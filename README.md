@@ -12,6 +12,7 @@ TensorLayer features include:
 
 ### Table of Contents
 0. [Overview](#Overview)
+0. [Library Structure](#Library-Structure)
 0. [Easy-to-modify](#Easy-to-modify)
 0. [Installation](#Installation)
 
@@ -106,6 +107,12 @@ recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 # Start training
 ...
 ```
+## Library Structure
+	-tensorlayer
+		- README.md	(the current directory)
+		- setup.py	()
+		- examples	()
+			-
 
 ## Easy-to-modify
 **Modifying Pre-train Behaviour**
