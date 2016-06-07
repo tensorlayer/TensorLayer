@@ -118,11 +118,13 @@ p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)   # theano: p_hat 
 KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
 ```
 
-For this reason, TensorLayer provides a simple way to modify or design your own pre-train metrice. For Autoencoder, TensorLayer uses **ReconLayer.*__*init__()** to define the reconstruction layer and cost function, to define your own cost function, just simply modify the **self.cost** in **ReconLayer.*__*init__()**.
-        
-	ReconLayer.__init__(...):
-	    ...
-		self.cost = mse + L1_a + L2_w
+For this reason, TensorLayer provides a simple way to modify or design your own pre-train metrice. For Autoencoder, TensorLayer uses **ReconLayer.*__*init__()** to define the reconstruction layer and cost function, to define your own cost function, just simply modify the **self.cost** in **ReconLayer.*__*init__()**. To creat your own cost expression please read *[Tensorflow Math](https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html)*.
+    
+```python    
+ReconLayer.__init__(...):
+    ...
+	self.cost = mse + L1_a + L2_w
+```
 --
 **Adding Customized Regularizer**
 
