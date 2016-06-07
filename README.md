@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://www.tensorflow.org/images/tf_logo_transp.png"><br><br>
+</div>
+
 # TensorLayer: Deep learning library for Tensorflow.
 
 TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to be extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
