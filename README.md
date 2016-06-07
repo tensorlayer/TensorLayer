@@ -1,6 +1,6 @@
 # TensorLayer: Deep learning library for Tensorflow.
 
-TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to be extended and modified, suitable for both machine learning researches and applications.
+TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to be extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
 TensorLayer features include:
@@ -17,12 +17,16 @@ TensorLayer features include:
 
 
 ## Overview
+More examples available *[here](https://www.xxx)*
+
 **Placeholder**
 
-All placeholder and variables can be initialized by the same way from Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)* and *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)*.
+All placeholder and variables can be initialized by the same way with Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)* and *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)*.
 
 ```python
 # For MNIST example, 28*28 images have 784 pixels, i.e, 784 inputs.
+import tensorflow as tf
+from tensorlayer import *
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 ```
