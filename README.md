@@ -11,7 +11,7 @@
 
 # TensorLayer: Deep learning library for Tensorflow.
 
-TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to be extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
+TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
 TensorLayer features include:
@@ -136,7 +136,7 @@ For example, the pre-train of *[Vanilla Sparse Autoencoder](http://deeplearning.
 # Vanilla Sparse Autoencoder
 beta = 4
 rho = 0.15
-p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)   # theano: p_hat = T.mean( self.a[i], axis=0 )
+p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
 KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
 ```
 
