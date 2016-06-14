@@ -21,7 +21,7 @@ TensorLayer features include:
 - Other libraries for Tensorflow are easy to merged into TensorLayer, suitable for machine learning researches...
 - Many official examples covering Dropout, DropNeuron, Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
 
-## Table of Contents
+# Table of Contents
 0. [Overview](#Overview)
 0. [Library Structure](#Library-Structure)
 0. [Easy to modify](#Easytomodify)
@@ -52,7 +52,6 @@ x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 ```
 
----
 **Rectifying Network with Dropout**
 
 ```python
@@ -67,7 +66,7 @@ network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
 # Start training
 ...
 ```
----
+
 **Vanilla Sparse Autoencoder**
 
 ```python
@@ -80,7 +79,7 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None
 # Start fine-tune
 ...
 ```
----
+
 **Denoising Autoencoder**
 
 ```python
@@ -94,7 +93,7 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 # Start fine-tune
 ...
 ```
----
+
 **Stacked Denoising Autoencoders**
 
 ```python
@@ -127,7 +126,7 @@ recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 # Start training
 ...
 ```
----
+
 ### Convolutional Neural Network
 
 Instead of input the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents to (batch_size, rows, columns, channels). Set 'batch_size' to 'None' means any batch_size can fill into the placeholder.
@@ -136,30 +135,30 @@ Instead of input the images as 1D vectors, the images can be imported as 4D matr
 x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[None,])
 ```
----
+
 **2 CNNs + MLP**
 
----
+
 
 ### Recurrent Neural Network
 
 **LSTM**
 
----
+
 ### Reinforcement Learning
 To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)*) and a Paper (*[Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)*) are recommended. To play with RL, *[OpenAI Gym](https://github.com/openai/gym)* as benchmark is recommended.
 
 **Pong Game**
 
-***
-## Library Structure
+
+# Library Structure
 	-tensorlayer
 		- README.md	(the current directory)
 		- setup.py	()
 		- examples	()
 			-
 
-***
+
 # Easy to modify
 **Modifying Pre-train Behaviour**
 
@@ -185,10 +184,10 @@ ReconLayer.__init__(...):
     ...
 	self.cost = mse + L1_a + L2_w
 ```
----
+
 **Adding Customized Regularizer**
 
----
+
 
 # Installation
 
@@ -196,7 +195,7 @@ ReconLayer.__init__(...):
 
 This library requires Tensorflow (version >= 0.8) to be installed: *[Tensorflow installation instructions](https://www.tensorflow.org/versions/r0.9/get_started/os_setup.html)*.
 
----
+
 **GPU Setup**
 
 GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
@@ -207,7 +206,7 @@ GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
 
 *[CuDNN download](https://developer.nvidia.com/cudnn)*.
 
----
+
 **TensorLayer Installation**
 ```python
 pip install git+https://github.com/xxx/xxx.git
@@ -218,7 +217,7 @@ Otherwise, you can also install from source by running (from source folder):
 ```python
 python setup.py install
 ```
----
+
 
 # Ways to Contribute
 
