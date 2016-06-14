@@ -37,7 +37,7 @@ More examples available *[here](https://www.xxx)*
 0. [Recurrent Neural Network](#)
 0. [Reinforcement Learning](#)
 
-### Fully Connected Network
+### *Fully Connected Network*
 TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
 
 **Placeholder**
@@ -127,7 +127,7 @@ recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 ...
 ```
 
-### Convolutional Neural Network
+### *Convolutional Neural Network*
 
 Instead of input the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents to (batch_size, rows, columns, channels). Set 'batch_size' to 'None' means any batch_size can fill into the placeholder.
 
@@ -138,14 +138,16 @@ y_ = tf.placeholder(tf.int64, shape=[None,])
 
 **2 CNNs + MLP**
 
+CNN is xn   dsansjkdnjsand sa dkas d
 
-
-### Recurrent Neural Network
+### *Recurrent Neural Network*
 
 **LSTM**
 
+Long Short-Term Memory is xxxxxx xjsdjansijdni
 
-### Reinforcement Learning
+
+### *Reinforcement Learning*
 To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)*) and a Paper (*[Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)*) are recommended. To play with RL, *[OpenAI Gym](https://github.com/openai/gym)* as benchmark is recommended.
 
 **Pong Game**
