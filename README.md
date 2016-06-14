@@ -79,6 +79,7 @@ network = InputLayer(x, name='input_layer')
 network = DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
 recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
 # Start pre-train
+sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
 ...
 ```
@@ -92,6 +93,7 @@ network = DropoutLayer(network, keep=0.5, name='denoising1')
 network = DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
 recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # Start pre-train
+sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
 ...
 ```
@@ -235,6 +237,17 @@ cost = cross_entropy
 cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
 ```
 
+Instance method **network.print_layers()** prints all outputs of different layers in order. To achieve regularization on activation output, you can use **network.all_layers** which contains all outputs of different layers. If you want to use L1 penalty on the activations of first hidden layer, just simply add **tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])** to the cost function.
+
+```python
+network.print_layers()
+>> layer 0: Tensor("dropout/mul_1:0", shape=(?, 784), dtype=float32)
+>> layer 1: Tensor("Relu:0", shape=(?, 800), dtype=float32)
+>> layer 2: Tensor("dropout_1/mul_1:0", shape=(?, 800), dtype=float32)
+>> layer 3: Tensor("Relu_1:0", shape=(?, 800), dtype=float32)
+>> layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
+>> layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
+```
 
 # Library Structure
 	-tensorlayer
