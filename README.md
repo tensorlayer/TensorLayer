@@ -11,7 +11,7 @@
 
 # TensorLayer: Deep learning and Reinforcement learning library for Tensorflow.
 
-TensorLayer is a transparent deep learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
+TensorLayer is a transparent deep learning and reinforcement learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
 TensorLayer features include:
@@ -42,7 +42,7 @@ TensorLayer provides large amount of state-of-the-art Layers including Dropout, 
 
 **Placeholder**
 
-All placeholder and variables can be initialized by the same way with Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)* and *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)*.
+All placeholder and variables can be initialized by the same way with Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)*, *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)* and *[tensorflow-math](https://www.tensorflow.org/versions/r0.9/api_docs/python/math_ops.html)*.
 
 ```python
 # For MNIST example, 28*28 images have 784 pixels, i.e, 784 inputs.
@@ -146,9 +146,18 @@ Long Short-Term Memory is xxxxxx xjsdjansijdni
 
 
 ### *Reinforcement Learning*
-To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)*) and a Paper (*[Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)*) are recommended. To play with RL, *[OpenAI Gym](https://github.com/openai/gym)* as benchmark is recommended.
+To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)*) and a Paper (*[Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)*) are recommended. To play with RL, use *[OpenAI Gym](https://github.com/openai/gym)* as benchmark is recommended.
 
 **Pong Game**
+
+Atari Pong Game is a single agent example. *[Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)* using 130 lines of Python only *[(Code link)](https://gist.github.com/karpathy/a4166c7fe253700972fcbc77e4ea32c5)* can be reimplemented as follow.
+
+```python
+# Policy network
+network = InputLayer(x, name='input_layer')
+network = DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
+network = DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
+```
 
 
 # Library Structure
@@ -157,6 +166,7 @@ To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pon
 		- setup.py	()
 		- examples	()
 			-
+		- img*		(images for README.md)
 
 
 # Easy to Modify
