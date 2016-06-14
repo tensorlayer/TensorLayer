@@ -24,7 +24,7 @@ TensorLayer features include:
 # Table of Contents
 0. [Overview](#Overview)
 0. [Library Structure](#Library-Structure)
-0. [Easy to modify](#Easytomodify)
+0. [Easy to Modify](#Easytomodify)
 0. [Installation](#Installation)
 0. [Ways to Contribute](#Waystocontribute)
 
@@ -76,7 +76,6 @@ network = DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
 recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
 # Start pre-train
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
-# Start fine-tune
 ...
 ```
 
@@ -90,7 +89,6 @@ network = DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
 recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # Start pre-train
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
-# Start fine-tune
 ...
 ```
 
@@ -161,7 +159,7 @@ To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pon
 			-
 
 
-# Easy to modify
+# Easy to Modify
 **Modifying Pre-train Behaviour**
 
 Greedy layer-wise pretrain is an important task for deep neural network initialization, while there are many kinds of pre-train metrices according to different architectures and applications.
