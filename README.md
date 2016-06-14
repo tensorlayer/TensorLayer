@@ -9,17 +9,20 @@
 -->
 
 
-# TensorLayer: Deep learning and Reinforcement learning library for Tensorflow.
+# TensorLayer: Deep learning and Reinforcement learning library for TensorFlow.
 
-TensorLayer is a transparent deep learning and reinforcement learning library built on the top of *[Google Tensorflow](https://www.tensorflow.org)*. It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
+TensorLayer is a transparent deep learning and reinforcement learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
 TensorLayer features include:
 
 - Fast prototyping through highly modular built-in neural network layers, pre-train metrices, regularizers, optimizers, cost functions...
 - Implemented by straightforward code, easy to modify and extend by yourself...
-- Other libraries for Tensorflow are easy to merged into TensorLayer, suitable for machine learning researches...
-- Many official examples covering Dropout, DropNeuron, Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
+- Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for machine learning researches...
+- Many official examples covering Dropout, DropConnect, DropNeuron, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
+- The running speed would not decrease compare with pure TensorFlow codes...
+
+Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 # Table of Contents
 0. [Overview](#Overview)
@@ -36,6 +39,7 @@ More examples available *[here](https://www.xxx)*
 0. [Convolutional Neural Network](#)
 0. [Recurrent Neural Network](#)
 0. [Reinforcement Learning](#)
+0. [Cost Function](#)
 
 ### *Fully Connected Network*
 TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
@@ -127,16 +131,50 @@ recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 
 ### *Convolutional Neural Network*
 
-Instead of input the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents to [batch_size, height, width, channels]. Set 'batch_size' to 'None' means any batch_size can fill into the placeholder.
-I
+Instead of feeding the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents [batchsize, height, width, channels]. Set 'batchsize' to 'None' means data with different batchsize can all filled into the placeholder.
+
 ```python
 x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[None,])
 ```
+**CNNs + MLP**
 
-**2 CNNs + MLP**
+A 2 layers CNN followed by 2 fully connected layers can be defined by the following codes:
 
-CNN is xn   dsansjkdnjsand sa dkas d
+```python
+network = InputLayer(x, name='input_layer')
+network = Conv2dLayer(network,
+                      act = tf.nn.relu,
+                      shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+                      strides=[1, 1, 1, 1],
+                      padding='SAME',
+                      name ='cnn_layer1')     # output: (?, 28, 28, 100)
+network = Pool2dLayer(network,
+                      ksize=[1, 2, 2, 1],
+                      strides=[1, 2, 2, 1],
+                      padding='SAME',
+                      pool = tf.nn.max_pool,
+                      name ='pool_layer1',)   # output: (?, 14, 14, 100)
+network = Conv2dLayer(network,
+                      act = tf.nn.relu,
+                      shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
+                      strides=[1, 1, 1, 1],
+                      padding='SAME',
+                      name ='cnn_layer2')     # output: (?, 14, 14, 32)
+network = Pool2dLayer(network,
+                      ksize=[1, 2, 2, 1],
+                      strides=[1, 2, 2, 1],
+                      padding='SAME',
+                      pool = tf.nn.max_pool,
+                      name ='pool_layer2',)   # output: (?, 7, 7, 32)
+network = FlattenLayer(network, name='flatten_layer')
+network = DropoutLayer(network, keep=0.5, name='drop1')
+network = DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
+network = DropoutLayer(network, keep=0.5, name='drop2')
+network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+```
+
+
 
 ### *Recurrent Neural Network*
 
@@ -157,6 +195,44 @@ Atari Pong Game is a single agent example. *[Pong from Pixels](http://karpathy.g
 network = InputLayer(x, name='input_layer')
 network = DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
 network = DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
+```
+
+
+### *Cost Function*
+
+TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
+
+```python
+network = InputLayer(x, name='input_layer')
+network = DropoutLayer(network, keep=0.8, name='drop1')
+network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = DropoutLayer(network, keep=0.5, name='drop2')
+network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+network = DropoutLayer(network, keep=0.5, name='drop3')
+network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+```
+
+After initializing the variables, the informations of network parameters can be observed by using **network.print_params()**.
+
+```python
+sess.run(tf.initialize_all_variables())
+network.print_params()
+>> param 0: (784, 800) (mean: -0.000000, median: 0.000004 std: 0.035524)
+>> param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+>> param 2: (800, 800) (mean: 0.000029, median: 0.000031 std: 0.035378)
+>> param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+>> param 4: (800, 10) (mean: 0.000673, median: 0.000763 std: 0.049373)
+>> param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+>> num of params: 1276810
+```
+
+The output of network is **network.outputs**, then the cross entropy can be defined as follow. Besides, to regularize the weights, the **network.all_params** contains all parameters of the network. In this case, **network.all_params** = [W1, b1, W2, b2, Wout, bout] according to param 0, 1 ... 5 shown by **network.print_params()**. Then max-norm regularization on W1 and W2 can be performed as follow.
+
+```python
+y = network.outputs
+cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+cost = cross_entropy
+cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
 ```
 
 
@@ -218,6 +294,7 @@ GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
 
 
 **TensorLayer Installation**
+
 ```python
 pip install git+https://github.com/xxx/xxx.git
 ```
