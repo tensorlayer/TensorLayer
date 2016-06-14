@@ -127,8 +127,8 @@ recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 
 ### *Convolutional Neural Network*
 
-Instead of input the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents to (batch_size, rows, columns, channels). Set 'batch_size' to 'None' means any batch_size can fill into the placeholder.
-
+Instead of input the images as 1D vectors, the images can be imported as 4D matrix, where [None, 28, 28, 1] represents to [batch_size, height, width, channels]. Set 'batch_size' to 'None' means any batch_size can fill into the placeholder.
+I
 ```python
 x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[None,])
