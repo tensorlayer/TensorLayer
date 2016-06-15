@@ -20,11 +20,12 @@ from sys import platform as _platform
 # np.random.seed(0)
 # tf.set_random_seed(0)
 
-## Dynamically creat variable for layer
-dynamic_val = locals()
+## Dynamically creat variable for keep prob
+set_keep = locals()
+# set_keep = globals()
 
 ## System
-def exit_tf():
+def exit_tf(sess):
     text = "Close tensorboard and nvidia-process if available"
     sess.close()
     # import time
@@ -43,14 +44,28 @@ def exit_tf():
         print(_platform)
     exit()
 
-def set_gpu_fraction(gpu_fraction = 0.3):
+def clear_all(printable=True):
+    """Clears all the placeholder variables from of the application."""
+    gl = globals().copy()
+    for var in gl:
+        if var[0] == '_': continue
+        if 'func' in str(globals()[var]): continue
+        if 'module' in str(globals()[var]): continue
+        if 'class' in str(globals()[var]): continue
+
+        if printable:
+            print(" clear_all ------- %s" % str(globals()[var]))
+
+        del globals()[var]
+
+def set_gpu_fraction(gpu_fraction=0.3):
     print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
     return sess
 
 ## Visualization
-def visualize_W(W, second=10, saveable=True, name='mnist_', fig_idx=2312):
+def visualize_W(W, second=10, saveable=True, name='mnist_', fig_idx=2396512):
     plt.ion()
     fig = plt.figure(fig_idx)      # show all feature images
     size = W.shape[0]
@@ -447,6 +462,7 @@ def flatten_reshape(variable):
     return tf.reshape(variable, shape=[-1, dim])
 
 ## Layers
+# Layer base class
 class Layer(object):
     ''' super class of a network'''
     def __init__(
@@ -477,6 +493,14 @@ class Layer(object):
             print("  param %d: %s (mean: %f, median: %f std: %f)" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std()))
         print("  num of params: %d" % self.count_params())
 
+    # @instancemethod
+    def print_layers(self):
+        ''' print all info of layers in the network '''
+        for i, p in enumerate(self.all_layers):
+            # print(vars(p))
+            print("  layer %d: %s" % (i, str(p)))
+
+
     def count_params(self):
         ''' return the number of parameters in the network '''
         n_params = 0
@@ -488,6 +512,7 @@ class Layer(object):
             n_params = n_params + n
         return n_params
 
+# Network input
 class InputLayer(Layer):
     def __init__(
         self,
@@ -498,40 +523,14 @@ class InputLayer(Layer):
         # super(InputLayer, self).__init__()            # initialize all super classes
         self.n_units = int(inputs._shape[1])
         print("  tensorlayer:Instantiate InputLayer %s %s" % (self.name, inputs._shape))
+
         self.outputs = inputs
+
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
 
-class DropoutLayer(Layer):
-    def __init__(
-        self,
-        layer = None,
-        keep = 0.5,
-        name = 'dropout_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        self.n_units = layer.n_units
-        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
-
-        dynamic_val[name] = tf.placeholder(tf.float32)
-
-        self.outputs = tf.nn.dropout(self.inputs, dynamic_val[name])
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_drop.update( {dynamic_val[name]: keep} )
-        self.all_layers.extend( [self.outputs] )
-        # print(dynamic_val[name])    # Tensor("Placeholder_2:0", dtype=float32)
-        # print(denoising1)           # Tensor("Placeholder_2:0", dtype=float32)
-        # print(self.all_drop[denoising1])    # 0.8
-        # exit()
-        # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/tf/index.html
-        # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
-        # If the key is a Tensor, the value may be a Python scalar, string, list, or numpy ndarray that can be converted to the same dtype as that tensor. Additionally, if the key is a placeholder, the shape of the value will be checked for compatibility with the placeholder.
-        # If the key is a SparseTensor, the value should be a SparseTensorValue.
-
+# Dense layer
 class DenseLayer(Layer):
     def __init__(
         self,
@@ -557,6 +556,7 @@ class DenseLayer(Layer):
         # W = tf.Variable(tf.constant(.01, shape=[n_in, n_units]), name='W')
         b = tf.Variable(tf.zeros([n_units]), name='b')
         self.outputs = act(tf.matmul(self.inputs, W) + b)
+
         self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
@@ -662,8 +662,8 @@ class ReconLayer(DenseLayer):
         print("     tensorlayer:  %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:
-            print("     denoising layer keep: %f" % self.all_drop[dynamic_val[denoise_name]])
-            dp_denoise = self.all_drop[dynamic_val[denoise_name]]
+            print("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
+            dp_denoise = self.all_drop[set_keep[denoise_name]]
         else:
             print("     no denoising layer")
 
@@ -679,7 +679,7 @@ class ReconLayer(DenseLayer):
             for X_train_a, _ in iterate_minibatches(X_train, X_train, batch_size, shuffle=True):
                 dp_dict = Layer.dict_to_one( self.all_drop )
                 if denoise_name:
-                    dp_dict[dynamic_val[denoise_name]] = dp_denoise
+                    dp_dict[set_keep[denoise_name]] = dp_denoise
                 feed_dict = {x: X_train_a}
                 feed_dict.update(dp_dict)
                 sess.run(self.train_op, feed_dict=feed_dict)
@@ -710,6 +710,36 @@ class ReconLayer(DenseLayer):
                     except:
                         raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
 
+# Noise layer
+class DropoutLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        keep = 0.5,
+        name = 'dropout_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        self.n_units = layer.n_units
+        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
+
+        set_keep[name] = tf.placeholder(tf.float32)
+        self.outputs = tf.nn.dropout(self.inputs, set_keep[name])
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_drop.update( {set_keep[name]: keep} )
+        self.all_layers.extend( [self.outputs] )
+        # print(set_keep[name])    # Tensor("Placeholder_2:0", dtype=float32)
+        # print(denoising1)           # Tensor("Placeholder_2:0", dtype=float32)
+        # print(self.all_drop[denoising1])    # 0.8
+        # exit()
+        # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/tf/index.html
+        # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
+        # If the key is a Tensor, the value may be a Python scalar, string, list, or numpy ndarray that can be converted to the same dtype as that tensor. Additionally, if the key is a placeholder, the shape of the value will be checked for compatibility with the placeholder.
+        # If the key is a SparseTensor, the value should be a SparseTensorValue.
+
 class DropconnectDenseLayer(Layer):
     def __init__(
         self,
@@ -734,18 +764,18 @@ class DropconnectDenseLayer(Layer):
 
         W = tf.Variable(xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
         b = tf.Variable(tf.zeros([n_units]), name='b')
-
-        dynamic_val[name] = tf.placeholder(tf.float32)
-        W_dropcon = tf.nn.dropout(W,  dynamic_val[name])
+        set_keep[name] = tf.placeholder(tf.float32)
+        W_dropcon = tf.nn.dropout(W,  set_keep[name])
         self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        self.all_drop.update( {dynamic_val[name]: keep} )
+        self.all_drop.update( {set_keep[name]: keep} )
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+# Convolutional layer
 class Conv2dLayer(Layer):
     def __init__(
         self,
@@ -762,9 +792,7 @@ class Conv2dLayer(Layer):
         print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
         W = tf.Variable( tf.truncated_normal(shape=shape, stddev=0.1, seed=np.random.randint(99999999)), name='W_conv')
-
         b = tf.Variable(tf.constant(0.1, shape=[shape[-1]]), name='b_conv')
-
         self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
 
         self.all_layers = list(layer.all_layers)
@@ -773,6 +801,7 @@ class Conv2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+# Pooling layer
 class Pool2dLayer(Layer):
     def __init__(
         self,
@@ -799,6 +828,7 @@ class Pool2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( [W] )
 
+# Shape layer
 class FlattenLayer(Layer):
     def __init__(
         self,
@@ -811,17 +841,16 @@ class FlattenLayer(Layer):
         self.outputs = flatten_reshape(self.inputs)
         self.n_units = int(self.outputs._shape[-1])
         print("  tensorlayer:Instantiate FlattenLayer %s, %d" % (self.name, self.n_units))
-
-
-        # print(self.n_units)
-        # exit()
-
         self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
+# Merge layer
+    # ConcatLayer
 
 ## Layers have not been tested yet
-
+# dense
 class MaxoutLayer(Layer):
     def __init__(
         self,
@@ -853,7 +882,7 @@ class MaxoutLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-
+# densen
 class ResnetLayer(Layer):
     def __init__(
         self,
@@ -883,464 +912,492 @@ class ResnetLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
+# noise
+class GaussianNoiseLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        # keep = 0.5,
+        name = 'gaussian_noise_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        self.n_units = layer.n_units
+        print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
+# shape
+class ReshapeLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        shape = None,
+        name ='reshape_layer',
+    ):
+        pass
+# merge
+class ConcatLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        name ='concat_layer',
+    ):
+        pass
 
 ## Testing Scripts
-def main_test_layers(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
-    sess = tf.InteractiveSession()
-
-    # placeholder
-    x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
-
-    if model == 'relu':
-        network = InputLayer(x, name='input_layer')
-        network = DropoutLayer(network, keep=0.8, name='drop1')
-        network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-        network = DropoutLayer(network, keep=0.5, name='drop2')
-        network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-        network = DropoutLayer(network, keep=0.5, name='drop3')
-        network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
-    elif model == 'resnet':
-        network = InputLayer(x, name='input_layer')
-        network = DropoutLayer(network, keep=0.8, name='drop1')
-        network = ResnetLayer(network, act = tf.nn.relu, name='resnet1')
-        network = DropoutLayer(network, keep=0.5, name='drop2')
-        network = ResnetLayer(network, act = tf.nn.relu, name='resnet2')
-        network = DropoutLayer(network, keep=0.5, name='drop3')
-        network = DenseLayer(network, act = identity, name='output_layer')
-    elif model == 'dropconnect':
-        network = InputLayer(x, name='input_layer')
-        network = DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
-        network = DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
-        network = DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = identity, name='output_layer')
-
-    # attrs = vars(network)
-    # print(', '.join("%s: %s\n" % item for item in attrs.items()))
-
-    # print(network.all_drop)     # {'drop1': 0.8, 'drop2': 0.5, 'drop3': 0.5}
-    # print(drop1, drop2, drop3)  # Tensor("Placeholder_2:0", dtype=float32) Tensor("Placeholder_3:0", dtype=float32) Tensor("Placeholder_4:0", dtype=float32)
-    # exit()
-
-    y = network.outputs
-    y_op = tf.argmax(tf.nn.softmax(y), 1)
-    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    cost = ce
-
-    # cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
-    # cost = cost + lo_regularizer(0.0001)(network.all_params[0]) + lo_regularizer(0.0001)(network.all_params[2])
-    cost = cost + maxnorm_o_regularizer(0.001)(network.all_params[0]) + maxnorm_o_regularizer(0.001)(network.all_params[2])
-
-
-    params = network.all_params
-    # train
-    n_epoch = 500
-    batch_size = 128
-    learning_rate = 0.0001
-    print_freq = 10
-    # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost)
-
-    sess.run(tf.initialize_all_variables()) # initialize all variables
-
-    network.print_params()
-
-    print('   learning_rate: %f' % learning_rate)
-    print('   batch_size: %d' % batch_size)
-
-    for epoch in range(n_epoch):
-        start_time = time.time()
-        for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
-            feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )    # enable all dropout/dropconnect/denoising layers
-            sess.run(train_op, feed_dict=feed_dict)
-
-            # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
-            # If the key is a Tensor, the value may be a Python scalar, string, list, or numpy ndarray that can be converted to the same dtype as that tensor. Additionally, if the key is a placeholder, the shape of the value will be checked for compatibility with the placeholder.
-            # If the key is a SparseTensor, the value should be a SparseTensorValue.
-
-        if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-            dp_dict = Layer.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
-            feed_dict = {x: X_train, y_: y_train}
-            feed_dict.update(dp_dict)
-            print("   train loss: %f" % sess.run(cost, feed_dict=feed_dict))
-            dp_dict = Layer.dict_to_one( network.all_drop )
-            feed_dict = {x: X_val, y_: y_val}
-            feed_dict.update(dp_dict)
-            print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
-            print("   val acc: %f" % np.mean(y_val == sess.run(y_op, feed_dict=feed_dict)))
-            try:
-                visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
-            except:
-                raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
-
-    print('Evaluation')
-    dp_dict = Layer.dict_to_one( network.all_drop )
-    feed_dict = {x: X_test, y_: y_test}
-    feed_dict.update(dp_dict)
-    print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
-    print("   test acc: %f" % np.mean(y_test == sess.run(y_op, feed_dict=feed_dict)))
-
-    # Add ops to save and restore all the variables.
-    # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
-    saver = tf.train.Saver()
-    # you may want to save the model
-    save_path = saver.save(sess, "model.ckpt")
-    print("Model saved in file: %s" % save_path)
-    sess.close()
-
-def main_test_denoise_AE(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
-    sess = tf.InteractiveSession()
-
-    # placeholder
-    x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
-
-    print("Build Network")
-    if model == 'relu':
-        network = InputLayer(x, name='input_layer')
-        network = DropoutLayer(network, keep=0.5, name='denoising1')    # if drop some inputs, it is denoise AE
-        network = DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
-        recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
-    elif model == 'sigmoid':
-        # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
-        network = InputLayer(x, name='input_layer')
-        network = DropoutLayer(network, keep=0.5, name='denoising1')
-        network = DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
-        recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
-
-    ## ready to train
-    sess.run(tf.initialize_all_variables())
-
-    ## print all params
-    print("All Network Params")
-    network.print_params()
-
-    ## pretrain
-    print("Pre-train Layer 1")
-    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
-        # recon_layer1.pretrain(sess, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1000, batch_size=128, print_freq=10)
-
-    # Add ops to save and restore all the variables.
-    # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
-    saver = tf.train.Saver()
-    # you may want to save the model
-    save_path = saver.save(sess, "model.ckpt")
-    print("Model saved in file: %s" % save_path)
-    sess.close()
-
-def main_test_stacked_denoise_AE(model='relu'):
-    # Load MNIST dataset
-    X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
-    sess = tf.InteractiveSession()
-
-    x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
-
-    if model == 'relu':
-        act = tf.nn.relu
-        act_recon = tf.nn.softplus
-    elif model == 'sigmoid':
-        act = tf.nn.sigmoid
-        act_recon = act
-
-    # Define network
-    print("\nBuild Network")
-    network = InputLayer(x, name='input_layer')
-    # denoise layer for AE
-    network = DropoutLayer(network, keep=0.5, name='denoising1')
-    # 1st layer
-    network = DropoutLayer(network, keep=0.8, name='drop1')
-    network = DenseLayer(network, n_units=800, act = act, name=model+'1')
-    x_recon1 = network.outputs
-    recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = act_recon, name='recon_layer1')
-    # 2nd layer
-    network = DropoutLayer(network, keep=0.5, name='drop2')
-    network = DenseLayer(network, n_units=800, act = act, name=model+'2')
-    recon_layer2 = ReconLayer(network, x_recon=x_recon1, n_units=800, act = act_recon, name='recon_layer2')
-    # 3rd layer
-    network = DropoutLayer(network, keep=0.5, name='drop3')
-    network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
-
-    # Define fine-tune process
-    y = network.outputs
-    y_op = tf.argmax(tf.nn.softmax(y), 1)
-    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    cost = ce
-
-    n_epoch = 500
-    batch_size = 128
-    learning_rate = 0.0001
-    print_freq = 10
-
-    train_params = network.all_params
-
-        # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
-    train_op = tf.train.AdamOptimizer(learning_rate , beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
-
-    # Initialize all variables including weights, biases and the variables in train_op
-    sess.run(tf.initialize_all_variables())
-
-    # Pre-train
-    print("\nAll Network Params before pre-train")
-    network.print_params()
-    print("\nPre-train Layer 1")
-    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
-    print("\nPre-train Layer 2")
-    recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=False)
-    print("\nAll Network Params after pre-train")
-    network.print_params()
-
-    # Fine-tune
-    print("\nFine-tune Network")
-    correct_prediction = tf.equal(tf.argmax(y, 1), y_)
-    acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-    print('   learning_rate: %f' % learning_rate)
-    print('   batch_size: %d' % batch_size)
-
-    for epoch in range(n_epoch):
-        start_time = time.time()
-        for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
-            feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
-            feed_dict[dynamic_val['denoising1']] = 1    # disable denoising layer
-            sess.run(train_op, feed_dict=feed_dict)
-
-        if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-            train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
-                feed_dict = {x: X_train_a, y_: y_train_a}
-                feed_dict.update(dp_dict)
-                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                train_loss += err
-                train_acc += ac
-                n_batch += 1
-            print("   train loss: %f" % (train_loss/ n_batch))
-            print("   train acc: %f" % (train_acc/ n_batch))
-            val_loss, val_acc, n_batch = 0, 0, 0
-            for X_val_a, y_val_a in iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
-                feed_dict = {x: X_val_a, y_: y_val_a}
-                feed_dict.update(dp_dict)
-                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                val_loss += err
-                val_acc += ac
-                n_batch += 1
-            print("   val loss: %f" % (val_loss/ n_batch))
-            print("   val acc: %f" % (val_acc/ n_batch))
-            try:
-                visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
-            except:
-                raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
-
-    print('Evaluation')
-    test_loss, test_acc, n_batch = 0, 0, 0
-    for X_test_a, y_test_a in iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout layers
-        feed_dict = {x: X_test_a, y_: y_test_a}
-        feed_dict.update(dp_dict)
-        err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-        test_loss += err
-        test_acc += ac
-        n_batch += 1
-    print("   test loss: %f" % (test_loss/n_batch))
-    print("   test acc: %f" % (test_acc/n_batch))
-        # print("   test acc: %f" % np.mean(y_test == sess.run(y_op, feed_dict=feed_dict)))
-
-    # Add ops to save and restore all the variables.
-    # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
-    saver = tf.train.Saver()
-    # you may want to save the model
-    save_path = saver.save(sess, "model.ckpt")
-    print("Model saved in file: %s" % save_path)
-    sess.close()
-
-def main_test_cnn_layer():
-    '''
-        Reimplementation of the tensorflow official MNIST CNN tutorials:
-        # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
-        # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
-    '''
-    X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1, 28, 28, 1))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
-    sess = tf.InteractiveSession()
-
-    x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])   # [batch_size, height, width, channels]
-    y_ = tf.placeholder(tf.int64, shape=[None,])
-
-    network = InputLayer(x, name='input_layer')
-    network = Conv2dLayer(network,
-                        act = tf.nn.relu,
-                        shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                        strides=[1, 1, 1, 1],
-                        padding='SAME',
-                        name ='cnn_layer1')     # output: (?, 28, 28, 100)
-    network = Pool2dLayer(network,
-                        ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1],
-                        padding='SAME',
-                        pool = tf.nn.max_pool,
-                        name ='pool_layer1',)   # output: (?, 14, 14, 100)
-    network = Conv2dLayer(network,
-                        act = tf.nn.relu,
-                        shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-                        strides=[1, 1, 1, 1],
-                        padding='SAME',
-                        name ='cnn_layer2')     # output: (?, 14, 14, 32)
-    network = Pool2dLayer(network,
-                        ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1],
-                        padding='SAME',
-                        pool = tf.nn.max_pool,
-                        name ='pool_layer2',)   # output: (?, 7, 7, 32)
-    network = FlattenLayer(network, name='flatten_layer')
-    network = DropoutLayer(network, keep=0.5, name='drop1')
-    network = DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
-    network = DropoutLayer(network, keep=0.5, name='drop2')
-    network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
-
-    y = network.outputs
-
-    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    cost = ce
-
-    correct_prediction = tf.equal(tf.argmax(y, 1), y_)
-    acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-    # train
-    n_epoch = 500
-    batch_size = 128
-    learning_rate = 0.0001
-    print_freq = 10
-
-    train_params = network.all_params
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
-
-    sess.run(tf.initialize_all_variables())
-
-    network.print_params()
-
-    print('   learning_rate: %f' % learning_rate)
-    print('   batch_size: %d' % batch_size)
-
-    for epoch in range(n_epoch):
-        start_time = time.time()
-        for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
-            feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
-            sess.run(train_op, feed_dict=feed_dict)
-
-        if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-            train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
-                feed_dict = {x: X_train_a, y_: y_train_a}
-                feed_dict.update(dp_dict)
-                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                train_loss += err
-                train_acc += ac
-                n_batch += 1
-            print("   train loss: %f" % (train_loss/ n_batch))
-            print("   train acc: %f" % (train_acc/ n_batch))
-            val_loss, val_acc, n_batch = 0, 0, 0
-            for X_val_a, y_val_a in iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
-                feed_dict = {x: X_val_a, y_: y_val_a}
-                feed_dict.update(dp_dict)
-                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                val_loss += err
-                val_acc += ac
-                n_batch += 1
-            print("   val loss: %f" % (val_loss/ n_batch))
-            print("   val acc: %f" % (val_acc/ n_batch))
-            # try:
-            #     visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
-            # except:
-            #     raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
-
-    print('Evaluation')
-    test_loss, test_acc, n_batch = 0, 0, 0
-    for X_test_a, y_test_a in iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout layers
-        feed_dict = {x: X_test_a, y_: y_test_a}
-        feed_dict.update(dp_dict)
-        err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-        test_loss += err
-        test_acc += ac
-        n_batch += 1
-    print("   test loss: %f" % (test_loss/n_batch))
-    print("   test acc: %f" % (test_acc/n_batch))
-
-
+# def main_test_layers(model='relu'):
+#     X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
+#
+#     X_train = np.asarray(X_train, dtype=np.float32)
+#     y_train = np.asarray(y_train, dtype=np.int64)
+#     X_val = np.asarray(X_val, dtype=np.float32)
+#     y_val = np.asarray(y_val, dtype=np.int64)
+#     X_test = np.asarray(X_test, dtype=np.float32)
+#     y_test = np.asarray(y_test, dtype=np.int64)
+#
+#     print('X_train.shape', X_train.shape)
+#     print('y_train.shape', y_train.shape)
+#     print('X_val.shape', X_val.shape)
+#     print('y_val.shape', y_val.shape)
+#     print('X_test.shape', X_test.shape)
+#     print('y_test.shape', y_test.shape)
+#     print('X %s   y %s' % (X_test.dtype, y_test.dtype))
+#
+#     sess = tf.InteractiveSession()
+#
+#     # placeholder
+#     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+#     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+#
+#     if model == 'relu':
+#         network = InputLayer(x, name='input_layer')
+#         network = DropoutLayer(network, keep=0.8, name='drop1')
+#         network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+#         network = DropoutLayer(network, keep=0.5, name='drop2')
+#         network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+#         network = DropoutLayer(network, keep=0.5, name='drop3')
+#         network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+#     elif model == 'resnet':
+#         network = InputLayer(x, name='input_layer')
+#         network = DropoutLayer(network, keep=0.8, name='drop1')
+#         network = ResnetLayer(network, act = tf.nn.relu, name='resnet1')
+#         network = DropoutLayer(network, keep=0.5, name='drop2')
+#         network = ResnetLayer(network, act = tf.nn.relu, name='resnet2')
+#         network = DropoutLayer(network, keep=0.5, name='drop3')
+#         network = DenseLayer(network, act = identity, name='output_layer')
+#     elif model == 'dropconnect':
+#         network = InputLayer(x, name='input_layer')
+#         network = DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
+#         network = DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
+#         network = DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = identity, name='output_layer')
+#
+#     # attrs = vars(network)
+#     # print(', '.join("%s: %s\n" % item for item in attrs.items()))
+#
+#     # print(network.all_drop)     # {'drop1': 0.8, 'drop2': 0.5, 'drop3': 0.5}
+#     # print(drop1, drop2, drop3)  # Tensor("Placeholder_2:0", dtype=float32) Tensor("Placeholder_3:0", dtype=float32) Tensor("Placeholder_4:0", dtype=float32)
+#     # exit()
+#
+#     y = network.outputs
+#     y_op = tf.argmax(tf.nn.softmax(y), 1)
+#     ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+#     cost = ce
+#
+#     # cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
+#     # cost = cost + lo_regularizer(0.0001)(network.all_params[0]) + lo_regularizer(0.0001)(network.all_params[2])
+#     cost = cost + maxnorm_o_regularizer(0.001)(network.all_params[0]) + maxnorm_o_regularizer(0.001)(network.all_params[2])
+#
+#
+#     params = network.all_params
+#     # train
+#     n_epoch = 500
+#     batch_size = 128
+#     learning_rate = 0.0001
+#     print_freq = 10
+#     # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
+#     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost)
+#
+#     sess.run(tf.initialize_all_variables()) # initialize all variables
+#
+#     network.print_params()
+#     network.print_layers()
+#
+#     print('   learning_rate: %f' % learning_rate)
+#     print('   batch_size: %d' % batch_size)
+#
+#     for epoch in range(n_epoch):
+#         start_time = time.time()
+#         for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+#             feed_dict = {x: X_train_a, y_: y_train_a}
+#             feed_dict.update( network.all_drop )    # enable all dropout/dropconnect/denoising layers
+#             sess.run(train_op, feed_dict=feed_dict)
+#
+#             # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
+#             # If the key is a Tensor, the value may be a Python scalar, string, list, or numpy ndarray that can be converted to the same dtype as that tensor. Additionally, if the key is a placeholder, the shape of the value will be checked for compatibility with the placeholder.
+#             # If the key is a SparseTensor, the value should be a SparseTensorValue.
+#
+#         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+#             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+#             dp_dict = Layer.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
+#             feed_dict = {x: X_train, y_: y_train}
+#             feed_dict.update(dp_dict)
+#             print("   train loss: %f" % sess.run(cost, feed_dict=feed_dict))
+#             dp_dict = Layer.dict_to_one( network.all_drop )
+#             feed_dict = {x: X_val, y_: y_val}
+#             feed_dict.update(dp_dict)
+#             print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
+#             print("   val acc: %f" % np.mean(y_val == sess.run(y_op, feed_dict=feed_dict)))
+#             try:
+#                 visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+#             except:
+#                 raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
+#
+#     print('Evaluation')
+#     dp_dict = Layer.dict_to_one( network.all_drop )
+#     feed_dict = {x: X_test, y_: y_test}
+#     feed_dict.update(dp_dict)
+#     print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
+#     print("   test acc: %f" % np.mean(y_test == sess.run(y_op, feed_dict=feed_dict)))
+#
+#     # Add ops to save and restore all the variables.
+#     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
+#     saver = tf.train.Saver()
+#     # you may want to save the model
+#     save_path = saver.save(sess, "model.ckpt")
+#     print("Model saved in file: %s" % save_path)
+#     sess.close()
+#
+# def main_test_denoise_AE(model='relu'):
+#     X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
+#
+#     X_train = np.asarray(X_train, dtype=np.float32)
+#     y_train = np.asarray(y_train, dtype=np.int64)
+#     X_val = np.asarray(X_val, dtype=np.float32)
+#     y_val = np.asarray(y_val, dtype=np.int64)
+#     X_test = np.asarray(X_test, dtype=np.float32)
+#     y_test = np.asarray(y_test, dtype=np.int64)
+#
+#     print('X_train.shape', X_train.shape)
+#     print('y_train.shape', y_train.shape)
+#     print('X_val.shape', X_val.shape)
+#     print('y_val.shape', y_val.shape)
+#     print('X_test.shape', X_test.shape)
+#     print('y_test.shape', y_test.shape)
+#     print('X %s   y %s' % (X_test.dtype, y_test.dtype))
+#
+#     sess = tf.InteractiveSession()
+#
+#     # placeholder
+#     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+#     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+#
+#     print("Build Network")
+#     if model == 'relu':
+#         network = InputLayer(x, name='input_layer')
+#         network = DropoutLayer(network, keep=0.5, name='denoising1')    # if drop some inputs, it is denoise AE
+#         network = DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
+#         recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+#     elif model == 'sigmoid':
+#         # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
+#         network = InputLayer(x, name='input_layer')
+#         network = DropoutLayer(network, keep=0.5, name='denoising1')
+#         network = DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
+#         recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
+#
+#     ## ready to train
+#     sess.run(tf.initialize_all_variables())
+#
+#     ## print all params
+#     print("All Network Params")
+#     network.print_params()
+#
+#     ## pretrain
+#     print("Pre-train Layer 1")
+#     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+#         # recon_layer1.pretrain(sess, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1000, batch_size=128, print_freq=10)
+#
+#     # Add ops to save and restore all the variables.
+#     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
+#     saver = tf.train.Saver()
+#     # you may want to save the model
+#     save_path = saver.save(sess, "model.ckpt")
+#     print("Model saved in file: %s" % save_path)
+#     sess.close()
+#
+# def main_test_stacked_denoise_AE(model='relu'):
+#     # Load MNIST dataset
+#     X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1,784))
+#
+#     X_train = np.asarray(X_train, dtype=np.float32)
+#     y_train = np.asarray(y_train, dtype=np.int64)
+#     X_val = np.asarray(X_val, dtype=np.float32)
+#     y_val = np.asarray(y_val, dtype=np.int64)
+#     X_test = np.asarray(X_test, dtype=np.float32)
+#     y_test = np.asarray(y_test, dtype=np.int64)
+#
+#     print('X_train.shape', X_train.shape)
+#     print('y_train.shape', y_train.shape)
+#     print('X_val.shape', X_val.shape)
+#     print('y_val.shape', y_val.shape)
+#     print('X_test.shape', X_test.shape)
+#     print('y_test.shape', y_test.shape)
+#     print('X %s   y %s' % (X_test.dtype, y_test.dtype))
+#
+#     sess = tf.InteractiveSession()
+#
+#     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+#     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+#
+#     if model == 'relu':
+#         act = tf.nn.relu
+#         act_recon = tf.nn.softplus
+#     elif model == 'sigmoid':
+#         act = tf.nn.sigmoid
+#         act_recon = act
+#
+#     # Define network
+#     print("\nBuild Network")
+#     network = InputLayer(x, name='input_layer')
+#     # denoise layer for AE
+#     network = DropoutLayer(network, keep=0.5, name='denoising1')
+#     # 1st layer
+#     network = DropoutLayer(network, keep=0.8, name='drop1')
+#     network = DenseLayer(network, n_units=800, act = act, name=model+'1')
+#     x_recon1 = network.outputs
+#     recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = act_recon, name='recon_layer1')
+#     # 2nd layer
+#     network = DropoutLayer(network, keep=0.5, name='drop2')
+#     network = DenseLayer(network, n_units=800, act = act, name=model+'2')
+#     recon_layer2 = ReconLayer(network, x_recon=x_recon1, n_units=800, act = act_recon, name='recon_layer2')
+#     # 3rd layer
+#     network = DropoutLayer(network, keep=0.5, name='drop3')
+#     network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+#
+#     # Define fine-tune process
+#     y = network.outputs
+#     y_op = tf.argmax(tf.nn.softmax(y), 1)
+#     ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+#     cost = ce
+#
+#     n_epoch = 500
+#     batch_size = 128
+#     learning_rate = 0.0001
+#     print_freq = 10
+#
+#     train_params = network.all_params
+#
+#         # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
+#     train_op = tf.train.AdamOptimizer(learning_rate , beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+#
+#     # Initialize all variables including weights, biases and the variables in train_op
+#     sess.run(tf.initialize_all_variables())
+#
+#     # Pre-train
+#     print("\nAll Network Params before pre-train")
+#     network.print_params()
+#     print("\nPre-train Layer 1")
+#     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+#     print("\nPre-train Layer 2")
+#     recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=False)
+#     print("\nAll Network Params after pre-train")
+#     network.print_params()
+#
+#     # Fine-tune
+#     print("\nFine-tune Network")
+#     correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+#     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+#
+#     print('   learning_rate: %f' % learning_rate)
+#     print('   batch_size: %d' % batch_size)
+#
+#     for epoch in range(n_epoch):
+#         start_time = time.time()
+#         for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+#             feed_dict = {x: X_train_a, y_: y_train_a}
+#             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
+#             feed_dict[set_keep['denoising1']] = 1    # disable denoising layer
+#             sess.run(train_op, feed_dict=feed_dict)
+#
+#         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+#             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+#             train_loss, train_acc, n_batch = 0, 0, 0
+#             for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+#                 dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+#                 feed_dict = {x: X_train_a, y_: y_train_a}
+#                 feed_dict.update(dp_dict)
+#                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#                 train_loss += err
+#                 train_acc += ac
+#                 n_batch += 1
+#             print("   train loss: %f" % (train_loss/ n_batch))
+#             print("   train acc: %f" % (train_acc/ n_batch))
+#             val_loss, val_acc, n_batch = 0, 0, 0
+#             for X_val_a, y_val_a in iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
+#                 dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+#                 feed_dict = {x: X_val_a, y_: y_val_a}
+#                 feed_dict.update(dp_dict)
+#                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#                 val_loss += err
+#                 val_acc += ac
+#                 n_batch += 1
+#             print("   val loss: %f" % (val_loss/ n_batch))
+#             print("   val acc: %f" % (val_acc/ n_batch))
+#             try:
+#                 visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+#             except:
+#                 raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
+#
+#     print('Evaluation')
+#     test_loss, test_acc, n_batch = 0, 0, 0
+#     for X_test_a, y_test_a in iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
+#         dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout layers
+#         feed_dict = {x: X_test_a, y_: y_test_a}
+#         feed_dict.update(dp_dict)
+#         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#         test_loss += err
+#         test_acc += ac
+#         n_batch += 1
+#     print("   test loss: %f" % (test_loss/n_batch))
+#     print("   test acc: %f" % (test_acc/n_batch))
+#         # print("   test acc: %f" % np.mean(y_test == sess.run(y_op, feed_dict=feed_dict)))
+#
+#     # Add ops to save and restore all the variables.
+#     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
+#     saver = tf.train.Saver()
+#     # you may want to save the model
+#     save_path = saver.save(sess, "model.ckpt")
+#     print("Model saved in file: %s" % save_path)
+#     sess.close()
+#
+# def main_test_cnn_layer():
+#     '''
+#         Reimplementation of the tensorflow official MNIST CNN tutorials:
+#         # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
+#         # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
+#     '''
+#     X_train, y_train, X_val, y_val, X_test, y_test = load_mnist_dataset(shape=(-1, 28, 28, 1))
+#
+#     X_train = np.asarray(X_train, dtype=np.float32)
+#     y_train = np.asarray(y_train, dtype=np.int64)
+#     X_val = np.asarray(X_val, dtype=np.float32)
+#     y_val = np.asarray(y_val, dtype=np.int64)
+#     X_test = np.asarray(X_test, dtype=np.float32)
+#     y_test = np.asarray(y_test, dtype=np.int64)
+#
+#     print('X_train.shape', X_train.shape)
+#     print('y_train.shape', y_train.shape)
+#     print('X_val.shape', X_val.shape)
+#     print('y_val.shape', y_val.shape)
+#     print('X_test.shape', X_test.shape)
+#     print('y_test.shape', y_test.shape)
+#     print('X %s   y %s' % (X_test.dtype, y_test.dtype))
+#
+#     sess = tf.InteractiveSession()
+#
+#     x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])   # [batch_size, height, width, channels]
+#     y_ = tf.placeholder(tf.int64, shape=[None,])
+#
+#     network = InputLayer(x, name='input_layer')
+#     network = Conv2dLayer(network,
+#                         act = tf.nn.relu,
+#                         shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+#                         strides=[1, 1, 1, 1],
+#                         padding='SAME',
+#                         name ='cnn_layer1')     # output: (?, 28, 28, 100)
+#     network = Pool2dLayer(network,
+#                         ksize=[1, 2, 2, 1],
+#                         strides=[1, 2, 2, 1],
+#                         padding='SAME',
+#                         pool = tf.nn.max_pool,
+#                         name ='pool_layer1',)   # output: (?, 14, 14, 100)
+#     network = Conv2dLayer(network,
+#                         act = tf.nn.relu,
+#                         shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
+#                         strides=[1, 1, 1, 1],
+#                         padding='SAME',
+#                         name ='cnn_layer2')     # output: (?, 14, 14, 32)
+#     network = Pool2dLayer(network,
+#                         ksize=[1, 2, 2, 1],
+#                         strides=[1, 2, 2, 1],
+#                         padding='SAME',
+#                         pool = tf.nn.max_pool,
+#                         name ='pool_layer2',)   # output: (?, 7, 7, 32)
+#     network = FlattenLayer(network, name='flatten_layer')
+#     network = DropoutLayer(network, keep=0.5, name='drop1')
+#     network = DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
+#     network = DropoutLayer(network, keep=0.5, name='drop2')
+#     network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+#
+#     y = network.outputs
+#
+#     ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+#     cost = ce
+#
+#     correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+#     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+#
+#     # train
+#     n_epoch = 500
+#     batch_size = 128
+#     learning_rate = 0.0001
+#     print_freq = 10
+#
+#     train_params = network.all_params
+#     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+#
+#     sess.run(tf.initialize_all_variables())
+#     network.print_params()
+#     network.print_layers()
+#
+#     print('   learning_rate: %f' % learning_rate)
+#     print('   batch_size: %d' % batch_size)
+#
+#     for epoch in range(n_epoch):
+#         start_time = time.time()
+#         for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+#             feed_dict = {x: X_train_a, y_: y_train_a}
+#             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
+#             sess.run(train_op, feed_dict=feed_dict)
+#
+#         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+#             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+#             train_loss, train_acc, n_batch = 0, 0, 0
+#             for X_train_a, y_train_a in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+#                 dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+#                 feed_dict = {x: X_train_a, y_: y_train_a}
+#                 feed_dict.update(dp_dict)
+#                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#                 train_loss += err
+#                 train_acc += ac
+#                 n_batch += 1
+#             print("   train loss: %f" % (train_loss/ n_batch))
+#             print("   train acc: %f" % (train_acc/ n_batch))
+#             val_loss, val_acc, n_batch = 0, 0, 0
+#             for X_val_a, y_val_a in iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
+#                 dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+#                 feed_dict = {x: X_val_a, y_: y_val_a}
+#                 feed_dict.update(dp_dict)
+#                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#                 val_loss += err
+#                 val_acc += ac
+#                 n_batch += 1
+#             print("   val loss: %f" % (val_loss/ n_batch))
+#             print("   val acc: %f" % (val_acc/ n_batch))
+#             # try:
+#             #     visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+#             # except:
+#             #     raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
+#
+#     print('Evaluation')
+#     test_loss, test_acc, n_batch = 0, 0, 0
+#     for X_test_a, y_test_a in iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
+#         dp_dict = Layer.dict_to_one( network.all_drop )    # disable all dropout layers
+#         feed_dict = {x: X_test_a, y_: y_test_a}
+#         feed_dict.update(dp_dict)
+#         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+#         test_loss += err
+#         test_acc += ac
+#         n_batch += 1
+#     print("   test loss: %f" % (test_loss/n_batch))
+#     print("   test acc: %f" % (test_acc/n_batch))
 
 def main_pg_pong2():
     '''
@@ -1758,56 +1815,10 @@ if __name__ == '__main__':
         # main_test_layers(model='relu')        # model = relu, resnet, dropconnect
         # main_test_denoise_AE(model='relu')    # model = relu, sigmoid
         # main_test_stacked_denoise_AE(model='relu')        # model = relu, sigmoid
-        main_test_cnn_layer()     # To Do
+        # main_test_cnn_layer()
         # main_pg_pong1()                       # To Do
-        # main_pg_pong2()                        # To Do
-        exit_tf()
+        main_pg_pong2()                        # To Do
+        exit_tf(sess)
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        exit_tf()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# act       / n_units / pre-train              / train                     / test acc
-
-# relu      / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.77
-#                     / None                   / e500 adam 1e-4 b128 d255  / 98.77
-#                                                   max-norm               /
-#                     / None                   / e500 adam 1e-4 b128 d255  /
-#                                                   max-norm out           /
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  / 98.7881      Note: relu can reach it's best performance without pre-train
-#                     / P_o instead of L2_w    / e500 adam 1e-4 b128 d255  / 98.6779
-
-# sig       / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.6579
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  / 98.6879
-#                     / P_o instead of L2_w    / e500 adam 1e-4 b128 d255  /
-
-# resnet+relu/784-784 / None                   / e500 adam 1e-4 b128 d255  / 98.73
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  /
-
-# dropcon+relu/800-800/ None                   / e150 adam 1e-4 b128 d255  / 98.00 no more increase
-#                                                P_o instead of L2_w 0.001
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  /
+        exit_tf(sess)

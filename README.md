@@ -51,7 +51,7 @@ All placeholder and variables can be initialized by the same way with Tensorflow
 ```python
 # For MNIST example, 28*28 images have 784 pixels, i.e, 784 inputs.
 import tensorflow as tf
-from tensorlayer import *
+import tensorlayer as tl
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 ```
@@ -60,13 +60,13 @@ y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
 ```python
 # Define the network
-network = InputLayer(x, name='input_layer')
-network = DropoutLayer(network, keep=0.8, name='drop1')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-network = DropoutLayer(network, keep=0.5, name='drop2')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-network = DropoutLayer(network, keep=0.5, name='drop3')
-network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.InputLayer(x, name='input_layer')
+network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 # Start training
 ...
 ```
@@ -75,9 +75,9 @@ network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
 
 ```python
 # Define the network
-network = InputLayer(x, name='input_layer')
-network = DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
-recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
+network = tl.InputLayer(x, name='input_layer')
+network = tl.DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
+recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
 # Start pre-train
 sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
@@ -88,10 +88,10 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None
 
 ```python
 # Define the network
-network = InputLayer(x, name='input_layer')
-network = DropoutLayer(network, keep=0.5, name='denoising1')   
-network = DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
-recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+network = tl.InputLayer(x, name='input_layer')
+network = tl.DropoutLayer(network, keep=0.5, name='denoising1')   
+network = tl.DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
+recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # Start pre-train
 sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
@@ -102,21 +102,21 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 
 ```python
 # Define the network
-network = InputLayer(x, name='input_layer')
+network = tl.InputLayer(x, name='input_layer')
 # denoise layer for Autoencoders
-network = DropoutLayer(network, keep=0.5, name='denoising1')
+network = tl.DropoutLayer(network, keep=0.5, name='denoising1')
 # 1st layer
-network = DropoutLayer(network, keep=0.8, name='drop1')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
 x_recon1 = network.outputs
-recon_layer1 = ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # 2nd layer
-network = DropoutLayer(network, keep=0.5, name='drop2')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-recon_layer2 = ReconLayer(network, x_recon=x_recon1, n_units=800, act = tf.nn.softplus, name='recon_layer2')
+network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+recon_layer2 = tl.ReconLayer(network, x_recon=x_recon1, n_units=800, act = tf.nn.softplus, name='recon_layer2')
 # 3rd layer
-network = DropoutLayer(network, keep=0.5, name='drop3')
-network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 
 sess.run(tf.initialize_all_variables())
 
@@ -144,36 +144,36 @@ y_ = tf.placeholder(tf.int64, shape=[None,])
 A 2 layers CNN followed by 2 fully connected layers can be defined by the following codes:
 
 ```python
-network = InputLayer(x, name='input_layer')
-network = Conv2dLayer(network,
+network = tl.InputLayer(x, name='input_layer')
+network = tl.Conv2dLayer(network,
                       act = tf.nn.relu,
                       shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
                       strides=[1, 1, 1, 1],
                       padding='SAME',
                       name ='cnn_layer1')     # output: (?, 28, 28, 100)
-network = Pool2dLayer(network,
+network = tl.Pool2dLayer(network,
                       ksize=[1, 2, 2, 1],
                       strides=[1, 2, 2, 1],
                       padding='SAME',
                       pool = tf.nn.max_pool,
                       name ='pool_layer1',)   # output: (?, 14, 14, 100)
-network = Conv2dLayer(network,
+network = tl.Conv2dLayer(network,
                       act = tf.nn.relu,
                       shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
                       strides=[1, 1, 1, 1],
                       padding='SAME',
                       name ='cnn_layer2')     # output: (?, 14, 14, 32)
-network = Pool2dLayer(network,
+network = tl.Pool2dLayer(network,
                       ksize=[1, 2, 2, 1],
                       strides=[1, 2, 2, 1],
                       padding='SAME',
                       pool = tf.nn.max_pool,
                       name ='pool_layer2',)   # output: (?, 7, 7, 32)
-network = FlattenLayer(network, name='flatten_layer')
-network = DropoutLayer(network, keep=0.5, name='drop1')
-network = DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
-network = DropoutLayer(network, keep=0.5, name='drop2')
-network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.FlattenLayer(network, name='flatten_layer')
+network = tl.DropoutLayer(network, keep=0.5, name='drop1')
+network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
+network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 ```
 
 
@@ -194,9 +194,9 @@ Atari Pong Game is a single agent example. *[Pong from Pixels](http://karpathy.g
 
 ```python
 # Policy network
-network = InputLayer(x, name='input_layer')
-network = DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
-network = DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
+network = tl.InputLayer(x, name='input_layer')
+network = tl.DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
+network = tl.DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
 ```
 
 
@@ -205,13 +205,13 @@ network = DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_lay
 TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
 
 ```python
-network = InputLayer(x, name='input_layer')
-network = DropoutLayer(network, keep=0.8, name='drop1')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-network = DropoutLayer(network, keep=0.5, name='drop2')
-network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-network = DropoutLayer(network, keep=0.5, name='drop3')
-network = DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.InputLayer(x, name='input_layer')
+network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 ```
 
 After initializing the variables, the informations of network parameters can be observed by using **network.print_params()**.
