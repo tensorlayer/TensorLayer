@@ -65,8 +65,9 @@ def set_gpu_fraction(gpu_fraction=0.3):
     return sess
 
 ## Visualization
-def visualize_W(W, second=10, saveable=True, name='mnist_', fig_idx=2396512):
-    plt.ion()
+def visualize_W(W, second=10, saveable=True, name='mnist', fig_idx=2396512):
+    if saveable is False:
+        plt.ion()
     fig = plt.figure(fig_idx)      # show all feature images
     size = W.shape[0]
     n_units = W.shape[1]
@@ -85,6 +86,22 @@ def visualize_W(W, second=10, saveable=True, name='mnist_', fig_idx=2396512):
             plt.gca().xaxis.set_major_locator(plt.NullLocator())    # distable tick
             plt.gca().yaxis.set_major_locator(plt.NullLocator())
             count = count + 1
+    if saveable:
+        plt.savefig(name+'.pdf',format='pdf')
+    else:
+        plt.draw()
+        plt.pause(second)
+
+def visualize_frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
+    ''' display a frame. Make sure OpenAI Gym render() is disable before using it. '''
+    if saveable is False:
+        plt.ion()
+    fig = plt.figure(fig_idx)      # show all feature images
+
+    plt.imshow(I)
+    # plt.gca().xaxis.set_major_locator(plt.NullLocator())    # distable tick
+    # plt.gca().yaxis.set_major_locator(plt.NullLocator())
+
     if saveable:
         plt.savefig(name+'.pdf',format='pdf')
     else:
@@ -464,7 +481,19 @@ def flatten_reshape(variable):
 ## Layers
 # Layer base class
 class Layer(object):
-    ''' super class of a network'''
+    """
+    The :class:`Layer` class represents a single layer of a neural network. It
+    should be subclassed when implementing new types of layers.
+    Because each layer can keep track of the layer(s) feeding into it, a
+    network's output :class:`Layer` instance can double as a handle to the full
+    network.
+    Parameters
+    ----------
+    incoming : a :class:`Layer` instance or a tuple
+        The layer feeding into this layer, or the expected input shape.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
     def __init__(
         self,
         inputs = None,
@@ -532,6 +561,40 @@ class InputLayer(Layer):
 
 # Dense layer
 class DenseLayer(Layer):
+        """
+    tensorlayer.layers.DenseLayer(incoming, num_units,
+    W=lasagne.init.GlorotUniform(), b=lasagne.init.Constant(0.),
+    nonlinearity=lasagne.nonlinearities.rectify, **kwargs)
+    A fully connected layer.
+    Parameters
+    ----------
+    incoming : a :class:`Layer` instance or a tuple
+        The layer feeding into this layer, or the expected input shape
+    num_units : int
+        The number of units of the layer
+    W : Theano shared variable, expression, numpy array or callable
+        Initial value, expression or initializer for the weights.
+        These should be a matrix with shape ``(num_inputs, num_units)``.
+        See :func:`lasagne.utils.create_param` for more information.
+    b : Theano shared variable, expression, numpy array, callable or ``None``
+        Initial value, expression or initializer for the biases. If set to
+        ``None``, the layer will have no biases. Otherwise, biases should be
+        a 1D array with shape ``(num_units,)``.
+        See :func:`lasagne.utils.create_param` for more information.
+    nonlinearity : callable or None
+        The nonlinearity that is applied to the layer activations. If None
+        is provided, the layer will be linear.
+    Examples
+    --------
+    >>> xxx
+    >>> xxx
+    Notes
+    -----
+    If the input to this layer has more than two axes, it will flatten the
+    trailing axes. This is useful for when a dense layer follows a
+    convolutional layer, for example. It is not necessary to insert a
+    :class:`FlattenLayer` in this case.
+    """
     def __init__(
         self,
         layer = None,
@@ -1411,21 +1474,7 @@ def main_pg_pong2():
 
     np.set_printoptions(threshold=np.nan)    # print all values for debug
 
-    def visualize_frame(I, ion = True, second=5, fig_idx=12836):
-        ''' display a frame. Make sure OpenAI Gym render() is disable before using it. '''
-        if ion:
-            plt.ion()
-        fig = plt.figure(fig_idx)      # show all feature images
 
-        plt.imshow(I)
-        # plt.gca().xaxis.set_major_locator(plt.NullLocator())    # distable tick
-        # plt.gca().yaxis.set_major_locator(plt.NullLocator())
-
-        if ion:
-            plt.draw()
-            plt.pause(second)
-        else:
-            plt.show()
 
     def prepro(I):
       """ pre-processing: 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """

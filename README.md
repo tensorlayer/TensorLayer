@@ -24,12 +24,15 @@ TensorLayer features include:
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
+
+
 # Table of Contents
 0. [Overview](#Overview)
 0. [Library Structure](#Library-Structure)
 0. [Easy to Modify](#Easytomodify)
 0. [Installation](#Installation)
 0. [Ways to Contribute](#Waystocontribute)
+0. [Documentation](http://tensorlayer.readthedocs.io/en/latest/)
 
 --
 # Overview
@@ -333,3 +336,5 @@ Your method can be merged into TensorLayer, if you can prove your method xxx
 Test script with detailed descriptions is required
 
 
+# Documentation
+The documentation is placed in [Read-the-Docs](http://tensorlayer.readthedocs.io/en/latest/).
