@@ -1,0 +1,734 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; tensorlayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tensorlayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Layers" href="layers.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> tensorlayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-we-start">Before we start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-mnist-example">Run the MNIST example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-the-mnist-example">Understand the MNIST example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preface">Preface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-data">Loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-model">Building the model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multi-layer-perceptron-mlp">Multi-Layer Perceptron (MLP)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-mlp">Custom MLP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#convolutional-neural-network-cnn">Convolutional Neural Network (CNN)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#training-the-model">Training the model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dataset-iteration">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#preparation">Preparation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loss-and-update-expressions">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compilation">Compilation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#training-loop">Training loop</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#where-to-go-from-here">Where to go from here</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_layers.html">Creating custom layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul class="simple">
+</ul>
+<ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">tensorlayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/tutorial.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will walk you through building a handwritten digits classifier
+using the MNIST dataset, arguably the &#8220;Hello World&#8221; of neural networks.
+More tutorials and examples can be found in the <a class="reference external" href="https://github.com/Lasagne/Recipes">Lasagne Recipes</a> repository.</p>
+<div class="section" id="before-we-start">
+<h2>Before we start<a class="headerlink" href="#before-we-start" title="Permalink to this headline">¶</a></h2>
+<p>The tutorial assumes that you are somewhat familiar with neural networks and
+Theano (the library which Lasagne is built on top of). You can try to learn
+both at once from the <a class="reference external" href="http://deeplearning.net/tutorial/">Deeplearning Tutorial</a>.</p>
+<p>For a more slow-paced introduction to artificial neural networks, we recommend
+<a class="reference external" href="http://cs231n.github.io/">Convolutional Neural Networks for Visual Recognition</a> by Andrej Karpathy et
+al., <a class="reference external" href="http://neuralnetworksanddeeplearning.com/">Neural Networks and Deep Learning</a> by Michael Nielsen or a standard text
+book such as &#8220;Machine Learning&#8221; by Tom Mitchell.</p>
+<p>To learn more about Theano, have a look at the <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/">Theano tutorial</a>. You will not
+need all of it, but a basic understanding of how Theano works is required to be
+able to use Lasagne. If you&#8217;re new to Theano, going through that tutorial up to
+(and including) &#8220;More Examples&#8221; should get you covered! <a class="reference external" href="http://deeplearning.net/software/theano/extending/graphstructures.html">Graph Structures</a> is
+a good extra read if you&#8217;re curious about its inner workings.</p>
+</div>
+<div class="section" id="run-the-mnist-example">
+<h2>Run the MNIST example<a class="headerlink" href="#run-the-mnist-example" title="Permalink to this headline">¶</a></h2>
+<p>In this first part of the tutorial, we will just run the MNIST example that&#8217;s
+included in the source distribution of Lasagne.</p>
+<p>We assume that you have already run through the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>. If you
+haven&#8217;t done so already, get a copy of the source tree of Lasagne, and navigate
+to the folder in a terminal window. Enter the <code class="docutils literal"><span class="pre">examples</span></code> folder and run the
+<code class="docutils literal"><span class="pre">mnist.py</span></code> example script:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> examples
+python mnist.py
+</pre></div>
+</div>
+<p>If everything is set up correctly, you will get an output like the following:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Using gpu device 0: GeForce GT 640
+Loading data...
+Downloading train-images-idx3-ubyte.gz
+Downloading train-labels-idx1-ubyte.gz
+Downloading t10k-images-idx3-ubyte.gz
+Downloading t10k-labels-idx1-ubyte.gz
+Building model and compiling functions...
+Starting training...
+
+Epoch 1 of 500 took 1.858s
+  training loss:                1.233348
+  validation loss:              0.405868
+  validation accuracy:          88.78 %
+Epoch 2 of 500 took 1.845s
+  training loss:                0.571644
+  validation loss:              0.310221
+  validation accuracy:          91.24 %
+Epoch 3 of 500 took 1.845s
+  training loss:                0.471582
+  validation loss:              0.265931
+  validation accuracy:          92.35 %
+Epoch 4 of 500 took 1.847s
+  training loss:                0.412204
+  validation loss:              0.238558
+  validation accuracy:          93.05 %
+...
+</pre></div>
+</div>
+<p>The example script allows you to try three different models, selected via the
+first command line argument. Run the script with <code class="docutils literal"><span class="pre">python</span> <span class="pre">mnist.py</span> <span class="pre">--help</span></code> for
+more information and feel free to play around with it some more before we have
+a look at the implementation.</p>
+</div>
+<div class="section" id="understand-the-mnist-example">
+<h2>Understand the MNIST example<a class="headerlink" href="#understand-the-mnist-example" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s now investigate what&#8217;s needed to make that happen! To follow along, open
+up the source code in your favorite editor (or online: <a class="reference external" href="https://github.com/Lasagne/Lasagne/blob/master/examples/mnist.py">mnist.py</a>).</p>
+<div class="section" id="preface">
+<h3>Preface<a class="headerlink" href="#preface" title="Permalink to this headline">¶</a></h3>
+<p>The first thing you might notice is that besides Lasagne, we also import numpy
+and Theano:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">theano</span>
+<span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="kn">as</span> <span class="nn">T</span>
+
+<span class="kn">import</span> <span class="nn">lasagne</span>
+</pre></div>
+</div>
+<p>While Lasagne is built on top of Theano, it is meant as a supplement helping
+with some tasks, not as a replacement. You will always mix Lasagne with some
+vanilla Theano code.</p>
+</div>
+<div class="section" id="loading-data">
+<h3>Loading data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h3>
+<p>The first piece of code defines a function <code class="docutils literal"><span class="pre">load_dataset()</span></code>. Its purpose is
+to download the MNIST dataset (if it hasn&#8217;t been downloaded yet) and return it
+in the form of regular numpy arrays. There is no Lasagne involved at all, so
+for the purpose of this tutorial, we can regard it as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_dataset</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">X_train.shape</span></code> is <code class="docutils literal"><span class="pre">(50000,</span> <span class="pre">1,</span> <span class="pre">28,</span> <span class="pre">28)</span></code>, to be interpreted as: 50,000
+images of 1 channel, 28 rows and 28 columns each. Note that the number of
+channels is 1 because we have monochrome input. Color images would have 3
+channels, spectrograms also would have a single channel.
+<code class="docutils literal"><span class="pre">y_train.shape</span></code> is simply <code class="docutils literal"><span class="pre">(50000,)</span></code>, that is, it is a vector the same
+length of <code class="docutils literal"><span class="pre">X_train</span></code> giving an integer class label for each image &#8211; namely,
+the digit between 0 and 9 depicted in the image (according to the human
+annotator who drew that digit).</p>
+</div>
+<div class="section" id="building-the-model">
+<h3>Building the model<a class="headerlink" href="#building-the-model" title="Permalink to this headline">¶</a></h3>
+<p>This is where Lasagne steps in. It allows you to define an arbitrarily
+structured neural network by creating and stacking or merging layers.
+Since every layer knows its immediate incoming layers, the output layer (or
+output layers) of a network double as a handle to the network as a whole, so
+usually this is the only thing we will pass on to the rest of the code.</p>
+<p>As mentioned above, <code class="docutils literal"><span class="pre">mnist.py</span></code> supports three types of models, and we
+implement that via three easily exchangeable functions of the same interface.
+First, we&#8217;ll define a function that creates a Multi-Layer Perceptron (MLP) of
+a fixed architecture, explaining all the steps in detail. We&#8217;ll then present
+a function generating an MLP of a custom architecture. Finally, we&#8217;ll
+show how to create a Convolutional Neural Network (CNN).</p>
+<div class="section" id="multi-layer-perceptron-mlp">
+<h4>Multi-Layer Perceptron (MLP)<a class="headerlink" href="#multi-layer-perceptron-mlp" title="Permalink to this headline">¶</a></h4>
+<p>The first function, <code class="docutils literal"><span class="pre">build_mlp()</span></code>, creates an MLP of two hidden layers of
+800 units each, followed by a softmax output layer of 10 units. It applies 20%
+dropout to the input data and 50% dropout to the hidden layers. It is similar,
+but not fully equivalent to the smallest MLP in <a class="reference internal" href="#hinton2012" id="id2">[Hinton2012]</a> (that paper uses
+different nonlinearities, weight initialization and training).</p>
+<p>The foundation of each neural network in Lasagne is an
+<code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code> instance (or multiple of those)
+representing the input data that will subsequently be fed to the network. Note
+that the <code class="docutils literal"><span class="pre">InputLayer</span></code> is not tied to any specific data yet, but only holds
+the shape of the data that will be passed to the network. In addition, it
+creates or can be linked to a <a class="reference external" href="http://deeplearning.net/software/theano/glossary.html#term-variable">Theano variable</a> that
+will represent the network input in the <a class="reference external" href="http://deeplearning.net/software/theano/glossary.html#term-expression-graph">Theano graph</a>
+we&#8217;ll build from the network later.
+Thus, our function starts like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_mlp</span><span class="p">(</span><span class="n">input_var</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">l_in</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+                                     <span class="n">input_var</span><span class="o">=</span><span class="n">input_var</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The four numbers in the shape tuple represent, in order:
+<code class="docutils literal"><span class="pre">(batchsize,</span> <span class="pre">channels,</span> <span class="pre">rows,</span> <span class="pre">columns)</span></code>.
+Here we&#8217;ve set the batchsize to <code class="docutils literal"><span class="pre">None</span></code>, which means the network will accept
+input data of arbitrary batchsize after compilation. If you know the batchsize
+beforehand and do not need this flexibility, you should give the batchsize
+here &#8211; especially for convolutional layers, this can allow Theano to apply
+some optimizations.
+<code class="docutils literal"><span class="pre">input_var</span></code> denotes the Theano variable we want to link the network&#8217;s input
+layer to. If it is omitted (or set to <code class="docutils literal"><span class="pre">None</span></code>), the layer will just create a
+suitable variable itself, but it can be handy to link an existing variable to
+the network at construction time &#8211; especially if you&#8217;re creating networks of
+multiple input layers. Here, we link it to a variable given as an argument to
+the <code class="docutils literal"><span class="pre">build_mlp()</span></code> function.</p>
+<p>Before adding the first hidden layer, we&#8217;ll apply 20% dropout to the input
+data. This is realized via a <code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code> instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">l_in_drop</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the first constructor argument is the incoming layer, such that
+<code class="docutils literal"><span class="pre">l_in_drop</span></code> is now stacked on top of <code class="docutils literal"><span class="pre">l_in</span></code>. All layers work this way,
+except for layers that merge multiple inputs: those accept a list of incoming
+layers as their first constructor argument instead.</p>
+<p>We&#8217;ll proceed with the first fully-connected hidden layer of 800 units. Note
+that when stacking a <code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code> on
+higher-order input tensors, they will be flattened implicitly so we don&#8217;t need
+to care about that. In this case, the input will be flattened from 1x28x28
+images to 784-dimensional vectors.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">l_hid1</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+        <span class="n">l_in_drop</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span><span class="p">,</span>
+        <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Again, the first constructor argument means that we&#8217;re stacking <code class="docutils literal"><span class="pre">l_hid1</span></code> on
+top of <code class="docutils literal"><span class="pre">l_in_drop</span></code>.
+<code class="docutils literal"><span class="pre">num_units</span></code> simply gives the number of units for this fully-connected layer.
+<code class="docutils literal"><span class="pre">nonlinearity</span></code> takes a nonlinearity function, several of which are defined
+in <code class="xref py py-mod docutils literal"><span class="pre">lasagne.nonlinearities</span></code>. Here we&#8217;ve chosen the linear rectifier, so
+we&#8217;ll obtain ReLUs.
+Finally, <code class="xref py py-class docutils literal"><span class="pre">lasagne.init.GlorotUniform()</span></code> gives the initializer for the
+weight matrix <code class="docutils literal"><span class="pre">W</span></code>. This particular initializer samples weights from a uniform
+distribution of a carefully chosen range. Other initializers are available in
+<code class="xref py py-mod docutils literal"><span class="pre">lasagne.init</span></code>, and alternatively, <code class="docutils literal"><span class="pre">W</span></code> could also have been initialized
+from a Theano shared variable or numpy array of the correct shape (784x800 in
+this case, as the input to this layer has 1*28*28=784 dimensions).
+Note that <code class="docutils literal"><span class="pre">lasagne.init.GlorotUniform()</span></code> is the default, so we&#8217;ll omit it
+from here &#8211; we just wanted to highlight that there is a choice.</p>
+<p>We&#8217;ll now add dropout of 50%, another 800-unit dense layer and 50% dropout
+again:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">l_hid1_drop</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">l_hid1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">l_hid2</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+        <span class="n">l_hid1_drop</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span><span class="p">)</span>
+
+<span class="n">l_hid2_drop</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">l_hid2</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we&#8217;ll add the fully-connected output layer. The main difference is
+that it uses the softmax nonlinearity, as we&#8217;re planning to solve a 10-class
+classification problem with this network.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">l_out</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+        <span class="n">l_hid2_drop</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned above, each layer is linked to its incoming layer(s), so we only
+need the output layer(s) to access a network in Lasagne:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="n">l_out</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-mlp">
+<h4>Custom MLP<a class="headerlink" href="#custom-mlp" title="Permalink to this headline">¶</a></h4>
+<p>The second function has a slightly more extensive signature:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_custom_mlp</span><span class="p">(</span><span class="n">input_var</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">drop_input</span><span class="o">=.</span><span class="mi">2</span><span class="p">,</span>
+                     <span class="n">drop_hidden</span><span class="o">=.</span><span class="mi">5</span><span class="p">):</span>
+</pre></div>
+</div>
+<p>By default, it creates the same network as <code class="docutils literal"><span class="pre">build_mlp()</span></code> described above, but
+it can be customized with respect to the number and size of hidden layers, as
+well as the amount of input and hidden dropout. This demonstrates how creating
+a network in Python code can be a lot more flexible than a configuration file.
+See for yourself:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Input layer and dropout (with shortcut `dropout` for `DropoutLayer`):</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+                                    <span class="n">input_var</span><span class="o">=</span><span class="n">input_var</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">drop_input</span><span class="p">:</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">drop_input</span><span class="p">)</span>
+<span class="c1"># Hidden layers and dropout:</span>
+<span class="n">nonlin</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">depth</span><span class="p">):</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+            <span class="n">network</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">nonlinearity</span><span class="o">=</span><span class="n">nonlin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">drop_hidden</span><span class="p">:</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">drop_hidden</span><span class="p">)</span>
+<span class="c1"># Output layer:</span>
+<span class="n">softmax</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">softmax</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">nonlinearity</span><span class="o">=</span><span class="n">softmax</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">network</span>
+</pre></div>
+</div>
+<p>With two <code class="docutils literal"><span class="pre">if</span></code> clauses and a <code class="docutils literal"><span class="pre">for</span></code> loop, this network definition allows
+varying the architecture in a way that would be impossible for a <code class="docutils literal"><span class="pre">.yaml</span></code> file
+in <a class="reference external" href="http://deeplearning.net/software/pylearn2/">Pylearn2</a> or a <code class="docutils literal"><span class="pre">.cfg</span></code> file in <a class="reference external" href="https://code.google.com/p/cuda-convnet/">cuda-convnet</a>.</p>
+<p>Note that to make the code easier, all the layers are just called <code class="docutils literal"><span class="pre">network</span></code>
+here &#8211; there is no need to give them different names if all we return is the
+last one we created anyway; we just used different names before for clarity.</p>
+</div>
+<div class="section" id="convolutional-neural-network-cnn">
+<h4>Convolutional Neural Network (CNN)<a class="headerlink" href="#convolutional-neural-network-cnn" title="Permalink to this headline">¶</a></h4>
+<p>Finally, the <code class="docutils literal"><span class="pre">build_cnn()</span></code> function creates a CNN of two convolution and
+pooling stages, a fully-connected hidden layer and a fully-connected output
+layer.
+The function begins like the others:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_cnn</span><span class="p">(</span><span class="n">input_var</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+                                        <span class="n">input_var</span><span class="o">=</span><span class="n">input_var</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We don&#8217;t apply dropout to the inputs, as this tends to work less well for
+convolutional layers. Instead of a <code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code>, we now add a <code class="xref py py-class docutils literal"><span class="pre">Conv2DLayer</span></code> with 32 filters of size 5x5 on top:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2DLayer</span><span class="p">(</span>
+        <span class="n">network</span><span class="p">,</span> <span class="n">num_filters</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">filter_size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span><span class="p">,</span>
+        <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">GlorotUniform</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The nonlinearity and weight initializer can be given just as for the
+<code class="docutils literal"><span class="pre">DenseLayer</span></code> (and again, <code class="docutils literal"><span class="pre">GlorotUniform()</span></code> is the default, we&#8217;ll omit it
+from now). Strided and padded convolutions are supported as well; see the
+<code class="xref py py-class docutils literal"><span class="pre">Conv2DLayer</span></code> docstring.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>For experts: <code class="docutils literal"><span class="pre">Conv2DLayer</span></code> will create a convolutional layer using
+<code class="docutils literal"><span class="pre">T.nnet.conv2d</span></code>, Theano&#8217;s default convolution. On compilation for GPU,
+Theano replaces this with a <a class="reference external" href="https://developer.nvidia.com/cudnn">cuDNN</a>-based implementation if available,
+otherwise falls back to a gemm-based implementation. For details on this,
+please see the <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/nnet/conv.html">Theano convolution documentation</a>.</p>
+<p class="last">Lasagne also provides convolutional layers directly enforcing a specific
+implementation: <code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.dnn.Conv2DDNNLayer</span></code> to enforce
+cuDNN, <code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.corrmm.Conv2DMMLayer</span></code> to enforce the
+gemm-based one, <code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.cuda_convnet.Conv2DCCLayer</span></code> for
+Krizhevsky&#8217;s <a class="reference external" href="https://code.google.com/p/cuda-convnet/">cuda-convnet</a>.</p>
+</div>
+<p>We then apply max-pooling of factor 2 in both dimensions, using a
+<code class="xref py py-class docutils literal"><span class="pre">MaxPool2DLayer</span></code> instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPool2DLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We add another convolution and pooling stage like the ones before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2DLayer</span><span class="p">(</span>
+        <span class="n">network</span><span class="p">,</span> <span class="n">num_filters</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">filter_size</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPool2DLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Then a fully-connected layer of 256 units with 50% dropout on its inputs
+(using the <code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.dropout</span></code> shortcut directly inline):</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+        <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">p</span><span class="o">=.</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">num_units</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">rectify</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And finally a 10-unit softmax output layer, again with 50% dropout:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span>
+        <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">p</span><span class="o">=.</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">num_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">nonlinearities</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>
+
+<span class="k">return</span> <span class="n">network</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="training-the-model">
+<h3>Training the model<a class="headerlink" href="#training-the-model" title="Permalink to this headline">¶</a></h3>
+<p>The remaining part of the <code class="docutils literal"><span class="pre">mnist.py</span></code> script copes with setting up and running
+a training loop over the MNIST dataset.</p>
+<div class="section" id="dataset-iteration">
+<h4>Dataset iteration<a class="headerlink" href="#dataset-iteration" title="Permalink to this headline">¶</a></h4>
+<p>It first defines a short helper function for synchronously iterating over two
+numpy arrays of input data and targets, respectively, in mini-batches of a
+given number of items. For the purpose of this tutorial, we can shorten it to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">iterate_minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batchsize</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+        <span class="o">...</span>
+    <span class="k">for</span> <span class="o">...</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">inputs</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">targets</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>All that&#8217;s relevant is that it is a generator function that serves one batch of
+inputs and targets at a time until the given dataset (in <code class="docutils literal"><span class="pre">inputs</span></code> and
+<code class="docutils literal"><span class="pre">targets</span></code>) is exhausted, either in sequence or in random order. Below we will
+plug this function into our training loop, validation loop and test loop.</p>
+</div>
+<div class="section" id="preparation">
+<h4>Preparation<a class="headerlink" href="#preparation" title="Permalink to this headline">¶</a></h4>
+<p>Let&#8217;s now focus on the <code class="docutils literal"><span class="pre">main()</span></code> function. A bit simplified, it begins like
+this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Load the dataset</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">()</span>
+<span class="c1"># Prepare Theano variables for inputs and targets</span>
+<span class="n">input_var</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tensor4</span><span class="p">(</span><span class="s1">&#39;inputs&#39;</span><span class="p">)</span>
+<span class="n">target_var</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ivector</span><span class="p">(</span><span class="s1">&#39;targets&#39;</span><span class="p">)</span>
+<span class="c1"># Create neural network model</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">build_mlp</span><span class="p">(</span><span class="n">input_var</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first line loads the inputs and targets of the MNIST dataset as numpy
+arrays, split into training, validation and test data.
+The next two statements define symbolic Theano variables that will represent
+a mini-batch of inputs and targets in all the Theano expressions we will
+generate for network training and inference. They are not tied to any data yet,
+but their dimensionality and data type is fixed already and matches the actual
+inputs and targets we will process later.
+Finally, we call one of the three functions for building the Lasagne network,
+depending on the first command line argument &#8211; we&#8217;ve just removed command line
+handling here for clarity. Note that we hand the symbolic input variable to
+<code class="docutils literal"><span class="pre">build_mlp()</span></code> so it will be linked to the network&#8217;s input layer.</p>
+</div>
+<div class="section" id="loss-and-update-expressions">
+<h4>Loss and update expressions<a class="headerlink" href="#loss-and-update-expressions" title="Permalink to this headline">¶</a></h4>
+<p>Continuing, we create a loss expression to be minimized in training:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">prediction</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">objectives</span><span class="o">.</span><span class="n">categorical_crossentropy</span><span class="p">(</span><span class="n">prediction</span><span class="p">,</span> <span class="n">target_var</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The first step generates a Theano expression for the network output given the
+input variable linked to the network&#8217;s input layer(s). The second step defines
+a Theano expression for the categorical cross-entropy loss between said network
+output and the targets. Finally, as we need a scalar loss, we simply take the
+mean over the mini-batch. Depending on the problem you are solving, you will
+need different loss functions, see <code class="xref py py-mod docutils literal"><span class="pre">lasagne.objectives</span></code> for more.</p>
+<p>Having the model and the loss function defined, we create update expressions
+for training the network. An update expression describes how to change the
+trainable parameters of the network at each presented mini-batch. We will use
+Stochastic Gradient Descent (SGD) with Nesterov momentum here, but the
+<code class="xref py py-mod docutils literal"><span class="pre">lasagne.updates</span></code> module offers several others you can plug in instead:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">params</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_all_params</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">updates</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">updates</span><span class="o">.</span><span class="n">nesterov_momentum</span><span class="p">(</span>
+        <span class="n">loss</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first step collects all Theano <code class="docutils literal"><span class="pre">SharedVariable</span></code> instances making up the
+trainable parameters of the layer, and the second step generates an update
+expression for each parameter.</p>
+<p>For monitoring progress during training, after each epoch, we evaluate the
+network on the validation set. We need a slightly different loss expression
+for that:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">test_prediction</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">objectives</span><span class="o">.</span><span class="n">categorical_crossentropy</span><span class="p">(</span><span class="n">test_prediction</span><span class="p">,</span>
+                                                        <span class="n">target_var</span><span class="p">)</span>
+<span class="n">test_loss</span> <span class="o">=</span> <span class="n">test_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The crucial difference is that we pass <code class="docutils literal"><span class="pre">deterministic=True</span></code> to the
+<code class="xref py py-func docutils literal"><span class="pre">get_output</span></code> call. This causes all
+nondeterministic layers to switch to a deterministic implementation, so in our
+case, it disables the dropout layers.
+As an additional monitoring quantity, we create an expression for the
+classification accuracy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">test_acc</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">test_prediction</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">target_var</span><span class="p">),</span>
+                  <span class="n">dtype</span><span class="o">=</span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It also builds on the deterministic <code class="docutils literal"><span class="pre">test_prediction</span></code> expression.</p>
+</div>
+<div class="section" id="compilation">
+<h4>Compilation<a class="headerlink" href="#compilation" title="Permalink to this headline">¶</a></h4>
+<p>Equipped with all the necessary Theano expressions, we&#8217;re now ready to compile
+a function performing a training step:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">train_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">input_var</span><span class="p">,</span> <span class="n">target_var</span><span class="p">],</span> <span class="n">loss</span><span class="p">,</span> <span class="n">updates</span><span class="o">=</span><span class="n">updates</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This tells Theano to generate and compile a function taking two inputs &#8211; a
+mini-batch of images and a vector of corresponding targets &#8211; and returning a
+single output: the training loss. Additionally, each time it is invoked, it
+applies all parameter updates in the <code class="docutils literal"><span class="pre">updates</span></code> dictionary, thus performing a
+gradient descent step with Nesterov momentum.</p>
+<p>For validation, we compile a second function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">val_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">input_var</span><span class="p">,</span> <span class="n">target_var</span><span class="p">],</span> <span class="p">[</span><span class="n">test_loss</span><span class="p">,</span> <span class="n">test_acc</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This one also takes a mini-batch of images and targets, then returns the
+(deterministic) loss and classification accuracy, not performing any updates.</p>
+</div>
+<div class="section" id="training-loop">
+<h4>Training loop<a class="headerlink" href="#training-loop" title="Permalink to this headline">¶</a></h4>
+<p>We&#8217;re finally ready to write the training loop. In essence, we just need to do
+the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">iterate_minibatches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">train_fn</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This uses our dataset iteration helper function to iterate over the training
+data in random order, in mini-batches of 500 items each, for <code class="docutils literal"><span class="pre">num_epochs</span></code>
+epochs, and calls the training function we compiled to perform an update step
+of the network parameters.</p>
+<p>But to be able to monitor the training progress, we capture the training loss,
+compute the validation loss and print some information to the console every
+time an epoch finishes:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+    <span class="c1"># In each epoch, we do a full pass over the training data:</span>
+    <span class="n">train_err</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">train_batches</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">iterate_minibatches</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">train_err</span> <span class="o">+=</span> <span class="n">train_fn</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">train_batches</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># And a full pass over the validation data:</span>
+    <span class="n">val_err</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">val_acc</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">val_batches</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">iterate_minibatches</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">err</span><span class="p">,</span> <span class="n">acc</span> <span class="o">=</span> <span class="n">val_fn</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+        <span class="n">val_err</span> <span class="o">+=</span> <span class="n">err</span>
+        <span class="n">val_acc</span> <span class="o">+=</span> <span class="n">acc</span>
+        <span class="n">val_batches</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Then we print the results for this epoch:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Epoch {} of {} took {:.3f}s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_epochs</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  training loss:</span><span class="se">\t\t</span><span class="s2">{:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">train_err</span> <span class="o">/</span> <span class="n">train_batches</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  validation loss:</span><span class="se">\t\t</span><span class="s2">{:.6f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val_err</span> <span class="o">/</span> <span class="n">val_batches</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  validation accuracy:</span><span class="se">\t\t</span><span class="s2">{:.2f} %&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">val_acc</span> <span class="o">/</span> <span class="n">val_batches</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>At the very end, we re-use the <code class="docutils literal"><span class="pre">val_fn()</span></code> function to compute the loss and
+accuracy on the test set, finishing the script.</p>
+</div>
+</div>
+</div>
+<div class="section" id="where-to-go-from-here">
+<h2>Where to go from here<a class="headerlink" href="#where-to-go-from-here" title="Permalink to this headline">¶</a></h2>
+<p>This finishes our introductory tutorial. For more information on what you can
+do with Lasagne&#8217;s layers, just continue reading through <a class="reference internal" href="layers.html"><span class="doc">Layers</span></a> and
+<a class="reference internal" href="custom_layers.html"><span class="doc">Creating custom layers</span></a>.
+More tutorials, examples and code snippets can be found in the <a class="reference external" href="https://github.com/Lasagne/Recipes">Lasagne
+Recipes</a> repository.
+Finally, the reference lists and explains all layers (<code class="xref py py-mod docutils literal"><span class="pre">lasagne.layers</span></code>),
+weight initializers (<code class="xref py py-mod docutils literal"><span class="pre">lasagne.init</span></code>), nonlinearities
+(<code class="xref py py-mod docutils literal"><span class="pre">lasagne.nonlinearities</span></code>), loss expressions (<code class="xref py py-mod docutils literal"><span class="pre">lasagne.objectives</span></code>),
+training methods (<code class="xref py py-mod docutils literal"><span class="pre">lasagne.updates</span></code>) and regularizers
+(<code class="xref py py-mod docutils literal"><span class="pre">lasagne.regularization</span></code>) included in the library, and should also make
+it simple to create your own.</p>
+<table class="docutils citation" frame="void" id="hinton2012" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Hinton2012]</a></td><td>Improving neural networks by preventing co-adaptation
+of feature detectors. <a class="reference external" href="http://arxiv.org/abs/1207.0580">http://arxiv.org/abs/1207.0580</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="layers.html" class="btn btn-neutral float-right" title="Layers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

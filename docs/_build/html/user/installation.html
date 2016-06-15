@@ -1,0 +1,415 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; tensorlayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="tensorlayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Tutorial" href="tutorial.html"/>
+        <link rel="prev" title="Welcome to TensorLayer" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> tensorlayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-pip">Python + pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#c-compiler">C compiler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#numpy-scipy-blas">numpy/scipy + BLAS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#theano">Theano</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#stable-lasagne-release">Stable Lasagne release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bleeding-edge-version">Bleeding-edge version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development-installation">Development installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gpu-support">GPU support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cuda">CUDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Theano</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cudnn">cuDNN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#docker">Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_layers.html">Creating custom layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul class="simple">
+</ul>
+<ul class="simple">
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">tensorlayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Installation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/installation.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Lasagne has a couple of prerequisites that need to be installed first, but it
+is not very picky about versions. The single exception is Theano: Due to its
+tight coupling to Theano, you will have to install a recent version of Theano
+(usually more recent than the latest official release!) fitting the version of
+Lasagne you choose to install.</p>
+<p>Most of the instructions below assume you are running a Linux or Mac system,
+but are otherwise very generic. For detailed step-by-step instructions for
+specific platforms including Windows, check our <a class="reference external" href="https://github.com/Lasagne/Lasagne/wiki/From-Zero-to-Lasagne">From Zero to Lasagne</a> guides.</p>
+<p>If you run into any trouble, please check the <a class="reference external" href="http://deeplearning.net/software/theano/install.html">Theano installation instructions</a> which cover installing
+the prerequisites for a range of operating systems, or ask for help on <a class="reference external" href="https://groups.google.com/d/forum/lasagne-users">our
+mailing list</a>.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-pip">
+<h3>Python + pip<a class="headerlink" href="#python-pip" title="Permalink to this headline">¶</a></h3>
+<p>Lasagne currently requires Python 2.7 or 3.4 to run. Please install Python via
+the package manager of your operating system if it is not included already.</p>
+<p>Python includes <code class="docutils literal"><span class="pre">pip</span></code> for installing additional modules that are not shipped
+with your operating system, or shipped in an old version, and we will make use
+of it below. We recommend installing these modules into your home directory
+via <code class="docutils literal"><span class="pre">--user</span></code>, or into a <a class="reference external" href="http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/">virtual environment</a>
+via <code class="docutils literal"><span class="pre">virtualenv</span></code>.</p>
+</div>
+<div class="section" id="c-compiler">
+<h3>C compiler<a class="headerlink" href="#c-compiler" title="Permalink to this headline">¶</a></h3>
+<p>Theano requires a working C compiler, and numpy/scipy require a compiler as
+well if you install them via <code class="docutils literal"><span class="pre">pip</span></code>. On Linux, the default compiler is usually
+<code class="docutils literal"><span class="pre">gcc</span></code>, and on Mac OS, it&#8217;s <code class="docutils literal"><span class="pre">clang</span></code>. Again, please install them via the
+package manager of your operating system.</p>
+</div>
+<div class="section" id="numpy-scipy-blas">
+<h3>numpy/scipy + BLAS<a class="headerlink" href="#numpy-scipy-blas" title="Permalink to this headline">¶</a></h3>
+<p>Lasagne requires numpy of version 1.6.2 or above, and Theano also requires
+scipy 0.11 or above. Numpy/scipy rely on a BLAS library to provide fast linear
+algebra routines. They will work fine without one, but a lot slower, so it is
+worth getting this right (but this is less important if you plan to use a GPU).</p>
+<p>If you install numpy and scipy via your operating system&#8217;s package manager,
+they should link to the BLAS library installed in your system. If you install
+numpy and scipy via <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code> and <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">scipy</span></code>, make sure
+to have development headers for your BLAS library installed (e.g., the
+<code class="docutils literal"><span class="pre">libopenblas-dev</span></code> package on Debian/Ubuntu) while running the installation
+command. Please refer to the <a class="reference external" href="http://www.scipy.org/scipylib/building/index.html">numpy/scipy build instructions</a> if in doubt.</p>
+</div>
+<div class="section" id="theano">
+<h3>Theano<a class="headerlink" href="#theano" title="Permalink to this headline">¶</a></h3>
+<p>The version to install depends on the Lasagne version you choose, so this will
+be handled below.</p>
+</div>
+</div>
+<div class="section" id="stable-lasagne-release">
+<h2>Stable Lasagne release<a class="headerlink" href="#stable-lasagne-release" title="Permalink to this headline">¶</a></h2>
+<p>Lasagne 0.1 requires a more recent version of Theano than the one available
+on PyPI. To install a version that is known to work, run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -r https://raw.githubusercontent.com/Lasagne/Lasagne/v0.1/requirements.txt
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">An even more recent version of Theano will often work as well, but at the
+time of writing, a simple <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">Theano</span></code> will give you a version that
+is too old.</p>
+</div>
+<p>To install release 0.1 of Lasagne from PyPI, run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install <span class="nv">Lasagne</span><span class="o">==</span>0.1
+</pre></div>
+</div>
+<p>If you do not use <code class="docutils literal"><span class="pre">virtualenv</span></code>, add <code class="docutils literal"><span class="pre">--user</span></code> to both commands to install
+into your home directory instead. To upgrade from an earlier installation, add
+<code class="docutils literal"><span class="pre">--upgrade</span></code>.</p>
+</div>
+<div class="section" id="bleeding-edge-version">
+<h2>Bleeding-edge version<a class="headerlink" href="#bleeding-edge-version" title="Permalink to this headline">¶</a></h2>
+<p>The latest development version of Lasagne usually works fine with the latest
+development version of Theano. To install both, run the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install --upgrade https://github.com/Theano/Theano/archive/master.zip
+pip install --upgrade https://github.com/Lasagne/Lasagne/archive/master.zip
+</pre></div>
+</div>
+<p>Again, add <code class="docutils literal"><span class="pre">--user</span></code> if you want to install to your home directory instead.</p>
+</div>
+<div class="section" id="development-installation">
+<span id="lasagne-development-install"></span><h2>Development installation<a class="headerlink" href="#development-installation" title="Permalink to this headline">¶</a></h2>
+<p>Alternatively, you can install Lasagne (and optionally Theano) from source,
+in a way that any changes to your local copy of the source tree take effect
+without requiring a reinstall. This is often referred to as <em>editable</em> or
+<em>development</em> mode. Firstly, you will need to obtain a copy of the source tree:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git clone https://github.com/Lasagne/Lasagne.git
+</pre></div>
+</div>
+<p>It will be cloned to a subdirectory called <code class="docutils literal"><span class="pre">Lasagne</span></code>. Make sure to place it
+in some permanent location, as for an <em>editable</em> installation, Python will
+import the module directly from this directory and not copy over the files.
+Enter the directory and install the known good version of Theano:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> Lasagne
+pip install -r requirements.txt
+</pre></div>
+</div>
+<p>Alternatively, install the bleeding-edge version of Theano as described in the
+previous section.</p>
+<p>To install the Lasagne package itself, in editable mode, run:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install --editable .
+</pre></div>
+</div>
+<p>As always, add <code class="docutils literal"><span class="pre">--user</span></code> to install it to your home directory instead.</p>
+<p><strong>Optional</strong>: If you plan to contribute to Lasagne, you will need to fork the
+Lasagne repository on GitHub. This will create a repository under your user
+account. Update your local clone to refer to the official repository as
+<code class="docutils literal"><span class="pre">upstream</span></code>, and your personal fork as <code class="docutils literal"><span class="pre">origin</span></code>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>git remote rename origin upstream
+git remote add origin https://github.com/&lt;your-github-name&gt;/Lasagne.git
+</pre></div>
+</div>
+<p>If you set up an <a class="reference external" href="https://help.github.com/categories/ssh/">SSH key</a>, use the
+SSH clone URL instead: <code class="docutils literal"><span class="pre">git&#64;github.com:&lt;your-github-name&gt;/Lasagne.git</span></code>.</p>
+<p>You can now use this installation to develop features and send us pull requests
+on GitHub, see <a class="reference internal" href="development.html"><span class="doc">Development</span></a>!</p>
+</div>
+<div class="section" id="gpu-support">
+<h2>GPU support<a class="headerlink" href="#gpu-support" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to Theano, Lasagne transparently supports training your networks on a
+GPU, which may be 10 to 50 times faster than training them on a CPU. Currently,
+this requires an NVIDIA GPU with CUDA support, and some additional software for
+Theano to use it.</p>
+<div class="section" id="cuda">
+<h3>CUDA<a class="headerlink" href="#cuda" title="Permalink to this headline">¶</a></h3>
+<p>Install the latest CUDA Toolkit and possibly the corresponding driver available
+from NVIDIA: <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></p>
+<p>Closely follow the <em>Getting Started Guide</em> linked underneath the download table
+to be sure you don&#8217;t mess up your system by installing conflicting drivers.</p>
+<p>After installation, make sure <code class="docutils literal"><span class="pre">/usr/local/cuda/bin</span></code> is in your <code class="docutils literal"><span class="pre">PATH</span></code>, so
+<code class="docutils literal"><span class="pre">nvcc</span> <span class="pre">--version</span></code> works. Also make sure <code class="docutils literal"><span class="pre">/usr/local/cuda/lib64</span></code> is in your
+<code class="docutils literal"><span class="pre">LD_LIBRARY_PATH</span></code>, so the toolkit libraries can be found.</p>
+</div>
+<div class="section" id="id2">
+<h3>Theano<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>If CUDA is set up correctly, the following should print some information on
+your GPU (the first CUDA-capable GPU in your system if you have multiple ones):</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nv">THEANO_FLAGS</span><span class="o">=</span><span class="nv">device</span><span class="o">=</span>gpu python -c <span class="s2">&quot;import theano; print(theano.sandbox.cuda.device_properties(0))&quot;</span>
+</pre></div>
+</div>
+<p>To configure Theano to use the GPU by default, create a file <code class="docutils literal"><span class="pre">.theanorc</span></code>
+directly in your home directory, with the following contents:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>[global]
+floatX = float32
+device = gpu
+</pre></div>
+</div>
+<p>Optionally add <code class="docutils literal"><span class="pre">allow_gc</span> <span class="pre">=</span> <span class="pre">False</span></code> for some extra performance at the expense
+of (sometimes substantially) higher GPU memory usage.</p>
+<p>If you run into problems, please check Theano&#8217;s instructions for <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/using_gpu.html">Using the GPU</a>.</p>
+</div>
+<div class="section" id="cudnn">
+<h3>cuDNN<a class="headerlink" href="#cudnn" title="Permalink to this headline">¶</a></h3>
+<p>NVIDIA provides a library for common neural network operations that especially
+speeds up Convolutional Neural Networks (CNNs). Again, it can be obtained from
+NVIDIA (after registering as a developer): <a class="reference external" href="https://developer.nvidia.com/cudnn">https://developer.nvidia.com/cudnn</a></p>
+<p>Note that it requires a reasonably modern GPU with Compute Capability 3.0 or higher;
+see <a class="reference external" href="https://developer.nvidia.com/cuda-gpus">NVIDIA&#8217;s list of CUDA GPUs</a>.</p>
+<p>To install it, copy the <code class="docutils literal"><span class="pre">*.h</span></code> files to <code class="docutils literal"><span class="pre">/usr/local/cuda/include</span></code> and the
+<code class="docutils literal"><span class="pre">lib*</span></code> files to <code class="docutils literal"><span class="pre">/usr/local/cuda/lib64</span></code>.</p>
+<p>To check whether it is found by Theano, run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -c <span class="s2">&quot;from theano.sandbox.cuda.dnn import dnn_available as d; print(d() or d.msg)&quot;</span>
+</pre></div>
+</div>
+<p>It will print <code class="docutils literal"><span class="pre">True</span></code> if everything is fine, or an error message otherwise.
+There are no additional steps required for Theano to make use of cuDNN.</p>
+</div>
+</div>
+<div class="section" id="docker">
+<h2>Docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
+<p>Instead of manually installing Theano and Lasagne on your machines as described above,
+you may want to use a pre-made <a class="reference external" href="https://www.docker.com/what-docker">Docker</a>
+image: <a class="reference external" href="https://hub.docker.com/r/kaixhin/lasagne/">Lasagne Docker (CPU)</a> or
+<a class="reference external" href="https://hub.docker.com/r/kaixhin/cuda-lasagne/">Lasagne Docker (CUDA)</a>. These
+are updated on a weekly basis with bleeding-edge builds of Theano and Lasagne.
+Examples of running bash in a Docker container are as follows:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo docker run -it kaixhin/lasagne
+sudo nvidia-docker run -it kaixhin/cuda-lasagne:7.0
+</pre></div>
+</div>
+<p>For a guide to Docker, see the <a class="reference external" href="https://docs.docker.com">official docs</a>.
+CUDA support requires <a class="reference external" href="https://github.com/NVIDIA/nvidia-docker">NVIDIA Docker</a>.
+For more details on how to use the Lasagne Docker images,
+consult the <a class="reference external" href="https://github.com/Kaixhin/dockerfiles">source project</a>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Welcome to TensorLayer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer Team.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
