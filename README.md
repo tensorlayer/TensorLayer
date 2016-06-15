@@ -147,34 +147,34 @@ A 2 layers CNN followed by 2 fully connected layers can be defined by the follow
 ```python
 network = tl.InputLayer(x, name='input_layer')
 network = tl.Conv2dLayer(network,
-                      act = tf.nn.relu,
-                      shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                      strides=[1, 1, 1, 1],
-                      padding='SAME',
-                      name ='cnn_layer1')     # output: (?, 28, 28, 100)
+                        act = tf.nn.relu,
+                        shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+                        strides=[1, 1, 1, 1],
+                        padding='SAME',
+                        name ='cnn_layer1')     # output: (?, 28, 28, 32)
 network = tl.Pool2dLayer(network,
-                      ksize=[1, 2, 2, 1],
-                      strides=[1, 2, 2, 1],
-                      padding='SAME',
-                      pool = tf.nn.max_pool,
-                      name ='pool_layer1',)   # output: (?, 14, 14, 100)
+                        ksize=[1, 2, 2, 1],
+                        strides=[1, 2, 2, 1],
+                        padding='SAME',
+                        pool = tf.nn.max_pool,
+                        name ='pool_layer1',)   # output: (?, 14, 14, 32)
 network = tl.Conv2dLayer(network,
-                      act = tf.nn.relu,
-                      shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-                      strides=[1, 1, 1, 1],
-                      padding='SAME',
-                      name ='cnn_layer2')     # output: (?, 14, 14, 32)
+                        act = tf.nn.relu,
+                        shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
+                        strides=[1, 1, 1, 1],
+                        padding='SAME',
+                        name ='cnn_layer2')     # output: (?, 14, 14, 64)
 network = tl.Pool2dLayer(network,
-                      ksize=[1, 2, 2, 1],
-                      strides=[1, 2, 2, 1],
-                      padding='SAME',
-                      pool = tf.nn.max_pool,
-                      name ='pool_layer2',)   # output: (?, 7, 7, 32)
-network = tl.FlattenLayer(network, name='flatten_layer')
-network = tl.DropoutLayer(network, keep=0.5, name='drop1')
-network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
-network = tl.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+                        ksize=[1, 2, 2, 1],
+                        strides=[1, 2, 2, 1],
+                        padding='SAME',
+                        pool = tf.nn.max_pool,
+                        name ='pool_layer2',)   # output: (?, 7, 7, 64)
+network = tl.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
+network = tl.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
+network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
+network = tl.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
+network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 ```
 
 
