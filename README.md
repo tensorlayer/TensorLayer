@@ -44,7 +44,7 @@ More examples available *[here](https://www.xxx)*
 ### *Fully Connected Network*
 TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
 
-**Placeholder**
+**<font color="grey"> Placeholder: </font>**
 
 All placeholder and variables can be initialized by the same way with Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)*, *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)* and *[tensorflow-math](https://www.tensorflow.org/versions/r0.9/api_docs/python/math_ops.html)*.
 
@@ -56,7 +56,7 @@ x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 ```
 
-**Rectifying Network with Dropout**
+**<font color="grey"> Rectifying Network with Dropout: </font>**
 
 ```python
 # Define the network
@@ -70,8 +70,8 @@ network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer'
 # Start training
 ...
 ```
+**<font color="grey"> Vanilla Sparse Autoencoder: </font>**
 
-**Vanilla Sparse Autoencoder**
 
 ```python
 # Define the network
@@ -83,8 +83,8 @@ sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
 ...
 ```
+**<font color="grey"> Denoising Autoencoder: </font>**
 
-**Denoising Autoencoder**
 
 ```python
 # Define the network
@@ -98,7 +98,7 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 ...
 ```
 
-**Stacked Denoising Autoencoders**
+**<font color="grey"> Stacked Denoising Autoencoders: </font>**
 
 ```python
 # Define the network
@@ -139,7 +139,8 @@ Instead of feeding the images as 1D vectors, the images can be imported as 4D ma
 x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[None,])
 ```
-**CNNs + MLP**
+
+**<font color="grey"> CNNs + MLP: </font>**
 
 A 2 layers CNN followed by 2 fully connected layers can be defined by the following codes:
 
@@ -180,7 +181,7 @@ network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer'
 
 ### *Recurrent Neural Network*
 
-**LSTM**
+**<font color="grey"> LSTM: </font>**
 
 Long Short-Term Memory is xxxxxx xjsdjansijdni
 
@@ -188,7 +189,7 @@ Long Short-Term Memory is xxxxxx xjsdjansijdni
 ### *Reinforcement Learning*
 To understand Reinforcement Learning, a Blog (*[Deep Reinforcement Learning: Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)*) and a Paper (*[Playing Atari with Deep Reinforcement Learning](https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf)*) are recommended. To play with RL, use *[OpenAI Gym](https://github.com/openai/gym)* as benchmark is recommended.
 
-**Pong Game**
+**<font color="grey"> Pong Game: </font>**
 
 Atari Pong Game is a single agent example. *[Pong from Pixels](http://karpathy.github.io/2016/05/31/rl/)* using 130 lines of Python only *[(Code link)](https://gist.github.com/karpathy/a4166c7fe253700972fcbc77e4ea32c5)* can be reimplemented as follow.
 
@@ -214,7 +215,9 @@ network = tl.DropoutLayer(network, keep=0.5, name='drop3')
 network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 ```
 
-After initializing the variables, the informations of network parameters can be observed by using **network.print_params()**.
+**<font color="grey"> Regularization of Weights: </font>**
+
+After initializing the variables, the informations of network parameters can be observed by using **<font color="grey">network.print_params()</font>**.
 
 ```python
 sess.run(tf.initialize_all_variables())
@@ -228,7 +231,7 @@ network.print_params()
 >> num of params: 1276810
 ```
 
-The output of network is **network.outputs**, then the cross entropy can be defined as follow. Besides, to regularize the weights, the **network.all_params** contains all parameters of the network. In this case, **network.all_params** = [W1, b1, W2, b2, Wout, bout] according to param 0, 1 ... 5 shown by **network.print_params()**. Then max-norm regularization on W1 and W2 can be performed as follow.
+The output of network is **<font color="grey">network.outputs</font>**, then the cross entropy can be defined as follow. Besides, to regularize the weights, the **<font color="grey">network.all_params</font>** contains all parameters of the network. In this case, **<font color="grey">network.all_params</font>** = [W1, b1, W2, b2, Wout, bout] according to param 0, 1 ... 5 shown by **<font color="grey">network.print_params()</font>**. Then max-norm regularization on W1 and W2 can be performed as follow.
 
 ```python
 y = network.outputs
@@ -237,7 +240,9 @@ cost = cross_entropy
 cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
 ```
 
-Instance method **network.print_layers()** prints all outputs of different layers in order. To achieve regularization on activation output, you can use **network.all_layers** which contains all outputs of different layers. If you want to use L1 penalty on the activations of first hidden layer, just simply add **tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])** to the cost function.
+**<font color="grey"> Regularization of Activation Outputs: </font>**
+
+Instance method **<font color="grey">network.print_layers()</font>** prints all outputs of different layers in order. To achieve regularization on activation output, you can use **<font color="grey">network.all_layers</font>** which contains all outputs of different layers. If you want to use L1 penalty on the activations of first hidden layer, just simply add **<font color="grey">tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])</font>** to the cost function.
 
 ```python
 network.print_layers()
@@ -259,7 +264,8 @@ network.print_layers()
 
 
 # Easy to Modify
-**Modifying Pre-train Behaviour**
+**<font color="grey"> Modifying Pre-train Behaviour: </font>**
+
 
 Greedy layer-wise pretrain is an important task for deep neural network initialization, while there are many kinds of pre-train metrices according to different architectures and applications.
 
@@ -284,18 +290,18 @@ ReconLayer.__init__(...):
 	self.cost = mse + L1_a + L2_w
 ```
 
-**Adding Customized Regularizer**
+**<font color="grey"> Adding Customized Regularizer: </font>**
+
 
 
 
 # Installation
 
-**TensorFlow Installation**
+**<font color="grey"> TensorFlow Installation: </font>**
 
 This library requires Tensorflow (version >= 0.8) to be installed: *[Tensorflow installation instructions](https://www.tensorflow.org/versions/r0.9/get_started/os_setup.html)*.
 
-
-**GPU Setup**
+**<font color="grey"> GPU Setup: </font>**
 
 GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
 
@@ -305,8 +311,7 @@ GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
 
 *[CuDNN download](https://developer.nvidia.com/cudnn)*.
 
-
-**TensorLayer Installation**
+**<font color="grey"> TensorLayer Installation: </font>**
 
 ```python
 pip install git+https://github.com/xxx/xxx.git
