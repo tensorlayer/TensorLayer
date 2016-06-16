@@ -3,16 +3,14 @@
 
 .. automodule:: tensorlayer.init
 
-Initializers
-------------
 
 .. autosummary::
 
    xavier_init
 
 
-Detailed description
---------------------
+ Initializers
+ ------------
 
 .. autofunction:: xavier_init
    :members:

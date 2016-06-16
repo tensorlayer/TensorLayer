@@ -7,6 +7,10 @@ import tensorlayer.cost as cost
 import tensorlayer.iterate as iterate
 import numpy as np
 
+__all__ = [
+    "Layer",
+    "DenseLayer",
+]
 
 ## Dynamically creat variable for keep prob
 # set_keep = locals()
@@ -27,21 +31,21 @@ def flatten_reshape(variable):
     >>> xxx
     """
 
-    ''' input a high-dimension variable, return a 1-D reshaped variable
-        for example:
-            W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
-            b_conv2 = bias_variable([32])
-            W_fc1 = weight_variable([7 * 7 * 32, 256])
-
-            h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-            h_pool2 = max_pool_2x2(h_conv2)
-            h_pool2.get_shape()[:].as_list() = [batch_size, 7, 7, 32]
-
-            [batch_size, mask_row, mask_col, n_mask]
-
-            h_pool2_flat = tensorflatten(h_pool2)
-            h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
-    '''
+    # ''' input a high-dimension variable, return a 1-D reshaped variable
+    #     for example:
+    #         W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
+    #         b_conv2 = bias_variable([32])
+    #         W_fc1 = weight_variable([7 * 7 * 32, 256])
+    #
+    #         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+    #         h_pool2 = max_pool_2x2(h_conv2)
+    #         h_pool2.get_shape()[:].as_list() = [batch_size, 7, 7, 32]
+    #
+    #         [batch_size, mask_row, mask_col, n_mask]
+    #
+    #         h_pool2_flat = tensorflatten(h_pool2)
+    #         h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
+    # '''
     dim = 1
     for d in variable.get_shape()[1:].as_list():
         dim *= d
@@ -604,7 +608,7 @@ class FlattenLayer(Layer):
         The `Layer` class feeding into this layer.
     name : a string or None
         An optional name to attach to this layer.
-        
+
     Examples
     --------
     >>> xxx

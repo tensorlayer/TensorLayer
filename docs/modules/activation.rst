@@ -8,7 +8,7 @@
    identity
    ramp
 
-Detailed description
+Activation functions
 --------------------
 
 .. autofunction:: identity
