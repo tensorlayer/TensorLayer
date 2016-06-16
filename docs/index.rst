@@ -36,13 +36,15 @@ method, this part of the documentation is for you.
   :maxdepth: 2
 
   modules/layers
-  modules/updates
-  modules/init
-  modules/nonlinearities
-  modules/objectives
-  modules/regularization
-  modules/random
+  modules/activation
+  modules/iterate
+  modules/cost
+  modules/visualize
+  modules/files
   modules/utils
+  modules/init
+  modules/os
+
 
 Contents:
 
@@ -58,3 +60,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _GitHub: https://github.com/zsdonghao/tensorlayer

@@ -4,12 +4,16 @@
 
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
+from tensorlayer import set_keep
 import numpy as np
+import matplotlib.pyplot as plt
+import sys
+import os
 import time
+from sys import platform as _platform
 
 def main_test_layers(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.load_mnist_dataset(shape=(-1,784))
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int64)
@@ -33,26 +37,26 @@ def main_test_layers(model='relu'):
     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
     if model == 'relu':
-        network = tl.layers.InputLayer(x, name='input_layer')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-        network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+        network = tl.InputLayer(x, name='input_layer')
+        network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+        network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+        network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+        network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+        network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+        network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')
     elif model == 'resnet':
-        network = tl.layers.InputLayer(x, name='input_layer')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        network = tl.layers.ResnetLayer(network, act = tf.nn.relu, name='resnet1')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-        network = tl.layers.ResnetLayer(network, act = tf.nn.relu, name='resnet2')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-        network = tl.layers.DenseLayer(network, act = tl.activation.identity, name='output_layer')
+        network = tl.InputLayer(x, name='input_layer')
+        network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+        network = tl.ResnetLayer(network, act = tf.nn.relu, name='resnet1')
+        network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+        network = tl.ResnetLayer(network, act = tf.nn.relu, name='resnet2')
+        network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+        network = tl.DenseLayer(network, act = tl.identity, name='output_layer')
     elif model == 'dropconnect':
-        network = tl.layers.InputLayer(x, name='input_layer')
-        network = tl.layers.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
-        network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
-        network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name='output_layer')
+        network = tl.InputLayer(x, name='input_layer')
+        network = tl.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
+        network = tl.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
+        network = tl.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.identity, name='output_layer')
 
     # attrs = vars(network)
     # print(', '.join("%s: %s\n" % item for item in attrs.items()))
@@ -90,10 +94,9 @@ def main_test_layers(model='relu'):
 
     for epoch in range(n_epoch):
         start_time = time.time()
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update( network.all_drop )    # enable all dropout/dropconnect/denoising layers
-
             sess.run(train_op, feed_dict=feed_dict)
 
             # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
@@ -102,22 +105,22 @@ def main_test_layers(model='relu'):
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-            dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
+            dp_dict = tl.Layer.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
             feed_dict = {x: X_train, y_: y_train}
             feed_dict.update(dp_dict)
             print("   train loss: %f" % sess.run(cost, feed_dict=feed_dict))
-            dp_dict = tl.utils.dict_to_one( network.all_drop )
+            dp_dict = tl.Layer.dict_to_one( network.all_drop )
             feed_dict = {x: X_val, y_: y_val}
             feed_dict.update(dp_dict)
             print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
             print("   val acc: %f" % np.mean(y_val == sess.run(y_op, feed_dict=feed_dict)))
             try:
-                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+                tl.visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
+                raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
-    dp_dict = tl.utils.dict_to_one( network.all_drop )
+    dp_dict = tl.Layer.dict_to_one( network.all_drop )
     feed_dict = {x: X_test, y_: y_test}
     feed_dict.update(dp_dict)
     print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
@@ -132,7 +135,7 @@ def main_test_layers(model='relu'):
     sess.close()
 
 def main_test_denoise_AE(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.load_mnist_dataset(shape=(-1,784))
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int64)
@@ -157,16 +160,16 @@ def main_test_denoise_AE(model='relu'):
 
     print("Build Network")
     if model == 'relu':
-        network = tl.layers.InputLayer(x, name='input_layer')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')    # if drop some inputs, it is denoise AE
-        network = tl.layers.DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
-        recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+        network = tl.InputLayer(x, name='input_layer')
+        network = tl.DropoutLayer(network, keep=0.5, name='denoising1')    # if drop some inputs, it is denoise AE
+        network = tl.DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
+        recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
     elif model == 'sigmoid':
         # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
-        network = tl.layers.InputLayer(x, name='input_layer')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')
-        network = tl.layers.DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
-        recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
+        network = tl.InputLayer(x, name='input_layer')
+        network = tl.DropoutLayer(network, keep=0.5, name='denoising1')
+        network = tl.DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
+        recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
 
     ## ready to train
     sess.run(tf.initialize_all_variables())
@@ -178,6 +181,7 @@ def main_test_denoise_AE(model='relu'):
     ## pretrain
     print("Pre-train Layer 1")
     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+        # recon_layer1.pretrain(sess, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1000, batch_size=128, print_freq=10)
 
     # Add ops to save and restore all the variables.
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
@@ -189,7 +193,7 @@ def main_test_denoise_AE(model='relu'):
 
 def main_test_stacked_denoise_AE(model='relu'):
     # Load MNIST dataset
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.load_mnist_dataset(shape=(-1,784))
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int64)
@@ -220,21 +224,21 @@ def main_test_stacked_denoise_AE(model='relu'):
 
     # Define network
     print("\nBuild Network")
-    network = tl.layers.InputLayer(x, name='input_layer')
+    network = tl.InputLayer(x, name='input_layer')
     # denoise layer for AE
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')
+    network = tl.DropoutLayer(network, keep=0.5, name='denoising1')
     # 1st layer
-    network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-    network = tl.layers.DenseLayer(network, n_units=800, act = act, name=model+'1')
+    network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+    network = tl.DenseLayer(network, n_units=800, act = act, name=model+'1')
     x_recon1 = network.outputs
-    recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act = act_recon, name='recon_layer1')
+    recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = act_recon, name='recon_layer1')
     # 2nd layer
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-    network = tl.layers.DenseLayer(network, n_units=800, act = act, name=model+'2')
-    recon_layer2 = tl.layers.ReconLayer(network, x_recon=x_recon1, n_units=800, act = act_recon, name='recon_layer2')
+    network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+    network = tl.DenseLayer(network, n_units=800, act = act, name=model+'2')
+    recon_layer2 = tl.ReconLayer(network, x_recon=x_recon1, n_units=800, act = act_recon, name='recon_layer2')
     # 3rd layer
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+    network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+    network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')
 
     # Define fine-tune process
     y = network.outputs
@@ -259,9 +263,9 @@ def main_test_stacked_denoise_AE(model='relu'):
     print("\nAll Network Params before pre-train")
     network.print_params()
     print("\nPre-train Layer 1")
-    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=1, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
     print("\nPre-train Layer 2")
-    recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=1, batch_size=128, print_freq=10, save=False)
+    recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=False)
     print("\nAll Network Params after pre-train")
     network.print_params()
 
@@ -275,7 +279,7 @@ def main_test_stacked_denoise_AE(model='relu'):
 
     for epoch in range(n_epoch):
         start_time = time.time()
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
             feed_dict[set_keep['denoising1']] = 1    # disable denoising layer
@@ -284,8 +288,8 @@ def main_test_stacked_denoise_AE(model='relu'):
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+            for X_train_a, y_train_a in tl.iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+                dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -295,8 +299,8 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   train loss: %f" % (train_loss/ n_batch))
             print("   train acc: %f" % (train_acc/ n_batch))
             val_loss, val_acc, n_batch = 0, 0, 0
-            for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+            for X_val_a, y_val_a in tl.iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
+                dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -306,14 +310,14 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
-                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+                tl.visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("# You should change visualize.W(), if you want to save the feature images for different dataset")
+                raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
-    for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout layers
+    for X_test_a, y_test_a in tl.iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
+        dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -338,7 +342,7 @@ def main_test_cnn_layer():
         # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
         # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
     '''
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int64)
@@ -360,36 +364,36 @@ def main_test_cnn_layer():
     x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])   # [batch_size, height, width, channels]
     y_ = tf.placeholder(tf.int64, shape=[None,])
 
-    network = tl.layers.InputLayer(x, name='input_layer')
-    network = tl.layers.Conv2dLayer(network,
+    network = tl.InputLayer(x, name='input_layer')
+    network = tl.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.Pool2dLayer(network,
+    network = tl.Pool2dLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
                         name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    network = tl.layers.Conv2dLayer(network,
+    network = tl.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.layers.Pool2dLayer(network,
+    network = tl.Pool2dLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
                         name ='pool_layer2',)   # output: (?, 7, 7, 64)
-    network = tl.layers.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
-    network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
+    network = tl.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
+    network = tl.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
+    network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
+    network = tl.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
+    network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 
     y = network.outputs
 
@@ -417,7 +421,7 @@ def main_test_cnn_layer():
 
     for epoch in range(n_epoch):
         start_time = time.time()
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
             sess.run(train_op, feed_dict=feed_dict)
@@ -425,8 +429,8 @@ def main_test_cnn_layer():
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+            for X_train_a, y_train_a in tl.iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+                dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -434,8 +438,8 @@ def main_test_cnn_layer():
             print("   train loss: %f" % (train_loss/ n_batch))
             print("   train acc: %f" % (train_acc/ n_batch))
             val_loss, val_acc, n_batch = 0, 0, 0
-            for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+            for X_val_a, y_val_a in tl.iterate_minibatches(X_val, y_val, batch_size, shuffle=True):
+                dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -443,14 +447,14 @@ def main_test_cnn_layer():
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
             # try:
-            #     tl.visualize.CNN(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+            #     tl.visualize_CNN(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
             # except:
-            #     raise Exception("# You should change visualize.CNN(), if you want to save the feature images for different dataset")
+            #     raise Exception("# You should change visualize_CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
-    for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+    for X_test_a, y_test_a in tl.iterate_minibatches(X_test, y_test, batch_size, shuffle=True):
+        dp_dict = tl.Layer.dict_to_one( network.all_drop )    # disable all dropout layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -458,22 +462,21 @@ def main_test_cnn_layer():
     print("   test loss: %f" % (test_loss/n_batch))
     print("   test acc: %f" % (test_acc/n_batch))
 
+
 if __name__ == '__main__':
-    sess = tf.InteractiveSession()
-    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.3)
+    sess = tl.set_gpu_fraction(gpu_fraction = 0.3)
     try:
-        # main_test_layers(model='relu')                # model = relu, resnet, dropconnect
-
-        # main_test_denoise_AE(model='relu')            # model = relu, sigmoid
-
-        # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
-
+        main_test_layers(model='relu')                # model = relu, resnet, dropconnect
+        tl.clear_all()
+        main_test_denoise_AE(model='relu')            # model = relu, sigmoid
+        tl.clear_all()
+        main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
+        tl.clear_all()
         main_test_cnn_layer()
-
-        tl.os.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.exit_tf(sess)
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        tl.os.exit_tf(sess)
+        tl.exit_tf(sess)
 
 
 
@@ -486,7 +489,7 @@ if __name__ == '__main__':
 
 # act       / n_units / pre-train              / train                     / test acc
 
-# relu      / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.77  98.80 98.84
+# relu      / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.77  98.80
 #                     / None                   / e500 adam 1e-4 b128 d255  / 98.77
 #                                                   max-norm               /
 #                     / None                   / e500 adam 1e-4 b128 d255  / 98.58
