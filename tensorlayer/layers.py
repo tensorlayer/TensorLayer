@@ -16,9 +16,11 @@ set_keep = globals()
 def flatten_reshape(variable):
     """
     The :function:`flatten_reshape` reshapes the input to a 1D vector.
+
     Parameters
     ----------
     variable : a tensorflow variable
+
     Examples
     --------
     >>> xxx
@@ -53,6 +55,7 @@ class Layer(object):
     Because each layer can keep track of the layer(s) feeding into it, a
     network's output :class:`Layer` instance can double as a handle to the full
     network.
+
     Parameters
     ----------
     inputs : a :class:`Layer` instance
@@ -104,6 +107,7 @@ class Layer(object):
 class InputLayer(Layer):
     """
     The :class:`InputLayer` class is the starting layer of a neural network.
+
     Parameters
     ----------
     inputs : a :tensorflow placeholder
@@ -131,6 +135,7 @@ class InputLayer(Layer):
 class DenseLayer(Layer):
     """
     The :class:`DenseLayer` class is a fully connected layer.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -145,10 +150,12 @@ class DenseLayer(Layer):
         Initialize the bias vector
     name : a string or None
         An optional name to attach to this layer.
+
     Examples
     --------
     >>> xxx
     >>> xxx
+
     Notes
     -----
     If the input to this layer has more than two axes, it need to flatten the
@@ -201,6 +208,7 @@ class ReconLayer(DenseLayer):
     """
     The :class:`ReconLayer` class is a reconstruction layer `DenseLayer` which
     use to pre-train a `DenseLayer`.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -215,10 +223,12 @@ class ReconLayer(DenseLayer):
         The activation function that is applied to the reconstruction layer.
         Normally, for sigmoid layer, the reconstruction activation is sigmoid;
                   for rectifying layer, the reconstruction activation is softplus.
+
     Examples
     --------
     >>> xxx
     >>> xxx
+
     Notes
     -----
     The input layer should be `DenseLayer` or a layer has only one axes.
@@ -365,6 +375,7 @@ class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some
     values to zero by a given keeping probability.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -373,6 +384,7 @@ class DropoutLayer(Layer):
         The keeping probability, the lower more values will be set to zero.
     name : a string or None
         An optional name to attach to this layer.
+
     Examples
     --------
     >>> xxx
@@ -411,6 +423,7 @@ class DropconnectDenseLayer(Layer):
     The :class:`DropconnectDenseLayer` class is `DenseLayer` with DropConnect
     behaviour which randomly remove connection between this layer to previous
     layer by a given keeping probability.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -427,6 +440,7 @@ class DropconnectDenseLayer(Layer):
         Initialize the bias vector
     name : a string or None
         An optional name to attach to this layer.
+
     Examples
     --------
     >>> xxx
@@ -474,6 +488,7 @@ class DropconnectDenseLayer(Layer):
 class Conv2dLayer(Layer):
     """
     The :class:`Conv2dLayer` class is a 2D CNN layer.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -494,6 +509,7 @@ class Conv2dLayer(Layer):
         Initialize the bias vector
     name : a string or None
         An optional name to attach to this layer.
+
     Examples
     --------
     >>> xxx
@@ -530,6 +546,7 @@ class Conv2dLayer(Layer):
 class Pool2dLayer(Layer):
     """
     The :class:`Pool2dLayer` class is a 2D Pooling layer.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -544,6 +561,7 @@ class Pool2dLayer(Layer):
         tf.nn.max_pool ...
     name : a string or None
         An optional name to attach to this layer.
+
     Examples
     --------
     >>> xxx
@@ -579,12 +597,14 @@ class FlattenLayer(Layer):
     """
     The :class:`FlattenLayer` class is layer which reshape the input to a 1D
     vector.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     name : a string or None
         An optional name to attach to this layer.
+        
     Examples
     --------
     >>> xxx

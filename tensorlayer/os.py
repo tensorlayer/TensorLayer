@@ -7,6 +7,7 @@ from tensorlayer.layers import set_keep
 def exit_tf(sess):
     """
     The :function:`exit_tf()`
+
     Parameters
     ----------
     sess : a :sess instance of tensorflow
@@ -32,7 +33,8 @@ def exit_tf(sess):
 def clear_all(printable=True):
     """
     The :function:`clear_all()` Clears all the placeholder variables of keep prob,
-    including keeping probabilities of all dropout, denoising, dropconnect
+    including keeping probabilities of all dropout, denoising, dropconnect etc.
+
     Parameters
     ----------
     printable : if True, print all deleted variables.
@@ -73,8 +75,10 @@ def clear_all(printable=True):
 def set_gpu_fraction(sess, gpu_fraction=0.3):
     """
     The :function:`set_gpu_fraction()` sets the GPU memory fraction for the application
+
     Parameters
     ----------
+    sess : a :sess instance of tensorflow
     gpu_fraction : float (0 ~ 1], fraction of GPU memory
     """
     print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)

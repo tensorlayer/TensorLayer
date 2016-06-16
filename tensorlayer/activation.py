@@ -3,6 +3,7 @@ import tensorflow as tf
 def identity(x):
     """
     The : identity activation function
+    
     Parameters
     ----------
     x : input(s)
@@ -12,6 +13,7 @@ def identity(x):
 def ramp(x, v_min=0, v_max=1, name=None):
     """
     The : ramp activation function
+
     Parameters
     ----------
     x : a tensor outputs

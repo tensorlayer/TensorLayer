@@ -1,7 +1,7 @@
-:mod:`tensorlayer.file`
+:mod:`tensorlayer.files`
 =======================
 
-.. automodule:: tensorlayer.file
+.. automodule:: tensorlayer.files
 
 
 Load dataset functions

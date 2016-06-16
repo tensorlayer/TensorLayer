@@ -8,6 +8,7 @@ def xavier_init(shape, uniform=True):
     The :function:`xavier_init` set the parameter initialization using the method described.
     This method is designed to keep the scale of the gradients roughly the same
     in all layers.
+
     Parameters
     ----------
     n_inputs : int
@@ -15,9 +16,11 @@ def xavier_init(shape, uniform=True):
     n_units : int
         The number of units of the current layer
     uniform: If true use a uniform distribution, otherwise use a normal.
+
     Returns
     -------
     An initializer.
+    
     Reference
     ---------
     Glorot, X., & Bengio, Y. (2010). Understanding the difficulty of training deep

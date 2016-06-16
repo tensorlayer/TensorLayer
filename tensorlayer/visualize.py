@@ -16,6 +16,7 @@ def W(W, second=10, saveable=True, name='mnist', fig_idx=2396512):
         A name to save the image, if saveable is True.
     fig_idx: int
         matplotlib figure index.
+
     Examples
     --------
     >>> xxx
@@ -62,6 +63,7 @@ def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
         A name to save the image, if saveable is True.
     fig_idx: int
         matplotlib figure index.
+
     Examples
     --------
     >>> xxx
@@ -84,6 +86,7 @@ def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
 def CNN(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
     """
     The :function:`CNN` display or save a group of CNN mask.
+
     Parameters
     ----------
     CNN : numpy.array
@@ -94,6 +97,7 @@ def CNN(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
         A name to save the image, if saveable is True.
     fig_idx: int
         matplotlib figure index.
+        
     Examples
     --------
     >>> xxx

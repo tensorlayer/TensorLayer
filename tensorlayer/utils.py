@@ -1,5 +1,25 @@
 ## Evaluation
 def evaluation(y_test, y_predict, n_classes):
+    """
+    The :function:`evaluation()` input the predicted results, targets results and
+    the number of class, return the confusion matrix, F1-score of each class,
+    accuracy and macro F1-score.
+
+    Parameters
+    ----------
+    y_test : numpy.array or list
+        target results
+    y_predict : numpy.array or list
+        predicted results
+    n_classes : int
+        number of classes
+
+    Examples
+    --------
+    >>> dp_dict = Layer.dict_to_one( network.all_drop )
+    >>> dp_dict = Layer.dict_to_one( network.all_drop )
+    >>> feed_dict.update(dp_dict)
+    """
     from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
     c_mat = confusion_matrix(y_test, y_predict, labels = [x for x in range(n_classes)])
     f1    = f1_score(y_test, y_predict, average = None, labels = [x for x in range(n_classes)])
@@ -15,10 +35,12 @@ def dict_to_one(dp_dict):
     """
     The :function:`dict_to_one()` input a dictionary, return a dictionary that
     all items are set to one, use for disable dropout, dropconnect layer and so on.
+
     Parameters
     ----------
     dp_dict : dictionary
         keeping probabilities
+
     Examples
     --------
     >>> dp_dict = Layer.dict_to_one( network.all_drop )

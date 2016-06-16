@@ -8,16 +8,19 @@ def cross_entropy(output, target):
     """
     The :function:`cross_entropy` function return the cost function of
     cross-entropy between two distribution.
+
     Parameters
     ----------
     output : tensorflow variable
         A distribution with shape: [None, n_feature].
     target : tensorflow variable
         A distribution with shape: [None, n_feature].
+
     Examples
     --------
     >>> xxx
     >>> xxx
+    
     Notes
     -----
     About cross-entropy:
