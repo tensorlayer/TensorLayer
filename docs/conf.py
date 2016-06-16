@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# tensorlayer documentation build configuration file, created by
+# TensorLayer documentation build configuration file, created by
 # sphinx-quickstart on Wed Jun 15 16:10:29 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -47,6 +47,11 @@ extensions = [
     # 'sphinx.ext.linkcode',  # link to github, see linkcode_resolve() below
 #    'sphinx.ext.napoleon',  # alternative to numpydoc -- looks a bit worse.
 ]
+
+# See https://github.com/rtfd/readthedocs.org/issues/283
+mathjax_path = ('https://cdn.mathjax.org/mathjax/latest/MathJax.js?'
+                'config=TeX-AMS-MML_HTMLorMML')
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -152,7 +157,7 @@ html_theme_path = ["_themes", ]
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'tensorlayer v1.1'
+# html_title = 'TensorLayerrlayer v1.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -278,7 +283,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'tensorlayer.tex', 'tensorlayer Documentation',
+    (master_doc, 'TensorLayer.tex', 'TensorLayer Documentation',
      'TensorLayer Team', 'manual'),
 ]
 
@@ -314,7 +319,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'tensorlayer', 'tensorlayer Documentation',
+    (master_doc, 'TensorLayer', 'TensorLayer Documentation',
      [author], 1)
 ]
 
@@ -329,7 +334,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'tensorlayer', 'tensorlayer Documentation',
+    (master_doc, 'TensorLayer', 'TensorLayer Documentation',
      author, 'tensorlayer', 'One line description of project.',
      'Miscellaneous'),
 ]
