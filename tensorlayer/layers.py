@@ -7,10 +7,10 @@ import tensorlayer.cost as cost
 import tensorlayer.iterate as iterate
 import numpy as np
 
-__all__ = [
-    "Layer",
-    "DenseLayer",
-]
+# __all__ = [
+#     "Layer",
+#     "DenseLayer",
+# ]
 
 ## Dynamically creat variable for keep prob
 # set_keep = locals()
