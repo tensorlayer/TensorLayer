@@ -21,6 +21,14 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+
+# import mock
+# import sys
+#
+# MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate']
+# for mod_name in MOCK_MODULES:
+#     sys.modules[mod_name] = mock.Mock()
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -322,14 +330,24 @@ texinfo_documents = [
 
 # If false, no module index is generated.
 #
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
-              'sphinx.ext.intersphinx', 'sphinx.ext.todo',
-              'sphinx.ext.ifconfig', 'sphinx.ext.viewcode',
+
+
+
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.doctest',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.todo',
+              'sphinx.ext.ifconfig',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.mathjax',
+              'numpydoc',
               'sphinx.ext.inheritance_diagram',
               'sphinx.ext.autosummary']
 pygments_style = 'sphinx'
 html_theme = "sphinx_rtd_theme"
 html_theme_path = ["_themes", ]
+
+
 # texinfo_domain_indices = True
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.

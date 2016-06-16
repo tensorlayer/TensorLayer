@@ -1,0 +1,416 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Development &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="tensorlayer.layers" href="../modules/layers.html"/>
+        <link rel="prev" title="Creating custom layers" href="custom_layers.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_layers.html">Creating custom layers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-to-contribute">What to contribute</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#give-feedback">Give feedback</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report-bugs">Report bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fix-bugs">Fix bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implement-features">Implement features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-documentation">Write documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-contribute">How to contribute</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#edit-on-github">Edit on GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-setup">Development setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sending-pull-requests">Sending Pull Requests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Development</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/development.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>The Lasagne project was started by Sander Dieleman in September 2014. It is
+developed by a core team of eight people (in alphabetical order:
+<a class="reference external" href="http://ericbattenberg.com/">Eric Battenberg</a>,
+<a class="reference external" href="http://benanne.github.io">Sander Dieleman</a>,
+<a class="reference external" href="http://danielnouri.org">Daniel Nouri</a>,
+<a class="reference external" href="https://github.com/ebenolson">Eben Olson</a>,
+<a class="reference external" href="https://twitter.com/avdnoord">Aäron van den Oord</a>,
+<a class="reference external" href="http://colinraffel.com/">Colin Raffel</a>,
+<a class="reference external" href="http://www.ofai.at/~jan.schlueter/">Jan Schlüter</a>,
+<a class="reference external" href="http://www1.bio.ku.dk/english/staff/?pure=en/persons/418078">Søren Kaae Sønderby</a>)
+and <a class="reference external" href="https://github.com/Lasagne/Lasagne/graphs/contributors">numerous additional contributors</a> on GitHub:
+<a class="reference external" href="https://github.com/Lasagne/Lasagne">https://github.com/Lasagne/Lasagne</a></p>
+<p>As an open-source project by researchers for researchers, we highly welcome
+contributions! Every bit helps and will be credited.</p>
+<div class="section" id="philosophy">
+<span id="lasagne-philosopy"></span><h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
+<p>Lasagne grew out of a need to combine the flexibility of Theano with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:</p>
+<ul class="simple">
+<li><strong>Simplicity</strong>: Be easy to use, easy to understand and easy to extend, to
+facilitate use in research. Interfaces should be kept small, with as few
+classes and methods as possible. Every added abstraction and feature should
+be carefully scrutinized, to determine whether the added complexity is
+justified.</li>
+<li><strong>Transparency</strong>: Do not hide Theano behind abstractions, directly process
+and return Theano expressions or Python / numpy data types. Try to rely on
+Theano&#8217;s functionality where possible, and follow Theano&#8217;s conventions.</li>
+<li><strong>Modularity</strong>: Allow all parts (layers, regularizers, optimizers, ...) to be
+used independently of Lasagne. Make it easy to use components in isolation or
+in conjunction with other frameworks.</li>
+<li><strong>Pragmatism</strong>: Make common use cases easy, do not overrate uncommon cases.
+Ideally, everything should be possible, but common use cases shouldn&#8217;t be
+made more difficult just to cater for exotic ones.</li>
+<li><strong>Restraint</strong>: Do not obstruct users with features they decide not to use.
+Both in using and in extending components, it should be possible for users to
+be fully oblivious to features they do not need.</li>
+<li><strong>Focus</strong>: &#8220;Do one thing and do it well&#8221;. Do not try to provide a library for
+everything to do with deep learning.</li>
+</ul>
+</div>
+<div class="section" id="what-to-contribute">
+<h2>What to contribute<a class="headerlink" href="#what-to-contribute" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="give-feedback">
+<h3>Give feedback<a class="headerlink" href="#give-feedback" title="Permalink to this headline">¶</a></h3>
+<p>To send us general feedback, questions or ideas for improvement, please post on
+<a class="reference external" href="https://groups.google.com/forum/#!forum/lasagne-users">our mailing list</a>.</p>
+<p>If you have a very concrete feature proposal, add it to the <a class="reference external" href="https://github.com/Lasagne/Lasagne/issues">issue tracker on
+GitHub</a>:</p>
+<ul class="simple">
+<li>Explain how it would work, and link to a scientific paper if applicable.</li>
+<li>Keep the scope as narrow as possible, to make it easier to implement.</li>
+</ul>
+</div>
+<div class="section" id="report-bugs">
+<h3>Report bugs<a class="headerlink" href="#report-bugs" title="Permalink to this headline">¶</a></h3>
+<p>Report bugs at the <a class="reference external" href="https://github.com/Lasagne/Lasagne/issues">issue tracker on GitHub</a>.
+If you are reporting a bug, please include:</p>
+<ul class="simple">
+<li>your Lasagne and Theano version.</li>
+<li>steps to reproduce the bug, ideally reduced to a few Python commands.</li>
+<li>the results you obtain, and the results you expected instead.</li>
+</ul>
+<p>If you are unsure whether the behavior you experience is a bug, or if you are
+unsure whether it is related to Lasagne or Theano, please just ask on <a class="reference external" href="https://groups.google.com/forum/#!forum/lasagne-users">our
+mailing list</a> first.</p>
+</div>
+<div class="section" id="fix-bugs">
+<h3>Fix bugs<a class="headerlink" href="#fix-bugs" title="Permalink to this headline">¶</a></h3>
+<p>Look through the GitHub issues for bug reports. Anything tagged with &#8220;bug&#8221; is
+open to whoever wants to implement it. If you discover a bug in Lasagne you can
+fix yourself, by all means feel free to just implement a fix and not report it
+first.</p>
+</div>
+<div class="section" id="implement-features">
+<h3>Implement features<a class="headerlink" href="#implement-features" title="Permalink to this headline">¶</a></h3>
+<p>Look through the GitHub issues for feature proposals. Anything tagged with
+&#8220;feature&#8221; or &#8220;enhancement&#8221; is open to whoever wants to implement it. If you
+have a feature in mind you want to implement yourself, please note that Lasagne
+has a fairly narrow focus and we strictly follow a set of <a class="reference internal" href="#lasagne-philosopy"><span class="std std-ref">design
+principles</span></a>, so we cannot guarantee upfront that your code
+will be included. Please do not hesitate to just propose your idea in a GitHub
+issue or on the mailing list first, so we can discuss it and/or guide you
+through the implementation.</p>
+</div>
+<div class="section" id="write-documentation">
+<h3>Write documentation<a class="headerlink" href="#write-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Whenever you find something not explained well, misleading, glossed over or
+just wrong, please update it! The <em>Edit on GitHub</em> link on the top right of
+every documentation page and the <em>[source]</em> link for every documented entity
+in the API reference will help you to quickly locate the origin of any text.</p>
+</div>
+</div>
+<div class="section" id="how-to-contribute">
+<h2>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="edit-on-github">
+<h3>Edit on GitHub<a class="headerlink" href="#edit-on-github" title="Permalink to this headline">¶</a></h3>
+<p>As a very easy way of just fixing issues in the documentation, use the <em>Edit
+on GitHub</em> link on the top right of a documentation page or the <em>[source]</em> link
+of an entity in the API reference to open the corresponding source file in
+GitHub, then click the <em>Edit this file</em> link to edit the file in your browser
+and send us a Pull Request. All you need for this is a free GitHub account.</p>
+<p>For any more substantial changes, please follow the steps below to setup
+Lasagne for development.</p>
+</div>
+<div class="section" id="development-setup">
+<h3>Development setup<a class="headerlink" href="#development-setup" title="Permalink to this headline">¶</a></h3>
+<p>First, follow the instructions for performing a development installation of
+Lasagne (including forking on GitHub): <a class="reference internal" href="installation.html#lasagne-development-install"><span class="std std-ref">Development installation</span></a></p>
+<p>To be able to run the tests and build the documentation locally, install
+additional requirements with: <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements-dev.txt</span></code> (adding
+<code class="docutils literal"><span class="pre">--user</span></code> if you want to install to your home directory instead).</p>
+<p>If you use the bleeding-edge version of Theano, then instead of running that
+command, just use <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span></code> to manually install all dependencies listed
+in <code class="docutils literal"><span class="pre">requirements-dev.txt</span></code> with their correct versions; otherwise it will
+attempt to downgrade Theano to the known good version in <code class="docutils literal"><span class="pre">requirements.txt</span></code>.</p>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>The documentation is generated with <a class="reference external" href="http://sphinx-doc.org/latest/index.html">Sphinx</a>. To build it locally, run the
+following commands:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">docs</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p>Afterwards, open <code class="docutils literal"><span class="pre">docs/_build/html/index.html</span></code> to view the documentation as
+it would appear on <a class="reference external" href="http://lasagne.readthedocs.org/">readthedocs</a>. If you
+changed a lot and seem to get misleading error messages or warnings, run
+<code class="docutils literal"><span class="pre">make</span> <span class="pre">clean</span> <span class="pre">html</span></code> to force Sphinx to recreate all files from scratch.</p>
+<p>When writing docstrings, follow existing documentation as much as possible to
+ensure consistency throughout the library. For additional information on the
+syntax and conventions used, please refer to the following documents:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://sphinx-doc.org/rest.html">reStructuredText Primer</a></li>
+<li><a class="reference external" href="http://sphinx-doc.org/markup/index.html">Sphinx reST markup constructs</a></li>
+<li><a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">A Guide to NumPy/SciPy Documentation</a></li>
+</ul>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>Lasagne has a code coverage of 100%, which has proven very helpful in the past,
+but also creates some duties:</p>
+<ul class="simple">
+<li>Whenever you change any code, you should test whether it breaks existing
+features by just running the test suite. The test suite will also be run by
+<a class="reference external" href="https://travis-ci.org/">Travis</a> for any Pull Request to Lasagne.</li>
+<li>Any code you add needs to be accompanied by tests ensuring that nobody else
+breaks it in future. <a class="reference external" href="https://coveralls.io/">Coveralls</a> will check whether
+the code coverage stays at 100% for any Pull Request to Lasagne.</li>
+<li>Every bug you fix indicates a missing test case, so a proposed bug fix should
+come with a new test that fails without your fix.</li>
+</ul>
+<p>To run the full test suite, just do</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">py</span><span class="o">.</span><span class="n">test</span>
+</pre></div>
+</div>
+<p>Testing will take over 5 minutes for the first run, but less than a minute for
+subsequent runs when Theano can reuse compiled code. It will end with a code
+coverage report specifying which code lines are not covered by tests, if any.
+Furthermore, it will list any failed tests, and failed <a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">PEP8</a> checks.</p>
+<p>To only run tests matching a certain name pattern, use the <code class="docutils literal"><span class="pre">-k</span></code> command line
+switch, e.g., <code class="docutils literal"><span class="pre">-k</span> <span class="pre">pool</span></code> will run the pooling layer tests only.</p>
+<p>To land in a <code class="docutils literal"><span class="pre">pdb</span></code> debug prompt on a failure to inspect it more closely, use
+the <code class="docutils literal"><span class="pre">--pdb</span></code> switch.</p>
+<p>Finally, for a loop-on-failing mode, do <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pytest-xdist</span></code> and run
+<code class="docutils literal"><span class="pre">py.test</span> <span class="pre">-f</span></code>. This will pause after the run, wait for any source file to
+change and run all previously failing tests again.</p>
+</div>
+<div class="section" id="sending-pull-requests">
+<h3>Sending Pull Requests<a class="headerlink" href="#sending-pull-requests" title="Permalink to this headline">¶</a></h3>
+<p>When you&#8217;re satisfied with your addition, the tests pass and the documentation
+looks good without any markup errors, commit your changes to a new branch, push
+that branch to your fork and send us a Pull Request via GitHub&#8217;s web interface.</p>
+<p>All these steps are nicely explained on GitHub:
+<a class="reference external" href="https://guides.github.com/introduction/flow/">https://guides.github.com/introduction/flow/</a></p>
+<p>When filing your Pull Request, please include a description of what it does, to
+help us reviewing it. If it is fixing an open issue, say, issue #123, add
+<em>Fixes #123</em>, <em>Resolves #123</em> or <em>Closes #123</em> to the description text, so
+GitHub will close it when your request is merged.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../modules/layers.html" class="btn btn-neutral float-right" title="tensorlayer.layers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="custom_layers.html" class="btn btn-neutral" title="Creating custom layers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

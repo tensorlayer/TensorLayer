@@ -1,0 +1,426 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Layers &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Creating custom layers" href="custom_layers.html"/>
+        <link rel="prev" title="Tutorial" href="tutorial.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-layer">Creating a layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#creating-a-network">Creating a network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#naming-layers">Naming layers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#initializing-parameters">Initializing parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-sharing">Parameter sharing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#propagating-data-through-layers">Propagating data through layers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_layers.html">Creating custom layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Layers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/layers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="layers">
+<h1>Layers<a class="headerlink" href="#layers" title="Permalink to this headline">¶</a></h1>
+<p>The <cite>lasagne.layers</cite> module provides various classes representing the layers
+of a neural network. All of them are subclasses of the
+<code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.Layer</span></code> base class.</p>
+<div class="section" id="creating-a-layer">
+<h2>Creating a layer<a class="headerlink" href="#creating-a-layer" title="Permalink to this headline">¶</a></h2>
+<p>A layer can be created as an instance of a <cite>Layer</cite> subclass. For example, a
+dense layer can be created as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lasagne</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> 
+</pre></div>
+</div>
+<p>This will create a dense layer with 100 units, connected to another layer
+<cite>l_in</cite>.</p>
+</div>
+<div class="section" id="creating-a-network">
+<h2>Creating a network<a class="headerlink" href="#creating-a-network" title="Permalink to this headline">¶</a></h2>
+<p>Note that for almost all types of layers, you will have to specify one or more
+other layers that the layer you are creating gets its input from. The main
+exception is <code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code>, which can be used to represent the input of
+a network.</p>
+<p>Chaining layer instances together like this will allow you to specify your
+desired network structure. Note that the same layer can be used as input to
+multiple other layers, allowing for arbitrary tree and directed acyclic graph
+(DAG) structures.</p>
+<p>Here is an example of an MLP with a single hidden layer:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="k">as</span> <span class="nn">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l_in</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l_hidden</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l_out</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_hidden</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">... </span>                                  <span class="n">nonlinearity</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first layer of the network is an <cite>InputLayer</cite>, which represents the input.
+When creating an input layer, you should specify the shape of the input data.
+In this example, the input is a matrix with shape (100, 50), representing a
+batch of 100 data points, where each data point is a vector of length 50.
+The first dimension of a tensor is usually the batch dimension, following the
+established Theano and scikit-learn conventions.</p>
+<p>The hidden layer of the network is a dense layer with 200 units, taking its
+input from the input layer. Note that we did not specify the nonlinearity of
+the hidden layer. A layer with rectified linear units will be created by
+default.</p>
+<p>The output layer of the network is a dense layer with 10 units and a softmax
+nonlinearity, allowing for 10-way classification of the input vectors.</p>
+<p>Note also that we did not create any object representing the entire network.
+Instead, the output layer instance <cite>l_out</cite> is also used to refer to the entire
+network in Lasagne.</p>
+</div>
+<div class="section" id="naming-layers">
+<h2>Naming layers<a class="headerlink" href="#naming-layers" title="Permalink to this headline">¶</a></h2>
+<p>For convenience, you can name a layer by specifying the <cite>name</cite> keyword
+argument:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l_hidden</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="gp">... </span>                                     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hidden_layer&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="initializing-parameters">
+<h2>Initializing parameters<a class="headerlink" href="#initializing-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Many types of layers, such as <code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code>, have trainable parameters.
+These are referred to by short names that match the conventions used in modern
+deep learning literature. For example, a weight matrix will usually be called
+<cite>W</cite>, and a bias vector will usually be <cite>b</cite>.</p>
+<p>When creating a layer with trainable parameters, Theano shared variables will
+be created for them and initialized automatically. You can optionally specify
+your own initialization strategy by using keyword arguments that match the
+parameter variable names. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The weight matrix <cite>W</cite> of this dense layer will be initialized using samples
+from a normal distribution with standard deviation 0.01 (see <cite>lasagne.init</cite>
+for more information).</p>
+<p>There are several ways to manually initialize parameters:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Theano shared variable</dt>
+<dd><p class="first">If a shared variable instance is provided, this is used unchanged as the
+parameter variable. For example:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">theano</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">W</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">W</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>numpy array</dt>
+<dd><p class="first">If a numpy array is provided, a shared variable is created and initialized
+using the array. For example:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">W_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">W_init</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>callable</dt>
+<dd><p class="first">If a callable is provided (e.g. a function or a
+<code class="xref py py-class docutils literal"><span class="pre">lasagne.init.Initializer</span></code> instance), a shared variable is created
+and the callable is called with the desired shape to generate suitable
+initial parameter values. The variable is then initialized with those
+values. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+<span class="gp">... </span>                              <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Or, using a custom initialization function:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">init_W</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">init_W</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Some types of parameter variables can also be set to <code class="docutils literal"><span class="pre">None</span></code> at initialization
+(e.g. biases). In that case, the parameter variable will be omitted.
+For example, creating a dense layer without biases is done as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parameter-sharing">
+<h2>Parameter sharing<a class="headerlink" href="#parameter-sharing" title="Permalink to this headline">¶</a></h2>
+<p>Parameter sharing between multiple layers can be achieved by using the
+same Theano shared variable instance for their parameters. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l1</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l2</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">l1</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These two layers will now share weights (but have separate biases).</p>
+</div>
+<div class="section" id="propagating-data-through-layers">
+<h2>Propagating data through layers<a class="headerlink" href="#propagating-data-through-layers" title="Permalink to this headline">¶</a></h2>
+<p>To compute an expression for the output of a single layer given its input, the
+<cite>get_output_for()</cite> method can be used. To compute the output of a network, you
+should instead call <code class="xref py py-func docutils literal"><span class="pre">lasagne.layers.get_output()</span></code> on it. This will
+traverse the network graph.</p>
+<p>You can call this function with the layer you want to compute the output
+expression for:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In that case, a Theano expression will be returned that represents the output
+in function of the input variables associated with the
+<code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.InputLayer</span></code> instance (or instances) in the network,
+so given the example network from before, you could compile a Theano function
+to compute its output given an input as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">l_in</span><span class="o">.</span><span class="n">input_var</span><span class="p">],</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can also specify a Theano expression to use as input as a second argument
+to <code class="xref py py-func docutils literal"><span class="pre">lasagne.layers.get_output()</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This only works when there is only a single <code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code> in the network.
+If there is more than one, you can specify input expressions in a dictionary.
+For example, in a network with two input layers <cite>l_in1</cite> and <cite>l_in2</cite> and an
+output layer <cite>l_out</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="s1">&#39;x2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out</span><span class="p">,</span> <span class="p">{</span> <span class="n">l_in1</span><span class="p">:</span> <span class="n">x1</span><span class="p">,</span> <span class="n">l_in2</span><span class="p">:</span> <span class="n">x2</span> <span class="p">})</span>
+</pre></div>
+</div>
+<p>Any keyword arguments passed to <cite>get_output()</cite> are propagated to all layers.
+This makes it possible to control the behavior of the entire network. The
+main use case for this is the <code class="docutils literal"><span class="pre">deterministic</span></code> keyword argument, which
+disables stochastic behaviour such as dropout when set to <code class="docutils literal"><span class="pre">True</span></code>. This is
+useful because a deterministic output is desirable at evaluation time.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Some networks may have multiple output layers - or you may just want to
+compute output expressions for intermediate layers in the network. In that
+case, you can pass a list of layers. For example, in a network with two output
+layers <cite>l_out1</cite> and <cite>l_out2</cite>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">([</span><span class="n">l_out1</span><span class="p">,</span> <span class="n">l_out2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You could also just call <code class="xref py py-func docutils literal"><span class="pre">lasagne.layers.get_output()</span></code> twice:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y1</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y2</span> <span class="o">=</span> <span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">get_output</span><span class="p">(</span><span class="n">l_out2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, this is <strong>not recommended</strong>! Some network layers may have
+non-deterministic output, such as dropout layers. If you compute the network
+output expressions with separate calls to <code class="xref py py-func docutils literal"><span class="pre">lasagne.layers.get_output()</span></code>,
+they will not use the same samples. Furthermore, this may lead to unnecessary
+computation because Theano is not always able to merge identical computations
+properly. Calling <cite>get_output()</cite> only once prevents both of these issues.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="custom_layers.html" class="btn btn-neutral float-right" title="Creating custom layers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="tutorial.html" class="btn btn-neutral" title="Tutorial" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
