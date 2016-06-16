@@ -1,7 +1,7 @@
-:mod:`tensorlayer.utils`
-========================
+:mod:`tensorlayer.visualize`
+============================
 
-.. automodule:: tensorlayer.utils
+.. automodule:: tensorlayer.visualize
 
 .. autofunction:: W
 .. autofunction:: frame

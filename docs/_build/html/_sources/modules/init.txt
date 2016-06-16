@@ -1,5 +1,5 @@
 :mod:`tensorlayer.init`
-===================
+=======================
 
 .. automodule:: tensorlayer.init
 
