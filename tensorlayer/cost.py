@@ -5,9 +5,7 @@ from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
 def cross_entropy(output, target):
-    """
-    The :function:`cross_entropy` function return the cost function of
-    cross-entropy between two distribution.
+    """Return the cost function of cross-entropy between two distribution.
 
     Parameters
     ----------
@@ -20,7 +18,7 @@ def cross_entropy(output, target):
     --------
     >>> xxx
     >>> xxx
-    
+
     Notes
     -----
     About cross-entropy:
@@ -37,9 +35,7 @@ def cross_entropy(output, target):
 
 ## Regularization Functions
 def li_regularizer(scale):
-  """
-  The :function:`li_regularizer` function returns a function that can be used to
-  apply group li regularization to weights.
+  """Returns a function that can be used to apply group li regularization to weights.
   https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py
   li regularization removes the neurons of previous layer.
   'i' represents 'inputs'
@@ -92,9 +88,7 @@ def li_regularizer(scale):
   return li
 
 def lo_regularizer(scale):
-  """
-  The :function:`lo_regularizer` function returns a function that can be used to
-  apply group lo regularization to weights.
+  """Returns a function that can be used to apply group lo regularization to weights.
   see:
   https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py
   Lo regularization removes the neurons of current layer.
@@ -148,8 +142,7 @@ def lo_regularizer(scale):
   return lo
 
 def maxnorm_regularizer(scale=1.0):
-  """
-  The :function:`maxnorm_regularizer` function eturns a function that can be used
+  """Returns a function that can be used
   to apply max-norm regularization to weights.
   see:
   https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py
@@ -195,8 +188,7 @@ def maxnorm_regularizer(scale=1.0):
   return mn
 
 def maxnorm_o_regularizer(scale):
-  """
-  The :function:`maxnorm_o_regularizer` function returns a function that can be
+  """Returns a function that can be
   used to apply max-norm regularization to each column of weight matrix.
   see:
   https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py
@@ -242,8 +234,7 @@ def maxnorm_o_regularizer(scale):
   return mn_o
 
 def maxnorm_i_regularizer(scale):
-  """
-  The :function:`maxnorm_i_regularizer` function returns a function that can be
+  """Returns a function that can be
   used to apply max-norm regularization to each row of weight matrix.
   see:
   https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py

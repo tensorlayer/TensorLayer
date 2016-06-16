@@ -18,8 +18,7 @@ set_keep = globals()
 
 ## Variable Operation
 def flatten_reshape(variable):
-    """
-    The :function:`flatten_reshape` reshapes the input to a 1D vector.
+    """Reshapes the input to a 1D vector.
 
     Parameters
     ----------

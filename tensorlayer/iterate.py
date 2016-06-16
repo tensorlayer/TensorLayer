@@ -1,8 +1,7 @@
 import numpy as np
 
 def minibatches(inputs, targets, batchsize, shuffle=False):
-    """
-    The :function:`minibatches` return a dataset by a given batch size.
+    """Return a dataset by a given batch size.
 
     Parameters
     ----------
@@ -14,7 +13,7 @@ def minibatches(inputs, targets, batchsize, shuffle=False):
         The batch size.
     shuffle : True, False
         If True, shuffle the dataset before return.
-        
+
     Examples
     --------
     >>> xxx

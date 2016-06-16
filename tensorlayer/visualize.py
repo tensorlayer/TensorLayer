@@ -2,9 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def W(W, second=10, saveable=True, name='mnist', fig_idx=2396512):
-    """
-    The :function:`W` visualizes each column of weight matrix
-    for MNIST dataset.
+    """Visualize every column of weight matrix for MNIST dataset.
 
     Parameters
     ----------
@@ -49,9 +47,7 @@ def W(W, second=10, saveable=True, name='mnist', fig_idx=2396512):
         plt.pause(second)
 
 def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
-    """
-    The :function:`frame` display a frame(image).
-    Make sure OpenAI Gym render() is disable before using it.
+    """Display a frame(image). Make sure OpenAI Gym render() is disable before using it.
 
     Parameters
     ----------
@@ -84,8 +80,7 @@ def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
         plt.pause(second)
 
 def CNN(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
-    """
-    The :function:`CNN` display or save a group of CNN mask.
+    """Display or save a group of CNN mask.
 
     Parameters
     ----------
@@ -97,7 +92,7 @@ def CNN(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
         A name to save the image, if saveable is True.
     fig_idx: int
         matplotlib figure index.
-        
+
     Examples
     --------
     >>> xxx

@@ -1,7 +1,6 @@
 ## Evaluation
 def evaluation(y_test, y_predict, n_classes):
-    """
-    The :function:`evaluation()` input the predicted results, targets results and
+    """Input the predicted results, targets results and
     the number of class, return the confusion matrix, F1-score of each class,
     accuracy and macro F1-score.
 
@@ -32,9 +31,7 @@ def evaluation(y_test, y_predict, n_classes):
     return c_mat, f1, acc, f1_macro
 
 def dict_to_one(dp_dict):
-    """
-    The :function:`dict_to_one()` input a dictionary, return a dictionary that
-    all items are set to one, use for disable dropout, dropconnect layer and so on.
+    """Input a dictionary, return a dictionary that all items are set to one, use for disable dropout, dropconnect layer and so on.
 
     Parameters
     ----------

@@ -4,8 +4,7 @@ import math
 
 
 def xavier_init(shape, uniform=True):
-    """
-    The :function:`xavier_init` set the parameter initialization using the method described.
+    """Set the parameter initialization using the method described.
     This method is designed to keep the scale of the gradients roughly the same
     in all layers.
 
@@ -20,7 +19,7 @@ def xavier_init(shape, uniform=True):
     Returns
     -------
     An initializer.
-    
+
     Reference
     ---------
     Glorot, X., & Bengio, Y. (2010). Understanding the difficulty of training deep

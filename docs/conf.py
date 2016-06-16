@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # TensorLayer documentation build configuration file, created by
-# sphinx-quickstart on Wed Jun 15 16:10:29 2016.
+# sphinx-quickstart on Thu Jun 16 15:53:34 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -21,13 +21,6 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-# lasagne use this theme https://github.com/snide/sphinx_rtd_theme
-# import sphinx_rtd_theme
-#
-# html_theme = "sphinx_rtd_theme"
-#
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -37,21 +30,7 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
-    # 'sphinx.ext.linkcode',  # link to github, see linkcode_resolve() below
-#    'sphinx.ext.napoleon',  # alternative to numpydoc -- looks a bit worse.
-]
-
-# See https://github.com/rtfd/readthedocs.org/issues/283
-mathjax_path = ('https://cdn.mathjax.org/mathjax/latest/MathJax.js?'
-                'config=TeX-AMS-MML_HTMLorMML')
-
+extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -70,9 +49,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'TensorLayer'
-copyright = u'2016, TensorLayer contributors'
-author = u'TensorLayer contributors'
+project = 'TensorLayer'
+copyright = '2016, TensorLayer contributors'
+author = 'TensorLayer contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -142,8 +121,6 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
-html_theme_path = ["_themes", ]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -157,7 +134,7 @@ html_theme_path = ["_themes", ]
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'TensorLayerrlayer v1.1'
+# html_title = 'TensorLayer v1.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -257,7 +234,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'tensorlayerdoc'
+htmlhelp_basename = 'TensorLayerdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -284,7 +261,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'TensorLayer.tex', 'TensorLayer Documentation',
-     'TensorLayer Team', 'manual'),
+     'TensorLayer contributors', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -319,7 +296,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'TensorLayer', 'TensorLayer Documentation',
+    (master_doc, 'tensorlayer', 'TensorLayer Documentation',
      [author], 1)
 ]
 
@@ -335,7 +312,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'TensorLayer', 'TensorLayer Documentation',
-     author, 'tensorlayer', 'One line description of project.',
+     author, 'TensorLayer', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -345,6 +322,14 @@ texinfo_documents = [
 
 # If false, no module index is generated.
 #
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
+              'sphinx.ext.intersphinx', 'sphinx.ext.todo',
+              'sphinx.ext.ifconfig', 'sphinx.ext.viewcode',
+              'sphinx.ext.inheritance_diagram',
+              'sphinx.ext.autosummary']
+pygments_style = 'sphinx'
+html_theme = "sphinx_rtd_theme"
+html_theme_path = ["_themes", ]
 # texinfo_domain_indices = True
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
@@ -354,7 +339,3 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #
 # texinfo_no_detailmenu = False
-
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}

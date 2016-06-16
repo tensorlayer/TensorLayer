@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Creating custom layers &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Development" href="development.html"/>
+        <link rel="prev" title="Layers" href="layers.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Creating custom layers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#a-simple-layer">A simple layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-layer-that-changes-the-shape">A layer that changes the shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-layer-with-parameters">A layer with parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-layer-with-multiple-behaviors">A layer with multiple behaviors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Creating custom layers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/custom_layers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="creating-custom-layers">
+<h1>Creating custom layers<a class="headerlink" href="#creating-custom-layers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-simple-layer">
+<h2>A simple layer<a class="headerlink" href="#a-simple-layer" title="Permalink to this headline">¶</a></h2>
+<p>To implement a custom layer in Lasagne, you will have to write a Python class
+that subclasses <code class="xref py py-class docutils literal"><span class="pre">Layer</span></code> and implement at least one method:
+<cite>get_output_for()</cite>. This method computes the output of the layer given its
+input. Note that both the output and the input are Theano expressions, so they
+are symbolic.</p>
+<p>The following is an example implementation of a layer that multiplies its input
+by 2:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DoubleLayer</span><span class="p">(</span><span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_output_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">input</span>
+</pre></div>
+</div>
+<p>This is all that&#8217;s required to implement a functioning custom layer class in
+Lasagne.</p>
+</div>
+<div class="section" id="a-layer-that-changes-the-shape">
+<h2>A layer that changes the shape<a class="headerlink" href="#a-layer-that-changes-the-shape" title="Permalink to this headline">¶</a></h2>
+<p>If the layer does not change the shape of the data (for example because it
+applies an elementwise operation), then implementing only this one method is
+sufficient. Lasagne will assume that the output of the layer has the same shape
+as its input.</p>
+<p>However, if the operation performed by the layer changes the shape of the data,
+you also need to implement <cite>get_output_shape_for()</cite>. This method computes the
+shape of the layer output given the shape of its input. Note that this shape
+computation should result in a tuple of integers, so it is <em>not</em> symbolic.</p>
+<p>This method exists because Lasagne needs a way to propagate shape information
+when a network is defined, so it can determine what sizes the parameter tensors
+should be, for example. This mechanism allows each layer to obtain the size of
+its input from the previous layer, which means you don&#8217;t have to specify the
+input size manually. This also prevents errors stemming from inconsistencies
+between the layers&#8217; expected and actual shapes.</p>
+<p>We can implement a layer that computes the sum across the trailing axis of its
+input as follows:</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SumLayer</span><span class="p">(</span><span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_output_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_output_shape_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">input_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>It is important that the shape computation is correct, as this shape
+information may be used to initialize other layers in the network.</p>
+</div>
+<div class="section" id="a-layer-with-parameters">
+<h2>A layer with parameters<a class="headerlink" href="#a-layer-with-parameters" title="Permalink to this headline">¶</a></h2>
+<p>If the layer has parameters, these should be initialized in the constructor.
+In Lasagne, parameters are represented by Theano shared variables. A method
+is provided to create and register parameter variables:
+<code class="xref py py-meth docutils literal"><span class="pre">lasagne.layers.Layer.add_param()</span></code>.</p>
+<p>To show how this can be used, here is a layer that multiplies its input
+by a matrix <code class="docutils literal"><span class="pre">W</span></code> (much like a typical fully connected layer in a neural
+network would). This matrix is a parameter of the layer. The shape of the
+matrix will be <code class="docutils literal"><span class="pre">(num_inputs,</span> <span class="pre">num_units)</span></code>, where <code class="docutils literal"><span class="pre">num_inputs</span></code> is the
+number of input features and <code class="docutils literal"><span class="pre">num_units</span></code> has to be specified when the layer
+is created.</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DotLayer</span><span class="p">(</span><span class="n">lasagne</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming</span><span class="p">,</span> <span class="n">num_units</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DotLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">incoming</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">num_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_units</span> <span class="o">=</span> <span class="n">num_units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_param</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="p">(</span><span class="n">num_inputs</span><span class="p">,</span> <span class="n">num_units</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_output_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_output_shape_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_units</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A few things are worth noting here: when overriding the constructor, we need
+to call the superclass constructor on the first line. This is important to
+ensure the layer functions properly.
+Note that we pass <code class="docutils literal"><span class="pre">**kwargs</span></code> - although this is not strictly necessary, it
+enables some other cool Lasagne features, such as making it possible to give
+the layer a name:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l_dot</span> <span class="o">=</span> <span class="n">DotLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_dot_layer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The call to <code class="docutils literal"><span class="pre">self.add_param()</span></code> creates the Theano shared variable
+representing the parameter, and registers it so it can later be retrieved using
+<code class="xref py py-meth docutils literal"><span class="pre">lasagne.layers.Layer.get_params()</span></code>. It returns the created variable,
+which we tuck away in <code class="docutils literal"><span class="pre">self.W</span></code> for easy access.</p>
+<p>Note that we&#8217;ve also made it possible to specify a custom initialization
+strategy for <code class="docutils literal"><span class="pre">W</span></code> by adding a constructor argument for it, e.g.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l_dot</span> <span class="o">=</span> <span class="n">DotLayer</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">num_units</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">W</span><span class="o">=</span><span class="n">lasagne</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This &#8216;Lasagne idiom&#8217; of tucking away a created parameter variable in an
+attribute for easy access and adding a constructor argument with the same name
+to specify the initialization strategy is very common throughout the library.</p>
+<p>Finally, note that we used <code class="docutils literal"><span class="pre">self.input_shape</span></code> to determine the shape of the
+parameter matrix. This property is available in all Lasagne layers, once the
+superclass constructor has been called.</p>
+</div>
+<div class="section" id="a-layer-with-multiple-behaviors">
+<h2>A layer with multiple behaviors<a class="headerlink" href="#a-layer-with-multiple-behaviors" title="Permalink to this headline">¶</a></h2>
+<p>Some layers can have multiple behaviors. For example, a layer implementing
+dropout should be able to be switched on or off. During training, we want it
+to apply dropout noise to its input and scale up the remaining values, but
+during evaluation we don&#8217;t want it to do anything.</p>
+<p>For this purpose, the <cite>get_output_for()</cite> method takes optional keyword
+arguments (<code class="docutils literal"><span class="pre">kwargs</span></code>). When <cite>get_output()</cite> is called to compute an expression
+for the output of a network, all specified keyword arguments are passed to the
+<cite>get_output_for()</cite> methods of all layers in the network.</p>
+<p>For layers that add noise for regularization purposes, such as dropout, the
+convention in Lasagne is to use the keyword argument <code class="docutils literal"><span class="pre">deterministic</span></code> to
+control its behavior.</p>
+<p>Lasagne&#8217;s <code class="xref py py-class docutils literal"><span class="pre">lasagne.layers.DropoutLayer</span></code> looks roughly like this
+(simplified implementation for illustration purposes):</p>
+<div class="code python highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">theano.sandbox.rng_mrg</span> <span class="k">import</span> <span class="n">MRG_RandomStreams</span> <span class="k">as</span> <span class="n">RandomStreams</span>
+<span class="n">_srng</span> <span class="o">=</span> <span class="n">RandomStreams</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">DropoutLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DropoutLayer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">incoming</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+    <span class="k">def</span> <span class="nf">get_output_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">deterministic</span><span class="p">:</span>  <span class="c1"># do nothing in the deterministic case</span>
+            <span class="k">return</span> <span class="nb">input</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># add dropout noise otherwise</span>
+            <span class="n">retain_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span>
+            <span class="nb">input</span> <span class="o">/=</span> <span class="n">retain_prob</span>
+            <span class="k">return</span> <span class="nb">input</span> <span class="o">*</span> <span class="n">_srng</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">retain_prob</span><span class="p">,</span>
+                                          <span class="n">dtype</span><span class="o">=</span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="development.html" class="btn btn-neutral float-right" title="Development" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="layers.html" class="btn btn-neutral" title="Layers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

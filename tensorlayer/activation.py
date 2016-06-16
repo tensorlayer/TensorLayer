@@ -1,9 +1,8 @@
 import tensorflow as tf
 
 def identity(x):
-    """
-    The : identity activation function
-    
+    """The identity activation function.
+
     Parameters
     ----------
     x : input(s)
@@ -11,8 +10,7 @@ def identity(x):
     return x
 
 def ramp(x, v_min=0, v_max=1, name=None):
-    """
-    The : ramp activation function
+    """The ramp activation function.
 
     Parameters
     ----------

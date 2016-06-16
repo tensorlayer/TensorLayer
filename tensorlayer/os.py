@@ -5,8 +5,7 @@ from tensorlayer.layers import set_keep
 
 
 def exit_tf(sess):
-    """
-    The :function:`exit_tf()`
+    """Close tensorboard and nvidia-process if available
 
     Parameters
     ----------
@@ -31,8 +30,7 @@ def exit_tf(sess):
     exit()
 
 def clear_all(printable=True):
-    """
-    The :function:`clear_all()` Clears all the placeholder variables of keep prob,
+    """Clears all the placeholder variables of keep prob,
     including keeping probabilities of all dropout, denoising, dropconnect etc.
 
     Parameters
@@ -73,8 +71,7 @@ def clear_all(printable=True):
 #         del var
 
 def set_gpu_fraction(sess, gpu_fraction=0.3):
-    """
-    The :function:`set_gpu_fraction()` sets the GPU memory fraction for the application
+    """Set the GPU memory fraction for the application.
 
     Parameters
     ----------

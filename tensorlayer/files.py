@@ -5,8 +5,7 @@ import sys
 
 ## Load Data
 def load_mnist_dataset(shape=(-1,784)):
-    """
-    The :function:`load_mnist_dataset` automatically download MNIST dataset
+    """Automatically download MNIST dataset
     and return the training, validation and test set with 50000, 10000 and 10000
     digit images respectively.
 
@@ -14,7 +13,7 @@ def load_mnist_dataset(shape=(-1,784)):
     ----------
     shape : tuple
         The shape of digit images
-        
+
     Examples
     --------
     >>> xxx
