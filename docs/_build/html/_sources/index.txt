@@ -1,8 +1,3 @@
-.. tensorlayer documentation master file, created by
-   sphinx-quickstart on Wed Jun 15 16:10:29 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to TensorLayer
 =======================================
 TensorLayer is a transparent deep learning and reinforcement learning library built
@@ -44,9 +39,6 @@ method, this part of the documentation is for you.
   modules/utils
   modules/init
   modules/os
-
-
-Contents:
 
 .. toctree::
    :maxdepth: 2

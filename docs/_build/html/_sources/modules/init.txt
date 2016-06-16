@@ -14,7 +14,7 @@ Initializers
 Detailed description
 --------------------
 
-.. autoclass:: xavier_init
+.. autofunction:: xavier_init
    :members:
 
 .

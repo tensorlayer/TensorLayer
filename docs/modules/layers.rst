@@ -4,48 +4,61 @@
 
 .. automodule:: tensorlayer.layers
 
+.. autosummary::
+
+   Layer
+   InputLayer
+   DenseLayer
+   ReconLayer
+   DropoutLayer
+   DropconnectDenseLayer
+   Conv2dLayer
+   Pool2dLayer
+   FlattenLayer
+   flatten_reshape
+
 
 Basic layer
 ----------------
 
-.. autofunction:: Layer
+.. autoclass:: Layer
 
 Input layer
 ----------------
 
-.. autofunction:: InputLayer
+.. autoclass:: InputLayer
 
 Dense layer
 ----------------
 
-.. autofunction:: DenseLayer
-.. autofunction:: ReconLayer
+.. autoclass:: DenseLayer
+.. autoclass:: ReconLayer
 
 Noise layer
 ----------------
 
-.. autofunction:: DropoutLayer
-.. autofunction:: DropconnectDenseLayer
+.. autoclass:: DropoutLayer
+.. autoclass:: DropconnectDenseLayer
 
 Convolutional layer
 ----------------
 
-.. autofunction:: Conv2dLayer
-.. autofunction:: Pool2dLayer
+.. autoclass:: Conv2dLayer
+.. autoclass:: Pool2dLayer
 
 Shape layer
 ----------------
 
-.. autofunction:: FlattenLayer
+.. autoclass:: FlattenLayer
 
 Coming soon
 ----------------
 
-.. autofunction:: MaxoutLayer
-.. autofunction:: ResnetLayer
-.. autofunction:: GaussianNoiseLayer
-.. autofunction:: ReshapeLayer
-.. autofunction:: ConcatLayer
+.. autoclass:: MaxoutLayer
+.. autoclass:: ResnetLayer
+.. autoclass:: GaussianNoiseLayer
+.. autoclass:: ReshapeLayer
+.. autoclass:: ConcatLayer
 
 Function
 ----------------

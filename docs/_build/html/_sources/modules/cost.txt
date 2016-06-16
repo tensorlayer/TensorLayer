@@ -1,5 +1,5 @@
 :mod:`tensorlayer.cost`
-=============================
+=======================
 
 .. automodule:: tensorlayer.cost
 

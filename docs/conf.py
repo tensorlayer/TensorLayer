@@ -43,6 +43,9 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
+    # 'sphinx.ext.linkcode',  # link to github, see linkcode_resolve() below
+#    'sphinx.ext.napoleon',  # alternative to numpydoc -- looks a bit worse.
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -62,9 +65,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'tensorlayer'
-copyright = '2016, TensorLayer Team'
-author = 'TensorLayer Team'
+project = u'TensorLayer'
+copyright = u'2016, TensorLayer contributors'
+author = u'TensorLayer contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

@@ -1,5 +1,5 @@
 :mod:`tensorlayer.utils`
-====================
+========================
 
 .. automodule:: tensorlayer.utils
 
