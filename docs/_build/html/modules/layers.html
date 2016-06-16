@@ -155,68 +155,309 @@
            <div itemprop="articleBody">
             
   <div class="section" id="tensorlayer-layers">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code><a class="headerlink" href="#tensorlayer-layers" title="Permalink to this headline">¶</a></h1>
-<table border="1" class="longtable docutils">
+<h1><a class="reference internal" href="#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a><a class="headerlink" href="#tensorlayer-layers" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-tensorlayer.layers"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Layer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-obj docutils literal"><span class="pre">Layer</span></code></a>([inputs,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> class represents a single layer of a neural network.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></a>([inputs,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">DenseLayer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DenseLayer</span></code></a>([layer,&nbsp;n_units,&nbsp;act,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">ReconLayer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReconLayer</span></code></a>([layer,&nbsp;x_recon,&nbsp;name,&nbsp;n_units,&nbsp;act])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-class docutils literal"><span class="pre">ReconLayer</span></code></a> class is a reconstruction layer <cite>DenseLayer</cite> which use to pre-train a <cite>DenseLayer</cite>.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">DropoutLayer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropoutLayer</span></code></a>([layer,&nbsp;keep,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> class is a noise layer which randomly set some values to zero by a given keeping probability.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">DropconnectDenseLayer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a>([layer,&nbsp;keep,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect behaviour which randomly remove connection between this layer to previous layer by a given keeping probability.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></a>([layer,&nbsp;act,&nbsp;shape,&nbsp;strides,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Pool2dLayer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Pool2dLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D vector.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
+<td>The <a href="#id1"><span class="problematic" id="id2">:function:`flatten_reshape`</span></a> reshapes the input to a 1D vector.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="basic-layer">
 <h2>Basic layer<a class="headerlink" href="#basic-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Layer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Layer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>name='layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> class represents a single layer of a neural network. It
+should be subclassed when implementing new types of layers.
+Because each layer can keep track of the layer(s) feeding into it, a
+network&#8217;s output <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance can double as a handle to the full
+network.</p>
+<dl class="docutils">
+<dt>inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="input-layer">
 <h2>Input layer<a class="headerlink" href="#input-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.InputLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">InputLayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>name='input_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#InputLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.InputLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</p>
+<dl class="docutils">
+<dt>inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a :tensorflow placeholder</span><dd>The input tensor data.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="dense-layer">
 <h2>Dense layer<a class="headerlink" href="#dense-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.DenseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>weights_initializer=&lt;function xavier_init&gt;</em>, <em>biases_initializer=&lt;function zeros&gt;</em>, <em>name='dense_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DenseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer</dd>
+<dt>act</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd>The function that is applied to the layer activations.</dd>
+<dt>weights_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>Initialize the weight matrix</dd>
+<dt>biases_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>Initialize the bias vector</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p>If the input to this layer has more than two axes, it need to flatten the
+input by using <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> in this case.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ReconLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReconLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>x_recon=None</em>, <em>name='recon_layer'</em>, <em>n_units=784</em>, <em>act=&lt;function softplus&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReconLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReconLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-class docutils literal"><span class="pre">ReconLayer</span></code></a> class is a reconstruction layer <cite>DenseLayer</cite> which
+use to pre-train a <cite>DenseLayer</cite>.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>x_recon</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>The data used for reconstruct</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer, should be equal to x_recon</dd>
+<dt>act</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd><p class="first">The activation function that is applied to the reconstruction layer.
+Normally, for sigmoid layer, the reconstruction activation is sigmoid;</p>
+<blockquote class="last">
+<div>for rectifying layer, the reconstruction activation is softplus.</div></blockquote>
+</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="noise-layer">
 <h2>Noise layer<a class="headerlink" href="#noise-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.DropoutLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>name='dropout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropoutLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> class is a noise layer which randomly set some
+values to zero by a given keeping probability.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>keep</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>The keeping probability, the lower more values will be set to zero.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.DropconnectDenseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropconnectDenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>weights_initializer=&lt;function xavier_init&gt;</em>, <em>biases_initializer=&lt;function zeros&gt;</em>, <em>name='dropconnect_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropconnectDenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropconnectDenseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect
+behaviour which randomly remove connection between this layer to previous
+layer by a given keeping probability.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>keep</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>The keeping probability, the lower more values will be set to zero.</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer</dd>
+<dt>act</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd>The function that is applied to the layer activations.</dd>
+<dt>weights_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>Initialize the weight matrix</dd>
+<dt>biases_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>Initialize the bias vector</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="convolutional-layer">
 <h2>Convolutional layer<a class="headerlink" href="#convolutional-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Conv2dLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv2dLayer</code><span class="sig-paren">(</span><em>layer=None, act=&lt;function relu&gt;, shape=[5, 5, 1, 100], strides=[1, 1, 1, 1], padding='SAME', weights_initializer=&lt;function truncated_normal&gt;, biases_initializer=&lt;function zeros&gt;, name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv2dLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>act</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd>The function that is applied to the layer activations.</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer</dd>
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">list of shape</span><dd>XXX</dd>
+<dt>strides: list of stride</dt>
+<dd>XXX</dd>
+<dt>padding: a string</dt>
+<dd>XXX</dd>
+<dt>weights_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>Initialize the weight matrix</dd>
+<dt>biases_initializer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>Initialize the bias vector</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.Pool2dLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Pool2dLayer</code><span class="sig-paren">(</span><em>layer=None, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=&lt;function max_pool&gt;, name='pool_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Pool2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Pool2dLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>ksize</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">list of XX</span><dd>XXX</dd>
+<dt>strides: list of stride</dt>
+<dd>XXX</dd>
+<dt>padding: a string</dt>
+<dd>XXX</dd>
+<dt>pool: a pooling function</dt>
+<dd>tf.nn.max_pool ...</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="shape-layer">
 <h2>Shape layer<a class="headerlink" href="#shape-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.FlattenLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">FlattenLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='flatten_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#FlattenLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.FlattenLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D
+vector.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="coming-soon">
 <h2>Coming soon<a class="headerlink" href="#coming-soon" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.MaxoutLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">MaxoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>name='maxout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#MaxoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.MaxoutLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ResnetLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ResnetLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>name='resnet_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ResnetLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ResnetLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.GaussianNoiseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">GaussianNoiseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='gaussian_noise_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#GaussianNoiseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.GaussianNoiseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ReshapeLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>shape=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ConcatLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ConcatLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='concat_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ConcatLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ConcatLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+</dd></dl>
+
 </div>
 <div class="section" id="function">
 <h2>Function<a class="headerlink" href="#function" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.layers.flatten_reshape">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">flatten_reshape</code><span class="sig-paren">(</span><em>variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#flatten_reshape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.flatten_reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a href="#id3"><span class="problematic" id="id4">:function:`flatten_reshape`</span></a> reshapes the input to a 1D vector.</p>
+<p>variable : a tensorflow variable</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 
