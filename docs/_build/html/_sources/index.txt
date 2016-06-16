@@ -40,11 +40,6 @@ method, this part of the documentation is for you.
   modules/init
   modules/os
 
-.. toctree::
-   :maxdepth: 2
-
-   LICENSE
-
 
 Indices and tables
 ==================
