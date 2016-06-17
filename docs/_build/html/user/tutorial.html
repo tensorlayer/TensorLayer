@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Layers" href="layers.html"/>
+        <link rel="prev" title="Installation" href="installation.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-we-start">Before we start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-mnist-example">Run the MNIST example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-the-mnist-example">Understand the MNIST example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preface">Preface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-data">Loading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-model">Building the model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multi-layer-perceptron-mlp">Multi-Layer Perceptron (MLP)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#denoising-autoencoder-dae">Denoising Autoencoder (DAE)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#convolutional-neural-network-cnn">Convolutional Neural Network (CNN)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#training-the-model">Training the model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dataset-iteration">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loss-and-update-expressions">Loss and update expressions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#more-info">More info</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/tutorial.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will walk you through building a handwritten digits classifier
+using the MNIST dataset, arguably the &#8220;Hello World&#8221; of neural networks.</p>
+<div class="section" id="before-we-start">
+<h2>Before we start<a class="headerlink" href="#before-we-start" title="Permalink to this headline">¶</a></h2>
+<p>The tutorial assumes that you are somewhat familiar with neural networks and
+TensorFlow (the library which TensorLayer is built on top of). You can try to learn
+both at once from the <a class="reference external" href="http://deeplearning.stanford.edu/tutorial/">Deeplearning Tutorial</a>.</p>
+<p>For a more slow-paced introduction to artificial neural networks, we recommend
+<a class="reference external" href="http://cs231n.github.io/">Convolutional Neural Networks for Visual Recognition</a> by Andrej Karpathy et
+al., <a class="reference external" href="http://neuralnetworksanddeeplearning.com/">Neural Networks and Deep Learning</a> by Michael Nielsen.</p>
+<p>To learn more about TensorFlow, have a look at the <a class="reference external" href="https://www.tensorflow.org/versions/r0.9/tutorials/index.html">TensorFlow tutorial</a>. You will not
+need all of it, but a basic understanding of how TensorFlow works is required to be
+able to use TensorLayer. If you&#8217;re new to TensorFlow, going through that tutorial.</p>
+</div>
+<div class="section" id="run-the-mnist-example">
+<h2>Run the MNIST example<a class="headerlink" href="#run-the-mnist-example" title="Permalink to this headline">¶</a></h2>
+<p>In this first part of the tutorial, we will just run the MNIST example that&#8217;s
+included in the source distribution of TensorLayer.</p>
+<p>We assume that you have already run through the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>. If you
+haven&#8217;t done so already, get a copy of the source tree of TensorLayer, and navigate
+to the folder in a terminal window. Enter the folder and run the <code class="docutils literal"><span class="pre">tutorial_mnist.py</span></code>
+example script:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_mnist.py
+</pre></div>
+</div>
+<p>If everything is set up correctly, you will get an output like the following:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>tensorlayer: GPU MEM Fraction 0.300000
+Downloading train-images-idx3-ubyte.gz
+Downloading train-labels-idx1-ubyte.gz
+Downloading t10k-images-idx3-ubyte.gz
+Downloading t10k-labels-idx1-ubyte.gz
+
+X_train.shape (50000, 784)
+y_train.shape (50000,)
+X_val.shape (10000, 784)
+y_val.shape (10000,)
+X_test.shape (10000, 784)
+y_test.shape (10000,)
+X float32   y int64
+
+tensorlayer:Instantiate InputLayer input_layer (?, 784)
+tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
+tensorlayer:Instantiate DenseLayer relu1: 800, &lt;function relu at 0x11281cb70&gt;
+tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
+tensorlayer:Instantiate DenseLayer relu2: 800, &lt;function relu at 0x11281cb70&gt;
+tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
+tensorlayer:Instantiate DenseLayer output_layer: 10, &lt;function identity at 0x115e099d8&gt;
+
+param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
+param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+param 2: (800, 800) (mean: 0.000008, median: 0.000041 std: 0.035371)
+param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+param 4: (800, 10) (mean: 0.000469, median: 0.000432 std: 0.049895)
+param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+num of params: 1276810
+
+layer 0: Tensor(&quot;dropout/mul_1:0&quot;, shape=(?, 784), dtype=float32)
+layer 1: Tensor(&quot;Relu:0&quot;, shape=(?, 800), dtype=float32)
+layer 2: Tensor(&quot;dropout_1/mul_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 3: Tensor(&quot;Relu_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 4: Tensor(&quot;dropout_2/mul_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 5: Tensor(&quot;add_2:0&quot;, shape=(?, 10), dtype=float32)
+
+learning_rate: 0.000100
+batch_size: 128
+
+Epoch 1 of 500 took 0.342539s
+  train loss: 0.330111
+  val loss: 0.298098
+  val acc: 0.910700
+Epoch 10 of 500 took 0.356471s
+  train loss: 0.085225
+  val loss: 0.097082
+  val acc: 0.971700
+Epoch 20 of 500 took 0.352137s
+  train loss: 0.040741
+  val loss: 0.070149
+  val acc: 0.978600
+Epoch 30 of 500 took 0.350814s
+  train loss: 0.022995
+  val loss: 0.060471
+  val acc: 0.982800
+Epoch 40 of 500 took 0.350996s
+  train loss: 0.013713
+  val loss: 0.055777
+  val acc: 0.983700
+...
+</pre></div>
+</div>
+<p>The example script allows you to try different models, including Multi-Layer Perceptron,
+Dropout, Dropconnect, Stacked Denoising Autoencoder and Convolutional Neural Network.
+Select different models from <code class="docutils literal"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">'__main__':</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">main_test_layers</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)</span>
+<span class="n">main_test_denoise_AE</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)</span>
+<span class="n">main_test_stacked_denoise_AE</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)</span>
+<span class="n">main_test_cnn_layer</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="understand-the-mnist-example">
+<h2>Understand the MNIST example<a class="headerlink" href="#understand-the-mnist-example" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s now investigate what&#8217;s needed to make that happen! To follow along, open
+up the source code.</p>
+<div class="section" id="preface">
+<h3>Preface<a class="headerlink" href="#preface" title="Permalink to this headline">¶</a></h3>
+<p>The first thing you might notice is that besides TensorLayer, we also import numpy
+and tensorflow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">tensorlayer</span> <span class="kn">as</span> <span class="nn">tl</span>
+<span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</pre></div>
+</div>
+<p>As we know, TensorLayer is built on top of TensorFlow, it is meant as a supplement helping
+with some tasks, not as a replacement. You will always mix TensorLayer with some
+vanilla TensorFlow code. The <code class="docutils literal"><span class="pre">set_keep</span></code> is used to access the placeholder of keeping probabilities
+when using Denoising Autoencoder.</p>
+</div>
+<div class="section" id="loading-data">
+<h3>Loading data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h3>
+<p>The first piece of code defines a function <code class="docutils literal"><span class="pre">load_dataset()</span></code>. Its purpose is
+to download the MNIST dataset (if it hasn&#8217;t been downloaded yet) and return it
+in the form of regular numpy arrays. There is no TensorLayer involved at all, so
+for the purpose of this tutorial, we can regard it as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">X_train.shape</span></code> is <code class="docutils literal"><span class="pre">(50000,</span> <span class="pre">784)</span></code>, to be interpreted as: 50,000
+images and each image has 784 pixels. <code class="docutils literal"><span class="pre">y_train.shape</span></code> is simply <code class="docutils literal"><span class="pre">(50000,)</span></code>, which is a vector the same
+length of <code class="docutils literal"><span class="pre">X_train</span></code> giving an integer class label for each image &#8211; namely,
+the digit between 0 and 9 depicted in the image (according to the human
+annotator who drew that digit).</p>
+<p>For Convolutional Neural Network example, the MNIST can be load as 4D version as follow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">X_train.shape</span></code> is <code class="docutils literal"><span class="pre">(50000,</span> <span class="pre">28,</span> <span class="pre">28,</span> <span class="pre">1)</span></code> which represents 50,000 images with 1 channel, 28 rows and 28 columns each.
+Channel one is because it is a grey scale image, every pixel have only one value.</p>
+</div>
+<div class="section" id="building-the-model">
+<h3>Building the model<a class="headerlink" href="#building-the-model" title="Permalink to this headline">¶</a></h3>
+<p>This is where TensorLayer steps in. It allows you to define an arbitrarily
+structured neural network by creating and stacking or merging layers.
+Since every layer knows its immediate incoming layers, the output layer (or
+output layers) of a network double as a handle to the network as a whole, so
+usually this is the only thing we will pass on to the rest of the code.</p>
+<p>As mentioned above, <code class="docutils literal"><span class="pre">tutorial_mnist.py</span></code> supports four types of models, and we
+implement that via easily exchangeable functions of the same interface.
+First, we&#8217;ll define a function that creates a Multi-Layer Perceptron (MLP) of
+a fixed architecture, explaining all the steps in detail. We&#8217;ll then implement
+a Denosing Autoencoder (DAE), after that we will then stack all Denoising Autoencoder and
+supervised fine-tune them. Finally, we&#8217;ll show how to create a
+Convolutional Neural Network (CNN).</p>
+<div class="section" id="multi-layer-perceptron-mlp">
+<h4>Multi-Layer Perceptron (MLP)<a class="headerlink" href="#multi-layer-perceptron-mlp" title="Permalink to this headline">¶</a></h4>
+<p>The first script, <code class="docutils literal"><span class="pre">main_test_layers()</span></code>, creates an MLP of two hidden layers of
+800 units each, followed by a softmax output layer of 10 units. It applies 20%
+dropout to the input data and 50% dropout to the hidden layers.</p>
+<p>To feed data into the network, TensofFlow placeholders need to be defined as follow.
+The <code class="docutils literal"><span class="pre">None</span></code> here means the network will accept input data of arbitrary batchsize after compilation.
+The <code class="docutils literal"><span class="pre">x</span></code> is used to hold the <code class="docutils literal"><span class="pre">X_train</span></code> data and <code class="docutils literal"><span class="pre">y_</span></code> is used to hold the <code class="docutils literal"><span class="pre">y_train</span></code> data.
+If you know the batchsize beforehand and do not need this flexibility, you should give the batchsize
+here &#8211; especially for convolutional layers, this can allow TensorFlow to apply
+some optimizations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="mi">784</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">y_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;y_&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The foundation of each neural network in TensorLayer is an
+<a class="reference internal" href="../modules/layers.html#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> instance
+representing the input data that will subsequently be fed to the network. Note
+that the <code class="docutils literal"><span class="pre">InputLayer</span></code> is not tied to any specific data yet.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Before adding the first hidden layer, we&#8217;ll apply 20% dropout to the input
+data. This is realized via a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the first constructor argument is the incoming layer, the second
+argument is the keeping probability for the activation value. Now we&#8217;ll proceed
+with the first fully-connected hidden layer of 800 units. Note
+that when stacking a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, the first constructor argument means that we&#8217;re stacking <code class="docutils literal"><span class="pre">network</span></code> on
+top of <code class="docutils literal"><span class="pre">network</span></code>.
+<code class="docutils literal"><span class="pre">n_units</span></code> simply gives the number of units for this fully-connected layer.
+<code class="docutils literal"><span class="pre">act</span></code> takes an activation function, several of which are defined
+in <code class="xref py py-mod docutils literal"><span class="pre">tensorflow.nn</span></code> and <cite>tensorlayer.activation</cite>. Here we&#8217;ve chosen the rectifier, so
+we&#8217;ll obtain ReLUs. We&#8217;ll now add dropout of 50%, another 800-unit dense layer and 50% dropout
+again:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu2&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop3&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we&#8217;ll add the fully-connected output layer which the <code class="docutils literal"><span class="pre">n_units</span></code> equals to
+the number of classes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned above, each layer is linked to its incoming layer(s), so we only
+need the output layer(s) to access a network in TensorLayer:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
+<span class="n">y_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal"><span class="pre">network.outputs</span></code> is the 10 identity outputs from the network (in one hot format), <code class="docutils literal"><span class="pre">y_op</span></code> is the integer
+output represents the class index. While <code class="docutils literal"><span class="pre">cost</span></code> is the cross-entropy between target and predicted labels.</p>
+</div>
+<div class="section" id="denoising-autoencoder-dae">
+<h4>Denoising Autoencoder (DAE)<a class="headerlink" href="#denoising-autoencoder-dae" title="Permalink to this headline">¶</a></h4>
+<p>Autoencoder is a unsupervised learning models which able to extract representative features,
+it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
+For vanilla Autoencoder see <a class="reference external" href="http://deeplearning.stanford.edu/tutorial/">Deeplearning Tutorial</a>.</p>
+<p>The script <code class="docutils literal"><span class="pre">main_test_denoise_AE()</span></code> implements a Denoising Autoencoder with corrosion rate of 50%.
+The Autoencoder can be defined as follow, where an Autoencoder is represented by a <code class="docutils literal"><span class="pre">DenseLayer</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;denoising1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sigmoid1&#39;</span><span class="p">)</span>
+<span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To train the <code class="docutils literal"><span class="pre">DenseLayer</span></code>, simply run <code class="docutils literal"><span class="pre">ReconLayer.pretrain()</span></code>, if using denoising Autoencoder, the name of
+corrosion layer (a <code class="docutils literal"><span class="pre">DropoutLayer</span></code>) need to be specified as follow. To save the feature images, set <code class="docutils literal"><span class="pre">save</span></code> to True.
+There are many kinds of pre-train metrices according to different architectures and applications. For sigmoid activation,
+the Autoencoder can be implemented by using KL divergence, while for rectifer, L1 regularization of activation outputs
+can make the output to be sparse. So the default behaviour of <code class="docutils literal"><span class="pre">ReconLayer</span></code> only provide KLD and cross-entropy for sigmoid
+activation function and L1 of activation outputs and mean-squared-error for rectifing activation function.
+We recommend you to modify <code class="docutils literal"><span class="pre">ReconLayer</span></code> to achieve your own pre-train metrice.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span> <span class="n">denoise_name</span><span class="o">=</span><span class="s1">&#39;denoising1&#39;</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In addition, the script <code class="docutils literal"><span class="pre">main_test_stacked_denoise_AE()</span></code> shows how to stacked multiple Autoencoder to one network and then
+fine-tune.</p>
+</div>
+<div class="section" id="convolutional-neural-network-cnn">
+<h4>Convolutional Neural Network (CNN)<a class="headerlink" href="#convolutional-neural-network-cnn" title="Permalink to this headline">¶</a></h4>
+<p>Finally, the <code class="docutils literal"><span class="pre">main_test_cnn_layer()</span></code> script creates two CNN layers and
+max pooling stages, a fully-connected hidden layer and a fully-connected output
+layer.</p>
+<p>At the begin, we add a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> with 32 filters of size 5x5 on top, follow by
+max-pooling of factor 2 in both dimensions. And then apply a <code class="docutils literal"><span class="pre">Conv2dLayer</span></code> with
+64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
+the 4D output to 1D vector by using <code class="docutils literal"><span class="pre">FlattenLayer</span></code>, and apply a dropout with 50%
+to last hidden layer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For experts: <code class="docutils literal"><span class="pre">Conv2dLayer</span></code> will create a convolutional layer using
+<code class="docutils literal"><span class="pre">tensorflow.nn.conv2d</span></code>, TensorFlow&#8217;s default convolution.</p>
+</div>
+</div>
+</div>
+<div class="section" id="training-the-model">
+<h3>Training the model<a class="headerlink" href="#training-the-model" title="Permalink to this headline">¶</a></h3>
+<p>The remaining part of the <code class="docutils literal"><span class="pre">tutorial_mnist.py</span></code> script copes with setting up and running
+a training loop over the MNIST dataset by using cross-entropy only.</p>
+<div class="section" id="dataset-iteration">
+<h4>Dataset iteration<a class="headerlink" href="#dataset-iteration" title="Permalink to this headline">¶</a></h4>
+<p>An iteration function for synchronously iterating over two
+numpy arrays of input data and targets, respectively, in mini-batches of a
+given number of items. More iteration function can be found in <code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">iterate</span><span class="o">.</span><span class="n">minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batchsize</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loss-and-update-expressions">
+<h4>Loss and update expressions<a class="headerlink" href="#loss-and-update-expressions" title="Permalink to this headline">¶</a></h4>
+<p>Continuing, we create a loss expression to be minimized in training:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
+<span class="n">y_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>More cost or regularization can be applied here, take <code class="docutils literal"><span class="pre">main_test_layers()</span></code> for example,
+to apply max-norm on the weight matrices, we can add the following line:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Depending on the problem you are solving, you will need different loss functions,
+see <a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a> for more.</p>
+<p>Having the model and the loss function defined, we create update expressions
+for training the network. TensorLayer do not provide many optimizer, we used TensorFlow&#8217;s
+optimizer instead:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">train_params</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">all_params</span>
+<span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">beta1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">beta2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">use_locking</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For training the network, we fed data and the keeping probabilities to the <code class="docutils literal"><span class="pre">feed_dict</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">X_train_a</span><span class="p">,</span> <span class="n">y_</span><span class="p">:</span> <span class="n">y_train_a</span><span class="p">}</span>
+<span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">train_op</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>While, for validation and testing, we use slightly different way. All
+dropout, dropconnect, corrosion layers need to be disable.
+<code class="docutils literal"><span class="pre">tl.utils.dict_to_one</span></code> set all <code class="docutils literal"><span class="pre">network.all_drop</span></code> to 1.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
+<span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">X_test_a</span><span class="p">,</span> <span class="n">y_</span><span class="p">:</span> <span class="n">y_test_a</span><span class="p">}</span>
+<span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">)</span>
+<span class="n">err</span><span class="p">,</span> <span class="n">ac</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">cost</span><span class="p">,</span> <span class="n">acc</span><span class="p">],</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As an additional monitoring quantity, we create an expression for the
+classification accuracy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">correct_prediction</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">y_</span><span class="p">)</span>
+<span class="n">acc</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct_prediction</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="more-info">
+<h2>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h2>
+<p>For more information on what you can do with TensorLayer&#8217;s layers, just continue
+reading through readthedocs.
+Finally, the reference lists and explains all layers (<a class="reference internal" href="../modules/layers.html#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a>),
+weight initializers (<a class="reference internal" href="../modules/init.html#module-tensorlayer.init" title="tensorlayer.init"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.init</span></code></a>), activation
+(<a class="reference internal" href="../modules/activation.html#module-tensorlayer.activation" title="tensorlayer.activation"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.activation</span></code></a>), cost expressions and regularizers (<a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a>),
+load and save files (<a class="reference internal" href="../modules/files.html#module-tensorlayer.files" title="tensorlayer.files"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.files</span></code></a>), operating system (<a class="reference internal" href="../modules/os.html#module-tensorlayer.os" title="tensorlayer.os"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.os</span></code></a>),
+help function (<a class="reference internal" href="../modules/utils.html#module-tensorlayer.utils" title="tensorlayer.utils"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.utils</span></code></a>), visualization (<a class="reference internal" href="../modules/visualize.html#module-tensorlayer.visualize" title="tensorlayer.visualize"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.visualize</span></code></a>),
+iteration functions (<a class="reference internal" href="../modules/iterate.html#module-tensorlayer.iterate" title="tensorlayer.iterate"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.iterate</span></code></a>), included in the library.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="layers.html" class="btn btn-neutral float-right" title="Layers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral" title="Installation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

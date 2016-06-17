@@ -6,11 +6,8 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
 import numpy as np
-# import matplotlib.pyplot as plt
-# import sys
-# import os
 import time
-# from sys import platform as _platform
+
 
 def main_test_layers(model='relu'):
     X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
@@ -43,7 +40,7 @@ def main_test_layers(model='relu'):
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
         network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-        network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')
+        network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
     elif model == 'resnet':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
@@ -51,12 +48,12 @@ def main_test_layers(model='relu'):
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
         network = tl.layers.ResnetLayer(network, act = tf.nn.relu, name='resnet2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-        network = tl.layers.DenseLayer(network, act = tl.identity, name='output_layer')
+        network = tl.layers.DenseLayer(network, act = tl.activation.identity, name='output_layer')
     elif model == 'dropconnect':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
-        network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.identity, name='output_layer')
+        network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name='output_layer')
 
     # attrs = vars(network)
     # print(', '.join("%s: %s\n" % item for item in attrs.items()))
@@ -67,10 +64,9 @@ def main_test_layers(model='relu'):
 
     y = network.outputs
     y_op = tf.argmax(tf.nn.softmax(y), 1)
-    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    cost = ce
+    cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
-    # cost = cost + tl.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.maxnorm_regularizer(1.0)(network.all_params[2])
+    # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
     # cost = cost + tl.lo_regularizer(0.0001)(network.all_params[0]) + tl.lo_regularizer(0.0001)(network.all_params[2])
     # cost = cost + tl.maxnorm_o_regularizer(0.001)(network.all_params[0]) + tl.maxnorm_o_regularizer(0.001)(network.all_params[2])
 
@@ -105,22 +101,22 @@ def main_test_layers(model='relu'):
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-            dp_dict = tl.layers.Layer.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
+            dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable all dropout/dropconnect/denoising layers
             feed_dict = {x: X_train, y_: y_train}
             feed_dict.update(dp_dict)
             print("   train loss: %f" % sess.run(cost, feed_dict=feed_dict))
-            dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )
+            dp_dict = tl.utils.dict_to_one( network.all_drop )
             feed_dict = {x: X_val, y_: y_val}
             feed_dict.update(dp_dict)
             print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
             print("   val acc: %f" % np.mean(y_val == sess.run(y_op, feed_dict=feed_dict)))
             try:
-                tl.visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
             except:
                 raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
-    dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )
+    dp_dict = tl.utils.dict_to_one( network.all_drop )
     feed_dict = {x: X_test, y_: y_test}
     feed_dict.update(dp_dict)
     print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
@@ -238,7 +234,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     recon_layer2 = tl.layers.ReconLayer(network, x_recon=x_recon1, n_units=800, act = act_recon, name='recon_layer2')
     # 3rd layer
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')
+    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
 
     # Define fine-tune process
     y = network.outputs
@@ -289,7 +285,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
             for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -300,7 +296,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   train acc: %f" % (train_acc/ n_batch))
             val_loss, val_acc, n_batch = 0, 0, 0
             for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -317,7 +313,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
     for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout layers
+        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -393,7 +389,7 @@ def main_test_cnn_layer():
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
     network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
+    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
 
     y = network.outputs
 
@@ -430,7 +426,7 @@ def main_test_cnn_layer():
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
             for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -439,7 +435,7 @@ def main_test_cnn_layer():
             print("   train acc: %f" % (train_acc/ n_batch))
             val_loss, val_acc, n_batch = 0, 0, 0
             for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -454,7 +450,7 @@ def main_test_cnn_layer():
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
     for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.layers.Layer.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -463,19 +459,17 @@ def main_test_cnn_layer():
     print("   test acc: %f" % (test_acc/n_batch))
 
 if __name__ == '__main__':
-    sess = tl.set_gpu_fraction(gpu_fraction = 0.3)
+    sess = tf.InteractiveSession()
+    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
-        main_test_layers(model='relu')                # model = relu, resnet, dropconnect
-        tl.clear_all()                                # clear all placeholder of keep prob
-        main_test_denoise_AE(model='relu')            # model = relu, sigmoid
-        tl.clear_all()
-        main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
-        tl.clear_all()
+        # main_test_layers(model='relu')                # model = relu, resnet, dropconnect
+        # main_test_denoise_AE(model='relu')            # model = relu, sigmoid
+        # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
         main_test_cnn_layer()
-        tl.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.os.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        tl.exit_tf(sess)
+        tl.os.exit_tf(sess)
 
 
 

@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Development &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="tensorlayer.layers" href="../modules/layers.html"/>
+        <link rel="prev" title="Layers" href="layers.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#philosophy">Philosophy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-to-contribute">What to contribute</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#your-method">Your method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#report-bugs">Report bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fix-bugs">Fix bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-documentation">Write documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-contribute">How to contribute</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#edit-on-github">Edit on GitHub</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sending-pull-requests">Sending Pull Requests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Development</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/development.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>The TensorLayer project was started by Data Science Institute, Imperial College London in Jun 2016. It is
+developed by a core team (in alphabetical order:
+<a class="reference external" href="https://zsdonghao.github.io/">Hao Dong</a>,)
+and <a href="#id1"><span class="problematic" id="id2">`</span></a>numerous additional contributors on GitHub:
+<a class="reference external" href="https://github.com/zsdonghao/TensorLayer">https://github.com/zsdonghao/TensorLayer</a></p>
+<p>As an open-source project by researchers for researchers and engineers, we highly welcome
+contributions! Every bit helps and will be credited.</p>
+<div class="section" id="philosophy">
+<span id="tensorlayer-philosopy"></span><h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
+<p>TensorLayer grew out of a need to combine the flexibility of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:</p>
+<ul class="simple">
+<li><strong>Simplicity</strong>: Be easy to use, easy to extend and modify, to facilitate use
+in research and engineering.</li>
+<li><strong>High-Speed</strong>: Make sure the runing speed under GPU support is the same with
+pure TensorFlow script. The simplicity do not sacrifice the performance.</li>
+<li><strong>Compatibility</strong>: A network is abstracted to regularization, cost and outputs
+of each layer. Easy to work with other TensorFlow libraries.</li>
+<li><strong>Transparency</strong>: Do not hide TensorFlow behind abstractions. Try to rely on
+TensorFlow&#8217;s functionality where possible, and follow TensorFlow&#8217;s conventions.</li>
+</ul>
+</div>
+<div class="section" id="what-to-contribute">
+<h2>What to contribute<a class="headerlink" href="#what-to-contribute" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="your-method">
+<h3>Your method<a class="headerlink" href="#your-method" title="Permalink to this headline">¶</a></h3>
+<p>If you publish a new method in term of Deep learning and Reinforcement learning,
+you are welcome to contribute your method to TensorLayer.</p>
+<ul class="simple">
+<li>Explain how it would work, and link to a scientific paper if applicable.</li>
+<li>Keep the scope as narrow as possible, to make it easier to implement.</li>
+</ul>
+</div>
+<div class="section" id="report-bugs">
+<h3>Report bugs<a class="headerlink" href="#report-bugs" title="Permalink to this headline">¶</a></h3>
+<p>Report bugs at the <a class="reference external" href="https://github.com/zsdonghao/tensorlayer">GitHub</a>.
+If you are reporting a bug, please include:</p>
+<ul class="simple">
+<li>your TensorLayer and TensorFlow version.</li>
+<li>steps to reproduce the bug, ideally reduced to a few Python commands.</li>
+<li>the results you obtain, and the results you expected instead.</li>
+</ul>
+<p>If you are unsure whether the behavior you experience is a bug, or if you are
+unsure whether it is related to TensorLayer or TensorFlow, please just ask on <a class="reference external" href="mailto:hao&#46;dong11&#37;&#52;&#48;imperial&#46;ac&#46;uk">our
+mailing list</a> first.</p>
+</div>
+<div class="section" id="fix-bugs">
+<h3>Fix bugs<a class="headerlink" href="#fix-bugs" title="Permalink to this headline">¶</a></h3>
+<p>Look through the GitHub issues for bug reports. Anything tagged with &#8220;bug&#8221; is
+open to whoever wants to implement it. If you discover a bug in TensorLayer you can
+fix yourself, by all means feel free to just implement a fix and not report it
+first.</p>
+</div>
+<div class="section" id="write-documentation">
+<h3>Write documentation<a class="headerlink" href="#write-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Whenever you find something not explained well, misleading, glossed over or
+just wrong, please update it! The <em>Edit on GitHub</em> link on the top right of
+every documentation page and the <em>[source]</em> link for every documented entity
+in the API reference will help you to quickly locate the origin of any text.</p>
+</div>
+</div>
+<div class="section" id="how-to-contribute">
+<h2>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="edit-on-github">
+<h3>Edit on GitHub<a class="headerlink" href="#edit-on-github" title="Permalink to this headline">¶</a></h3>
+<p>As a very easy way of just fixing issues in the documentation, use the <em>Edit
+on GitHub</em> link on the top right of a documentation page or the <em>[source]</em> link
+of an entity in the API reference to open the corresponding source file in
+GitHub, then click the <em>Edit this file</em> link to edit the file in your browser
+and send us a Pull Request. All you need for this is a free GitHub account.</p>
+<p>For any more substantial changes, please follow the steps below to setup
+TensorLayer for development.</p>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>The documentation is generated with <a class="reference external" href="http://sphinx-doc.org/latest/index.html">Sphinx</a>. To build it locally, run the
+following commands:</p>
+<div class="code bash highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">docs</span>
+<span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p>Afterwards, open <code class="docutils literal"><span class="pre">docs/_build/html/index.html</span></code> to view the documentation as
+it would appear on <a class="reference external" href="http://tensorlayer.readthedocs.org/">readthedocs</a>. If you
+changed a lot and seem to get misleading error messages or warnings, run
+<code class="docutils literal"><span class="pre">make</span> <span class="pre">clean</span> <span class="pre">html</span></code> to force Sphinx to recreate all files from scratch.</p>
+<p>When writing docstrings, follow existing documentation as much as possible to
+ensure consistency throughout the library. For additional information on the
+syntax and conventions used, please refer to the following documents:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://sphinx-doc.org/rest.html">reStructuredText Primer</a></li>
+<li><a class="reference external" href="http://sphinx-doc.org/markup/index.html">Sphinx reST markup constructs</a></li>
+<li><a class="reference external" href="https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt">A Guide to NumPy/SciPy Documentation</a></li>
+</ul>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>TensorLayer has a code coverage of 100%, which has proven very helpful in the past,
+but also creates some duties:</p>
+<ul class="simple">
+<li>Whenever you change any code, you should test whether it breaks existing
+features by just running the test scripts.</li>
+<li>Every bug you fix indicates a missing test case, so a proposed bug fix should
+come with a new test that fails without your fix.</li>
+</ul>
+</div>
+<div class="section" id="sending-pull-requests">
+<h3>Sending Pull Requests<a class="headerlink" href="#sending-pull-requests" title="Permalink to this headline">¶</a></h3>
+<p>When you&#8217;re satisfied with your addition, the tests pass and the documentation
+looks good without any markup errors, commit your changes to a new branch, push
+that branch to your fork and send us a Pull Request via GitHub&#8217;s web interface.</p>
+<p>All these steps are nicely explained on GitHub:
+<a class="reference external" href="https://guides.github.com/introduction/flow/">https://guides.github.com/introduction/flow/</a></p>
+<p>When filing your Pull Request, please include a description of what it does, to
+help us reviewing it. If it is fixing an open issue, say, issue #123, add
+<em>Fixes #123</em>, <em>Resolves #123</em> or <em>Closes #123</em> to the description text, so
+GitHub will close it when your request is merged.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../modules/layers.html" class="btn btn-neutral float-right" title="tensorlayer.layers" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="layers.html" class="btn btn-neutral" title="Layers" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

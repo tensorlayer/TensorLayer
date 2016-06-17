@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installation &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="next" title="Tutorial" href="tutorial.html"/>
+        <link rel="prev" title="Welcome to TensorLayer" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#python-pip">Python + pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">TensorFlow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tensorflow-release">TensorFlow release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gpu-support">GPU support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cuda">CUDA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">TensorFlow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cudnn">cuDNN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Installation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user/installation.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>TensorLayer has some prerequisites that need to be installed first, including <a class="reference external" href="https://www.tensorflow.org">TensorFlow</a>, numpy and matplotlib. For GPU support CUDA and cuDNN are
+required.</p>
+<p>If you run into any trouble, please check the <a class="reference external" href="https://www.tensorflow.org/versions/master/get_started/os_setup.html">TensorFlow installation instructions</a> which cover installing
+the TensorFlow for a range of operating systems including Mac OX and Linux, or ask for help on <cite>hao.dong11&#64;imperial.ac.uk</cite>.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python-pip">
+<h3>Python + pip<a class="headerlink" href="#python-pip" title="Permalink to this headline">¶</a></h3>
+<p>TensorLayer is build on the top of Python-version TensorFlow. Please install Python first.</p>
+<p>Python includes <code class="docutils literal"><span class="pre">pip</span></code> command for installing additional modules is recommended.
+Besides, a <a class="reference external" href="http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/">virtual environment</a>
+via <code class="docutils literal"><span class="pre">virtualenv</span></code> can help you to manage your python packages.</p>
+<p>Take Python3 for example, to install Python includes <code class="docutils literal"><span class="pre">pip</span></code>, run the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sudo apt-get install python3
+sudo apt-get install python3-pip
+sudo pip3 install virtualenv
+</pre></div>
+</div>
+<p>To build a virtual environment and install matplotlib and numpy into it, run the following commands:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>virtualenv env
+env/bin/pip install matplotlib
+env/bin/pip install numpy
+</pre></div>
+</div>
+<p>Check the installed packages, run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>env/bin/pip list
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>TensorFlow<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The installation instructions of TensorFlow are written to be very detailed on TensorFlow website.
+However, there are something need to be considered.</p>
+</div>
+</div>
+<div class="section" id="tensorflow-release">
+<h2>TensorFlow release<a class="headerlink" href="#tensorflow-release" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.tensorflow.org/versions/master/get_started/os_setup.html">TensorFlow</a> only officially
+supports GPU acceleration for Linux at present.
+If you want to use GPU with Mac OX, you need to compile TensorFlow from source.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For ARM processor architecture, you also need to install TensorFlow from source.</p>
+</div>
+</div>
+<div class="section" id="gpu-support">
+<h2>GPU support<a class="headerlink" href="#gpu-support" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to NVIDIA supports, training a fully connected network on a
+GPU, which may be 10 to 20 times faster than training them on a CPU.
+For convolutional network, may have 50 times faster. This requires an NVIDIA GPU with CUDA and cuDNN support.</p>
+<div class="section" id="cuda">
+<h3>CUDA<a class="headerlink" href="#cuda" title="Permalink to this headline">¶</a></h3>
+<p>The TensorFlow website also teach how to install the CUDA and cuDNN, please click:
+<a class="reference external" href="https://www.tensorflow.org/versions/master/get_started/os_setup.html#optional-install-cuda-gpus-on-linux">TensorFlow: CUDA install</a>.</p>
+<p>Install the latest CUDA and cuDNN available from NVIDIA:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://developer.nvidia.com/cuda-downloads">CUDA install</a></p>
+<p><a class="reference external" href="https://developer.nvidia.com/cuda-downloads">cuDNN install</a></p>
+</div></blockquote>
+<p>After installation, make sure <code class="docutils literal"><span class="pre">/usr/local/cuda/bin</span></code> is in your <code class="docutils literal"><span class="pre">PATH</span></code> (use <code class="docutils literal"><span class="pre">echo</span> <span class="pre">#PATH</span></code> to check), and
+<code class="docutils literal"><span class="pre">nvcc</span> <span class="pre">--version</span></code> works. Also ensure <code class="docutils literal"><span class="pre">/usr/local/cuda/lib64</span></code> is in your
+<code class="docutils literal"><span class="pre">LD_LIBRARY_PATH</span></code>, so the CUDA libraries can be found.</p>
+</div>
+<div class="section" id="id4">
+<h3>TensorFlow<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>If CUDA is set up correctly, the following command should print some GPU information on
+the terminal:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -c <span class="s2">&quot;import tensorflow&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="cudnn">
+<h3>cuDNN<a class="headerlink" href="#cudnn" title="Permalink to this headline">¶</a></h3>
+<p>NVIDIA provides a library for common neural network operations that especially
+speeds up Convolutional Neural Networks (CNNs). Again, it can be obtained from
+NVIDIA after registering as a developer (it take a while): <a class="reference external" href="https://developer.nvidia.com/cuda-downloads">cuDNN install</a></p>
+<p>To install it, copy the <code class="docutils literal"><span class="pre">*.h</span></code> files to <code class="docutils literal"><span class="pre">/usr/local/cuda/include</span></code> and the
+<code class="docutils literal"><span class="pre">lib*</span></code> files to <code class="docutils literal"><span class="pre">/usr/local/cuda/lib64</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Welcome to TensorLayer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

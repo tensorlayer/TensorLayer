@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorlayer.os &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tensorlayer.os</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tensorlayer.os</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span> <span class="k">as</span> <span class="n">_platform</span>
+<span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
+
+
+<div class="viewcode-block" id="exit_tf"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.exit_tf">[docs]</a><span class="k">def</span> <span class="nf">exit_tf</span><span class="p">(</span><span class="n">sess</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Close tensorboard and nvidia-process if available</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sess : a :sess instance of tensorflow</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Close tensorboard and nvidia-process if available&quot;</span>
+    <span class="n">sess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># import time</span>
+    <span class="c1"># time.sleep(2)</span>
+    <span class="k">if</span> <span class="n">_platform</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span> <span class="ow">or</span> <span class="n">_platform</span> <span class="o">==</span> <span class="s2">&quot;linux2&quot;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;linux: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;nvidia-smi&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;fuser 6006/tcp -k&#39;</span><span class="p">)</span>  <span class="c1"># kill tensorboard 6006</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;nvidia-smi | grep python |awk &#39;{print $3}&#39;|xargs kill&quot;</span><span class="p">)</span> <span class="c1"># kill all nvidia-smi python process</span>
+    <span class="k">elif</span> <span class="n">_platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;OS X: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;lsof -i tcp:6006 | grep -v PID | awk &#39;{print $2}&#39; | xargs kill&quot;</span><span class="p">)</span> <span class="c1"># kill tensorboard 6006</span>
+    <span class="k">elif</span> <span class="n">_platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Windows: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">_platform</span><span class="p">)</span>
+    <span class="nb">exit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="clear_all"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.clear_all">[docs]</a><span class="k">def</span> <span class="nf">clear_all</span><span class="p">(</span><span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Clears all the placeholder variables of keep prob,</span>
+<span class="sd">    including keeping probabilities of all dropout, denoising, dropconnect etc.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    printable : if True, print all deleted variables.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;clear all .....................................&#39;</span><span class="p">)</span>
+    <span class="n">gl</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">gl</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;func&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="n">var</span><span class="p">]):</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="n">var</span><span class="p">]):</span> <span class="k">continue</span>
+        <span class="k">if</span> <span class="s1">&#39;class&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="n">var</span><span class="p">]):</span> <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot; clear_all ------- </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="nb">globals</span><span class="p">()[</span><span class="n">var</span><span class="p">]))</span>
+
+        <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">var</span><span class="p">]</span></div>
+
+<span class="c1"># def clear_all2(vars, printable=True):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     The :function:`clear_all()` Clears all the placeholder variables of keep prob,</span>
+<span class="c1">#     including keeping probabilities of all dropout, denoising, dropconnect</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     printable : if True, print all deleted variables.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     print(&#39;clear all .....................................&#39;)</span>
+<span class="c1">#     for var in vars:</span>
+<span class="c1">#         if var[0] == &#39;_&#39;: continue</span>
+<span class="c1">#         if &#39;func&#39; in str(var): continue</span>
+<span class="c1">#         if &#39;module&#39; in str(var): continue</span>
+<span class="c1">#         if &#39;class&#39; in str(var): continue</span>
+<span class="c1">#</span>
+<span class="c1">#         if printable:</span>
+<span class="c1">#             print(&quot; clear_all ------- %s&quot; % str(var))</span>
+<span class="c1">#</span>
+<span class="c1">#         del var</span>
+
+<div class="viewcode-block" id="set_gpu_fraction"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.set_gpu_fraction">[docs]</a><span class="k">def</span> <span class="nf">set_gpu_fraction</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">gpu_fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the GPU memory fraction for the application.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sess : a :sess instance of tensorflow</span>
+<span class="sd">    gpu_fraction : float (0 ~ 1], fraction of GPU memory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer: GPU MEM Fraction </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">gpu_fraction</span><span class="p">)</span>
+    <span class="n">gpu_options</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">GPUOptions</span><span class="p">(</span><span class="n">per_process_gpu_memory_fraction</span><span class="o">=</span><span class="n">gpu_fraction</span><span class="p">)</span>
+    <span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">config</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">ConfigProto</span><span class="p">(</span><span class="n">gpu_options</span> <span class="o">=</span> <span class="n">gpu_options</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sess</span></div>
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1">#</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -32,7 +32,10 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 0. [Easy to Modify](#Easytomodify)
 0. [Installation](#Installation)
 0. [Ways to Contribute](#Waystocontribute)
-0. [Documentation](http://tensorlayer.readthedocs.io/en/latest/)
+0. [Online Documentation](http://tensorlayer.readthedocs.io/en/latest/)
+0. [Download Documentation](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
+
+
 
 --
 # Overview
@@ -336,5 +339,8 @@ Your method can be merged into TensorLayer, if you can prove your method xxx
 Test script with detailed descriptions is required
 
 
-# Documentation
+# Online Documentation
 The documentation is placed in [Read-the-Docs](http://tensorlayer.readthedocs.io/en/latest/).
+
+# Download Documentation
+Alternatively you can download the documentation via [Read-the-Docs](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) as well.

@@ -322,6 +322,7 @@ class ReconLayer(DenseLayer):
 
     def pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10,
                   save=True, save_name='w1pre_'):
+        ''' pre-train the parameters of previous DenseLayer '''
         print("     tensorlayer:  %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:

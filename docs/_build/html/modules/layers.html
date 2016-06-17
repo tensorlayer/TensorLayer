@@ -1,0 +1,951 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorlayer.layers &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
+        <link rel="prev" title="Development" href="../user/development.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/development.html">Development</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-layer">Basic layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#input-layer">Input layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dense-layer">Dense layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#noise-layer">Noise layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#convolutional-layer">Convolutional layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#shape-layer">Shape layer</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#coming-soon">Coming soon</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/modules/layers.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-tensorlayer.layers">
+<span id="tensorlayer-layers"></span><h1><a class="reference internal" href="#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a><a class="headerlink" href="#module-tensorlayer.layers" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-obj docutils literal"><span class="pre">Layer</span></code></a>([inputs,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> class represents a single layer of a neural network.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></a>([inputs,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DenseLayer</span></code></a>([layer,&nbsp;n_units,&nbsp;act,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReconLayer</span></code></a>([layer,&nbsp;x_recon,&nbsp;name,&nbsp;n_units,&nbsp;act])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-class docutils literal"><span class="pre">ReconLayer</span></code></a> class is a reconstruction layer <cite>DenseLayer</cite> which use to pre-train a <cite>DenseLayer</cite>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropoutLayer</span></code></a>([layer,&nbsp;keep,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> class is a noise layer which randomly set some values to zero by a given keeping probability.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a>([layer,&nbsp;keep,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect behaviour which randomly remove connection between this layer to previous layer by a given keeping probability.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></a>([layer,&nbsp;act,&nbsp;shape,&nbsp;strides,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Pool2dLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D vector.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
+<td>Reshapes the input to a 1D vector.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="basic-layer">
+<h2>Basic layer<a class="headerlink" href="#basic-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Layer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Layer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>name='layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Layer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> class represents a single layer of a neural network. It
+should be subclassed when implementing new types of layers.
+Because each layer can keep track of the layer(s) feeding into it, a
+network&#8217;s output <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance can double as a handle to the full
+network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>inputs</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="input-layer">
+<h2>Input layer<a class="headerlink" href="#input-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.InputLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">InputLayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>name='input_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#InputLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.InputLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>inputs</strong> : a :tensorflow placeholder</p>
+<blockquote>
+<div><p>The input tensor data.</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="dense-layer">
+<h2>Dense layer<a class="headerlink" href="#dense-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.DenseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>weights_initializer=&lt;function xavier_init&gt;</em>, <em>biases_initializer=&lt;function zeros&gt;</em>, <em>name='dense_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DenseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>n_units</strong> : int</p>
+<blockquote>
+<div><p>The number of units of the layer</p>
+</div></blockquote>
+<p><strong>act</strong> : activation function</p>
+<blockquote>
+<div><p>The function that is applied to the layer activations.</p>
+</div></blockquote>
+<p><strong>weights_initializer</strong> : weights initializer</p>
+<blockquote>
+<div><p>Initialize the weight matrix</p>
+</div></blockquote>
+<p><strong>biases_initializer</strong> : biases initializer</p>
+<blockquote>
+<div><p>Initialize the bias vector</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>If the input to this layer has more than two axes, it need to flatten the
+input by using <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> in this case.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ReconLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReconLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>x_recon=None</em>, <em>name='recon_layer'</em>, <em>n_units=784</em>, <em>act=&lt;function softplus&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReconLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReconLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-class docutils literal"><span class="pre">ReconLayer</span></code></a> class is a reconstruction layer <cite>DenseLayer</cite> which
+use to pre-train a <cite>DenseLayer</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>x_recon</strong> : tensorflow variable</p>
+<blockquote>
+<div><p>The data used for reconstruct</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote>
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+<p><strong>n_units</strong> : int</p>
+<blockquote>
+<div><p>The number of units of the layer, should be equal to x_recon</p>
+</div></blockquote>
+<p><strong>act</strong> : activation function</p>
+<blockquote class="last">
+<div><p>The activation function that is applied to the reconstruction layer.
+Normally, for sigmoid layer, the reconstruction activation is sigmoid;</p>
+<blockquote>
+<div><p>for rectifying layer, the reconstruction activation is softplus.</p>
+</div></blockquote>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">pretrain</span></code>(sess,&nbsp;x,&nbsp;X_train,&nbsp;X_val[,&nbsp;...])</td>
+<td>pre-train the parameters of previous DenseLayer</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="noise-layer">
+<h2>Noise layer<a class="headerlink" href="#noise-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.DropoutLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>name='dropout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropoutLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> class is a noise layer which randomly set some
+values to zero by a given keeping probability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>keep</strong> : float</p>
+<blockquote>
+<div><p>The keeping probability, the lower more values will be set to zero.</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.DropconnectDenseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropconnectDenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>weights_initializer=&lt;function xavier_init&gt;</em>, <em>biases_initializer=&lt;function zeros&gt;</em>, <em>name='dropconnect_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropconnectDenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropconnectDenseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect
+behaviour which randomly remove connection between this layer to previous
+layer by a given keeping probability.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>keep</strong> : float</p>
+<blockquote>
+<div><p>The keeping probability, the lower more values will be set to zero.</p>
+</div></blockquote>
+<p><strong>n_units</strong> : int</p>
+<blockquote>
+<div><p>The number of units of the layer</p>
+</div></blockquote>
+<p><strong>act</strong> : activation function</p>
+<blockquote>
+<div><p>The function that is applied to the layer activations.</p>
+</div></blockquote>
+<p><strong>weights_initializer</strong> : weights initializer</p>
+<blockquote>
+<div><p>Initialize the weight matrix</p>
+</div></blockquote>
+<p><strong>biases_initializer</strong> : biases initializer</p>
+<blockquote>
+<div><p>Initialize the bias vector</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="convolutional-layer">
+<h2>Convolutional layer<a class="headerlink" href="#convolutional-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Conv2dLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv2dLayer</code><span class="sig-paren">(</span><em>layer=None, act=&lt;function relu&gt;, shape=[5, 5, 1, 100], strides=[1, 1, 1, 1], padding='SAME', weights_initializer=&lt;function truncated_normal&gt;, biases_initializer=&lt;function zeros&gt;, name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv2dLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>act</strong> : activation function</p>
+<blockquote>
+<div><p>The function that is applied to the layer activations.</p>
+</div></blockquote>
+<p><strong>n_units</strong> : int</p>
+<blockquote>
+<div><p>The number of units of the layer</p>
+</div></blockquote>
+<p><strong>shape</strong> : list of shape</p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>strides: list of stride</strong></p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>padding: a string</strong></p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>weights_initializer</strong> : weights initializer</p>
+<blockquote>
+<div><p>Initialize the weight matrix</p>
+</div></blockquote>
+<p><strong>biases_initializer</strong> : biases initializer</p>
+<blockquote>
+<div><p>Initialize the bias vector</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.Pool2dLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Pool2dLayer</code><span class="sig-paren">(</span><em>layer=None, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=&lt;function max_pool&gt;, name='pool_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Pool2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Pool2dLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>ksize</strong> : list of XX</p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>strides: list of stride</strong></p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>padding: a string</strong></p>
+<blockquote>
+<div><p>XXX</p>
+</div></blockquote>
+<p><strong>pool: a pooling function</strong></p>
+<blockquote>
+<div><p>tf.nn.max_pool ...</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="shape-layer">
+<h2>Shape layer<a class="headerlink" href="#shape-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.FlattenLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">FlattenLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='flatten_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#FlattenLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.FlattenLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D
+vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>layer</strong> : a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</p>
+<blockquote>
+<div><p>The <cite>Layer</cite> class feeding into this layer.</p>
+</div></blockquote>
+<p><strong>name</strong> : a string or None</p>
+<blockquote class="last">
+<div><p>An optional name to attach to this layer.</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="coming-soon">
+<h2>Coming soon<a class="headerlink" href="#coming-soon" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.MaxoutLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">MaxoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>name='maxout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#MaxoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.MaxoutLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ResnetLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ResnetLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>name='resnet_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ResnetLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ResnetLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.GaussianNoiseLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">GaussianNoiseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='gaussian_noise_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#GaussianNoiseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.GaussianNoiseLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ReshapeLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>shape=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ConcatLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ConcatLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='concat_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ConcatLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ConcatLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coming soon</p>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">count_params</span></code>()</td>
+<td>return the number of parameters in the network</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">print_layers</span></code>()</td>
+<td>print all info of layers in the network</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">print_params</span></code>()</td>
+<td>print all info of parameters in the network</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="helper-functions">
+<h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.layers.flatten_reshape">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">flatten_reshape</code><span class="sig-paren">(</span><em>variable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#flatten_reshape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.flatten_reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reshapes the input to a 1D vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>variable</strong> : a tensorflow variable</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../user/development.html" class="btn btn-neutral" title="Development" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
