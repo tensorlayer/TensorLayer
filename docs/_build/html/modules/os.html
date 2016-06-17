@@ -168,14 +168,7 @@
 <dt id="tensorlayer.os.exit_tf">
 <code class="descclassname">tensorlayer.os.</code><code class="descname">exit_tf</code><span class="sig-paren">(</span><em>sess</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#exit_tf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.exit_tf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close tensorboard and nvidia-process if available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sess</strong> : a :sess instance of tensorflow</td>
-</tr>
-</tbody>
-</table>
+<p>sess : a :sess instance of tensorflow</p>
 </dd></dl>
 
 <dl class="function">
@@ -183,30 +176,15 @@
 <code class="descclassname">tensorlayer.os.</code><code class="descname">clear_all</code><span class="sig-paren">(</span><em>printable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#clear_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.clear_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clears all the placeholder variables of keep prob,
 including keeping probabilities of all dropout, denoising, dropconnect etc.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>printable</strong> : if True, print all deleted variables.</td>
-</tr>
-</tbody>
-</table>
+<p>printable : if True, print all deleted variables.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="tensorlayer.os.set_gpu_fraction">
 <code class="descclassname">tensorlayer.os.</code><code class="descname">set_gpu_fraction</code><span class="sig-paren">(</span><em>sess</em>, <em>gpu_fraction=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#set_gpu_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.set_gpu_fraction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the GPU memory fraction for the application.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>sess</strong> : a :sess instance of tensorflow</p>
-<p class="last"><strong>gpu_fraction</strong> : float (0 ~ 1], fraction of GPU memory</p>
-</td>
-</tr>
-</tbody>
-</table>
+<p>sess : a :sess instance of tensorflow
+gpu_fraction : float (0 ~ 1], fraction of GPU memory</p>
 </dd></dl>
 
 </div>

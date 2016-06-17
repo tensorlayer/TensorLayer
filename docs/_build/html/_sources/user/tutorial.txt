@@ -269,7 +269,7 @@ Here, ``network.outputs`` is the 10 identity outputs from the network (in one ho
 output represents the class index. While ``cost`` is the cross-entropy between target and predicted labels.
 
 Denoising Autoencoder (DAE)
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Autoencoder is a unsupervised learning models which able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
@@ -317,6 +317,7 @@ to last hidden layer.
 
 
 .. code-block:: python
+
     network = tl.InputLayer(x, name='input_layer')
     network = tl.Conv2dLayer(network,
                             act = tf.nn.relu,

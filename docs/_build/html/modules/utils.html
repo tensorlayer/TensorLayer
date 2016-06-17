@@ -169,27 +169,14 @@
 <dd><p>Input the predicted results, targets results and
 the number of class, return the confusion matrix, F1-score of each class,
 accuracy and macro F1-score.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>y_test</strong> : numpy.array or list</p>
-<blockquote>
-<div><p>target results</p>
-</div></blockquote>
-<p><strong>y_predict</strong> : numpy.array or list</p>
-<blockquote>
-<div><p>predicted results</p>
-</div></blockquote>
-<p><strong>n_classes</strong> : int</p>
-<blockquote class="last">
-<div><p>number of classes</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
+<dl class="docutils">
+<dt>y_test</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>target results</dd>
+<dt>y_predict</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>predicted results</dd>
+<dt>n_classes</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>number of classes</dd>
+</dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">)</span>
@@ -204,19 +191,10 @@ accuracy and macro F1-score.</p>
 <dt id="tensorlayer.utils.dict_to_one">
 <code class="descclassname">tensorlayer.utils.</code><code class="descname">dict_to_one</code><span class="sig-paren">(</span><em>dp_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/utils.html#dict_to_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.utils.dict_to_one" title="Permalink to this definition">¶</a></dt>
 <dd><p>Input a dictionary, return a dictionary that all items are set to one, use for disable dropout, dropconnect layer and so on.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>dp_dict</strong> : dictionary</p>
-<blockquote class="last">
-<div><p>keeping probabilities</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
+<dl class="docutils">
+<dt>dp_dict</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>keeping probabilities</dd>
+</dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">Layer</span><span class="o">.</span><span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">)</span>

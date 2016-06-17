@@ -179,32 +179,20 @@
 <dt id="tensorlayer.cost.cross_entropy">
 <code class="descclassname">tensorlayer.cost.</code><code class="descname">cross_entropy</code><span class="sig-paren">(</span><em>output</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#cross_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.cross_entropy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the cost function of cross-entropy between two distribution.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>output</strong> : tensorflow variable</p>
-<blockquote>
-<div><p>A distribution with shape: [None, n_feature].</p>
-</div></blockquote>
-<p><strong>target</strong> : tensorflow variable</p>
-<blockquote class="last">
-<div><p>A distribution with shape: [None, n_feature].</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>About cross-entropy:
-<a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">https://en.wikipedia.org/wiki/Cross_entropy</a>
-The code are borrowed from:
-<a class="reference external" href="https://github.com/cmgreen210/TensorFlowDeepAutoencoder/blob/master/code/ae/autoencoder.py">https://github.com/cmgreen210/TensorFlowDeepAutoencoder/blob/master/code/ae/autoencoder.py</a></p>
-<p class="rubric">Examples</p>
+<dl class="docutils">
+<dt>output</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+<dt>target</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+</dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
 </pre></div>
 </div>
+<p>About cross-entropy:
+<a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">https://en.wikipedia.org/wiki/Cross_entropy</a>
+The code are borrowed from:
+<a class="reference external" href="https://github.com/cmgreen210/TensorFlowDeepAutoencoder/blob/master/code/ae/autoencoder.py">https://github.com/cmgreen210/TensorFlowDeepAutoencoder/blob/master/code/ae/autoencoder.py</a></p>
 </dd></dl>
 
 </div>
@@ -217,18 +205,9 @@ The code are borrowed from:
 <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py</a>
 li regularization removes the neurons of previous layer.
 &#8216;i&#8217; represents &#8216;inputs&#8217;</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scale: A scalar multiplier `Tensor`. 0.0 disables the regularizer.</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function with signature <cite>li(weights, name=None)</cite> that apply L1 regularization.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</strong></td>
-</tr>
-</tbody>
-</table>
+<p>scale: A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</p>
+<p>A function with signature <cite>li(weights, name=None)</cite> that apply L1 regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
 </dd></dl>
 
 <dl class="function">
@@ -239,18 +218,10 @@ see:
 <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py</a>
 Lo regularization removes the neurons of current layer.
 &#8216;o&#8217; represents outputs</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scale: A scalar multiplier `Tensor`. 0.0 disables the regularizer.</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function with signature <cite>lo(weights, name=None)</cite> that apply Lo regularization.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</strong></td>
-</tr>
-</tbody>
-</table>
+<blockquote>
+<div>scale: A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</div></blockquote>
+<p>A function with signature <cite>lo(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
 </dd></dl>
 
 <dl class="function">
@@ -262,18 +233,9 @@ see:
 <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py</a>
 <a class="reference external" href="https://en.wikipedia.org/wiki/Matrix_norm#Max_norm">https://en.wikipedia.org/wiki/Matrix_norm#Max_norm</a>
 Max-norm regularization</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scale: A scalar multiplier `Tensor`. 0.0 disables the regularizer.</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function with signature <cite>mn(weights, name=None)</cite> that apply Lo regularization.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</strong></td>
-</tr>
-</tbody>
-</table>
+<p>scale: A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</p>
+<p>A function with signature <cite>mn(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
 </dd></dl>
 
 <dl class="function">
@@ -285,18 +247,9 @@ see:
 <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py</a>
 <a class="reference external" href="https://en.wikipedia.org/wiki/Matrix_norm#Max_norm">https://en.wikipedia.org/wiki/Matrix_norm#Max_norm</a>
 Max-norm output regularization removes the neurons of current layer.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scale: A scalar multiplier `Tensor`. 0.0 disables the regularizer.</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function with signature <cite>mn_o(weights, name=None)</cite> that apply Lo regularization.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</strong></td>
-</tr>
-</tbody>
-</table>
+<p>scale: A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</p>
+<p>A function with signature <cite>mn_o(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
 </dd></dl>
 
 <dl class="function">
@@ -308,18 +261,9 @@ see:
 <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py</a>
 <a class="reference external" href="https://en.wikipedia.org/wiki/Matrix_norm#Max_norm">https://en.wikipedia.org/wiki/Matrix_norm#Max_norm</a>
 Max-norm output regularization removes the neurons of current layer.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>scale: A scalar multiplier `Tensor`. 0.0 disables the regularizer.</strong></td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A function with signature <cite>mn_i(weights, name=None)</cite> that apply Lo regularization.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><strong>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</strong></td>
-</tr>
-</tbody>
-</table>
+<p>scale: A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</p>
+<p>A function with signature <cite>mn_i(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
 </dd></dl>
 
 </div>
