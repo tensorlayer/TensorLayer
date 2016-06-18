@@ -33,10 +33,13 @@ def main_test_layers(model='relu'):
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
+
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+        # network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1',
+        #         W_init=tf.random_normal, W_init_args={'mean':1.0, 'stddev':1.0})
+        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1', weights_initializer=tf.random_normal, )
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
         network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
@@ -361,6 +364,16 @@ def main_test_cnn_layer():
     y_ = tf.placeholder(tf.int64, shape=[None,])
 
     network = tl.layers.InputLayer(x, name='input_layer')
+    # network = tl.layers.Conv2dLayer(network,
+    #                     act = tf.nn.relu,
+    #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    #                     strides=[1, 1, 1, 1],
+    #                     padding='SAME',
+    #                     W_init = tf.truncated_normal,
+    #                     W_init_args = {'mean' : 1, 'stddev':3},
+    #                     b_init = tf.zeros,
+    #                     b_init_args = {'name' : 'HAHA'},
+    #                     name ='cnn_layer1')     # output: (?, 28, 28, 32)
     network = tl.layers.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch

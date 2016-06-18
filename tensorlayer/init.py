@@ -4,7 +4,8 @@ import math
 
 
 def xavier_init(shape, uniform=True):
-    """Set the parameter initialization using the method described.
+    """
+    Set the parameter initialization using the method described.
     This method is designed to keep the scale of the gradients roughly the same
     in all layers.
 
@@ -14,14 +15,15 @@ def xavier_init(shape, uniform=True):
         The number of units of the previous layer
     n_units : int
         The number of units of the current layer
-    uniform: If true use a uniform distribution, otherwise use a normal.
+    uniform : True, False
+        If true use a uniform distribution, otherwise use a normal.
 
     Returns
     -------
-    An initializer.
+    An initializer for 2D matrix.
 
     Reference
-    ---------
+    ----------
     Glorot, X., & Bengio, Y. (2010). Understanding the difficulty of training deep
     feedforward neural networks. Proceedings of the 13th International Conference
     on Artificial Intelligence and Statistics (AISTATS), 9, 249–256. http://doi.org/10.1.1.207.2059

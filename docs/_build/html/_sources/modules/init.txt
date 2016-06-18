@@ -3,7 +3,6 @@
 
 .. automodule:: tensorlayer.init
 
-
 .. autosummary::
 
    xavier_init
@@ -13,6 +12,3 @@
  -------------
 
 .. autofunction:: xavier_init
-   :members:
-
-.

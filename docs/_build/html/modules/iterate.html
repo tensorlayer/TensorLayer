@@ -91,7 +91,7 @@
 <li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#general-functions">General functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iteration-functions">Iteration functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
@@ -153,16 +153,23 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches" title="tensorlayer.iterate.minibatches"><code class="xref py py-obj docutils literal"><span class="pre">minibatches</span></code></a>(inputs,&nbsp;targets,&nbsp;batchsize[,&nbsp;...])</td>
-<td>Return a dataset by a given batch size.</td>
+<td>Input a group of example in 2D numpy.array and their labels.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches_for_sequence2D" title="tensorlayer.iterate.minibatches_for_sequence2D"><code class="xref py py-obj docutils literal"><span class="pre">minibatches_for_sequence2D</span></code></a>(inputs,&nbsp;targets,&nbsp;...)</td>
+<td>Input a group of example in 2D numpy.array and their labels.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches_for_sequence4D" title="tensorlayer.iterate.minibatches_for_sequence4D"><code class="xref py py-obj docutils literal"><span class="pre">minibatches_for_sequence4D</span></code></a>(inputs,&nbsp;targets,&nbsp;...)</td>
+<td>Input a group of example in 4D numpy.array and their labels.</td>
 </tr>
 </tbody>
 </table>
-<div class="section" id="general-functions">
-<h2>General functions<a class="headerlink" href="#general-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="iteration-functions">
+<h2>Iteration functions<a class="headerlink" href="#iteration-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.iterate.minibatches">
 <code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batchsize</em>, <em>shuffle=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dataset by a given batch size.</p>
+<dd><p>Input a group of example in 2D numpy.array and their labels.
+Return the examples and labels by the given batchsize</p>
 <dl class="docutils">
 <dt>inputs</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last upperalpha simple" start="24">
@@ -181,6 +188,134 @@
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.iterate.minibatches_for_sequence2D">
+<code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches_for_sequence2D</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batch_size</em>, <em>sequence_length</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches_for_sequence2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches_for_sequence2D" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Input a group of example in 2D numpy.array and their labels.
+Return the examples and labels by the given batchsize, sequence_length.
+Use for RNN.</p>
+<dl class="docutils">
+<dt>inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last upperalpha simple" start="24">
+<li>The input features, every row is a example.</li>
+</ol>
+</dd>
+<dt>targets</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last loweralpha simple" start="25">
+<li>The labels of inputs, every row is a example.</li>
+</ol>
+</dd>
+<dt>batchsize</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</dd>
+<dt>sequence_length</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The sequence length</dd>
+<dt>stride: int</dt>
+<dd>The stride step</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sequence_length</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">],[</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">],[</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">],[</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span><span class="s1">&#39;5&#39;</span><span class="p">,</span><span class="s1">&#39;6&#39;</span><span class="p">,</span><span class="s1">&#39;7&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;X_train =</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="docutils">
+<dt>%s&#8217; % X_train)</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_train =</span>
+</pre></div>
+</div>
+</dd>
+<dt>%s&#8217; % y_train)</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">minibatches_for_sequence2D</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">sequence_length</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[[</span> <span class="mf">1.</span>  <span class="mf">2.</span>  <span class="mf">3.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">4.</span>  <span class="mf">5.</span>  <span class="mf">6.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">4.</span>  <span class="mf">5.</span>  <span class="mf">6.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">7.</span>  <span class="mf">8.</span>  <span class="mf">9.</span><span class="p">]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">1</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[[</span>  <span class="mf">4.</span>   <span class="mf">5.</span>   <span class="mf">6.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span>  <span class="mf">7.</span>   <span class="mf">8.</span>   <span class="mf">9.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span>  <span class="mf">7.</span>   <span class="mf">8.</span>   <span class="mf">9.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">10.</span>  <span class="mf">11.</span>  <span class="mf">12.</span><span class="p">]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">2</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">... </span><span class="o">...</span>
+<span class="gp">... </span><span class="p">[[</span> <span class="mf">16.</span>  <span class="mf">17.</span>  <span class="mf">18.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">19.</span>  <span class="mf">20.</span>  <span class="mf">21.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">19.</span>  <span class="mf">20.</span>  <span class="mf">21.</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">22.</span>  <span class="mf">23.</span>  <span class="mf">24.</span><span class="p">]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">6</span> <span class="mi">7</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.iterate.minibatches_for_sequence4D">
+<code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches_for_sequence4D</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batch_size</em>, <em>sequence_length</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches_for_sequence4D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches_for_sequence4D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input a group of example in 4D numpy.array and their labels.
+Return the examples and labels by the given batchsize, sequence_length.
+Use for RNN.</p>
+<dl class="docutils">
+<dt>inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last upperalpha simple" start="24">
+<li>The input features, every row is a example.</li>
+</ol>
+</dd>
+<dt>targets</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last loweralpha simple" start="25">
+<li>The labels of inputs, every row is a example.</li>
+</ol>
+</dd>
+<dt>batchsize</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</dd>
+<dt>sequence_length</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The sequence length</dd>
+<dt>stride: int</dt>
+<dd>The stride step</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sequence_length</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">],[</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">],[</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">],[</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span><span class="s1">&#39;5&#39;</span><span class="p">,</span><span class="s1">&#39;6&#39;</span><span class="p">,</span><span class="s1">&#39;7&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">minibatches_for_sequence4D</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">sequence_length</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[[[[</span> <span class="mf">1.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">2.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">3.</span><span class="p">]]]</span>
+<span class="gp">... </span><span class="p">[[[</span> <span class="mf">4.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">5.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">6.</span><span class="p">]]]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[[[[</span> <span class="mf">4.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">5.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">6.</span><span class="p">]]]</span>
+<span class="gp">... </span><span class="p">[[[</span> <span class="mf">7.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">8.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">9.</span><span class="p">]]]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="o">...</span>
+<span class="gp">... </span><span class="p">[[[[</span> <span class="mf">19.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">20.</span><span class="p">]</span>
+<span class="gp">... </span>   <span class="p">[</span> <span class="mf">21.</span><span class="p">]]]</span>
+<span class="gp">... </span><span class="p">[[[</span> <span class="mf">22.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">23.</span><span class="p">]</span>
+<span class="gp">... </span>  <span class="p">[</span> <span class="mf">24.</span><span class="p">]]]]</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>

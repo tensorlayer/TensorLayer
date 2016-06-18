@@ -143,7 +143,8 @@
   <h1>Source code for tensorlayer.utils</h1><div class="highlight"><pre>
 <span></span><span class="c1">## Evaluation</span>
 <div class="viewcode-block" id="evaluation"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.evaluation">[docs]</a><span class="k">def</span> <span class="nf">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Input the predicted results, targets results and</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input the predicted results, targets results and</span>
 <span class="sd">    the number of class, return the confusion matrix, F1-score of each class,</span>
 <span class="sd">    accuracy and macro F1-score.</span>
 
@@ -158,9 +159,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; dp_dict = Layer.dict_to_one( network.all_drop )</span>
-<span class="sd">    &gt;&gt;&gt; dp_dict = Layer.dict_to_one( network.all_drop )</span>
-<span class="sd">    &gt;&gt;&gt; feed_dict.update(dp_dict)</span>
+<span class="sd">    &gt;&gt;&gt; c_mat, f1, acc, f1_macro = evaluation(y_test, y_predict, n_classes)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">accuracy_score</span>
     <span class="n">c_mat</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_classes</span><span class="p">)])</span>
@@ -174,7 +173,9 @@
     <span class="k">return</span> <span class="n">c_mat</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">f1_macro</span></div>
 
 <div class="viewcode-block" id="dict_to_one"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.dict_to_one">[docs]</a><span class="k">def</span> <span class="nf">dict_to_one</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Input a dictionary, return a dictionary that all items are set to one, use for disable dropout, dropconnect layer and so on.</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input a dictionary, return a dictionary that all items are set to one,</span>
+<span class="sd">    use for disable dropout, dropconnect layer and so on.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -183,11 +184,87 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; dp_dict = Layer.dict_to_one( network.all_drop )</span>
-<span class="sd">    &gt;&gt;&gt; dp_dict = Layer.dict_to_one( network.all_drop )</span>
+<span class="sd">    &gt;&gt;&gt; dp_dict = dict_to_one( network.all_drop )</span>
+<span class="sd">    &gt;&gt;&gt; dp_dict = dict_to_one( network.all_drop )</span>
 <span class="sd">    &gt;&gt;&gt; feed_dict.update(dp_dict)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dp_dict</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="class_balancing_oversample"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.class_balancing_oversample">[docs]</a><span class="k">def</span> <span class="nf">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Input the features and labels, return the features and labels</span>
+<span class="sd">    after oversampling.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X_train : numpy.array</span>
+<span class="sd">        Features, each row is an example</span>
+<span class="sd">    y_train : numpy.array</span>
+<span class="sd">        Labels</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train = class_balancing_oversample(X_train, y_train, printable=True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ======== Classes balancing</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Classes balancing for training examples...&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the occurrence number of each stage: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">())</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the least stage is Label </span><span class="si">%s</span><span class="s1"> have </span><span class="si">%s</span><span class="s1"> instances&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the most stage is  Label </span><span class="si">%s</span><span class="s1"> have </span><span class="si">%s</span><span class="s1"> instances&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">most_num</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;most num is </span><span class="si">%d</span><span class="s1">, all classes tend to be this num&#39;</span> <span class="o">%</span> <span class="n">most_num</span><span class="p">)</span>
+
+    <span class="n">locations</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">lab</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">():</span>    <span class="c1"># find the index from y_train</span>
+        <span class="n">number</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">num</span>
+        <span class="n">locations</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span><span class="o">==</span><span class="n">lab</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;convert list(np.array) to dict format&#39;</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># convert list to dict</span>
+    <span class="k">for</span> <span class="n">lab</span><span class="p">,</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">number</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">X</span><span class="p">[</span><span class="n">lab</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">locations</span><span class="p">[</span><span class="n">lab</span><span class="p">]]</span>
+
+    <span class="c1"># oversampling</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;start oversampling&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">most_num</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">temp</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;first features of label 0 &gt;&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the occurrence num of each stage after oversampling&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;make each stage have same num of instances&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+        <span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">most_num</span><span class="p">,:]</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+    <span class="c1"># convert dict to list</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;convert from dict to list format&#39;</span><span class="p">)</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])))</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span> <span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">y_train</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">key</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">key</span><span class="p">]))])</span>
+    <span class="c1"># print(len(X_train), len(y_train))</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the occurrence number of each stage after oversampling: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">())</span>
+    <span class="c1"># ================ End of Classes balancing</span>
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span></div>
 </pre></div>
 
            </div>

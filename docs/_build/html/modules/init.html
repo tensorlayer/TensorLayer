@@ -149,7 +149,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">xavier_init</span></code>(shape[,&nbsp;uniform])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.init.xavier_init" title="tensorlayer.init.xavier_init"><code class="xref py py-obj docutils literal"><span class="pre">xavier_init</span></code></a>(shape[,&nbsp;uniform])</td>
 <td>Set the parameter initialization using the method described.</td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Initializers</span></code></td>
@@ -157,7 +157,26 @@
 </tr>
 </tbody>
 </table>
-<p>.</p>
+<dl class="function">
+<dt id="tensorlayer.init.xavier_init">
+<code class="descclassname">tensorlayer.init.</code><code class="descname">xavier_init</code><span class="sig-paren">(</span><em>shape</em>, <em>uniform=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/init.html#xavier_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.init.xavier_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameter initialization using the method described.
+This method is designed to keep the scale of the gradients roughly the same
+in all layers.</p>
+<dl class="docutils">
+<dt>n_inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the previous layer</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the current layer</dd>
+<dt>uniform</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">True, False</span><dd>If true use a uniform distribution, otherwise use a normal.</dd>
+</dl>
+<p>An initializer for 2D matrix.</p>
+<p>Glorot, X., &amp; Bengio, Y. (2010). Understanding the difficulty of training deep
+feedforward neural networks. Proceedings of the 13th International Conference
+on Artificial Intelligence and Statistics (AISTATS), 9, 249–256. <a class="reference external" href="http://doi.org/10.1.1.207.2059">http://doi.org/10.1.1.207.2059</a></p>
+</dd></dl>
+
 </div>
 
 

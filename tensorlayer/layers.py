@@ -144,20 +144,25 @@ class DenseLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     n_units : int
-        The number of units of the layer
+        The number of units of the layer.
     act : activation function
         The function that is applied to the layer activations.
-    weights_initializer : weights initializer
-        Initialize the weight matrix
-    biases_initializer : biases initializer
-        Initialize the bias vector
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias matrix.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1',
+    ...            W_init=tf.random_normal, W_init_args={'mean':1.0, 'stddev':1.0})
 
     Notes
     -----
@@ -169,8 +174,10 @@ class DenseLayer(Layer):
         layer = None,
         n_units = 100,
         act = tf.nn.relu,
-        weights_initializer = init.xavier_init,
-        biases_initializer = tf.zeros,
+        W_init = init.xavier_init,
+        b_init = tf.zeros,
+        W_init_args = {},
+        b_init_args = {},
         name ='dense_layer',
     ):
         Layer.__init__(self, name=name)
@@ -178,18 +185,9 @@ class DenseLayer(Layer):
         n_in = layer.n_units
         self.n_units = n_units
         print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
-        # self.shape = inputs._shape
-        # print(vars(self))
-        # exit()
-            # W = tf.get_variable("W", shape=[n_in, n_units], initializer=tf.contrib.layers.xavier_initializer())
-        # if act == tf.nn.relu:
-        #     W = tf.Variable(tf.random_uniform([n_in, n_units], minval=0, maxval=0.01, dtype=tf.float32, seed=None, name=None), name='W')
-        # else:
-        #     W = tf.Variable(tf.random_normal([n_in, n_units], stddev=0.01), name='W')
-        W = tf.Variable(weights_initializer(shape=(n_in, n_units)), name='W')
-        # W = tf.Variable(init.xavier_init(shape=(n_in, n_units), uniform=True), name='W')
-        # W = tf.Variable(tf.constant(.01, shape=[n_in, n_units]), name='W')
-        b = tf.Variable(biases_initializer([n_units]), name='b')
+
+        W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
+        b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
         self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
@@ -435,13 +433,17 @@ class DropconnectDenseLayer(Layer):
     keep : float
         The keeping probability, the lower more values will be set to zero.
     n_units : int
-        The number of units of the layer
+        The number of units of the layer.
     act : activation function
         The function that is applied to the layer activations.
-    weights_initializer : weights initializer
-        Initialize the weight matrix
-    biases_initializer : biases initializer
-        Initialize the bias vector
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias matrix.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -456,8 +458,10 @@ class DropconnectDenseLayer(Layer):
         keep = 0.5,
         n_units = 100,
         act = tf.nn.relu,
-        weights_initializer = init.xavier_init,
-        biases_initializer = tf.zeros,
+        W_init = init.xavier_init,
+        b_init = tf.zeros,
+        W_init_args = {},
+        b_init_args = {},
         name ='dropconnect_layer',
     ):
         '''
@@ -473,10 +477,10 @@ class DropconnectDenseLayer(Layer):
         self.n_units = n_units
         print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act))
 
-        # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
-        # b = tf.Variable(tf.zeros([n_units]), name='b')
-        W = tf.Variable(weights_initializer(shape=(n_in, n_units)), name='W')
-        b = tf.Variable(biases_initializer([n_units]), name='b')
+        W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
+        b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
+        self.outputs = act(tf.matmul(self.inputs, W) + b)
+
         set_keep[name] = tf.placeholder(tf.float32)
         W_dropcon = tf.nn.dropout(W,  set_keep[name])
         self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
@@ -502,22 +506,36 @@ class Conv2dLayer(Layer):
     n_units : int
         The number of units of the layer
     shape : list of shape
-        XXX
+        shape of the filters
     strides: list of stride
         XXX
     padding: a string
         XXX
-    weights_initializer : weights initializer
-        Initialize the weight matrix
-    biases_initializer : biases initializer
-        Initialize the bias vector
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias matrix.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.Conv2dLayer(network,
+    >>>                   act = tf.nn.relu,
+    >>>                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    >>>                   strides=[1, 1, 1, 1],
+    >>>                   padding='SAME',
+    >>>                   W_init = tf.truncated_normal,
+    >>>                   W_init_args = {'mean' : 1, 'stddev':3},
+    >>>                   b_init = tf.zeros,
+    >>>                   b_init_args = {'name' : 'HAHA'},
+    >>>                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
     """
     def __init__(
         self,
@@ -526,8 +544,10 @@ class Conv2dLayer(Layer):
         shape = [5, 5, 1, 100],
         strides=[1, 1, 1, 1],
         padding='SAME',
-        weights_initializer = tf.truncated_normal,
-        biases_initializer = tf.zeros,
+        W_init = tf.truncated_normal,
+        b_init = tf.zeros,
+        W_init_args = {},
+        b_init_args = {},
         name ='cnn_layer',
     ):
         Layer.__init__(self, name=name)
@@ -535,10 +555,11 @@ class Conv2dLayer(Layer):
         # n_in = layer.n_units
         print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
-        # W = tf.Variable( tf.truncated_normal(shape=shape, stddev=0.1, seed=np.random.randint(99999999)), name='W_conv')
-        # b = tf.Variable(tf.constant(0.1, shape=[shape[-1]]), name='b_conv')
-        W = tf.Variable( weights_initializer(shape=shape), name='W_conv')
-        b = tf.Variable( biases_initializer(shape=[shape[-1]]), name='b_conv')
+        W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+        b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+
+        # W = tf.Variable( weights_initializer(shape=shape), name='W_conv')
+        # b = tf.Variable( biases_initializer(shape=[shape[-1]]), name='b_conv')
         self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
 
         self.all_layers = list(layer.all_layers)
@@ -672,12 +693,37 @@ class MaxoutLayer(Layer):
 # densen
 class ResnetLayer(Layer):
     """
-    Coming soon
+    The :class:`ResnetLayer` class is a fully connected layer.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function
+        The function that is applied to the layer activations.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias matrix.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    >>>
     """
     def __init__(
         self,
         layer = None,
         act = tf.nn.relu,
+        W_init = init.xavier_init,
+        b_init = tf.zeros,
+        W_init_args = {},
+        b_init_args = {},
         name ='resnet_layer',
     ):
         '''
@@ -692,9 +738,9 @@ class ResnetLayer(Layer):
         n_in = layer.n_units
         self.n_units = n_in
         print("  tensorlayer:Instantiate ResnetLayer %s: %d, %s" % (self.name, self.n_units, act))
-        W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=self.n_units, uniform=True), name='W')
-        b = tf.Variable(tf.zeros([self.n_units]), name='b')
 
+        W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
+        b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
         self.outputs = act(tf.matmul(self.inputs, W) + b) + self.inputs
 
         self.all_layers = list(layer.all_layers)

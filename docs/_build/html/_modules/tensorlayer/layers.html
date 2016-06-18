@@ -287,20 +287,25 @@
 <span class="sd">    layer : a :class:`Layer` instance</span>
 <span class="sd">        The `Layer` class feeding into this layer.</span>
 <span class="sd">    n_units : int</span>
-<span class="sd">        The number of units of the layer</span>
+<span class="sd">        The number of units of the layer.</span>
 <span class="sd">    act : activation function</span>
 <span class="sd">        The function that is applied to the layer activations.</span>
-<span class="sd">    weights_initializer : weights initializer</span>
-<span class="sd">        Initialize the weight matrix</span>
-<span class="sd">    biases_initializer : biases initializer</span>
-<span class="sd">        Initialize the bias vector</span>
+<span class="sd">    W_init : weights initializer</span>
+<span class="sd">        The initializer for initializing the weight matrix.</span>
+<span class="sd">    b_init : biases initializer</span>
+<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">    W_init_args : dictionary</span>
+<span class="sd">        The arguments for the weights initializer.</span>
+<span class="sd">    b_init_args : dictionary</span>
+<span class="sd">        The arguments for the biases initializer.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this layer.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name=&#39;relu1&#39;,</span>
+<span class="sd">    ...            W_init=tf.random_normal, W_init_args={&#39;mean&#39;:1.0, &#39;stddev&#39;:1.0})</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -312,8 +317,10 @@
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
         <span class="n">n_units</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
-        <span class="n">weights_initializer</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">,</span>
-        <span class="n">biases_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">,</span>
+        <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;dense_layer&#39;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -321,18 +328,9 @@
         <span class="n">n_in</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">n_units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate DenseLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
-        <span class="c1"># self.shape = inputs._shape</span>
-        <span class="c1"># print(vars(self))</span>
-        <span class="c1"># exit()</span>
-            <span class="c1"># W = tf.get_variable(&quot;W&quot;, shape=[n_in, n_units], initializer=tf.contrib.layers.xavier_initializer())</span>
-        <span class="c1"># if act == tf.nn.relu:</span>
-        <span class="c1">#     W = tf.Variable(tf.random_uniform([n_in, n_units], minval=0, maxval=0.01, dtype=tf.float32, seed=None, name=None), name=&#39;W&#39;)</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     W = tf.Variable(tf.random_normal([n_in, n_units], stddev=0.01), name=&#39;W&#39;)</span>
-        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">weights_initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_units</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
-        <span class="c1"># W = tf.Variable(init.xavier_init(shape=(n_in, n_units), uniform=True), name=&#39;W&#39;)</span>
-        <span class="c1"># W = tf.Variable(tf.constant(.01, shape=[n_in, n_units]), name=&#39;W&#39;)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">biases_initializer</span><span class="p">([</span><span class="n">n_units</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_units</span><span class="p">),</span> <span class="o">**</span><span class="n">W_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">b_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n_units</span><span class="p">],</span> <span class="o">**</span><span class="n">b_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>    <span class="c1"># list() is pass by value (shallow), without list is pass by reference</span>
@@ -578,13 +576,17 @@
 <span class="sd">    keep : float</span>
 <span class="sd">        The keeping probability, the lower more values will be set to zero.</span>
 <span class="sd">    n_units : int</span>
-<span class="sd">        The number of units of the layer</span>
+<span class="sd">        The number of units of the layer.</span>
 <span class="sd">    act : activation function</span>
 <span class="sd">        The function that is applied to the layer activations.</span>
-<span class="sd">    weights_initializer : weights initializer</span>
-<span class="sd">        Initialize the weight matrix</span>
-<span class="sd">    biases_initializer : biases initializer</span>
-<span class="sd">        Initialize the bias vector</span>
+<span class="sd">    W_init : weights initializer</span>
+<span class="sd">        The initializer for initializing the weight matrix.</span>
+<span class="sd">    b_init : biases initializer</span>
+<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">    W_init_args : dictionary</span>
+<span class="sd">        The arguments for the weights initializer.</span>
+<span class="sd">    b_init_args : dictionary</span>
+<span class="sd">        The arguments for the biases initializer.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this layer.</span>
 
@@ -599,8 +601,10 @@
         <span class="n">keep</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">n_units</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
-        <span class="n">weights_initializer</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">,</span>
-        <span class="n">biases_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">,</span>
+        <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;dropconnect_layer&#39;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -616,10 +620,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate DropconnectDenseLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
 
-        <span class="c1"># W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name=&#39;W&#39;)</span>
-        <span class="c1"># b = tf.Variable(tf.zeros([n_units]), name=&#39;b&#39;)</span>
-        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">weights_initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_units</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">biases_initializer</span><span class="p">([</span><span class="n">n_units</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_units</span><span class="p">),</span> <span class="o">**</span><span class="n">W_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">b_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n_units</span><span class="p">],</span> <span class="o">**</span><span class="n">b_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+
         <span class="n">set_keep</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="n">W_dropcon</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">W</span><span class="p">,</span>  <span class="n">set_keep</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W_dropcon</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
@@ -645,22 +649,36 @@
 <span class="sd">    n_units : int</span>
 <span class="sd">        The number of units of the layer</span>
 <span class="sd">    shape : list of shape</span>
-<span class="sd">        XXX</span>
+<span class="sd">        shape of the filters</span>
 <span class="sd">    strides: list of stride</span>
 <span class="sd">        XXX</span>
 <span class="sd">    padding: a string</span>
 <span class="sd">        XXX</span>
-<span class="sd">    weights_initializer : weights initializer</span>
-<span class="sd">        Initialize the weight matrix</span>
-<span class="sd">    biases_initializer : biases initializer</span>
-<span class="sd">        Initialize the bias vector</span>
+<span class="sd">    W_init : weights initializer</span>
+<span class="sd">        The initializer for initializing the weight matrix.</span>
+<span class="sd">    b_init : biases initializer</span>
+<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">    W_init_args : dictionary</span>
+<span class="sd">        The arguments for the weights initializer.</span>
+<span class="sd">    b_init_args : dictionary</span>
+<span class="sd">        The arguments for the biases initializer.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this layer.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.Conv2dLayer(network,</span>
+<span class="sd">    &gt;&gt;&gt;                   act = tf.nn.relu,</span>
+<span class="sd">    &gt;&gt;&gt;                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch</span>
+<span class="sd">    &gt;&gt;&gt;                   strides=[1, 1, 1, 1],</span>
+<span class="sd">    &gt;&gt;&gt;                   padding=&#39;SAME&#39;,</span>
+<span class="sd">    &gt;&gt;&gt;                   W_init = tf.truncated_normal,</span>
+<span class="sd">    &gt;&gt;&gt;                   W_init_args = {&#39;mean&#39; : 1, &#39;stddev&#39;:3},</span>
+<span class="sd">    &gt;&gt;&gt;                   b_init = tf.zeros,</span>
+<span class="sd">    &gt;&gt;&gt;                   b_init_args = {&#39;name&#39; : &#39;HAHA&#39;},</span>
+<span class="sd">    &gt;&gt;&gt;                   name =&#39;cnn_layer1&#39;)     # output: (?, 28, 28, 32)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -669,8 +687,10 @@
         <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
         <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
-        <span class="n">weights_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
-        <span class="n">biases_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
+        <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;cnn_layer&#39;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -678,10 +698,11 @@
         <span class="c1"># n_in = layer.n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate Conv2dLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span> <span class="n">padding</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
 
-        <span class="c1"># W = tf.Variable( tf.truncated_normal(shape=shape, stddev=0.1, seed=np.random.randint(99999999)), name=&#39;W_conv&#39;)</span>
-        <span class="c1"># b = tf.Variable(tf.constant(0.1, shape=[shape[-1]]), name=&#39;b_conv&#39;)</span>
-        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">weights_initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W_conv&#39;</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span> <span class="n">biases_initializer</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_conv&#39;</span><span class="p">)</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">W_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W_conv&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">b_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="o">**</span><span class="n">b_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_conv&#39;</span><span class="p">)</span>
+
+        <span class="c1"># W = tf.Variable( weights_initializer(shape=shape), name=&#39;W_conv&#39;)</span>
+        <span class="c1"># b = tf.Variable( biases_initializer(shape=[shape[-1]]), name=&#39;b_conv&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
@@ -815,12 +836,37 @@
 <span class="c1"># densen</span>
 <div class="viewcode-block" id="ResnetLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ResnetLayer">[docs]</a><span class="k">class</span> <span class="nc">ResnetLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Coming soon</span>
+<span class="sd">    The :class:`ResnetLayer` class is a fully connected layer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layer : a :class:`Layer` instance</span>
+<span class="sd">        The `Layer` class feeding into this layer.</span>
+<span class="sd">    act : activation function</span>
+<span class="sd">        The function that is applied to the layer activations.</span>
+<span class="sd">    W_init : weights initializer</span>
+<span class="sd">        The initializer for initializing the weight matrix.</span>
+<span class="sd">    b_init : biases initializer</span>
+<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">    W_init_args : dictionary</span>
+<span class="sd">        The arguments for the weights initializer.</span>
+<span class="sd">    b_init_args : dictionary</span>
+<span class="sd">        The arguments for the biases initializer.</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        An optional name to attach to this layer.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
         <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
+        <span class="n">W_init</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">,</span>
+        <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;resnet_layer&#39;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -835,9 +881,9 @@
         <span class="n">n_in</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">n_units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">n_in</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate ResnetLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%d</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
-        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_init</span><span class="p">(</span><span class="n">n_inputs</span><span class="o">=</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">,</span> <span class="n">uniform</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_units</span><span class="p">]),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
 
+        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="n">n_units</span><span class="p">),</span> <span class="o">**</span><span class="n">W_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">b_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">n_units</span><span class="p">],</span> <span class="o">**</span><span class="n">b_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
