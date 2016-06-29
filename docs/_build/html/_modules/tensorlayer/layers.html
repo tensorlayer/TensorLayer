@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -141,11 +142,17 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tensorlayer.layers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.init</span> <span class="kn">as</span> <span class="nn">init</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.visualize</span> <span class="kn">as</span> <span class="nn">visualize</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.utils</span> <span class="kn">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">tensorlayer.files</span> <span class="kn">as</span> <span class="nn">files</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.cost</span> <span class="kn">as</span> <span class="nn">cost</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.iterate</span> <span class="kn">as</span> <span class="nn">iterate</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -358,7 +365,7 @@
 <span class="sd">    layer : a :class:`Layer` instance</span>
 <span class="sd">        The `Layer` class feeding into this layer.</span>
 <span class="sd">    x_recon : tensorflow variable</span>
-<span class="sd">        The data used for reconstruct</span>
+<span class="sd">        The variables used for reconstruction.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this layer.</span>
 <span class="sd">    n_units : int</span>
@@ -366,16 +373,29 @@
 <span class="sd">    act : activation function</span>
 <span class="sd">        The activation function that is applied to the reconstruction layer.</span>
 <span class="sd">        Normally, for sigmoid layer, the reconstruction activation is sigmoid;</span>
-<span class="sd">                  for rectifying layer, the reconstruction activation is softplus.</span>
+<span class="sd">        for rectifying layer, the reconstruction activation is softplus.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=196, act=tf.nn.sigmoid, name=&#39;sigmoid1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name=&#39;recon_layer1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1200, batch_size=128, print_freq=10, save=True, save_name=&#39;w1pre_&#39;)</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name=&#39;w1pre_&#39;)</span>
+<span class="sd">        Start to pre-train the parameters of previous DenseLayer.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The input layer should be `DenseLayer` or a layer has only one axes.</span>
+<span class="sd">    You may need to modify this part to define your own cost function.</span>
+<span class="sd">    By default, the cost is implemented as follow:</span>
+
+<span class="sd">    For sigmoid layer, the implementation as (http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial)</span>
+
+<span class="sd">    For rectifying layer, the implementation as (Glorot, X., Bordes, A., &amp; Bengio, Y. (2011). Deep Sparse Rectifier Neural Networks. Aistats, 15, 315–323. http://doi.org/10.1.1.208.6449)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -388,66 +408,72 @@
         <span class="n">DenseLayer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_units</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     tensorlayer:  </span><span class="si">%s</span><span class="s2"> is a ReconLayer&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">lambda_l2_w</span> <span class="o">=</span> <span class="mf">0.004</span>
-        <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.0001</span> <span class="o">*</span> <span class="mi">1</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     lambda_l2_w: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lambda_l2_w</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     learning_rate: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">learning_rate</span><span class="p">)</span>
-
-        <span class="c1"># print(vars(x_recon))</span>
-        <span class="c1"># exit()</span>
-
+        <span class="c1"># y : reconstruction outputs; train_params : parameters to train</span>
+        <span class="c1"># Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">train_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        You may want to modify this part to define your own cost function</span>
+        <span class="c1"># =====================================================================</span>
+        <span class="c1">#</span>
+        <span class="c1"># You need to modify the below cost function and optimizer so as to</span>
+        <span class="c1"># implement your own pre-train method.</span>
+        <span class="c1">#</span>
+        <span class="c1"># =====================================================================</span>
+        <span class="n">lambda_l2_w</span> <span class="o">=</span> <span class="mf">0.004</span>
+        <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.0001</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     lambda_l2_w: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">lambda_l2_w</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     learning_rate: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">learning_rate</span><span class="p">)</span>
 
-<span class="sd">        by default, the cost is implemented as:</span>
-<span class="sd">         for sigmoid layer, the implementation follow:</span>
-<span class="sd">             Ref:  http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial</span>
-<span class="sd">         for rectifying layer, the implementation follow:</span>
-<span class="sd">             Ref: Glorot, X., Bordes, A., &amp; Bengio, Y. (2011).</span>
-<span class="sd">                  Deep Sparse Rectifier Neural Networks. Aistats,</span>
-<span class="sd">                  15, 315–323. http://doi.org/10.1.1.208.6449</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-
-        <span class="c1"># mean-squre-error = quadratic-cost</span>
+        <span class="c1"># Mean-squre-error i.e. quadratic-cost</span>
         <span class="n">mse</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squared_difference</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x_recon</span><span class="p">),</span> <span class="n">reduction_indices</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">mse</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>                               <span class="c1"># theano: ((y - x) ** 2 ).sum(axis=1).mean()</span>
+        <span class="n">mse</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span>                               <span class="c1"># DH: theano: ((y - x) ** 2 ).sum(axis=1).mean()</span>
             <span class="c1"># mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)), reduction_indices = 1))</span>
-            <span class="c1"># mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # Error</span>
-            <span class="c1"># mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # Error</span>
-        <span class="c1"># cross-entropy</span>
+            <span class="c1"># mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # DH: Error</span>
+            <span class="c1"># mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # DH: Error</span>
+        <span class="c1"># Cross-entropy</span>
         <span class="n">ce</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x_recon</span><span class="p">)</span>
-            <span class="c1"># ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # list , list , Error (only be used for softmax output)</span>
-            <span class="c1"># ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # list , index , Error (only be used for softmax output)</span>
+            <span class="c1"># ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # DH: list , list , Error (only be used for softmax output)</span>
+            <span class="c1"># ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # DH: list , index , Error (only be used for softmax output)</span>
         <span class="n">L2_w</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">l2_regularizer</span><span class="p">(</span><span class="n">lambda_l2_w</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> \
                 <span class="o">+</span> <span class="n">tf</span><span class="o">.</span><span class="n">contrib</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">l2_regularizer</span><span class="p">(</span><span class="n">lambda_l2_w</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>           <span class="c1"># faster than the code below</span>
             <span class="c1"># L2_w = lambda_l2_w * tf.reduce_mean(tf.square(self.train_params[0])) + lambda_l2_w * tf.reduce_mean( tf.square(self.train_params[2]))</span>
         <span class="c1"># DropNeuro</span>
-        <span class="n">P_o</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">lo_regularizer</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cost</span><span class="o">.</span><span class="n">lo_regularizer</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="n">P_i</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">li_regularizer</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">cost</span><span class="o">.</span><span class="n">li_regularizer</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-
+        <span class="n">P_o</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">lo_regularizer</span><span class="p">(</span><span class="mf">0.03</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># + cost.lo_regularizer(0.5)(self.train_params[2])    # DH: if add lo on decoder, no neuron will be broken</span>
+        <span class="n">P_i</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">li_regularizer</span><span class="p">(</span><span class="mf">0.03</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># + cost.li_regularizer(0.001)(self.train_params[2])</span>
         <span class="c1"># L1 of activation outputs</span>
         <span class="n">activation_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">L1_a</span> <span class="o">=</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">activation_out</span><span class="p">)</span>   <span class="c1"># theano: T.mean( self.a[i] )                     # some neuron are broken, white and black</span>
-            <span class="c1"># L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=0) )         # some neuron are broken, white and black</span>
-            <span class="c1"># L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=1) )   # some neuron are broken, white and black</span>
-        <span class="c1"># KLD</span>
+        <span class="n">L1_a</span> <span class="o">=</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">activation_out</span><span class="p">)</span>   <span class="c1"># DH:  theano: T.mean( self.a[i] )                     # some neuron are broken, white and black</span>
+            <span class="c1"># L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=0) )         # DH: some neuron are broken, white and black</span>
+            <span class="c1"># L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=1) )   # DH: some neuron are broken, white and black</span>
+        <span class="c1"># KL Divergence</span>
         <span class="n">beta</span> <span class="o">=</span> <span class="mi">4</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="mf">0.15</span>
         <span class="n">p_hat</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">activation_out</span><span class="p">,</span> <span class="n">reduction_indices</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># theano: p_hat = T.mean( self.a[i], axis=0 )</span>
         <span class="n">KLD</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">p_hat</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span><span class="o">/</span> <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">p_hat</span><span class="p">)))</span> <span class="p">)</span>
             <span class="c1"># KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )</span>
             <span class="c1"># theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )</span>
-
+        <span class="c1"># Total cost</span>
         <span class="k">if</span> <span class="n">act</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softplus</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s1">&#39;     use: mse, L2_w, L1_a&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">mse</span> <span class="o">+</span> <span class="n">L1_a</span> <span class="o">+</span> <span class="n">L2_w</span> <span class="c1">#P_o</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">mse</span> <span class="o">+</span> <span class="n">L1_a</span> <span class="o">+</span> <span class="n">L2_w</span>
         <span class="k">elif</span> <span class="n">act</span> <span class="o">==</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">:</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;     use: ce, L2_w, KLD&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">ce</span> <span class="o">+</span> <span class="n">L2_w</span> <span class="o">+</span> <span class="n">KLD</span>
-                <span class="c1"># self.cost = mse + L2_w + KLD</span>
+            <span class="c1"># ----------------------------------------------------</span>
+            <span class="c1"># Cross-entropy was used in Denoising AE</span>
+            <span class="c1"># print(&#39;     use: ce, L2_w, KLD&#39;)</span>
+            <span class="c1"># self.cost = ce + L2_w + KLD</span>
+            <span class="c1"># ----------------------------------------------------</span>
+            <span class="c1"># Mean-squared-error was used in Vanilla AE</span>
+            <span class="c1"># print(&#39;     use: mse, L2_w, KLD&#39;)</span>
+            <span class="c1"># self.cost = mse + L2_w + KLD</span>
+            <span class="c1"># ----------------------------------------------------</span>
+            <span class="c1"># Add DropNeuro penalty (P_o) can remove neurons of AE</span>
+            <span class="c1"># print(&#39;     use: mse, L2_w, KLD, P_o&#39;)</span>
+            <span class="c1"># self.cost = mse + L2_w + KLD + P_o</span>
+            <span class="c1"># ----------------------------------------------------</span>
+            <span class="c1"># Add DropNeuro penalty (P_i) can remove neurons of previous layer</span>
+            <span class="c1">#   If previous layer is InputLayer, it means remove useless features</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;     use: mse, L2_w, KLD, P_i&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">mse</span> <span class="o">+</span> <span class="n">L2_w</span> <span class="o">+</span> <span class="n">KLD</span> <span class="o">+</span> <span class="n">P_i</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Don&#39;t support the given reconstruct activation function&quot;</span><span class="p">)</span>
 
@@ -455,15 +481,14 @@
                                         <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">use_locking</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">)</span>
                 <span class="c1"># self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)</span>
 
-        <span class="c1"># You may want to check different cost values</span>
-        <span class="c1"># self.KLD = KLD</span>
-        <span class="c1"># self.L2_w = L2_w</span>
-        <span class="c1"># self.mse = mse</span>
-        <span class="c1"># self.L1_a = L1_a</span>
-
     <span class="k">def</span> <span class="nf">pretrain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">denoise_name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                   <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; pre-train the parameters of previous DenseLayer &#39;&#39;&#39;</span>
+        <span class="c1"># ====================================================</span>
+        <span class="c1">#</span>
+        <span class="c1"># You need to modify the cost function in __init__() so as to</span>
+        <span class="c1"># get your own pre-train method.</span>
+        <span class="c1">#</span>
+        <span class="c1"># ====================================================</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     tensorlayer:  </span><span class="si">%s</span><span class="s2"> start pretrain&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     batch_size: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">batch_size</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">denoise_name</span><span class="p">:</span>
@@ -471,13 +496,6 @@
             <span class="n">dp_denoise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span><span class="p">[</span><span class="n">set_keep</span><span class="p">[</span><span class="n">denoise_name</span><span class="p">]]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;     no denoising layer&quot;</span><span class="p">)</span>
-
-        <span class="c1"># You may want to check different cost values</span>
-        <span class="c1"># dp_dict = utils.dict_to_one( self.all_drop )</span>
-        <span class="c1"># feed_dict = {x: X_val}</span>
-        <span class="c1"># feed_dict.update(dp_dict)</span>
-        <span class="c1"># print(sess.run([self.mse, self.L1_a, self.L2_w], feed_dict=feed_dict))</span>
-        <span class="c1"># exit()</span>
 
         <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_epoch</span><span class="p">):</span>
             <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -511,7 +529,8 @@
                 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;   val loss: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val_loss</span><span class="o">/</span> <span class="n">n_batch</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">visualize</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">(),</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">save_name</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span>
+                        <span class="n">visualize</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">(),</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">save_name</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span>
+                        <span class="n">files</span><span class="o">.</span><span class="n">save_npz</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">save_name</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.npz&#39;</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You should change visualize.W(), if you want to save the feature images for different dataset&quot;</span><span class="p">)</span></div>
 
@@ -532,8 +551,15 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropoutLayer(network, keep=0.8, name=&#39;drop1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name=&#39;relu1&#39;)</span>
+<span class="sd">    ... Alternatively, you can choose a specific initializer for the weights as follow:</span>
+<span class="sd">    ... network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name=&#39;relu1&#39;, W_init=tf.random_normal )</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropoutLayer(network, keep=0.5, name=&#39;drop2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name=&#39;relu2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropoutLayer(network, keep=0.5, name=&#39;drop3&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name=&#39;output_layer&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -592,8 +618,11 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name=&#39;dropconnect_relu1&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name=&#39;dropconnect_relu2&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name=&#39;output_layer&#39;)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -635,6 +664,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
 
+
 <span class="c1"># Convolutional Layer</span>
 <div class="viewcode-block" id="Conv2dLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.Conv2dLayer">[docs]</a><span class="k">class</span> <span class="nc">Conv2dLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -650,10 +680,10 @@
 <span class="sd">        The number of units of the layer</span>
 <span class="sd">    shape : list of shape</span>
 <span class="sd">        shape of the filters</span>
-<span class="sd">    strides: list of stride</span>
-<span class="sd">        XXX</span>
-<span class="sd">    padding: a string</span>
-<span class="sd">        XXX</span>
+<span class="sd">    strides : a list of ints. 1-D of length 4.</span>
+<span class="sd">        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.</span>
+<span class="sd">    padding : a string from: &quot;SAME&quot;, &quot;VALID&quot;.</span>
+<span class="sd">        The type of padding algorithm to use.</span>
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
@@ -677,7 +707,7 @@
 <span class="sd">    &gt;&gt;&gt;                   W_init = tf.truncated_normal,</span>
 <span class="sd">    &gt;&gt;&gt;                   W_init_args = {&#39;mean&#39; : 1, &#39;stddev&#39;:3},</span>
 <span class="sd">    &gt;&gt;&gt;                   b_init = tf.zeros,</span>
-<span class="sd">    &gt;&gt;&gt;                   b_init_args = {&#39;name&#39; : &#39;HAHA&#39;},</span>
+<span class="sd">    &gt;&gt;&gt;                   b_init_args = {&#39;name&#39; : &#39;bias&#39;},</span>
 <span class="sd">    &gt;&gt;&gt;                   name =&#39;cnn_layer1&#39;)     # output: (?, 28, 28, 32)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
@@ -711,22 +741,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Pool2dLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.Pool2dLayer">[docs]</a><span class="k">class</span> <span class="nc">Pool2dLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PoolLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.PoolLayer">[docs]</a><span class="k">class</span> <span class="nc">PoolLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The :class:`Pool2dLayer` class is a 2D Pooling layer.</span>
+<span class="sd">    The :class:`PoolLayer` class is a 2D Pooling layer.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    layer : a :class:`Layer` instance</span>
 <span class="sd">        The `Layer` class feeding into this layer.</span>
-<span class="sd">    ksize : list of XX</span>
-<span class="sd">        XXX</span>
-<span class="sd">    strides: list of stride</span>
-<span class="sd">        XXX</span>
-<span class="sd">    padding: a string</span>
-<span class="sd">        XXX</span>
-<span class="sd">    pool: a pooling function</span>
-<span class="sd">        tf.nn.max_pool ...</span>
+<span class="sd">    ksize : a list of ints that has length &gt;= 4.</span>
+<span class="sd">        The size of the window for each dimension of the input tensor.</span>
+<span class="sd">    strides : a list of ints that has length &gt;= 4.</span>
+<span class="sd">        The stride of the sliding window for each dimension of the input tensor.</span>
+<span class="sd">    padding : a string from: &quot;SAME&quot;, &quot;VALID&quot;.</span>
+<span class="sd">        The type of padding algorithm to use.</span>
+<span class="sd">    pool : a pooling function</span>
+<span class="sd">        tf.nn.max_pool , tf.nn.avg_pool ...</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this layer.</span>
 
@@ -750,7 +781,7 @@
         <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
         <span class="c1"># n_in = layer.n_units</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate Pool2dLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ksize</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span> <span class="n">padding</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate PoolLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ksize</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span> <span class="n">padding</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="n">ksize</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">)</span>
 
@@ -759,6 +790,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span></div>
         <span class="c1"># self.all_params.extend( [W] )</span>
+
 
 <span class="c1"># Shape layer</span>
 <div class="viewcode-block" id="FlattenLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.FlattenLayer">[docs]</a><span class="k">class</span> <span class="nc">FlattenLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
@@ -775,8 +807,21 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.Conv2dLayer(network,</span>
+<span class="sd">    ...                    act = tf.nn.relu,</span>
+<span class="sd">    ...                    shape = [5, 5, 32, 64],</span>
+<span class="sd">    ...                    strides=[1, 1, 1, 1],</span>
+<span class="sd">    ...                    padding=&#39;SAME&#39;,</span>
+<span class="sd">    ...                    name =&#39;cnn_layer&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.Pool2dLayer(network,</span>
+<span class="sd">    ...                    ksize=[1, 2, 2, 1],</span>
+<span class="sd">    ...                    strides=[1, 2, 2, 1],</span>
+<span class="sd">    ...                    padding=&#39;SAME&#39;,</span>
+<span class="sd">    ...                    pool = tf.nn.max_pool,</span>
+<span class="sd">    ...                    name =&#39;pool_layer&#39;,)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.FlattenLayer(network, name=&#39;flatten_layer&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -833,7 +878,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
-<span class="c1"># densen</span>
+<span class="c1"># dense</span>
 <div class="viewcode-block" id="ResnetLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ResnetLayer">[docs]</a><span class="k">class</span> <span class="nc">ResnetLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The :class:`ResnetLayer` class is a fully connected layer.</span>
@@ -891,6 +936,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
+
 <span class="c1"># noise</span>
 <div class="viewcode-block" id="GaussianNoiseLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.GaussianNoiseLayer">[docs]</a><span class="k">class</span> <span class="nc">GaussianNoiseLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -906,6 +952,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate GaussianNoiseLayer </span><span class="si">%s</span><span class="s2">: keep: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">keep</span><span class="p">))</span></div>
+
 <span class="c1"># shape</span>
 <div class="viewcode-block" id="ReshapeLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ReshapeLayer">[docs]</a><span class="k">class</span> <span class="nc">ReshapeLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -918,6 +965,7 @@
         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;reshape_layer&#39;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">pass</span></div>
+
 <span class="c1"># merge</span>
 <div class="viewcode-block" id="ConcatLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ConcatLayer">[docs]</a><span class="k">class</span> <span class="nc">ConcatLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -931,6 +979,68 @@
         <span class="k">pass</span></div>
 
 
+<span class="c1"># cnn</span>
+<span class="k">class</span> <span class="nc">Conv3dLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The :class:`Conv3dLayer` class is a 3D CNN layer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layer : a :class:`Layer` instance</span>
+<span class="sd">        The `Layer` class feeding into this layer.</span>
+<span class="sd">    act : activation function</span>
+<span class="sd">        The function that is applied to the layer activations.</span>
+<span class="sd">    n_units : int</span>
+<span class="sd">        The number of units of the layer</span>
+<span class="sd">    shape : list of shape</span>
+<span class="sd">        shape of the filters</span>
+<span class="sd">    strides : a list of ints. 1-D of length 4.</span>
+<span class="sd">        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.</span>
+<span class="sd">    padding : a string from: &quot;SAME&quot;, &quot;VALID&quot;.</span>
+<span class="sd">        The type of padding algorithm to use.</span>
+<span class="sd">    W_init : weights initializer</span>
+<span class="sd">        The initializer for initializing the weight matrix.</span>
+<span class="sd">    b_init : biases initializer</span>
+<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">    W_init_args : dictionary</span>
+<span class="sd">        The arguments for the weights initializer.</span>
+<span class="sd">    b_init_args : dictionary</span>
+<span class="sd">        The arguments for the biases initializer.</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        An optional name to attach to this layer.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
+        <span class="n">W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
+        <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;cnn_layer&#39;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
+        <span class="c1"># n_in = layer.n_units</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate Conv3dLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span> <span class="n">padding</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
+
+        <span class="c1"># W = tf.Variable(W_init(shape=shape, **W_init_args), name=&#39;W_conv&#39;)</span>
+        <span class="c1"># b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name=&#39;b_conv&#39;)</span>
+        <span class="c1">#</span>
+        <span class="c1"># self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span>
 
 
 

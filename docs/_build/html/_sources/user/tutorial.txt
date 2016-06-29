@@ -148,7 +148,7 @@ when using Denoising Autoencoder.
 Loading data
 ------------
 
-The first piece of code defines a function ``load_dataset()``. Its purpose is
+The first piece of code defines a function ``load_mnist_dataset()``. Its purpose is
 to download the MNIST dataset (if it hasn't been downloaded yet) and return it
 in the form of regular numpy arrays. There is no TensorLayer involved at all, so
 for the purpose of this tutorial, we can regard it as:
@@ -318,36 +318,36 @@ to last hidden layer.
 
 .. code-block:: python
 
-    network = tl.InputLayer(x, name='input_layer')
-    network = tl.Conv2dLayer(network,
+    network = tl.layers.InputLayer(x, name='input_layer')
+    network = tl.layers.Conv2dLayer(network,
                             act = tf.nn.relu,
                             shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
                             strides=[1, 1, 1, 1],
                             padding='SAME',
                             name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.Pool2dLayer(network,
+    network = tl.layers.PoolLayer(network,
                             ksize=[1, 2, 2, 1],
                             strides=[1, 2, 2, 1],
                             padding='SAME',
                             pool = tf.nn.max_pool,
                             name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    network = tl.Conv2dLayer(network,
+    network = tl.layers.Conv2dLayer(network,
                             act = tf.nn.relu,
                             shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
                             strides=[1, 1, 1, 1],
                             padding='SAME',
                             name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.Pool2dLayer(network,
+    network = tl.layers.PoolLayer(network,
                             ksize=[1, 2, 2, 1],
                             strides=[1, 2, 2, 1],
                             padding='SAME',
                             pool = tf.nn.max_pool,
                             name ='pool_layer2',)   # output: (?, 7, 7, 64)
-    network = tl.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
-    network = tl.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
-    network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
-    network = tl.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
-    network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
+    network = tl.layers.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
+    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
+    network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
+    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
+    network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 
 
 .. note::
@@ -372,7 +372,7 @@ given number of items. More iteration function can be found in ``tensorlayer.ite
 
 .. code-block:: python
 
-    iterate.minibatches(inputs, targets, batchsize, shuffle=False)
+    tl.iterate.minibatches(inputs, targets, batchsize, shuffle=False)
 
 
 Loss and update expressions
@@ -446,7 +446,8 @@ weight initializers (:mod:`tensorlayer.init`), activation
 (:mod:`tensorlayer.activation`), cost expressions and regularizers (:mod:`tensorlayer.cost`),
 load and save files (:mod:`tensorlayer.files`), operating system (:mod:`tensorlayer.os`),
 help function (:mod:`tensorlayer.utils`), visualization (:mod:`tensorlayer.visualize`),
-iteration functions (:mod:`tensorlayer.iterate`), included in the library.
+iteration functions (:mod:`tensorlayer.iterate`), preprocessing functions
+(:mod:`tensorlayer.preprocess`), included in the library.
 
 
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/

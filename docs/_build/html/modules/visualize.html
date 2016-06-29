@@ -99,6 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -152,14 +153,17 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.W" title="tensorlayer.visualize.W"><code class="xref py py-obj docutils literal"><span class="pre">W</span></code></a>(W[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
-<td>Visualize every column of weight matrix for MNIST dataset.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.W" title="tensorlayer.visualize.W"><code class="xref py py-obj docutils literal"><span class="pre">W</span></code></a>(W[,&nbsp;second,&nbsp;saveable,&nbsp;shape,&nbsp;name,&nbsp;fig_idx])</td>
+<td>Visualize every columns of the weight matrix for MNIST dataset.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.frame" title="tensorlayer.visualize.frame"><code class="xref py py-obj docutils literal"><span class="pre">frame</span></code></a>(I[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.CNN2d" title="tensorlayer.visualize.CNN2d"><code class="xref py py-obj docutils literal"><span class="pre">CNN2d</span></code></a>(CNN[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
+<td>Display a group of RGB or Greyscale CNN masks.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.frame" title="tensorlayer.visualize.frame"><code class="xref py py-obj docutils literal"><span class="pre">frame</span></code></a>(I[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
 <td>Display a frame(image).</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.CNN" title="tensorlayer.visualize.CNN"><code class="xref py py-obj docutils literal"><span class="pre">CNN</span></code></a>(CNN[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
-<td>Display or save a group of CNN mask.</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.images2d" title="tensorlayer.visualize.images2d"><code class="xref py py-obj docutils literal"><span class="pre">images2d</span></code></a>(images[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;...])</td>
+<td>Display a group of RGB or Greyscale images.</td>
 </tr>
 </tbody>
 </table>
@@ -167,28 +171,29 @@
 <h2>Visualize weights<a class="headerlink" href="#visualize-weights" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.visualize.W">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">W</code><span class="sig-paren">(</span><em>W</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='mnist'</em>, <em>fig_idx=2396512</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#W"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.W" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize every column of weight matrix for MNIST dataset.</p>
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">W</code><span class="sig-paren">(</span><em>W, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#W"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.W" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize every columns of the weight matrix for MNIST dataset.</p>
 <dl class="docutils">
 <dt>W</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>The weight matrix</dd>
 <dt>second</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The display second(s) for the image(s), if saveable is False.</dd>
+<dt>shape: list with 2 int</dt>
+<dd>The shape of feature image, MNIST is [28, 80].</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>A name to save the image, if saveable is True.</dd>
 <dt>fig_idx: int</dt>
 <dd>matplotlib figure index.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">(),</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight_of_1st_layer&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="function">
-<dt id="tensorlayer.visualize.CNN">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">CNN</code><span class="sig-paren">(</span><em>CNN</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='cnn'</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#CNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.CNN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display or save a group of CNN mask.</p>
+<dt id="tensorlayer.visualize.CNN2d">
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">CNN2d</code><span class="sig-paren">(</span><em>CNN</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='cnn'</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#CNN2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.CNN2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a group of RGB or Greyscale CNN masks.</p>
 <dl class="docutils">
 <dt>CNN</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>The image</dd>
@@ -199,8 +204,7 @@
 <dt>fig_idx: int</dt>
 <dd>matplotlib figure index.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">CNN2d</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">(),</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cnn1_mnist&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -219,8 +223,31 @@
 <dt>fig_idx: int</dt>
 <dd>matplotlib figure index.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s2">&quot;Pong-v0&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">observation</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tf</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">observation</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.visualize.images2d">
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">images2d</code><span class="sig-paren">(</span><em>images</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='images'</em>, <em>dtype=None</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#images2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.images2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a group of RGB or Greyscale images.</p>
+<dl class="docutils">
+<dt>images</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>The images.</dd>
+<dt>second</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The display second(s) for the image(s), if saveable is False.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>A name to save the image, if saveable is True.</dd>
+<dt>dtype</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">None or numpy data type</span><dd>The data type for displaying the images.</dd>
+<dt>fig_idx: int</dt>
+<dd>matplotlib figure index.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_cifar10_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">plotable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">images2d</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,:,:,:],</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cifar10&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">20212</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

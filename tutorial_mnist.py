@@ -37,9 +37,9 @@ def main_test_layers(model='relu'):
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        # network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1',
-        #         W_init=tf.random_normal, W_init_args={'mean':1.0, 'stddev':1.0})
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1', weights_initializer=tf.random_normal, )
+        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+        # Alternatively, you can choose a specific initializer for the weights as follow:
+        # network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1', W_init=tf.random_normal )
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
         network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
@@ -76,11 +76,10 @@ def main_test_layers(model='relu'):
 
     params = network.all_params
     # train
-    n_epoch = 500
+    n_epoch = 0
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
-    # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost)
 
     sess.run(tf.initialize_all_variables()) # initialize all variables
@@ -114,7 +113,10 @@ def main_test_layers(model='relu'):
             print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
             print("   val acc: %f" % np.mean(y_val == sess.run(y_op, feed_dict=feed_dict)))
             try:
-                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+                # You can visualize the weight of 1st hidden layer as follow.
+                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_'+str(epoch+1), fig_idx=2012)
+                # You can also save the weight of 1st hidden layer to .npz file.
+                # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
             except:
                 raise Exception("You should change visualize_W(), if you want to save the feature images for different dataset")
 
@@ -125,12 +127,21 @@ def main_test_layers(model='relu'):
     print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
     print("   test acc: %f" % np.mean(y_test == sess.run(y_op, feed_dict=feed_dict)))
 
-    # Add ops to save and restore all the variables.
+    # Add ops to save and restore all the variables, including variables for training.
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
-    # you may want to save the model
     save_path = saver.save(sess, "model.ckpt")
     print("Model saved in file: %s" % save_path)
+
+
+    # You can also save the parameters into .npz file.
+    tl.files.save_npz(network.all_params , name='model.npz')
+    # You can only save one parameter as follow.
+    # tl.files.save_npz([network.all_params[0]] , name='model.npz')
+    # Then, restore the parameters as follow.
+    # load_params = tl.utils.load_npz(path='', name='model.npz')
+
+    # In the end, close TensorFlow session.
     sess.close()
 
 def main_test_denoise_AE(model='relu'):
@@ -167,7 +178,7 @@ def main_test_denoise_AE(model='relu'):
         # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')
-        network = tl.layers.DenseLayer(network, n_units=200, act=tf.nn.sigmoid, name='sigmoid1')
+        network = tl.layers.DenseLayer(network, n_units=196, act=tf.nn.sigmoid, name='sigmoid1')
         recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
 
     ## ready to train
@@ -180,7 +191,8 @@ def main_test_denoise_AE(model='relu'):
     ## pretrain
     print("Pre-train Layer 1")
     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
-        # recon_layer1.pretrain(sess, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1000, batch_size=128, print_freq=10)
+    # You can also disable denoisong by setting denoise_name=None.
+    # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=500, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
 
     # Add ops to save and restore all the variables.
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
@@ -309,7 +321,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
-                tl.visualize_W(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
+                tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_'+str(epoch+1), fig_idx=2012)
             except:
                 raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
 
@@ -340,6 +352,8 @@ def main_test_cnn_layer():
         Reimplementation of the tensorflow official MNIST CNN tutorials:
         # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
         # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
+        More TensorFlow official CNN tutorials can be found here:
+        # https://www.tensorflow.org/versions/master/tutorials/deep_cnn/index.html
     '''
     X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
@@ -360,10 +374,22 @@ def main_test_cnn_layer():
 
     sess = tf.InteractiveSession()
 
-    x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])   # [batch_size, height, width, channels]
-    y_ = tf.placeholder(tf.int64, shape=[None,])
+    # Define the batchsize at the begin, you can give the batchsize in x and y_
+    # rather than 'None', this can allow TensorFlow to apply some optimizations
+    # – especially for convolutional layers.
+    batch_size = 128
+
+    x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])   # [batch_size, height, width, channels]
+    y_ = tf.placeholder(tf.int64, shape=[batch_size,])
 
     network = tl.layers.InputLayer(x, name='input_layer')
+    network = tl.layers.Conv2dLayer(network,
+                        act = tf.nn.relu,
+                        shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+                        strides=[1, 1, 1, 1],
+                        padding='SAME',
+                        name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    # Alternatively, you can choose a specific initializer for the weights as follow:
     # network = tl.layers.Conv2dLayer(network,
     #                     act = tf.nn.relu,
     #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
@@ -372,15 +398,9 @@ def main_test_cnn_layer():
     #                     W_init = tf.truncated_normal,
     #                     W_init_args = {'mean' : 1, 'stddev':3},
     #                     b_init = tf.zeros,
-    #                     b_init_args = {'name' : 'HAHA'},
+    #                     b_init_args = {'name' : 'bias'},
     #                     name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.Conv2dLayer(network,
-                        act = tf.nn.relu,
-                        shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                        strides=[1, 1, 1, 1],
-                        padding='SAME',
-                        name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.Pool2dLayer(network,
+    network = tl.layers.PoolLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
@@ -392,7 +412,7 @@ def main_test_cnn_layer():
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.layers.Pool2dLayer(network,
+    network = tl.layers.PoolLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
@@ -414,7 +434,6 @@ def main_test_cnn_layer():
 
     # train
     n_epoch = 100
-    batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
 
@@ -455,10 +474,10 @@ def main_test_cnn_layer():
                 val_loss += err; val_acc += ac; n_batch += 1
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
-            # try:
-            #     tl.visualize_CNN(network.all_params[0].eval(), second=10, saveable=True, name='w1_'+str(epoch+1), fig_idx=2012)
-            # except:
-            #     raise Exception("# You should change visualize_CNN(), if you want to save the feature images for different dataset")
+            try:
+                tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_'+str(epoch+1), fig_idx=2012)
+            except:
+                raise Exception("# You should change visualize.CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -471,14 +490,17 @@ def main_test_cnn_layer():
     print("   test loss: %f" % (test_loss/n_batch))
     print("   test acc: %f" % (test_acc/n_batch))
 
+
+
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
         # main_test_layers(model='relu')                # model = relu, resnet, dropconnect
-        # main_test_denoise_AE(model='relu')            # model = relu, sigmoid
+        # main_test_denoise_AE(model='sigmoid')            # model = relu, sigmoid
         # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
         main_test_cnn_layer()
+        # tl.files.npz_to_W_pdf(path='/Users/haodong/Documents/Projects/python-workspace/tensorlayer/可视化/npz_file/', regx='w1pre_[0-9]+\.(npz)')
         tl.os.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')

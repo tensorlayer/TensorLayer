@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -141,14 +142,20 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tensorlayer.activation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 
 <div class="viewcode-block" id="identity"><a class="viewcode-back" href="../../modules/activation.html#tensorlayer.activation.identity">[docs]</a><span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The identity activation function.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : input(s)</span>
+<span class="sd">    x : a tensor outputs</span>
+<span class="sd">        input(s)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">x</span></div>
 

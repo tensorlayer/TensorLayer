@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -141,11 +142,19 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tensorlayer.visualize</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
 
-<div class="viewcode-block" id="W"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.W">[docs]</a><span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2396512</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Visualize every column of weight matrix for MNIST dataset.</span>
+
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+
+<div class="viewcode-block" id="W"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.W">[docs]</a><span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2396512</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Visualize every columns of the weight matrix for MNIST dataset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -153,6 +162,8 @@
 <span class="sd">        The weight matrix</span>
 <span class="sd">    second : int</span>
 <span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    shape: list with 2 int</span>
+<span class="sd">        The shape of feature image, MNIST is [28, 80].</span>
 <span class="sd">    name : a string</span>
 <span class="sd">        A name to save the image, if saveable is True.</span>
 <span class="sd">    fig_idx: int</span>
@@ -160,8 +171,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name=&#39;weight_of_1st_layer&#39;, fig_idx=2012)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">saveable</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
@@ -177,8 +187,20 @@
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">n_units</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">num_r</span><span class="p">,</span> <span class="n">num_c</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-            <span class="c1"># plt.imshow(np.reshape(W.get_value()[:,count-1],(28,28)), cmap=&#39;gray&#39;)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">W</span><span class="p">[:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">W</span><span class="p">[:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="p">,(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">size</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">size</span><span class="p">))),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+            <span class="c1"># ------------------------------------------------------------</span>
+            <span class="c1"># plt.imshow(np.reshape(W[:,count-1],(28,28)), cmap=&#39;gray&#39;)</span>
+            <span class="c1"># ------------------------------------------------------------</span>
+            <span class="n">feature</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="n">W</span><span class="p">[:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+            <span class="c1"># feature[feature&lt;0.0001] = 0   # value threshold</span>
+            <span class="c1"># if count == 1 or count == 2:</span>
+            <span class="c1">#     print(np.mean(feature))</span>
+            <span class="c1"># if np.std(feature) &lt; 0.03:      # condition threshold</span>
+            <span class="c1">#     feature = np.zeros_like(feature)</span>
+            <span class="c1"># if np.mean(feature) &lt; -0.015:      # condition threshold</span>
+            <span class="c1">#     feature = np.zeros_like(feature)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">feature</span> <span class="p">,(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span>
+                    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span><span class="c1">#, vmin=np.min(feature), vmax=np.max(feature))</span>
+            <span class="c1"># ------------------------------------------------------------</span>
             <span class="c1"># plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap=&#39;gray&#39;, interpolation=&quot;nearest&quot;)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>    <span class="c1"># distable tick</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
@@ -205,8 +227,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; env = gym.make(&quot;Pong-v0&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; observation = env.reset()</span>
+<span class="sd">    &gt;&gt;&gt; tf.visualize.frame(observation)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">saveable</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
@@ -222,8 +245,8 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CNN"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.CNN">[docs]</a><span class="k">def</span> <span class="nf">CNN</span><span class="p">(</span><span class="n">CNN</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cnn&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">3119362</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Display or save a group of CNN mask.</span>
+<div class="viewcode-block" id="CNN2d"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.CNN2d">[docs]</a><span class="k">def</span> <span class="nf">CNN2d</span><span class="p">(</span><span class="n">CNN</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cnn&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">3119362</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display a group of RGB or Greyscale CNN masks.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -238,13 +261,14 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name=&#39;cnn1_mnist&#39;, fig_idx=2012)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">n_mask</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">n_row</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">n_col</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-    <span class="n">n_color</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="c1"># print(CNN.shape)    # (5, 5, 3, 64)</span>
+    <span class="c1"># exit()</span>
+    <span class="n">n_mask</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">n_row</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_col</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">n_color</span> <span class="o">=</span> <span class="n">CNN</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_mask</span><span class="p">))</span>
     <span class="n">col</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_mask</span><span class="o">/</span><span class="n">row</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>   <span class="c1"># active mode</span>
@@ -255,10 +279,22 @@
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">n_mask</span><span class="p">:</span>
                 <span class="k">break</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">CNN</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:,:],</span> <span class="p">(</span><span class="n">n_row</span><span class="p">,</span> <span class="n">n_col</span><span class="p">)),</span>
-                    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>    <span class="c1"># 不显示刻度(tick)</span>
+            <span class="c1"># print(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5</span>
+            <span class="c1"># exit()</span>
+            <span class="c1"># plt.imshow(</span>
+            <span class="c1">#         np.reshape(CNN[count-1,:,:,:], (n_row, n_col)),</span>
+            <span class="c1">#         cmap=&#39;gray&#39;, interpolation=&quot;nearest&quot;)     # theano</span>
+            <span class="k">if</span> <span class="n">n_color</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">CNN</span><span class="p">[:,:,:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">n_row</span><span class="p">,</span> <span class="n">n_col</span><span class="p">)),</span>
+                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">n_color</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">CNN</span><span class="p">[:,:,:,</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="n">n_row</span><span class="p">,</span> <span class="n">n_col</span><span class="p">,</span> <span class="n">n_color</span><span class="p">)),</span>
+                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unknown n_color&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>    <span class="c1"># distable tick</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
             <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">saveable</span><span class="p">:</span>
@@ -268,7 +304,66 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="images2d"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.images2d">[docs]</a><span class="k">def</span> <span class="nf">images2d</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">3119362</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display a group of RGB or Greyscale images.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : numpy.array</span>
+<span class="sd">        The images.</span>
+<span class="sd">    second : int</span>
+<span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    name : a string</span>
+<span class="sd">        A name to save the image, if saveable is True.</span>
+<span class="sd">    dtype : None or numpy data type</span>
+<span class="sd">        The data type for displaying the images.</span>
+<span class="sd">    fig_idx: int</span>
+<span class="sd">        matplotlib figure index.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.images2d(X_train[0:100,:,:,:], second=10, saveable=False, name=&#39;cifar10&#39;, dtype=np.uint8, fig_idx=20212)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># print(images.shape)    # (50000, 32, 32, 3)</span>
+    <span class="c1"># exit()</span>
+    <span class="k">if</span> <span class="n">dtype</span><span class="p">:</span>
+        <span class="n">images</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="n">n_mask</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">n_row</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">n_col</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">n_color</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_mask</span><span class="p">))</span>
+    <span class="n">col</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_mask</span><span class="o">/</span><span class="n">row</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>   <span class="c1"># active mode</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">fig_idx</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">ir</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">n_mask</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+            <span class="c1"># print(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5</span>
+            <span class="c1"># plt.imshow(</span>
+            <span class="c1">#         np.reshape(images[count-1,:,:,:], (n_row, n_col)),</span>
+            <span class="c1">#         cmap=&#39;gray&#39;, interpolation=&quot;nearest&quot;)     # theano</span>
+            <span class="k">if</span> <span class="n">n_color</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:],</span> <span class="p">(</span><span class="n">n_row</span><span class="p">,</span> <span class="n">n_col</span><span class="p">)),</span>
+                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">n_color</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">,:,:],</span>
+                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unknown n_color&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>    <span class="c1"># distable tick</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">saveable</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;.pdf&#39;</span><span class="p">,</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span></div>
 
 
 

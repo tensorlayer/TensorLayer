@@ -1,3 +1,8 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
+
+
 import tensorflow as tf
 
 def identity(x):
@@ -5,7 +10,8 @@ def identity(x):
 
     Parameters
     ----------
-    x : input(s)
+    x : a tensor outputs
+        input(s)
     """
     return x
 

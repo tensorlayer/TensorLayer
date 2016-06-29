@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -141,7 +142,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tensorlayer.utils</h1><div class="highlight"><pre>
-<span></span><span class="c1">## Evaluation</span>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c1">## Evaluation</span>
 <div class="viewcode-block" id="evaluation"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.evaluation">[docs]</a><span class="k">def</span> <span class="nf">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Input the predicted results, targets results and</span>
@@ -191,9 +199,7 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dp_dict</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="class_balancing_oversample"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.class_balancing_oversample">[docs]</a><span class="k">def</span> <span class="nf">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Input the features and labels, return the features and labels</span>
-<span class="sd">    after oversampling.</span>
+    <span class="sd">&quot;&quot;&quot;Input the features and labels, return the features and labels after oversampling.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -265,6 +271,101 @@
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;the occurrence number of each stage after oversampling: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">most_common</span><span class="p">())</span>
     <span class="c1"># ================ End of Classes balancing</span>
     <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># def class_balancing_sequence_4D(X_train, y_train, sequence_length, model=&#39;downsampling&#39; ,printable=True):</span>
+<span class="c1">#     &#39;&#39;&#39; 输入、输出都是sequence format</span>
+<span class="c1">#         oversampling or downsampling</span>
+<span class="c1">#     &#39;&#39;&#39;</span>
+<span class="c1">#     n_features = X_train.shape[2]</span>
+<span class="c1">#     # ======== Classes balancing for sequence</span>
+<span class="c1">#     if printable:</span>
+<span class="c1">#         print(&quot;Classes balancing for 4D sequence training examples...&quot;)</span>
+<span class="c1">#     from collections import Counter</span>
+<span class="c1">#     c = Counter(y_train)    # Counter({2: 454, 4: 267, 3: 124, 1: 57, 0: 48})</span>
+<span class="c1">#     if printable:</span>
+<span class="c1">#         print(&#39;the occurrence number of each stage: %s&#39; % c.most_common())</span>
+<span class="c1">#         print(&#39;the least Label %s have %s instances&#39; % c.most_common()[-1])</span>
+<span class="c1">#         print(&#39;the most  Label %s have %s instances&#39; % c.most_common(1)[0])</span>
+<span class="c1">#     # print(c.most_common()) # [(2, 454), (4, 267), (3, 124), (1, 57), (0, 48)]</span>
+<span class="c1">#     most_num = c.most_common(1)[0][1]</span>
+<span class="c1">#     less_num = c.most_common()[-1][1]</span>
+<span class="c1">#</span>
+<span class="c1">#     locations = {}</span>
+<span class="c1">#     number = {}</span>
+<span class="c1">#     for lab, num in c.most_common():</span>
+<span class="c1">#         number[lab] = num</span>
+<span class="c1">#         locations[lab] = np.where(np.array(y_train)==lab)[0]</span>
+<span class="c1">#     # print(locations)</span>
+<span class="c1">#     # print(number)</span>
+<span class="c1">#     if printable:</span>
+<span class="c1">#         print(&#39;  convert list to dict&#39;)</span>
+<span class="c1">#     X = {}  # convert list to dict</span>
+<span class="c1">#     ### a sequence</span>
+<span class="c1">#     for lab, _ in number.items():</span>
+<span class="c1">#         X[lab] = np.empty(shape=(0,1,n_features,1)) # 4D</span>
+<span class="c1">#     for lab, _ in number.items():</span>
+<span class="c1">#         #X[lab] = X_train[locations[lab]</span>
+<span class="c1">#         for l in locations[lab]:</span>
+<span class="c1">#             X[lab] = np.vstack((X[lab], X_train[l*sequence_length : (l+1)*(sequence_length)]))</span>
+<span class="c1">#         # X[lab] = X_train[locations[lab]*sequence_length : locations[lab]*(sequence_length+1)]    # a sequence</span>
+<span class="c1">#     # print(X)</span>
+<span class="c1">#</span>
+<span class="c1">#     if model==&#39;oversampling&#39;:</span>
+<span class="c1">#         if printable:</span>
+<span class="c1">#             print(&#39;  oversampling -- most num is %d, all classes tend to be this num\nshuffle applied&#39; % most_num)</span>
+<span class="c1">#         for key in X:</span>
+<span class="c1">#             temp = X[key]</span>
+<span class="c1">#             while True:</span>
+<span class="c1">#                 if len(X[key]) &gt;= most_num * sequence_length:   # sequence</span>
+<span class="c1">#                     break</span>
+<span class="c1">#                 X[key] = np.vstack((X[key], temp))</span>
+<span class="c1">#             # print(key, len(X[key]))</span>
+<span class="c1">#         if printable:</span>
+<span class="c1">#             print(&#39;  make each stage have same num of instances&#39;)</span>
+<span class="c1">#         for key in X:</span>
+<span class="c1">#             X[key] = X[key][0:most_num*sequence_length,:]   # sequence</span>
+<span class="c1">#             if printable:</span>
+<span class="c1">#                 print(key, len(X[key]))</span>
+<span class="c1">#     elif model==&#39;downsampling&#39;:</span>
+<span class="c1">#         import random</span>
+<span class="c1">#         if printable:</span>
+<span class="c1">#             print(&#39;  downsampling -- less num is %d, all classes tend to be this num by randomly choice without replacement\nshuffle applied&#39; % less_num)</span>
+<span class="c1">#         for key in X:</span>
+<span class="c1">#             # print(key, len(X[key]))#, len(X[key])/sequence_length)</span>
+<span class="c1">#             s_idx = [ i for i in range(int(len(X[key])/sequence_length))]</span>
+<span class="c1">#             s_idx = np.asarray(s_idx)*sequence_length   # start index of sequnce in X[key]</span>
+<span class="c1">#             # print(&#39;s_idx&#39;,s_idx)</span>
+<span class="c1">#             r_idx = np.random.choice(s_idx, less_num, replace=False)    # random choice less_num of s_idx</span>
+<span class="c1">#             # print(&#39;r_idx&#39;,r_idx)</span>
+<span class="c1">#             temp = X[key]</span>
+<span class="c1">#             X[key] = np.empty(shape=(0,1,n_features,1)) # 4D</span>
+<span class="c1">#             for idx in r_idx:</span>
+<span class="c1">#                 X[key] = np.vstack((X[key], temp[idx:idx+sequence_length]))</span>
+<span class="c1">#             # print(key, X[key])</span>
+<span class="c1">#             # np.random.choice(l, len(l), replace=False)</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         raise Exception(&#39;  model should be oversampling or downsampling&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     # convert dict to list</span>
+<span class="c1">#     if printable:</span>
+<span class="c1">#         print(&#39;  convert dict to list&#39;)</span>
+<span class="c1">#     y_train = []</span>
+<span class="c1">#     # X_train = np.empty(shape=(0,len(X[0][0])))</span>
+<span class="c1">#     # X_train = np.empty(shape=(0,len(X[1][0])))    # 2D</span>
+<span class="c1">#     X_train = np.empty(shape=(0,1,n_features,1))    # 4D</span>
+<span class="c1">#     l_key = list(X.keys())  # shuffle</span>
+<span class="c1">#     random.shuffle(l_key)   # shuffle</span>
+<span class="c1">#     # for key in X:     # no shuffle</span>
+<span class="c1">#     for key in l_key:   # shuffle</span>
+<span class="c1">#         X_train = np.vstack( (X_train, X[key] ) )</span>
+<span class="c1">#         # print(len(X[key]))</span>
+<span class="c1">#         y_train.extend([key for i in range(int(len(X[key])/sequence_length))])</span>
+<span class="c1">#     # print(X_train,y_train, type(X_train), type(y_train))</span>
+<span class="c1">#     # ================ End of Classes balancing for sequence</span>
+<span class="c1">#     # print(X_train.shape, len(y_train))</span>
+<span class="c1">#     return X_train, np.asarray(y_train)</span>
 </pre></div>
 
            </div>

@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -180,8 +181,8 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></a>([layer,&nbsp;act,&nbsp;shape,&nbsp;strides,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Pool2dLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;...])</td>
-<td>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-obj docutils literal"><span class="pre">PoolLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;padding,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-class docutils literal"><span class="pre">PoolLayer</span></code></a> class is a 2D Pooling layer.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D vector.</td>
@@ -267,23 +268,31 @@ use to pre-train a <cite>DenseLayer</cite>.</p>
 <dt>layer</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
 <dt>x_recon</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>The data used for reconstruct</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>The variables used for reconstruction.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 <dt>n_units</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer, should be equal to x_recon</dd>
 <dt>act</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd><p class="first">The activation function that is applied to the reconstruction layer.
-Normally, for sigmoid layer, the reconstruction activation is sigmoid;</p>
-<blockquote class="last">
-<div>for rectifying layer, the reconstruction activation is softplus.</div></blockquote>
-</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd>The activation function that is applied to the reconstruction layer.
+Normally, for sigmoid layer, the reconstruction activation is sigmoid;
+for rectifying layer, the reconstruction activation is softplus.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">196</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sigmoid1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span> <span class="n">denoise_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.</p>
+<dl class="docutils">
+<dt>pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name=&#8217;<a href="#id1"><span class="problematic" id="id2">w1pre_</span></a>&#8216;)</dt>
+<dd>Start to pre-train the parameters of previous DenseLayer.</dd>
+</dl>
+<p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.
+You may need to modify this part to define your own cost function.
+By default, the cost is implemented as follow:</p>
+<p>For sigmoid layer, the implementation as (<a class="reference external" href="http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial">http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial</a>)</p>
+<p>For rectifying layer, the implementation as (Glorot, X., Bordes, A., &amp; Bengio, Y. (2011). Deep Sparse Rectifier Neural Networks. Aistats, 15, 315–323. <a class="reference external" href="http://doi.org/10.1.1.208.6449">http://doi.org/10.1.1.208.6449</a>)</p>
 </dd></dl>
 
 </div>
@@ -302,8 +311,15 @@ values to zero by a given keeping probability.</p>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">Alternatively</span><span class="p">,</span> <span class="n">you</span> <span class="n">can</span> <span class="n">choose</span> <span class="n">a</span> <span class="n">specific</span> <span class="n">initializer</span> <span class="k">for</span> <span class="n">the</span> <span class="n">weights</span> <span class="k">as</span> <span class="n">follow</span><span class="p">:</span>
+<span class="gp">... </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">,</span> <span class="n">W_init</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -334,8 +350,10 @@ layer by a given keeping probability.</p>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropconnectDenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropconnect_relu1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropconnectDenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropconnect_relu2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropconnectDenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -356,10 +374,10 @@ layer by a given keeping probability.</p>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer</dd>
 <dt>shape</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">list of shape</span><dd>shape of the filters</dd>
-<dt>strides: list of stride</dt>
-<dd>XXX</dd>
-<dt>padding: a string</dt>
-<dd>XXX</dd>
+<dt>strides</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints. 1-D of length 4.</span><dd>The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.</dd>
+<dt>padding</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string from: &#8220;SAME&#8221;, &#8220;VALID&#8221;.</span><dd>The type of padding algorithm to use.</dd>
 <dt>W_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
 <dt>b_init</dt>
@@ -381,27 +399,27 @@ layer by a given keeping probability.</p>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">W_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mean&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;stddev&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">},</span>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>                  <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="s1">&#39;HAHA&#39;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>                  <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="s1">&#39;bias&#39;</span><span class="p">},</span>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;cnn_layer1&#39;</span><span class="p">)</span>     <span class="c1"># output: (?, 28, 28, 32)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="class">
-<dt id="tensorlayer.layers.Pool2dLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Pool2dLayer</code><span class="sig-paren">(</span><em>layer=None, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=&lt;function max_pool&gt;, name='pool_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Pool2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Pool2dLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Pool2dLayer" title="tensorlayer.layers.Pool2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Pool2dLayer</span></code></a> class is a 2D Pooling layer.</p>
+<dt id="tensorlayer.layers.PoolLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">PoolLayer</code><span class="sig-paren">(</span><em>layer=None, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=&lt;function max_pool&gt;, name='pool_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#PoolLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.PoolLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-class docutils literal"><span class="pre">PoolLayer</span></code></a> class is a 2D Pooling layer.</p>
 <dl class="docutils">
 <dt>layer</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
 <dt>ksize</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">list of XX</span><dd>XXX</dd>
-<dt>strides: list of stride</dt>
-<dd>XXX</dd>
-<dt>padding: a string</dt>
-<dd>XXX</dd>
-<dt>pool: a pooling function</dt>
-<dd>tf.nn.max_pool ...</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints that has length &gt;= 4.</span><dd>The size of the window for each dimension of the input tensor.</dd>
+<dt>strides</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints that has length &gt;= 4.</span><dd>The stride of the sliding window for each dimension of the input tensor.</dd>
+<dt>padding</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string from: &#8220;SAME&#8221;, &#8220;VALID&#8221;.</span><dd>The type of padding algorithm to use.</dd>
+<dt>pool</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a pooling function</span><dd>tf.nn.max_pool , tf.nn.avg_pool ...</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
@@ -425,8 +443,21 @@ vector.</p>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2dLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;cnn_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Pool2dLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">ksize</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;pool_layer&#39;</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">FlattenLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;flatten_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

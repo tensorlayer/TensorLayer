@@ -1,3 +1,8 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
+
+
 import numpy as np
 
 def minibatches(inputs, targets, batchsize, shuffle=False):
@@ -13,8 +18,8 @@ def minibatches(inputs, targets, batchsize, shuffle=False):
         (y) The labels of inputs, every row is a example.
     batchsize : int
         The batch size.
-    shuffle : True, False
-        If True, shuffle the dataset before return.
+    shuffle : boolean
+        Indicating whether to use a shuffling queue, shuffle the dataset before return.
 
     Examples
     --------
@@ -22,7 +27,7 @@ def minibatches(inputs, targets, batchsize, shuffle=False):
     >>> xxx
     """
     assert len(inputs) == len(targets)
-    if shuffle: # 打乱顺序
+    if shuffle:
         indices = np.arange(len(inputs))
         np.random.shuffle(indices)
     for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
@@ -49,7 +54,7 @@ def minibatches_for_sequence2D(inputs, targets, batch_size, sequence_length, str
         The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0
     sequence_length : int
         The sequence length
-    stride: int
+    stride : int
         The stride step
 
     Examples
@@ -59,8 +64,8 @@ def minibatches_for_sequence2D(inputs, targets, batch_size, sequence_length, str
     >>> stride = 1
     >>> X_train = np.asarray([[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],[22,23,24]])
     >>> y_train = np.asarray(['0','1','2','3','4','5','6','7'])
-    >>> print('X_train =\n %s' % X_train)
-    >>> print('y_train =\n %s' % y_train)
+    >>> print('X_train = %s' % X_train)
+    >>> print('y_train = %s' % y_train)
     >>> for batch in minibatches_for_sequence2D(X_train, y_train, batch_size=batch_size, sequence_length=sequence_length, stride=stride):
     >>>     inputs, targets = batch
     >>>     print(inputs)
@@ -120,7 +125,7 @@ def minibatches_for_sequence4D(inputs, targets, batch_size, sequence_length, str
         The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0
     sequence_length : int
         The sequence length
-    stride: int
+    stride : int
         The stride step
 
     Examples

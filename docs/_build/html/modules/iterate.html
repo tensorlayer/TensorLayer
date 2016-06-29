@@ -99,6 +99,7 @@
 <li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -184,7 +185,7 @@ Return the examples and labels by the given batchsize</p>
 <dt>batchsize</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size.</dd>
 <dt>shuffle</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">True, False</span><dd>If True, shuffle the dataset before return.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span><dd>Indicating whether to use a shuffling queue, shuffle the dataset before return.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
@@ -195,8 +196,7 @@ Return the examples and labels by the given batchsize</p>
 <dl class="function">
 <dt id="tensorlayer.iterate.minibatches_for_sequence2D">
 <code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches_for_sequence2D</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batch_size</em>, <em>sequence_length</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches_for_sequence2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches_for_sequence2D" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Input a group of example in 2D numpy.array and their labels.
+<dd><p>Input a group of example in 2D numpy.array and their labels.
 Return the examples and labels by the given batchsize, sequence_length.
 Use for RNN.</p>
 <dl class="docutils">
@@ -214,26 +214,17 @@ Use for RNN.</p>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</dd>
 <dt>sequence_length</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The sequence length</dd>
-<dt>stride: int</dt>
-<dd>The stride step</dd>
+<dt>stride</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The stride step</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sequence_length</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">],[</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],[</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">],[</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">],[</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="s1">&#39;1&#39;</span><span class="p">,</span><span class="s1">&#39;2&#39;</span><span class="p">,</span><span class="s1">&#39;3&#39;</span><span class="p">,</span><span class="s1">&#39;4&#39;</span><span class="p">,</span><span class="s1">&#39;5&#39;</span><span class="p">,</span><span class="s1">&#39;6&#39;</span><span class="p">,</span><span class="s1">&#39;7&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;X_train =</span>
-</pre></div>
-</div>
-</div></blockquote>
-<dl class="docutils">
-<dt>%s&#8217; % X_train)</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_train =</span>
-</pre></div>
-</div>
-</dd>
-<dt>%s&#8217; % y_train)</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">minibatches_for_sequence2D</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">sequence_length</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;X_train = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">X_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_train = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">minibatches_for_sequence2D</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">sequence_length</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">):</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">batch</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
@@ -255,8 +246,6 @@ Use for RNN.</p>
 <span class="gp">... </span><span class="p">[</span><span class="mi">6</span> <span class="mi">7</span><span class="p">]</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="function">
@@ -280,8 +269,8 @@ Use for RNN.</p>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</dd>
 <dt>sequence_length</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The sequence length</dd>
-<dt>stride: int</dt>
-<dd>The stride step</dd>
+<dt>stride</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The stride step</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sequence_length</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">2</span>

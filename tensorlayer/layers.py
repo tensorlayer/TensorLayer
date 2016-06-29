@@ -1,8 +1,14 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
+
+
 import tensorflow as tf
 import time
 import tensorlayer.init as init
 import tensorlayer.visualize as visualize
 import tensorlayer.utils as utils
+import tensorlayer.files as files
 import tensorlayer.cost as cost
 import tensorlayer.iterate as iterate
 import numpy as np
@@ -215,7 +221,7 @@ class ReconLayer(DenseLayer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     x_recon : tensorflow variable
-        The data used for reconstruct
+        The variables used for reconstruction.
     name : a string or None
         An optional name to attach to this layer.
     n_units : int
@@ -223,16 +229,29 @@ class ReconLayer(DenseLayer):
     act : activation function
         The activation function that is applied to the reconstruction layer.
         Normally, for sigmoid layer, the reconstruction activation is sigmoid;
-                  for rectifying layer, the reconstruction activation is softplus.
+        for rectifying layer, the reconstruction activation is softplus.
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DenseLayer(network, n_units=196, act=tf.nn.sigmoid, name='sigmoid1')
+    >>> recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
+    >>> recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+
+    Methods
+    -------
+    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+        Start to pre-train the parameters of previous DenseLayer.
 
     Notes
     -----
     The input layer should be `DenseLayer` or a layer has only one axes.
+    You may need to modify this part to define your own cost function.
+    By default, the cost is implemented as follow:
+
+    For sigmoid layer, the implementation as (http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial)
+
+    For rectifying layer, the implementation as (Glorot, X., Bordes, A., & Bengio, Y. (2011). Deep Sparse Rectifier Neural Networks. Aistats, 15, 315–323. http://doi.org/10.1.1.208.6449)
     """
     def __init__(
         self,
@@ -245,66 +264,72 @@ class ReconLayer(DenseLayer):
         DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
         print("     tensorlayer:  %s is a ReconLayer" % self.name)
 
-        lambda_l2_w = 0.004
-        learning_rate = 0.0001 * 1
-        print("     lambda_l2_w: %f" % lambda_l2_w)
-        print("     learning_rate: %f" % learning_rate)
-
-        # print(vars(x_recon))
-        # exit()
-
+        # y : reconstruction outputs; train_params : parameters to train
+        # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
         y = self.outputs
         self.train_params = self.all_params[-4:]
 
-        '''
-        You may want to modify this part to define your own cost function
+        # =====================================================================
+        #
+        # You need to modify the below cost function and optimizer so as to
+        # implement your own pre-train method.
+        #
+        # =====================================================================
+        lambda_l2_w = 0.004
+        learning_rate = 0.0001
+        print("     lambda_l2_w: %f" % lambda_l2_w)
+        print("     learning_rate: %f" % learning_rate)
 
-        by default, the cost is implemented as:
-         for sigmoid layer, the implementation follow:
-             Ref:  http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial
-         for rectifying layer, the implementation follow:
-             Ref: Glorot, X., Bordes, A., & Bengio, Y. (2011).
-                  Deep Sparse Rectifier Neural Networks. Aistats,
-                  15, 315–323. http://doi.org/10.1.1.208.6449
-        '''
-
-        # mean-squre-error = quadratic-cost
+        # Mean-squre-error i.e. quadratic-cost
         mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
-        mse = tf.reduce_mean(mse)                               # theano: ((y - x) ** 2 ).sum(axis=1).mean()
+        mse = tf.reduce_mean(mse)                               # DH: theano: ((y - x) ** 2 ).sum(axis=1).mean()
             # mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)), reduction_indices = 1))
-            # mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # Error
-            # mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # Error
-        # cross-entropy
+            # mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # DH: Error
+            # mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # DH: Error
+        # Cross-entropy
         ce = cost.cross_entropy(y, x_recon)
-            # ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # list , list , Error (only be used for softmax output)
-            # ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # list , index , Error (only be used for softmax output)
+            # ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # DH: list , list , Error (only be used for softmax output)
+            # ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # DH: list , index , Error (only be used for softmax output)
         L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[0]) \
                 + tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[2])           # faster than the code below
             # L2_w = lambda_l2_w * tf.reduce_mean(tf.square(self.train_params[0])) + lambda_l2_w * tf.reduce_mean( tf.square(self.train_params[2]))
         # DropNeuro
-        P_o = cost.lo_regularizer(0.001)(self.train_params[0]) + cost.lo_regularizer(0.001)(self.train_params[2])
-        P_i = cost.li_regularizer(0.001)(self.train_params[0]) + cost.li_regularizer(0.001)(self.train_params[2])
-
+        P_o = cost.lo_regularizer(0.03)(self.train_params[0])   # + cost.lo_regularizer(0.5)(self.train_params[2])    # DH: if add lo on decoder, no neuron will be broken
+        P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
-        L1_a = 0.001 * tf.reduce_mean(activation_out)   # theano: T.mean( self.a[i] )                     # some neuron are broken, white and black
-            # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=0) )         # some neuron are broken, white and black
-            # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=1) )   # some neuron are broken, white and black
-        # KLD
+        L1_a = 0.001 * tf.reduce_mean(activation_out)   # DH:  theano: T.mean( self.a[i] )                     # some neuron are broken, white and black
+            # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=0) )         # DH: some neuron are broken, white and black
+            # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=1) )   # DH: some neuron are broken, white and black
+        # KL Divergence
         beta = 4
         rho = 0.15
         p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)   # theano: p_hat = T.mean( self.a[i], axis=0 )
         KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
-
+        # Total cost
         if act == tf.nn.softplus:
             print('     use: mse, L2_w, L1_a')
-            self.cost = mse + L1_a + L2_w #P_o
+            self.cost = mse + L1_a + L2_w
         elif act == tf.nn.sigmoid:
-            print('     use: ce, L2_w, KLD')
-            self.cost = ce + L2_w + KLD
-                # self.cost = mse + L2_w + KLD
+            # ----------------------------------------------------
+            # Cross-entropy was used in Denoising AE
+            # print('     use: ce, L2_w, KLD')
+            # self.cost = ce + L2_w + KLD
+            # ----------------------------------------------------
+            # Mean-squared-error was used in Vanilla AE
+            # print('     use: mse, L2_w, KLD')
+            # self.cost = mse + L2_w + KLD
+            # ----------------------------------------------------
+            # Add DropNeuro penalty (P_o) can remove neurons of AE
+            # print('     use: mse, L2_w, KLD, P_o')
+            # self.cost = mse + L2_w + KLD + P_o
+            # ----------------------------------------------------
+            # Add DropNeuro penalty (P_i) can remove neurons of previous layer
+            #   If previous layer is InputLayer, it means remove useless features
+            print('     use: mse, L2_w, KLD, P_i')
+            self.cost = mse + L2_w + KLD + P_i
         else:
             raise Exception("Don't support the given reconstruct activation function")
 
@@ -312,15 +337,14 @@ class ReconLayer(DenseLayer):
                                         epsilon=1e-08, use_locking=False).minimize(self.cost, var_list=self.train_params)
                 # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
-        # You may want to check different cost values
-        # self.KLD = KLD
-        # self.L2_w = L2_w
-        # self.mse = mse
-        # self.L1_a = L1_a
-
     def pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10,
                   save=True, save_name='w1pre_'):
-        ''' pre-train the parameters of previous DenseLayer '''
+        # ====================================================
+        #
+        # You need to modify the cost function in __init__() so as to
+        # get your own pre-train method.
+        #
+        # ====================================================
         print("     tensorlayer:  %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:
@@ -328,13 +352,6 @@ class ReconLayer(DenseLayer):
             dp_denoise = self.all_drop[set_keep[denoise_name]]
         else:
             print("     no denoising layer")
-
-        # You may want to check different cost values
-        # dp_dict = utils.dict_to_one( self.all_drop )
-        # feed_dict = {x: X_val}
-        # feed_dict.update(dp_dict)
-        # print(sess.run([self.mse, self.L1_a, self.L2_w], feed_dict=feed_dict))
-        # exit()
 
         for epoch in range(n_epoch):
             start_time = time.time()
@@ -368,7 +385,8 @@ class ReconLayer(DenseLayer):
                 print("   val loss: %f" % (val_loss/ n_batch))
                 if save:
                     try:
-                        visualize.W(self.train_params[0].eval(), second=10, saveable=True, name=save_name+str(epoch+1), fig_idx=2012)
+                        visualize.W(self.train_params[0].eval(), second=10, saveable=True, shape=[28,28], name=save_name+str(epoch+1), fig_idx=2012)
+                        files.save_npz([self.all_params[0]] , name=save_name+str(epoch+1)+'.npz')
                     except:
                         raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
 
@@ -389,8 +407,15 @@ class DropoutLayer(Layer):
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+    >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+    ... Alternatively, you can choose a specific initializer for the weights as follow:
+    ... network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1', W_init=tf.random_normal )
+    >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+    >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+    >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+    >>> network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
     """
     def __init__(
         self,
@@ -449,8 +474,11 @@ class DropconnectDenseLayer(Layer):
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
+    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
+    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name='output_layer')
+
     """
     def __init__(
         self,
@@ -492,6 +520,7 @@ class DropconnectDenseLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+
 # Convolutional Layer
 class Conv2dLayer(Layer):
     """
@@ -507,10 +536,10 @@ class Conv2dLayer(Layer):
         The number of units of the layer
     shape : list of shape
         shape of the filters
-    strides: list of stride
-        XXX
-    padding: a string
-        XXX
+    strides : a list of ints. 1-D of length 4.
+        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
@@ -534,7 +563,7 @@ class Conv2dLayer(Layer):
     >>>                   W_init = tf.truncated_normal,
     >>>                   W_init_args = {'mean' : 1, 'stddev':3},
     >>>                   b_init = tf.zeros,
-    >>>                   b_init_args = {'name' : 'HAHA'},
+    >>>                   b_init_args = {'name' : 'bias'},
     >>>                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
     """
     def __init__(
@@ -568,22 +597,23 @@ class Conv2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
-class Pool2dLayer(Layer):
+
+class PoolLayer(Layer):
     """
-    The :class:`Pool2dLayer` class is a 2D Pooling layer.
+    The :class:`PoolLayer` class is a 2D Pooling layer.
 
     Parameters
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    ksize : list of XX
-        XXX
-    strides: list of stride
-        XXX
-    padding: a string
-        XXX
-    pool: a pooling function
-        tf.nn.max_pool ...
+    ksize : a list of ints that has length >= 4.
+        The size of the window for each dimension of the input tensor.
+    strides : a list of ints that has length >= 4.
+        The stride of the sliding window for each dimension of the input tensor.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    pool : a pooling function
+        tf.nn.max_pool , tf.nn.avg_pool ...
     name : a string or None
         An optional name to attach to this layer.
 
@@ -607,7 +637,7 @@ class Pool2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         # n_in = layer.n_units
-        print("  tensorlayer:Instantiate Pool2dLayer %s: %s, %s, %s, %s" % (self.name, str(ksize), str(strides), padding, pool))
+        print("  tensorlayer:Instantiate PoolLayer %s: %s, %s, %s, %s" % (self.name, str(ksize), str(strides), padding, pool))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding)
 
@@ -616,6 +646,7 @@ class Pool2dLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( [W] )
+
 
 # Shape layer
 class FlattenLayer(Layer):
@@ -632,8 +663,21 @@ class FlattenLayer(Layer):
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.Conv2dLayer(network,
+    ...                    act = tf.nn.relu,
+    ...                    shape = [5, 5, 32, 64],
+    ...                    strides=[1, 1, 1, 1],
+    ...                    padding='SAME',
+    ...                    name ='cnn_layer')
+    >>> network = tl.layers.Pool2dLayer(network,
+    ...                    ksize=[1, 2, 2, 1],
+    ...                    strides=[1, 2, 2, 1],
+    ...                    padding='SAME',
+    ...                    pool = tf.nn.max_pool,
+    ...                    name ='pool_layer',)
+    >>> network = tl.layers.FlattenLayer(network, name='flatten_layer')
     """
     def __init__(
         self,
@@ -690,7 +734,7 @@ class MaxoutLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-# densen
+# dense
 class ResnetLayer(Layer):
     """
     The :class:`ResnetLayer` class is a fully connected layer.
@@ -748,6 +792,7 @@ class ResnetLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
+
 # noise
 class GaussianNoiseLayer(Layer):
     """
@@ -763,6 +808,7 @@ class GaussianNoiseLayer(Layer):
         self.inputs = layer.outputs
         self.n_units = layer.n_units
         print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
+
 # shape
 class ReshapeLayer(Layer):
     """
@@ -775,6 +821,7 @@ class ReshapeLayer(Layer):
         name ='reshape_layer',
     ):
         pass
+
 # merge
 class ConcatLayer(Layer):
     """
@@ -788,6 +835,68 @@ class ConcatLayer(Layer):
         pass
 
 
+# cnn
+class Conv3dLayer(Layer):
+    """
+    The :class:`Conv3dLayer` class is a 3D CNN layer.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function
+        The function that is applied to the layer activations.
+    n_units : int
+        The number of units of the layer
+    shape : list of shape
+        shape of the filters
+    strides : a list of ints. 1-D of length 4.
+        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias matrix.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    >>>
+    """
+    def __init__(
+        self,
+        layer = None,
+        act = tf.nn.relu,
+        shape = [5, 5, 1, 100],
+        strides=[1, 1, 1, 1],
+        padding='SAME',
+        W_init = tf.truncated_normal,
+        b_init = tf.zeros,
+        W_init_args = {},
+        b_init_args = {},
+        name ='cnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        # n_in = layer.n_units
+        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
+
+        # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+        # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+        #
+        # self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( [W, b] )
 
 
 

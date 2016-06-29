@@ -16,7 +16,7 @@ setup(
     license = "MIT" ,
     packages = find_packages(),
     install_requires=install_requires,
-    scripts=['tutorial_mnist.py'],
+    # scripts=['tutorial_mnist.py'],
     description = "A Deep learning and Reinforcement learning library for TensorFlow",
     keywords = "deep learning, reinforcement learning, tensorflow",
     platform=['any'],

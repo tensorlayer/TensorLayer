@@ -1,3 +1,10 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
+
+
+import numpy as np
+
 ## Evaluation
 def evaluation(y_test, y_predict, n_classes):
     """
@@ -48,9 +55,7 @@ def dict_to_one(dp_dict):
     return {x: 1 for x in dp_dict}
 
 def class_balancing_oversample(X_train, y_train, printable=True):
-    """
-    Input the features and labels, return the features and labels
-    after oversampling.
+    """Input the features and labels, return the features and labels after oversampling.
 
     Parameters
     ----------
@@ -122,3 +127,98 @@ def class_balancing_oversample(X_train, y_train, printable=True):
         print('the occurrence number of each stage after oversampling: %s' % c.most_common())
     # ================ End of Classes balancing
     return X_train, y_train
+
+
+#
+# def class_balancing_sequence_4D(X_train, y_train, sequence_length, model='downsampling' ,printable=True):
+#     ''' 输入、输出都是sequence format
+#         oversampling or downsampling
+#     '''
+#     n_features = X_train.shape[2]
+#     # ======== Classes balancing for sequence
+#     if printable:
+#         print("Classes balancing for 4D sequence training examples...")
+#     from collections import Counter
+#     c = Counter(y_train)    # Counter({2: 454, 4: 267, 3: 124, 1: 57, 0: 48})
+#     if printable:
+#         print('the occurrence number of each stage: %s' % c.most_common())
+#         print('the least Label %s have %s instances' % c.most_common()[-1])
+#         print('the most  Label %s have %s instances' % c.most_common(1)[0])
+#     # print(c.most_common()) # [(2, 454), (4, 267), (3, 124), (1, 57), (0, 48)]
+#     most_num = c.most_common(1)[0][1]
+#     less_num = c.most_common()[-1][1]
+#
+#     locations = {}
+#     number = {}
+#     for lab, num in c.most_common():
+#         number[lab] = num
+#         locations[lab] = np.where(np.array(y_train)==lab)[0]
+#     # print(locations)
+#     # print(number)
+#     if printable:
+#         print('  convert list to dict')
+#     X = {}  # convert list to dict
+#     ### a sequence
+#     for lab, _ in number.items():
+#         X[lab] = np.empty(shape=(0,1,n_features,1)) # 4D
+#     for lab, _ in number.items():
+#         #X[lab] = X_train[locations[lab]
+#         for l in locations[lab]:
+#             X[lab] = np.vstack((X[lab], X_train[l*sequence_length : (l+1)*(sequence_length)]))
+#         # X[lab] = X_train[locations[lab]*sequence_length : locations[lab]*(sequence_length+1)]    # a sequence
+#     # print(X)
+#
+#     if model=='oversampling':
+#         if printable:
+#             print('  oversampling -- most num is %d, all classes tend to be this num\nshuffle applied' % most_num)
+#         for key in X:
+#             temp = X[key]
+#             while True:
+#                 if len(X[key]) >= most_num * sequence_length:   # sequence
+#                     break
+#                 X[key] = np.vstack((X[key], temp))
+#             # print(key, len(X[key]))
+#         if printable:
+#             print('  make each stage have same num of instances')
+#         for key in X:
+#             X[key] = X[key][0:most_num*sequence_length,:]   # sequence
+#             if printable:
+#                 print(key, len(X[key]))
+#     elif model=='downsampling':
+#         import random
+#         if printable:
+#             print('  downsampling -- less num is %d, all classes tend to be this num by randomly choice without replacement\nshuffle applied' % less_num)
+#         for key in X:
+#             # print(key, len(X[key]))#, len(X[key])/sequence_length)
+#             s_idx = [ i for i in range(int(len(X[key])/sequence_length))]
+#             s_idx = np.asarray(s_idx)*sequence_length   # start index of sequnce in X[key]
+#             # print('s_idx',s_idx)
+#             r_idx = np.random.choice(s_idx, less_num, replace=False)    # random choice less_num of s_idx
+#             # print('r_idx',r_idx)
+#             temp = X[key]
+#             X[key] = np.empty(shape=(0,1,n_features,1)) # 4D
+#             for idx in r_idx:
+#                 X[key] = np.vstack((X[key], temp[idx:idx+sequence_length]))
+#             # print(key, X[key])
+#             # np.random.choice(l, len(l), replace=False)
+#     else:
+#         raise Exception('  model should be oversampling or downsampling')
+#
+#     # convert dict to list
+#     if printable:
+#         print('  convert dict to list')
+#     y_train = []
+#     # X_train = np.empty(shape=(0,len(X[0][0])))
+#     # X_train = np.empty(shape=(0,len(X[1][0])))    # 2D
+#     X_train = np.empty(shape=(0,1,n_features,1))    # 4D
+#     l_key = list(X.keys())  # shuffle
+#     random.shuffle(l_key)   # shuffle
+#     # for key in X:     # no shuffle
+#     for key in l_key:   # shuffle
+#         X_train = np.vstack( (X_train, X[key] ) )
+#         # print(len(X[key]))
+#         y_train.extend([key for i in range(int(len(X[key])/sequence_length))])
+#     # print(X_train,y_train, type(X_train), type(y_train))
+#     # ================ End of Classes balancing for sequence
+#     # print(X_train.shape, len(y_train))
+#     return X_train, np.asarray(y_train)

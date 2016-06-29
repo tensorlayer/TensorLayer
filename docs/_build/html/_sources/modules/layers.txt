@@ -13,7 +13,7 @@
    DropoutLayer
    DropconnectDenseLayer
    Conv2dLayer
-   Pool2dLayer
+   PoolLayer
    FlattenLayer
    flatten_reshape
 
@@ -33,6 +33,7 @@ Dense layer
 
 .. autoclass:: DenseLayer
 .. autoclass:: ReconLayer
+   :members:
 
 Noise layer
 ----------------
@@ -44,7 +45,7 @@ Convolutional layer
 --------------------
 
 .. autoclass:: Conv2dLayer
-.. autoclass:: Pool2dLayer
+.. autoclass:: PoolLayer
 
 Shape layer
 ----------------

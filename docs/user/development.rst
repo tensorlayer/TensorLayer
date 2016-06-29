@@ -1,9 +1,10 @@
 Development
 ===========
 
-The TensorLayer project was started by Data Science Institute, Imperial College London in Jun 2016. It is
+The TensorLayer project was started by Hao Dong in Jun 2016. It is
 developed by a core team (in alphabetical order:
-`Hao Dong <https://zsdonghao.github.io/>`_,)
+`Akara Supratak <https://github.com/zsdonghao>`_,
+`Hao Dong <https://github.com/akaraspt>`_,)
 and `numerous additional contributors on GitHub:
 https://github.com/zsdonghao/TensorLayer
 

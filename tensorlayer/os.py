@@ -1,3 +1,9 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
+
+
+
 import tensorflow as tf
 import os
 from sys import platform as _platform

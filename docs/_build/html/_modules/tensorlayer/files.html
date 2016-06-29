@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
@@ -141,10 +142,18 @@
            <div itemprop="articleBody">
             
   <h1>Source code for tensorlayer.files</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">tensorlayer.visualize</span> <span class="kn">as</span> <span class="nn">visualize</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="c1">## Load Data</span>
 <div class="viewcode-block" id="load_mnist_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_mnist_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">)):</span>
@@ -159,8 +168,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># We first define a download function, supporting both Python 2 and 3.</span>
     <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -232,6 +240,421 @@
     <span class="c1"># We just return all the arrays in order, as expected in main().</span>
     <span class="c1"># (It doesn&#39;t matter how we do this as long as we can read them again.)</span>
     <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span></div>
+
+<div class="viewcode-block" id="load_cifar10_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_cifar10_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_cifar10_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">plotable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with</span>
+<span class="sd">    6000 images per class. There are 50000 training images and 10000 test images.</span>
+
+<span class="sd">    The dataset is divided into five training batches and one test batch, each with</span>
+<span class="sd">    10000 images. The test batch contains exactly 1000 randomly-selected images from</span>
+<span class="sd">    each class. The training batches contain the remaining images in random order,</span>
+<span class="sd">    but some training batches may contain more images from one class than another.</span>
+<span class="sd">    Between them, the training batches contain exactly 5000 images from each class.</span>
+
+<span class="sd">    # code references : https://teratail.com/questions/28932</span>
+<span class="sd">    # data download link : https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz</span>
+<span class="sd">                           https://www.cs.toronto.edu/~kriz/cifar.html</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : tupe</span>
+<span class="sd">        The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32*32*3)</span>
+<span class="sd">    plotable : True, False</span>
+<span class="sd">        Whether to plot some image examples.</span>
+<span class="sd">    second : int</span>
+<span class="sd">        If &#39;plotable&#39; is True, &#39;second&#39; is the display time.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=True)</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ------</span>
+<span class="sd">    CIFAR-10 images can only be display without color change under uint8.</span>
+<span class="sd">    &gt;&gt;&gt; X_train = np.asarray(X_train, dtype=np.uint8)</span>
+<span class="sd">    &gt;&gt;&gt; plt.ion()</span>
+<span class="sd">    &gt;&gt;&gt; fig = plt.figure(1232)</span>
+<span class="sd">    &gt;&gt;&gt; count = 1</span>
+<span class="sd">    &gt;&gt;&gt; for row in range(10):</span>
+<span class="sd">    &gt;&gt;&gt;     for col in range(10):</span>
+<span class="sd">    &gt;&gt;&gt;         a = fig.add_subplot(10, 10, count)</span>
+<span class="sd">    &gt;&gt;&gt;         plt.imshow(X_train[count-1], interpolation=&#39;nearest&#39;)</span>
+<span class="sd">    &gt;&gt;&gt;         plt.gca().xaxis.set_major_locator(plt.NullLocator())    # 不显示刻度(tick)</span>
+<span class="sd">    &gt;&gt;&gt;         plt.gca().yaxis.set_major_locator(plt.NullLocator())</span>
+<span class="sd">    &gt;&gt;&gt;         count = count + 1</span>
+<span class="sd">    &gt;&gt;&gt; plt.draw()</span>
+<span class="sd">    &gt;&gt;&gt; plt.pause(3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+    <span class="c1"># We first define a download function, supporting both Python 2 and 3.</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;cifar-10-python.tar.gz&#39;</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;https://www.cs.toronto.edu/~kriz/&#39;</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Downloading </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">urlretrieve</span><span class="p">(</span><span class="n">source</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># After downloading the cifar-10-python.tar.gz, we need to unzip it.</span>
+    <span class="kn">import</span> <span class="nn">tarfile</span>
+    <span class="k">def</span> <span class="nf">un_tar</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Extracting </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">tar</span> <span class="o">=</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">getnames</span><span class="p">()</span>
+        <span class="c1"># if os.path.isdir(file_name + &quot;_files&quot;):</span>
+        <span class="c1">#     pass</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     os.mkdir(file_name + &quot;_files&quot;)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">tar</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="c1">#, file_name.split(&#39;.&#39;)[0])</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Extracted to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;cifar-10-batches-py&#39;</span><span class="p">):</span>
+        <span class="n">download</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">un_tar</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">unpickle</span><span class="p">(</span><span class="nb">file</span><span class="p">):</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">X_train</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># you can set a dir to the data here.</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">):</span>
+        <span class="n">data_dic</span> <span class="o">=</span> <span class="n">unpickle</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;cifar-10-batches-py/data_batch_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">X_train</span> <span class="o">=</span> <span class="n">data_dic</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X_train</span><span class="p">,</span> <span class="n">data_dic</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
+        <span class="n">y_train</span> <span class="o">+=</span> <span class="n">data_dic</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">]</span>
+
+    <span class="n">test_data_dic</span> <span class="o">=</span> <span class="n">unpickle</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;cifar-10-batches-py/test_batch&quot;</span><span class="p">)</span>
+    <span class="n">X_test</span> <span class="o">=</span> <span class="n">test_data_dic</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">test_data_dic</span><span class="p">[</span><span class="s1">&#39;labels&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">):</span>
+        <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="c1"># X_train = np.transpose(X_train, (0, 1, 3, 2))</span>
+    <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+        <span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plotable</span> <span class="o">==</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">CIFAR-10&#39;</span><span class="p">)</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Shape of a training image: X_train[0]&#39;</span><span class="p">,</span><span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>       <span class="c1"># interactive mode</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">):</span>
+                    <span class="c1"># plt.imshow(X_train[count-1], interpolation=&#39;nearest&#39;)</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+                    <span class="c1"># plt.imshow(np.transpose(X_train[count-1], (2, 1, 0)), interpolation=&#39;nearest&#39;)</span>
+                <span class="k">elif</span> <span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">count</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+                    <span class="c1"># plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation=&#39;nearest&#39;)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Do not support the given &#39;shape&#39; to plot the image examples&quot;</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>    <span class="c1"># 不显示刻度(tick)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">NullLocator</span><span class="p">())</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>      <span class="c1"># interactive mode</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>   <span class="c1"># interactive mode</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;X_train:&quot;</span><span class="p">,</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;y_train:&quot;</span><span class="p">,</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;X_test:&quot;</span><span class="p">,</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;y_test:&quot;</span><span class="p">,</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span></div>
+
+<div class="viewcode-block" id="load_ptb_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_ptb_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_ptb_dataset</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;PTB dataset is used in many LM papers, including &quot;Empirical Evaluation</span>
+<span class="sd">    and Combination of Advanced Language Modeling Techniques&quot;.</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    tensorflow.models.rnn.ptb import reader</span>
+
+<span class="sd">    Download Links</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We first define a download function, supporting both Python 2 and 3.</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;simple-examples.tgz&#39;</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;http://www.fit.vutbr.cz/~imikolov/rnnlm/&#39;</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Downloading </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">urlretrieve</span><span class="p">(</span><span class="n">source</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="c1"># After downloading, we need to unzip it.</span>
+    <span class="kn">import</span> <span class="nn">tarfile</span>
+    <span class="k">def</span> <span class="nf">un_tar</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Extracting </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">tar</span> <span class="o">=</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">getnames</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">tar</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">tar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Extracted to /simple-examples&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;simple-examples&#39;</span><span class="p">):</span>
+        <span class="n">download</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">un_tar</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/simple-examples/data&#39;</span>
+    <span class="n">train_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;ptb.train.txt&quot;</span><span class="p">)</span>
+    <span class="n">valid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;ptb.valid.txt&quot;</span><span class="p">)</span>
+    <span class="n">test_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;ptb.test.txt&quot;</span><span class="p">)</span>
+
+    <span class="n">word_to_id</span> <span class="o">=</span> <span class="n">build_vocab</span><span class="p">(</span><span class="n">read_words</span><span class="p">(</span><span class="n">train_path</span><span class="p">))</span>
+
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">words_to_word_ids</span><span class="p">(</span><span class="n">read_words</span><span class="p">(</span><span class="n">train_path</span><span class="p">),</span> <span class="n">word_to_id</span><span class="p">)</span>
+    <span class="n">valid_data</span> <span class="o">=</span> <span class="n">words_to_word_ids</span><span class="p">(</span><span class="n">read_words</span><span class="p">(</span><span class="n">valid_path</span><span class="p">),</span> <span class="n">word_to_id</span><span class="p">)</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="n">words_to_word_ids</span><span class="p">(</span><span class="n">read_words</span><span class="p">(</span><span class="n">test_path</span><span class="p">),</span> <span class="n">word_to_id</span><span class="p">)</span>
+    <span class="n">vocabulary</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">word_to_id</span><span class="p">)</span>
+
+    <span class="c1"># print(read_words(train_path))     # ... &#39;according&#39;, &#39;to&#39;, &#39;mr.&#39;, &#39;&lt;unk&gt;&#39;, &#39;&lt;eos&gt;&#39;]</span>
+    <span class="c1"># print(train_data)                 # ...  214,         5,    23,    1,       2]</span>
+    <span class="c1"># print(word_to_id)                 # ... &#39;beyond&#39;: 1295, &#39;anti-nuclear&#39;: 9599, &#39;trouble&#39;: 1520, &#39;&lt;eos&gt;&#39;: 2 ... }</span>
+    <span class="c1"># print(vocabulary)                 # 10000</span>
+    <span class="c1"># exit()</span>
+    <span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">vocabulary</span></div>
+
+
+<span class="c1">## text vectorlization</span>
+<div class="viewcode-block" id="read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_words">[docs]</a><span class="k">def</span> <span class="nf">read_words</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;File to list format context.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : a string</span>
+<span class="sd">        a file path (like .txt file),</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    The context in a list, split by &#39; &#39; by default, and use &#39;&lt;eos&gt;&#39; to represent &#39;\n&#39;.</span>
+<span class="sd">    e.g. [... &#39;how&#39;, &#39;useful&#39;, &#39;it&#39;, &quot;&#39;s&quot; ... ]</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    tensorflow.models.rnn.ptb.reader</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">GFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;eos&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="build_vocab"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_vocab">[docs]</a><span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Build vocabulary.</span>
+<span class="sd">        Given the context in list format</span>
+<span class="sd">        Return the vocabulary, which is a dictionary for word to id.</span>
+<span class="sd">        e.g. {&#39;campbell&#39;: 2587, &#39;atlantic&#39;: 2247, &#39;aoun&#39;: 6746 .... }</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : a list of string</span>
+<span class="sd">        the context in list format</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    word_to_id : a dictionary</span>
+<span class="sd">        mapping words to unique IDs.</span>
+<span class="sd">        e.g. {&#39;campbell&#39;: 2587, &#39;atlantic&#39;: 2247, &#39;aoun&#39;: 6746 .... }</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    tensorflow.models.rnn.ptb.reader</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; data_path = os.getcwd() + &#39;/simple-examples/data&#39;</span>
+<span class="sd">    &gt;&gt;&gt; train_path = os.path.join(data_path, &quot;ptb.train.txt&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; word_to_id = build_vocab(read_words(train_path))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># data = _read_words(filename)</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># print(&#39;counter&#39;, counter)   # dictionary for the occurrence number of each word, e.g. &#39;banknote&#39;: 1, &#39;photography&#39;: 1, &#39;kia&#39;: 1</span>
+    <span class="n">count_pairs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="c1"># print(&#39;count_pairs&#39;,count_pairs)  # convert dictionary to list of tuple, e.g. (&#39;ssangyong&#39;, 1), (&#39;swapo&#39;, 1), (&#39;wachter&#39;, 1)</span>
+    <span class="n">words</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">count_pairs</span><span class="p">))</span>
+    <span class="n">word_to_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))))</span>
+    <span class="c1"># print(words)    # list of words</span>
+    <span class="c1"># print(word_to_id) # dictionary for word to id, e.g. &#39;campbell&#39;: 2587, &#39;atlantic&#39;: 2247, &#39;aoun&#39;: 6746</span>
+    <span class="k">return</span> <span class="n">word_to_id</span></div>
+
+<div class="viewcode-block" id="words_to_word_ids"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.words_to_word_ids">[docs]</a><span class="k">def</span> <span class="nf">words_to_word_ids</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">word_to_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given a context in list format and the vocabulary,</span>
+<span class="sd">    Returns a list of IDs to represent the context.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : a list of string</span>
+<span class="sd">        the context in list format</span>
+<span class="sd">    word_to_id : a dictionary</span>
+<span class="sd">        mapping words to unique IDs.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    A list of IDs to represent the context.</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    ---------------</span>
+<span class="sd">    tensorflow.models.rnn.ptb.reader</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># data = read_words(filename)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">word_to_id</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
+
+
+<span class="c1">## .npz operations</span>
+<div class="viewcode-block" id="save_npz"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.save_npz">[docs]</a><span class="k">def</span> <span class="nf">save_npz</span><span class="p">(</span><span class="n">save_list</span><span class="o">=</span><span class="p">{},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model.npz&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    save_list : a dictionary</span>
+<span class="sd">        Parameters want to be saved.</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        The name of the .npz file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params , name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    ... File saved to: model_test.npz</span>
+<span class="sd">    &gt;&gt;&gt; load_params = tl.files.load_npz(name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    ... Loading param0, (784, 800)</span>
+<span class="sd">    ... Loading param1, (800,)</span>
+<span class="sd">    ... Loading param2, (800, 800)</span>
+<span class="sd">    ... Loading param3, (800,)</span>
+<span class="sd">    ... Loading param4, (800, 10)</span>
+<span class="sd">    ... Loading param5, (10,)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rename_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">save_list</span><span class="p">):</span>
+        <span class="n">rename_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;param&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">eval</span><span class="p">()})</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_dict</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;File saved to: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="load_npz"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_npz">[docs]</a><span class="k">def</span> <span class="nf">load_npz</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model.npz&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Input the file name, restore the parameters from .npz file. Use tl.utils.save_npz() to save parameters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        The name of the .npz file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params , name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    ... File saved to: model_test.npz</span>
+<span class="sd">    &gt;&gt;&gt; load_params = tl.files.load_npz(name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    ... Loading param0, (784, 800)</span>
+<span class="sd">    ... Loading param1, (800,)</span>
+<span class="sd">    ... Loading param2, (800, 800)</span>
+<span class="sd">    ... Loading param3, (800,)</span>
+<span class="sd">    ... Loading param4, (800, 10)</span>
+<span class="sd">    ... Loading param5, (10,)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="n">path</span><span class="o">+</span><span class="n">name</span> <span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">):</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">params</span></div>
+
+
+<div class="viewcode-block" id="npz_to_W_pdf"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.npz_to_W_pdf">[docs]</a><span class="k">def</span> <span class="nf">npz_to_W_pdf</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;w1pre_[0-9]+\.(npz)&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : a string or None</span>
+<span class="sd">        XXX</span>
+<span class="sd">    regx : a string</span>
+<span class="sd">        XXX</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ... convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.npz_to_W_pdf(path=&#39;/Users/.../npz_file/&#39;, regx=&#39;w1pre_[0-9]+\.(npz)&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">load_file_list</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="n">regx</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">:</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">load_npz</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> --&gt; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.pdf&#39;</span><span class="p">))</span>
+        <span class="n">visualize</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span></div>
+
+
+<span class="c1">## Help functions</span>
+<div class="viewcode-block" id="load_file_list"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_file_list">[docs]</a><span class="k">def</span> <span class="nf">load_file_list</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;\.npz&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a file list in a folder by given a path and regular expression.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : a string or None</span>
+<span class="sd">        XXX</span>
+<span class="sd">    regx : a string</span>
+<span class="sd">        XXX</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &gt;&gt;&gt; file_list = tl.files.load_file_list(path=None, regx=&#39;w1pre_[0-9]+\.(npz)&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">file_list</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">return_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">file_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">regx</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+            <span class="n">return_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="c1"># return_list.sort()</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Match file list = </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">return_list</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Number of files = </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">return_list</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">return_list</span></div>
 </pre></div>
 
            </div>
