@@ -21,7 +21,7 @@ Class balancing functions
 .. autofunction:: class_balancing_oversample
 
 
-Help functions
+Helper functions
 --------------------
 
 .. autofunction:: dict_to_one

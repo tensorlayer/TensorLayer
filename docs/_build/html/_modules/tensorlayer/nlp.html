@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tensorlayer.nlp &mdash; TensorLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TensorLayer 1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TensorLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/layers.html">Layers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/development.html">Development</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">TensorLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tensorlayer.nlp</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tensorlayer.nlp</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span> <span class="k">as</span> <span class="n">_platform</span>
+<span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<div class="viewcode-block" id="generate_skip_gram_batch"><a class="viewcode-back" href="../../modules/nlp.html#tensorlayer.nlp.generate_skip_gram_batch">[docs]</a><span class="k">def</span> <span class="nf">generate_skip_gram_batch</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_skips</span><span class="p">,</span> <span class="n">skip_window</span><span class="p">,</span> <span class="n">data_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a training batch for the Skip-Gram model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : a list</span>
+<span class="sd">        To present context.</span>
+<span class="sd">    batch_size : an int</span>
+<span class="sd">        Batch size to return.</span>
+<span class="sd">    num_skips : an int</span>
+<span class="sd">        How many times to reuse an input to generate a label.</span>
+<span class="sd">    skip_window : an int</span>
+<span class="sd">        How many words to consider left and right.</span>
+<span class="sd">    data_index : an int</span>
+<span class="sd">        Index of the context location.</span>
+<span class="sd">        without using yield, this code use data_index to instead.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    batch : a list</span>
+<span class="sd">        Inputs</span>
+<span class="sd">    labels : a list</span>
+<span class="sd">        Labels</span>
+<span class="sd">    data_index : an int</span>
+<span class="sd">        Index of the context location.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    Setting num_skips=2, skip_window=1, use the right and left words.</span>
+<span class="sd">    In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.</span>
+
+<span class="sd">    &gt;&gt;&gt; data = [1,2,3,4,5,6,7,8,9,10,11]</span>
+<span class="sd">    &gt;&gt;&gt; batch, labels, data_index = tl.nlp.generate_skip_gram_batch(    \</span>
+<span class="sd">        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)</span>
+<span class="sd">    &gt;&gt;&gt; print(batch)</span>
+<span class="sd">    ... [2 2 3 3 4 4 5 5]</span>
+<span class="sd">    &gt;&gt;&gt; print(labels)</span>
+<span class="sd">    ... [[3]</span>
+<span class="sd">    ... [1]</span>
+<span class="sd">    ... [4]</span>
+<span class="sd">    ... [2]</span>
+<span class="sd">    ... [5]</span>
+<span class="sd">    ... [3]</span>
+<span class="sd">    ... [4]</span>
+<span class="sd">    ... [6]]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+<span class="sd">    https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># global data_index   # you can put data_index outside the function, then</span>
+    <span class="c1">#       modify the global data_index in the function without return it.</span>
+    <span class="c1"># note: without using yield, this code use data_index to instead.</span>
+    <span class="k">assert</span> <span class="n">batch_size</span> <span class="o">%</span> <span class="n">num_skips</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">num_skips</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">skip_window</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="n">span</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">skip_window</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1"># [ skip_window target skip_window ]</span>
+    <span class="nb">buffer</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">span</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">span</span><span class="p">):</span>
+        <span class="nb">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">data_index</span><span class="p">])</span>
+        <span class="n">data_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span> <span class="o">//</span> <span class="n">num_skips</span><span class="p">):</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">skip_window</span>  <span class="c1"># target label at the center of the buffer</span>
+        <span class="n">targets_to_avoid</span> <span class="o">=</span> <span class="p">[</span> <span class="n">skip_window</span> <span class="p">]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_skips</span><span class="p">):</span>
+            <span class="k">while</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets_to_avoid</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">span</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">targets_to_avoid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">batch</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">num_skips</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">buffer</span><span class="p">[</span><span class="n">skip_window</span><span class="p">]</span>
+            <span class="n">labels</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">num_skips</span> <span class="o">+</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">buffer</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+        <span class="nb">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">data_index</span><span class="p">])</span>
+        <span class="n">data_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">data_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">batch</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">data_index</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1">#</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TensorLayer contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

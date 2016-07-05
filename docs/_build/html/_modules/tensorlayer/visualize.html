@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -154,7 +155,7 @@
 
 
 <div class="viewcode-block" id="W"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.W">[docs]</a><span class="k">def</span> <span class="nf">W</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">28</span><span class="p">,</span><span class="mi">28</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;mnist&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2396512</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Visualize every columns of the weight matrix for MNIST dataset.</span>
+    <span class="sd">&quot;&quot;&quot;Visualize every columns of the weight matrix to a group of Greyscale img.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -162,6 +163,8 @@
 <span class="sd">        The weight matrix</span>
 <span class="sd">    second : int</span>
 <span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    saveable : boolen</span>
+<span class="sd">        Save or plot the figure.</span>
 <span class="sd">    shape: list with 2 int</span>
 <span class="sd">        The shape of feature image, MNIST is [28, 80].</span>
 <span class="sd">    name : a string</span>
@@ -220,6 +223,8 @@
 <span class="sd">        The image</span>
 <span class="sd">    second : int</span>
 <span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    saveable : boolen</span>
+<span class="sd">        Save or plot the figure.</span>
 <span class="sd">    name : a string</span>
 <span class="sd">        A name to save the image, if saveable is True.</span>
 <span class="sd">    fig_idx: int</span>
@@ -251,9 +256,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    CNN : numpy.array</span>
-<span class="sd">        The image</span>
+<span class="sd">        The image. e.g: 64 5x5 RGB images can be (5, 5, 3, 64).</span>
 <span class="sd">    second : int</span>
 <span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    saveable : boolen</span>
+<span class="sd">        Save or plot the figure.</span>
 <span class="sd">    name : a string</span>
 <span class="sd">        A name to save the image, if saveable is True.</span>
 <span class="sd">    fig_idx: int</span>
@@ -304,7 +311,8 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="images2d"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.images2d">[docs]</a><span class="k">def</span> <span class="nf">images2d</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">3119362</span><span class="p">):</span>
+<div class="viewcode-block" id="images2d"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.images2d">[docs]</a><span class="k">def</span> <span class="nf">images2d</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                                            <span class="n">fig_idx</span><span class="o">=</span><span class="mi">3119362</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Display a group of RGB or Greyscale images.</span>
 
 <span class="sd">    Parameters</span>
@@ -313,6 +321,8 @@
 <span class="sd">        The images.</span>
 <span class="sd">    second : int</span>
 <span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    saveable : boolen</span>
+<span class="sd">        Save or plot the figure.</span>
 <span class="sd">    name : a string</span>
 <span class="sd">        A name to save the image, if saveable is True.</span>
 <span class="sd">    dtype : None or numpy data type</span>
@@ -365,6 +375,78 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="tsne_embedding"><a class="viewcode-back" href="../../modules/visualize.html#tensorlayer.visualize.tsne_embedding">[docs]</a><span class="k">def</span> <span class="nf">tsne_embedding</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">reverse_dictionary</span><span class="p">,</span> <span class="n">plot_only</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                        <span class="n">second</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tsne&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">9862</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Visualize the embeddings by using t-SNE.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    embeddings : a matrix</span>
+<span class="sd">        The images.</span>
+<span class="sd">    reverse_dictionary : a dictionary</span>
+<span class="sd">        id_to_word, mapping id to unique word.</span>
+<span class="sd">    plot_only : int</span>
+<span class="sd">        The number of examples to plot, choice the most common words.</span>
+<span class="sd">    second : int</span>
+<span class="sd">        The display second(s) for the image(s), if saveable is False.</span>
+<span class="sd">    saveable : boolen</span>
+<span class="sd">        Save or plot the figure.</span>
+<span class="sd">    name : a string</span>
+<span class="sd">        A name to save the image, if saveable is True.</span>
+<span class="sd">    fig_idx: int</span>
+<span class="sd">        matplotlib figure index.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    In &#39;tutorial_word2vec_basic.py&#39; :</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>
+<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
+<span class="sd">    ...         tl.files.build_words_dataset(words, vocabulary_size, True)</span>
+<span class="sd">    &gt;&gt;&gt; data_index = 0</span>
+<span class="sd">    &gt;&gt;&gt; batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,</span>
+<span class="sd">    ...                 batch_size=20, num_skips=4, skip_window=2, data_index=0)</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... Build and train the embedding matrix</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; final_embeddings = normalized_embeddings.eval()</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,</span>
+<span class="sd">    ...                   plot_only=500, second=5, saveable=False, name=&#39;tsne&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">plot_with_labels</span><span class="p">(</span><span class="n">low_dim_embs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">18</span><span class="p">),</span> <span class="n">second</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                    <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tsne&#39;</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">9862</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">low_dim_embs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="s2">&quot;More labels than embeddings&quot;</span>
+        <span class="k">if</span> <span class="n">saveable</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ion</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">fig_idx</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>  <span class="c1">#in inches</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">low_dim_embs</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span>
+                     <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+                     <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                     <span class="n">textcoords</span><span class="o">=</span><span class="s1">&#39;offset points&#39;</span><span class="p">,</span>
+                     <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span>
+                     <span class="n">va</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">saveable</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;.pdf&#39;</span><span class="p">,</span><span class="n">format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">TSNE</span>
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+        <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
+
+        <span class="n">tsne</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">perplexity</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+        <span class="c1"># plot_only = 500</span>
+        <span class="n">low_dim_embs</span> <span class="o">=</span> <span class="n">tsne</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">embeddings</span><span class="p">[:</span><span class="n">plot_only</span><span class="p">,:])</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">reverse_dictionary</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">plot_only</span><span class="p">)]</span>
+        <span class="n">plot_with_labels</span><span class="p">(</span><span class="n">low_dim_embs</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="n">second</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="n">saveable</span><span class="p">,</span> \
+                                                    <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="n">fig_idx</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Please install sklearn and matplotlib to visualize embeddings.&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1">#</span>

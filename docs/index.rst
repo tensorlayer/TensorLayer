@@ -32,6 +32,7 @@ method, this part of the documentation is for you.
 
   modules/layers
   modules/activation
+  modules/nlp
   modules/iterate
   modules/cost
   modules/visualize

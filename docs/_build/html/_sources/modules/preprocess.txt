@@ -5,6 +5,8 @@
 
 .. autosummary::
 
+   distorted_images
+   crop_central_whiten_images
 
 
 Images

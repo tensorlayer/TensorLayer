@@ -443,7 +443,8 @@ For more information on what you can do with TensorLayer's layers, just continue
 reading through readthedocs.
 Finally, the reference lists and explains all layers (:mod:`tensorlayer.layers`),
 weight initializers (:mod:`tensorlayer.init`), activation
-(:mod:`tensorlayer.activation`), cost expressions and regularizers (:mod:`tensorlayer.cost`),
+(:mod:`tensorlayer.activation`), natural language processing
+(:mod:`tensorlayer.nlp`), cost expressions and regularizers (:mod:`tensorlayer.cost`),
 load and save files (:mod:`tensorlayer.files`), operating system (:mod:`tensorlayer.os`),
 help function (:mod:`tensorlayer.utils`), visualization (:mod:`tensorlayer.visualize`),
 iteration functions (:mod:`tensorlayer.iterate`), preprocessing functions

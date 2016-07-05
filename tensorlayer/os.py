@@ -83,6 +83,10 @@ def set_gpu_fraction(sess, gpu_fraction=0.3):
     ----------
     sess : a :sess instance of tensorflow
     gpu_fraction : float (0 ~ 1], fraction of GPU memory
+
+    References
+    ----------
+    https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html
     """
     print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)

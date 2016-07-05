@@ -70,8 +70,8 @@ def main_test_layers(model='relu'):
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
     # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
-    # cost = cost + tl.lo_regularizer(0.0001)(network.all_params[0]) + tl.lo_regularizer(0.0001)(network.all_params[2])
-    # cost = cost + tl.maxnorm_o_regularizer(0.001)(network.all_params[0]) + tl.maxnorm_o_regularizer(0.001)(network.all_params[2])
+    # cost = cost + tl.cost.lo_regularizer(0.0001)(network.all_params[0]) + tl.cost.lo_regularizer(0.0001)(network.all_params[2])
+    # cost = cost + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[0]) + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[2])
 
 
     params = network.all_params

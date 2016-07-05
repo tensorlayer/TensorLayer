@@ -10,7 +10,7 @@ import os
 
 
 def W(W, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512):
-    """Visualize every columns of the weight matrix for MNIST dataset.
+    """Visualize every columns of the weight matrix to a group of Greyscale img.
 
     Parameters
     ----------
@@ -18,6 +18,8 @@ def W(W, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512)
         The weight matrix
     second : int
         The display second(s) for the image(s), if saveable is False.
+    saveable : boolen
+        Save or plot the figure.
     shape: list with 2 int
         The shape of feature image, MNIST is [28, 80].
     name : a string
@@ -76,6 +78,8 @@ def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
         The image
     second : int
         The display second(s) for the image(s), if saveable is False.
+    saveable : boolen
+        Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
     fig_idx: int
@@ -107,9 +111,11 @@ def CNN2d(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
     Parameters
     ----------
     CNN : numpy.array
-        The image
+        The image. e.g: 64 5x5 RGB images can be (5, 5, 3, 64).
     second : int
         The display second(s) for the image(s), if saveable is False.
+    saveable : boolen
+        Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
     fig_idx: int
@@ -160,7 +166,8 @@ def CNN2d(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
         plt.pause(second)
 
 
-def images2d(images, second=10, saveable=True, name='images', dtype=None, fig_idx=3119362):
+def images2d(images, second=10, saveable=True, name='images', dtype=None,
+                                                            fig_idx=3119362):
     """Display a group of RGB or Greyscale images.
 
     Parameters
@@ -169,6 +176,8 @@ def images2d(images, second=10, saveable=True, name='images', dtype=None, fig_id
         The images.
     second : int
         The display second(s) for the image(s), if saveable is False.
+    saveable : boolen
+        Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
     dtype : None or numpy data type
@@ -221,6 +230,78 @@ def images2d(images, second=10, saveable=True, name='images', dtype=None, fig_id
         plt.draw()
         plt.pause(second)
 
+def tsne_embedding(embeddings, reverse_dictionary, plot_only=500,
+                        second=5, saveable=False, name='tsne', fig_idx=9862):
+    """Visualize the embeddings by using t-SNE.
+
+    Parameters
+    ----------
+    embeddings : a matrix
+        The images.
+    reverse_dictionary : a dictionary
+        id_to_word, mapping id to unique word.
+    plot_only : int
+        The number of examples to plot, choice the most common words.
+    second : int
+        The display second(s) for the image(s), if saveable is False.
+    saveable : boolen
+        Save or plot the figure.
+    name : a string
+        A name to save the image, if saveable is True.
+    fig_idx: int
+        matplotlib figure index.
+
+    Examples
+    --------
+    In 'tutorial_word2vec_basic.py' :
+    >>> vocabulary_size = 50000
+    >>> data, count, dictionary, reverse_dictionary = \
+    ...         tl.files.build_words_dataset(words, vocabulary_size, True)
+    >>> data_index = 0
+    >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,
+    ...                 batch_size=20, num_skips=4, skip_window=2, data_index=0)
+    ...
+    ... Build and train the embedding matrix
+    ...
+    >>> final_embeddings = normalized_embeddings.eval()
+    >>> tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,
+    ...                   plot_only=500, second=5, saveable=False, name='tsne')
+    """
+    def plot_with_labels(low_dim_embs, labels, figsize=(18, 18), second=5,
+                                    saveable=True, name='tsne', fig_idx=9862):
+        assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+        if saveable is False:
+            plt.ion()
+            plt.figure(fig_idx)
+        plt.figure(figsize=figsize)  #in inches
+        for i, label in enumerate(labels):
+            x, y = low_dim_embs[i,:]
+            plt.scatter(x, y)
+            plt.annotate(label,
+                     xy=(x, y),
+                     xytext=(5, 2),
+                     textcoords='offset points',
+                     ha='right',
+                     va='bottom')
+        if saveable:
+            plt.savefig(name+'.pdf',format='pdf')
+        else:
+            plt.draw()
+            plt.pause(second)
+
+    try:
+        from sklearn.manifold import TSNE
+        import matplotlib.pyplot as plt
+        from six.moves import xrange
+
+        tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
+        # plot_only = 500
+        low_dim_embs = tsne.fit_transform(embeddings[:plot_only,:])
+        labels = [reverse_dictionary[i] for i in xrange(plot_only)]
+        plot_with_labels(low_dim_embs, labels, second=second, saveable=saveable, \
+                                                    name=name, fig_idx=fig_idx)
+    except ImportError:
+        print("Please install sklearn and matplotlib to visualize embeddings.")
 
 
 #

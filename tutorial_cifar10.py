@@ -11,6 +11,7 @@ import time
 
 def main_test_cnn_naive():
     """Without any distorting, whitening and cropping for training data.
+    This method work well for MNIST, but not CIFAR-10.
     """
     model_file_name = "model_cifar10_naive.ckpt"
     resume = False # load model, resume from previous checkpoint?
@@ -92,6 +93,7 @@ def main_test_cnn_naive():
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
         epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
+
     sess.run(tf.initialize_all_variables())
     if resume:
         print("Load existing model " + "!"*10)
@@ -145,7 +147,7 @@ def main_test_cnn_naive():
 
 
 def main_test_cnn_advanced():
-    """Reimplementation of the tensorflow official CIFAR-10 CNN tutorials:
+    """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
 
     This model has 1,068,298 paramters, after few hours of training with GPU,
     accurcy of 86% was found.
@@ -183,9 +185,9 @@ def main_test_cnn_advanced():
     X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
     X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
+    y_train = np.asarray(y_train, dtype=np.int32)
     X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
+    y_test = np.asarray(y_test, dtype=np.int32)
 
     print('X_train.shape', X_train.shape)   # (50000, 32, 32, 3)
     print('y_train.shape', y_train.shape)   # (50000,)
@@ -199,7 +201,7 @@ def main_test_cnn_advanced():
 
     x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])   # [batch_size, height, width, channels]
     x_crop = tf.placeholder(tf.float32, shape=[batch_size, 24, 24, 3])
-    y_ = tf.placeholder(tf.int64, shape=[batch_size,])
+    y_ = tf.placeholder(tf.int32, shape=[batch_size,])
 
     ## distorted images for training.
     distorted_images_op = tl.preprocess.distorted_images(images=x, height=24, width=24)
@@ -219,13 +221,17 @@ def main_test_cnn_advanced():
     # exit()
 
     # Network is the same with:
-    #   https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10.py
+    #  https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10.py
+    #  using relu, the biases should be better to initialize to positive value.
     network = tl.layers.InputLayer(x_crop, name='input_layer')
     network = tl.layers.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 3, 64],  # 64 features for each 5x5x3 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
+                        W_init=tf.truncated_normal,
+                        W_init_args={'stddev':5e-2},
+                        b_init=tf.zeros,
                         name ='cnn_layer1')     # output: (batch_size, 24, 24, 64)
     network = tl.layers.PoolLayer(network,
                         ksize=[1, 3, 3, 1],
@@ -240,6 +246,10 @@ def main_test_cnn_advanced():
                         shape = [5, 5, 64, 64], # 64 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
+                        W_init=tf.truncated_normal,
+                        W_init_args={'stddev':5e-2},
+                        b_init=tf.constant,
+                        b_init_args={'value':0.1},
                         name ='cnn_layer2')     # output: (batch_size, 12, 12, 64)
     network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
                                                     beta=0.75, name='norm2')
@@ -249,26 +259,42 @@ def main_test_cnn_advanced():
                         padding='SAME',
                         pool = tf.nn.max_pool,
                         name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
-
-    network = tl.layers.FlattenLayer(network, name='flatten_layer')                                # output: (?, 2304)
-    network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu, name='relu1')           # output: (?, 384)
-    network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu, name='relu2')           # output: (?, 192)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
-
+    network = tl.layers.FlattenLayer(network, name='flatten_layer')                        # output: (batch_size, 2304)
+    network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
+                        W_init=tf.truncated_normal, W_init_args={'stddev':0.04},
+                        b_init=tf.constant, b_init_args={'value':0.1}, name='relu1')       # output: (batch_size, 384)
+    network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
+                        W_init=tf.truncated_normal, W_init_args={'stddev':0.04},
+                        b_init=tf.constant, b_init_args={'value':0.1}, name='relu2')       # output: (batch_size, 192)
+    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity,
+                        W_init=tf.truncated_normal, W_init_args={'stddev':1/192.0},
+                        b_init = tf.zeros,
+                        name='output_layer')    # output: (batch_size, 10)
     y = network.outputs
 
     ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    L2 = tl.cost.l2_regularizer(0.004)(network.all_params[4]) + tl.cost.l2_regularizer(0.004)(network.all_params[6])
+    # L2 for the MLP, without this, the accuracy will be reduced by 15%.
+    L2 = tf.contrib.layers.l2_regularizer(0.004)(network.all_params[4]) + \
+            tf.contrib.layers.l2_regularizer(0.004)(network.all_params[6])
     cost = ce + L2
 
-    correct_prediction = tf.equal(tf.argmax(y, 1), y_)
-    # correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int32), y_)
+    # correct_prediction = tf.equal(tf.argmax(tf.nn.softmax(y), 1), y_)
+    correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int32), y_)
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+    # view you graph here
+    # tensorboard --logdir=/tmp/cifar10_logs/train
+    # http://0.0.0.0:6006
+    # print('a')
+    # merged = tf.merge_all_summaries()
+    # train_writer = tf.train.SummaryWriter('/tmp/cifar10_logs/train', sess.graph)
+    # sess.run(merged)
+    # print('b')
 
     # train
     n_epoch = 50000
     learning_rate = 0.0001
-    print_freq = 1
+    print_freq = 5
 
     train_params = network.all_params
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
@@ -337,16 +363,50 @@ def main_test_cnn_advanced():
         # 200   68      64      -4
         # 400   74      69      -5
         # 500   76      70      -6
-        # 600
-        # 700
-        # 800
+        # 600   76      70      -6
+        # 700   76      70      -6
+        # 800   Convergence,
+        # then we add l2
+        # 810   76      70      -6  train loss 1.1
+        # 850
         # 900
-        # 1000
-        #
+
+        # with l2 and truncated_normal Adam lr=1e-4 b_init=0
+        # epoch train   test
+        # 1     18      18
+        # 10    41      41
+        # 25    58      57
+        # 50    68      66
+        # 75    74      71
+        # 100   78      74
+        # 125   80      75
+        # 150   82      76
+        # 200   85      77
+        # 300   88      78
+        # 400   90      79
+        # 500   91      79
+        # 600   91      79
+        # change lr=1e-5
+        # 1     93      80
+        # 10    94      80
+        # 50    96      80
+        # change lr=1e-8
+        # 50    96      80
+
+        # with l2 and truncated_normal Adam lr=1e-4 b_init=0.1
+        # epoch train   test
+        # 1     35      35
+        # 10    54      53
+        # 20    62      60
+        # 50    73      70
+        # + 75
+        # 100   80      74
+        # 200   86      77
+        # 300   88      78
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = .9)
+    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = .5)
     try:
         # main_test_cnn_naive()
         main_test_cnn_advanced()

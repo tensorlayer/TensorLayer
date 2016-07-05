@@ -3,8 +3,8 @@ Development
 
 The TensorLayer project was started by Hao Dong in Jun 2016. It is
 developed by a core team (in alphabetical order:
-`Akara Supratak <https://github.com/zsdonghao>`_,
-`Hao Dong <https://github.com/akaraspt>`_,)
+`Akara Supratak <https://github.com/akaraspt>`_,
+`Hao Dong <https://github.com/zsdonghao>`_,)
 and `numerous additional contributors on GitHub:
 https://github.com/zsdonghao/TensorLayer
 

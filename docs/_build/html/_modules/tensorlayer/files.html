@@ -89,6 +89,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -154,6 +155,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">tensorlayer.visualize</span> <span class="kn">as</span> <span class="nn">visualize</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
 
 <span class="c1">## Load Data</span>
 <div class="viewcode-block" id="load_mnist_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_mnist_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">)):</span>
@@ -459,6 +461,48 @@
     <span class="c1"># exit()</span>
     <span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">valid_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">vocabulary</span></div>
 
+<div class="viewcode-block" id="load_matt_mahoney_text8_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_matt_mahoney_text8_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_matt_mahoney_text8_dataset</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Download a text file from Matt Mahoney&#39;s website</span>
+<span class="sd">    if not present, and make sure it&#39;s the right size.</span>
+<span class="sd">    Extract the first file enclosed in a zip file as a list of words.</span>
+<span class="sd">    The data can be used for testing Word Embedding.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    word_list : a list</span>
+<span class="sd">        a list of string (word).</span>
+<span class="sd">        e.g. [.... &#39;their&#39;, &#39;families&#39;, &#39;who&#39;, &#39;were&#39;, &#39;expelled&#39;, &#39;from&#39;, &#39;jerusalem&#39;, ...]</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;Data size&#39;, len(words))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">zipfile</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://mattmahoney.net/dc/&#39;</span>
+
+    <span class="k">def</span> <span class="nf">download_matt_mahoney_text8</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">expected_bytes</span><span class="p">):</span>
+      <span class="sd">&quot;&quot;&quot;Download a text file from Matt Mahoney&#39;s website</span>
+<span class="sd">      if not present, and make sure it&#39;s the right size.&quot;&quot;&quot;</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Downloading ...&#39;</span><span class="p">)</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+      <span class="n">statinfo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">statinfo</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">expected_bytes</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Found and verified&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+      <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">statinfo</span><span class="o">.</span><span class="n">st_size</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s1">&#39;Failed to verify &#39;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;. Can you get to it with a browser?&#39;</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">filename</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">download_matt_mahoney_text8</span><span class="p">(</span><span class="s1">&#39;text8.zip&#39;</span><span class="p">,</span> <span class="mi">31344016</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">namelist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">word_list</span></div>
+
 
 <span class="c1">## text vectorlization</span>
 <div class="viewcode-block" id="read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_words">[docs]</a><span class="k">def</span> <span class="nf">read_words</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -480,6 +524,66 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">GFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;eos&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="read_analogies_file"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_analogies_file">[docs]</a><span class="k">def</span> <span class="nf">read_analogies_file</span><span class="p">(</span><span class="n">eval_file</span><span class="o">=</span><span class="s1">&#39;questions-words.txt&#39;</span><span class="p">,</span> <span class="n">word2id</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Reads through an analogy question file, return its id format.</span>
+
+<span class="sd">    eval_data : a string</span>
+<span class="sd">        The file name.</span>
+<span class="sd">    word2id : a dictionary</span>
+<span class="sd">        Mapping words to unique IDs.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">    questions: a [n, 4] numpy array containing the analogy question&#39;s</span>
+<span class="sd">             word ids.</span>
+<span class="sd">             questions_skipped: questions skipped due to unknown words.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    eval_file should be in this format :</span>
+<span class="sd">    : capital-common-countries</span>
+<span class="sd">    Athens Greece Baghdad Iraq</span>
+<span class="sd">    Athens Greece Bangkok Thailand</span>
+<span class="sd">    Athens Greece Beijing China</span>
+<span class="sd">    Athens Greece Berlin Germany</span>
+<span class="sd">    Athens Greece Bern Switzerland</span>
+<span class="sd">    Athens Greece Cairo Egypt</span>
+<span class="sd">    Athens Greece Canberra Australia</span>
+<span class="sd">    Athens Greece Hanoi Vietnam</span>
+<span class="sd">    Athens Greece Havana Cuba</span>
+<span class="sd">    ...</span>
+
+<span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
+<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
+<span class="sd">                tl.files.build_words_dataset(words, vocabulary_size, True)</span>
+<span class="sd">    &gt;&gt;&gt; analogy_questions = tl.files.read_analogies_file( \</span>
+<span class="sd">                eval_file=&#39;questions-words.txt&#39;, word2id=dictionary)</span>
+<span class="sd">    &gt;&gt;&gt; print(analogy_questions)</span>
+<span class="sd">    ... [[ 3068  1248  7161  1581]</span>
+<span class="sd">    ... [ 3068  1248 28683  5642]</span>
+<span class="sd">    ... [ 3068  1248  3878   486]</span>
+<span class="sd">    ... ...,</span>
+<span class="sd">    ... [ 1216  4309 19982 25506]</span>
+<span class="sd">    ... [ 1216  4309  3194  8650]</span>
+<span class="sd">    ... [ 1216  4309   140   312]]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">questions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">questions_skipped</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">eval_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">analogy_f</span><span class="p">:</span>
+      <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">analogy_f</span><span class="p">:</span>
+          <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot;:&quot;</span><span class="p">):</span>  <span class="c1"># Skip comments.</span>
+                <span class="k">continue</span>
+          <span class="n">words</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot; &quot;</span><span class="p">)</span>  <span class="c1"># lowercase</span>
+          <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">word2id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">]</span>
+          <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">ids</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+              <span class="n">questions_skipped</span> <span class="o">+=</span> <span class="mi">1</span>
+          <span class="k">else</span><span class="p">:</span>
+              <span class="n">questions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Eval analogy file: &quot;</span><span class="p">,</span> <span class="n">eval_file</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Questions: &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">questions</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Skipped: &quot;</span><span class="p">,</span> <span class="n">questions_skipped</span><span class="p">)</span>
+    <span class="n">analogy_questions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">questions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">analogy_questions</span></div>
 
 <div class="viewcode-block" id="build_vocab"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_vocab">[docs]</a><span class="k">def</span> <span class="nf">build_vocab</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Build vocabulary.</span>
@@ -506,7 +610,7 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; data_path = os.getcwd() + &#39;/simple-examples/data&#39;</span>
 <span class="sd">    &gt;&gt;&gt; train_path = os.path.join(data_path, &quot;ptb.train.txt&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; word_to_id = build_vocab(read_words(train_path))</span>
+<span class="sd">    &gt;&gt;&gt; word_to_id = build_vocab(read_txt_words(train_path))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># data = _read_words(filename)</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -519,13 +623,81 @@
     <span class="c1"># print(word_to_id) # dictionary for word to id, e.g. &#39;campbell&#39;: 2587, &#39;atlantic&#39;: 2247, &#39;aoun&#39;: 6746</span>
     <span class="k">return</span> <span class="n">word_to_id</span></div>
 
+<div class="viewcode-block" id="build_reverse_dictionary"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_reverse_dictionary">[docs]</a><span class="k">def</span> <span class="nf">build_reverse_dictionary</span><span class="p">(</span><span class="n">word_to_id</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given a dictionary for converting word to integer id.</span>
+<span class="sd">    Returns a reverse dictionary for converting a id to word.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reverse_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">word_to_id</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">word_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">reverse_dictionary</span></div>
+
+<div class="viewcode-block" id="build_words_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_words_dataset">[docs]</a><span class="k">def</span> <span class="nf">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Build the words dictionary and replace rare words with &#39;UNK&#39; token.</span>
+<span class="sd">    The most common word has the smallest integer id.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    words : a list of string or byte</span>
+<span class="sd">        The context in list format</span>
+<span class="sd">    vocabulary_size : an int</span>
+<span class="sd">        The maximum vocabulary size, limiting the vocabulary size.</span>
+<span class="sd">        Then the script replaces rare words with &#39;UNK&#39; token.</span>
+<span class="sd">    printable : boolen</span>
+<span class="sd">        Whether to print the read vocabulary size of the given words.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    data : a list of integer</span>
+<span class="sd">        The context in a list of ids</span>
+<span class="sd">    count : a list of tuple and list</span>
+<span class="sd">        count[0] is a list : the number of rare words</span>
+<span class="sd">        count[1:] are tuples : the number of occurrence of each word</span>
+<span class="sd">        e.g. [[&#39;UNK&#39;, 418391], (b&#39;the&#39;, 1061396), (b&#39;of&#39;, 593677),</span>
+<span class="sd">                                        (b&#39;and&#39;, 416629), (b&#39;one&#39;, 411764)]</span>
+<span class="sd">    dictionary : a dictionary</span>
+<span class="sd">        word_to_id, mapping words to unique IDs.</span>
+<span class="sd">    reverse_dictionary : a dictionary</span>
+<span class="sd">        id_to_word, mapping id to unique word.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>
+<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
+<span class="sd">    ...     tl.files.build_words_dataset(words, vocabulary_size)</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    -----------------</span>
+<span class="sd">    tensorflow/examples/tutorials/word2vec/word2vec_basic.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">collections</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;UNK&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">count</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">vocabulary_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
+        <span class="n">dictionary</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dictionary</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">unk_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="n">word</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># dictionary[&#39;UNK&#39;]</span>
+            <span class="n">unk_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">unk_count</span>
+    <span class="n">reverse_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dictionary</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Real vocabulary size    {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Limited vocabulary size {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vocabulary_size</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span></div>
+
 <div class="viewcode-block" id="words_to_word_ids"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.words_to_word_ids">[docs]</a><span class="k">def</span> <span class="nf">words_to_word_ids</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">word_to_id</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Given a context in list format and the vocabulary,</span>
+    <span class="sd">&quot;&quot;&quot;Given a context (words) in list format and the vocabulary,</span>
 <span class="sd">    Returns a list of IDs to represent the context.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    data : a list of string</span>
+<span class="sd">    data : a list of string or byte</span>
 <span class="sd">        the context in list format</span>
 <span class="sd">    word_to_id : a dictionary</span>
 <span class="sd">        mapping words to unique IDs.</span>
@@ -534,12 +706,88 @@
 <span class="sd">    --------</span>
 <span class="sd">    A list of IDs to represent the context.</span>
 
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>
+<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
+<span class="sd">    ...         tl.files.build_words_dataset(words, vocabulary_size, True)</span>
+<span class="sd">    &gt;&gt;&gt; context = [b&#39;hello&#39;, b&#39;how&#39;, b&#39;are&#39;, b&#39;you&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; ids = tl.files.words_to_word_ids(words, dictionary)</span>
+<span class="sd">    &gt;&gt;&gt; context = tl.files.word_ids_to_words(ids, reverse_dictionary)</span>
+<span class="sd">    &gt;&gt;&gt; print(ids)</span>
+<span class="sd">    ... [6434, 311, 26, 207]</span>
+<span class="sd">    &gt;&gt;&gt; print(context)</span>
+<span class="sd">    ... [b&#39;hello&#39;, b&#39;how&#39;, b&#39;are&#39;, b&#39;you&#39;]</span>
+
 <span class="sd">    Code References</span>
 <span class="sd">    ---------------</span>
 <span class="sd">    tensorflow.models.rnn.ptb.reader</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># data = read_words(filename)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">word_to_id</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
+    <span class="c1"># if isinstance(data[0], str):</span>
+    <span class="c1">#     # print(&#39;is a string object&#39;)</span>
+    <span class="c1">#     return [word_to_id[word] for word in data]</span>
+    <span class="c1"># else:#if isinstance(s, bytes):</span>
+    <span class="c1">#     # print(&#39;is a unicode object&#39;)</span>
+    <span class="c1">#     # print(data[0])</span>
+    <span class="c1">#     return [word_to_id[str(word)] for word in data]</span>
+
+<div class="viewcode-block" id="word_ids_to_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.word_ids_to_words">[docs]</a><span class="k">def</span> <span class="nf">word_ids_to_words</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">id_to_word</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given a context (ids) in list format and the vocabulary,</span>
+<span class="sd">    Returns a list of words to represent the context.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : a list of integer</span>
+<span class="sd">        the context in list format</span>
+<span class="sd">    id_to_word : a dictionary</span>
+<span class="sd">        mapping id to unique word.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    A list of string or byte to represent the context.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ---------</span>
+<span class="sd">    see words_to_word_ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">id_to_word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="save_vocab"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.save_vocab">[docs]</a><span class="k">def</span> <span class="nf">save_vocab</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;vocab.txt&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save the vocabulary to a file so the model can be reloaded.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    count : a list of tuple and list</span>
+<span class="sd">        count[0] is a list : the number of rare words</span>
+<span class="sd">        count[1:] are tuples : the number of occurrence of each word</span>
+<span class="sd">        e.g. [[&#39;UNK&#39;, 418391], (b&#39;the&#39;, 1061396), (b&#39;of&#39;, 593677),</span>
+<span class="sd">                                        (b&#39;and&#39;, 416629), (b&#39;one&#39;, 411764)]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ---------</span>
+<span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
+<span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>
+<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
+<span class="sd">                tl.files.build_words_dataset(words, vocabulary_size, True)</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_vocab(count, name=&#39;vocab_text8.txt&#39;)</span>
+<span class="sd">    ... vocab_text8.txt</span>
+<span class="sd">    ... UNK 418391</span>
+<span class="sd">    ... the 1061396</span>
+<span class="sd">    ... of 593677</span>
+<span class="sd">    ... and 416629</span>
+<span class="sd">    ... one 411764</span>
+<span class="sd">    ... in 372201</span>
+<span class="sd">    ... a 325873</span>
+<span class="sd">    ... to 316376</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pwd</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">vocabulary_size</span><span class="p">):</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">compat</span><span class="o">.</span><span class="n">as_text</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> vocab saved to </span><span class="si">%s</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pwd</span><span class="p">))</span></div>
 
 
 <span class="c1">## .npz operations</span>

@@ -90,12 +90,13 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#load-dataset-functions">Load dataset functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#vector-representations-of-words">Vector Representations of Words</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vector-representations-of-words">Vector representations of words</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#load-and-save-models">Load and save models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper functions</a></li>
 </ul>
@@ -165,14 +166,32 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.load_ptb_dataset" title="tensorlayer.files.load_ptb_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_ptb_dataset</span></code></a>()</td>
 <td>PTB dataset is used in many LM papers, including &#8220;Empirical Evaluation and Combination of Advanced Language Modeling Techniques&#8221;.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.load_matt_mahoney_text8_dataset" title="tensorlayer.files.load_matt_mahoney_text8_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_matt_mahoney_text8_dataset</span></code></a>()</td>
+<td>Download a text file from Matt Mahoney&#8217;s website if not present, and make sure it&#8217;s the right size.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename)</td>
 <td>File to list format context.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_analogies_file" title="tensorlayer.files.read_analogies_file"><code class="xref py py-obj docutils literal"><span class="pre">read_analogies_file</span></code></a>([eval_file,&nbsp;word2id])</td>
+<td>Reads through an analogy question file, return its id format.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.build_vocab" title="tensorlayer.files.build_vocab"><code class="xref py py-obj docutils literal"><span class="pre">build_vocab</span></code></a>(data)</td>
 <td>Build vocabulary.</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.build_reverse_dictionary" title="tensorlayer.files.build_reverse_dictionary"><code class="xref py py-obj docutils literal"><span class="pre">build_reverse_dictionary</span></code></a>(word_to_id)</td>
+<td>Given a dictionary for converting word to integer id.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.build_words_dataset" title="tensorlayer.files.build_words_dataset"><code class="xref py py-obj docutils literal"><span class="pre">build_words_dataset</span></code></a>(words[,&nbsp;...])</td>
+<td>Build the words dictionary and replace rare words with &#8216;UNK&#8217; token.</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.words_to_word_ids" title="tensorlayer.files.words_to_word_ids"><code class="xref py py-obj docutils literal"><span class="pre">words_to_word_ids</span></code></a>(data,&nbsp;word_to_id)</td>
-<td>Given a context in list format and the vocabulary, Returns a list of IDs to represent the context.</td>
+<td>Given a context (words) in list format and the vocabulary, Returns a list of IDs to represent the context.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.word_ids_to_words" title="tensorlayer.files.word_ids_to_words"><code class="xref py py-obj docutils literal"><span class="pre">word_ids_to_words</span></code></a>(data,&nbsp;id_to_word)</td>
+<td>Given a context (ids) in list format and the vocabulary, Returns a list of words to represent the context.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.save_vocab" title="tensorlayer.files.save_vocab"><code class="xref py py-obj docutils literal"><span class="pre">save_vocab</span></code></a>(count[,&nbsp;name])</td>
+<td>Save the vocabulary to a file so the model can be reloaded.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.save_npz" title="tensorlayer.files.save_npz"><code class="xref py py-obj docutils literal"><span class="pre">save_npz</span></code></a>([save_list,&nbsp;name])</td>
 <td>Input parameters and the file name, save parameters into .npz file.</td>
@@ -255,9 +274,27 @@ and Combination of Advanced Language Modeling Techniques&#8221;.</p>
 <p><a class="reference external" href="http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz">http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz</a></p>
 </dd></dl>
 
+<dl class="function">
+<dt id="tensorlayer.files.load_matt_mahoney_text8_dataset">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">load_matt_mahoney_text8_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_matt_mahoney_text8_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_matt_mahoney_text8_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a text file from Matt Mahoney&#8217;s website
+if not present, and make sure it&#8217;s the right size.
+Extract the first file enclosed in a zip file as a list of words.
+The data can be used for testing Word Embedding.</p>
+<dl class="docutils">
+<dt>word_list</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>a list of string (word).
+e.g. [.... &#8216;their&#8217;, &#8216;families&#8217;, &#8216;who&#8217;, &#8216;were&#8217;, &#8216;expelled&#8217;, &#8216;from&#8217;, &#8216;jerusalem&#8217;, ...]</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Data size&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="vector-representations-of-words">
-<h2>Vector Representations of Words<a class="headerlink" href="#vector-representations-of-words" title="Permalink to this headline">¶</a></h2>
+<h2>Vector representations of words<a class="headerlink" href="#vector-representations-of-words" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.files.read_words">
 <code class="descclassname">tensorlayer.files.</code><code class="descname">read_words</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#read_words"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.read_words" title="Permalink to this definition">¶</a></dt>
@@ -275,6 +312,48 @@ and Combination of Advanced Language Modeling Techniques&#8221;.</p>
 <p class="last">tensorflow.models.rnn.ptb.reader</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.files.read_analogies_file">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">read_analogies_file</code><span class="sig-paren">(</span><em>eval_file='questions-words.txt'</em>, <em>word2id={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#read_analogies_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.read_analogies_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads through an analogy question file, return its id format.</p>
+<dl class="docutils">
+<dt>eval_data</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>The file name.</dd>
+<dt>word2id</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>Mapping words to unique IDs.</dd>
+</dl>
+<p>Returns:
+questions: a [n, 4] numpy array containing the analogy question&#8217;s</p>
+<blockquote>
+<div>word ids.
+questions_skipped: questions skipped due to unknown words.</div></blockquote>
+<p>eval_file should be in this format :
+: capital-common-countries
+Athens Greece Baghdad Iraq
+Athens Greece Bangkok Thailand
+Athens Greece Beijing China
+Athens Greece Berlin Germany
+Athens Greece Bern Switzerland
+Athens Greece Cairo Egypt
+Athens Greece Canberra Australia
+Athens Greece Hanoi Vietnam
+Athens Greece Havana Cuba
+...</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span> <span class="o">=</span>                 <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">analogy_questions</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">read_analogies_file</span><span class="p">(</span>                 <span class="n">eval_file</span><span class="o">=</span><span class="s1">&#39;questions-words.txt&#39;</span><span class="p">,</span> <span class="n">word2id</span><span class="o">=</span><span class="n">dictionary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">analogy_questions</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[[</span> <span class="mi">3068</span>  <span class="mi">1248</span>  <span class="mi">7161</span>  <span class="mi">1581</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mi">3068</span>  <span class="mi">1248</span> <span class="mi">28683</span>  <span class="mi">5642</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mi">3068</span>  <span class="mi">1248</span>  <span class="mi">3878</span>   <span class="mi">486</span><span class="p">]</span>
+<span class="gp">... </span><span class="o">...</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mi">1216</span>  <span class="mi">4309</span> <span class="mi">19982</span> <span class="mi">25506</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mi">1216</span>  <span class="mi">4309</span>  <span class="mi">3194</span>  <span class="mi">8650</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mi">1216</span>  <span class="mi">4309</span>   <span class="mi">140</span>   <span class="mi">312</span><span class="p">]]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -298,24 +377,125 @@ e.g. {&#8216;campbell&#8217;: 2587, &#8216;atlantic&#8217;: 2247, &#8216;aoun&#8
 <p>tensorflow.models.rnn.ptb.reader</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/simple-examples/data&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;ptb.train.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">word_to_id</span> <span class="o">=</span> <span class="n">build_vocab</span><span class="p">(</span><span class="n">read_words</span><span class="p">(</span><span class="n">train_path</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">word_to_id</span> <span class="o">=</span> <span class="n">build_vocab</span><span class="p">(</span><span class="n">read_txt_words</span><span class="p">(</span><span class="n">train_path</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="function">
+<dt id="tensorlayer.files.build_reverse_dictionary">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">build_reverse_dictionary</code><span class="sig-paren">(</span><em>word_to_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#build_reverse_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.build_reverse_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a dictionary for converting word to integer id.
+Returns a reverse dictionary for converting a id to word.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.files.build_words_dataset">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">build_words_dataset</code><span class="sig-paren">(</span><em>words</em>, <em>vocabulary_size=50000</em>, <em>printable=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#build_words_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.build_words_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build the words dictionary and replace rare words with &#8216;UNK&#8217; token.
+The most common word has the smallest integer id.</p>
+<dl class="docutils">
+<dt>words</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of string or byte</span><dd>The context in list format</dd>
+<dt>vocabulary_size</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">an int</span><dd>The maximum vocabulary size, limiting the vocabulary size.
+Then the script replaces rare words with &#8216;UNK&#8217; token.</dd>
+<dt>printable</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">boolen</span><dd>Whether to print the read vocabulary size of the given words.</dd>
+</dl>
+<dl class="docutils">
+<dt>data</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of integer</span><dd>The context in a list of ids</dd>
+<dt>count</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of tuple and list</span><dd><p class="first">count[0] is a list : the number of rare words
+count[1:] are tuples : the number of occurrence of each word
+e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8217;, 593677),</p>
+<blockquote class="last">
+<div>(b&#8217;and&#8217;, 416629), (b&#8217;one&#8217;, 411764)]</div></blockquote>
+</dd>
+<dt>dictionary</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>word_to_id, mapping words to unique IDs.</dd>
+<dt>reverse_dictionary</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>id_to_word, mapping id to unique word.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">50000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span> <span class="o">=</span>     <span class="o">...</span>     <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>tensorflow/examples/tutorials/word2vec/word2vec_basic.py</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="tensorlayer.files.words_to_word_ids">
 <code class="descclassname">tensorlayer.files.</code><code class="descname">words_to_word_ids</code><span class="sig-paren">(</span><em>data</em>, <em>word_to_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#words_to_word_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.words_to_word_ids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a context in list format and the vocabulary,
+<dd><p>Given a context (words) in list format and the vocabulary,
 Returns a list of IDs to represent the context.</p>
 <dl class="docutils">
 <dt>data</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a list of string</span><dd>the context in list format</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of string or byte</span><dd>the context in list format</dd>
 <dt>word_to_id</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>mapping words to unique IDs.</dd>
 </dl>
 <p>A list of IDs to represent the context.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">50000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span> <span class="o">=</span>     <span class="o">...</span>         <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">b</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;how&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;are&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;you&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ids</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">words_to_word_ids</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">context</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">word_ids_to_words</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">reverse_dictionary</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[</span><span class="mi">6434</span><span class="p">,</span> <span class="mi">311</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">207</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[</span><span class="n">b</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;how&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;are&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;you&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
 <p>tensorflow.models.rnn.ptb.reader</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.files.word_ids_to_words">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">word_ids_to_words</code><span class="sig-paren">(</span><em>data</em>, <em>id_to_word</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#word_ids_to_words"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.word_ids_to_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a context (ids) in list format and the vocabulary,
+Returns a list of words to represent the context.</p>
+<dl class="docutils">
+<dt>data</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of integer</span><dd>the context in list format</dd>
+<dt>id_to_word</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>mapping id to unique word.</dd>
+</dl>
+<p>A list of string or byte to represent the context.</p>
+<p>see words_to_word_ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.files.save_vocab">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">save_vocab</code><span class="sig-paren">(</span><em>count</em>, <em>name='vocab.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#save_vocab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.save_vocab" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the vocabulary to a file so the model can be reloaded.</p>
+<dl class="docutils">
+<dt>count</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of tuple and list</span><dd><p class="first">count[0] is a list : the number of rare words
+count[1:] are tuples : the number of occurrence of each word
+e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8217;, 593677),</p>
+<blockquote class="last">
+<div>(b&#8217;and&#8217;, 416629), (b&#8217;one&#8217;, 411764)]</div></blockquote>
+</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">50000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span> <span class="o">=</span>                 <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_vocab</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;vocab_text8.txt&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">vocab_text8</span><span class="o">.</span><span class="n">txt</span>
+<span class="gp">... </span><span class="n">UNK</span> <span class="mi">418391</span>
+<span class="gp">... </span><span class="n">the</span> <span class="mi">1061396</span>
+<span class="gp">... </span><span class="n">of</span> <span class="mi">593677</span>
+<span class="gp">... </span><span class="ow">and</span> <span class="mi">416629</span>
+<span class="gp">... </span><span class="n">one</span> <span class="mi">411764</span>
+<span class="gp">... </span><span class="ow">in</span> <span class="mi">372201</span>
+<span class="gp">... </span><span class="n">a</span> <span class="mi">325873</span>
+<span class="gp">... </span><span class="n">to</span> <span class="mi">316376</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

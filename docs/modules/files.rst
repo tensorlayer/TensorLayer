@@ -8,9 +8,17 @@
    load_mnist_dataset
    load_cifar10_dataset
    load_ptb_dataset
+   load_matt_mahoney_text8_dataset
+
    read_words
+   read_analogies_file
    build_vocab
+   build_reverse_dictionary
+   build_words_dataset
    words_to_word_ids
+   word_ids_to_words
+   save_vocab
+
    save_npz
    load_npz
    npz_to_W_pdf
@@ -22,12 +30,19 @@ Load dataset functions
 .. autofunction:: load_mnist_dataset
 .. autofunction:: load_cifar10_dataset
 .. autofunction:: load_ptb_dataset
+.. autofunction:: load_matt_mahoney_text8_dataset
 
-Vector Representations of Words
+Vector representations of words
 -------------------------------
+
 .. autofunction:: read_words
+.. autofunction:: read_analogies_file
 .. autofunction:: build_vocab
+.. autofunction:: build_reverse_dictionary
+.. autofunction:: build_words_dataset
 .. autofunction:: words_to_word_ids
+.. autofunction:: word_ids_to_words
+.. autofunction:: save_vocab
 
 Load and save models
 ----------------------

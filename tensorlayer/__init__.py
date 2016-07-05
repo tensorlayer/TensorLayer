@@ -15,6 +15,7 @@ from . import os
 from . import utils
 from . import visualize
 from . import preprocess
+from . import nlp
 
 
 __version__ = "1.1.dev1"
