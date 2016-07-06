@@ -72,17 +72,21 @@ def main_word2vec_basic():
     # num_steps = 100001    # total number of iteration
 
     # optimized setting:
-    vocabulary_size = 200000 # maximum number of word in vocabulary
-    batch_size = 20
+    vocabulary_size = 80000#80000 # maximum number of word in vocabulary
+    batch_size = 120#18#20 # DH: biger better
     embedding_size = 200
-    skip_window = 5
-    num_skips = 10
-    num_sampled = 100
-    learning_rate = 0.2
-    num_steps = 300001
+    skip_window = 2#5#5
+    num_skips = 4#6#10
+    num_sampled = 64#100
+    learning_rate = 1.0 # if too small, the cost can't be
+                        # 1.0 best
+                        # 0.2 when 5, it stack
+                        # 0.1 no
+    num_steps = 100001
+    # 4.5
 
     model_file_name = "model_word2vec.ckpt"
-    resume = True  # load existing .ckpt
+    # resume = True  # load existing .ckpt  if reload the model, all dictionaries should be the same.
 
     """ Step 1: Download the data, read the context into a list of strings.
     """
@@ -183,14 +187,16 @@ def main_word2vec_basic():
     """ Step 5: Begin training.
     """
     sess.run(tf.initialize_all_variables())
-    if resume:
-        print("Load existing model " + "!"*10)
-        saver = tf.train.Saver()
-        saver.restore(sess, model_file_name)
+    # if resume:
+    #     print("Load existing model " + "!"*10)
+    #     saver = tf.train.Saver()
+    #     saver.restore(sess, model_file_name)
 
     average_loss = 0
 
-    for step in xrange(num_steps):
+    # for step in xrange(num_steps):
+    step = 0
+    while (step < num_steps):
         start_time = time.time()
         batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
                         data=data, batch_size=batch_size, num_skips=num_skips,
@@ -220,13 +226,21 @@ def main_word2vec_basic():
                     close_word = reverse_dictionary[nearest[k]]
                     log_str = "%s %s," % (log_str, close_word)
                 print(log_str)
-        if step % (print_freq * 20) == 0:
-            print("Save model " + "!"*10);
-            saver = tf.train.Saver()
-            save_path = saver.save(sess, model_file_name)
+        # if step % (print_freq * 10) == 0:
+        #     print("Save model " + "!"*10);
+        #     saver = tf.train.Saver()
+        #     save_path = saver.save(sess, model_file_name)
+        if step == num_steps-1:
+            keeptrain = input("Training %d finished enter 1 to keep training: " % num_steps)
+            if keeptrain == '1':
+                step = 0
+                learning_rate = float(input("Input new learning rate: "))
+                train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+        step += 1
+
     final_embeddings = normalized_embeddings.eval()
 
-    """ Step 6: Visualize the embeddings.
+    """ Step 6: Visualize the embeddings by t-SNE.
     """
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
                 plot_only=500, second=5, saveable=True, name='word2vec_basic')
@@ -277,7 +291,7 @@ def main_word2vec_basic():
     total = analogy_questions.shape[0]
     start = 0
     while start < total:
-        limit = start + 1#2500
+        limit = start + 2500
         sub = analogy_questions[start:limit, :] # question
         idx = predict(sub)      # 4 answers for every question
         # print('question:', tl.files.word_ids_to_words(sub[0], reverse_dictionary))

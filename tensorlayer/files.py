@@ -688,15 +688,7 @@ def load_npz(path='', name='model.npz'):
 
     Examples
     --------
-    >>> tl.files.save_npz(network.all_params , name='model_test.npz')
-    ... File saved to: model_test.npz
-    >>> load_params = tl.files.load_npz(name='model_test.npz')
-    ... Loading param0, (784, 800)
-    ... Loading param1, (800,)
-    ... Loading param2, (800, 800)
-    ... Loading param3, (800,)
-    ... Loading param4, (800, 10)
-    ... Loading param5, (10,)
+    >>> see save_npz
 
     References
     ----------
@@ -739,9 +731,9 @@ def load_file_list(path=None, regx='\.npz'):
     Parameters
     ----------
     path : a string or None
-        XXX
+        A folder path.
     regx : a string
-        XXX
+        The regx of file name.
 
     Examples
     ----------

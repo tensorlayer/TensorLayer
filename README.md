@@ -27,19 +27,27 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 
 # Table of Contents
-0. [Overview](#Overview)
 0. [Library Structure](#Library-Structure)
+0. [Overview](#Overview)
 0. [Easy to Modify](#Easytomodify)
 0. [Installation](#Installation)
 0. [Ways to Contribute](#Waystocontribute)
 0. [Online Documentation](http://tensorlayer.readthedocs.io/en/latest/)
 0. [Download Documentation](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
 
-
+--
+# Library Structure
+	-tensorlayer
+		- tensorlayer	 *library source code*
+		- setup.py       *python setup.py install, to install TensorLayer*
+		- docs           *readthedocs*
+			- _build/html/index.html *homepage of docs*
+		- tutorial_*     *official tutorials include NLP, DL, RL etc*
+		- ...
 
 --
 # Overview
-More examples available *[here](https://www.xxx)*
+More examples available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file read it locally.
 
 0. [Fully Connected Network](#)
 0. [Convolutional Neural Network](#)
@@ -66,13 +74,13 @@ y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
 ```python
 # Define the network
-network = tl.InputLayer(x, name='input_layer')
-network = tl.DropoutLayer(network, keep=0.8, name='drop1')
-network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-network = tl.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.layers.InputLayer(x, name='input_layer')
+network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.layers.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 # Start training
 ...
 ```
@@ -81,9 +89,9 @@ network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer'
 
 ```python
 # Define the network
-network = tl.InputLayer(x, name='input_layer')
-network = tl.DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
-recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
+network = tl.layers.InputLayer(x, name='input_layer')
+network = tl.layers.DenseLayer(network, n_units=196, act = tf.nn.sigmoid, name='sigmoid1')
+recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.sigmoid, name='recon_layer1')
 # Start pre-train
 sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
@@ -94,10 +102,10 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None
 
 ```python
 # Define the network
-network = tl.InputLayer(x, name='input_layer')
-network = tl.DropoutLayer(network, keep=0.5, name='denoising1')   
-network = tl.DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
-recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+network = tl.layers.InputLayer(x, name='input_layer')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')   
+network = tl.layers.DenseLayer(network, n_units=196, act = tf.nn.relu, name='relu1')
+recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # Start pre-train
 sess.run(tf.initialize_all_variables())
 recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
@@ -108,21 +116,21 @@ recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='den
 
 ```python
 # Define the network
-network = tl.InputLayer(x, name='input_layer')
+network = tl.layers.InputLayer(x, name='input_layer')
 # denoise layer for Autoencoders
-network = tl.DropoutLayer(network, keep=0.5, name='denoising1')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')
 # 1st layer
-network = tl.DropoutLayer(network, keep=0.8, name='drop1')
-network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
 x_recon1 = network.outputs
-recon_layer1 = tl.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
+recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act = tf.nn.softplus, name='recon_layer1')
 # 2nd layer
-network = tl.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-recon_layer2 = tl.ReconLayer(network, x_recon=x_recon1, n_units=800, act = tf.nn.softplus, name='recon_layer2')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+recon_layer2 = tl.layers.ReconLayer(network, x_recon=x_recon1, n_units=800, act = tf.nn.softplus, name='recon_layer2')
 # 3rd layer
-network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.layers.DenseLayer(network, n_units=10, act = identity, name='output_layer')
 
 sess.run(tf.initialize_all_variables())
 
@@ -151,36 +159,36 @@ y_ = tf.placeholder(tf.int64, shape=[None,])
 A 2 layers CNN followed by 2 fully connected layers can be defined by the following codes:
 
 ```python
-network = tl.InputLayer(x, name='input_layer')
-network = tl.Conv2dLayer(network,
+network = tl.layers.InputLayer(x, name='input_layer')
+network = tl.layers.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer1')     # output: (?, 28, 28, 32)
-network = tl.Pool2dLayer(network,
+network = tl.layers.Pool2dLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
                         name ='pool_layer1',)   # output: (?, 14, 14, 32)
-network = tl.Conv2dLayer(network,
+network = tl.layers.Conv2dLayer(network,
                         act = tf.nn.relu,
                         shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer2')     # output: (?, 14, 14, 64)
-network = tl.Pool2dLayer(network,
+network = tl.layers.Pool2dLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
                         name ='pool_layer2',)   # output: (?, 7, 7, 64)
-network = tl.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
-network = tl.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
-network = tl.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
-network = tl.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
-network = tl.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
+network = tl.layers.FlattenLayer(network, name='flatten_layer')                                # output: (?, 3136)
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
+network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
+network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
+network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 ```
 
 
@@ -201,9 +209,9 @@ Atari Pong Game is a single agent example. *[Pong from Pixels](http://karpathy.g
 
 ```python
 # Policy network
-network = tl.InputLayer(x, name='input_layer')
-network = tl.DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
-network = tl.DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
+network = tl.layers.InputLayer(x, name='input_layer')
+network = tl.layers.DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
+network = tl.layers.DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
 ```
 
 
@@ -259,14 +267,6 @@ network.print_layers()
 >> layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
 >> layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
 ```
-
-# Library Structure
-	-tensorlayer
-		- README.md	(the current directory)
-		- setup.py	()
-		- examples	()
-			-
-		- img*		(images for README.md)
 
 
 # Easy to Modify
