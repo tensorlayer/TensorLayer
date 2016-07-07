@@ -7,9 +7,10 @@
     </div>
 </div>
 -->
-<div class="TensorLayer">
-    <img src="img/img_tensorlayer.png" align="middle"">
+<div align="center">
+  <img src="img/img_tensorlayer.png"><br><br>
 </div>
+
 
 
 # TensorLayer: Deep learning and Reinforcement learning library for TensorFlow.
