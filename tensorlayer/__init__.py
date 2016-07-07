@@ -16,6 +16,7 @@ from . import utils
 from . import visualize
 from . import preprocess
 from . import nlp
+from . import rein
 
 
 __version__ = "1.1.dev1"

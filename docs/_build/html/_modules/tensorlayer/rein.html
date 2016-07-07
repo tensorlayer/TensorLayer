@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.activation &mdash; TensorLayer 1.1 documentation</title>
+  <title>tensorlayer.rein &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -131,7 +131,7 @@
       
           <li><a href="../index.html">Module code</a> &raquo;</li>
       
-    <li>tensorlayer.activation</li>
+    <li>tensorlayer.rein</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -143,7 +143,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for tensorlayer.activation</h1><div class="highlight"><pre>
+  <h1>Source code for tensorlayer.rein</h1><div class="highlight"><pre>
 <span></span><span class="ch">#! /usr/bin/python</span>
 <span class="c1"># -*- coding: utf8 -*-</span>
 
@@ -151,18 +151,10 @@
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 
-<div class="viewcode-block" id="identity"><a class="viewcode-back" href="../../modules/activation.html#tensorlayer.activation.identity">[docs]</a><span class="k">def</span> <span class="nf">identity</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The identity activation function.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x : a tensor outputs</span>
-<span class="sd">        input(s)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">x</span></div>
 
-<div class="viewcode-block" id="ramp"><a class="viewcode-back" href="../../modules/activation.html#tensorlayer.activation.ramp">[docs]</a><span class="k">def</span> <span class="nf">ramp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The ramp activation function.</span>
+<div class="viewcode-block" id="XXXX"><a class="viewcode-back" href="../../modules/rein.html#tensorlayer.rein.XXXX">[docs]</a><span class="k">def</span> <span class="nf">XXXX</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The XXXX function.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -174,6 +166,16 @@
 <span class="sd">        if input(s) greater than v_max, change inputs to v_max</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        An optional name to attach to this activation function.</span>
+
+<span class="sd">    return</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import tensorlayer as tl</span>
+<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    ... result</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_value</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">clip_value_min</span><span class="o">=</span><span class="n">v_min</span><span class="p">,</span> <span class="n">clip_value_max</span><span class="o">=</span><span class="n">v_max</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 </pre></div>

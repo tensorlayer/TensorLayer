@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -147,7 +148,7 @@
 <span class="c1"># -*- coding: utf8 -*-</span>
 
 
-
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -157,7 +158,7 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
 
-<span class="c1">## Load Data</span>
+<span class="c1">## Load dataset functions</span>
 <div class="viewcode-block" id="load_mnist_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_mnist_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">)):</span>
     <span class="sd">&quot;&quot;&quot;Automatically download MNIST dataset</span>
 <span class="sd">    and return the training, validation and test set with 50000, 10000 and 10000</span>
@@ -479,6 +480,7 @@
 <span class="sd">    &gt;&gt;&gt; print(&#39;Data size&#39;, len(words))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">zipfile</span>
+    <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">urllib</span>
 
     <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://mattmahoney.net/dc/&#39;</span>
 
@@ -503,8 +505,99 @@
         <span class="n">word_list</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">namelist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">word_list</span></div>
 
+<div class="viewcode-block" id="load_imbd_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_imbd_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_imbd_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;imdb.pkl&quot;</span><span class="p">,</span> <span class="n">nb_words</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">skip_top</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+              <span class="n">maxlen</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">test_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span>
+              <span class="n">start_char</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">oov_char</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">index_from</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load IMDB dataset</span>
 
-<span class="c1">## text vectorlization</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_test, y_test = tl.files.load_imbd_dataset(</span>
+<span class="sd">    ...                                 nb_words=20000, test_split=0.2)</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;X_train.shape&#39;, X_train.shape)</span>
+<span class="sd">    ... (20000,)  [[1, 62, 74, ... 1033, 507, 27],[1, 60, 33, ... 13, 1053, 7]..]</span>
+<span class="sd">    &gt;&gt;&gt; print(&#39;y_train.shape&#39;, y_train.shape)</span>
+<span class="sd">    ... (20000,)  [1 0 0 ..., 1 0 1]</span>
+
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Modify from keras.</span>
+<span class="sd">    https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">cPickle</span>
+    <span class="kn">import</span> <span class="nn">gzip</span>
+    <span class="c1"># from ..utils.data_utils import get_file</span>
+    <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">zip</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">urllib</span>
+
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://s3.amazonaws.com/text-datasets/&#39;</span>
+    <span class="k">def</span> <span class="nf">download_imbd</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+      <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Downloading ...&#39;</span><span class="p">)</span>
+        <span class="n">filename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">filename</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">download_imbd</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="c1"># path = get_file(path, origin=&quot;https://s3.amazonaws.com/text-datasets/imdb.pkl&quot;)</span>
+
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.gz&quot;</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="n">X</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">cPickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">start_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="n">start_char</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">w</span> <span class="o">+</span> <span class="n">index_from</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">index_from</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="n">w</span> <span class="o">+</span> <span class="n">index_from</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">maxlen</span><span class="p">:</span>
+        <span class="n">new_X</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">maxlen</span><span class="p">:</span>
+                <span class="n">new_X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">new_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">new_X</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">new_labels</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">X</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;After filtering for sequences shorter than maxlen=&#39;</span> <span class="o">+</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">maxlen</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, no sequence was kept. &#39;</span>
+                        <span class="s1">&#39;Increase maxlen.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nb_words</span><span class="p">:</span>
+        <span class="n">nb_words</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span>
+
+    <span class="c1"># by convention, use 2 as OOV word</span>
+    <span class="c1"># reserve &#39;index_from&#39; (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)</span>
+    <span class="k">if</span> <span class="n">oov_char</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="n">oov_char</span> <span class="k">if</span> <span class="p">(</span><span class="n">w</span> <span class="o">&gt;=</span> <span class="n">nb_words</span> <span class="ow">or</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">skip_top</span><span class="p">)</span> <span class="k">else</span> <span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">nX</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+            <span class="n">nx</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">w</span> <span class="o">&gt;=</span> <span class="n">nb_words</span> <span class="ow">or</span> <span class="n">w</span> <span class="o">&lt;</span> <span class="n">skip_top</span><span class="p">):</span>
+                    <span class="n">nx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">nX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">nX</span>
+
+    <span class="n">X_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">test_split</span><span class="p">))])</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">test_split</span><span class="p">))])</span>
+
+    <span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">test_split</span><span class="p">)):])</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">test_split</span><span class="p">)):])</span>
+
+    <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span></div>
+
+<span class="c1">## Vector representations of words</span>
 <div class="viewcode-block" id="read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_words">[docs]</a><span class="k">def</span> <span class="nf">read_words</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;File to list format context.</span>
 
@@ -524,7 +617,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">GFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;eos&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span></div>
-
 
 <div class="viewcode-block" id="read_analogies_file"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_analogies_file">[docs]</a><span class="k">def</span> <span class="nf">read_analogies_file</span><span class="p">(</span><span class="n">eval_file</span><span class="o">=</span><span class="s1">&#39;questions-words.txt&#39;</span><span class="p">,</span> <span class="n">word2id</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Reads through an analogy question file, return its id format.</span>
@@ -772,7 +864,7 @@
 <span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
 <span class="sd">                tl.files.build_words_dataset(words, vocabulary_size, True)</span>
 <span class="sd">    &gt;&gt;&gt; tl.files.save_vocab(count, name=&#39;vocab_text8.txt&#39;)</span>
-<span class="sd">    ... vocab_text8.txt</span>
+<span class="sd">    &gt;&gt;&gt; vocab_text8.txt</span>
 <span class="sd">    ... UNK 418391</span>
 <span class="sd">    ... the 1061396</span>
 <span class="sd">    ... of 593677</span>
@@ -790,20 +882,20 @@
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> vocab saved to </span><span class="si">%s</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pwd</span><span class="p">))</span></div>
 
 
-<span class="c1">## .npz operations</span>
-<div class="viewcode-block" id="save_npz"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.save_npz">[docs]</a><span class="k">def</span> <span class="nf">save_npz</span><span class="p">(</span><span class="n">save_list</span><span class="o">=</span><span class="p">{},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model.npz&#39;</span><span class="p">):</span>
+<span class="c1">## Load and save network</span>
+<div class="viewcode-block" id="save_npz"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.save_npz">[docs]</a><span class="k">def</span> <span class="nf">save_npz</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model.npz&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    save_list : a dictionary</span>
+<span class="sd">    save_dict : a dictionary</span>
 <span class="sd">        Parameters want to be saved.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        The name of the .npz file.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params , name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params, name=&#39;model_test.npz&#39;)</span>
 <span class="sd">    ... File saved to: model_test.npz</span>
 <span class="sd">    &gt;&gt;&gt; load_params = tl.files.load_npz(name=&#39;model_test.npz&#39;)</span>
 <span class="sd">    ... Loading param0, (784, 800)</span>
@@ -818,7 +910,7 @@
 <span class="sd">    http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rename_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">save_list</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">save_dict</span><span class="p">):</span>
         <span class="n">rename_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;param&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">eval</span><span class="p">()})</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_dict</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;File saved to: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
@@ -828,20 +920,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    path : a string</span>
+<span class="sd">        Folder path to .npz file.</span>
 <span class="sd">    name : a string or None</span>
 <span class="sd">        The name of the .npz file.</span>
 
+<span class="sd">    Return</span>
+<span class="sd">    --------</span>
+<span class="sd">    params : list</span>
+<span class="sd">        A list of parameters in order.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params , name=&#39;model_test.npz&#39;)</span>
-<span class="sd">    ... File saved to: model_test.npz</span>
-<span class="sd">    &gt;&gt;&gt; load_params = tl.files.load_npz(name=&#39;model_test.npz&#39;)</span>
-<span class="sd">    ... Loading param0, (784, 800)</span>
-<span class="sd">    ... Loading param1, (800,)</span>
-<span class="sd">    ... Loading param2, (800, 800)</span>
-<span class="sd">    ... Loading param3, (800,)</span>
-<span class="sd">    ... Loading param4, (800, 10)</span>
-<span class="sd">    ... Loading param5, (10,)</span>
+<span class="sd">    &gt;&gt;&gt; see save_npz</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -854,16 +945,71 @@
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">params</span></div>
 
+<div class="viewcode-block" id="assign_params"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.assign_params">[docs]</a><span class="k">def</span> <span class="nf">assign_params</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assign the given parameters to the TensorLayer network.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sess : TensorFlow Session</span>
+<span class="sd">    params : list</span>
+<span class="sd">        A list of parameters in order.</span>
+<span class="sd">    network : :class:`Layer` class</span>
+<span class="sd">        The network to be assigned</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ... Save your network as follow:</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_npz(network.all_params, name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; network.print_params()</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... Next time, load and assign your network as follow:</span>
+<span class="sd">    &gt;&gt;&gt; sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign</span>
+<span class="sd">    &gt;&gt;&gt; load_params = tl.files.load_npz(name=&#39;model_test.npz&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.assign_params(sess, load_params, network)</span>
+<span class="sd">    &gt;&gt;&gt; network.print_params()</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+        <span class="n">assign_op</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">assign_op</span><span class="p">)</span></div>
+
+<span class="c1"># Load and save variables</span>
+<div class="viewcode-block" id="save_any_to_npy"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.save_any_to_npy">[docs]</a><span class="k">def</span> <span class="nf">save_any_to_npy</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;any.npy&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save variables to .npy file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ---------</span>
+<span class="sd">    &gt;&gt;&gt; tl.files.save_any_to_npy(save_dict={&#39;data&#39;: [&#39;a&#39;,&#39;b&#39;]}, name=&#39;test.npy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; data = tl.files.load_npy_to_any(name=&#39;test.npy&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    ... {&#39;data&#39;: [&#39;a&#39;,&#39;b&#39;]}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">save_dict</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">load_npy_to_any</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;any.npy&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load .npy file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    ---------</span>
+<span class="sd">    see save_any_to_npy()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">npz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">npz</span>
+
+
+<span class="c1"># Visualizing npz files</span>
 <div class="viewcode-block" id="npz_to_W_pdf"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.npz_to_W_pdf">[docs]</a><span class="k">def</span> <span class="nf">npz_to_W_pdf</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;w1pre_[0-9]+\.(npz)&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : a string or None</span>
-<span class="sd">        XXX</span>
+<span class="sd">        A folder path to npz files.</span>
 <span class="sd">    regx : a string</span>
-<span class="sd">        XXX</span>
+<span class="sd">        Regx for the file name.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -877,16 +1023,16 @@
         <span class="n">visualize</span><span class="o">.</span><span class="n">W</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">2012</span><span class="p">)</span></div>
 
 
-<span class="c1">## Help functions</span>
+<span class="c1">## Helper functions</span>
 <div class="viewcode-block" id="load_file_list"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_file_list">[docs]</a><span class="k">def</span> <span class="nf">load_file_list</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;\.npz&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a file list in a folder by given a path and regular expression.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : a string or None</span>
-<span class="sd">        XXX</span>
+<span class="sd">        A folder path.</span>
 <span class="sd">    regx : a string</span>
-<span class="sd">        XXX</span>
+<span class="sd">        The regx of file name.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    ----------</span>

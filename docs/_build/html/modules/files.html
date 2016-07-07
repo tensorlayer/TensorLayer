@@ -91,13 +91,16 @@
 <li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#load-dataset-functions">Load dataset functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#vector-representations-of-words">Vector representations of words</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#load-and-save-models">Load and save models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-and-save-network">Load and save network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#load-and-save-variables">Load and save variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualizing-npz-file">Visualizing npz file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper functions</a></li>
 </ul>
 </li>
@@ -169,38 +172,50 @@
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.load_matt_mahoney_text8_dataset" title="tensorlayer.files.load_matt_mahoney_text8_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_matt_mahoney_text8_dataset</span></code></a>()</td>
 <td>Download a text file from Matt Mahoney&#8217;s website if not present, and make sure it&#8217;s the right size.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.load_imbd_dataset" title="tensorlayer.files.load_imbd_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_imbd_dataset</span></code></a>([path,&nbsp;nb_words,&nbsp;...])</td>
+<td>Load IMDB dataset</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename)</td>
 <td>File to list format context.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_analogies_file" title="tensorlayer.files.read_analogies_file"><code class="xref py py-obj docutils literal"><span class="pre">read_analogies_file</span></code></a>([eval_file,&nbsp;word2id])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.read_analogies_file" title="tensorlayer.files.read_analogies_file"><code class="xref py py-obj docutils literal"><span class="pre">read_analogies_file</span></code></a>([eval_file,&nbsp;word2id])</td>
 <td>Reads through an analogy question file, return its id format.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.build_vocab" title="tensorlayer.files.build_vocab"><code class="xref py py-obj docutils literal"><span class="pre">build_vocab</span></code></a>(data)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.build_vocab" title="tensorlayer.files.build_vocab"><code class="xref py py-obj docutils literal"><span class="pre">build_vocab</span></code></a>(data)</td>
 <td>Build vocabulary.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.build_reverse_dictionary" title="tensorlayer.files.build_reverse_dictionary"><code class="xref py py-obj docutils literal"><span class="pre">build_reverse_dictionary</span></code></a>(word_to_id)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.build_reverse_dictionary" title="tensorlayer.files.build_reverse_dictionary"><code class="xref py py-obj docutils literal"><span class="pre">build_reverse_dictionary</span></code></a>(word_to_id)</td>
 <td>Given a dictionary for converting word to integer id.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.build_words_dataset" title="tensorlayer.files.build_words_dataset"><code class="xref py py-obj docutils literal"><span class="pre">build_words_dataset</span></code></a>(words[,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.build_words_dataset" title="tensorlayer.files.build_words_dataset"><code class="xref py py-obj docutils literal"><span class="pre">build_words_dataset</span></code></a>(words[,&nbsp;...])</td>
 <td>Build the words dictionary and replace rare words with &#8216;UNK&#8217; token.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.words_to_word_ids" title="tensorlayer.files.words_to_word_ids"><code class="xref py py-obj docutils literal"><span class="pre">words_to_word_ids</span></code></a>(data,&nbsp;word_to_id)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.words_to_word_ids" title="tensorlayer.files.words_to_word_ids"><code class="xref py py-obj docutils literal"><span class="pre">words_to_word_ids</span></code></a>(data,&nbsp;word_to_id)</td>
 <td>Given a context (words) in list format and the vocabulary, Returns a list of IDs to represent the context.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.word_ids_to_words" title="tensorlayer.files.word_ids_to_words"><code class="xref py py-obj docutils literal"><span class="pre">word_ids_to_words</span></code></a>(data,&nbsp;id_to_word)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.word_ids_to_words" title="tensorlayer.files.word_ids_to_words"><code class="xref py py-obj docutils literal"><span class="pre">word_ids_to_words</span></code></a>(data,&nbsp;id_to_word)</td>
 <td>Given a context (ids) in list format and the vocabulary, Returns a list of words to represent the context.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.save_vocab" title="tensorlayer.files.save_vocab"><code class="xref py py-obj docutils literal"><span class="pre">save_vocab</span></code></a>(count[,&nbsp;name])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.save_vocab" title="tensorlayer.files.save_vocab"><code class="xref py py-obj docutils literal"><span class="pre">save_vocab</span></code></a>(count[,&nbsp;name])</td>
 <td>Save the vocabulary to a file so the model can be reloaded.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.save_npz" title="tensorlayer.files.save_npz"><code class="xref py py-obj docutils literal"><span class="pre">save_npz</span></code></a>([save_list,&nbsp;name])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.save_npz" title="tensorlayer.files.save_npz"><code class="xref py py-obj docutils literal"><span class="pre">save_npz</span></code></a>([save_dict,&nbsp;name])</td>
 <td>Input parameters and the file name, save parameters into .npz file.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.load_npz" title="tensorlayer.files.load_npz"><code class="xref py py-obj docutils literal"><span class="pre">load_npz</span></code></a>([path,&nbsp;name])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.load_npz" title="tensorlayer.files.load_npz"><code class="xref py py-obj docutils literal"><span class="pre">load_npz</span></code></a>([path,&nbsp;name])</td>
 <td>Input the file name, restore the parameters from .npz file.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.assign_params" title="tensorlayer.files.assign_params"><code class="xref py py-obj docutils literal"><span class="pre">assign_params</span></code></a>(sess,&nbsp;params,&nbsp;network)</td>
+<td>Assign the given parameters to the TensorLayer network.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.npz_to_W_pdf" title="tensorlayer.files.npz_to_W_pdf"><code class="xref py py-obj docutils literal"><span class="pre">npz_to_W_pdf</span></code></a>([path,&nbsp;regx])</td>
 <td>Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.save_any_to_npy" title="tensorlayer.files.save_any_to_npy"><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></a>([save_dict,&nbsp;name])</td>
+<td>Save variables to .npy file.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.save_any_to_npy" title="tensorlayer.files.save_any_to_npy"><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></a>([save_dict,&nbsp;name])</td>
+<td>Save variables to .npy file.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.load_file_list" title="tensorlayer.files.load_file_list"><code class="xref py py-obj docutils literal"><span class="pre">load_file_list</span></code></a>([path,&nbsp;regx])</td>
 <td>Return a file list in a folder by given a path and regular expression.</td>
@@ -290,6 +305,22 @@ e.g. [.... &#8216;their&#8217;, &#8216;families&#8217;, &#8216;who&#8217;, &#821
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Data size&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.files.load_imbd_dataset">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">load_imbd_dataset</code><span class="sig-paren">(</span><em>path='imdb.pkl'</em>, <em>nb_words=None</em>, <em>skip_top=0</em>, <em>maxlen=None</em>, <em>test_split=0.2</em>, <em>seed=113</em>, <em>start_char=1</em>, <em>oov_char=2</em>, <em>index_from=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_imbd_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_imbd_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load IMDB dataset</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_imbd_dataset</span><span class="p">(</span>
+<span class="gp">... </span>                                <span class="n">nb_words</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span> <span class="n">test_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;X_train.shape&#39;</span><span class="p">,</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">20000</span><span class="p">,)</span>  <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="o">...</span> <span class="mi">1033</span><span class="p">,</span> <span class="mi">507</span><span class="p">,</span> <span class="mi">27</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="o">...</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">1053</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span><span class="o">..</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_train.shape&#39;</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">20000</span><span class="p">,)</span>  <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="o">...</span><span class="p">,</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Modify from keras.
+<a class="reference external" href="https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py">https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py</a></p>
 </dd></dl>
 
 </div>
@@ -485,7 +516,7 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 <span class="gp">&gt;&gt;&gt; </span><span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">50000</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span> <span class="o">=</span>                 <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_vocab</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;vocab_text8.txt&#39;</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">vocab_text8</span><span class="o">.</span><span class="n">txt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vocab_text8</span><span class="o">.</span><span class="n">txt</span>
 <span class="gp">... </span><span class="n">UNK</span> <span class="mi">418391</span>
 <span class="gp">... </span><span class="n">the</span> <span class="mi">1061396</span>
 <span class="gp">... </span><span class="n">of</span> <span class="mi">593677</span>
@@ -499,19 +530,19 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 </dd></dl>
 
 </div>
-<div class="section" id="load-and-save-models">
-<h2>Load and save models<a class="headerlink" href="#load-and-save-models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="load-and-save-network">
+<h2>Load and save network<a class="headerlink" href="#load-and-save-network" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.files.save_npz">
-<code class="descclassname">tensorlayer.files.</code><code class="descname">save_npz</code><span class="sig-paren">(</span><em>save_list={}</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#save_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.save_npz" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.files.</code><code class="descname">save_npz</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#save_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.save_npz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.</p>
 <dl class="docutils">
-<dt>save_list</dt>
+<dt>save_dict</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>Parameters want to be saved.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>The name of the .npz file.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_npz</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_npz</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
 <span class="gp">... </span><span class="n">File</span> <span class="n">saved</span> <span class="n">to</span><span class="p">:</span> <span class="n">model_test</span><span class="o">.</span><span class="n">npz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">load_params</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
 <span class="gp">... </span><span class="n">Loading</span> <span class="n">param0</span><span class="p">,</span> <span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
@@ -530,49 +561,101 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 <code class="descclassname">tensorlayer.files.</code><code class="descname">load_npz</code><span class="sig-paren">(</span><em>path=''</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_npz" title="Permalink to this definition">¶</a></dt>
 <dd><p>Input the file name, restore the parameters from .npz file. Use tl.utils.save_npz() to save parameters.</p>
 <dl class="docutils">
+<dt>path</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>Folder path to .npz file.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>The name of the .npz file.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_npz</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span> <span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">File</span> <span class="n">saved</span> <span class="n">to</span><span class="p">:</span> <span class="n">model_test</span><span class="o">.</span><span class="n">npz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">load_params</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param0</span><span class="p">,</span> <span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param1</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param2</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param3</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param4</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="gp">... </span><span class="n">Loading</span> <span class="n">param5</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,)</span>
+<dl class="docutils">
+<dt>params</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">list</span><dd>A list of parameters in order.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">see</span> <span class="n">save_npz</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez">http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</a></p>
 </dd></dl>
 
+<dl class="function">
+<dt id="tensorlayer.files.assign_params">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">assign_params</code><span class="sig-paren">(</span><em>sess</em>, <em>params</em>, <em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#assign_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.assign_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the given parameters to the TensorLayer network.</p>
+<p>sess : TensorFlow Session
+params : list</p>
+<blockquote>
+<div>A list of parameters in order.</div></blockquote>
+<dl class="docutils">
+<dt>network</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code> class</span><dd>The network to be assigned</dd>
+</dl>
+<p>... Save your network as follow:
+&gt;&gt;&gt; tl.files.save_npz(network.all_params, name=&#8217;model_test.npz&#8217;)
+&gt;&gt;&gt; network.print_params()
+...
+... Next time, load and assign your network as follow:
+&gt;&gt;&gt; sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign
+&gt;&gt;&gt; load_params = tl.files.load_npz(name=&#8217;model_test.npz&#8217;)
+&gt;&gt;&gt; tl.files.assign_params(sess, load_params, network)
+&gt;&gt;&gt; network.print_params()</p>
+<p><a class="reference external" href="http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable">http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable</a></p>
+</dd></dl>
+
 </div>
-<div class="section" id="helper-functions">
-<h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="load-and-save-variables">
+<h2>Load and save variables<a class="headerlink" href="#load-and-save-variables" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.files.save_any_to_npy">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">save_any_to_npy</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='any.npy'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#save_any_to_npy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.save_any_to_npy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save variables to .npy file.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_any_to_npy</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npy_to_any</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">tensorlayer.files.</code><code class="descname">save_any_to_npy</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='any.npy'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#save_any_to_npy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Save variables to .npy file.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_any_to_npy</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npy_to_any</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="visualizing-npz-file">
+<h2>Visualizing npz file<a class="headerlink" href="#visualizing-npz-file" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.files.npz_to_W_pdf">
 <code class="descclassname">tensorlayer.files.</code><code class="descname">npz_to_W_pdf</code><span class="sig-paren">(</span><em>path=None</em>, <em>regx='w1pre_[0-9]+\\.(npz)'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#npz_to_W_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.npz_to_W_pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</p>
 <dl class="docutils">
 <dt>path</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>XXX</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>A folder path to npz files.</dd>
 <dt>regx</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>XXX</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>Regx for the file name.</dd>
 </dl>
 <p>... convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
 &gt;&gt;&gt; tl.files.npz_to_W_pdf(path=&#8217;/Users/.../npz_file/&#8217;, regx=&#8217;w1pre_[0-9]+.(npz)&#8217;)</p>
 </dd></dl>
 
+</div>
+<div class="section" id="helper-functions">
+<h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.files.load_file_list">
 <code class="descclassname">tensorlayer.files.</code><code class="descname">load_file_list</code><span class="sig-paren">(</span><em>path=None</em>, <em>regx='\\.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_file_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_file_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a file list in a folder by given a path and regular expression.</p>
 <dl class="docutils">
 <dt>path</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>XXX</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>A folder path.</dd>
 <dt>regx</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>XXX</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>The regx of file name.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_list</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_file_list</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;w1pre_[0-9]+\.(npz)&#39;</span><span class="p">)</span>
 </pre></div>

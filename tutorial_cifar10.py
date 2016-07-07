@@ -93,7 +93,6 @@ def main_test_cnn_naive():
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
         epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
-
     sess.run(tf.initialize_all_variables())
     if resume:
         print("Load existing model " + "!"*10)

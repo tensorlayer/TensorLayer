@@ -16,8 +16,8 @@
 """
 Vector Representations of Words
 ---------------------------------
-This is the minimalistic reimplementation of
-tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+This is the minimalistic implementation in
+tensorflow/examples/tutorials/word2vec/word2vec_basic.py   (reimplementation)
 This basic example contains the code needed to download some data,
 train on it a bit and visualize the result by using t-SNE.
 
@@ -108,7 +108,7 @@ def main_word2vec_basic():
     num_skips = 10
     num_sampled = 25
     learning_rate = 0.025
-    n_epoch = 1500000000
+    n_epoch = 15
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
 
@@ -117,10 +117,9 @@ def main_word2vec_basic():
     print('   batch_size: %d' % batch_size)
 
     model_file_name = "model_word2vec"
-    resume = True  # load existing .ckpt, data and dictionaries
+    resume = True  # load existing .ckpt
     """ Step 2: Build the dictionary and replace rare words with 'UNK' token.
     """
-    print()
     if resume:
         print("Load existing data and dictionaries" + "!"*10)
         all_var = tl.files.load_npy_to_any(name=model_file_name+'.npy')
@@ -130,7 +129,7 @@ def main_word2vec_basic():
         reverse_dictionary = all_var['reverse_dictionary']
     else:
         data, count, dictionary, reverse_dictionary = \
-                    tl.files.build_words_dataset(words, vocabulary_size, True)
+                        tl.files.build_words_dataset(words, vocabulary_size, True)
 
     print('Most 5 common words (+UNK)', count[:5]) # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]]) # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
@@ -140,7 +139,6 @@ def main_word2vec_basic():
 
     """ Step 3: Function to generate a training batch for the Skip-Gram model.
     """
-    print()
     data_index = 0
     batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,
                         batch_size=20, num_skips=4, skip_window=2, data_index=0)
@@ -151,7 +149,6 @@ def main_word2vec_basic():
 
     """ Step 4: Build and train a Skip-Gram model.
     """
-    print()
     # We pick a random validation set to sample nearest neighbors. Here we limit the
     # validation samples to the words that have a low numeric ID, which by
     # construction are also the most frequent.
@@ -171,7 +168,35 @@ def main_word2vec_basic():
     valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
     # Look up embeddings for inputs.
-    emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+    # Note: a row of 'embeddings' is the vector representation of a word.
+    # for the sake of speed, it is better to slice the embedding matrix
+    # instead of transfering a word id to one-hot-format vector and then
+    # multiply by the embedding matrix.
+    # embed is the outputs of the hidden layer (embedding layer), it is a
+    # row vector with 'embedding_size' values.
+    ## ============= without TensorLayer ===============================
+    # embeddings = tf.Variable(
+    #     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+    # embed = tf.nn.embedding_lookup(embeddings, train_inputs)
+    #
+    # # Construct the variables for the NCE loss (i.e. negative sampling)
+    # nce_weights = tf.Variable(
+    #     tf.truncated_normal([vocabulary_size, embedding_size],
+    #                         stddev=1.0 / math.sqrt(embedding_size)))
+    # nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
+    #
+    # # Compute the average NCE loss for the batch.
+    # # tf.nce_loss automatically draws a new sample of the negative labels
+    # # each time we evaluate the loss.
+    # cost = tf.reduce_mean(
+    #     tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+    #                    inputs=embed, labels=train_labels,
+    #                    num_sampled=num_sampled, num_classes=vocabulary_size,
+    #                    num_true=1))
+    ## ============= with TensorLayer ===================================
+    # network = tl.layers.InputLayer(train_inputs, name='input_layer')
+    network = tl.layers.Word2vecEmbeddingInputlayer(
+            # layer = network,
             inputs = train_inputs,
             train_labels = train_labels,
             vocabulary_size = vocabulary_size,
@@ -186,14 +211,24 @@ def main_word2vec_basic():
             nce_b_init_args = {},
             name ='word2vec_layer',
         )
+    # num_sampled: An int. The number of classes to randomly sample per batch
+    #              Number of negative examples to sample.
+    # num_classes: An int. The number of possible classes.
+    # num_true = 1: An int. The number of target classes per training example.
+    #            DH: if 1, predict one word given one word, like bigram model?  Check!
+
     # Construct the optimizer. Note: AdamOptimizer is very slow in this case
-    cost = emb_net.nce_cost
-    train_params = emb_net.all_params
-    train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    cost = network.nce_cost
+    train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
     # Compute the cosine similarity between minibatch examples and all embeddings.
     # For simple visualization of validation set.
-    normalized_embeddings = emb_net.normalized_embeddings
+    ## ============= without TensorLayer ===============================
+    # norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
+    #     # print(norm) # shape=(50000, 1)
+    # normalized_embeddings = embeddings / norm
+    # # Equal To: normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
+    normalized_embeddings = network.normalized_embeddings
     valid_embed = tf.nn.embedding_lookup(
                                 normalized_embeddings, valid_dataset)
     similarity = tf.matmul(
@@ -203,15 +238,14 @@ def main_word2vec_basic():
 
     """ Step 5: Begin training.
     """
-    print()
     sess.run(tf.initialize_all_variables())
     if resume:
         print("Load existing model" + "!"*10)
         saver = tf.train.Saver()
         saver.restore(sess, model_file_name+'.ckpt')
 
-    emb_net.print_params()
-    emb_net.print_layers()
+    network.print_params()
+    network.print_layers()
 
     # save vocabulary to txt
     tl.files.save_vocab(count, name='vocab_text8.txt')
@@ -251,7 +285,7 @@ def main_word2vec_basic():
                     log_str = "%s %s," % (log_str, close_word)
                 print(log_str)
 
-        if step % (print_freq * 20) == 0:
+        if step % (print_freq * 10) == 0:
             print("Save model, data and dictionaries" + "!"*10);
             saver = tf.train.Saver()
             save_path = saver.save(sess, model_file_name+'.ckpt')
@@ -271,17 +305,21 @@ def main_word2vec_basic():
 
     """ Step 6: Visualize the embeddings by t-SNE.
     """
-    print()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
                 plot_only=500, second=5, saveable=True, name='word2vec_basic')
+
 
     """ Step 7: Evaluate by analogy questions.
         see tensorflow/models/embedding/word2vec_optimized.py
     """
-    print()
     #   from tensorflow/models/embedding/word2vec.py
     analogy_questions = tl.files.read_analogies_file( \
                 eval_file='questions-words.txt', word2id=dictionary)
+    # print(analogy_questions)
+    # print(analogy_questions[0][0])
+    # print(reverse_dictionary[analogy_questions[0][0]])
+    # print(dictionary[b'athens'])
+    # exit()
     # The eval feeds three vectors of word ids for a, b, c, each of
     # which is of size N, where N is the number of analogies we want to
     # evaluate in one batch.
@@ -330,7 +368,7 @@ def main_word2vec_basic():
                 # if one of the top 4 answers in correct, win !
                 if idx[question, j] == sub[question, 3]:
                     # Bingo! We predicted correctly. E.g., [italy, rome, france, paris].
-                    print(tl.files.word_ids_to_words([idx[question, j]], reverse_dictionary) \
+                    print(tl.files.word_ids_to_words(idx[question, j], reverse_dictionary) \
                         , ':', tl.files.word_ids_to_words(sub[question, :], reverse_dictionary))
                     correct += 1
                     break
@@ -340,6 +378,7 @@ def main_word2vec_basic():
                 else:
                     # The correct label is not the precision@1
                     break
+    print()
     print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
                                              correct * 100.0 / total))
 

@@ -8,6 +8,7 @@
 
    Layer
    InputLayer
+   Word2vecEmbeddingInputlayer
    DenseLayer
    ReconLayer
    DropoutLayer
@@ -27,6 +28,11 @@ Input layer
 ----------------
 
 .. autoclass:: InputLayer
+
+Word Embedding Input layer
+----------------
+
+.. autoclass:: Word2vecEmbeddingInputlayer
 
 Dense layer
 ----------------

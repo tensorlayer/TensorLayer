@@ -91,6 +91,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#basic-layer">Basic layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#input-layer">Input layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#word-embedding-input-layer">Word Embedding Input layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dense-layer">Dense layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#noise-layer">Noise layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#convolutional-layer">Convolutional layer</a></li>
@@ -101,6 +102,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -167,28 +169,31 @@
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></a>([inputs,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DenseLayer</span></code></a>([layer,&nbsp;n_units,&nbsp;act,&nbsp;W_init,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-obj docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a>([inputs,&nbsp;...])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a> class is a fully connected layer, for Word Embedding.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DenseLayer</span></code></a>([layer,&nbsp;n_units,&nbsp;act,&nbsp;W_init,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReconLayer</span></code></a>([layer,&nbsp;x_recon,&nbsp;name,&nbsp;n_units,&nbsp;act])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReconLayer</span></code></a>([layer,&nbsp;x_recon,&nbsp;name,&nbsp;n_units,&nbsp;act])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.ReconLayer" title="tensorlayer.layers.ReconLayer"><code class="xref py py-class docutils literal"><span class="pre">ReconLayer</span></code></a> class is a reconstruction layer <cite>DenseLayer</cite> which use to pre-train a <cite>DenseLayer</cite>.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropoutLayer</span></code></a>([layer,&nbsp;keep,&nbsp;name])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropoutLayer</span></code></a>([layer,&nbsp;keep,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> class is a noise layer which randomly set some values to zero by a given keeping probability.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a>([layer,&nbsp;keep,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-obj docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a>([layer,&nbsp;keep,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect behaviour which randomly remove connection between this layer to previous layer by a given keeping probability.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></a>([layer,&nbsp;act,&nbsp;shape,&nbsp;strides,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-obj docutils literal"><span class="pre">Conv2dLayer</span></code></a>([layer,&nbsp;act,&nbsp;shape,&nbsp;strides,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-obj docutils literal"><span class="pre">PoolLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;padding,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-obj docutils literal"><span class="pre">PoolLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;padding,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-class docutils literal"><span class="pre">PoolLayer</span></code></a> class is a 2D Pooling layer.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D vector.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
 <td>Reshapes the input to a 1D vector.</td>
 </tr>
 </tbody>
@@ -227,6 +232,95 @@ network.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="word-embedding-input-layer">
+<h2>Word Embedding Input layer<a class="headerlink" href="#word-embedding-input-layer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Word2vecEmbeddingInputlayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'minval': -1.0</em>, <em>'maxval': 1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a> class is a fully connected layer,
+for Word Embedding. Words are input as integer index.
+The output is the embedded word vector.</p>
+<dl class="docutils">
+<dt>inputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">placeholder</span><dd>For word inputs. integer index format.</dd>
+<dt>train_labels</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">placeholder</span><dd>For word labels. integer index format.</dd>
+<dt>vocabulary_size</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The size of vocabulary, number of words.</dd>
+<dt>embedding_size</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of embedding dimensions.</dd>
+<dt>num_sampled</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The Number of negative examples for NCE loss.</dd>
+<dt>nce_loss_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for tf.nn.nce_loss()</dd>
+<dt>E_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">embedding initializer</span><dd>The initializer for initializing the embedding matrix.</dd>
+<dt>E_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for embedding initializer</dd>
+<dt>nce_W_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">NCE decoder biases initializer</span><dd>The initializer for initializing the nce decoder weight matrix.</dd>
+<dt>nce_W_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for initializing the nce decoder weight matrix.</dd>
+<dt>nce_b_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">NCE decoder biases initializer</span><dd>The initializer for initializing the nce decoder bias vector.</dd>
+<dt>nce_b_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for initializing the nce decoder bias vector.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<dl class="docutils">
+<dt>nce_cost</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The NCE loss.</dd>
+<dt>outputs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The outputs of embedding layer.</dd>
+<dt>normalized_embeddings</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>Normalized embedding matrix</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Without</span> <span class="n">TensorLayer</span> <span class="p">:</span> <span class="n">see</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">tutorials</span><span class="o">/</span><span class="n">word2vec</span><span class="o">/</span><span class="n">word2vec_basic</span><span class="o">.</span><span class="n">py</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">([</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">embedding_size</span><span class="p">],</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embed</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">train_inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nce_weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">([</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">embedding_size</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">stddev</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">embedding_size</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nce_biases</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">vocabulary_size</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span>
+<span class="gp">... </span>   <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">nce_loss</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">nce_weights</span><span class="p">,</span> <span class="n">biases</span><span class="o">=</span><span class="n">nce_biases</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">inputs</span><span class="o">=</span><span class="n">embed</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">train_labels</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">num_sampled</span><span class="o">=</span><span class="n">num_sampled</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="n">vocabulary_size</span><span class="p">,</span>
+<span class="gp">... </span>              <span class="n">num_true</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">With</span> <span class="n">TensorLayer</span> <span class="p">:</span> <span class="n">see</span> <span class="n">tutorial_word2vec_basic</span><span class="o">.</span><span class="n">py</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">emb_net</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Word2vecEmbeddingInputlayer</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">inputs</span> <span class="o">=</span> <span class="n">train_inputs</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_labels</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="n">vocabulary_size</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">embedding_size</span> <span class="o">=</span> <span class="n">embedding_size</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">num_sampled</span> <span class="o">=</span> <span class="n">num_sampled</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">nce_loss_args</span> <span class="o">=</span> <span class="p">{},</span>
+<span class="gp">... </span>        <span class="n">E_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">E_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;minval&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;maxval&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">},</span>
+<span class="gp">... </span>        <span class="n">nce_W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">nce_W_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stddev&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">embedding_size</span><span class="p">))},</span>
+<span class="gp">... </span>        <span class="n">nce_b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">nce_b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+<span class="gp">... </span>       <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;word2vec_layer&#39;</span><span class="p">,</span>
+<span class="gp">... </span>   <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cost</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">nce_cost</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_params</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">all_params</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">normalized_embeddings</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">normalized_embeddings</span>
+</pre></div>
+</div>
+<p>tensorflow/examples/tutorials/word2vec/word2vec_basic.py</p>
+</dd></dl>
+
+</div>
 <div class="section" id="dense-layer">
 <h2>Dense layer<a class="headerlink" href="#dense-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -243,7 +337,7 @@ network.</p>
 <dt>W_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
 <dt>b_init</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias matrix.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
 <dt>b_init_args</dt>
@@ -343,7 +437,7 @@ layer by a given keeping probability.</p>
 <dt>W_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
 <dt>b_init</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias matrix.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
 <dt>b_init_args</dt>
@@ -382,7 +476,7 @@ layer by a given keeping probability.</p>
 <dt>W_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
 <dt>b_init</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias matrix.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
 <dt>b_init_args</dt>
@@ -402,6 +496,12 @@ layer by a given keeping probability.</p>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">b_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="s1">&#39;bias&#39;</span><span class="p">},</span>
 <span class="gp">&gt;&gt;&gt; </span>                  <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;cnn_layer1&#39;</span><span class="p">)</span>     <span class="c1"># output: (?, 28, 28, 32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">PoolLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">ksize</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                  <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>                  <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;pool_layer1&#39;</span><span class="p">,)</span>   <span class="c1"># output: (?, 14, 14, 32)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -424,10 +524,7 @@ layer by a given keeping probability.</p>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
-</pre></div>
-</div>
+<p>see Conv2dLayer</p>
 </dd></dl>
 
 </div>
@@ -484,7 +581,7 @@ vector.</p>
 <dt>W_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
 <dt>b_init</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias matrix.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
 <dt>b_init_args</dt>

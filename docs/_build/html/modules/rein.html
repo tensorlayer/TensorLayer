@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.os &mdash; TensorLayer 1.1 documentation</title>
+  <title>tensorlayer.rein &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -31,7 +31,8 @@
 
   
     <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
-        <link rel="prev" title="tensorlayer.preprocess" href="preprocess.html"/> 
+        <link rel="next" title="tensorlayer.iterate" href="iterate.html"/>
+        <link rel="prev" title="tensorlayer.nlp" href="nlp.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -90,7 +91,10 @@
 <li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#activation-functions">Activation functions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -98,10 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#operation-system-functions">Operation system functions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
 
             
@@ -132,11 +133,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></li>
+    <li><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/modules/os.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/modules/rein.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -146,49 +147,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-tensorlayer.os">
-<span id="tensorlayer-os"></span><h1><a class="reference internal" href="#module-tensorlayer.os" title="tensorlayer.os"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.os</span></code></a><a class="headerlink" href="#module-tensorlayer.os" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-tensorlayer.rein">
+<span id="tensorlayer-rein"></span><h1><a class="reference internal" href="#module-tensorlayer.rein" title="tensorlayer.rein"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.rein</span></code></a><a class="headerlink" href="#module-tensorlayer.rein" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.exit_tf" title="tensorlayer.os.exit_tf"><code class="xref py py-obj docutils literal"><span class="pre">exit_tf</span></code></a>(sess)</td>
-<td>Close tensorboard and nvidia-process if available</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.os.clear_all" title="tensorlayer.os.clear_all"><code class="xref py py-obj docutils literal"><span class="pre">clear_all</span></code></a>([printable])</td>
-<td>Clears all the placeholder variables of keep prob, including keeping probabilities of all dropout, denoising, dropconnect etc.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.set_gpu_fraction" title="tensorlayer.os.set_gpu_fraction"><code class="xref py py-obj docutils literal"><span class="pre">set_gpu_fraction</span></code></a>(sess[,&nbsp;gpu_fraction])</td>
-<td>Set the GPU memory fraction for the application.</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.rein.XXXX" title="tensorlayer.rein.XXXX"><code class="xref py py-obj docutils literal"><span class="pre">XXXX</span></code></a>(x[,&nbsp;v_min,&nbsp;v_max,&nbsp;name])</td>
+<td>The XXXX function.</td>
 </tr>
 </tbody>
 </table>
-<div class="section" id="operation-system-functions">
-<h2>Operation system functions<a class="headerlink" href="#operation-system-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="activation-functions">
+<h2>Activation functions<a class="headerlink" href="#activation-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="tensorlayer.os.exit_tf">
-<code class="descclassname">tensorlayer.os.</code><code class="descname">exit_tf</code><span class="sig-paren">(</span><em>sess</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#exit_tf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.exit_tf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Close tensorboard and nvidia-process if available</p>
-<p>sess : a :sess instance of tensorflow</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tensorlayer.os.clear_all">
-<code class="descclassname">tensorlayer.os.</code><code class="descname">clear_all</code><span class="sig-paren">(</span><em>printable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#clear_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.clear_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clears all the placeholder variables of keep prob,
-including keeping probabilities of all dropout, denoising, dropconnect etc.</p>
-<p>printable : if True, print all deleted variables.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="tensorlayer.os.set_gpu_fraction">
-<code class="descclassname">tensorlayer.os.</code><code class="descname">set_gpu_fraction</code><span class="sig-paren">(</span><em>sess</em>, <em>gpu_fraction=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#set_gpu_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.set_gpu_fraction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the GPU memory fraction for the application.</p>
-<p>sess : a :sess instance of tensorflow
-gpu_fraction : float (0 ~ 1], fraction of GPU memory</p>
-<p><a class="reference external" href="https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html">https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html</a></p>
+<dt id="tensorlayer.rein.XXXX">
+<code class="descclassname">tensorlayer.rein.</code><code class="descname">XXXX</code><span class="sig-paren">(</span><em>x</em>, <em>v_min=0</em>, <em>v_max=1</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/rein.html#XXXX"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.rein.XXXX" title="Permalink to this definition">¶</a></dt>
+<dd><p>The XXXX function.</p>
+<dl class="docutils">
+<dt>x</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor outputs</span><dd>input(s)</dd>
+<dt>v_min</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>if input(s) smaller than v_min, change inputs to v_min</dd>
+<dt>v_max</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>if input(s) greater than v_max, change inputs to v_max</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this activation function.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tensorlayer</span> <span class="k">as</span> <span class="nn">tl</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xxx</span>
+<span class="gp">... </span><span class="n">result</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -201,8 +194,10 @@ gpu_fraction : float (0 ~ 1], fraction of GPU memory</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="iterate.html" class="btn btn-neutral float-right" title="tensorlayer.iterate" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="preprocess.html" class="btn btn-neutral" title="tensorlayer.preprocess" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="nlp.html" class="btn btn-neutral" title="tensorlayer.nlp" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

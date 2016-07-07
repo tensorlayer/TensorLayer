@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 
-
+from __future__ import absolute_import
 import tensorflow as tf
 import os
 import numpy as np
@@ -12,7 +12,7 @@ import tensorlayer.visualize as visualize
 import collections
 from six.moves import xrange
 
-## Load Data
+## Load dataset functions
 def load_mnist_dataset(shape=(-1,784)):
     """Automatically download MNIST dataset
     and return the training, validation and test set with 50000, 10000 and 10000
@@ -334,6 +334,7 @@ def load_matt_mahoney_text8_dataset():
     >>> print('Data size', len(words))
     """
     import zipfile
+    from six.moves import urllib
 
     url = 'http://mattmahoney.net/dc/'
 
@@ -358,8 +359,99 @@ def load_matt_mahoney_text8_dataset():
         word_list = f.read(f.namelist()[0]).split()
     return word_list
 
+def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
+              maxlen=None, test_split=0.2, seed=113,
+              start_char=1, oov_char=2, index_from=3):
+    """Load IMDB dataset
 
-## text vectorlization
+    Examples
+    --------
+    >>> X_train, y_train, X_test, y_test = tl.files.load_imbd_dataset(
+    ...                                 nb_words=20000, test_split=0.2)
+    >>> print('X_train.shape', X_train.shape)
+    ... (20000,)  [[1, 62, 74, ... 1033, 507, 27],[1, 60, 33, ... 13, 1053, 7]..]
+    >>> print('y_train.shape', y_train.shape)
+    ... (20000,)  [1 0 0 ..., 1 0 1]
+
+    References
+    -----------
+    Modify from keras.
+    https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py
+    """
+    from six.moves import cPickle
+    import gzip
+    # from ..utils.data_utils import get_file
+    from six.moves import zip
+    import numpy as np
+    from six.moves import urllib
+
+    url = 'https://s3.amazonaws.com/text-datasets/'
+    def download_imbd(filename):
+      if not os.path.exists(filename):
+        print('Downloading ...')
+        filename, _ = urllib.request.urlretrieve(url + filename, filename)
+      return filename
+
+    filename = download_imbd(path)
+    # path = get_file(path, origin="https://s3.amazonaws.com/text-datasets/imdb.pkl")
+
+    if filename.endswith(".gz"):
+        f = gzip.open(filename, 'rb')
+    else:
+        f = open(filename, 'rb')
+
+    X, labels = cPickle.load(f)
+    f.close()
+
+    np.random.seed(seed)
+    np.random.shuffle(X)
+    np.random.seed(seed)
+    np.random.shuffle(labels)
+
+    if start_char is not None:
+        X = [[start_char] + [w + index_from for w in x] for x in X]
+    elif index_from:
+        X = [[w + index_from for w in x] for x in X]
+
+    if maxlen:
+        new_X = []
+        new_labels = []
+        for x, y in zip(X, labels):
+            if len(x) < maxlen:
+                new_X.append(x)
+                new_labels.append(y)
+        X = new_X
+        labels = new_labels
+    if not X:
+        raise Exception('After filtering for sequences shorter than maxlen=' +
+                        str(maxlen) + ', no sequence was kept. '
+                        'Increase maxlen.')
+    if not nb_words:
+        nb_words = max([max(x) for x in X])
+
+    # by convention, use 2 as OOV word
+    # reserve 'index_from' (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)
+    if oov_char is not None:
+        X = [[oov_char if (w >= nb_words or w < skip_top) else w for w in x] for x in X]
+    else:
+        nX = []
+        for x in X:
+            nx = []
+            for w in x:
+                if (w >= nb_words or w < skip_top):
+                    nx.append(w)
+            nX.append(nx)
+        X = nX
+
+    X_train = np.array(X[:int(len(X) * (1 - test_split))])
+    y_train = np.array(labels[:int(len(X) * (1 - test_split))])
+
+    X_test = np.array(X[int(len(X) * (1 - test_split)):])
+    y_test = np.array(labels[int(len(X) * (1 - test_split)):])
+
+    return X_train, y_train, X_test, y_test
+
+## Vector representations of words
 def read_words(filename):
     """File to list format context.
 
@@ -379,7 +471,6 @@ def read_words(filename):
     """
     with tf.gfile.GFile(filename, "r") as f:
         return f.read().replace("\n", "<eos>").split()
-
 
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     """Reads through an analogy question file, return its id format.
@@ -627,7 +718,7 @@ def save_vocab(count, name='vocab.txt'):
     >>> data, count, dictionary, reverse_dictionary = \
                 tl.files.build_words_dataset(words, vocabulary_size, True)
     >>> tl.files.save_vocab(count, name='vocab_text8.txt')
-    ... vocab_text8.txt
+    >>> vocab_text8.txt
     ... UNK 418391
     ... the 1061396
     ... of 593677
@@ -645,20 +736,20 @@ def save_vocab(count, name='vocab.txt'):
     print("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd))
 
 
-## .npz operations
-def save_npz(save_list={}, name='model.npz'):
+## Load and save network
+def save_npz(save_dict={}, name='model.npz'):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
     ----------
-    save_list : a dictionary
+    save_dict : a dictionary
         Parameters want to be saved.
     name : a string or None
         The name of the .npz file.
 
     Examples
     --------
-    >>> tl.files.save_npz(network.all_params , name='model_test.npz')
+    >>> tl.files.save_npz(network.all_params, name='model_test.npz')
     ... File saved to: model_test.npz
     >>> load_params = tl.files.load_npz(name='model_test.npz')
     ... Loading param0, (784, 800)
@@ -673,7 +764,7 @@ def save_npz(save_list={}, name='model.npz'):
     http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez
     """
     rename_dict = {}
-    for k, value in enumerate(save_list):
+    for k, value in enumerate(save_dict):
         rename_dict.update({'param'+str(k) : value.eval()})
     np.savez(name, **rename_dict)
     print('File saved to: %s' % name)
@@ -683,8 +774,15 @@ def load_npz(path='', name='model.npz'):
 
     Parameters
     ----------
+    path : a string
+        Folder path to .npz file.
     name : a string or None
         The name of the .npz file.
+
+    Return
+    --------
+    params : list
+        A list of parameters in order.
 
     Examples
     --------
@@ -701,16 +799,71 @@ def load_npz(path='', name='model.npz'):
         print('Loading %s, %s' % (key, str(val.shape)))
     return params
 
+def assign_params(sess, params, network):
+    """Assign the given parameters to the TensorLayer network.
 
+    Parameters
+    ----------
+    sess : TensorFlow Session
+    params : list
+        A list of parameters in order.
+    network : :class:`Layer` class
+        The network to be assigned
+
+    Examples
+    --------
+    ... Save your network as follow:
+    >>> tl.files.save_npz(network.all_params, name='model_test.npz')
+    >>> network.print_params()
+    ...
+    ... Next time, load and assign your network as follow:
+    >>> sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign
+    >>> load_params = tl.files.load_npz(name='model_test.npz')
+    >>> tl.files.assign_params(sess, load_params, network)
+    >>> network.print_params()
+
+    References
+    ----------
+    http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable
+    """
+    for idx, param in enumerate(params):
+        assign_op = network.all_params[idx].assign(param)
+        sess.run(assign_op)
+
+# Load and save variables
+def save_any_to_npy(save_dict={}, name='any.npy'):
+    """Save variables to .npy file.
+
+    Examples
+    ---------
+    >>> tl.files.save_any_to_npy(save_dict={'data': ['a','b']}, name='test.npy')
+    >>> data = tl.files.load_npy_to_any(name='test.npy')
+    >>> print(data)
+    ... {'data': ['a','b']}
+    """
+    np.save(name, save_dict)
+
+def load_npy_to_any(path='', name='any.npy'):
+    """Load .npy file.
+
+    Examples
+    ---------
+    see save_any_to_npy()
+    """
+    npz = np.load(path+name).item()
+    return npz
+
+
+# Visualizing npz files
 def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
 
     Parameters
     ----------
     path : a string or None
-        XXX
+        A folder path to npz files.
     regx : a string
-        XXX
+        Regx for the file name.
 
     Examples
     --------
@@ -724,7 +877,7 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
         visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
 
 
-## Help functions
+## Helper functions
 def load_file_list(path=None, regx='\.npz'):
     """Return a file list in a folder by given a path and regular expression.
 

@@ -156,7 +156,7 @@ class DenseLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias matrix.
+        The initializer for initializing the bias vector.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary
@@ -390,6 +390,162 @@ class ReconLayer(DenseLayer):
                     except:
                         raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
 
+# Word Embedding Input layer
+class Word2vecEmbeddingInputlayer(Layer):
+    """
+    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
+    for Word Embedding. Words are input as integer index.
+    The output is the embedded word vector.
+
+    Parameters
+    ----------
+    inputs : placeholder
+        For word inputs. integer index format.
+    train_labels : placeholder
+        For word labels. integer index format.
+    vocabulary_size : int
+        The size of vocabulary, number of words.
+    embedding_size : int
+        The number of embedding dimensions.
+    num_sampled : int
+        The Number of negative examples for NCE loss.
+    nce_loss_args : a dictionary
+        The arguments for tf.nn.nce_loss()
+    E_init : embedding initializer
+        The initializer for initializing the embedding matrix.
+    E_init_args : a dictionary
+        The arguments for embedding initializer
+    nce_W_init : NCE decoder biases initializer
+        The initializer for initializing the nce decoder weight matrix.
+    nce_W_init_args : a dictionary
+        The arguments for initializing the nce decoder weight matrix.
+    nce_b_init : NCE decoder biases initializer
+        The initializer for initializing the nce decoder bias vector.
+    nce_b_init_args : a dictionary
+        The arguments for initializing the nce decoder bias vector.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    nce_cost : tensor
+        The NCE loss.
+    outputs : tensor
+        The outputs of embedding layer.
+    normalized_embeddings : tensor
+        Normalized embedding matrix
+
+    Examples
+    --------
+    >>> Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> embeddings = tf.Variable(
+    ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+    >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
+    >>> nce_weights = tf.Variable(
+    ...     tf.truncated_normal([vocabulary_size, embedding_size],
+    ...                    stddev=1.0 / math.sqrt(embedding_size)))
+    >>> nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
+    >>> cost = tf.reduce_mean(
+    ...    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+    ...               inputs=embed, labels=train_labels,
+    ...               num_sampled=num_sampled, num_classes=vocabulary_size,
+    ...               num_true=1))
+
+    >>> With TensorLayer : see tutorial_word2vec_basic.py
+    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+    ...         inputs = train_inputs,
+    ...         train_labels = train_labels,
+    ...         vocabulary_size = vocabulary_size,
+    ...         embedding_size = embedding_size,
+    ...         num_sampled = num_sampled,
+    ...         nce_loss_args = {},
+    ...         E_init = tf.random_uniform,
+    ...         E_init_args = {'minval':-1.0, 'maxval':1.0},
+    ...         nce_W_init = tf.truncated_normal,
+    ...         nce_W_init_args = {'stddev': float(1.0/np.sqrt(embedding_size))},
+    ...         nce_b_init = tf.zeros,
+    ...         nce_b_init_args = {},
+    ...        name ='word2vec_layer',
+    ...    )
+    >>> cost = emb_net.nce_cost
+    >>> train_params = emb_net.all_params
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    >>> normalized_embeddings = emb_net.normalized_embeddings
+
+    References
+    ----------
+    tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    """
+    def __init__(
+        self,
+        inputs = None,
+        train_labels = None,
+        vocabulary_size = 80000,
+        embedding_size = 200,
+        num_sampled = 64,
+        nce_loss_args = {},
+        E_init = tf.random_uniform,
+        E_init_args = {'minval':-1.0, 'maxval':1.0},
+        nce_W_init = tf.truncated_normal,
+        nce_W_init_args = {'stddev':0.03},
+        nce_b_init = tf.zeros,
+        nce_b_init_args = {},
+        name ='word2vec_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = inputs#layer.outputs
+        # n_in = layer.n_units
+        self.n_units = embedding_size
+        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s" % (self.name))
+        # Look up embeddings for inputs.
+        # Note: a row of 'embeddings' is the vector representation of a word.
+        # for the sake of speed, it is better to slice the embedding matrix
+        # instead of transfering a word id to one-hot-format vector and then
+        # multiply by the embedding matrix.
+        # embed is the outputs of the hidden layer (embedding layer), it is a
+        # row vector with 'embedding_size' values.
+        embeddings = tf.Variable(
+            E_init(shape=[vocabulary_size, embedding_size], **E_init_args))
+        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+
+        # Construct the variables for the NCE loss (i.e. negative sampling)
+        nce_weights = tf.Variable(
+            nce_W_init(shape=[vocabulary_size, embedding_size], **nce_W_init_args))
+        nce_biases = tf.Variable(nce_b_init([vocabulary_size], **nce_b_init_args))
+
+        # Compute the average NCE loss for the batch.
+        # tf.nce_loss automatically draws a new sample of the negative labels
+        # each time we evaluate the loss.
+        self.nce_cost = tf.reduce_mean(
+            tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+                           inputs=embed, labels=train_labels,
+                           num_sampled=num_sampled, num_classes=vocabulary_size,
+                           **nce_loss_args))
+        # num_sampled: An int. The number of classes to randomly sample per batch
+        #              Number of negative examples to sample.
+        # num_classes: An int. The number of possible classes.
+        # num_true = 1: An int. The number of target classes per training example.
+        #            DH: if 1, predict one word given one word, like bigram model?  Check!
+
+        self.outputs = embed
+        self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
+
+
+        self.all_layers = [self.outputs]
+        self.all_params = [embeddings, nce_weights, nce_biases]
+        self.all_drop = {}
+
+        # self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
+        # self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( [embeddings, nce_weights, nce_biases] )
+
+
 # Dense+Noise layer
 class DropoutLayer(Layer):
     """
@@ -464,7 +620,7 @@ class DropconnectDenseLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias matrix.
+        The initializer for initializing the bias vector.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary
@@ -543,7 +699,7 @@ class Conv2dLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias matrix.
+        The initializer for initializing the bias vector.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary
@@ -565,6 +721,12 @@ class Conv2dLayer(Layer):
     >>>                   b_init = tf.zeros,
     >>>                   b_init_args = {'name' : 'bias'},
     >>>                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    >>> network = tl.layers.PoolLayer(network,
+    ...                   ksize=[1, 2, 2, 1],
+    ...                   strides=[1, 2, 2, 1],
+    ...                   padding='SAME',
+    ...                   pool = tf.nn.max_pool,
+    ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
     """
     def __init__(
         self,
@@ -619,8 +781,7 @@ class PoolLayer(Layer):
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
+    see Conv2dLayer
     """
     def __init__(
         self,
@@ -748,7 +909,7 @@ class ResnetLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias matrix.
+        The initializer for initializing the bias vector.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary
@@ -857,7 +1018,7 @@ class Conv3dLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias matrix.
+        The initializer for initializing the bias vector.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary

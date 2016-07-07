@@ -9,6 +9,7 @@
    load_cifar10_dataset
    load_ptb_dataset
    load_matt_mahoney_text8_dataset
+   load_imbd_dataset
 
    read_words
    read_analogies_file
@@ -21,7 +22,13 @@
 
    save_npz
    load_npz
+   assign_params
+
    npz_to_W_pdf
+
+   save_any_to_npy
+   save_any_to_npy
+
    load_file_list
 
 Load dataset functions
@@ -31,6 +38,7 @@ Load dataset functions
 .. autofunction:: load_cifar10_dataset
 .. autofunction:: load_ptb_dataset
 .. autofunction:: load_matt_mahoney_text8_dataset
+.. autofunction:: load_imbd_dataset
 
 Vector representations of words
 -------------------------------
@@ -44,15 +52,25 @@ Vector representations of words
 .. autofunction:: word_ids_to_words
 .. autofunction:: save_vocab
 
-Load and save models
+Load and save network
 ----------------------
 
 .. autofunction:: save_npz
 .. autofunction:: load_npz
+.. autofunction:: assign_params
+
+Load and save variables
+------------------------
+.. autofunction:: save_any_to_npy
+.. autofunction:: save_any_to_npy
+
+
+Visualizing npz file
+---------------------------------------
+.. autofunction:: npz_to_W_pdf
 
 
 Helper functions
 ----------------------
 
-.. autofunction:: npz_to_W_pdf
 .. autofunction:: load_file_list

@@ -90,6 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
@@ -301,7 +302,7 @@
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
-<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">        The initializer for initializing the bias vector.</span>
 <span class="sd">    W_init_args : dictionary</span>
 <span class="sd">        The arguments for the weights initializer.</span>
 <span class="sd">    b_init_args : dictionary</span>
@@ -535,6 +536,162 @@
                     <span class="k">except</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You should change visualize.W(), if you want to save the feature images for different dataset&quot;</span><span class="p">)</span></div>
 
+<span class="c1"># Word Embedding Input layer</span>
+<div class="viewcode-block" id="Word2vecEmbeddingInputlayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.Word2vecEmbeddingInputlayer">[docs]</a><span class="k">class</span> <span class="nc">Word2vecEmbeddingInputlayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,</span>
+<span class="sd">    for Word Embedding. Words are input as integer index.</span>
+<span class="sd">    The output is the embedded word vector.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    inputs : placeholder</span>
+<span class="sd">        For word inputs. integer index format.</span>
+<span class="sd">    train_labels : placeholder</span>
+<span class="sd">        For word labels. integer index format.</span>
+<span class="sd">    vocabulary_size : int</span>
+<span class="sd">        The size of vocabulary, number of words.</span>
+<span class="sd">    embedding_size : int</span>
+<span class="sd">        The number of embedding dimensions.</span>
+<span class="sd">    num_sampled : int</span>
+<span class="sd">        The Number of negative examples for NCE loss.</span>
+<span class="sd">    nce_loss_args : a dictionary</span>
+<span class="sd">        The arguments for tf.nn.nce_loss()</span>
+<span class="sd">    E_init : embedding initializer</span>
+<span class="sd">        The initializer for initializing the embedding matrix.</span>
+<span class="sd">    E_init_args : a dictionary</span>
+<span class="sd">        The arguments for embedding initializer</span>
+<span class="sd">    nce_W_init : NCE decoder biases initializer</span>
+<span class="sd">        The initializer for initializing the nce decoder weight matrix.</span>
+<span class="sd">    nce_W_init_args : a dictionary</span>
+<span class="sd">        The arguments for initializing the nce decoder weight matrix.</span>
+<span class="sd">    nce_b_init : NCE decoder biases initializer</span>
+<span class="sd">        The initializer for initializing the nce decoder bias vector.</span>
+<span class="sd">    nce_b_init_args : a dictionary</span>
+<span class="sd">        The arguments for initializing the nce decoder bias vector.</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        An optional name to attach to this layer.</span>
+
+<span class="sd">    Field (Class Variables)</span>
+<span class="sd">    -----------------------</span>
+<span class="sd">    nce_cost : tensor</span>
+<span class="sd">        The NCE loss.</span>
+<span class="sd">    outputs : tensor</span>
+<span class="sd">        The outputs of embedding layer.</span>
+<span class="sd">    normalized_embeddings : tensor</span>
+<span class="sd">        Normalized embedding matrix</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py</span>
+<span class="sd">    &gt;&gt;&gt; train_inputs = tf.placeholder(tf.int32, shape=[batch_size])</span>
+<span class="sd">    &gt;&gt;&gt; train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])</span>
+<span class="sd">    &gt;&gt;&gt; embeddings = tf.Variable(</span>
+<span class="sd">    ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))</span>
+<span class="sd">    &gt;&gt;&gt; embed = tf.nn.embedding_lookup(embeddings, train_inputs)</span>
+<span class="sd">    &gt;&gt;&gt; nce_weights = tf.Variable(</span>
+<span class="sd">    ...     tf.truncated_normal([vocabulary_size, embedding_size],</span>
+<span class="sd">    ...                    stddev=1.0 / math.sqrt(embedding_size)))</span>
+<span class="sd">    &gt;&gt;&gt; nce_biases = tf.Variable(tf.zeros([vocabulary_size]))</span>
+<span class="sd">    &gt;&gt;&gt; cost = tf.reduce_mean(</span>
+<span class="sd">    ...    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,</span>
+<span class="sd">    ...               inputs=embed, labels=train_labels,</span>
+<span class="sd">    ...               num_sampled=num_sampled, num_classes=vocabulary_size,</span>
+<span class="sd">    ...               num_true=1))</span>
+
+<span class="sd">    &gt;&gt;&gt; With TensorLayer : see tutorial_word2vec_basic.py</span>
+<span class="sd">    &gt;&gt;&gt; train_inputs = tf.placeholder(tf.int32, shape=[batch_size])</span>
+<span class="sd">    &gt;&gt;&gt; train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])</span>
+<span class="sd">    &gt;&gt;&gt; emb_net = tl.layers.Word2vecEmbeddingInputlayer(</span>
+<span class="sd">    ...         inputs = train_inputs,</span>
+<span class="sd">    ...         train_labels = train_labels,</span>
+<span class="sd">    ...         vocabulary_size = vocabulary_size,</span>
+<span class="sd">    ...         embedding_size = embedding_size,</span>
+<span class="sd">    ...         num_sampled = num_sampled,</span>
+<span class="sd">    ...         nce_loss_args = {},</span>
+<span class="sd">    ...         E_init = tf.random_uniform,</span>
+<span class="sd">    ...         E_init_args = {&#39;minval&#39;:-1.0, &#39;maxval&#39;:1.0},</span>
+<span class="sd">    ...         nce_W_init = tf.truncated_normal,</span>
+<span class="sd">    ...         nce_W_init_args = {&#39;stddev&#39;: float(1.0/np.sqrt(embedding_size))},</span>
+<span class="sd">    ...         nce_b_init = tf.zeros,</span>
+<span class="sd">    ...         nce_b_init_args = {},</span>
+<span class="sd">    ...        name =&#39;word2vec_layer&#39;,</span>
+<span class="sd">    ...    )</span>
+<span class="sd">    &gt;&gt;&gt; cost = emb_net.nce_cost</span>
+<span class="sd">    &gt;&gt;&gt; train_params = emb_net.all_params</span>
+<span class="sd">    &gt;&gt;&gt; train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)</span>
+<span class="sd">    &gt;&gt;&gt; normalized_embeddings = emb_net.normalized_embeddings</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tensorflow/examples/tutorials/word2vec/word2vec_basic.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">train_labels</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">80000</span><span class="p">,</span>
+        <span class="n">embedding_size</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">num_sampled</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="n">nce_loss_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">E_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform</span><span class="p">,</span>
+        <span class="n">E_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;minval&#39;</span><span class="p">:</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;maxval&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">},</span>
+        <span class="n">nce_W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
+        <span class="n">nce_W_init_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;stddev&#39;</span><span class="p">:</span><span class="mf">0.03</span><span class="p">},</span>
+        <span class="n">nce_b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
+        <span class="n">nce_b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;word2vec_layer&#39;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="c1">#layer.outputs</span>
+        <span class="c1"># n_in = layer.n_units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">embedding_size</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate Word2vecEmbeddingInputlayer </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1"># Look up embeddings for inputs.</span>
+        <span class="c1"># Note: a row of &#39;embeddings&#39; is the vector representation of a word.</span>
+        <span class="c1"># for the sake of speed, it is better to slice the embedding matrix</span>
+        <span class="c1"># instead of transfering a word id to one-hot-format vector and then</span>
+        <span class="c1"># multiply by the embedding matrix.</span>
+        <span class="c1"># embed is the outputs of the hidden layer (embedding layer), it is a</span>
+        <span class="c1"># row vector with &#39;embedding_size&#39; values.</span>
+        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+            <span class="n">E_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">embedding_size</span><span class="p">],</span> <span class="o">**</span><span class="n">E_init_args</span><span class="p">))</span>
+        <span class="n">embed</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">embedding_lookup</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
+
+        <span class="c1"># Construct the variables for the NCE loss (i.e. negative sampling)</span>
+        <span class="n">nce_weights</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+            <span class="n">nce_W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">vocabulary_size</span><span class="p">,</span> <span class="n">embedding_size</span><span class="p">],</span> <span class="o">**</span><span class="n">nce_W_init_args</span><span class="p">))</span>
+        <span class="n">nce_biases</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">nce_b_init</span><span class="p">([</span><span class="n">vocabulary_size</span><span class="p">],</span> <span class="o">**</span><span class="n">nce_b_init_args</span><span class="p">))</span>
+
+        <span class="c1"># Compute the average NCE loss for the batch.</span>
+        <span class="c1"># tf.nce_loss automatically draws a new sample of the negative labels</span>
+        <span class="c1"># each time we evaluate the loss.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nce_cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span>
+            <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">nce_loss</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="n">nce_weights</span><span class="p">,</span> <span class="n">biases</span><span class="o">=</span><span class="n">nce_biases</span><span class="p">,</span>
+                           <span class="n">inputs</span><span class="o">=</span><span class="n">embed</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">train_labels</span><span class="p">,</span>
+                           <span class="n">num_sampled</span><span class="o">=</span><span class="n">num_sampled</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="n">vocabulary_size</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">nce_loss_args</span><span class="p">))</span>
+        <span class="c1"># num_sampled: An int. The number of classes to randomly sample per batch</span>
+        <span class="c1">#              Number of negative examples to sample.</span>
+        <span class="c1"># num_classes: An int. The number of possible classes.</span>
+        <span class="c1"># num_true = 1: An int. The number of target classes per training example.</span>
+        <span class="c1">#            DH: if 1, predict one word given one word, like bigram model?  Check!</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">embed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_embeddings</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">l2_normalize</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">nce_weights</span><span class="p">,</span> <span class="n">nce_biases</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+        <span class="c1"># self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference</span>
+        <span class="c1"># self.all_params = list(layer.all_params)</span>
+        <span class="c1"># self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference</span>
+        <span class="c1"># self.all_layers.extend( [self.outputs] )</span>
+        <span class="c1"># self.all_params.extend( [embeddings, nce_weights, nce_biases] )</span>
+
+
 <span class="c1"># Dense+Noise layer</span>
 <div class="viewcode-block" id="DropoutLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.DropoutLayer">[docs]</a><span class="k">class</span> <span class="nc">DropoutLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -609,7 +766,7 @@
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
-<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">        The initializer for initializing the bias vector.</span>
 <span class="sd">    W_init_args : dictionary</span>
 <span class="sd">        The arguments for the weights initializer.</span>
 <span class="sd">    b_init_args : dictionary</span>
@@ -688,7 +845,7 @@
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
-<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">        The initializer for initializing the bias vector.</span>
 <span class="sd">    W_init_args : dictionary</span>
 <span class="sd">        The arguments for the weights initializer.</span>
 <span class="sd">    b_init_args : dictionary</span>
@@ -710,6 +867,12 @@
 <span class="sd">    &gt;&gt;&gt;                   b_init = tf.zeros,</span>
 <span class="sd">    &gt;&gt;&gt;                   b_init_args = {&#39;name&#39; : &#39;bias&#39;},</span>
 <span class="sd">    &gt;&gt;&gt;                   name =&#39;cnn_layer1&#39;)     # output: (?, 28, 28, 32)</span>
+<span class="sd">    &gt;&gt;&gt; network = tl.layers.PoolLayer(network,</span>
+<span class="sd">    ...                   ksize=[1, 2, 2, 1],</span>
+<span class="sd">    ...                   strides=[1, 2, 2, 1],</span>
+<span class="sd">    ...                   padding=&#39;SAME&#39;,</span>
+<span class="sd">    ...                   pool = tf.nn.max_pool,</span>
+<span class="sd">    ...                   name =&#39;pool_layer1&#39;,)   # output: (?, 14, 14, 32)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -764,8 +927,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
-<span class="sd">    &gt;&gt;&gt; xxx</span>
+<span class="sd">    see Conv2dLayer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -893,7 +1055,7 @@
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
-<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">        The initializer for initializing the bias vector.</span>
 <span class="sd">    W_init_args : dictionary</span>
 <span class="sd">        The arguments for the weights initializer.</span>
 <span class="sd">    b_init_args : dictionary</span>
@@ -1002,7 +1164,7 @@
 <span class="sd">    W_init : weights initializer</span>
 <span class="sd">        The initializer for initializing the weight matrix.</span>
 <span class="sd">    b_init : biases initializer</span>
-<span class="sd">        The initializer for initializing the bias matrix.</span>
+<span class="sd">        The initializer for initializing the bias vector.</span>
 <span class="sd">    W_init_args : dictionary</span>
 <span class="sd">        The arguments for the weights initializer.</span>
 <span class="sd">    b_init_args : dictionary</span>
