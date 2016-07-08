@@ -1,16 +1,17 @@
 Welcome to TensorLayer
 =======================================
-TensorLayer is a transparent deep learning and reinforcement learning library built
-on the top of Google TensorFlow. It was designed to provide a higher-level API to
-TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and
-modified, suitable for both machine learning researches and applications.
+TensorLayer is a transparent deep learning and reinforcement learning library
+built on the top of Google TensorFlow. It was designed to provide a higher-level
+API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to
+extended and modified, suitable for both machine learning researches and
+applications.
 
 User Guide
 ------------
 
-The TensorLayer user guide explains how to install TensorFlow, CUDA and CuDNN, how to build and train
-neural networks using TensorLayer, and how to contribute to the library as a
-developer.
+The TensorLayer user guide explains how to install TensorFlow, CUDA and cuDNN,
+how to build and train neural networks using TensorLayer, and how to contribute
+to the library as a developer.
 
 .. toctree::
   :maxdepth: 2

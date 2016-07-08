@@ -203,7 +203,7 @@
 <td>Input parameters and the file name, save parameters into .npz file.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.load_npz" title="tensorlayer.files.load_npz"><code class="xref py py-obj docutils literal"><span class="pre">load_npz</span></code></a>([path,&nbsp;name])</td>
-<td>Input the file name, restore the parameters from .npz file.</td>
+<td>Load the parameters of a Model saved by tl.files.save_npz().</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.assign_params" title="tensorlayer.files.assign_params"><code class="xref py py-obj docutils literal"><span class="pre">assign_params</span></code></a>(sess,&nbsp;params,&nbsp;network)</td>
 <td>Assign the given parameters to the TensorLayer network.</td>
@@ -551,6 +551,7 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 <span class="gp">... </span><span class="n">Loading</span> <span class="n">param3</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,)</span>
 <span class="gp">... </span><span class="n">Loading</span> <span class="n">param4</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="gp">... </span><span class="n">Loading</span> <span class="n">param5</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">put</span> <span class="n">parameters</span> <span class="n">into</span> <span class="n">a</span> <span class="n">TensorLayer</span> <span class="n">network</span><span class="p">,</span> <span class="n">please</span> <span class="n">see</span> <span class="n">assign_params</span><span class="p">()</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez">http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</a></p>
@@ -559,7 +560,7 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 <dl class="function">
 <dt id="tensorlayer.files.load_npz">
 <code class="descclassname">tensorlayer.files.</code><code class="descname">load_npz</code><span class="sig-paren">(</span><em>path=''</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_npz" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input the file name, restore the parameters from .npz file. Use tl.utils.save_npz() to save parameters.</p>
+<dd><p>Load the parameters of a Model saved by tl.files.save_npz().</p>
 <dl class="docutils">
 <dt>path</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>Folder path to .npz file.</dd>
@@ -570,7 +571,7 @@ e.g. [[&#8216;UNK&#8217;, 418391], (b&#8217;the&#8217;, 1061396), (b&#8217;of&#8
 <dt>params</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">list</span><dd>A list of parameters in order.</dd>
 </dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">see</span> <span class="n">save_npz</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">see</span> <span class="n">save_npz</span> <span class="ow">and</span> <span class="n">assign_params</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez">http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez</a></p>

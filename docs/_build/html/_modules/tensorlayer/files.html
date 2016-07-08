@@ -904,6 +904,7 @@
 <span class="sd">    ... Loading param3, (800,)</span>
 <span class="sd">    ... Loading param4, (800, 10)</span>
 <span class="sd">    ... Loading param5, (10,)</span>
+<span class="sd">    &gt;&gt;&gt; put parameters into a TensorLayer network, please see assign_params()</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -913,10 +914,10 @@
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">save_dict</span><span class="p">):</span>
         <span class="n">rename_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;param&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">eval</span><span class="p">()})</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">rename_dict</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;File saved to: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Model is saved to: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="load_npz"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_npz">[docs]</a><span class="k">def</span> <span class="nf">load_npz</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model.npz&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Input the file name, restore the parameters from .npz file. Use tl.utils.save_npz() to save parameters.</span>
+    <span class="sd">&quot;&quot;&quot;Load the parameters of a Model saved by tl.files.save_npz().</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -932,7 +933,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; see save_npz</span>
+<span class="sd">    &gt;&gt;&gt; see save_npz and assign_params</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -940,6 +941,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span> <span class="n">path</span><span class="o">+</span><span class="n">name</span> <span class="p">)</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Load Model&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">):</span>
         <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Loading </span><span class="si">%s</span><span class="s1">, </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>

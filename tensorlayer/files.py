@@ -758,6 +758,7 @@ def save_npz(save_dict={}, name='model.npz'):
     ... Loading param3, (800,)
     ... Loading param4, (800, 10)
     ... Loading param5, (10,)
+    >>> put parameters into a TensorLayer network, please see assign_params()
 
     References
     ----------
@@ -767,10 +768,10 @@ def save_npz(save_dict={}, name='model.npz'):
     for k, value in enumerate(save_dict):
         rename_dict.update({'param'+str(k) : value.eval()})
     np.savez(name, **rename_dict)
-    print('File saved to: %s' % name)
+    print('Model is saved to: %s' % name)
 
 def load_npz(path='', name='model.npz'):
-    """Input the file name, restore the parameters from .npz file. Use tl.utils.save_npz() to save parameters.
+    """Load the parameters of a Model saved by tl.files.save_npz().
 
     Parameters
     ----------
@@ -786,7 +787,7 @@ def load_npz(path='', name='model.npz'):
 
     Examples
     --------
-    >>> see save_npz
+    >>> see save_npz and assign_params
 
     References
     ----------
@@ -794,6 +795,7 @@ def load_npz(path='', name='model.npz'):
     """
     d = np.load( path+name )
     params = []
+    print('Load Model')
     for key, val in sorted( d.items() ):
         params.append(val)
         print('Loading %s, %s' % (key, str(val.shape)))

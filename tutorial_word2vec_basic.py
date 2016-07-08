@@ -106,7 +106,7 @@ def main_word2vec_basic():
     embedding_size = 200
     skip_window = 5
     num_skips = 10
-    num_sampled = 25
+    num_sampled = 100#25
     learning_rate = 0.025
     n_epoch = 1500000000
 

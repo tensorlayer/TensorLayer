@@ -7,6 +7,10 @@ Tutorial
 This tutorial will walk you through building a handwritten digits classifier
 using the MNIST dataset, arguably the "Hello World" of neural networks.
 
+.. note::
+    For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
+    will understand how TensorLayer work. After that, we recommend you to read
+    the codes for tutorial directly.
 
 Before we start
 ===============
@@ -437,14 +441,15 @@ classification accuracy:
 
 
 More info
-=====================
+==========
 
 For more information on what you can do with TensorLayer's layers, just continue
 reading through readthedocs.
 Finally, the reference lists and explains all layers (:mod:`tensorlayer.layers`),
 weight initializers (:mod:`tensorlayer.init`), activation
 (:mod:`tensorlayer.activation`), natural language processing
-(:mod:`tensorlayer.nlp`), cost expressions and regularizers (:mod:`tensorlayer.cost`),
+(:mod:`tensorlayer.nlp`), reinfocement learning (:mod:`tensorlayer.rein`),
+cost expressions and regularizers (:mod:`tensorlayer.cost`),
 load and save files (:mod:`tensorlayer.files`), operating system (:mod:`tensorlayer.os`),
 help function (:mod:`tensorlayer.utils`), visualization (:mod:`tensorlayer.visualize`),
 iteration functions (:mod:`tensorlayer.iterate`), preprocessing functions
