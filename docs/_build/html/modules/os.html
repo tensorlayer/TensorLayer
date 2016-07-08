@@ -154,13 +154,13 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.exit_tf" title="tensorlayer.os.exit_tf"><code class="xref py py-obj docutils literal"><span class="pre">exit_tf</span></code></a>(sess)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.exit_tf" title="tensorlayer.os.exit_tf"><code class="xref py py-obj docutils literal"><span class="pre">exit_tf</span></code></a>([sess])</td>
 <td>Close tensorboard and nvidia-process if available</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.os.clear_all" title="tensorlayer.os.clear_all"><code class="xref py py-obj docutils literal"><span class="pre">clear_all</span></code></a>([printable])</td>
 <td>Clears all the placeholder variables of keep prob, including keeping probabilities of all dropout, denoising, dropconnect etc.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.set_gpu_fraction" title="tensorlayer.os.set_gpu_fraction"><code class="xref py py-obj docutils literal"><span class="pre">set_gpu_fraction</span></code></a>(sess[,&nbsp;gpu_fraction])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.os.set_gpu_fraction" title="tensorlayer.os.set_gpu_fraction"><code class="xref py py-obj docutils literal"><span class="pre">set_gpu_fraction</span></code></a>([sess,&nbsp;gpu_fraction])</td>
 <td>Set the GPU memory fraction for the application.</td>
 </tr>
 </tbody>
@@ -169,9 +169,9 @@
 <h2>Operation system functions<a class="headerlink" href="#operation-system-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.os.exit_tf">
-<code class="descclassname">tensorlayer.os.</code><code class="descname">exit_tf</code><span class="sig-paren">(</span><em>sess</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#exit_tf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.exit_tf" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.os.</code><code class="descname">exit_tf</code><span class="sig-paren">(</span><em>sess=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#exit_tf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.exit_tf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close tensorboard and nvidia-process if available</p>
-<p>sess : a :sess instance of tensorflow</p>
+<p>sess : a session instance of tensorflow</p>
 </dd></dl>
 
 <dl class="function">
@@ -184,7 +184,7 @@ including keeping probabilities of all dropout, denoising, dropconnect etc.</p>
 
 <dl class="function">
 <dt id="tensorlayer.os.set_gpu_fraction">
-<code class="descclassname">tensorlayer.os.</code><code class="descname">set_gpu_fraction</code><span class="sig-paren">(</span><em>sess</em>, <em>gpu_fraction=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#set_gpu_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.set_gpu_fraction" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.os.</code><code class="descname">set_gpu_fraction</code><span class="sig-paren">(</span><em>sess=None</em>, <em>gpu_fraction=0.3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/os.html#set_gpu_fraction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.os.set_gpu_fraction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the GPU memory fraction for the application.</p>
 <p>sess : a :sess instance of tensorflow
 gpu_fraction : float (0 ~ 1], fraction of GPU memory</p>

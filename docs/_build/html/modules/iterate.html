@@ -155,7 +155,7 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches" title="tensorlayer.iterate.minibatches"><code class="xref py py-obj docutils literal"><span class="pre">minibatches</span></code></a>(inputs,&nbsp;targets,&nbsp;batchsize[,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches" title="tensorlayer.iterate.minibatches"><code class="xref py py-obj docutils literal"><span class="pre">minibatches</span></code></a>([inputs,&nbsp;targets,&nbsp;batchsize,&nbsp;...])</td>
 <td>Input a group of example in 2D numpy.array and their labels.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches_for_sequence2D" title="tensorlayer.iterate.minibatches_for_sequence2D"><code class="xref py py-obj docutils literal"><span class="pre">minibatches_for_sequence2D</span></code></a>(inputs,&nbsp;targets,&nbsp;...)</td>
@@ -170,7 +170,7 @@
 <h2>Iteration functions<a class="headerlink" href="#iteration-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.iterate.minibatches">
-<code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batchsize</em>, <em>shuffle=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>targets=None</em>, <em>batchsize=None</em>, <em>shuffle=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches" title="Permalink to this definition">¶</a></dt>
 <dd><p>Input a group of example in 2D numpy.array and their labels.
 Return the examples and labels by the given batchsize</p>
 <dl class="docutils">

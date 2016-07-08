@@ -15,7 +15,7 @@ def identity(x):
     """
     return x
 
-def ramp(x, v_min=0, v_max=1, name=None):
+def ramp(x=None, v_min=0, v_max=1, name=None):
     """The ramp activation function.
 
     Parameters

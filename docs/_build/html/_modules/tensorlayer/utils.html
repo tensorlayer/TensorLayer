@@ -152,7 +152,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="c1">## Evaluation</span>
-<div class="viewcode-block" id="evaluation"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.evaluation">[docs]</a><span class="k">def</span> <span class="nf">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">):</span>
+<div class="viewcode-block" id="evaluation"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.evaluation">[docs]</a><span class="k">def</span> <span class="nf">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">y_predict</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">n_classes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Input the predicted results, targets results and</span>
 <span class="sd">    the number of class, return the confusion matrix, F1-score of each class,</span>
@@ -182,7 +182,7 @@
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;accuracy-score:&#39;</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">c_mat</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">f1_macro</span></div>
 
-<div class="viewcode-block" id="dict_to_one"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.dict_to_one">[docs]</a><span class="k">def</span> <span class="nf">dict_to_one</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_to_one"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.dict_to_one">[docs]</a><span class="k">def</span> <span class="nf">dict_to_one</span><span class="p">(</span><span class="n">dp_dict</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Input a dictionary, return a dictionary that all items are set to one,</span>
 <span class="sd">    use for disable dropout, dropconnect layer and so on.</span>
@@ -200,7 +200,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dp_dict</span><span class="p">}</span></div>
 
-<div class="viewcode-block" id="class_balancing_oversample"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.class_balancing_oversample">[docs]</a><span class="k">def</span> <span class="nf">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="class_balancing_oversample"><a class="viewcode-back" href="../../modules/utils.html#tensorlayer.utils.class_balancing_oversample">[docs]</a><span class="k">def</span> <span class="nf">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">y_train</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Input the features and labels, return the features and labels after oversampling.</span>
 
 <span class="sd">    Parameters</span>

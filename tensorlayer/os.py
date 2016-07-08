@@ -10,7 +10,7 @@ from sys import platform as _platform
 from tensorlayer.layers import set_keep
 
 
-def exit_tf(sess):
+def exit_tf(sess=None):
     """Close tensorboard and nvidia-process if available
 
     Parameters
@@ -76,7 +76,7 @@ def clear_all(printable=True):
 #
 #         del var
 
-def set_gpu_fraction(sess, gpu_fraction=0.3):
+def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     """Set the GPU memory fraction for the application.
 
     Parameters

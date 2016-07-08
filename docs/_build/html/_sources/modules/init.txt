@@ -8,7 +8,8 @@
    xavier_init
 
 
- Initializers
- -------------
+
+Initializers
+-------------
 
 .. autofunction:: xavier_init

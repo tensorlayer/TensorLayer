@@ -6,7 +6,7 @@
 import numpy as np
 
 ## Evaluation
-def evaluation(y_test, y_predict, n_classes):
+def evaluation(y_test=None, y_predict=None, n_classes=None):
     """
     Input the predicted results, targets results and
     the number of class, return the confusion matrix, F1-score of each class,
@@ -36,7 +36,7 @@ def evaluation(y_test, y_predict, n_classes):
     print('accuracy-score:', acc)
     return c_mat, f1, acc, f1_macro
 
-def dict_to_one(dp_dict):
+def dict_to_one(dp_dict={}):
     """
     Input a dictionary, return a dictionary that all items are set to one,
     use for disable dropout, dropconnect layer and so on.
@@ -54,7 +54,7 @@ def dict_to_one(dp_dict):
     """
     return {x: 1 for x in dp_dict}
 
-def class_balancing_oversample(X_train, y_train, printable=True):
+def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     """Input the features and labels, return the features and labels after oversampling.
 
     Parameters

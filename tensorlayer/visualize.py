@@ -9,7 +9,7 @@ import os
 
 
 
-def W(W, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512):
+def W(W=None, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512):
     """Visualize every columns of the weight matrix to a group of Greyscale img.
 
     Parameters
@@ -69,7 +69,7 @@ def W(W, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512)
         plt.draw()
         plt.pause(second)
 
-def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
+def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
     """Display a frame(image). Make sure OpenAI Gym render() is disable before using it.
 
     Parameters
@@ -105,7 +105,7 @@ def frame(I, second=5, saveable=True, name='frame', fig_idx=12836):
         plt.draw()
         plt.pause(second)
 
-def CNN2d(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
+def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     """Display a group of RGB or Greyscale CNN masks.
 
     Parameters
@@ -166,7 +166,7 @@ def CNN2d(CNN, second=10, saveable=True, name='cnn', fig_idx=3119362):
         plt.pause(second)
 
 
-def images2d(images, second=10, saveable=True, name='images', dtype=None,
+def images2d(images=None, second=10, saveable=True, name='images', dtype=None,
                                                             fig_idx=3119362):
     """Display a group of RGB or Greyscale images.
 

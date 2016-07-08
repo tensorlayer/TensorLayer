@@ -9,8 +9,8 @@ import time
 import numbers
 
 
-def distorted_images(images, height=24, width=24):
-    """The images are processed as follows:
+def distorted_images(images=None, height=24, width=24):
+    """Distort images for generating more training data.
 
     Features
     ---------
@@ -57,9 +57,9 @@ def distorted_images(images, height=24, width=24):
     ------
     The first image in 'distorted_images' should be removed.
 
-    Code References
-    ----------------
-    tensorflow.models.image.cifar10.cifar10_input
+    References
+    -----------
+    `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
     """
     try:
         batch_size = int(images._shape[0])
@@ -89,8 +89,8 @@ def distorted_images(images, height=24, width=24):
     return result
 
 
-def crop_central_whiten_images(images, height=24, width=24):
-    """The images are processed as follows:
+def crop_central_whiten_images(images=None, height=24, width=24):
+    """Crop the central of image, and normailize it for test data.
 
     They are cropped to central of height * width pixels.
 

@@ -7,7 +7,7 @@ import tensorflow as tf
 
 
 
-def XXXX(x, v_min=0, v_max=1, name=None):
+def XXXX(x=None, v_min=0, v_max=1, name=None):
     """The XXXX function.
 
     Parameters

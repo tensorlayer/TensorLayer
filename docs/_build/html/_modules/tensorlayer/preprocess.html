@@ -155,8 +155,8 @@
 <span class="kn">import</span> <span class="nn">numbers</span>
 
 
-<div class="viewcode-block" id="distorted_images"><a class="viewcode-back" href="../../modules/preprocess.html#tensorlayer.preprocess.distorted_images">[docs]</a><span class="k">def</span> <span class="nf">distorted_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The images are processed as follows:</span>
+<div class="viewcode-block" id="distorted_images"><a class="viewcode-back" href="../../modules/preprocess.html#tensorlayer.preprocess.distorted_images">[docs]</a><span class="k">def</span> <span class="nf">distorted_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Distort images for generating more training data.</span>
 
 <span class="sd">    Features</span>
 <span class="sd">    ---------</span>
@@ -203,9 +203,9 @@
 <span class="sd">    ------</span>
 <span class="sd">    The first image in &#39;distorted_images&#39; should be removed.</span>
 
-<span class="sd">    Code References</span>
-<span class="sd">    ----------------</span>
-<span class="sd">    tensorflow.models.image.cifar10.cifar10_input</span>
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+<span class="sd">    `tensorflow.models.image.cifar10.cifar10_input &lt;https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -235,8 +235,8 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="crop_central_whiten_images"><a class="viewcode-back" href="../../modules/preprocess.html#tensorlayer.preprocess.crop_central_whiten_images">[docs]</a><span class="k">def</span> <span class="nf">crop_central_whiten_images</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;The images are processed as follows:</span>
+<div class="viewcode-block" id="crop_central_whiten_images"><a class="viewcode-back" href="../../modules/preprocess.html#tensorlayer.preprocess.crop_central_whiten_images">[docs]</a><span class="k">def</span> <span class="nf">crop_central_whiten_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Crop the central of image, and normailize it for test data.</span>
 
 <span class="sd">    They are cropped to central of height * width pixels.</span>
 

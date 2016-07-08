@@ -97,7 +97,10 @@
 <li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#initializers">Initializers</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
 </ul>
@@ -152,25 +155,22 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.init.xavier_init" title="tensorlayer.init.xavier_init"><code class="xref py py-obj docutils literal"><span class="pre">xavier_init</span></code></a>(shape[,&nbsp;uniform])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.init.xavier_init" title="tensorlayer.init.xavier_init"><code class="xref py py-obj docutils literal"><span class="pre">xavier_init</span></code></a>([shape,&nbsp;uniform])</td>
 <td>Set the parameter initialization using the method described.</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">Initializers</span></code></td>
-<td></td>
 </tr>
 </tbody>
 </table>
+<div class="section" id="initializers">
+<h2>Initializers<a class="headerlink" href="#initializers" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.init.xavier_init">
-<code class="descclassname">tensorlayer.init.</code><code class="descname">xavier_init</code><span class="sig-paren">(</span><em>shape</em>, <em>uniform=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/init.html#xavier_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.init.xavier_init" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.init.</code><code class="descname">xavier_init</code><span class="sig-paren">(</span><em>shape=()</em>, <em>uniform=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/init.html#xavier_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.init.xavier_init" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the parameter initialization using the method described.
 This method is designed to keep the scale of the gradients roughly the same
 in all layers.</p>
 <dl class="docutils">
-<dt>n_inputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the previous layer</dd>
-<dt>n_units</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the current layer</dd>
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tuple or a list</span><dd>The shape of matrix.</dd>
 <dt>uniform</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">True, False</span><dd>If true use a uniform distribution, otherwise use a normal.</dd>
 </dl>
@@ -179,6 +179,7 @@ in all layers.</p>
 feedforward neural networks.</a></p>
 </dd></dl>
 
+</div>
 </div>
 
 

@@ -5,7 +5,7 @@
 
 import numpy as np
 
-def minibatches(inputs, targets, batchsize, shuffle=False):
+def minibatches(inputs=None, targets=None, batchsize=None, shuffle=False):
     """
     Input a group of example in 2D numpy.array and their labels.
     Return the examples and labels by the given batchsize

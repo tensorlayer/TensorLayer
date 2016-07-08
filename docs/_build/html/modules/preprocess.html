@@ -155,11 +155,11 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.preprocess.distorted_images" title="tensorlayer.preprocess.distorted_images"><code class="xref py py-obj docutils literal"><span class="pre">distorted_images</span></code></a>(images[,&nbsp;height,&nbsp;width])</td>
-<td>The images are processed as follows:</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.preprocess.distorted_images" title="tensorlayer.preprocess.distorted_images"><code class="xref py py-obj docutils literal"><span class="pre">distorted_images</span></code></a>([images,&nbsp;height,&nbsp;width])</td>
+<td>Distort images for generating more training data.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.preprocess.crop_central_whiten_images" title="tensorlayer.preprocess.crop_central_whiten_images"><code class="xref py py-obj docutils literal"><span class="pre">crop_central_whiten_images</span></code></a>(images[,&nbsp;height,&nbsp;...])</td>
-<td>The images are processed as follows:</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.preprocess.crop_central_whiten_images" title="tensorlayer.preprocess.crop_central_whiten_images"><code class="xref py py-obj docutils literal"><span class="pre">crop_central_whiten_images</span></code></a>([images,&nbsp;height,&nbsp;...])</td>
+<td>Crop the central of image, and normailize it for test data.</td>
 </tr>
 </tbody>
 </table>
@@ -167,8 +167,8 @@
 <h2>Images<a class="headerlink" href="#images" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.preprocess.distorted_images">
-<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">distorted_images</code><span class="sig-paren">(</span><em>images</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#distorted_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.distorted_images" title="Permalink to this definition">¶</a></dt>
-<dd><p>The images are processed as follows:</p>
+<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">distorted_images</code><span class="sig-paren">(</span><em>images=None</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#distorted_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.distorted_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distort images for generating more training data.</p>
 <p>They are cropped to height * width pixels randomly.</p>
 <p>They are approximately whitened to make the model insensitive to dynamic range.</p>
 <p>Randomly flip the image from left to right.</p>
@@ -200,13 +200,13 @@
 </pre></div>
 </div>
 <p>The first image in &#8216;distorted_images&#8217; should be removed.</p>
-<p>tensorflow.models.image.cifar10.cifar10_input</p>
+<p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py">tensorflow.models.image.cifar10.cifar10_input</a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="tensorlayer.preprocess.crop_central_whiten_images">
-<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">crop_central_whiten_images</code><span class="sig-paren">(</span><em>images</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#crop_central_whiten_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.crop_central_whiten_images" title="Permalink to this definition">¶</a></dt>
-<dd><p>The images are processed as follows:</p>
+<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">crop_central_whiten_images</code><span class="sig-paren">(</span><em>images=None</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#crop_central_whiten_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.crop_central_whiten_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop the central of image, and normailize it for test data.</p>
 <p>They are cropped to central of height * width pixels.</p>
 <p>Whiten (Normalize) the images.</p>
 <dl class="docutils">

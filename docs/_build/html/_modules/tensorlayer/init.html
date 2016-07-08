@@ -154,7 +154,7 @@
 
 
 
-<div class="viewcode-block" id="xavier_init"><a class="viewcode-back" href="../../modules/init.html#tensorlayer.init.xavier_init">[docs]</a><span class="k">def</span> <span class="nf">xavier_init</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">uniform</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="xavier_init"><a class="viewcode-back" href="../../modules/init.html#tensorlayer.init.xavier_init">[docs]</a><span class="k">def</span> <span class="nf">xavier_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">uniform</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set the parameter initialization using the method described.</span>
 <span class="sd">    This method is designed to keep the scale of the gradients roughly the same</span>
@@ -162,10 +162,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_inputs : int</span>
-<span class="sd">        The number of units of the previous layer</span>
-<span class="sd">    n_units : int</span>
-<span class="sd">        The number of units of the current layer</span>
+<span class="sd">    shape : a tuple or a list</span>
+<span class="sd">        The shape of matrix.</span>
 <span class="sd">    uniform : True, False</span>
 <span class="sd">        If true use a uniform distribution, otherwise use a normal.</span>
 

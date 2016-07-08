@@ -8,7 +8,7 @@ import math
 
 
 
-def xavier_init(shape, uniform=True):
+def xavier_init(shape=(), uniform=True):
     """
     Set the parameter initialization using the method described.
     This method is designed to keep the scale of the gradients roughly the same
@@ -16,10 +16,8 @@ def xavier_init(shape, uniform=True):
 
     Parameters
     ----------
-    n_inputs : int
-        The number of units of the previous layer
-    n_units : int
-        The number of units of the current layer
+    shape : a tuple or a list
+        The shape of matrix.
     uniform : True, False
         If true use a uniform distribution, otherwise use a normal.
 

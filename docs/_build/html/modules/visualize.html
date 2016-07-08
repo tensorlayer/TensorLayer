@@ -156,16 +156,16 @@
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.W" title="tensorlayer.visualize.W"><code class="xref py py-obj docutils literal"><span class="pre">W</span></code></a>(W[,&nbsp;second,&nbsp;saveable,&nbsp;shape,&nbsp;name,&nbsp;fig_idx])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.W" title="tensorlayer.visualize.W"><code class="xref py py-obj docutils literal"><span class="pre">W</span></code></a>([W,&nbsp;second,&nbsp;saveable,&nbsp;shape,&nbsp;name,&nbsp;fig_idx])</td>
 <td>Visualize every columns of the weight matrix to a group of Greyscale img.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.CNN2d" title="tensorlayer.visualize.CNN2d"><code class="xref py py-obj docutils literal"><span class="pre">CNN2d</span></code></a>(CNN[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.CNN2d" title="tensorlayer.visualize.CNN2d"><code class="xref py py-obj docutils literal"><span class="pre">CNN2d</span></code></a>([CNN,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
 <td>Display a group of RGB or Greyscale CNN masks.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.frame" title="tensorlayer.visualize.frame"><code class="xref py py-obj docutils literal"><span class="pre">frame</span></code></a>(I[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.frame" title="tensorlayer.visualize.frame"><code class="xref py py-obj docutils literal"><span class="pre">frame</span></code></a>([I,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;fig_idx])</td>
 <td>Display a frame(image).</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.images2d" title="tensorlayer.visualize.images2d"><code class="xref py py-obj docutils literal"><span class="pre">images2d</span></code></a>(images[,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;...])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.visualize.images2d" title="tensorlayer.visualize.images2d"><code class="xref py py-obj docutils literal"><span class="pre">images2d</span></code></a>([images,&nbsp;second,&nbsp;saveable,&nbsp;name,&nbsp;...])</td>
 <td>Display a group of RGB or Greyscale images.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.visualize.tsne_embedding" title="tensorlayer.visualize.tsne_embedding"><code class="xref py py-obj docutils literal"><span class="pre">tsne_embedding</span></code></a>(embeddings,&nbsp;reverse_dictionary)</td>
@@ -177,7 +177,7 @@
 <h2>Visualize weights<a class="headerlink" href="#visualize-weights" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.visualize.W">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">W</code><span class="sig-paren">(</span><em>W, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#W"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.W" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">W</code><span class="sig-paren">(</span><em>W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#W"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.W" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualize every columns of the weight matrix to a group of Greyscale img.</p>
 <dl class="docutils">
 <dt>W</dt>
@@ -200,7 +200,7 @@
 
 <dl class="function">
 <dt id="tensorlayer.visualize.CNN2d">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">CNN2d</code><span class="sig-paren">(</span><em>CNN</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='cnn'</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#CNN2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.CNN2d" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">CNN2d</code><span class="sig-paren">(</span><em>CNN=None</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='cnn'</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#CNN2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.CNN2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display a group of RGB or Greyscale CNN masks.</p>
 <dl class="docutils">
 <dt>CNN</dt>
@@ -221,7 +221,7 @@
 
 <dl class="function">
 <dt id="tensorlayer.visualize.frame">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">frame</code><span class="sig-paren">(</span><em>I</em>, <em>second=5</em>, <em>saveable=True</em>, <em>name='frame'</em>, <em>fig_idx=12836</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.frame" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">frame</code><span class="sig-paren">(</span><em>I=None</em>, <em>second=5</em>, <em>saveable=True</em>, <em>name='frame'</em>, <em>fig_idx=12836</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display a frame(image). Make sure OpenAI Gym render() is disable before using it.</p>
 <dl class="docutils">
 <dt>I</dt>
@@ -244,7 +244,7 @@
 
 <dl class="function">
 <dt id="tensorlayer.visualize.images2d">
-<code class="descclassname">tensorlayer.visualize.</code><code class="descname">images2d</code><span class="sig-paren">(</span><em>images</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='images'</em>, <em>dtype=None</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#images2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.images2d" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.visualize.</code><code class="descname">images2d</code><span class="sig-paren">(</span><em>images=None</em>, <em>second=10</em>, <em>saveable=True</em>, <em>name='images'</em>, <em>dtype=None</em>, <em>fig_idx=3119362</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/visualize.html#images2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.visualize.images2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display a group of RGB or Greyscale images.</p>
 <dl class="docutils">
 <dt>images</dt>

@@ -156,12 +156,12 @@
 <span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
 
 
-<div class="viewcode-block" id="exit_tf"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.exit_tf">[docs]</a><span class="k">def</span> <span class="nf">exit_tf</span><span class="p">(</span><span class="n">sess</span><span class="p">):</span>
+<div class="viewcode-block" id="exit_tf"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.exit_tf">[docs]</a><span class="k">def</span> <span class="nf">exit_tf</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Close tensorboard and nvidia-process if available</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sess : a :sess instance of tensorflow</span>
+<span class="sd">    sess : a session instance of tensorflow</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Close tensorboard and nvidia-process if available&quot;</span>
     <span class="n">sess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -222,7 +222,7 @@
 <span class="c1">#</span>
 <span class="c1">#         del var</span>
 
-<div class="viewcode-block" id="set_gpu_fraction"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.set_gpu_fraction">[docs]</a><span class="k">def</span> <span class="nf">set_gpu_fraction</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">gpu_fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<div class="viewcode-block" id="set_gpu_fraction"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.set_gpu_fraction">[docs]</a><span class="k">def</span> <span class="nf">set_gpu_fraction</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">gpu_fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set the GPU memory fraction for the application.</span>
 
 <span class="sd">    Parameters</span>
