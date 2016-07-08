@@ -472,15 +472,32 @@ More info
 
 For more information on what you can do with TensorLayer's layers, just continue
 reading through readthedocs.
-Finally, the reference lists and explains all layers (:mod:`tensorlayer.layers`),
-weight initializers (:mod:`tensorlayer.init`), activation
-(:mod:`tensorlayer.activation`), natural language processing
-(:mod:`tensorlayer.nlp`), reinfocement learning (:mod:`tensorlayer.rein`),
+Finally, the reference lists and explains as follow.
+
+layers (:mod:`tensorlayer.layers`),
+
+weight initializers (:mod:`tensorlayer.init`),
+
+activation (:mod:`tensorlayer.activation`),
+
+natural language processing (:mod:`tensorlayer.nlp`),
+
+reinforcement learning (:mod:`tensorlayer.rein`),
+
 cost expressions and regularizers (:mod:`tensorlayer.cost`),
-load and save files (:mod:`tensorlayer.files`), operating system (:mod:`tensorlayer.os`),
-help function (:mod:`tensorlayer.utils`), visualization (:mod:`tensorlayer.visualize`),
-iteration functions (:mod:`tensorlayer.iterate`), preprocessing functions
-(:mod:`tensorlayer.preprocess`), included in the library.
+
+load and save files (:mod:`tensorlayer.files`),
+
+operating system (:mod:`tensorlayer.os`),
+
+helper functions (:mod:`tensorlayer.utils`),
+
+visualization (:mod:`tensorlayer.visualize`),
+
+iteration functions (:mod:`tensorlayer.iterate`),
+
+preprocessing functions (:mod:`tensorlayer.preprocess`),
+
 
 
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/

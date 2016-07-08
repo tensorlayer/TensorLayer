@@ -18,8 +18,6 @@ to the library as a developer.
 
   user/installation
   user/tutorial
-  user/layers
-  user/custom_layers
   user/development
 
 API Reference
