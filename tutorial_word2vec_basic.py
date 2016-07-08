@@ -61,13 +61,13 @@ import time
 def main_word2vec_basic():
 
     """ Step 1: Download the data, read the context into a list of strings.
+    Set hyperparameters.
     """
     words = tl.files.load_matt_mahoney_text8_dataset()
     data_size = len(words)
     print('Data size', data_size) # print(words)    # b'their', b'families', b'who', b'were', b'expelled', b'from', b'jerusalem',
 
-
-    # vanilla setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
+    # top setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
     # vocabulary_size = 50000 # maximum number of word in vocabulary
     # batch_size = 128
     # embedding_size = 128  # Dimension of the embedding vector (hidden layer).
@@ -80,17 +80,7 @@ def main_word2vec_basic():
     # learning_rate = 1.0
     # n_epoch = 1
 
-    # optimized setting 1:
-    # vocabulary_size = 80000
-    # batch_size = 120
-    # embedding_size = 200
-    # skip_window = 2
-    # num_skips = 4
-    # num_sampled = 64
-    # learning_rate = 1.0
-    # n_epoch = 1
-
-    # optimized setting 2 (tensorflow/models/embedding/word2vec.py)
+    # tensorflow/models/embedding/word2vec.py
     # vocabulary_size = 80000
     # batch_size = 20     # Note: small batch_size need more steps for a Epoch
     # embedding_size = 200
@@ -100,24 +90,35 @@ def main_word2vec_basic():
     # learning_rate = 0.2
     # n_epoch = 15
 
-    # optimized setting 3 (tensorflow/models/embedding/word2vec_optimized.py)
+    # tensorflow/models/embedding/word2vec_optimized.py
+    # vocabulary_size = 80000
+    # batch_size = 500
+    # embedding_size = 200
+    # skip_window = 5
+    # num_skips = 10
+    # num_sampled = 25
+    # learning_rate = 0.025
+    # n_epoch = 15
+
+    # see: Learning word embeddings efficiently with noise-contrastive estimation
     vocabulary_size = 80000
-    batch_size = 500
-    embedding_size = 200
+    batch_size = 100
+    embedding_size = 600
     skip_window = 5
     num_skips = 10
-    num_sampled = 100#25
-    learning_rate = 0.025
-    n_epoch = 1500000000
+    num_sampled = 25
+    learning_rate = 0.03
+    n_epoch = 20
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
+    model_file_name = "model_word2vec"
+    resume = False  # load existing model, data and dictionaries
 
     print('%d Steps a Epoch, total Epochs %d' % (int(data_size/batch_size), n_epoch))
     print('   learning_rate: %f' % learning_rate)
     print('   batch_size: %d' % batch_size)
 
-    model_file_name = "model_word2vec"
-    resume = True  # load existing .ckpt, data and dictionaries
+
     """ Step 2: Build the dictionary and replace rare words with 'UNK' token.
     """
     print()
@@ -148,7 +149,7 @@ def main_word2vec_basic():
             '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
 
-    """ Step 4: Build and train a Skip-Gram model.
+    """ Step 4: Build a Skip-Gram model.
     """
     print()
     # We pick a random validation set to sample nearest neighbors. Here we limit the
@@ -188,7 +189,9 @@ def main_word2vec_basic():
     # Construct the optimizer. Note: AdamOptimizer is very slow in this case
     cost = emb_net.nce_cost
     train_params = emb_net.all_params
-    train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=0.1,
+        use_locking=False).minimize(cost, var_list=train_params)
 
     # Compute the cosine similarity between minibatch examples and all embeddings.
     # For simple visualization of validation set.
@@ -214,7 +217,6 @@ def main_word2vec_basic():
 
     emb_net.print_params()
     emb_net.print_layers()
-
 
     # save vocabulary to txt
     tl.files.save_vocab(count, name='vocab_text8.txt')
@@ -272,11 +274,11 @@ def main_word2vec_basic():
                 train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
         step += 1
 
-    final_embeddings = normalized_embeddings.eval()
 
-    """ Step 6: Visualize the embeddings by t-SNE.
+    """ Step 6: Visualize the normalized embedding matrix by t-SNE.
     """
     print()
+    final_embeddings = normalized_embeddings.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
                 plot_only=500, second=5, saveable=True, name='word2vec_basic')
 
@@ -307,8 +309,9 @@ def main_word2vec_basic():
     # Compute cosine distance between each pair of target and vocab.
     # dist has shape [N, vocab_size].
     dist = tf.matmul(target, normalized_embeddings, transpose_b=True)
-    # For each question (row in dist), find the top 4 words.
-    _, pred_idx = tf.nn.top_k(dist, 4)
+    # For each question (row in dist), find the top 'n_answer' words.
+    n_answer = 4
+    _, pred_idx = tf.nn.top_k(dist, n_answer)
     def predict(analogy):
         """Predict the top 4 answers for analogy questions."""
         idx, = sess.run([pred_idx], {
@@ -331,11 +334,11 @@ def main_word2vec_basic():
         # print('answers:', tl.files.word_ids_to_words(idx[0], reverse_dictionary))
         start = limit
         for question in xrange(sub.shape[0]):
-            for j in xrange(4):
+            for j in xrange(n_answer):
                 # if one of the top 4 answers in correct, win !
                 if idx[question, j] == sub[question, 3]:
                     # Bingo! We predicted correctly. E.g., [italy, rome, france, paris].
-                    print(tl.files.word_ids_to_words([idx[question, j]], reverse_dictionary) \
+                    print(j+1, tl.files.word_ids_to_words([idx[question, j]], reverse_dictionary) \
                         , ':', tl.files.word_ids_to_words(sub[question, :], reverse_dictionary))
                     correct += 1
                     break

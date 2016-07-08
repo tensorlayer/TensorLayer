@@ -108,10 +108,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     but some training batches may contain more images from one class than another.
     Between them, the training batches contain exactly 5000 images from each class.
 
-    # code references : https://teratail.com/questions/28932
-    # data download link : https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
-                           https://www.cs.toronto.edu/~kriz/cifar.html
-
     Parameters
     ----------
     shape : tupe
@@ -141,6 +137,14 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     >>>         count = count + 1
     >>> plt.draw()
     >>> plt.pause(3)
+
+    References
+    ----------
+    `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
+
+    `Code download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
+
+    `Code references <https://teratail.com/questions/28932>`_
     """
     import sys
     import pickle
@@ -260,8 +264,33 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     return X_train, y_train, X_test, y_test
 
 def load_ptb_dataset():
-    """PTB dataset is used in many LM papers, including "Empirical Evaluation
-    and Combination of Advanced Language Modeling Techniques".
+    """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
+    including "Empirical Evaluation and Combination of Advanced Language
+    Modeling Techniques", "Recurrent Neural Network Regularization".
+
+    It consists of 929k training words, 73k validation words, and 82k test
+    words. It has 10k words in its vocabulary.
+
+    In "Recurrent Neural Network Regularization", they trained regularized LSTMs
+    of two sizes; these are denoted the medium LSTM and large LSTM. Both LSTMs
+    have two layers and are unrolled for 35 steps. They initialize the hidden
+    states to zero. They then use the final hidden states of the current
+    minibatch as the initial hidden state of the subsequent minibatch
+    (successive minibatches sequentially traverse the training set).
+    The size of each minibatch is 20.
+
+    The medium LSTM has 650 units per layer and its parameters are initialized
+    uniformly in [−0.05, 0.05]. They apply 50% dropout on the non-recurrent
+    connections. They train the LSTM for 39 epochs with a learning rate of 1,
+    and after 6 epochs they decrease it by a factor of 1.2 after each epoch.
+    They clip the norm of the gradients (normalized by minibatch size) at 5.
+
+    The large LSTM has 1500 units per layer and its parameters are initialized
+    uniformly in [−0.04, 0.04]. We apply 65% dropout on the non-recurrent
+    connections. They train the model for 55 epochs with a learning rate of 1;
+    after 14 epochs they start to reduce the learning rate by a factor of 1.15
+    after each epoch. They clip the norm of the gradients (normalized by
+    minibatch size) at 10.
 
     Code References
     ---------------
@@ -269,7 +298,7 @@ def load_ptb_dataset():
 
     Download Links
     ---------------
-    http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
+    `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
     # We first define a download function, supporting both Python 2 and 3.
     filename = 'simple-examples.tgz'
@@ -320,7 +349,7 @@ def load_matt_mahoney_text8_dataset():
     """Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
     Extract the first file enclosed in a zip file as a list of words.
-    The data can be used for testing Word Embedding.
+    This dataset can be used for Word Embedding.
 
     Returns
     --------
@@ -375,8 +404,7 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 
     References
     -----------
-    Modify from keras.
-    https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py
+    `Modify from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
     """
     from six.moves import cPickle
     import gzip
@@ -467,7 +495,8 @@ def read_words(filename):
 
     Code References
     ---------------
-    tensorflow.models.rnn.ptb.reader
+    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+
     """
     with tf.gfile.GFile(filename, "r") as f:
         return f.read().replace("\n", "<eos>").split()
@@ -486,17 +515,17 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
 
     Example
     -------
-    eval_file should be in this format :
-    : capital-common-countries
-    Athens Greece Baghdad Iraq
-    Athens Greece Bangkok Thailand
-    Athens Greece Beijing China
-    Athens Greece Berlin Germany
-    Athens Greece Bern Switzerland
-    Athens Greece Cairo Egypt
-    Athens Greece Canberra Australia
-    Athens Greece Hanoi Vietnam
-    Athens Greece Havana Cuba
+    >>> eval_file should be in this format :
+    >>> : capital-common-countries
+    >>> Athens Greece Baghdad Iraq
+    >>> Athens Greece Bangkok Thailand
+    >>> Athens Greece Beijing China
+    >>> Athens Greece Berlin Germany
+    >>> Athens Greece Bern Switzerland
+    >>> Athens Greece Cairo Egypt
+    >>> Athens Greece Canberra Australia
+    >>> Athens Greece Hanoi Vietnam
+    >>> Athens Greece Havana Cuba
     ...
 
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
@@ -550,7 +579,7 @@ def build_vocab(data):
 
     Code References
     ---------------
-    tensorflow.models.rnn.ptb.reader
+    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
 
     Examples
     --------
@@ -613,7 +642,7 @@ def build_words_dataset(words, vocabulary_size=50000, printable=False):
 
     Code References
     -----------------
-    tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
     import collections
     count = [['UNK', -1]]
@@ -668,7 +697,7 @@ def words_to_word_ids(data, word_to_id):
 
     Code References
     ---------------
-    tensorflow.models.rnn.ptb.reader
+    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     return [word_to_id[word] for word in data]
     # if isinstance(data[0], str):
@@ -716,7 +745,7 @@ def save_vocab(count, name='vocab.txt'):
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000
     >>> data, count, dictionary, reverse_dictionary = \
-                tl.files.build_words_dataset(words, vocabulary_size, True)
+    ...     tl.files.build_words_dataset(words, vocabulary_size, True)
     >>> tl.files.save_vocab(count, name='vocab_text8.txt')
     >>> vocab_text8.txt
     ... UNK 418391
@@ -762,7 +791,7 @@ def save_npz(save_dict={}, name='model.npz'):
 
     References
     ----------
-    http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez
+    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
     rename_dict = {}
     for k, value in enumerate(save_dict):
@@ -791,7 +820,7 @@ def load_npz(path='', name='model.npz'):
 
     References
     ----------
-    http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez
+    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
     d = np.load( path+name )
     params = []
@@ -826,7 +855,7 @@ def assign_params(sess, params, network):
 
     References
     ----------
-    http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable
+    `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
     """
     for idx, param in enumerate(params):
         assign_op = network.all_params[idx].assign(param)

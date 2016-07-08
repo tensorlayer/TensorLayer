@@ -60,7 +60,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
     References
     -----------
-    https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words
+    `TensorFlow word2vec tutorial <https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words>`_
     """
     # global data_index   # you can put data_index outside the function, then
     #       modify the global data_index in the function without return it.

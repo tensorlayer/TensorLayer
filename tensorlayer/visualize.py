@@ -253,16 +253,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500,
 
     Examples
     --------
-    In 'tutorial_word2vec_basic.py' :
-    >>> vocabulary_size = 50000
-    >>> data, count, dictionary, reverse_dictionary = \
-    ...         tl.files.build_words_dataset(words, vocabulary_size, True)
-    >>> data_index = 0
-    >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,
-    ...                 batch_size=20, num_skips=4, skip_window=2, data_index=0)
-    ...
-    ... Build and train the embedding matrix
-    ...
+    >>> see 'tutorial_word2vec_basic.py'
     >>> final_embeddings = normalized_embeddings.eval()
     >>> tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,
     ...                   plot_only=500, second=5, saveable=False, name='tsne')

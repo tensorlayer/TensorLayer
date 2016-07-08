@@ -289,18 +289,12 @@
 <dt>fig_idx: int</dt>
 <dd>matplotlib figure index.</dd>
 </dl>
-<p>In &#8216;tutorial_word2vec_basic.py&#8217; :
-&gt;&gt;&gt; vocabulary_size = 50000
-&gt;&gt;&gt; data, count, dictionary, reverse_dictionary =     ...         tl.files.build_words_dataset(words, vocabulary_size, True)
-&gt;&gt;&gt; data_index = 0
-&gt;&gt;&gt; batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,
-...                 batch_size=20, num_skips=4, skip_window=2, data_index=0)
-...
-... Build and train the embedding matrix
-...
-&gt;&gt;&gt; final_embeddings = normalized_embeddings.eval()
-&gt;&gt;&gt; tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,
-...                   plot_only=500, second=5, saveable=False, name=&#8217;tsne&#8217;)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">see</span> <span class="s1">&#39;tutorial_word2vec_basic.py&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">final_embeddings</span> <span class="o">=</span> <span class="n">normalized_embeddings</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">tsne_embedding</span><span class="p">(</span><span class="n">final_embeddings</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">reverse_dictionary</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">plot_only</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tsne&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

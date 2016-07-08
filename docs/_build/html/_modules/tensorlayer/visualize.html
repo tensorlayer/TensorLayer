@@ -399,16 +399,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    In &#39;tutorial_word2vec_basic.py&#39; :</span>
-<span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>
-<span class="sd">    &gt;&gt;&gt; data, count, dictionary, reverse_dictionary = \</span>
-<span class="sd">    ...         tl.files.build_words_dataset(words, vocabulary_size, True)</span>
-<span class="sd">    &gt;&gt;&gt; data_index = 0</span>
-<span class="sd">    &gt;&gt;&gt; batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data,</span>
-<span class="sd">    ...                 batch_size=20, num_skips=4, skip_window=2, data_index=0)</span>
-<span class="sd">    ...</span>
-<span class="sd">    ... Build and train the embedding matrix</span>
-<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; see &#39;tutorial_word2vec_basic.py&#39;</span>
 <span class="sd">    &gt;&gt;&gt; final_embeddings = normalized_embeddings.eval()</span>
 <span class="sd">    &gt;&gt;&gt; tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,</span>
 <span class="sd">    ...                   plot_only=500, second=5, saveable=False, name=&#39;tsne&#39;)</span>

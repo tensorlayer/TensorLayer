@@ -29,9 +29,8 @@ def xavier_init(shape, uniform=True):
 
     Reference
     ----------
-    Glorot, X., & Bengio, Y. (2010). Understanding the difficulty of training deep
-    feedforward neural networks. Proceedings of the 13th International Conference
-    on Artificial Intelligence and Statistics (AISTATS), 9, 249–256. http://doi.org/10.1.1.207.2059
+    `Glorot, X., & Bengio, Y. (2010). Understanding the difficulty of training deep
+    feedforward neural networks. <http://doi.org/10.1.1.207.2059>`_
     """
     n_inputs, n_outputs = shape[0], shape[1]
     if uniform:

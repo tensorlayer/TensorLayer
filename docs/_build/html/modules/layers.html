@@ -236,7 +236,7 @@ network.</p>
 <h2>Word Embedding Input layer<a class="headerlink" href="#word-embedding-input-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.Word2vecEmbeddingInputlayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'minval': -1.0</em>, <em>'maxval': 1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'maxval': 1.0</em>, <em>'minval': -1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a> class is a fully connected layer,
 for Word Embedding. Words are input as integer index.
 The output is the embedded word vector.</p>
@@ -317,7 +317,7 @@ The output is the embedded word vector.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">normalized_embeddings</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">normalized_embeddings</span>
 </pre></div>
 </div>
-<p>tensorflow/examples/tutorials/word2vec/word2vec_basic.py</p>
+<p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py">tensorflow/examples/tutorials/word2vec/word2vec_basic.py</a></p>
 </dd></dl>
 
 </div>
@@ -386,8 +386,8 @@ for rectifying layer, the reconstruction activation is softplus.</dd>
 <p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.
 You may need to modify this part to define your own cost function.
 By default, the cost is implemented as follow:</p>
-<p>For sigmoid layer, the implementation as (<a class="reference external" href="http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial">http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial</a>)</p>
-<p>For rectifying layer, the implementation as (Glorot, X., Bordes, A., &amp; Bengio, Y. (2011). Deep Sparse Rectifier Neural Networks. Aistats, 15, 315–323. <a class="reference external" href="http://doi.org/10.1.1.208.6449">http://doi.org/10.1.1.208.6449</a>)</p>
+<p>For sigmoid layer, the implementation can be <a class="reference external" href="http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial">UFLDL</a></p>
+<p>For rectifying layer, the implementation can be <a class="reference external" href="http://doi.org/10.1.1.208.6449">Glorot (2011). Deep Sparse Rectifier Neural Networks</a></p>
 </dd></dl>
 
 </div>
@@ -451,6 +451,7 @@ layer by a given keeping probability.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropconnectDenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><a class="reference external" href="http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13">Wan, L. (2013). Regularization of neural networks using dropconnect</a></p>
 </dd></dl>
 
 </div>
@@ -470,7 +471,9 @@ layer by a given keeping probability.</p>
 <dt>shape</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">list of shape</span><dd>shape of the filters</dd>
 <dt>strides</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints. 1-D of length 4.</span><dd>The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints. 1-D of length 4.</span><dd><p class="first">The stride of the sliding window for each dimension of input.</p>
+<p class="last">It Must be in the same order as the dimension specified with format.</p>
+</dd>
 <dt>padding</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string from: &#8220;SAME&#8221;, &#8220;VALID&#8221;.</span><dd>The type of padding algorithm to use.</dd>
 <dt>W_init</dt>
@@ -525,6 +528,7 @@ layer by a given keeping probability.</p>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
 <p>see Conv2dLayer</p>
+<p><a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling">TensorFlow Pooling</a></p>
 </dd></dl>
 
 </div>
@@ -567,12 +571,15 @@ vector.</p>
 <dt id="tensorlayer.layers.MaxoutLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">MaxoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>name='maxout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#MaxoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.MaxoutLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coming soon</p>
+<p>Single DenseLayer with Max-out behaviour, work well with Dropout.</p>
+<p><a class="reference external" href="http://arxiv.org/abs/1302.4389">Goodfellow (2013) Maxout Networks</a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="tensorlayer.layers.ResnetLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ResnetLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>W_init=&lt;function xavier_init&gt;</em>, <em>b_init=&lt;function zeros&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='resnet_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ResnetLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ResnetLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ResnetLayer" title="tensorlayer.layers.ResnetLayer"><code class="xref py py-class docutils literal"><span class="pre">ResnetLayer</span></code></a> class is a fully connected layer.</p>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ResnetLayer" title="tensorlayer.layers.ResnetLayer"><code class="xref py py-class docutils literal"><span class="pre">ResnetLayer</span></code></a> class is a fully connected layer, while the inputs
+are added on the outputs</p>
 <dl class="docutils">
 <dt>layer</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
@@ -592,6 +599,7 @@ vector.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
+<p><a class="reference external" href="http://doi.org/10.3389/fpsyg.2013.00124">He, K (2015) Deep Residual Learning for Image Recognition.</a></p>
 </dd></dl>
 
 <dl class="class">

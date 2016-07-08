@@ -249,9 +249,10 @@ class ReconLayer(DenseLayer):
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
 
-    For sigmoid layer, the implementation as (http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial)
+    For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
 
-    For rectifying layer, the implementation as (Glorot, X., Bordes, A., & Bengio, Y. (2011). Deep Sparse Rectifier Neural Networks. Aistats, 15, 315–323. http://doi.org/10.1.1.208.6449)
+    For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
+
     """
     def __init__(
         self,
@@ -478,7 +479,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     References
     ----------
-    tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
     def __init__(
         self,
@@ -635,6 +636,9 @@ class DropconnectDenseLayer(Layer):
     >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
     >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name='output_layer')
 
+    References
+    ----------
+    `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`_
     """
     def __init__(
         self,
@@ -648,13 +652,6 @@ class DropconnectDenseLayer(Layer):
         b_init_args = {},
         name ='dropconnect_layer',
     ):
-        '''
-        Single DenseLayer with dropconnect behaviour
-
-        Wan, L., Zeiler, M., Zhang, S., LeCun, Y., & Fergus, R. (2013).
-        Regularization of neural networks using dropconnect. Icml, (1), 109–111.
-        Retrieved from http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13
-        '''
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         n_in = layer.n_units
@@ -693,7 +690,9 @@ class Conv2dLayer(Layer):
     shape : list of shape
         shape of the filters
     strides : a list of ints. 1-D of length 4.
-        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
+        The stride of the sliding window for each dimension of input.
+
+        It Must be in the same order as the dimension specified with format.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
     W_init : weights initializer
@@ -782,6 +781,10 @@ class PoolLayer(Layer):
     Examples
     --------
     see Conv2dLayer
+
+    References
+    ------------
+    `TensorFlow Pooling <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
     """
     def __init__(
         self,
@@ -792,9 +795,6 @@ class PoolLayer(Layer):
         pool = tf.nn.max_pool,
         name ='pool_layer',
     ):
-        '''
-        https://www.tensorflow.org/versions/r0.9/api_docs/python/nn.html#pooling
-        '''
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         # n_in = layer.n_units
@@ -864,6 +864,12 @@ class FlattenLayer(Layer):
 class MaxoutLayer(Layer):
     """
     Coming soon
+
+    Single DenseLayer with Max-out behaviour, work well with Dropout.
+
+    References
+    -----------
+    `Goodfellow (2013) Maxout Networks <http://arxiv.org/abs/1302.4389>`_
     """
     def __init__(
         self,
@@ -871,12 +877,6 @@ class MaxoutLayer(Layer):
         n_units = 100,
         name ='maxout_layer',
     ):
-        '''
-        Single DenseLayer with Max-out behaviour, work well with DropOut
-
-        Goodfellow, I. J., Warde-Farley, D., Mirza, M., Courville, A., & Bengio, Y. (2013).
-        Maxout Networks. arXiv Preprint, 1319–1327. Retrieved from http://arxiv.org/abs/1302.4389
-        '''
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         n_in = layer.n_units
@@ -898,7 +898,8 @@ class MaxoutLayer(Layer):
 # dense
 class ResnetLayer(Layer):
     """
-    The :class:`ResnetLayer` class is a fully connected layer.
+    The :class:`ResnetLayer` class is a fully connected layer, while the inputs
+    are added on the outputs
 
     Parameters
     ----------
@@ -920,6 +921,10 @@ class ResnetLayer(Layer):
     Examples
     --------
     >>>
+
+    References
+    ----------
+    `He, K (2015) Deep Residual Learning for Image Recognition. <http://doi.org/10.3389/fpsyg.2013.00124>`_
     """
     def __init__(
         self,
@@ -931,13 +936,6 @@ class ResnetLayer(Layer):
         b_init_args = {},
         name ='resnet_layer',
     ):
-        '''
-        Single DenseLayer, while the inputs are added on the outputs
-
-        He, K., Zhang, X., Ren, S., & Sun, J. (2015).
-        Deep Residual Learning for Image Recognition.
-        Arxiv.Org, 7(3), 171–180. http://doi.org/10.3389/fpsyg.2013.00124
-        '''
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         n_in = layer.n_units

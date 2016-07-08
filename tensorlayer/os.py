@@ -15,7 +15,7 @@ def exit_tf(sess):
 
     Parameters
     ----------
-    sess : a :sess instance of tensorflow
+    sess : a session instance of tensorflow
     """
     text = "Close tensorboard and nvidia-process if available"
     sess.close()
@@ -86,7 +86,7 @@ def set_gpu_fraction(sess, gpu_fraction=0.3):
 
     References
     ----------
-    https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html
+    `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
     """
     print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
