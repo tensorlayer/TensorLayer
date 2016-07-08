@@ -102,6 +102,15 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-reinforcement-learning">Understand Reinforcement learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pong-game">Pong Game</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#policy-network">Policy Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Loss and update expressions</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#more-info">More info</a></li>
 </ul>
 </li>
@@ -167,8 +176,10 @@
             
   <div class="section" id="tutorial">
 <span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
-<p>This tutorial will walk you through building a handwritten digits classifier
-using the MNIST dataset, arguably the &#8220;Hello World&#8221; of neural networks.</p>
+<p>For deep learning, this tutorial will walk you through building a handwritten
+digits classifier using the MNIST dataset, arguably the &#8220;Hello World&#8221; of neural
+networks. For reinforcement learning, we will let computer learns to play Pong
+game from the original screen inputs.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For experts: Read the source code of <code class="docutils literal"><span class="pre">InputLayer</span></code> and <code class="docutils literal"><span class="pre">DenseLayer</span></code>, you
@@ -519,6 +530,29 @@ classification accuracy:</p>
 <span class="n">acc</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">correct_prediction</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
 </pre></div>
 </div>
+</div>
+</div>
+</div>
+<div class="section" id="understand-reinforcement-learning">
+<h2>Understand Reinforcement learning<a class="headerlink" href="#understand-reinforcement-learning" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pong-game">
+<h3>Pong Game<a class="headerlink" href="#pong-game" title="Permalink to this headline">¶</a></h3>
+<p>To understand RL, we will let computer learns to play Pong game from the
+original screen inputs. Before we start, we highly recommend you to go through
+a famous blog <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">&#8220;Deep Reinforcement Learning: Pong from Pixels&#8221;</a>
+which is a minimalistic implementation of deep reinforcement learning by using
+python-numpy and <a class="reference external" href="https://gym.openai.com">OpenAI Environment</a>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_pong.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="policy-network">
+<h3>Policy Network<a class="headerlink" href="#policy-network" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="policy-gradient">
+<h3>Policy Gradient<a class="headerlink" href="#policy-gradient" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h4>Loss and update expressions<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 </div>

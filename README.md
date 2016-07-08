@@ -15,7 +15,7 @@
 
 # TensorLayer: Deep learning and Reinforcement learning library for TensorFlow.
 
-TensorLayer is a transparent deep learning and reinforcement learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
+TensorLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
 TensorLayer features include:
@@ -42,16 +42,16 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 --
 # Library Structure
 	-tensorlayer
-		- tensorlayer	 *library source code*
-		- setup.py       *python setup.py install, to install TensorLayer*
-		- docs           *readthedocs*
-			- _build/html/index.html *homepage of docs*
-		- tutorial_*     *official tutorials include NLP, DL, RL etc*
+		- tensorlayer	 <library source code>
+		- setup.py       <python setup.py install, to install TensorLayer>
+		- docs           <readthedocs>
+			- _build/html/index.html <homepage of docs>
+		- tutorial_*     <official tutorials include NLP, DL, RL etc>
 		- ...
 
 --
 # Overview
-More examples available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file read it locally.
+More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file read it locally.
 
 0. [Fully Connected Network](#)
 0. [Convolutional Neural Network](#)
@@ -194,14 +194,14 @@ network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='rel
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
 network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 ```
-
+For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Recurrent Neural Network*
 
 **<font color="grey"> LSTM: </font>**
 
-Long Short-Term Memory is xxxxxx xjsdjansijdni
+For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Reinforcement Learning*
@@ -271,7 +271,7 @@ network.print_layers()
 >> layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
 >> layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
 ```
-
+For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 # Easy to Modify
 **<font color="grey"> Modifying Pre-train Behaviour: </font>**

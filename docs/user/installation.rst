@@ -4,13 +4,15 @@
 Installation
 ============
 
-TensorLayer has some prerequisites that need to be installed first, including `TensorFlow
-<https://www.tensorflow.org>`_, numpy and matplotlib. For GPU support CUDA and cuDNN are
-required.
+TensorLayer has some prerequisites that need to be installed first, including
+`TensorFlow <https://www.tensorflow.org>`_, numpy and matplotlib. For GPU
+support CUDA and cuDNN are required.
 
-If you run into any trouble, please check the `TensorFlow installation instructions
-<https://www.tensorflow.org/versions/master/get_started/os_setup.html>`_ which cover installing
-the TensorFlow for a range of operating systems including Mac OX and Linux, or ask for help on `hao.dong11@imperial.ac.uk`.
+If you run into any trouble, please check the `TensorFlow installation
+instructions <https://www.tensorflow.org/versions/master/get_started/os_setup.html>`_
+which cover installing the TensorFlow for a range of operating systems including
+Mac OX and Linux, or ask for help on `hao.dong11@imperial.ac.uk <hao.dong11@imperial.ac.uk>`_
+
 
 
 Prerequisites
@@ -19,7 +21,11 @@ Prerequisites
 Python + pip
 -------------
 
-TensorLayer is build on the top of Python-version TensorFlow. Please install Python first.
+TensorLayer is build on the top of Python-version TensorFlow. Please install
+Python first.
+
+.. note::
+  We highly recommend python3 instead of python2 for the sake of future.
 
 Python includes ``pip`` command for installing additional modules is recommended.
 Besides, a `virtual environment
@@ -81,9 +87,9 @@ The TensorFlow website also teach how to install the CUDA and cuDNN, please clic
 
 Install the latest CUDA and cuDNN available from NVIDIA:
 
-  `CUDA install <https://developer.nvidia.com/cuda-downloads>`_
+`CUDA install <https://developer.nvidia.com/cuda-downloads>`_
 
-  `cuDNN install <https://developer.nvidia.com/cuda-downloads>`_
+`cuDNN install <https://developer.nvidia.com/cuda-downloads>`_
 
 After installation, make sure ``/usr/local/cuda/bin`` is in your ``PATH`` (use ``echo #PATH`` to check), and
 ``nvcc --version`` works. Also ensure ``/usr/local/cuda/lib64`` is in your
@@ -105,7 +111,8 @@ cuDNN
 
 NVIDIA provides a library for common neural network operations that especially
 speeds up Convolutional Neural Networks (CNNs). Again, it can be obtained from
-NVIDIA after registering as a developer (it take a while): `cuDNN install <https://developer.nvidia.com/cuda-downloads>`_
+NVIDIA after registering as a developer (it take a while):
+`cuDNN install <https://developer.nvidia.com/cuda-downloads>`_
 
 To install it, copy the ``*.h`` files to ``/usr/local/cuda/include`` and the
 ``lib*`` files to ``/usr/local/cuda/lib64``.

@@ -4,8 +4,10 @@
 Tutorial
 ========
 
-This tutorial will walk you through building a handwritten digits classifier
-using the MNIST dataset, arguably the "Hello World" of neural networks.
+For deep learning, this tutorial will walk you through building a handwritten
+digits classifier using the MNIST dataset, arguably the "Hello World" of neural
+networks. For reinforcement learning, we will let computer learns to play Pong
+game from the original screen inputs.
 
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
@@ -439,6 +441,31 @@ classification accuracy:
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
+Understand Reinforcement learning
+==================================
+
+Pong Game
+---------
+
+To understand RL, we will let computer learns to play Pong game from the
+original screen inputs. Before we start, we highly recommend you to go through
+a famous blog `"Deep Reinforcement Learning: Pong from Pixels" <http://karpathy.github.io/2016/05/31/rl/>`_
+which is a minimalistic implementation of deep reinforcement learning by using
+python-numpy and `OpenAI Environment <https://gym.openai.com>`_.
+
+
+.. code-block:: bash
+
+  python tutorial_pong.py
+
+Policy Network
+---------------
+
+Policy Gradient
+---------------
+
+Loss and update expressions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 More info
 ==========
