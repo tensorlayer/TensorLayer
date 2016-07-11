@@ -41,14 +41,22 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 --
 # Library Structure
-	-tensorlayer
-		- tensorlayer	 <library source code>
-		- setup.py       <python setup.py install, to install TensorLayer>
-		- docs           <readthedocs>
-			- _build/html/index.html <homepage of docs>
-		- tutorial_*     <official tutorials include NLP, DL, RL etc>
-		- ...
 
+```
+<folder>
+├── tensorlayer  		<--- library source code
+│   ├── lstm.yml 		<--- config file
+│   ├── cbt_epoch10.h5 	<--- states for each time step
+│   ├── train.h5 		<--- word ID for each time step
+│   └── words.dict 		<--- mapping word ID -> word
+├── setup.py			<--- use ‘python setup.py install’, to install
+├── docs 				<--- readthedocs folder
+│   └── _build
+│   	└──html
+│			└──index.html <--- homepage of the documentation
+├── tutorials_*.py	 	<--- tutorials include NLP, DL,RL etc.
+├── .. 
+```
 --
 # Overview
 More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file read it locally.

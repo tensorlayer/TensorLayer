@@ -7,7 +7,7 @@
 
    XXXX
 
-Activation functions
+XXX functions
 ---------------------
 
 .. autofunction:: XXXX

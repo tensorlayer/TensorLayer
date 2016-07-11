@@ -1,4 +1,4 @@
-# Copyright 2016 TensorLayer. All Rights Reserved.
+ # Copyright 2016 TensorLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ This is the minimalistic reimplementation of
 tensorflow/examples/tutorials/word2vec/word2vec_basic.py
 This basic example contains the code needed to download some data,
 train on it a bit and visualize the result by using t-SNE.
-
+234567§
 Once you get comfortable with reading and running the basic version,
 you can graduate to
 tensorflow/models/embedding/word2vec.py
@@ -67,7 +67,9 @@ def main_word2vec_basic():
     data_size = len(words)
     print('Data size', data_size) # print(words)    # b'their', b'families', b'who', b'were', b'expelled', b'from', b'jerusalem',
 
-    # top setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
+    resume = False  # load existing model, data and dictionaries
+
+    # toy setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
     # vocabulary_size = 50000 # maximum number of word in vocabulary
     # batch_size = 128
     # embedding_size = 128  # Dimension of the embedding vector (hidden layer).
@@ -78,9 +80,11 @@ def main_word2vec_basic():
     # num_sampled = 64      # Number of negative examples to sample.
     #                       #     more negative samples, higher loss
     # learning_rate = 1.0
-    # n_epoch = 1
+    # n_epoch = 20
+    # model_file_name = "model_word2vec_50k_128"
+    # Eval 2084/15851 accuracy = 15.7%
 
-    # tensorflow/models/embedding/word2vec.py
+    # better (tensorflow/models/embedding/word2vec.py)
     # vocabulary_size = 80000
     # batch_size = 20     # Note: small batch_size need more steps for a Epoch
     # embedding_size = 200
@@ -89,8 +93,9 @@ def main_word2vec_basic():
     # num_sampled = 100
     # learning_rate = 0.2
     # n_epoch = 15
+    # model_file_name = "model_word2vec_80k_200"
 
-    # tensorflow/models/embedding/word2vec_optimized.py
+    # better (tensorflow/models/embedding/word2vec_optimized.py)
     # vocabulary_size = 80000
     # batch_size = 500
     # embedding_size = 200
@@ -98,21 +103,23 @@ def main_word2vec_basic():
     # num_skips = 10
     # num_sampled = 25
     # learning_rate = 0.025
-    # n_epoch = 15
+    # n_epoch = 20
+    # model_file_name = "model_word2vec_80k_200_opt"
+    # bad 0%
 
     # see: Learning word embeddings efficiently with noise-contrastive estimation
-    vocabulary_size = 80000
-    batch_size = 100
-    embedding_size = 600
-    skip_window = 5
-    num_skips = 10
-    num_sampled = 25
-    learning_rate = 0.03
-    n_epoch = 20
+    # vocabulary_size = 80000
+    # batch_size = 100
+    # embedding_size = 600
+    # skip_window = 5
+    # num_skips = 10
+    # num_sampled = 25
+    # learning_rate = 0.03
+    # n_epoch = 200 * 10
+    # model_file_name = "model_word2vec_80k_600"
+    # bad bad
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
-    model_file_name = "model_word2vec"
-    resume = False  # load existing model, data and dictionaries
 
     print('%d Steps a Epoch, total Epochs %d' % (int(data_size/batch_size), n_epoch))
     print('   learning_rate: %f' % learning_rate)
@@ -134,7 +141,6 @@ def main_word2vec_basic():
 
     print('Most 5 common words (+UNK)', count[:5]) # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]]) # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
-
 
     del words  # Hint to reduce memory.
 
@@ -256,7 +262,7 @@ def main_word2vec_basic():
                     log_str = "%s %s," % (log_str, close_word)
                 print(log_str)
 
-        if step % (print_freq * 20) == 0:
+        if (step % (print_freq * 20) == 0) and (step != 0):
             print("Save model, data and dictionaries" + "!"*10);
             # instead of using TensorFlow saver, we use TensorLayer to save a model
             # saver = tf.train.Saver()

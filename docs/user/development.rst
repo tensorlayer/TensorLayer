@@ -6,8 +6,8 @@ The TensorLayer project was started by Hao Dong, Imperial College London in Jun
 `Akara Supratak <https://github.com/akaraspt>`_,
 `Hao Dong <https://github.com/zsdonghao>`_,
 `Simiao Yu <https://github.com/zsdonghao>`_,)
-and `numerous additional contributors on GitHub:
-https://github.com/zsdonghao/TensorLayer
+and numerous additional contributors on `GitHub
+<https://github.com/zsdonghao/TensorLayer>`_,
 
 As an open-source project by researchers for researchers and engineers, we highly welcome
 contributions! Every bit helps and will be credited.
@@ -50,7 +50,7 @@ you are welcome to contribute your method to TensorLayer.
 Report bugs
 ~~~~~~~~~~~
 
-Report bugs at the `GitHub`_.
+Report bugs at the `GitHub <https://github.com/zsdonghao/TensorLayer>`_,
 If you are reporting a bug, please include:
 
 * your TensorLayer and TensorFlow version.

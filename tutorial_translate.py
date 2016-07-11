@@ -13,6 +13,7 @@ import time
 References
 -----------
 tensorflow/models/rnn/translate
+https://www.tensorflow.org/versions/r0.9/tutorials/seq2seq/index.html
 
 Data
 ----
