@@ -105,7 +105,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#understand-reinforcement-learning">Understand Reinforcement learning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pong-game">Pong Game</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#policy-network">Policy Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-next">What Next?</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id2">Loss and update expressions</a></li>
 </ul>
 </li>
@@ -536,20 +537,66 @@ classification accuracy:</p>
 <h2>Understand Reinforcement learning<a class="headerlink" href="#understand-reinforcement-learning" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="pong-game">
 <h3>Pong Game<a class="headerlink" href="#pong-game" title="Permalink to this headline">¶</a></h3>
-<p>To understand RL, we will let computer learns to play Pong game from the
-original screen inputs. Before we start, we highly recommend you to go through
-a famous blog <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">&#8220;Deep Reinforcement Learning: Pong from Pixels&#8221;</a>
-which is a minimalistic implementation of deep reinforcement learning by using
-python-numpy and <a class="reference external" href="https://gym.openai.com">OpenAI Environment</a>.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_pong.py
+<p>To understand Reinforcement Learning, we let computer to learns how to play
+Pong game from the original screen inputs. Before we start, we highly recommend
+you to go through a famous blog called <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">Deep Reinforcement Learning: Pong from Pixels</a>
+which is a minimalistic implementation of Deep Reinforcement Learning by
+using python-numpy and OpenAI gym environment.</p>
+<p>Before running the tutorial code, you need to install <a class="reference external" href="https://gym.openai.com/docs">OpenAI gym environment</a>
+which is a benchmark for RL.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_atari_pong.py
 </pre></div>
 </div>
 </div>
 <div class="section" id="policy-network">
 <h3>Policy Network<a class="headerlink" href="#policy-network" title="Permalink to this headline">¶</a></h3>
+<p>In Deep Reinforcement Learning, the Policy Network is the same with Deep Neural
+Network, it is our player (or “agent”) and output actions to tell what we should
+do (move UP or DOWN); in Karpathy&#8217;s code, he only defined 2 actions, UP and DOWN;
+in our tutorial, we defined 3 actions which are UP, DOWN and STOP (do nothing).
+So our output is in softmax format telling the probabilities of different actions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>     <span class="c1"># observation for training</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">states_batch_pl</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="n">probs</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
+<span class="n">sampling_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then when our agent is playing Pong, it calculte the probabilities of different
+actions, and then draw sample (action) from the uniform distribution. As the
+actions are represented by 1, 2 and 3, but the softmax outputs should be start
+from 0, we calculate the label value by minus 1.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">prob</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">sampling_prob</span><span class="p">,</span>
+    <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">states_batch_pl</span><span class="p">:</span> <span class="n">x</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="c1"># action. 1: STOP  2: UP  3: DOWN</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">p</span><span class="o">=</span><span class="n">prob</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+<span class="o">...</span>
+<span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="policy-gradient">
 <h3>Policy Gradient<a class="headerlink" href="#policy-gradient" title="Permalink to this headline">¶</a></h3>
+<p>The key of Deep Reinforcement Learning is how to train the Policy Network,
+there are many way to do</p>
+<p>Q-learning xxxxx</p>
+<p>AlphaGo is using xxxx</p>
+</div>
+<div class="section" id="what-next">
+<h3>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h3>
+<p>The tutorial above shows how you can build your own agent, end-to-end.
+While it has reasonable quality, the default parameters will not give you
+the best agent model. Here are a few things you can improve.</p>
+<p>First of all, instead of conventional MLP model, we can use CNNs to capture the
+screen information better as <a class="reference external" href="https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf">Playing Atari with Deep Reinforcement Learning</a>
+describe.</p>
+<p>Also, the default parameters of the model are not tuned. You can try changing
+the learning rate, decay, or initializing the weights of your model in a
+different way.</p>
+<p>Finally, you can try the model on different tasks (games).</p>
 <div class="section" id="id2">
 <h4>Loss and update expressions<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 </div>

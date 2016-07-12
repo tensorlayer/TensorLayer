@@ -94,6 +94,7 @@ def main_word2vec_basic():
     # learning_rate = 0.2
     # n_epoch = 15
     # model_file_name = "model_word2vec_80k_200"
+    # 7.9%
 
     # better (tensorflow/models/embedding/word2vec_optimized.py)
     # vocabulary_size = 80000

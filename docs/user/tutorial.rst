@@ -447,22 +447,83 @@ Understand Reinforcement learning
 Pong Game
 ---------
 
-To understand RL, we will let computer learns to play Pong game from the
-original screen inputs. Before we start, we highly recommend you to go through
-a famous blog `"Deep Reinforcement Learning: Pong from Pixels" <http://karpathy.github.io/2016/05/31/rl/>`_
-which is a minimalistic implementation of deep reinforcement learning by using
-python-numpy and `OpenAI Environment <https://gym.openai.com>`_.
+To understand Reinforcement Learning, we let computer to learns how to play
+Pong game from the original screen inputs. Before we start, we highly recommend
+you to go through a famous blog called `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_
+which is a minimalistic implementation of Deep Reinforcement Learning by
+using python-numpy and OpenAI gym environment.
 
+Before running the tutorial code, you need to install `OpenAI gym environment <https://gym.openai.com/docs>`_
+which is a benchmark for RL.
 
 .. code-block:: bash
 
-  python tutorial_pong.py
+  python tutorial_atari_pong.py
+
+
 
 Policy Network
 ---------------
 
+In Deep Reinforcement Learning, the Policy Network is the same with Deep Neural
+Network, it is our player (or “agent”) and output actions to tell what we should
+do (move UP or DOWN); in Karpathy's code, he only defined 2 actions, UP and DOWN;
+in our tutorial, we defined 3 actions which are UP, DOWN and STOP (do nothing).
+So our output is in softmax format telling the probabilities of different actions.
+
+.. code-block:: python
+
+    states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])     # observation for training
+    network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
+    network = tl.layers.DenseLayer(network, n_units=H, act = tf.nn.relu, name='relu1')
+    network = tl.layers.DenseLayer(network, n_units=3, act = tl.activation.identity, name='output_layer')
+    probs = network.outputs
+    sampling_prob = tf.nn.softmax(probs)
+
+Then when our agent is playing Pong, it calculte the probabilities of different
+actions, and then draw sample (action) from the uniform distribution. As the
+actions are represented by 1, 2 and 3, but the softmax outputs should be start
+from 0, we calculate the label value by minus 1.
+
+.. code-block:: python
+
+    prob = sess.run(
+        sampling_prob,
+        feed_dict={states_batch_pl: x}
+    )
+    # action. 1: STOP  2: UP  3: DOWN
+    action = np.random.choice([1,2,3], p=prob.flatten())
+    ...
+    ys.append(action - 1)
+
+
 Policy Gradient
 ---------------
+
+The key of Deep Reinforcement Learning is how to train the Policy Network,
+there are many way to do
+
+Q-learning xxxxx
+
+AlphaGo is using xxxx
+
+What Next?
+-----------
+
+The tutorial above shows how you can build your own agent, end-to-end.
+While it has reasonable quality, the default parameters will not give you
+the best agent model. Here are a few things you can improve.
+
+First of all, instead of conventional MLP model, we can use CNNs to capture the
+screen information better as `Playing Atari with Deep Reinforcement Learning <https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf>`_
+describe.
+
+Also, the default parameters of the model are not tuned. You can try changing
+the learning rate, decay, or initializing the weights of your model in a
+different way.
+
+Finally, you can try the model on different tasks (games).
+
 
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -497,6 +558,7 @@ visualization (:mod:`tensorlayer.visualize`),
 iteration functions (:mod:`tensorlayer.iterate`),
 
 preprocessing functions (:mod:`tensorlayer.preprocess`),
+
 
 
 

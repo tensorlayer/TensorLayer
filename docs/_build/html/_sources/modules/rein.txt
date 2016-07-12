@@ -5,9 +5,16 @@
 
 .. autosummary::
 
-   XXXX
+  discount_episode_rewards
+  cross_entropy_reward_loss
 
-Activation functions
+
+Reward functions
 ---------------------
 
-.. autofunction:: XXXX
+.. autofunction:: discount_episode_rewards
+
+Cost functions
+---------------------
+
+.. autofunction:: cross_entropy_reward_loss
