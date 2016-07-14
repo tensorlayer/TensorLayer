@@ -165,7 +165,7 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-obj docutils literal"><span class="pre">Layer</span></code></a>([inputs,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> class represents a single layer of a neural network.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></a>([inputs,&nbsp;name])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-obj docutils literal"><span class="pre">InputLayer</span></code></a>([inputs,&nbsp;n_features,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-obj docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a>([inputs,&nbsp;...])</td>
@@ -190,9 +190,12 @@
 <td>The <a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-class docutils literal"><span class="pre">PoolLayer</span></code></a> class is a 2D Pooling layer.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
-<td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D vector.</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape each input to a 1D vector.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-obj docutils literal"><span class="pre">ConcatLayer</span></code></a>([layer,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-class docutils literal"><span class="pre">ConcatLayer</span></code></a> class is layer which concat (merge) two or more <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> to a single class:<cite>DenseLayer</cite>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
 <td>Reshapes the input to a 1D vector.</td>
 </tr>
 </tbody>
@@ -220,13 +223,19 @@ network.</p>
 <h2>Input layer<a class="headerlink" href="#input-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.InputLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">InputLayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>name='input_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#InputLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.InputLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">InputLayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>n_features=None</em>, <em>name='input_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#InputLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.InputLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> class is the starting layer of a neural network.</p>
 <dl class="docutils">
 <dt>inputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a :tensorflow placeholder</span><dd>The input tensor data.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a TensorFlow placeholder</span><dd>The input tensor data.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+<dt>n_features</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a int</span><dd>The number of features. If not specify, it will assume the input is
+with the shape of [batch_size, n_features], then select the second
+element as the n_features. It is used to specify the matrix size of
+next layer. If apply Convolutional layer after InputLayer,
+n_features is not important.</dd>
 </dl>
 </dd></dl>
 
@@ -235,7 +244,7 @@ network.</p>
 <h2>Word Embedding Input layer<a class="headerlink" href="#word-embedding-input-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.Word2vecEmbeddingInputlayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'maxval': 1.0</em>, <em>'minval': -1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'minval': -1.0</em>, <em>'maxval': 1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a> class is a fully connected layer,
 for Word Embedding. Words are input as integer index.
 The output is the embedded word vector.</p>
@@ -269,9 +278,9 @@ The output is the embedded word vector.</p>
 </dl>
 <dl class="docutils">
 <dt>nce_cost</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The NCE loss.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor</span><dd>The NCE loss.</dd>
 <dt>outputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The outputs of embedding layer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor</span><dd>The outputs of embedding layer.</dd>
 <dt>normalized_embeddings</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>Normalized embedding matrix</dd>
 </dl>
@@ -536,7 +545,7 @@ layer by a given keeping probability.</p>
 <dl class="class">
 <dt id="tensorlayer.layers.FlattenLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">FlattenLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='flatten_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#FlattenLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.FlattenLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape the input to a 1D
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a> class is layer which reshape each input to a 1D
 vector.</p>
 <dl class="docutils">
 <dt>layer</dt>
@@ -559,6 +568,43 @@ vector.</p>
 <span class="gp">... </span>                   <span class="n">pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">,</span>
 <span class="gp">... </span>                   <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;pool_layer&#39;</span><span class="p">,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">FlattenLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;flatten_layer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="tensorlayer.layers.ConcatLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ConcatLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='concat_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ConcatLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ConcatLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-class docutils literal"><span class="pre">ConcatLayer</span></code></a> class is layer which concat (merge) two or more
+<a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> to a single class:<cite>DenseLayer</cite>.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instances</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt;&gt;&gt; sess = tf.InteractiveSession()
+&gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[None, 784])
+&gt;&gt;&gt; inputs = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)
+&gt;&gt;&gt; net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name=&#39;relu1_1&#39;)
+&gt;&gt;&gt; net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name=&#39;relu2_1&#39;)
+&gt;&gt;&gt; network = tl.layers.ConcatLayer(layer = [net1, net2], name =&#39;concat_layer&#39;)
+...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
+...     tensorlayer:Instantiate DenseLayer relu1_1: 800, &lt;function relu at 0x1108e41e0&gt;
+...     tensorlayer:Instantiate DenseLayer relu2_1: 300, &lt;function relu at 0x1108e41e0&gt;
+...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
+...
+&gt;&gt;&gt; sess.run(tf.initialize_all_variables())
+&gt;&gt;&gt; network.print_params()
+...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
+...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+...     param 2: (784, 300) (mean: 0.000000, median: -0.000048 std: 0.042947)
+...     param 3: (300,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+...     num of params: 863500
+&gt;&gt;&gt; network.print_layers()
+...     layer 0: Tensor(&quot;Relu:0&quot;, shape=(?, 800), dtype=float32)
+...     layer 1: Tensor(&quot;Relu_1:0&quot;, shape=(?, 300), dtype=float32)
+...
 </pre></div>
 </div>
 </dd></dl>
@@ -610,13 +656,7 @@ are added on the outputs</p>
 <dl class="class">
 <dt id="tensorlayer.layers.ReshapeLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>shape=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Coming soon</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="tensorlayer.layers.ConcatLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ConcatLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='concat_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ConcatLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ConcatLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Coming soon</p>
+<dd><p>Deprecated and unused.</p>
 </dd></dl>
 
 </div>

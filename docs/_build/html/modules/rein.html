@@ -191,7 +191,7 @@ episode. When encount a non-zero value, consider as the end a of an episode.</p>
 <h2>Cost functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="tensorlayer.rein.cross_entropy_reward_loss">
-<code class="descclassname">tensorlayer.rein.</code><code class="descname">cross_entropy_reward_loss</code><span class="sig-paren">(</span><em>logits</em>, <em>actions</em>, <em>discount_rewards</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/rein.html#cross_entropy_reward_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.rein.cross_entropy_reward_loss" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.rein.</code><code class="descname">cross_entropy_reward_loss</code><span class="sig-paren">(</span><em>logits</em>, <em>actions</em>, <em>rewards</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/rein.html#cross_entropy_reward_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.rein.cross_entropy_reward_loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the loss for Policy Gradient Network.</p>
 <dl class="docutils">
 <dt>logits</dt>
@@ -199,7 +199,7 @@ episode. When encount a non-zero value, consider as the end a of an episode.</p>
 inside.</dd>
 <dt>actions</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The agent actions.</dd>
-<dt>discount_rewards</dt>
+<dt>rewards</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The rewards.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>   <span class="c1"># observation for training</span>

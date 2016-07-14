@@ -86,6 +86,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-we-start">Before we start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-mnist-example">Run the MNIST example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-pong-game-example">Run the Pong Game example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-word2vec-example">Run the Word2Vec example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#understand-the-mnist-example">Understand the MNIST example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#preface">Preface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loading-data">Loading data</a></li>
@@ -105,9 +107,28 @@
 <li class="toctree-l2"><a class="reference internal" href="#understand-reinforcement-learning">Understand Reinforcement learning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pong-game">Pong Game</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#policy-network">Policy Network</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-next">What Next?</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Loss and update expressions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Loss and update expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#what-next">What Next?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-natural-language-processing">Understand Natural Language Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#word-embedding">Word Embedding</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Loss and update expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#many-to-one">Many to One</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Loss and update expressions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#many-to-many-seq2seq">Many to Many (Seq2seq)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Loss and update expressions</a></li>
 </ul>
 </li>
 </ul>
@@ -200,7 +221,7 @@ able to use TensorLayer. If you&#8217;re new to TensorFlow, going through that t
 </div>
 <div class="section" id="run-the-mnist-example">
 <h2>Run the MNIST example<a class="headerlink" href="#run-the-mnist-example" title="Permalink to this headline">¶</a></h2>
-<p>In this first part of the tutorial, we will just run the MNIST example that&#8217;s
+<p>In the first part of the tutorial, we will just run the MNIST example that&#8217;s
 included in the source distribution of TensorLayer.</p>
 <p>We assume that you have already run through the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>. If you
 haven&#8217;t done so already, get a copy of the source tree of TensorLayer, and navigate
@@ -282,6 +303,83 @@ Select different models from <code class="docutils literal"><span class="pre">if
 <span class="n">main_test_cnn_layer</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="run-the-pong-game-example">
+<h2>Run the Pong Game example<a class="headerlink" href="#run-the-pong-game-example" title="Permalink to this headline">¶</a></h2>
+<p>In the second part of the tutorial, we will run the Deep Reinforcement Learning
+example that is introduced by Karpathy in <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">Deep Reinforcement Learning: Pong from Pixels</a>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_atari_pong.py
+</pre></div>
+</div>
+<p>Before running the tutorial code, you need to install <a class="reference external" href="https://gym.openai.com/docs">OpenAI gym environment</a>
+which is a benchmark for Reinforcement Learning.
+If everything is set up correctly, you will get an output like the following:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>[2016-07-12 09:31:59,760] Making new env: Pong-v0
+  tensorlayer:Instantiate InputLayer input_layer (?, 6400)
+  tensorlayer:Instantiate DenseLayer relu1: 200, &lt;function relu at 0x1119471e0&gt;
+  tensorlayer:Instantiate DenseLayer output_layer: 3, &lt;function identity at 0x114bd39d8&gt;
+  param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
+  param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
+  param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  num of params: 1280803
+  layer 0: Tensor(&quot;Relu:0&quot;, shape=(?, 200), dtype=float32)
+  layer 1: Tensor(&quot;add_1:0&quot;, shape=(?, 3), dtype=float32)
+episode 0: game 0 took 0.17381s, reward: -1.000000
+episode 0: game 1 took 0.12629s, reward: 1.000000  !!!!!!!!
+episode 0: game 2 took 0.17082s, reward: -1.000000
+episode 0: game 3 took 0.08944s, reward: -1.000000
+episode 0: game 4 took 0.09446s, reward: -1.000000
+episode 0: game 5 took 0.09440s, reward: -1.000000
+episode 0: game 6 took 0.32798s, reward: -1.000000
+episode 0: game 7 took 0.74437s, reward: -1.000000
+episode 0: game 8 took 0.43013s, reward: -1.000000
+episode 0: game 9 took 0.42496s, reward: -1.000000
+episode 0: game 10 took 0.37128s, reward: -1.000000
+episode 0: game 11 took 0.08979s, reward: -1.000000
+episode 0: game 12 took 0.09138s, reward: -1.000000
+episode 0: game 13 took 0.09142s, reward: -1.000000
+episode 0: game 14 took 0.09639s, reward: -1.000000
+episode 0: game 15 took 0.09852s, reward: -1.000000
+episode 0: game 16 took 0.09984s, reward: -1.000000
+episode 0: game 17 took 0.09575s, reward: -1.000000
+episode 0: game 18 took 0.09416s, reward: -1.000000
+episode 0: game 19 took 0.08674s, reward: -1.000000
+episode 0: game 20 took 0.09628s, reward: -1.000000
+resetting env. episode reward total was -20.000000. running mean: -20.000000
+episode 1: game 0 took 0.09910s, reward: -1.000000
+episode 1: game 1 took 0.17056s, reward: -1.000000
+episode 1: game 2 took 0.09306s, reward: -1.000000
+episode 1: game 3 took 0.09556s, reward: -1.000000
+episode 1: game 4 took 0.12520s, reward: 1.000000  !!!!!!!!
+episode 1: game 5 took 0.17348s, reward: -1.000000
+episode 1: game 6 took 0.09415s, reward: -1.000000
+</pre></div>
+</div>
+<p>This example allow computer to learn how to play Pong game from the screen inputs,
+just like human behavior. After training for 15,000 episodes, the computer can
+win 20% of the games. The computer win 35% of the games at 20,000 episode,
+we can seen the computer learn faster and faster as it has more winning data to
+train. If you run it for 30,000 episode, it start to win.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">render</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">resume</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>Setting &#8216;render&#8217; to &#8216;True&#8217;, if you want to display the game environment. When
+you run the code again, you can set &#8216;resume&#8217; to &#8216;True&#8217;, the code will load the
+existing model and train the model basic on it.</p>
+</div>
+<div class="section" id="run-the-word2vec-example">
+<h2>Run the Word2Vec example<a class="headerlink" href="#run-the-word2vec-example" title="Permalink to this headline">¶</a></h2>
+<p>In the third part of the tutorial, we will run</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_word2vec_basic.py
+</pre></div>
+</div>
+<p>If everything is set up correctly, you will get an output in the end.</p>
+<div class="figure" id="fig-0601">
+<img alt="user/_static/my_figs/tsne.png" src="user/_static/my_figs/tsne.png" />
+</div>
+<img alt="user/_static/my_figs/tsne.png" src="user/_static/my_figs/tsne.png" />
 </div>
 <div class="section" id="understand-the-mnist-example">
 <h2>Understand the MNIST example<a class="headerlink" href="#understand-the-mnist-example" title="Permalink to this headline">¶</a></h2>
@@ -537,13 +635,11 @@ classification accuracy:</p>
 <h2>Understand Reinforcement learning<a class="headerlink" href="#understand-reinforcement-learning" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="pong-game">
 <h3>Pong Game<a class="headerlink" href="#pong-game" title="Permalink to this headline">¶</a></h3>
-<p>To understand Reinforcement Learning, we let computer to learns how to play
+<p>To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
 you to go through a famous blog called <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">Deep Reinforcement Learning: Pong from Pixels</a>
 which is a minimalistic implementation of Deep Reinforcement Learning by
 using python-numpy and OpenAI gym environment.</p>
-<p>Before running the tutorial code, you need to install <a class="reference external" href="https://gym.openai.com/docs">OpenAI gym environment</a>
-which is a benchmark for RL.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_atari_pong.py
 </pre></div>
 </div>
@@ -551,10 +647,11 @@ which is a benchmark for RL.</p>
 <div class="section" id="policy-network">
 <h3>Policy Network<a class="headerlink" href="#policy-network" title="Permalink to this headline">¶</a></h3>
 <p>In Deep Reinforcement Learning, the Policy Network is the same with Deep Neural
-Network, it is our player (or “agent”) and output actions to tell what we should
-do (move UP or DOWN); in Karpathy&#8217;s code, he only defined 2 actions, UP and DOWN;
-in our tutorial, we defined 3 actions which are UP, DOWN and STOP (do nothing).
-So our output is in softmax format telling the probabilities of different actions.</p>
+Network, it is our player (or “agent”) who output actions to tell what we should
+do (move UP or DOWN); in Karpathy&#8217;s code, he only defined 2 actions, UP and DOWN
+and using a single simgoid output;
+In order to make our tutorial more generic, we defined 3 actions which are UP,
+DOWN and STOP (do nothing) by using 3 softmax outputs.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>     <span class="c1"># observation for training</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">states_batch_pl</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
@@ -563,8 +660,8 @@ So our output is in softmax format telling the probabilities of different action
 <span class="n">sampling_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then when our agent is playing Pong, it calculte the probabilities of different
-actions, and then draw sample (action) from the uniform distribution. As the
+<p>Then when our agent is playing Pong, it calculates the probabilities of different
+actions, and then draw sample (action) from this uniform distribution. As the
 actions are represented by 1, 2 and 3, but the softmax outputs should be start
 from 0, we calculate the label value by minus 1.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">prob</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -584,6 +681,39 @@ from 0, we calculate the label value by minus 1.</p>
 there are many way to do</p>
 <p>Q-learning xxxxx</p>
 <p>AlphaGo is using xxxx</p>
+<div class="section" id="id3">
+<h4>Dataset iteration<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>In Reinforcement Learning, we consider a final decision as an episode.
+In Pong game, a episode is a few dozen games, because the games go up to score
+of 21 for either player. Then the batch size is how many episode we consider
+to update the model.
+In the tutorial, we train a 2-layer policy network with 200 hidden layer units
+using RMSProp on batches of 10 episodes.</p>
+</div>
+<div class="section" id="id4">
+<h4>Loss and update expressions<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>Continuing, we create a loss expression to be minimized in training:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">actions_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">])</span>
+<span class="n">discount_rewards_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">])</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">rein</span><span class="o">.</span><span class="n">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">actions_batch_pl</span><span class="p">,</span> <span class="n">discount_rewards_batch_pl</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">train_op</span><span class="p">,</span>
+    <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span>
+        <span class="n">states_batch_pl</span><span class="p">:</span> <span class="n">epx</span><span class="p">,</span>
+        <span class="n">actions_batch_pl</span><span class="p">:</span> <span class="n">epy</span><span class="p">,</span>
+        <span class="n">discount_rewards_batch_pl</span><span class="p">:</span> <span class="n">disR</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The loss in a batch is relate to all outputs of Policy Network, all actions we
+made and the corresponding discounted rewards in a batch. We first compute the
+loss of each action by multiplying the discounted reward and the cross-entropy
+between its output and its true action. The final loss in a batch is the sum of
+all loss of the actions.</p>
+</div>
 </div>
 <div class="section" id="what-next">
 <h3>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h3>
@@ -597,8 +727,35 @@ describe.</p>
 the learning rate, decay, or initializing the weights of your model in a
 different way.</p>
 <p>Finally, you can try the model on different tasks (games).</p>
-<div class="section" id="id2">
-<h4>Loss and update expressions<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="understand-natural-language-processing">
+<h2>Understand Natural Language Processing<a class="headerlink" href="#understand-natural-language-processing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="word-embedding">
+<h3>Word Embedding<a class="headerlink" href="#word-embedding" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h4>Dataset iteration<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id6">
+<h4>Loss and update expressions<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="many-to-one">
+<h3>Many to One<a class="headerlink" href="#many-to-one" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h4>Dataset iteration<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id8">
+<h4>Loss and update expressions<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="many-to-many-seq2seq">
+<h3>Many to Many (Seq2seq)<a class="headerlink" href="#many-to-many-seq2seq" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h4>Dataset iteration<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id10">
+<h4>Loss and update expressions<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 </div>

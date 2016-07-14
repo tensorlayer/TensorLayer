@@ -16,6 +16,7 @@
    Conv2dLayer
    PoolLayer
    FlattenLayer
+   ConcatLayer
    flatten_reshape
 
 
@@ -57,6 +58,7 @@ Shape layer
 ----------------
 
 .. autoclass:: FlattenLayer
+.. autoclass:: ConcatLayer
 
 Coming soon
 ----------------
@@ -65,7 +67,7 @@ Coming soon
 .. autoclass:: ResnetLayer
 .. autoclass:: GaussianNoiseLayer
 .. autoclass:: ReshapeLayer
-.. autoclass:: ConcatLayer
+
 
 Helper functions
 ----------------

@@ -107,6 +107,8 @@ class Layer(object):
         for i, p in enumerate(self.all_params):
             n = 1
             for s in p.eval().shape:
+            # for s in p.get_shape():
+                # s = int(s)
                 if s:
                     n = n * s
             n_params = n_params + n
@@ -119,19 +121,29 @@ class InputLayer(Layer):
 
     Parameters
     ----------
-    inputs : a :tensorflow placeholder
+    inputs : a TensorFlow placeholder
         The input tensor data.
     name : a string or None
         An optional name to attach to this layer.
+    n_features : a int
+        The number of features. If not specify, it will assume the input is
+        with the shape of [batch_size, n_features], then select the second
+        element as the n_features. It is used to specify the matrix size of
+        next layer. If apply Convolutional layer after InputLayer,
+        n_features is not important.
     """
     def __init__(
         self,
         inputs = None,
+        n_features = None,
         name ='input_layer'
     ):
         Layer.__init__(self, inputs=inputs, name=name)
         # super(InputLayer, self).__init__()            # initialize all super classes
-        self.n_units = int(inputs._shape[1])
+        if n_features:
+            self.n_units = n_features
+        else:
+            self.n_units = int(inputs._shape[1])
         print("  tensorlayer:Instantiate InputLayer %s %s" % (self.name, inputs._shape))
 
         self.outputs = inputs
@@ -139,6 +151,402 @@ class InputLayer(Layer):
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
+
+# Word Embedding Input layer
+class Word2vecEmbeddingInputlayer(Layer):
+    """
+    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
+    for Word Embedding. Words are input as integer index.
+    The output is the embedded word vector.
+
+    Parameters
+    ----------
+    inputs : placeholder
+        For word inputs. integer index format.
+    train_labels : placeholder
+        For word labels. integer index format.
+    vocabulary_size : int
+        The size of vocabulary, number of words.
+    embedding_size : int
+        The number of embedding dimensions.
+    num_sampled : int
+        The Number of negative examples for NCE loss.
+    nce_loss_args : a dictionary
+        The arguments for tf.nn.nce_loss()
+    E_init : embedding initializer
+        The initializer for initializing the embedding matrix.
+    E_init_args : a dictionary
+        The arguments for embedding initializer
+    nce_W_init : NCE decoder biases initializer
+        The initializer for initializing the nce decoder weight matrix.
+    nce_W_init_args : a dictionary
+        The arguments for initializing the nce decoder weight matrix.
+    nce_b_init : NCE decoder biases initializer
+        The initializer for initializing the nce decoder bias vector.
+    nce_b_init_args : a dictionary
+        The arguments for initializing the nce decoder bias vector.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    nce_cost : a tensor
+        The NCE loss.
+    outputs : a tensor
+        The outputs of embedding layer.
+    normalized_embeddings : tensor
+        Normalized embedding matrix
+
+    Examples
+    --------
+    >>> Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> embeddings = tf.Variable(
+    ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+    >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
+    >>> nce_weights = tf.Variable(
+    ...     tf.truncated_normal([vocabulary_size, embedding_size],
+    ...                    stddev=1.0 / math.sqrt(embedding_size)))
+    >>> nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
+    >>> cost = tf.reduce_mean(
+    ...    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+    ...               inputs=embed, labels=train_labels,
+    ...               num_sampled=num_sampled, num_classes=vocabulary_size,
+    ...               num_true=1))
+
+    >>> With TensorLayer : see tutorial_word2vec_basic.py
+    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+    ...         inputs = train_inputs,
+    ...         train_labels = train_labels,
+    ...         vocabulary_size = vocabulary_size,
+    ...         embedding_size = embedding_size,
+    ...         num_sampled = num_sampled,
+    ...         nce_loss_args = {},
+    ...         E_init = tf.random_uniform,
+    ...         E_init_args = {'minval':-1.0, 'maxval':1.0},
+    ...         nce_W_init = tf.truncated_normal,
+    ...         nce_W_init_args = {'stddev': float(1.0/np.sqrt(embedding_size))},
+    ...         nce_b_init = tf.zeros,
+    ...         nce_b_init_args = {},
+    ...        name ='word2vec_layer',
+    ...    )
+    >>> cost = emb_net.nce_cost
+    >>> train_params = emb_net.all_params
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    >>> normalized_embeddings = emb_net.normalized_embeddings
+
+    References
+    ----------
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    """
+    def __init__(
+        self,
+        inputs = None,
+        train_labels = None,
+        vocabulary_size = 80000,
+        embedding_size = 200,
+        num_sampled = 64,
+        nce_loss_args = {},
+        E_init = tf.random_uniform,
+        E_init_args = {'minval':-1.0, 'maxval':1.0},
+        nce_W_init = tf.truncated_normal,
+        nce_W_init_args = {'stddev':0.03},
+        nce_b_init = tf.zeros,
+        nce_b_init_args = {},
+        name ='word2vec_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = inputs#layer.outputs
+        # n_in = layer.n_units
+        self.n_units = embedding_size
+        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        # Look up embeddings for inputs.
+        # Note: a row of 'embeddings' is the vector representation of a word.
+        # for the sake of speed, it is better to slice the embedding matrix
+        # instead of transfering a word id to one-hot-format vector and then
+        # multiply by the embedding matrix.
+        # embed is the outputs of the hidden layer (embedding layer), it is a
+        # row vector with 'embedding_size' values.
+        embeddings = tf.Variable(
+            E_init(shape=[vocabulary_size, embedding_size], **E_init_args))
+        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+
+        # Construct the variables for the NCE loss (i.e. negative sampling)
+        nce_weights = tf.Variable(
+            nce_W_init(shape=[vocabulary_size, embedding_size], **nce_W_init_args))
+        nce_biases = tf.Variable(nce_b_init([vocabulary_size], **nce_b_init_args))
+
+        # Compute the average NCE loss for the batch.
+        # tf.nce_loss automatically draws a new sample of the negative labels
+        # each time we evaluate the loss.
+        self.nce_cost = tf.reduce_mean(
+            tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+                           inputs=embed, labels=train_labels,
+                           num_sampled=num_sampled, num_classes=vocabulary_size,
+                           **nce_loss_args))
+        # num_sampled: An int. The number of classes to randomly sample per batch
+        #              Number of negative examples to sample.
+        # num_classes: An int. The number of possible classes.
+        # num_true = 1: An int. The number of target classes per training example.
+        #            DH: if 1, predict one word given one word, like bigram model?  Check!
+
+        self.outputs = embed
+        self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
+
+
+        self.all_layers = [self.outputs]
+        self.all_params = [embeddings, nce_weights, nce_biases]
+        self.all_drop = {}
+
+        # self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
+        # self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( [embeddings, nce_weights, nce_biases] )
+
+class EmbeddingInputlayer(Layer):
+    """
+    The :class:`EmbeddingInputlayer` class is a fully connected layer,
+    for Word Embedding. Words are input as integer index.
+    The output is the embedded word vector.
+
+    This class can not be used to train the embedding matrix, you should assign
+    a trained matrix into it.
+
+    Note that, do not update this embedding matrix.
+
+    Parameters
+    ----------
+    inputs : placeholder
+        For word inputs. integer index format.
+    vocabulary_size : int
+        The size of vocabulary, number of words.
+    embedding_size : int
+        The number of embedding dimensions.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    outputs : a tensor
+        The outputs of embedding layer.
+
+    Examples
+    --------
+    >>> vocabulary_size = 50000
+    >>> embedding_size = 200
+    >>> model_file_name = "model_word2vec_50k_200"
+    >>> batch_size = None
+    >>> load_params = tl.files.load_npz(name=model_file_name+'.npz')
+    >>> x = tf.placeholder(tf.int32, shape=[batch_size])
+    >>> y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> emb_net = tl.layers.EmbeddingInputlayer(
+    ...                inputs = x,
+    ...                vocabulary_size = vocabulary_size,
+    ...                embedding_size = embedding_size,
+    ...                name ='embedding_layer')
+    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.files.assign_params(sess, [load_params[0]], emb_net)
+    >>> word = b'hello'
+    >>> word_id = dictionary[word]
+    >>> print('word_id:', word_id)
+    ... 6428
+    ...
+    >>> words = [b'i', b'am', b'hao', b'dong']
+    >>> word_ids = tl.files.words_to_word_ids(words, dictionary)
+    >>> context = tl.files.word_ids_to_words(word_ids, reverse_dictionary)
+    >>> print('word_ids:', word_ids)
+    ... [72, 1226, 46744, 20048]
+    >>> print('context:', context)
+    ... [b'i', b'am', b'hao', b'dong']
+    ...
+    >>> vector = sess.run(emb_net.outputs, feed_dict={x : [word_id]})
+    >>> print('vector:', vector.shape)
+    ... (1, 200)
+    >>> vectors = sess.run(emb_net.outputs, feed_dict={x : word_ids})
+    >>> print('vectors:', vectors.shape)
+    ... (4, 200)
+
+    References
+    ----------
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    """
+    def __init__(
+        self,
+        inputs = None,
+        vocabulary_size = 80000,
+        embedding_size = 200,
+        name ='embedding_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = inputs
+        self.n_units = embedding_size
+        print("  tensorlayer:Instantiate EmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
+        embeddings = tf.Variable(
+            tf.random_uniform(shape=[vocabulary_size, embedding_size]))
+        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+
+        self.outputs = embed
+
+        self.all_layers = [self.outputs]
+        self.all_params = [embeddings]
+        self.all_drop = {}
+
+# Sequence Input layer
+# class SeqInputLayer(Layer):
+#     """
+#     The :class:`SeqInputLayer` class is the starting layer of a neural network.
+#     This layer can be used, when you don't want to specify the batch_size.
+#
+#     Parameters
+#     ----------
+#     inputs : a TensorFlow placeholder, ［batch_size_rnn, n_steps, n_features].
+#         The input tensor data.
+#     name : a string or None
+#         An optional name to attach to this layer.
+#     """
+#     def __init__(
+#         self,
+#         inputs = None,
+#         name ='input_layer'
+#     ):
+#         Layer.__init__(self, inputs=inputs, name=name)
+#         print("  tensorlayer:Instantiate SeqInputLayer %s %s" % (self.name, inputs._shape))
+#         inputs = tf.reshape(inputs, shape=[-1, int(inputs._shape[-1])]) # [batch_size_rnn * n_steps, n_features]
+#         self.n_units = int(inputs._shape[-1])# batch_size_rnn * n_steps
+#         print("         reshape input : %s" % (inputs._shape))
+#         self.outputs = inputs
+#         self.all_layers = []
+#         self.all_params = []
+#         self.all_drop = {}
+
+class BasicLSTMLayer(Layer):
+    """
+    The :class:`BasicLSTMLayer` class is a RNN layer.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    n_hidden : a int
+        The number of hidden units in the layer.
+    n_steps : a int
+        The sequence length.
+    return_last : boolen
+        If True, return the last output, "Sequence input and single output"
+        If False, return all outputs, "Synced sequence input and output"
+    cell_init_args : dictionary
+        The arguments for the cell initializer.
+    is_reshape : boolen
+        If input is ［batch_size, n_steps, n_features], we do not need to reshape it.
+        If input is  [batch_size * n_steps, n_features], we need to reshape it.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    outputs : a tensor
+        The output of this RNN.
+    state : a tensor
+        When state_is_tuple=False
+        It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]
+
+    Examples
+    --------
+    >>>
+
+    Notes
+    -----
+    If the input to this layer has more than two axes, it need to flatten the
+    input by using :class:`FlattenLayer`.
+
+    References
+    ----------
+    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+
+    """
+    def __init__(
+        self,
+        layer = None,
+        n_hidden = 100,
+        n_steps = 5,
+        return_last = False,
+        is_reshape = True,
+        cell_init_args = {'forget_bias': 1.0},#, 'input_size' : None, 'state_is_tuple' : False, 'activation' : 'tanh' },
+        name = 'basic_lstm_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs # [batch_size_rnn * n_steps, n_features]
+        n_in = layer.n_units        # batch_size_rnn * n_steps
+        self.n_units = n_hidden
+
+        print("  tensorlayer:Instantiate BasicLSTMLayer %s: n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, n_hidden,
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape().with_rank(2)))
+
+        if is_reshape:
+            self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
+            # network.outputs = tf.reshape(network.outputs, shape=[-1, num_steps, H]
+
+        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
+        if fixed_batch_size.value:
+            batch_size = fixed_batch_size.value
+            print("     batch_size of rnn : %d" % batch_size)
+        else:
+            from tensorflow.python.ops import array_ops
+            batch_size = array_ops.shape(self.inputs)[0]
+            print("     non specified batch_size, use a tensor instead.")
+
+        outputs = []
+        # cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=n_hidden, **cell_init_args)
+        cell = tf.nn.rnn_cell.LSTMCell(num_units=n_hidden, **cell_init_args)
+        state = cell.zero_state(batch_size, dtype=tf.float32)
+        with tf.variable_scope(name) as vs:
+            for time_step in range(n_steps):
+                if time_step > 0: tf.get_variable_scope().reuse_variables()
+                '''
+                cell_output = hidden state        cell_output.get_shape() = (?, n_hidden)
+                state = hidden and cell states    state.get_shape() = (?, 2 * n_hidden)
+                '''
+                (cell_output, state) = cell(self.inputs[:, time_step, :], state)
+                outputs.append(cell_output)
+
+            # Retrieve just the LSTM variables.
+            # lstm_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
+            lstm_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+
+        print("     n_params : %d" % (len(lstm_variables)))
+
+        print('inputs', self.inputs)          # (?, 5, 6400)
+        print('state', state.get_shape())    # (?, 400)
+        for param in lstm_variables:
+            print('lstm_var', param.get_shape(), param.name)    # (6600, 800)   (800,)
+        print('last output', outputs[-1].get_shape(), outputs[-1])
+        # print()
+        # print(state)
+        # exit()
+
+        for p in tf.trainable_variables():
+            print('all_var', p.get_shape(), p.name)
+
+        if return_last:
+            self.outputs = outputs[-1]
+        else:
+            self.output = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+
+        self.state = state
+#   # "Synced sequence input and output"
+
+        self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( lstm_variables )
+
 
 # Dense layer
 class DenseLayer(Layer):
@@ -391,160 +799,6 @@ class ReconLayer(DenseLayer):
                     except:
                         raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
 
-# Word Embedding Input layer
-class Word2vecEmbeddingInputlayer(Layer):
-    """
-    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
-    for Word Embedding. Words are input as integer index.
-    The output is the embedded word vector.
-
-    Parameters
-    ----------
-    inputs : placeholder
-        For word inputs. integer index format.
-    train_labels : placeholder
-        For word labels. integer index format.
-    vocabulary_size : int
-        The size of vocabulary, number of words.
-    embedding_size : int
-        The number of embedding dimensions.
-    num_sampled : int
-        The Number of negative examples for NCE loss.
-    nce_loss_args : a dictionary
-        The arguments for tf.nn.nce_loss()
-    E_init : embedding initializer
-        The initializer for initializing the embedding matrix.
-    E_init_args : a dictionary
-        The arguments for embedding initializer
-    nce_W_init : NCE decoder biases initializer
-        The initializer for initializing the nce decoder weight matrix.
-    nce_W_init_args : a dictionary
-        The arguments for initializing the nce decoder weight matrix.
-    nce_b_init : NCE decoder biases initializer
-        The initializer for initializing the nce decoder bias vector.
-    nce_b_init_args : a dictionary
-        The arguments for initializing the nce decoder bias vector.
-    name : a string or None
-        An optional name to attach to this layer.
-
-    Field (Class Variables)
-    -----------------------
-    nce_cost : tensor
-        The NCE loss.
-    outputs : tensor
-        The outputs of embedding layer.
-    normalized_embeddings : tensor
-        Normalized embedding matrix
-
-    Examples
-    --------
-    >>> Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-    >>> embeddings = tf.Variable(
-    ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
-    >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
-    >>> nce_weights = tf.Variable(
-    ...     tf.truncated_normal([vocabulary_size, embedding_size],
-    ...                    stddev=1.0 / math.sqrt(embedding_size)))
-    >>> nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
-    >>> cost = tf.reduce_mean(
-    ...    tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
-    ...               inputs=embed, labels=train_labels,
-    ...               num_sampled=num_sampled, num_classes=vocabulary_size,
-    ...               num_true=1))
-
-    >>> With TensorLayer : see tutorial_word2vec_basic.py
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-    >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
-    ...         inputs = train_inputs,
-    ...         train_labels = train_labels,
-    ...         vocabulary_size = vocabulary_size,
-    ...         embedding_size = embedding_size,
-    ...         num_sampled = num_sampled,
-    ...         nce_loss_args = {},
-    ...         E_init = tf.random_uniform,
-    ...         E_init_args = {'minval':-1.0, 'maxval':1.0},
-    ...         nce_W_init = tf.truncated_normal,
-    ...         nce_W_init_args = {'stddev': float(1.0/np.sqrt(embedding_size))},
-    ...         nce_b_init = tf.zeros,
-    ...         nce_b_init_args = {},
-    ...        name ='word2vec_layer',
-    ...    )
-    >>> cost = emb_net.nce_cost
-    >>> train_params = emb_net.all_params
-    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    >>> normalized_embeddings = emb_net.normalized_embeddings
-
-    References
-    ----------
-    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
-    """
-    def __init__(
-        self,
-        inputs = None,
-        train_labels = None,
-        vocabulary_size = 80000,
-        embedding_size = 200,
-        num_sampled = 64,
-        nce_loss_args = {},
-        E_init = tf.random_uniform,
-        E_init_args = {'minval':-1.0, 'maxval':1.0},
-        nce_W_init = tf.truncated_normal,
-        nce_W_init_args = {'stddev':0.03},
-        nce_b_init = tf.zeros,
-        nce_b_init_args = {},
-        name ='word2vec_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = inputs#layer.outputs
-        # n_in = layer.n_units
-        self.n_units = embedding_size
-        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s" % (self.name))
-        # Look up embeddings for inputs.
-        # Note: a row of 'embeddings' is the vector representation of a word.
-        # for the sake of speed, it is better to slice the embedding matrix
-        # instead of transfering a word id to one-hot-format vector and then
-        # multiply by the embedding matrix.
-        # embed is the outputs of the hidden layer (embedding layer), it is a
-        # row vector with 'embedding_size' values.
-        embeddings = tf.Variable(
-            E_init(shape=[vocabulary_size, embedding_size], **E_init_args))
-        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
-
-        # Construct the variables for the NCE loss (i.e. negative sampling)
-        nce_weights = tf.Variable(
-            nce_W_init(shape=[vocabulary_size, embedding_size], **nce_W_init_args))
-        nce_biases = tf.Variable(nce_b_init([vocabulary_size], **nce_b_init_args))
-
-        # Compute the average NCE loss for the batch.
-        # tf.nce_loss automatically draws a new sample of the negative labels
-        # each time we evaluate the loss.
-        self.nce_cost = tf.reduce_mean(
-            tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
-                           inputs=embed, labels=train_labels,
-                           num_sampled=num_sampled, num_classes=vocabulary_size,
-                           **nce_loss_args))
-        # num_sampled: An int. The number of classes to randomly sample per batch
-        #              Number of negative examples to sample.
-        # num_classes: An int. The number of possible classes.
-        # num_true = 1: An int. The number of target classes per training example.
-        #            DH: if 1, predict one word given one word, like bigram model?  Check!
-
-        self.outputs = embed
-        self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
-
-
-        self.all_layers = [self.outputs]
-        self.all_params = [embeddings, nce_weights, nce_biases]
-        self.all_drop = {}
-
-        # self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
-        # self.all_layers.extend( [self.outputs] )
-        # self.all_params.extend( [embeddings, nce_weights, nce_biases] )
 
 
 # Dense+Noise layer
@@ -674,7 +928,7 @@ class DropconnectDenseLayer(Layer):
         self.all_params.extend( [W, b] )
 
 
-# Convolutional Layer
+# Convolutional layer
 class Conv2dLayer(Layer):
     """
     The :class:`Conv2dLayer` class is a 2D CNN layer.
@@ -808,11 +1062,13 @@ class PoolLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( [W] )
 
+# Recurrent layer
+
 
 # Shape layer
 class FlattenLayer(Layer):
     """
-    The :class:`FlattenLayer` class is layer which reshape the input to a 1D
+    The :class:`FlattenLayer` class is layer which reshape each input to a 1D
     vector.
 
     Parameters
@@ -856,10 +1112,72 @@ class FlattenLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
-# Merge layer
-    # ConcatLayer
+class ConcatLayer(Layer):
+    """
+    The :class:`ConcatLayer` class is layer which concat (merge) two or more
+    :class:`DenseLayer` to a single class:`DenseLayer`.
 
-## Layers have not been tested yet
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    >>> sess = tf.InteractiveSession()
+    >>> x = tf.placeholder(tf.float32, shape=[None, 784])
+    >>> inputs = tl.layers.InputLayer(x, name='input_layer')
+    >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
+    >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
+    >>> network = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
+    ...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
+    ...     tensorlayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
+    ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
+    ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
+    ...
+    >>> sess.run(tf.initialize_all_variables())
+    >>> network.print_params()
+    ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
+    ...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     param 2: (784, 300) (mean: 0.000000, median: -0.000048 std: 0.042947)
+    ...     param 3: (300,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     num of params: 863500
+    >>> network.print_layers()
+    ...     layer 0: Tensor("Relu:0", shape=(?, 800), dtype=float32)
+    ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
+    ...
+    """
+    def __init__(
+        self,
+        layer = None,
+        name ='concat_layer',
+    ):
+        Layer.__init__(self, name=name)
+        # self.inputs = layer.outputs
+        self.inputs = []
+        for l in layer:
+            self.inputs.append(l.outputs)
+        # self.outputs = flatten_reshape(self.inputs)
+        self.outputs = tf.concat(1, self.inputs)
+        self.n_units = int(self.outputs._shape[-1])
+        print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        self.all_layers = list(layer[0].all_layers)
+        self.all_params = list(layer[0].all_params)
+
+        self.all_drop = dict(layer[0].all_drop)
+        for i in range(1, len(layer)):
+            self.all_layers.extend(list(layer[i].all_layers))
+            self.all_params.extend(list(layer[i].all_params))
+            self.all_drop.update(dict(layer[i].all_drop))
+        # self.all_drop = dict(layer.all_drop)
+        # self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( [W, b] )
+
+## Layers have not been tested
 # dense
 class MaxoutLayer(Layer):
     """
@@ -895,6 +1213,7 @@ class MaxoutLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
+
 # dense
 class ResnetLayer(Layer):
     """
@@ -971,7 +1290,7 @@ class GaussianNoiseLayer(Layer):
 # shape
 class ReshapeLayer(Layer):
     """
-    Coming soon
+    Deprecated and unused.
     """
     def __init__(
         self,
@@ -979,24 +1298,33 @@ class ReshapeLayer(Layer):
         shape = None,
         name ='reshape_layer',
     ):
-        pass
+        # self.n_units = layer.n_units
+        print("  tensorlayer:Instantiate ReshapeLayer %s: %f" % (self.name, shape))
+
+        self.outputs = tf.reshape(layer.outputs, shape=shape)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
 
 # merge
-class ConcatLayer(Layer):
-    """
-    Coming soon
-    """
-    def __init__(
-        self,
-        layer = None,
-        name ='concat_layer',
-    ):
-        pass
+# class ConcatLayer(Layer):
+#     """
+#     Coming soon
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         name ='concat_layer',
+#     ):
+#         pass
 
 
 # cnn
 class Conv3dLayer(Layer):
     """
+    Coming soon
+
     The :class:`Conv3dLayer` class is a 3D CNN layer.
 
     Parameters

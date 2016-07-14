@@ -1,10 +1,14 @@
 Welcome to TensorLayer
 =======================================
-TensorLayer is a transparent deep learning and reinforcement learning library
+TensorLayer is a transparent Deep Learning and Reinforcement Learning library
 built on the top of Google TensorFlow. It was designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to
 extended and modified, suitable for both machine learning researches and
 applications.
+
+This documentation is not only for describing how to use the library but also
+a tutorial to walk through different type of Neural Networks, Deep
+Reinforcement Learning and Natural Language Processing etc.
 
 User Guide
 ------------

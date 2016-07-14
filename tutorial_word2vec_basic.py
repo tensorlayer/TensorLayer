@@ -67,7 +67,7 @@ def main_word2vec_basic():
     data_size = len(words)
     print('Data size', data_size) # print(words)    # b'their', b'families', b'who', b'were', b'expelled', b'from', b'jerusalem',
 
-    resume = False  # load existing model, data and dictionaries
+    resume = True  # load existing model, data and dictionaries
 
     # toy setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
     # vocabulary_size = 50000 # maximum number of word in vocabulary
@@ -119,6 +119,19 @@ def main_word2vec_basic():
     # n_epoch = 200 * 10
     # model_file_name = "model_word2vec_80k_600"
     # bad bad
+
+    vocabulary_size = 50000 # maximum number of word in vocabulary
+    batch_size = 128
+    embedding_size = 200  # Dimension of the embedding vector (hidden layer).
+    skip_window = 1       # How many words to consider left and right.
+    num_skips = 2         # How many times to reuse an input to generate a label.
+                          #     (should be double of 'skip_window' so as to
+                          #     use both left and right words)
+    num_sampled = 64      # Number of negative examples to sample.
+                          #     more negative samples, higher loss
+    learning_rate = 0.03
+    n_epoch = 40
+    model_file_name = "model_word2vec_50k_200"
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
 

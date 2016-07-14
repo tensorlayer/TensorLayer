@@ -33,7 +33,7 @@ able to use TensorLayer. If you're new to TensorFlow, going through that tutoria
 Run the MNIST example
 =====================
 
-In this first part of the tutorial, we will just run the MNIST example that's
+In the first part of the tutorial, we will just run the MNIST example that's
 included in the source distribution of TensorLayer.
 
 We assume that you have already run through the :ref:`installation`. If you
@@ -121,6 +121,97 @@ Select different models from ``if __name__ == '__main__':``.
   main_test_denoise_AE(model='relu')
   main_test_stacked_denoise_AE(model='relu')
   main_test_cnn_layer()
+
+
+Run the Pong Game example
+=========================
+
+In the second part of the tutorial, we will run the Deep Reinforcement Learning
+example that is introduced by Karpathy in `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_.
+
+.. code-block:: bash
+
+  python tutorial_atari_pong.py
+
+Before running the tutorial code, you need to install `OpenAI gym environment <https://gym.openai.com/docs>`_
+which is a benchmark for Reinforcement Learning.
+If everything is set up correctly, you will get an output like the following:
+
+.. code-block:: text
+
+  [2016-07-12 09:31:59,760] Making new env: Pong-v0
+    tensorlayer:Instantiate InputLayer input_layer (?, 6400)
+    tensorlayer:Instantiate DenseLayer relu1: 200, <function relu at 0x1119471e0>
+    tensorlayer:Instantiate DenseLayer output_layer: 3, <function identity at 0x114bd39d8>
+    param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
+    param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
+    param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    num of params: 1280803
+    layer 0: Tensor("Relu:0", shape=(?, 200), dtype=float32)
+    layer 1: Tensor("add_1:0", shape=(?, 3), dtype=float32)
+  episode 0: game 0 took 0.17381s, reward: -1.000000
+  episode 0: game 1 took 0.12629s, reward: 1.000000  !!!!!!!!
+  episode 0: game 2 took 0.17082s, reward: -1.000000
+  episode 0: game 3 took 0.08944s, reward: -1.000000
+  episode 0: game 4 took 0.09446s, reward: -1.000000
+  episode 0: game 5 took 0.09440s, reward: -1.000000
+  episode 0: game 6 took 0.32798s, reward: -1.000000
+  episode 0: game 7 took 0.74437s, reward: -1.000000
+  episode 0: game 8 took 0.43013s, reward: -1.000000
+  episode 0: game 9 took 0.42496s, reward: -1.000000
+  episode 0: game 10 took 0.37128s, reward: -1.000000
+  episode 0: game 11 took 0.08979s, reward: -1.000000
+  episode 0: game 12 took 0.09138s, reward: -1.000000
+  episode 0: game 13 took 0.09142s, reward: -1.000000
+  episode 0: game 14 took 0.09639s, reward: -1.000000
+  episode 0: game 15 took 0.09852s, reward: -1.000000
+  episode 0: game 16 took 0.09984s, reward: -1.000000
+  episode 0: game 17 took 0.09575s, reward: -1.000000
+  episode 0: game 18 took 0.09416s, reward: -1.000000
+  episode 0: game 19 took 0.08674s, reward: -1.000000
+  episode 0: game 20 took 0.09628s, reward: -1.000000
+  resetting env. episode reward total was -20.000000. running mean: -20.000000
+  episode 1: game 0 took 0.09910s, reward: -1.000000
+  episode 1: game 1 took 0.17056s, reward: -1.000000
+  episode 1: game 2 took 0.09306s, reward: -1.000000
+  episode 1: game 3 took 0.09556s, reward: -1.000000
+  episode 1: game 4 took 0.12520s, reward: 1.000000  !!!!!!!!
+  episode 1: game 5 took 0.17348s, reward: -1.000000
+  episode 1: game 6 took 0.09415s, reward: -1.000000
+
+This example allow computer to learn how to play Pong game from the screen inputs,
+just like human behavior. After training for 15,000 episodes, the computer can
+win 20% of the games. The computer win 35% of the games at 20,000 episode,
+we can seen the computer learn faster and faster as it has more winning data to
+train. If you run it for 30,000 episode, it start to win.
+
+.. code-block:: python
+
+  render = False
+  resume = False
+
+Setting 'render' to 'True', if you want to display the game environment. When
+you run the code again, you can set 'resume' to 'True', the code will load the
+existing model and train the model basic on it.
+
+
+Run the Word2Vec example
+=========================
+
+In the third part of the tutorial, we will run
+
+.. code-block:: bash
+
+  python tutorial_word2vec_basic.py
+
+
+If everything is set up correctly, you will get an output in the end.
+
+.. _fig_0601:
+.. figure:: _static/my_figs/tsne.png
+
+.. image:: _static/my_figs/tsne.png
 
 
 Understand the MNIST example
@@ -447,14 +538,12 @@ Understand Reinforcement learning
 Pong Game
 ---------
 
-To understand Reinforcement Learning, we let computer to learns how to play
+To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
 you to go through a famous blog called `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_
 which is a minimalistic implementation of Deep Reinforcement Learning by
 using python-numpy and OpenAI gym environment.
 
-Before running the tutorial code, you need to install `OpenAI gym environment <https://gym.openai.com/docs>`_
-which is a benchmark for RL.
 
 .. code-block:: bash
 
@@ -466,10 +555,11 @@ Policy Network
 ---------------
 
 In Deep Reinforcement Learning, the Policy Network is the same with Deep Neural
-Network, it is our player (or “agent”) and output actions to tell what we should
-do (move UP or DOWN); in Karpathy's code, he only defined 2 actions, UP and DOWN;
-in our tutorial, we defined 3 actions which are UP, DOWN and STOP (do nothing).
-So our output is in softmax format telling the probabilities of different actions.
+Network, it is our player (or “agent”) who output actions to tell what we should
+do (move UP or DOWN); in Karpathy's code, he only defined 2 actions, UP and DOWN
+and using a single simgoid output;
+In order to make our tutorial more generic, we defined 3 actions which are UP,
+DOWN and STOP (do nothing) by using 3 softmax outputs.
 
 .. code-block:: python
 
@@ -480,8 +570,8 @@ So our output is in softmax format telling the probabilities of different action
     probs = network.outputs
     sampling_prob = tf.nn.softmax(probs)
 
-Then when our agent is playing Pong, it calculte the probabilities of different
-actions, and then draw sample (action) from the uniform distribution. As the
+Then when our agent is playing Pong, it calculates the probabilities of different
+actions, and then draw sample (action) from this uniform distribution. As the
 actions are represented by 1, 2 and 3, but the softmax outputs should be start
 from 0, we calculate the label value by minus 1.
 
@@ -507,6 +597,45 @@ Q-learning xxxxx
 
 AlphaGo is using xxxx
 
+
+Dataset iteration
+^^^^^^^^^^^^^^^^^
+
+In Reinforcement Learning, we consider a final decision as an episode.
+In Pong game, a episode is a few dozen games, because the games go up to score
+of 21 for either player. Then the batch size is how many episode we consider
+to update the model.
+In the tutorial, we train a 2-layer policy network with 200 hidden layer units
+using RMSProp on batches of 10 episodes.
+
+Loss and update expressions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Continuing, we create a loss expression to be minimized in training:
+
+.. code-block:: python
+
+    actions_batch_pl = tf.placeholder(tf.int32, shape=[None])
+    discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
+    loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
+    ...
+    ...
+    sess.run(
+        train_op,
+        feed_dict={
+            states_batch_pl: epx,
+            actions_batch_pl: epy,
+            discount_rewards_batch_pl: disR
+        }
+    )
+
+The loss in a batch is relate to all outputs of Policy Network, all actions we
+made and the corresponding discounted rewards in a batch. We first compute the
+loss of each action by multiplying the discounted reward and the cross-entropy
+between its output and its true action. The final loss in a batch is the sum of
+all loss of the actions.
+
+
 What Next?
 -----------
 
@@ -525,8 +654,42 @@ different way.
 Finally, you can try the model on different tasks (games).
 
 
+Understand Natural Language Processing
+======================================
+
+Word Embedding
+----------------
+
+
+Dataset iteration
+^^^^^^^^^^^^^^^^^
+
+
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many to One
+----------------
+
+
+Dataset iteration
+^^^^^^^^^^^^^^^^^
+
+
+Loss and update expressions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many to Many (Seq2seq)
+----------------
+
+
+Dataset iteration
+^^^^^^^^^^^^^^^^^
+
+
+Loss and update expressions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 More info
 ==========

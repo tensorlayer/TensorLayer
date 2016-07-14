@@ -182,7 +182,7 @@
     <span class="k">return</span> <span class="n">discounted_r</span></div>
 
 
-<div class="viewcode-block" id="cross_entropy_reward_loss"><a class="viewcode-back" href="../../modules/rein.html#tensorlayer.rein.cross_entropy_reward_loss">[docs]</a><span class="k">def</span> <span class="nf">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">discount_rewards</span><span class="p">):</span>
+<div class="viewcode-block" id="cross_entropy_reward_loss"><a class="viewcode-back" href="../../modules/rein.html#tensorlayer.rein.cross_entropy_reward_loss">[docs]</a><span class="k">def</span> <span class="nf">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">rewards</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Calculate the loss for Policy Gradient Network.</span>
 
 <span class="sd">    Parameters</span>
@@ -192,9 +192,9 @@
 <span class="sd">        inside.</span>
 <span class="sd">    actions : tensor/ placeholder</span>
 <span class="sd">        The agent actions.</span>
-<span class="sd">    discount_rewards : tensor/ placeholder</span>
+<span class="sd">    rewards : tensor/ placeholder</span>
 <span class="sd">        The rewards.</span>
-<span class="sd">        </span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    ----------</span>
 <span class="sd">    &gt;&gt;&gt; states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])   # observation for training</span>
@@ -209,7 +209,7 @@
 <span class="sd">    &gt;&gt;&gt; train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">actions</span><span class="p">)</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">,</span> <span class="n">discount_rewards</span><span class="p">))</span>   <span class="c1"># element-wise mul</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">,</span> <span class="n">rewards</span><span class="p">))</span>   <span class="c1"># element-wise mul</span>
     <span class="k">return</span> <span class="n">loss</span></div>
 </pre></div>
 

@@ -37,7 +37,7 @@ def discount_episode_rewards(rewards, gamma=0.99):
     return discounted_r
 
 
-def cross_entropy_reward_loss(logits, actions, discount_rewards):
+def cross_entropy_reward_loss(logits, actions, rewards):
     """ Calculate the loss for Policy Gradient Network.
 
     Parameters
@@ -47,9 +47,9 @@ def cross_entropy_reward_loss(logits, actions, discount_rewards):
         inside.
     actions : tensor/ placeholder
         The agent actions.
-    discount_rewards : tensor/ placeholder
+    rewards : tensor/ placeholder
         The rewards.
-        
+
     Examples
     ----------
     >>> states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])   # observation for training
@@ -64,5 +64,5 @@ def cross_entropy_reward_loss(logits, actions, discount_rewards):
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
-    loss = tf.reduce_sum(tf.mul(cross_entropy, discount_rewards))   # element-wise mul
+    loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
     return loss
