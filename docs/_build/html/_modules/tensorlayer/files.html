@@ -97,7 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -147,13 +147,12 @@
 <span class="c1"># -*- coding: utf8 -*-</span>
 
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">tensorlayer.visualize</span> <span class="kn">as</span> <span class="nn">visualize</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">visualize</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
 
@@ -750,14 +749,15 @@
     <span class="n">reverse_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">word_to_id</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">word_to_id</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
     <span class="k">return</span> <span class="n">reverse_dictionary</span></div>
 
-<div class="viewcode-block" id="build_words_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_words_dataset">[docs]</a><span class="k">def</span> <span class="nf">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="build_words_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.build_words_dataset">[docs]</a><span class="k">def</span> <span class="nf">build_words_dataset</span><span class="p">(</span><span class="n">words</span><span class="p">,</span> <span class="n">vocabulary_size</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Build the words dictionary and replace rare words with &#39;UNK&#39; token.</span>
 <span class="sd">    The most common word has the smallest integer id.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    words : a list of string or byte</span>
-<span class="sd">        The context in list format</span>
+<span class="sd">        The context in list format. You may need to do preprocessing on the words,</span>
+<span class="sd">        such as lower case, remove marks etc.</span>
 <span class="sd">    vocabulary_size : an int</span>
 <span class="sd">        The maximum vocabulary size, limiting the vocabulary size.</span>
 <span class="sd">        Then the script replaces rare words with &#39;UNK&#39; token.</span>
@@ -778,7 +778,8 @@
 <span class="sd">    reverse_dictionary : a dictionary</span>
 <span class="sd">        id_to_word, mapping id to unique word.</span>
 
-<span class="sd">    Example</span>
+
+<span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; words = tl.files.load_matt_mahoney_text8_dataset()</span>
 <span class="sd">    &gt;&gt;&gt; vocabulary_size = 50000</span>

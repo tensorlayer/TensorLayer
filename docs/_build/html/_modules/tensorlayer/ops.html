@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.os &mdash; TensorLayer 1.1 documentation</title>
+  <title>tensorlayer.ops &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -97,7 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -130,7 +130,7 @@
       
           <li><a href="../index.html">Module code</a> &raquo;</li>
       
-    <li>tensorlayer.os</li>
+    <li>tensorlayer.ops</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -142,7 +142,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for tensorlayer.os</h1><div class="highlight"><pre>
+  <h1>Source code for tensorlayer.ops</h1><div class="highlight"><pre>
 <span></span><span class="ch">#! /usr/bin/python</span>
 <span class="c1"># -*- coding: utf8 -*-</span>
 
@@ -152,10 +152,10 @@
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span> <span class="k">as</span> <span class="n">_platform</span>
-<span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
+<span class="kn">from</span> <span class="nn">.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
 
 
-<div class="viewcode-block" id="exit_tf"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.exit_tf">[docs]</a><span class="k">def</span> <span class="nf">exit_tf</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="exit_tf"><a class="viewcode-back" href="../../modules/ops.html#tensorlayer.ops.exit_tf">[docs]</a><span class="k">def</span> <span class="nf">exit_tf</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Close tensorboard and nvidia-process if available</span>
 
 <span class="sd">    Parameters</span>
@@ -180,7 +180,7 @@
         <span class="k">print</span><span class="p">(</span><span class="n">_platform</span><span class="p">)</span>
     <span class="nb">exit</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="clear_all"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.clear_all">[docs]</a><span class="k">def</span> <span class="nf">clear_all</span><span class="p">(</span><span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="clear_all"><a class="viewcode-back" href="../../modules/ops.html#tensorlayer.ops.clear_all">[docs]</a><span class="k">def</span> <span class="nf">clear_all</span><span class="p">(</span><span class="n">printable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Clears all the placeholder variables of keep prob,</span>
 <span class="sd">    including keeping probabilities of all dropout, denoising, dropconnect etc.</span>
 
@@ -221,7 +221,7 @@
 <span class="c1">#</span>
 <span class="c1">#         del var</span>
 
-<div class="viewcode-block" id="set_gpu_fraction"><a class="viewcode-back" href="../../modules/os.html#tensorlayer.os.set_gpu_fraction">[docs]</a><span class="k">def</span> <span class="nf">set_gpu_fraction</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">gpu_fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<div class="viewcode-block" id="set_gpu_fraction"><a class="viewcode-back" href="../../modules/ops.html#tensorlayer.ops.set_gpu_fraction">[docs]</a><span class="k">def</span> <span class="nf">set_gpu_fraction</span><span class="p">(</span><span class="n">sess</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">gpu_fraction</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set the GPU memory fraction for the application.</span>
 
 <span class="sd">    Parameters</span>

@@ -106,7 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="os.html"><code class="docutils literal"><span class="pre">tensorlayer.os</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -442,12 +442,13 @@ Returns a reverse dictionary for converting a id to word.</p>
 
 <dl class="function">
 <dt id="tensorlayer.files.build_words_dataset">
-<code class="descclassname">tensorlayer.files.</code><code class="descname">build_words_dataset</code><span class="sig-paren">(</span><em>words</em>, <em>vocabulary_size=50000</em>, <em>printable=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#build_words_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.build_words_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">tensorlayer.files.</code><code class="descname">build_words_dataset</code><span class="sig-paren">(</span><em>words</em>, <em>vocabulary_size=50000</em>, <em>printable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#build_words_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.build_words_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the words dictionary and replace rare words with &#8216;UNK&#8217; token.
 The most common word has the smallest integer id.</p>
 <dl class="docutils">
 <dt>words</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a list of string or byte</span><dd>The context in list format</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of string or byte</span><dd>The context in list format. You may need to do preprocessing on the words,
+such as lower case, remove marks etc.</dd>
 <dt>vocabulary_size</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">an int</span><dd>The maximum vocabulary size, limiting the vocabulary size.
 Then the script replaces rare words with &#8216;UNK&#8217; token.</dd>

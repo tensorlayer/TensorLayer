@@ -799,8 +799,7 @@ class Conv2dLayer(Layer):
     shape : list of shape
         shape of the filters
     strides : a list of ints. 1-D of length 4.
-        The stride of the sliding window for each dimension of input.
-
+        The stride of the sliding window for each dimension of input.\n
         It Must be in the same order as the dimension specified with format.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
@@ -927,11 +926,11 @@ class RNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN methods.
-        class tf.nn.rnn_cell.BasicRNNCell
-        class tf.nn.rnn_cell.BasicLSTMCell
-        class tf.nn.rnn_cell.GRUCell
-        class tf.nn.rnn_cell.LSTMCell
+    cell_fn : a TensorFlow's core RNN methods as follow.
+        class tf.nn.rnn_cell.BasicRNNCell\n
+        class tf.nn.rnn_cell.BasicLSTMCell\n
+        class tf.nn.rnn_cell.GRUCell\n
+        class tf.nn.rnn_cell.LSTMCell\n
         see `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
@@ -940,12 +939,12 @@ class RNNLayer(Layer):
     n_steps : a int
         The sequence length.
     return_last : boolen
-        If True, return the last output, "Sequence input and single output"
-        If False, return all outputs, "Synced sequence input and output"
+        If True, return the last output, "Sequence input and single output"\n
+        If False, return all outputs, "Synced sequence input and output"\n
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     is_reshape : boolen
-        Reshape the inputs to 3 dimension tensor.
-        If input is［batch_size, n_steps, n_features], we do not need to reshape it.
+        Reshape the inputs to 3 dimension tensor.\n
+        If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
         If input is [batch_size * n_steps, n_features], we need to reshape it.
     name : a string or None
         An optional name to attach to this layer.
@@ -957,8 +956,8 @@ class RNNLayer(Layer):
         return_last = False, outputs = all cell_output, which is the hidden state.
             cell_output.get_shape() = (?, n_hidden)
     state : a tensor
-        When state_is_tuple = False
-        It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]
+        When state_is_tuple = False,
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
 
     Examples
@@ -1220,8 +1219,7 @@ class MaxoutLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-#
-# # dense
+
 # class ResnetLayer(Layer):
 #     """
 #     The :class:`ResnetLayer` class is a fully connected layer, while the inputs

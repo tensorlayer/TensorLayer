@@ -712,7 +712,7 @@ cost expressions and regularizers (:mod:`tensorlayer.cost`),
 
 load and save files (:mod:`tensorlayer.files`),
 
-operating system (:mod:`tensorlayer.os`),
+operating system (:mod:`tensorlayer.ops`),
 
 helper functions (:mod:`tensorlayer.utils`),
 

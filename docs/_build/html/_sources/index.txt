@@ -44,7 +44,7 @@ method, this part of the documentation is for you.
   modules/utils
   modules/init
   modules/preprocess
-  modules/os
+  modules/ops
 
 
 Indices and tables

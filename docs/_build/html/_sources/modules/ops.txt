@@ -1,7 +1,7 @@
-:mod:`tensorlayer.os`
+:mod:`tensorlayer.ops`
 ======================
 
-.. automodule:: tensorlayer.os
+.. automodule:: tensorlayer.ops
 
 .. autosummary::
 
