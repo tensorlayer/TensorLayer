@@ -604,14 +604,15 @@ def build_reverse_dictionary(word_to_id):
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
 
-def build_words_dataset(words, vocabulary_size=50000, printable=False):
+def build_words_dataset(words, vocabulary_size=50000, printable=True):
     """Build the words dictionary and replace rare words with 'UNK' token.
     The most common word has the smallest integer id.
 
     Parameters
     ----------
     words : a list of string or byte
-        The context in list format
+        The context in list format. You may need to do preprocessing on the words,
+        such as lower case, remove marks etc.
     vocabulary_size : an int
         The maximum vocabulary size, limiting the vocabulary size.
         Then the script replaces rare words with 'UNK' token.
@@ -632,7 +633,8 @@ def build_words_dataset(words, vocabulary_size=50000, printable=False):
     reverse_dictionary : a dictionary
         id_to_word, mapping id to unique word.
 
-    Example
+
+    Examples
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000

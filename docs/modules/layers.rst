@@ -9,12 +9,14 @@
    Layer
    InputLayer
    Word2vecEmbeddingInputlayer
+   EmbeddingInputlayer
    DenseLayer
    ReconLayer
    DropoutLayer
    DropconnectDenseLayer
    Conv2dLayer
    PoolLayer
+   RNNLayer
    FlattenLayer
    ConcatLayer
    flatten_reshape
@@ -34,6 +36,7 @@ Word Embedding Input layer
 ----------------
 
 .. autoclass:: Word2vecEmbeddingInputlayer
+.. autoclass:: EmbeddingInputlayer
 
 Dense layer
 ----------------
@@ -54,6 +57,11 @@ Convolutional layer
 .. autoclass:: Conv2dLayer
 .. autoclass:: PoolLayer
 
+Recurrent layer
+----------------
+
+.. autoclass:: RNNLayer
+
 Shape layer
 ----------------
 
@@ -64,9 +72,9 @@ Coming soon
 ----------------
 
 .. autoclass:: MaxoutLayer
-.. autoclass:: ResnetLayer
 .. autoclass:: GaussianNoiseLayer
 .. autoclass:: ReshapeLayer
+.. autoclass:: BidirectionalRNNLayer
 
 
 Helper functions
