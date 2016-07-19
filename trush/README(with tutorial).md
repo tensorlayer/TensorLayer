@@ -45,10 +45,6 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ```
 <folder>
 ├── tensorlayer  		<--- library source code
-│   ├── lstm.yml 		<--- config file
-│   ├── cbt_epoch10.h5 	<--- states for each time step
-│   ├── train.h5 		<--- word ID for each time step
-│   └── words.dict 		<--- mapping word ID -> word
 ├── setup.py			<--- use ‘python setup.py install’, to install
 ├── docs 				<--- readthedocs folder
 │   └── _build

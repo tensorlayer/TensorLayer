@@ -46,7 +46,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 <folder>
 ├── tensorlayer  		<--- library source code
 │
-├── setup.py			<--- use ‘python setup.py install’, to install
+├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
 ├── docs 				<--- readthedocs folder
 │   └── _build
 │   	└──html
