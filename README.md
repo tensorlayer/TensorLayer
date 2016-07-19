@@ -9,7 +9,7 @@
 -->
 
 <div align="center">
-	<img src="img/img_tensorlayer.png" width="60%" height="60%"/>
+	<img src="img/img_tensorlayer.png" width="30%" height="30%"/>
 </div>
 
 
