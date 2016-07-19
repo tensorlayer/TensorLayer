@@ -5,12 +5,12 @@
 
 import tensorflow as tf
 import time
-import tensorlayer.init as init
-import tensorlayer.visualize as visualize
-import tensorlayer.utils as utils
-import tensorlayer.files as files
-import tensorlayer.cost as cost
-import tensorlayer.iterate as iterate
+from . import init
+from . import visualize
+from . import utils
+from . import files
+from . import cost
+from . import iterate
 import numpy as np
 
 # __all__ = [
@@ -21,10 +21,12 @@ import numpy as np
 ## Dynamically creat variable for keep prob
 # set_keep = locals()
 set_keep = globals()
+set_keep['_layers_name_list'] =[]
 
 ## Variable Operation
 def flatten_reshape(variable):
-    """Reshapes the input to a 1D vector.
+    """Reshapes high-dimension input to a vector.
+    [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
@@ -32,25 +34,19 @@ def flatten_reshape(variable):
 
     Examples
     --------
-    >>> xxx
-    >>> xxx
-    """
+    >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
+    >>> b_conv2 = bias_variable([32])
+    >>> W_fc1 = weight_variable([7 * 7 * 32, 256])
 
-    # ''' input a high-dimension variable, return a 1-D reshaped variable
-    #     for example:
-    #         W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
-    #         b_conv2 = bias_variable([32])
-    #         W_fc1 = weight_variable([7 * 7 * 32, 256])
-    #
-    #         h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
-    #         h_pool2 = max_pool_2x2(h_conv2)
-    #         h_pool2.get_shape()[:].as_list() = [batch_size, 7, 7, 32]
-    #
-    #         [batch_size, mask_row, mask_col, n_mask]
-    #
-    #         h_pool2_flat = tensorflatten(h_pool2)
-    #         h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
-    # '''
+    >>> h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+    >>> h_pool2 = max_pool_2x2(h_conv2)
+    >>> h_pool2.get_shape()[:].as_list() = [batch_size, 7, 7, 32]
+    ...         [batch_size, mask_row, mask_col, n_mask]
+    >>> h_pool2_flat = tl.layers.flatten_reshape(h_pool2)
+    ...         [batch_size, mask_row * mask_col * n_mask]
+    >>> h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
+    ...
+    """
     dim = 1
     for d in variable.get_shape()[1:].as_list():
         dim *= d
@@ -78,10 +74,13 @@ class Layer(object):
         name ='layer'
     ):
         self.inputs = inputs
-        if name in globals():
-            raise Exception("Variable '%s' already exists, please choice other 'name'\nUse different name for different 'Layer'" % name)
+        # if name in globals():
+        if name in set_keep['_layers_name_list']:
+            raise Exception("Layer '%s' already exists, please choice other 'name'.\
+            \nHint : Use different name for different 'Layer'" % name)
         else:
             self.name = name
+            set_keep['_layers_name_list'].append(name)
 
     # @staticmethod
 
@@ -313,8 +312,9 @@ class EmbeddingInputlayer(Layer):
     for Word Embedding. Words are input as integer index.
     The output is the embedded word vector.
 
-    This class can not be used to train the embedding matrix, you should assign
-    a trained matrix into it.
+    This class can not be used to train a word embedding matrix, so you should
+    assign a trained matrix into it. To train a word embedding matrix, you can used
+    class:`Word2vecEmbeddingInputlayer`.
 
     Note that, do not update this embedding matrix.
 
@@ -340,6 +340,14 @@ class EmbeddingInputlayer(Layer):
     >>> embedding_size = 200
     >>> model_file_name = "model_word2vec_50k_200"
     >>> batch_size = None
+    ...
+    >>> all_var = tl.files.load_npy_to_any(name=model_file_name+'.npy')
+    >>> data = all_var['data']; count = all_var['count']
+    >>> dictionary = all_var['dictionary']
+    >>> reverse_dictionary = all_var['reverse_dictionary']
+    >>> tl.files.save_vocab(count, name='vocab_'+model_file_name+'.txt')
+    >>> del all_var, data, count
+    ...
     >>> load_params = tl.files.load_npz(name=model_file_name+'.npz')
     >>> x = tf.placeholder(tf.int32, shape=[batch_size])
     >>> y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
@@ -370,9 +378,6 @@ class EmbeddingInputlayer(Layer):
     >>> print('vectors:', vectors.shape)
     ... (4, 200)
 
-    References
-    ----------
-    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
     def __init__(
         self,
@@ -396,34 +401,7 @@ class EmbeddingInputlayer(Layer):
         self.all_params = [embeddings]
         self.all_drop = {}
 
-# Sequence Input layer
-# class SeqInputLayer(Layer):
-#     """
-#     The :class:`SeqInputLayer` class is the starting layer of a neural network.
-#     This layer can be used, when you don't want to specify the batch_size.
-#
-#     Parameters
-#     ----------
-#     inputs : a TensorFlow placeholder, ［batch_size_rnn, n_steps, n_features].
-#         The input tensor data.
-#     name : a string or None
-#         An optional name to attach to this layer.
-#     """
-#     def __init__(
-#         self,
-#         inputs = None,
-#         name ='input_layer'
-#     ):
-#         Layer.__init__(self, inputs=inputs, name=name)
-#         print("  tensorlayer:Instantiate SeqInputLayer %s %s" % (self.name, inputs._shape))
-#         inputs = tf.reshape(inputs, shape=[-1, int(inputs._shape[-1])]) # [batch_size_rnn * n_steps, n_features]
-#         self.n_units = int(inputs._shape[-1])# batch_size_rnn * n_steps
-#         print("         reshape input : %s" % (inputs._shape))
-#         self.outputs = inputs
-#         self.all_layers = []
-#         self.all_params = []
-#         self.all_drop = {}
-
+# Recurrent layer
 class BasicLSTMLayer(Layer):
     """
     The :class:`BasicLSTMLayer` class is a RNN layer.
@@ -439,11 +417,13 @@ class BasicLSTMLayer(Layer):
     return_last : boolen
         If True, return the last output, "Sequence input and single output"
         If False, return all outputs, "Synced sequence input and output"
+        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     cell_init_args : dictionary
         The arguments for the cell initializer.
     is_reshape : boolen
-        If input is ［batch_size, n_steps, n_features], we do not need to reshape it.
-        If input is  [batch_size * n_steps, n_features], we need to reshape it.
+        Reshape the inputs to 3 dimension tensor.
+        If input is［batch_size, n_steps, n_features], we do not need to reshape it.
+        If input is [batch_size * n_steps, n_features], we need to reshape it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -457,7 +437,24 @@ class BasicLSTMLayer(Layer):
 
     Examples
     --------
-    >>>
+    >>> x = tf.placeholder(tf.float32, shape=[None, D])
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+
+    ... For single RNN
+    >>> network = tl.layers.BasicLSTMLayer(x, n_hidden=200, n_steps=num_steps,
+                    return_last=True, is_reshape=True, name='lstm_layer')
+    >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
+    ...                 act = tl.activation.identity, name='output_layer')
+
+    ...
+    ... For multiple RNNs
+    >>> network = tl.layers.BasicLSTMLayer(x, n_hidden=200, n_steps=num_steps,
+    ...              return_last=False, is_reshape=True, name='lstm_layer1')
+    >>> network = tl.layers.BasicLSTMLayer(network, n_hidden=200, n_steps=num_steps,
+    ...              return_last=True, is_reshape=False, name='lstm_layer2')
+    >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
+    ...                 act = tl.activation.identity, name='output_layer')
+
 
     Notes
     -----
@@ -480,16 +477,18 @@ class BasicLSTMLayer(Layer):
         name = 'basic_lstm_layer',
     ):
         Layer.__init__(self, name=name)
-        self.inputs = layer.outputs # [batch_size_rnn * n_steps, n_features]
-        n_in = layer.n_units        # batch_size_rnn * n_steps
+        self.inputs = layer.outputs
+        n_in = layer.n_units
         self.n_units = n_hidden
 
         print("  tensorlayer:Instantiate BasicLSTMLayer %s: n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, n_hidden,
-            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape().with_rank(2)))
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape()))
+
+        # self.inputs.get_shape().with_rank(2)
+        # self.inputs.get_shape().with_rank(3)
 
         if is_reshape:
             self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
-            # network.outputs = tf.reshape(network.outputs, shape=[-1, num_steps, H]
 
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
 
@@ -502,8 +501,8 @@ class BasicLSTMLayer(Layer):
             print("     non specified batch_size, use a tensor instead.")
 
         outputs = []
-        # cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=n_hidden, **cell_init_args)
-        cell = tf.nn.rnn_cell.LSTMCell(num_units=n_hidden, **cell_init_args)
+        cell = tf.nn.rnn_cell.BasicLSTMCell(num_units=n_hidden, **cell_init_args)
+        # cell = tf.nn.rnn_cell.LSTMCell(num_units=n_hidden, **cell_init_args)
         state = cell.zero_state(batch_size, dtype=tf.float32)
         with tf.variable_scope(name) as vs:
             for time_step in range(n_steps):
@@ -516,36 +515,36 @@ class BasicLSTMLayer(Layer):
                 outputs.append(cell_output)
 
             # Retrieve just the LSTM variables.
-            # lstm_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
-            lstm_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
+            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
-        print("     n_params : %d" % (len(lstm_variables)))
+        print("     n_params : %d" % (len(rnn_variables)))
 
-        print('inputs', self.inputs)          # (?, 5, 6400)
-        print('state', state.get_shape())    # (?, 400)
-        for param in lstm_variables:
-            print('lstm_var', param.get_shape(), param.name)    # (6600, 800)   (800,)
-        print('last output', outputs[-1].get_shape(), outputs[-1])
-        # print()
-        # print(state)
+        # print('inputs', self.inputs)          # (?, 5, 6400)
+        # print('state', state.get_shape())    # (?, 400)
+        # for param in rnn_variables:
+        #     print('rnn_var', param.get_shape(), param.name)    # (6600, 800)   (800,)
+        # print('last output', outputs[-1].get_shape(), outputs[-1])
         # exit()
 
-        for p in tf.trainable_variables():
-            print('all_var', p.get_shape(), p.name)
+        # for p in tf.trainable_variables():
+        #     print('all_var', p.get_shape(), p.name)
 
         if return_last:
+            "Many to one"
             self.outputs = outputs[-1]
         else:
-            self.output = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+            "Many to many : Synced sequence input and output"
+            self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.state = state
-#   # "Synced sequence input and output"
 
-        self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
+        self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)        # dict() is pass by value (shallow), without dict is pass by reference
+        self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( lstm_variables )
+        self.all_params.extend( rnn_variables )
+
 
 
 # Dense layer
@@ -1062,14 +1061,17 @@ class PoolLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( [W] )
 
-# Recurrent layer
+
 
 
 # Shape layer
 class FlattenLayer(Layer):
     """
-    The :class:`FlattenLayer` class is layer which reshape each input to a 1D
-    vector.
+    The :class:`FlattenLayer` class is layer which reshape each high-dimension
+    input to a vector. Then we can apply DenseLayer, RNNLayer, ConcatLayer and
+    etc on the top of it.
+
+    [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
@@ -1298,7 +1300,8 @@ class ReshapeLayer(Layer):
         shape = None,
         name ='reshape_layer',
     ):
-        # self.n_units = layer.n_units
+        raise Exception("Deprecated and unused.\n Hint : Use tf.reshape to reshape Layer.outputs instead.")
+        self.n_units = layer.n_units
         print("  tensorlayer:Instantiate ReshapeLayer %s: %f" % (self.name, shape))
 
         self.outputs = tf.reshape(layer.outputs, shape=shape)

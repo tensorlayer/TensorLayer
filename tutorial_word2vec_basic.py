@@ -129,8 +129,8 @@ def main_word2vec_basic():
                           #     use both left and right words)
     num_sampled = 64      # Number of negative examples to sample.
                           #     more negative samples, higher loss
-    learning_rate = 0.03
-    n_epoch = 40
+    learning_rate = 0.001
+    n_epoch = 20
     model_file_name = "model_word2vec_50k_200"
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration

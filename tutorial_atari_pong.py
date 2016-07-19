@@ -1,6 +1,6 @@
 
 """
-To understand Reinforcement Learning, we let computer to learns how to play
+To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
 you to go through a famous blog called “Deep Reinforcement Learning: Pong from
 Pixels” which is a minimalistic implementation of deep reinforcement learning by
@@ -28,13 +28,12 @@ import time
 image_size = 80
 D = image_size * image_size
 H = 200
-# A = 3
 batch_size = 10
 learning_rate = 1e-4
 gamma = 0.99
 decay_rate = 0.99
-render = False
-resume = True   # load existing policy network
+render = False      # display the game environment
+resume = False      # load existing policy network
 model_file_name = "model_pong"
 np.set_printoptions(threshold=np.nan)
 
@@ -56,30 +55,22 @@ reward_sum = 0
 episode_number = 0
 
 xs, ys, rs = [], [], []
-# variables = testNetwork.Variables(D, H, A)
-# state_pl = tf.placeholder(tf.float32, shape=[1, D])             # observation for inference
-states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])     # observation for training
-# probs = testNetwork.inference(states_batch_pl, variables)
+states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])     # observation for training and inference
 network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
 network = tl.layers.DenseLayer(network, n_units=H, act = tf.nn.relu, name='relu1')
 network = tl.layers.DenseLayer(network, n_units=3, act = tl.activation.identity, name='output_layer')
 probs = network.outputs
-# sampling_prob = testNetwork.sampling_prob(state_pl, variables)
 sampling_prob = tf.nn.softmax(probs)
 
 actions_batch_pl = tf.placeholder(tf.int32, shape=[None])
 discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
-# loss = testNetwork.loss(probs, actions_batch_pl, discount_rewards_batch_pl)
-# train_op = testNetwork.training(loss, learning_rate, decay_rate)
 loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
 train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
 
-saver = tf.train.Saver()
 with tf.Session() as sess:
     init = tf.initialize_all_variables()
     sess.run(init)
     if resume:
-        # saver.restore(sess, model_file_name + ".ckpt")
         load_params = tl.files.load_npz(name=model_file_name+'.npz')
         tl.files.assign_params(sess, load_params, network)
     network.print_params()
@@ -98,7 +89,6 @@ with tf.Session() as sess:
         prob = sess.run(
             sampling_prob,
             feed_dict={states_batch_pl: x}
-            # feed_dict={state_pl: x}
         )
         # action. 1: STOP  2: UP  3: DOWN
         action = np.random.choice([1,2,3], p=prob.flatten())
@@ -132,7 +122,7 @@ with tf.Session() as sess:
                     }
                 )
 
-                # saver.save(sess, model_file_name + ".ckpt")
+            if episode_number % (batch_size * 100) == 0:
                 tl.files.save_npz(network.all_params, name=model_file_name+'.npz')
 
             running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01

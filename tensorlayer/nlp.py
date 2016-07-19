@@ -7,7 +7,7 @@
 import tensorflow as tf
 import os
 from sys import platform as _platform
-from tensorlayer.layers import set_keep
+from .layers import set_keep
 import collections
 import random
 import numpy as np

@@ -1,9 +1,14 @@
 """
 Deep learning and Reinforcement learning library for TensorFlow
 """
-from __future__ import absolute_import
+# from __future__ import absolute_import
 
-import tensorflow
+
+try:
+    install_instr = "Please make sure you install a recent enough version of TensorFlow."
+    import tensorflow
+except ImportError:
+    raise ImportError("Could not import TensorFlow." + install_instr)
 
 from . import activation
 from . import cost
@@ -11,7 +16,7 @@ from . import files
 from . import init
 from . import iterate
 from . import layers
-from . import os
+from . import ops
 from . import utils
 from . import visualize
 from . import preprocess

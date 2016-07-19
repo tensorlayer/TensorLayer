@@ -2,13 +2,12 @@
 # -*- coding: utf8 -*-
 
 
-from __future__ import absolute_import
 import tensorflow as tf
 import os
 import numpy as np
 import sys
 import re
-import tensorlayer.visualize as visualize
+from . import visualize
 import collections
 from six.moves import xrange
 

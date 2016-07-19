@@ -26,9 +26,9 @@ def main_test():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.9)
+    sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.9)
     try:
         main_test()
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        tl.os.exit_tf(sess)
+        tl.ops.exit_tf(sess)

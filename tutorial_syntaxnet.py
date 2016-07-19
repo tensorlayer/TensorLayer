@@ -20,10 +20,10 @@ def main_test_syntaxnet():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.3)
+    sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
         main_test_syntaxnet()
-        tl.os.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.ops.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        tl.os.exit_tf(sess)
+        tl.ops.exit_tf(sess)

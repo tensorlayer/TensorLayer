@@ -76,7 +76,7 @@ def main_test_layers(model='relu'):
 
     params = network.all_params
     # train
-    n_epoch = 0
+    n_epoch = 100
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
@@ -494,17 +494,17 @@ def main_test_cnn_layer():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    sess = tl.os.set_gpu_fraction(sess, gpu_fraction = 0.3)
+    sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
         main_test_layers(model='relu')                # model = relu, resnet, dropconnect
         # main_test_denoise_AE(model='sigmoid')            # model = relu, sigmoid
         # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
         # main_test_cnn_layer()
         # tl.files.npz_to_W_pdf(path='/Users/haodong/Documents/Projects/python-workspace/tensorlayer/可视化/npz_file/', regx='w1pre_[0-9]+\.(npz)')
-        tl.os.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.ops.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
-        tl.os.exit_tf(sess)
+        tl.ops.exit_tf(sess)
 
 
 
