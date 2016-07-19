@@ -6,6 +6,7 @@
 .. autosummary::
 
    cross_entropy
+   mean_squre_error
    li_regularizer
    lo_regularizer
    maxnorm_regularizer
@@ -16,6 +17,7 @@ Cost functions
 ----------------
 
 .. autofunction:: cross_entropy
+.. autofunction:: mean_squre_error
 
 
 Regularization functions

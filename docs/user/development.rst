@@ -24,7 +24,7 @@ TensorLayer grew out of a need to combine the flexibility of TensorFlow with the
 * **Simplicity**: Be easy to use, easy to extend and modify, to facilitate use
   in research and engineering.
 
-* **High-Speed**: Make sure the runing speed under GPU support is the same with
+* **High-Speed**: The running speed under GPU support is the same with
   pure TensorFlow script. The simplicity do not sacrifice the performance.
 
 * **Compatibility**: A network is abstracted to regularization, cost and outputs

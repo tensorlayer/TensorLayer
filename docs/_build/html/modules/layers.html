@@ -96,7 +96,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#convolutional-layer">Convolutional layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#recurrent-layer">Recurrent layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#shape-layer">Shape layer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#coming-soon">Coming soon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#developing-or-untested">Developing or Untested</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper functions</a></li>
 </ul>
 </li>
@@ -155,9 +155,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-tensorlayer.layers">
-<span id="tensorlayer-layers"></span><h1><a class="reference internal" href="#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a><a class="headerlink" href="#module-tensorlayer.layers" title="Permalink to this headline">¶</a></h1>
-<table border="1" class="longtable docutils">
+  <div class="section" id="tensorlayer-layers">
+<h1><a class="reference internal" href="#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a><a class="headerlink" href="#tensorlayer-layers" title="Permalink to this headline">¶</a></h1>
+<p>To make TensorLayer simple, we minimize the number of layer classes as much as
+we can. So we encourage you to use TensorFlow&#8217;s function.
+For example, we do not provide layer for local response normalization, we suggest
+you to apply <code class="docutils literal"><span class="pre">tf.nn.lrn</span></code> on <code class="docutils literal"><span class="pre">Layer.outputs</span></code>.</p>
+<span class="target" id="module-tensorlayer.layers"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
@@ -202,7 +206,10 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-obj docutils literal"><span class="pre">ConcatLayer</span></code></a>([layer,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-class docutils literal"><span class="pre">ConcatLayer</span></code></a> class is layer which concat (merge) two or more <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> to a single class:<cite>DenseLayer</cite>.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReshapeLayer</span></code></a>([layer,&nbsp;name])</td>
+<td>The <a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-class docutils literal"><span class="pre">ReshapeLayer</span></code></a> class is layer which reshape the tensor.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
 <td>Reshapes high-dimension input to a vector.</td>
 </tr>
 </tbody>
@@ -464,7 +471,7 @@ for rectifying layer, the reconstruction activation is softplus.</dd>
 </pre></div>
 </div>
 <dl class="docutils">
-<dt>pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name=&#8217;<a href="#id3"><span class="problematic" id="id4">w1pre_</span></a>&#8216;)</dt>
+<dt>pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name=&#8217;<a href="#id2"><span class="problematic" id="id3">w1pre_</span></a>&#8216;)</dt>
 <dd>Start to pre-train the parameters of previous DenseLayer.</dd>
 </dl>
 <p>The input layer should be <cite>DenseLayer</cite> or a layer has only one axes.
@@ -627,11 +634,11 @@ LSTM and GRU with it.</p>
 <dt>layer</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
 <dt>cell_fn</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a TensorFlow&#8217;s core RNN methods as follow.</span><dd><p class="first">class tf.nn.rnn_cell.BasicRNNCell</p>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a TensorFlow&#8217;s core RNN cell as follow.</span><dd><p class="first">see <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html">RNN Cells in TensorFlow</a></p>
+<p>class tf.nn.rnn_cell.BasicRNNCell</p>
 <p>class tf.nn.rnn_cell.BasicLSTMCell</p>
 <p>class tf.nn.rnn_cell.GRUCell</p>
-<p>class tf.nn.rnn_cell.LSTMCell</p>
-<p class="last">see <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html">Neural Network RNN Cells in TensorFlow</a></p>
+<p class="last">class tf.nn.rnn_cell.LSTMCell</p>
 </dd>
 <dt>cell_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for the cell initializer.</dd>
@@ -667,27 +674,28 @@ it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].<
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>... For single RNN
-&gt;&gt;&gt; network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,</p>
-<blockquote>
-<div>return_last=True, is_reshape=True, name=&#8217;lstm_layer&#8217;)</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="n">For</span> <span class="n">single</span> <span class="n">RNN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+<span class="go">                return_last=True, is_reshape=True, name=&#39;lstm_layer&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">...</span>
+<span class="gp">... </span><span class="n">For</span> <span class="n">multiple</span> <span class="n">RNNs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">return_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_reshape</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lstm_layer1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">return_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lstm_layer2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
 <span class="gp">... </span>                <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>...
-... For multiple RNNs
-&gt;&gt;&gt; network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
-...              return_last=False, is_reshape=True, name=&#8217;lstm_layer1&#8217;)
-&gt;&gt;&gt; network = tl.layers.RNNLayer(network, n_hidden=200, n_steps=num_steps,
-...              return_last=True, is_reshape=False, name=&#8217;lstm_layer2&#8217;)
-&gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=n_classes,
-...                 act = tl.activation.identity, name=&#8217;output_layer&#8217;)</p>
 <p>If the input to this layer has more than two axes, we need to flatten the
 input by using <a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-class docutils literal"><span class="pre">FlattenLayer</span></code></a>.</p>
 <p><a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html">Neural Network RNN Cells in TensorFlow</a></p>
+<p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py">tensorflow/python/ops/rnn.py</a></p>
+<p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py">tensorflow/python/ops/rnn_cell.py</a></p>
 </dd></dl>
 
 </div>
@@ -762,9 +770,58 @@ etc on the top of it.</p>
 </div>
 </dd></dl>
 
+<dl class="class">
+<dt id="tensorlayer.layers.ReshapeLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-class docutils literal"><span class="pre">ReshapeLayer</span></code></a> class is layer which reshape the tensor.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>The output shape.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+</dd></dl>
+
 </div>
-<div class="section" id="coming-soon">
-<h2>Coming soon<a class="headerlink" href="#coming-soon" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="developing-or-untested">
+<h2>Developing or Untested<a class="headerlink" href="#developing-or-untested" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="tensorlayer.layers.Conv3dLayer">
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv3dLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>shape=[]</em>, <em>strides=[]</em>, <em>padding='SAME'</em>, <em>W_init=&lt;function truncated_normal&gt;</em>, <em>b_init=&lt;function zeros&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv3dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv3dLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Untested</p>
+<p>The <a class="reference internal" href="#tensorlayer.layers.Conv3dLayer" title="tensorlayer.layers.Conv3dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv3dLayer</span></code></a> class is a 3D CNN layer.</p>
+<dl class="docutils">
+<dt>layer</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a <a class="reference internal" href="#tensorlayer.layers.Layer" title="tensorlayer.layers.Layer"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code></a> instance</span><dd>The <cite>Layer</cite> class feeding into this layer.</dd>
+<dt>act</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">activation function</span><dd>The function that is applied to the layer activations.</dd>
+<dt>n_units</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of units of the layer</dd>
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">list of shape</span><dd>shape of the filters</dd>
+<dt>strides</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list of ints. 1-D of length 4.</span><dd>The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.</dd>
+<dt>padding</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string from: &#8220;SAME&#8221;, &#8220;VALID&#8221;.</span><dd>The type of padding algorithm to use.</dd>
+<dt>W_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">weights initializer</span><dd>The initializer for initializing the weight matrix.</dd>
+<dt>b_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
+<dt>W_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
+<dt>b_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases initializer.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d">tf.nn.conv3d</a></p>
+</dd></dl>
+
 <dl class="class">
 <dt id="tensorlayer.layers.MaxoutLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">MaxoutLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>name='maxout_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#MaxoutLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.MaxoutLayer" title="Permalink to this definition">¶</a></dt>
@@ -777,12 +834,6 @@ etc on the top of it.</p>
 <dt id="tensorlayer.layers.GaussianNoiseLayer">
 <em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">GaussianNoiseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='gaussian_noise_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#GaussianNoiseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.GaussianNoiseLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coming soon</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="tensorlayer.layers.ReshapeLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>shape=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deprecated and unused.</p>
 </dd></dl>
 
 <dl class="class">

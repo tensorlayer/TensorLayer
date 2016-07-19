@@ -232,21 +232,21 @@
 
     <span class="c1"># @instancemethod</span>
     <span class="k">def</span> <span class="nf">print_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; print all info of parameters in the network &#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39; Print all info of parameters in the network &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="p">):</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  param </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> (mean: </span><span class="si">%f</span><span class="s2">, median: </span><span class="si">%f</span><span class="s2"> std: </span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">()),</span> <span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">()))</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  num of params: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_params</span><span class="p">())</span>
 
     <span class="c1"># @instancemethod</span>
     <span class="k">def</span> <span class="nf">print_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; print all info of layers in the network &#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39; Print all info of layers in the network &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="p">):</span>
             <span class="c1"># print(vars(p))</span>
             <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  layer </span><span class="si">%d</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)))</span>
 
 
     <span class="k">def</span> <span class="nf">count_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; return the number of parameters in the network &#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39; Return the number of parameters in the network &#39;&#39;&#39;</span>
         <span class="n">n_params</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="p">):</span>
             <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
@@ -801,7 +801,7 @@
 
 
 
-<span class="c1"># Dense+Noise layer</span>
+<span class="c1"># Noise layer</span>
 <div class="viewcode-block" id="DropoutLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.DropoutLayer">[docs]</a><span class="k">class</span> <span class="nc">DropoutLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The :class:`DropoutLayer` class is a noise layer which randomly set some</span>
@@ -1071,12 +1071,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    layer : a :class:`Layer` instance</span>
 <span class="sd">        The `Layer` class feeding into this layer.</span>
-<span class="sd">    cell_fn : a TensorFlow&#39;s core RNN methods as follow.</span>
+<span class="sd">    cell_fn : a TensorFlow&#39;s core RNN cell as follow.</span>
+<span class="sd">        see `RNN Cells in TensorFlow &lt;https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html&gt;`_\n</span>
 <span class="sd">        class tf.nn.rnn_cell.BasicRNNCell\n</span>
 <span class="sd">        class tf.nn.rnn_cell.BasicLSTMCell\n</span>
 <span class="sd">        class tf.nn.rnn_cell.GRUCell\n</span>
-<span class="sd">        class tf.nn.rnn_cell.LSTMCell\n</span>
-<span class="sd">        see `Neural Network RNN Cells in TensorFlow &lt;https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html&gt;`_</span>
+<span class="sd">        class tf.nn.rnn_cell.LSTMCell</span>
 <span class="sd">    cell_init_args : a dictionary</span>
 <span class="sd">        The arguments for the cell initializer.</span>
 <span class="sd">    n_hidden : a int</span>
@@ -1109,13 +1109,13 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[None, D])</span>
 <span class="sd">    &gt;&gt;&gt; network = tl.layers.InputLayer(x, name=&#39;input_layer&#39;)</span>
-
+<span class="sd">    ...</span>
 <span class="sd">    ... For single RNN</span>
 <span class="sd">    &gt;&gt;&gt; network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,</span>
 <span class="sd">                    return_last=True, is_reshape=True, name=&#39;lstm_layer&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; network = tl.layers.DenseLayer(network, n_units=n_classes,</span>
 <span class="sd">    ...                 act = tl.activation.identity, name=&#39;output_layer&#39;)</span>
-
+<span class="sd">    ...</span>
 <span class="sd">    ...</span>
 <span class="sd">    ... For multiple RNNs</span>
 <span class="sd">    &gt;&gt;&gt; network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,</span>
@@ -1133,7 +1133,10 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    `Neural Network RNN Cells in TensorFlow &lt;https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html&gt;`_</span>
+<span class="sd">    `Neural Network RNN Cells in TensorFlow &lt;https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html&gt;`_\n</span>
+<span class="sd">    `tensorflow/python/ops/rnn.py &lt;https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py&gt;`_\n</span>
+<span class="sd">    `tensorflow/python/ops/rnn_cell.py &lt;https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py&gt;`_</span>
+
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
@@ -1328,7 +1331,38 @@
         <span class="c1"># self.all_layers.extend( [self.outputs] )</span>
         <span class="c1"># self.all_params.extend( [W, b] )</span>
 
-<span class="c1">## Layers have not been tested</span>
+<div class="viewcode-block" id="ReshapeLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ReshapeLayer">[docs]</a><span class="k">class</span> <span class="nc">ReshapeLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The :class:`ReshapeLayer` class is layer which reshape the tensor.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layer : a :class:`Layer` instance</span>
+<span class="sd">        The `Layer` class feeding into this layer.</span>
+<span class="sd">    shape : a list</span>
+<span class="sd">        The output shape.</span>
+<span class="sd">    name : a string or None</span>
+<span class="sd">        An optional name to attach to this layer.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+        <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;reshape_layer&#39;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># self.n_units = int(self.outputs._shape[-1])</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate ReshapeLayer </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span></div>
+
+<span class="c1">## Developing or Untested</span>
 <span class="c1"># dense</span>
 <div class="viewcode-block" id="MaxoutLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.MaxoutLayer">[docs]</a><span class="k">class</span> <span class="nc">MaxoutLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1365,62 +1399,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
 
-<span class="c1"># class ResnetLayer(Layer):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     The :class:`ResnetLayer` class is a fully connected layer, while the inputs</span>
-<span class="c1">#     are added on the outputs</span>
-<span class="c1">#</span>
-<span class="c1">#     Parameters</span>
-<span class="c1">#     ----------</span>
-<span class="c1">#     layer : a :class:`Layer` instance</span>
-<span class="c1">#         The `Layer` class feeding into this layer.</span>
-<span class="c1">#     act : activation function</span>
-<span class="c1">#         The function that is applied to the layer activations.</span>
-<span class="c1">#     W_init : weights initializer</span>
-<span class="c1">#         The initializer for initializing the weight matrix.</span>
-<span class="c1">#     b_init : biases initializer</span>
-<span class="c1">#         The initializer for initializing the bias vector.</span>
-<span class="c1">#     W_init_args : dictionary</span>
-<span class="c1">#         The arguments for the weights initializer.</span>
-<span class="c1">#     b_init_args : dictionary</span>
-<span class="c1">#         The arguments for the biases initializer.</span>
-<span class="c1">#     name : a string or None</span>
-<span class="c1">#         An optional name to attach to this layer.</span>
-<span class="c1">#</span>
-<span class="c1">#     Examples</span>
-<span class="c1">#     --------</span>
-<span class="c1">#     &gt;&gt;&gt;</span>
-<span class="c1">#</span>
-<span class="c1">#     References</span>
-<span class="c1">#     ----------</span>
-<span class="c1">#     `He, K (2015) Deep Residual Learning for Image Recognition. &lt;http://doi.org/10.3389/fpsyg.2013.00124&gt;`_</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     def __init__(</span>
-<span class="c1">#         self,</span>
-<span class="c1">#         layer = None,</span>
-<span class="c1">#         act = tf.nn.relu,</span>
-<span class="c1">#         W_init = init.xavier_init,</span>
-<span class="c1">#         b_init = tf.zeros,</span>
-<span class="c1">#         W_init_args = {},</span>
-<span class="c1">#         b_init_args = {},</span>
-<span class="c1">#         name =&#39;resnet_layer&#39;,</span>
-<span class="c1">#     ):</span>
-<span class="c1">#         Layer.__init__(self, name=name)</span>
-<span class="c1">#         self.inputs = layer.outputs</span>
-<span class="c1">#         n_in = layer.n_units</span>
-<span class="c1">#         self.n_units = n_in</span>
-<span class="c1">#         print(&quot;  tensorlayer:Instantiate ResnetLayer %s: %d, %s&quot; % (self.name, self.n_units, act))</span>
-<span class="c1">#</span>
-<span class="c1">#         W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name=&#39;W&#39;)</span>
-<span class="c1">#         b = tf.Variable(b_init(shape=[n_units], **b_init_args), name=&#39;b&#39;)</span>
-<span class="c1">#         self.outputs = act(tf.matmul(self.inputs, W) + b) + self.inputs</span>
-<span class="c1">#</span>
-<span class="c1">#         self.all_layers = list(layer.all_layers)</span>
-<span class="c1">#         self.all_params = list(layer.all_params)</span>
-<span class="c1">#         self.all_drop = dict(layer.all_drop)</span>
-<span class="c1">#         self.all_layers.extend( [self.outputs] )</span>
-<span class="c1">#         self.all_params.extend( [W, b] )</span>
-
 <span class="c1"># noise</span>
 <div class="viewcode-block" id="GaussianNoiseLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.GaussianNoiseLayer">[docs]</a><span class="k">class</span> <span class="nc">GaussianNoiseLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1436,27 +1414,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate GaussianNoiseLayer </span><span class="si">%s</span><span class="s2">: keep: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">keep</span><span class="p">))</span></div>
-
-<span class="c1"># shape</span>
-<div class="viewcode-block" id="ReshapeLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.ReshapeLayer">[docs]</a><span class="k">class</span> <span class="nc">ReshapeLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Deprecated and unused.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
-        <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;reshape_layer&#39;</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Deprecated and unused.</span><span class="se">\n</span><span class="s2"> Hint : Use tf.reshape to reshape Layer.outputs instead.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">n_units</span>
-        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate ReshapeLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_params</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span></div>
 
 
 <span class="c1"># rnn</span>
@@ -1528,9 +1485,9 @@
 
 
 <span class="c1"># cnn</span>
-<span class="k">class</span> <span class="nc">Conv3dLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+<div class="viewcode-block" id="Conv3dLayer"><a class="viewcode-back" href="../../modules/layers.html#tensorlayer.layers.Conv3dLayer">[docs]</a><span class="k">class</span> <span class="nc">Conv3dLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Coming soon</span>
+<span class="sd">    Untested</span>
 
 <span class="sd">    The :class:`Conv3dLayer` class is a 3D CNN layer.</span>
 
@@ -1562,13 +1519,18 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt;</span>
+
+<span class="sd">    Links</span>
+<span class="sd">    ------</span>
+<span class="sd">    `tf.nn.conv3d &lt;https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d&gt;`_</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
         <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
-        <span class="n">strides</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">strides</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
         <span class="n">W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal</span><span class="p">,</span>
         <span class="n">b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span>
@@ -1581,16 +1543,17 @@
         <span class="c1"># n_in = layer.n_units</span>
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate Conv3dLayer </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">strides</span><span class="p">),</span> <span class="n">padding</span><span class="p">,</span> <span class="n">act</span><span class="p">))</span>
 
-        <span class="c1"># W = tf.Variable(W_init(shape=shape, **W_init_args), name=&#39;W_conv&#39;)</span>
-        <span class="c1"># b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name=&#39;b_conv&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">W_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="o">**</span><span class="n">W_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;W_conv&#39;</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">b_init</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="o">**</span><span class="n">b_init_args</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;b_conv&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">act</span><span class="p">(</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">conv3d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> <span class="p">)</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_layers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_drop</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">all_drop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="n">W</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="p">)</span></div>
 
 
 

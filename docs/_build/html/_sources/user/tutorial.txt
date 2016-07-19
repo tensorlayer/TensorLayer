@@ -532,6 +532,22 @@ classification accuracy:
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
+What Next?
+^^^^^^^^^^^
+
+We also have a more advanced image classification example in ``tutorial_cifar10.py``.
+Please read the code and notes, figure out how to generate more training data and what
+is local response normalization. After that, try to implement
+`Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you will need
+to use the Layer.outputs).
+
+
+
+
+
+
+
+
 Understand Reinforcement learning
 ==================================
 

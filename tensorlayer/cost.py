@@ -10,7 +10,7 @@ from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
 def cross_entropy(output, target):
-    """Return the cost function of cross-entropy of two distributions.
+    """Return the cost function of Cross-entropy of two distributions.
 
     Parameters
     ----------
@@ -34,6 +34,20 @@ def cross_entropy(output, target):
         cross_entropy = tf.add(tf.mul(tf.log(net_output_tf, name=None),target_tf),
                              tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
         return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
+
+def mean_squre_error(output, target):
+    """Return the cost function of Mean-squre-error of two distributions.
+
+    Parameters
+    ----------
+    output : tensorflow variable
+        A distribution with shape: [None, n_feature].
+    target : tensorflow variable
+        A distribution with shape: [None, n_feature].
+
+    """
+    mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
+    return tf.reduce_mean(mse)
 
 ## Regularization Functions
 def li_regularizer(scale):

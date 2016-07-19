@@ -100,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#training-the-model">Training the model</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#dataset-iteration">Dataset iteration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#loss-and-update-expressions">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-next">What Next?</a></li>
 </ul>
 </li>
 </ul>
@@ -112,23 +113,23 @@
 <li class="toctree-l4"><a class="reference internal" href="#id4">Loss and update expressions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#what-next">What Next?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">What Next?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#understand-natural-language-processing">Understand Natural Language Processing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#word-embedding">Word Embedding</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Loss and update expressions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#many-to-one">Many to One</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">Loss and update expressions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#many-to-many-seq2seq">Many to Many (Seq2seq)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id9">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id11">Loss and update expressions</a></li>
 </ul>
 </li>
 </ul>
@@ -629,6 +630,14 @@ classification accuracy:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="what-next">
+<h4>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h4>
+<p>We also have a more advanced image classification example in <code class="docutils literal"><span class="pre">tutorial_cifar10.py</span></code>.
+Please read the code and notes, figure out how to generate more training data and what
+is local response normalization. After that, try to implement
+<a class="reference external" href="http://doi.org/10.3389/fpsyg.2013.00124">Residual Network</a> (Hint: you will need
+to use the Layer.outputs).</p>
+</div>
 </div>
 </div>
 <div class="section" id="understand-reinforcement-learning">
@@ -715,8 +724,8 @@ between its output and its true action. The final loss in a batch is the sum of
 all loss of the actions.</p>
 </div>
 </div>
-<div class="section" id="what-next">
-<h3>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>What Next?<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>The tutorial above shows how you can build your own agent, end-to-end.
 While it has reasonable quality, the default parameters will not give you
 the best agent model. Here are a few things you can improve.</p>
@@ -733,29 +742,29 @@ different way.</p>
 <h2>Understand Natural Language Processing<a class="headerlink" href="#understand-natural-language-processing" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="word-embedding">
 <h3>Word Embedding<a class="headerlink" href="#word-embedding" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id5">
-<h4>Dataset iteration<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
-</div>
 <div class="section" id="id6">
-<h4>Loss and update expressions<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<h4>Dataset iteration<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id7">
+<h4>Loss and update expressions<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 <div class="section" id="many-to-one">
 <h3>Many to One<a class="headerlink" href="#many-to-one" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id7">
-<h4>Dataset iteration<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-</div>
 <div class="section" id="id8">
-<h4>Loss and update expressions<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<h4>Dataset iteration<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id9">
+<h4>Loss and update expressions<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 <div class="section" id="many-to-many-seq2seq">
 <h3>Many to Many (Seq2seq)<a class="headerlink" href="#many-to-many-seq2seq" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id9">
-<h4>Dataset iteration<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
-</div>
 <div class="section" id="id10">
-<h4>Loss and update expressions<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<h4>Dataset iteration<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id11">
+<h4>Loss and update expressions<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 </div>
 </div>
 </div>

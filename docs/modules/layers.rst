@@ -1,6 +1,12 @@
 :mod:`tensorlayer.layers`
 =========================
 
+To make TensorLayer simple, we minimize the number of layer classes as much as
+we can. So we encourage you to use TensorFlow's function.
+For example, we do not provide layer for local response normalization, we suggest
+you to apply ``tf.nn.lrn`` on ``Layer.outputs``.
+
+
 
 .. automodule:: tensorlayer.layers
 
@@ -19,6 +25,7 @@
    RNNLayer
    FlattenLayer
    ConcatLayer
+   ReshapeLayer
    flatten_reshape
 
 
@@ -31,6 +38,7 @@ Input layer
 ----------------
 
 .. autoclass:: InputLayer
+  :members:
 
 Word Embedding Input layer
 ----------------
@@ -67,15 +75,15 @@ Shape layer
 
 .. autoclass:: FlattenLayer
 .. autoclass:: ConcatLayer
+.. autoclass:: ReshapeLayer
 
-Coming soon
-----------------
+Developing or Untested
+-------------------------
 
+.. autoclass:: Conv3dLayer
 .. autoclass:: MaxoutLayer
 .. autoclass:: GaussianNoiseLayer
-.. autoclass:: ReshapeLayer
 .. autoclass:: BidirectionalRNNLayer
-
 
 Helper functions
 ----------------

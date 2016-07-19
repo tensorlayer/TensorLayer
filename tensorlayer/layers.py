@@ -87,21 +87,21 @@ class Layer(object):
 
     # @instancemethod
     def print_params(self):
-        ''' print all info of parameters in the network '''
+        ''' Print all info of parameters in the network '''
         for i, p in enumerate(self.all_params):
             print("  param %d: %s (mean: %f, median: %f std: %f)" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std()))
         print("  num of params: %d" % self.count_params())
 
     # @instancemethod
     def print_layers(self):
-        ''' print all info of layers in the network '''
+        ''' Print all info of layers in the network '''
         for i, p in enumerate(self.all_layers):
             # print(vars(p))
             print("  layer %d: %s" % (i, str(p)))
 
 
     def count_params(self):
-        ''' return the number of parameters in the network '''
+        ''' Return the number of parameters in the network '''
         n_params = 0
         for i, p in enumerate(self.all_params):
             n = 1
@@ -656,7 +656,7 @@ class ReconLayer(DenseLayer):
 
 
 
-# Dense+Noise layer
+# Noise layer
 class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some
@@ -926,12 +926,12 @@ class RNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN methods as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow.
+        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
         class tf.nn.rnn_cell.BasicRNNCell\n
         class tf.nn.rnn_cell.BasicLSTMCell\n
         class tf.nn.rnn_cell.GRUCell\n
-        class tf.nn.rnn_cell.LSTMCell\n
-        see `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        class tf.nn.rnn_cell.LSTMCell
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -964,13 +964,13 @@ class RNNLayer(Layer):
     --------
     >>> x = tf.placeholder(tf.float32, shape=[None, D])
     >>> network = tl.layers.InputLayer(x, name='input_layer')
-
+    ...
     ... For single RNN
     >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
                     return_last=True, is_reshape=True, name='lstm_layer')
     >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
     ...                 act = tl.activation.identity, name='output_layer')
-
+    ...
     ...
     ... For multiple RNNs
     >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
@@ -988,7 +988,10 @@ class RNNLayer(Layer):
 
     References
     ----------
-    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+    `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_\n
+    `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
+
 
     """
     def __init__(
@@ -1183,7 +1186,38 @@ class ConcatLayer(Layer):
         # self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( [W, b] )
 
-## Layers have not been tested
+class ReshapeLayer(Layer):
+    """
+    The :class:`ReshapeLayer` class is layer which reshape the tensor.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    shape : a list
+        The output shape.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    """
+    def __init__(
+        self,
+        layer = None,
+        name ='reshape_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
+        # self.n_units = int(self.outputs._shape[-1])
+        print("  tensorlayer:Instantiate ReshapeLayer %s" % (self.name))
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
+## Developing or Untested
 # dense
 class MaxoutLayer(Layer):
     """
@@ -1220,62 +1254,6 @@ class MaxoutLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
-# class ResnetLayer(Layer):
-#     """
-#     The :class:`ResnetLayer` class is a fully connected layer, while the inputs
-#     are added on the outputs
-#
-#     Parameters
-#     ----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
-#     act : activation function
-#         The function that is applied to the layer activations.
-#     W_init : weights initializer
-#         The initializer for initializing the weight matrix.
-#     b_init : biases initializer
-#         The initializer for initializing the bias vector.
-#     W_init_args : dictionary
-#         The arguments for the weights initializer.
-#     b_init_args : dictionary
-#         The arguments for the biases initializer.
-#     name : a string or None
-#         An optional name to attach to this layer.
-#
-#     Examples
-#     --------
-#     >>>
-#
-#     References
-#     ----------
-#     `He, K (2015) Deep Residual Learning for Image Recognition. <http://doi.org/10.3389/fpsyg.2013.00124>`_
-#     """
-#     def __init__(
-#         self,
-#         layer = None,
-#         act = tf.nn.relu,
-#         W_init = init.xavier_init,
-#         b_init = tf.zeros,
-#         W_init_args = {},
-#         b_init_args = {},
-#         name ='resnet_layer',
-#     ):
-#         Layer.__init__(self, name=name)
-#         self.inputs = layer.outputs
-#         n_in = layer.n_units
-#         self.n_units = n_in
-#         print("  tensorlayer:Instantiate ResnetLayer %s: %d, %s" % (self.name, self.n_units, act))
-#
-#         W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
-#         b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
-#         self.outputs = act(tf.matmul(self.inputs, W) + b) + self.inputs
-#
-#         self.all_layers = list(layer.all_layers)
-#         self.all_params = list(layer.all_params)
-#         self.all_drop = dict(layer.all_drop)
-#         self.all_layers.extend( [self.outputs] )
-#         self.all_params.extend( [W, b] )
-
 # noise
 class GaussianNoiseLayer(Layer):
     """
@@ -1291,27 +1269,6 @@ class GaussianNoiseLayer(Layer):
         self.inputs = layer.outputs
         self.n_units = layer.n_units
         print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
-
-# shape
-class ReshapeLayer(Layer):
-    """
-    Deprecated and unused.
-    """
-    def __init__(
-        self,
-        layer = None,
-        shape = None,
-        name ='reshape_layer',
-    ):
-        raise Exception("Deprecated and unused.\n Hint : Use tf.reshape to reshape Layer.outputs instead.")
-        self.n_units = layer.n_units
-        print("  tensorlayer:Instantiate ReshapeLayer %s: %f" % (self.name, shape))
-
-        self.outputs = tf.reshape(layer.outputs, shape=shape)
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
 
 
 # rnn
@@ -1385,7 +1342,7 @@ class BidirectionalRNNLayer(Layer):
 # cnn
 class Conv3dLayer(Layer):
     """
-    Coming soon
+    Untested
 
     The :class:`Conv3dLayer` class is a 3D CNN layer.
 
@@ -1417,13 +1374,18 @@ class Conv3dLayer(Layer):
     Examples
     --------
     >>>
+
+    Links
+    ------
+    `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
+
     """
     def __init__(
         self,
         layer = None,
         act = tf.nn.relu,
-        shape = [5, 5, 1, 100],
-        strides=[1, 1, 1, 1],
+        shape = [],
+        strides=[],
         padding='SAME',
         W_init = tf.truncated_normal,
         b_init = tf.zeros,
@@ -1436,10 +1398,11 @@ class Conv3dLayer(Layer):
         # n_in = layer.n_units
         print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
-        # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
-        # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
-        #
-        # self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
+        W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+        b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+
+        self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
+
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
