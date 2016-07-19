@@ -920,7 +920,8 @@ class PoolLayer(Layer):
 # Recurrent layer
 class RNNLayer(Layer):
     """
-    The :class:`BasicLSTMLayer` class is a RNN layer.
+    The :class:`RNNLayer` class is a RNN layer, you can implement vanilla RNN,
+    LSTM and GRU with it.
 
     Parameters
     ----------
