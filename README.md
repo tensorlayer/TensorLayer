@@ -7,10 +7,11 @@
     </div>
 </div>
 -->
-
+<a href="http://tensorlayer.readthedocs.io">
 <div align="center">
 	<img src="img/img_tensorlayer.png" width="30%" height="30%"/>
 </div>
+</a>
 
 
 # TensorLayer: Deep learning and Reinforcement learning library for TensorFlow.
@@ -28,9 +29,11 @@ TensorLayer features include:
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
-🇨🇳为了促进华人开发者的交流速度，我们正在建立微信群及其他交流方式，若感兴趣请发邮件到 haodong_cs@163.com.
+####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对开发感兴趣请发邮件到 haodong_cs@163.com.
 
-🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face.
+####🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face.
+
+####🇹🇭เพื่อความสะดวกในการอภิปรายของประสิทธิภาพของนักพัฒนาไทยที่เรากำลังสร้างแพลตฟอร์มการสื่อสาร.
 
 
 
