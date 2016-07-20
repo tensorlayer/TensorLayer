@@ -338,7 +338,7 @@ GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
 
 **<font color="grey"> TensorLayer Installation: </font>**
 
-You can install from source by running (from source folder), more detail in [readthedocs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
+You can install TensorLayer as follow, more detail in [readthedocs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
 
 ```python
 python setup.py install
