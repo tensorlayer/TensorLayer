@@ -353,55 +353,6 @@ def main_test_cnn_advanced():
             saver = tf.train.Saver()
             save_path = saver.save(sess, model_file_name)
 
-        # without l2
-        # epoch train   test
-        # 1     24      24      0
-        # 10    44      44      0
-        # 50    57      56      -1
-        # 100   62      60      -2
-        # 200   68      64      -4
-        # 400   74      69      -5
-        # 500   76      70      -6
-        # 600   76      70      -6
-        # 700   76      70      -6
-        # 800   Convergence,
-        # then we add l2
-        # 810   76      70      -6  train loss 1.1
-        # 850
-        # 900
-
-        # with l2 and truncated_normal Adam lr=1e-4 b_init=0
-        # epoch train   test
-        # 1     18      18
-        # 10    41      41
-        # 25    58      57
-        # 50    68      66
-        # 75    74      71
-        # 100   78      74
-        # 125   80      75
-        # 150   82      76
-        # 200   85      77
-        # 300   88      78
-        # 400   90      79
-        # 500   91      79
-        # 600   91      79
-        # change lr=1e-5
-        # 1     93      80
-        # 10    94      80
-        # 50    96      80
-        # change lr=1e-8
-        # 50    96      80
-
-        # with l2 and truncated_normal Adam lr=1e-4 b_init=0.1
-        # epoch train   test
-        # 1     35      35
-        # 10    54      53
-        # 20    62      60
-        # 50    73      70
-        # + 75
-        # 100   80      74
-        # 200   86      77
-        # 300   88      78
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()

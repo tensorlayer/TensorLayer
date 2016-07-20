@@ -29,13 +29,16 @@ TensorLayer features include:
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
-####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对开发感兴趣请发邮件到 haodong_cs@163.com.
+-
 
-####🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face.
+####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对开发感兴趣可把微信号发送到haodong_cs@163.com。
+
+####🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face. 
 
 ####🇹🇭เพื่อความสะดวกในการอภิปรายของประสิทธิภาพของนักพัฒนาไทยที่เรากำลังสร้างแพลตฟอร์มการสื่อสาร.
 
-
+####🌍You can join our TensorLayer Group on Facebook.
+-
 
 # Table of Contents
 0. [Library Structure](#Library-Structure)
@@ -63,7 +66,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ```
 --
 # Overview
-More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file read it locally.
+More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file then read it locally.
 
 0. [Fully Connected Network](#)
 0. [Convolutional Neural Network](#)
