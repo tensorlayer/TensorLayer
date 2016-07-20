@@ -59,14 +59,6 @@ More TensorFlow official RNN tutorials can be found here
 # Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
 # translation : tensorflow/models/rnn/translate
 
-Code References
----------------
-tf.nn.rnn_cell.BasicLSTMCell
-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard7/tf.nn.rnn_cell.BasicLSTMCell.md
-tf.nn.rnn_cell.BasicRNNCell
-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard5/tf.nn.rnn_cell.BasicRNNCell.md
-tf.nn.rnn_cell.GRUCell
-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard5/tf.nn.rnn_cell.GRUCell.md
 """
 
 
@@ -318,6 +310,7 @@ def run_epoch(sess, m, data, eval_op, verbose=False):
     costs = 0.0
     iters = 0
     state = m.initial_state.eval()
+    cell.zero_state(batch_size, tf.float32)
     # print(len(data), m.batch_size, m.num_steps) # 929589 20 20
 
     # for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
@@ -338,6 +331,33 @@ def run_epoch(sess, m, data, eval_op, verbose=False):
 
     return np.exp(costs / iters)
 
+def run_epoch2(sess, m, data, eval_op, verbose=False):
+    """Runs the model on the given data."""
+    epoch_size = ((len(data) // batch_size) - 1) // num_steps
+    start_time = time.time()
+    costs = 0.0
+    iters = 0
+    # state = m.initial_state.eval()
+    state = lstm2.initial_state.eval()
+    # print(len(data), m.batch_size, m.num_steps) # 929589 20 20
+
+    # for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
+    #                                                     m.num_steps)):
+    for step, (x, y) in enumerate(ptb_iterator(data, batch_size,
+                                                        num_steps)):
+        cost, state, _ = sess.run([cost, final_state, eval_op],
+                                     {input_data: x,
+                                      targets: y,
+                                      initial_state: state})
+        costs += cost
+        iters += num_steps
+
+        if verbose and step % (epoch_size // 10) == 10:
+            print("  %.3f perplexity: %.3f speed: %.0f wps" %
+                    (step * 1.0 / epoch_size, np.exp(costs / iters),
+                     iters * batch_size / (time.time() - start_time)))
+
+    return np.exp(costs / iters)
 
 def main(_):
     """
@@ -348,16 +368,82 @@ def main(_):
     reasons, we will process data in mini-batches of size batch_size.
     """
     train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
-    train_data = train_data[0:int(100000/2)]    # for fast testing
-    print('len(train_data) {}'.format(len(train_data))) # 929589
-    print('len(valid_data) {}'.format(len(valid_data))) # 73760
-    print('len(test_data)  {}'.format(len(test_data)))  # 82430
+    # train_data = train_data[0:int(100000/2)]    # for fast testing
+    print('len(train_data) {}'.format(len(train_data))) # 929589 a list of int
+    print('len(valid_data) {}'.format(len(valid_data))) # 73760  a list of int
+    print('len(test_data)  {}'.format(len(test_data)))  # 82430  a list of int
     print('vocab_size      {}'.format(vocab_size))      # 10000
+    print(vocab_size)
+    # exit()
 
-    config = SmallConfig()
-    eval_config = SmallConfig()
-    eval_config.batch_size = 1
-    eval_config.num_steps = 1
+    # config = SmallConfig()
+    # eval_config = SmallConfig()
+    # eval_config.batch_size = 1
+    # eval_config.num_steps = 1
+
+    init_scale = 0.05
+    learning_rate = 1.0
+    max_grad_norm = 5
+    num_layers = 2
+    num_steps = 35
+    hidden_size = 650
+    max_epoch = 6
+    max_max_epoch = 39
+    keep_prob = 0.5
+    lr_decay = 0.8
+    batch_size = 20
+    vocab_size = 10000
+
+    input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
+    targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+
+    # Build Graph
+    emb_net = tl.layers.EmbeddingInputlayer(
+                    inputs = input_data,
+                    vocabulary_size = vocab_size,
+                    embedding_size = hidden_size,
+                    name ='embedding_layer')
+    network = tl.layers.DropoutLayer(emb_net, keep=keep_prob, name='drop1')
+    network = tl.layers.RNNLayer(network,
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0},
+                        n_hidden=hidden_size,
+                        n_steps=num_steps,
+                        return_last=False,
+                        is_reshape=True,
+                        name='basic_lstm_layer1')
+    network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
+    lstm2 = tl.layers.RNNLayer(network,
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0},
+                        n_hidden=hidden_size,
+                        n_steps=num_steps,
+                        return_last=True,
+                        is_reshape=False,
+                        name='basic_lstm_layer2')
+    network = tl.layers.DropoutLayer(lstm2, keep=keep_prob, name='drop3')
+    network = tl.layers.DenseLayer(network, n_units=vocab_size,
+                        act = tl.activation.identity, name='output_layer')
+
+    # Cost
+    logits = network.outputs
+    print(logits, tf.reshape(targets, [-1]))
+    exit()
+    loss = tf.nn.seq2seq.sequence_loss_by_example(
+        [logits],
+        [tf.reshape(targets, [-1])],
+        [tf.ones([batch_size * num_steps])])
+    cost = tf.reduce_sum(loss) / batch_size
+    final_state = lstm2.state
+
+    # Truncated Backpropagation
+    lr = tf.Variable(0.0, trainable=False)
+    tvars = tf.trainable_variables()
+    grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars),
+                                      max_grad_norm)
+    optimizer = tf.train.GradientDescentOptimizer(lr)
+    train_op = optimizer.apply_gradients(zip(grads, tvars))
+
 
 
     # train_data = [i for i in range(1000)]
@@ -370,22 +456,66 @@ def main(_):
 
 
     sess = tf.InteractiveSession()
-    initializer = tf.random_uniform_initializer(-config.init_scale,
-                                                  config.init_scale)
-    with tf.variable_scope("model", reuse=None, initializer=initializer):
-        m = PTBModel(is_training=True, config=config)
-    with tf.variable_scope("model", reuse=True, initializer=initializer):
-        mvalid = PTBModel(is_training=False, config=config)
-        mtest = PTBModel(is_training=False, config=eval_config)
+    # initializer = tf.random_uniform_initializer(-config.init_scale,
+    #                                               config.init_scale)
+    # with tf.variable_scope("model", reuse=None, initializer=initializer):
+    #     m = PTBModel(is_training=True, config=config)
+    # with tf.variable_scope("model", reuse=True, initializer=initializer):
+    #     mvalid = PTBModel(is_training=False, config=config)
+    #     mtest = PTBModel(is_training=False, config=eval_config)
+
+
 
     sess.run(tf.initialize_all_variables())
 
-    for i in range(config.max_max_epoch):
-        lr_decay = config.lr_decay ** max(i - config.max_epoch, 0.0)
-        m.assign_lr(sess, config.learning_rate * lr_decay)
+    # for i in range(max_max_epoch):
+    #     new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
+    #     sess.run(tf.assign(lr, learning_rate * new_lr_decay))
+    #     start_time = time.time()
+    #     print("Epoch: %d Learning rate: %.3f" % (i + 1, sess.run(m.lr)))
+    #     train_perplexity = run_epoch(sess, m, train_data, m.train_op, verbose=True)
+    #     print("  Train Perplexity: %.3f took %fs" % (train_perplexity, time.time() - start_time))
+    #     valid_perplexity = run_epoch(sess, mvalid, valid_data, tf.no_op())
+    #     print("  Valid Perplexity: %.3f" % (valid_perplexity))
+    #
+    # start_time = time.time()
+    # test_perplexity = run_epoch(sess, mtest, test_data, tf.no_op())
+    # print("Test Perplexity: %.3f took %fs" % (test_perplexity, time.time() - start_time))
+
+    for i in range(max_max_epoch):
+        new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
+        sess.run(tf.assign(lr, learning_rate * new_lr_decay))
         start_time = time.time()
-        print("Epoch: %d Learning rate: %.3f" % (i + 1, sess.run(m.lr)))
-        train_perplexity = run_epoch(sess, m, train_data, m.train_op, verbose=True)
+        print("Epoch: %d Learning rate: %.3f" % (i + 1, sess.run(lr)))
+        # train_perplexity = run_epoch(sess, m, train_data, m.train_op, verbose=True)
+        verbose = True
+        epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
+        start_time = time.time()
+        costs = 0.0
+        iters = 0
+        # state = m.initial_state.eval()
+        print(lstm2.initial_state)
+        exit()
+        state = lstm2.initial_state.eval()
+        print(state)
+        exit()
+        for step, (x, y) in enumerate(ptb_iterator(train_data, batch_size,
+                                                            num_steps)):
+            cost, state, _ = sess.run([cost, final_state, eval_op],
+                                         {input_data: x,
+                                          targets: y,
+                                          initial_state: state})
+            costs += cost
+            iters += num_steps
+
+            if verbose and step % (epoch_size // 10) == 10:
+                print("  %.3f perplexity: %.3f speed: %.0f wps" %
+                        (step * 1.0 / epoch_size, np.exp(costs / iters),
+                         iters * batch_size / (time.time() - start_time)))
+
+        train_perplexity = np.exp(costs / iters)
+
+
         print("  Train Perplexity: %.3f took %fs" % (train_perplexity, time.time() - start_time))
         valid_perplexity = run_epoch(sess, mvalid, valid_data, tf.no_op())
         print("  Valid Perplexity: %.3f" % (valid_perplexity))

@@ -959,6 +959,8 @@ class RNNLayer(Layer):
         When state_is_tuple = False,
         it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
+    initial_state : a tensor
+        The initial state.
 
     Examples
     --------
@@ -1032,6 +1034,7 @@ class RNNLayer(Layer):
         outputs = []
         cell = cell_fn(num_units=n_hidden, **cell_init_args)
         state = cell.zero_state(batch_size, dtype=tf.float32)
+        self.initial_state = state
         with tf.variable_scope(name) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
@@ -1201,6 +1204,18 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
+    ... The core of this layer is ``tf.reshape``.
+    ... Use TensorFlow only:
+    >>> x = tf.placeholder(tf.float32, shape=[None, 3])
+    >>> y = tf.reshape(x, shape=[-1, 3, 3])
+    >>> sess = tf.InteractiveSession()
+    >>> print(sess.run(y, feed_dict={x:[[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6]]}))
+    ... [[[ 1.  1.  1.]
+    ... [ 2.  2.  2.]
+    ... [ 3.  3.  3.]]
+    ... [[ 4.  4.  4.]
+    ... [ 5.  5.  5.]
+    ... [ 6.  6.  6.]]]
     """
     def __init__(
         self,

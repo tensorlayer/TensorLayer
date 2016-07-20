@@ -23,10 +23,14 @@ TensorLayer features include:
 - Fast prototyping through highly modular built-in neural network layers, pre-train metrices, regularizers, optimizers, cost functions...
 - Implemented by straightforward code, easy to modify and extend by yourself...
 - Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for machine learning researches...
-- Many official examples covering Dropout, DropConnect, DropNeuron, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
+- Many official examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
 - The running speed would not decrease compare with pure TensorFlow codes...
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
+
+🇨🇳为了促进华人开发者的交流速度，我们正在建立微信群及其他交流方式，若感兴趣请发邮件到 haodong_cs@163.com.
+
+🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face.
 
 
 
@@ -49,8 +53,8 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
 ├── docs 				<--- readthedocs folder
 │   └── _build
-│   	└──html
-│			└──index.html <--- homepage of the documentation
+│   	 └──html
+│			 └──index.html <--- homepage of the documentation
 ├── tutorials_*.py	 	<--- tutorials include NLP, DL,RL etc.
 ├── .. 
 ```
@@ -199,14 +203,14 @@ network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='rel
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
 network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
 ```
-For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Recurrent Neural Network*
 
 **<font color="grey"> LSTM: </font>**
 
-For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Reinforcement Learning*
@@ -276,7 +280,7 @@ network.print_layers()
 >> layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
 >> layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
 ```
-For more powerful function, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[readthedocs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
 # Easy to Modify
 **<font color="grey"> Modifying Pre-train Behaviour: </font>**
