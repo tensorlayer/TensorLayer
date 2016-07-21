@@ -8,26 +8,6 @@ from tensorlayer.layers import set_keep
 import numpy as np
 import time
 
-"""
-This tutorial uses placeholder to control all keeping probabilities,
-so we need to set the non-one probabilities during training, and set them to 1
-during evaluating and testing.
-
-$ Set keeping probabilities.
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update( network.all_drop )
-
-$ Set all keeping probabilities to 1 for evaluating and testing.
->>> dp_dict = tl.utils.dict_to_one( network.all_drop )
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update(dp_dict)
-
-Alternatively, if you don't want to use placeholder to control them, you can
-build different inference for training, evaluating and testing,
-and all inferences share same model parameters.
-(see tutorial_ptb_lstm.py)
-
-"""
 
 def main_test_layers(model='relu'):
     X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
@@ -53,24 +33,43 @@ def main_test_layers(model='relu'):
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
+
     if model == 'relu':
+        with tf.variable_scope("model", reuse=None):
+            network = tl.layers.InputLayer(x, name='input_layer')
+            network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+            network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+            network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+            network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+            network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+            network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+        with tf.variable_scope("model", reuse=True):
+            set_keep['_layers_name_list'] = []
+            network2 = tl.layers.InputLayer(x, name='input_layer')
+            network2 = tl.layers.DenseLayer(network2, n_units=800, act = tf.nn.relu, name='relu1')
+            network2 = tl.layers.DenseLayer(network2, n_units=800, act = tf.nn.relu, name='relu2')
+            network2 = tl.layers.DenseLayer(network2, n_units=10, act = tl.activation.identity, name='output_layer')
+        print('a',network.all_params,len(network.all_params))
+        print('b',network2.all_params,len(network2.all_params))
+        print(network2.all_drop)
+        exit()
+    elif model == 'resnet':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+        network = tl.layers.ResnetLayer(network, act = tf.nn.relu, name='resnet1')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-        network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+        network = tl.layers.ResnetLayer(network, act = tf.nn.relu, name='resnet2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-        network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+        network = tl.layers.DenseLayer(network, act = tl.activation.identity, name='output_layer')
     elif model == 'dropconnect':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.8, n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.5, n_units=10, act = tl.activation.identity, name='output_layer')
 
-    # To print all attributes of a Layer.
     # attrs = vars(network)
     # print(', '.join("%s: %s\n" % item for item in attrs.items()))
-    #
+
     # print(network.all_drop)     # {'drop1': 0.8, 'drop2': 0.5, 'drop3': 0.5}
     # print(drop1, drop2, drop3)  # Tensor("Placeholder_2:0", dtype=float32) Tensor("Placeholder_3:0", dtype=float32) Tensor("Placeholder_4:0", dtype=float32)
     # exit()
@@ -79,14 +78,14 @@ def main_test_layers(model='relu'):
     y_op = tf.argmax(tf.nn.softmax(y), 1)
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
-    # You can add more penalty to the cost function as follow.
     # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
     # cost = cost + tl.cost.lo_regularizer(0.0001)(network.all_params[0]) + tl.cost.lo_regularizer(0.0001)(network.all_params[2])
     # cost = cost + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[0]) + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[2])
 
+
     params = network.all_params
     # train
-    n_epoch = 500
+    n_epoch = 100
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
@@ -399,6 +398,17 @@ def main_test_cnn_layer():
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    # Alternatively, you can choose a specific initializer for the weights as follow:
+    # network = tl.layers.Conv2dLayer(network,
+    #                     act = tf.nn.relu,
+    #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    #                     strides=[1, 1, 1, 1],
+    #                     padding='SAME',
+    #                     W_init = tf.truncated_normal,
+    #                     W_init_args = {'mean' : 1, 'stddev':3},
+    #                     b_init = tf.zeros,
+    #                     b_init_args = {'name' : 'bias'},
+    #                     name ='cnn_layer1')     # output: (?, 28, 28, 32)
     network = tl.layers.PoolLayer(network,
                         ksize=[1, 2, 2, 1],
                         strides=[1, 2, 2, 1],
@@ -495,7 +505,7 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
     sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
-        main_test_layers(model='relu')                # model = relu, dropconnect
+        main_test_layers(model='relu')                # model = relu, resnet, dropconnect
         # main_test_denoise_AE(model='sigmoid')            # model = relu, sigmoid
         # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
         # main_test_cnn_layer()

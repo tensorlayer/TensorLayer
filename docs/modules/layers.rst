@@ -27,6 +27,8 @@ you to apply ``tf.nn.lrn`` on ``Layer.outputs``.
    ConcatLayer
    ReshapeLayer
    flatten_reshape
+   clear_layers_name
+   set_name_reuse
 
 
 Basic layer
@@ -89,3 +91,5 @@ Helper functions
 ----------------
 
 .. autofunction:: flatten_reshape
+.. autofunction:: clear_layers_name
+.. autofunction:: set_name_reuse

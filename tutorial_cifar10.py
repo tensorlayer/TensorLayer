@@ -228,9 +228,10 @@ def main_test_cnn_advanced():
                         shape = [5, 5, 3, 64],  # 64 features for each 5x5x3 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
-                        W_init=tf.truncated_normal,
-                        W_init_args={'stddev':5e-2},
-                        b_init=tf.zeros,
+                        W_init=tf.truncated_normal_initializer(stddev=5e-2),
+                        W_init_args={},
+                        b_init=tf.constant_initializer(value=0.0),
+                        b_init_args={},
                         name ='cnn_layer1')     # output: (batch_size, 24, 24, 64)
     network = tl.layers.PoolLayer(network,
                         ksize=[1, 3, 3, 1],
@@ -245,10 +246,10 @@ def main_test_cnn_advanced():
                         shape = [5, 5, 64, 64], # 64 features for each 5x5 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
-                        W_init=tf.truncated_normal,
-                        W_init_args={'stddev':5e-2},
-                        b_init=tf.constant,
-                        b_init_args={'value':0.1},
+                        W_init=tf.truncated_normal_initializer(stddev=5e-2),
+                        W_init_args={},
+                        b_init=tf.constant_initializer(value=0.1),
+                        b_init_args={},
                         name ='cnn_layer2')     # output: (batch_size, 12, 12, 64)
     network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
                                                     beta=0.75, name='norm2')
@@ -260,14 +261,14 @@ def main_test_cnn_advanced():
                         name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
     network = tl.layers.FlattenLayer(network, name='flatten_layer')                        # output: (batch_size, 2304)
     network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
-                        W_init=tf.truncated_normal, W_init_args={'stddev':0.04},
-                        b_init=tf.constant, b_init_args={'value':0.1}, name='relu1')       # output: (batch_size, 384)
+                        W_init=tf.truncated_normal_initializer(stddev=0.04), W_init_args={},
+                        b_init=tf.constant_initializer(value=0.1), b_init_args={}, name='relu1')       # output: (batch_size, 384)
     network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
-                        W_init=tf.truncated_normal, W_init_args={'stddev':0.04},
-                        b_init=tf.constant, b_init_args={'value':0.1}, name='relu2')       # output: (batch_size, 192)
+                        W_init=tf.truncated_normal_initializer(stddev=0.04), W_init_args={},
+                        b_init=tf.constant_initializer(value=0.1), b_init_args={}, name='relu2')       # output: (batch_size, 192)
     network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity,
-                        W_init=tf.truncated_normal, W_init_args={'stddev':1/192.0},
-                        b_init = tf.zeros,
+                        W_init=tf.truncated_normal_initializer(stddev=1/192.0), W_init_args={},
+                        b_init = tf.constant_initializer(value=0.0),
                         name='output_layer')    # output: (batch_size, 10)
     y = network.outputs
 

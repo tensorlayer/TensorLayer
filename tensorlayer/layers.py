@@ -22,6 +22,7 @@ import numpy as np
 # set_keep = locals()
 set_keep = globals()
 set_keep['_layers_name_list'] =[]
+set_keep['name_reuse'] = False
 
 ## Variable Operation
 def flatten_reshape(variable):
@@ -52,6 +53,52 @@ def flatten_reshape(variable):
         dim *= d
     return tf.reshape(variable, shape=[-1, dim])
 
+def clear_layers_name():
+    """Clear all layer names in set_keep['_layers_name_list'],
+    enable layer name reuse.
+
+    Examples
+    ---------
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DenseLayer(network, n_units=800, name='relu1')
+    ...
+    >>> tl.layers.clear_layers_name()
+    >>> network2 = tl.layers.InputLayer(x, name='input_layer')
+    >>> network2 = tl.layers.DenseLayer(network2, n_units=800, name='relu1')
+    ...
+    """
+    set_keep['_layers_name_list'] =[]
+
+def set_name_reuse(enable=True):
+    """Enable or disable reuse layer name. By default, each layer must has unique
+    name. When you want two or more input placeholder (inference) share the same
+    model parameters, you need to enable layer name reuse, then allow the
+    parameters have same name scope.
+
+    Examples
+    ------------
+    see ``tutorial_ptb_lstm.py`` for example.
+    """
+    set_keep['name_reuse'] = enable
+
+def initialize_rnn_state(state):
+    """Return the initialized RNN state.
+    The input is LSTMStateTuple or State of RNNCells.
+    """
+    if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
+        # when state_is_tuple=True for LSTM
+        c = state.c.eval()
+        h = state.h.eval()
+        return (c, h)
+        # state.c = state.c.eval()
+        # state.h = state.h.eval()
+        # return state
+    else:
+        # when state_is_tuple=False for LSTM
+        # or other RNNs
+        state = state.eval()
+        return state
+
 # Basic layer
 class Layer(object):
     """
@@ -75,7 +122,7 @@ class Layer(object):
     ):
         self.inputs = inputs
         # if name in globals():
-        if name in set_keep['_layers_name_list']:
+        if (name in set_keep['_layers_name_list']) and name_reuse == False:
             raise Exception("Layer '%s' already exists, please choice other 'name'.\
             \nHint : Use different name for different 'Layer'" % name)
         else:
@@ -89,7 +136,7 @@ class Layer(object):
     def print_params(self):
         ''' Print all info of parameters in the network '''
         for i, p in enumerate(self.all_params):
-            print("  param %d: %s (mean: %f, median: %f std: %f)" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std()))
+            print("  param %d: %s (mean: %f, median: %f, std: %f)" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std()))
         print("  num of params: %d" % self.count_params())
 
     # @instancemethod
@@ -181,9 +228,9 @@ class Word2vecEmbeddingInputlayer(Layer):
     nce_W_init_args : a dictionary
         The arguments for initializing the nce decoder weight matrix.
     nce_b_init : NCE decoder biases initializer
-        The initializer for initializing the nce decoder bias vector.
+        The initializer for tf.get_variable() of the nce decoder bias vector.
     nce_b_init_args : a dictionary
-        The arguments for initializing the nce decoder bias vector.
+        The arguments for tf.get_variable() of the nce decoder bias vector.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -249,11 +296,11 @@ class Word2vecEmbeddingInputlayer(Layer):
         embedding_size = 200,
         num_sampled = 64,
         nce_loss_args = {},
-        E_init = tf.random_uniform,
-        E_init_args = {'minval':-1.0, 'maxval':1.0},
-        nce_W_init = tf.truncated_normal,
-        nce_W_init_args = {'stddev':0.03},
-        nce_b_init = tf.zeros,
+        E_init = tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
+        E_init_args = {},
+        nce_W_init = tf.truncated_normal_initializer(stddev=0.03),
+        nce_W_init_args = {},
+        nce_b_init = tf.constant_initializer(value=0.0),
         nce_b_init_args = {},
         name ='word2vec_layer',
     ):
@@ -269,14 +316,27 @@ class Word2vecEmbeddingInputlayer(Layer):
         # multiply by the embedding matrix.
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
-        embeddings = tf.Variable(
-            E_init(shape=[vocabulary_size, embedding_size], **E_init_args))
-        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+        with tf.variable_scope(name) as vs:
+            # embeddings = tf.Variable(
+            #     E_init(shape=[vocabulary_size, embedding_size], **E_init_args))
+            embeddings = tf.get_variable(name='embeddings',
+                                    shape=(vocabulary_size, embedding_size),
+                                    initializer=E_init,
+                                    **E_init_args)
+            embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
-        # Construct the variables for the NCE loss (i.e. negative sampling)
-        nce_weights = tf.Variable(
-            nce_W_init(shape=[vocabulary_size, embedding_size], **nce_W_init_args))
-        nce_biases = tf.Variable(nce_b_init([vocabulary_size], **nce_b_init_args))
+            # Construct the variables for the NCE loss (i.e. negative sampling)
+            # nce_weights = tf.Variable(
+            #     nce_W_init(shape=[vocabulary_size, embedding_size], **nce_W_init_args))
+            nce_weights = tf.get_variable(name='nce_weights',
+                                    shape=(vocabulary_size, embedding_size),
+                                    initializer=nce_W_init,
+                                    **nce_W_init_args)
+            # nce_biases = tf.Variable(nce_b_init([vocabulary_size], **nce_b_init_args))
+            nce_biases = tf.get_variable(name='nce_biases',
+                                    shape=(vocabulary_size),
+                                    initializer=nce_b_init,
+                                    **nce_b_init_args)
 
         # Compute the average NCE loss for the batch.
         # tf.nce_loss automatically draws a new sample of the negative labels
@@ -333,6 +393,8 @@ class EmbeddingInputlayer(Layer):
     -----------------------
     outputs : a tensor
         The outputs of embedding layer.
+        if inputs : [batch_size, num_steps (num_words)]
+        the outputs : [batch_size, num_steps (num_words), embedding_size]
 
     Examples
     --------
@@ -391,8 +453,12 @@ class EmbeddingInputlayer(Layer):
         self.n_units = embedding_size
         print("  tensorlayer:Instantiate EmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
-        embeddings = tf.Variable(
-            tf.random_uniform(shape=[vocabulary_size, embedding_size]))
+        with tf.variable_scope(name) as vs:
+            # embeddings = tf.Variable(
+            #     tf.random_uniform(shape=[vocabulary_size, embedding_size]))
+            embeddings = tf.get_variable(name='embeddings',
+                        shape=(vocabulary_size, embedding_size),
+                        initializer=tf.random_uniform_initializer())
         embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -421,9 +487,9 @@ class DenseLayer(Layer):
     b_init : biases initializer
         The initializer for initializing the bias vector.
     W_init_args : dictionary
-        The arguments for the weights initializer.
+        The arguments for the weights tf.get_variable.
     b_init_args : dictionary
-        The arguments for the biases initializer.
+        The arguments for the biases tf.get_variable.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -443,20 +509,29 @@ class DenseLayer(Layer):
         layer = None,
         n_units = 100,
         act = tf.nn.relu,
-        W_init = init.xavier_init,
-        b_init = tf.zeros,
+        # W_init = init.xavier_init,
+        # b_init = tf.zeros,
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
         name ='dense_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        n_in = layer.n_units
+        # n_in = layer.n_units
+        if self.inputs.get_shape().ndims != 2:
+            raise Exception("The input dimension must be rank 2")
+        n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
         print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
-
-        W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
-        b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
+        with tf.variable_scope(name) as vs:
+            # W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
+            # b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
+            # get_variable : Gets an existing variable with these parameters or create a new one.
+            #   it allows : with tf.variable_scope("model", reuse=True):
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
         self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         self.all_layers = list(layer.all_layers)    # list() is pass by value (shallow), without list is pass by reference
@@ -691,7 +766,7 @@ class DropoutLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        self.n_units = layer.n_units
+        # self.n_units = layer.n_units
         print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
 
         set_keep[name] = tf.placeholder(tf.float32)
@@ -732,9 +807,9 @@ class DropconnectDenseLayer(Layer):
     b_init : biases initializer
         The initializer for initializing the bias vector.
     W_init_args : dictionary
-        The arguments for the weights initializer.
+        The arguments for the weights tf.get_variable().
     b_init_args : dictionary
-        The arguments for the biases initializer.
+        The arguments for the biases tf.get_variable().
     name : a string or None
         An optional name to attach to this layer.
 
@@ -755,20 +830,28 @@ class DropconnectDenseLayer(Layer):
         keep = 0.5,
         n_units = 100,
         act = tf.nn.relu,
-        W_init = init.xavier_init,
-        b_init = tf.zeros,
+        # W_init = init.xavier_init,
+        # b_init = tf.zeros,
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
         name ='dropconnect_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        n_in = layer.n_units
+        # n_in = layer.n_units
+        if self.inputs.get_shape().ndims != 2:
+            raise Exception("The input dimension must be rank 2")
+        n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
         print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act))
 
-        W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
-        b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
+        with tf.variable_scope(name) as vs:
+            # W = tf.Variable(W_init(shape=(n_in, n_units), **W_init_args), name='W')
+            # b = tf.Variable(b_init(shape=[n_units], **b_init_args), name='b')
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
         self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         set_keep[name] = tf.placeholder(tf.float32)
@@ -808,9 +891,9 @@ class Conv2dLayer(Layer):
     b_init : biases initializer
         The initializer for initializing the bias vector.
     W_init_args : dictionary
-        The arguments for the weights initializer.
+        The arguments for the weights tf.get_variable().
     b_init_args : dictionary
-        The arguments for the biases initializer.
+        The arguments for the biases tf.get_variable().
     name : a string or None
         An optional name to attach to this layer.
 
@@ -842,8 +925,8 @@ class Conv2dLayer(Layer):
         shape = [5, 5, 1, 100],
         strides=[1, 1, 1, 1],
         padding='SAME',
-        W_init = tf.truncated_normal,
-        b_init = tf.zeros,
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
         name ='cnn_layer',
@@ -853,8 +936,11 @@ class Conv2dLayer(Layer):
         # n_in = layer.n_units
         print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
-        W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
-        b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+        with tf.variable_scope(name) as vs:
+            # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+            # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
 
         # W = tf.Variable( weights_initializer(shape=shape), name='W_conv')
         # b = tf.Variable( biases_initializer(shape=[shape[-1]]), name='b_conv')
@@ -942,10 +1028,10 @@ class RNNLayer(Layer):
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    is_reshape : boolen
-        Reshape the inputs to 3 dimension tensor.\n
-        If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
-        If input is [batch_size * n_steps, n_features], we need to reshape it.
+    # is_reshape : boolen
+    #     Reshape the inputs to 3 dimension tensor.\n
+    #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
+    #     If input is [batch_size * n_steps, n_features], we need to reshape it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -955,32 +1041,31 @@ class RNNLayer(Layer):
         The output of this RNN.
         return_last = False, outputs = all cell_output, which is the hidden state.
             cell_output.get_shape() = (?, n_hidden)
-    state : a tensor
+    final_state : a tensor or tuple
         When state_is_tuple = False,
         it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
-    initial_state : a tensor
-        The initial state.
+    initial_state : see final_state
 
     Examples
     --------
     >>> x = tf.placeholder(tf.float32, shape=[None, D])
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     ...
-    ... For single RNN
-    >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
-                    return_last=True, is_reshape=True, name='lstm_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
-    ...                 act = tl.activation.identity, name='output_layer')
-    ...
-    ...
-    ... For multiple RNNs
-    >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
-    ...              return_last=False, is_reshape=True, name='lstm_layer1')
-    >>> network = tl.layers.RNNLayer(network, n_hidden=200, n_steps=num_steps,
-    ...              return_last=True, is_reshape=False, name='lstm_layer2')
-    >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
-    ...                 act = tl.activation.identity, name='output_layer')
+    # ... For single RNN
+    # >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
+    #                 return_last=True, is_reshape=True, name='lstm_layer')
+    # >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
+    # ...                 act = tl.activation.identity, name='output_layer')
+    # ...
+    # ...
+    # ... For multiple RNNs
+    # >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
+    # ...              return_last=False, is_reshape=True, name='lstm_layer1')
+    # >>> network = tl.layers.RNNLayer(network, n_hidden=200, n_steps=num_steps,
+    # ...              return_last=True, is_reshape=False, name='lstm_layer2')
+    # >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
+    # ...                 act = tl.activation.identity, name='output_layer')
 
 
     Notes
@@ -994,7 +1079,7 @@ class RNNLayer(Layer):
     `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_\n
     `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
 
-
+    see TensorFlow tutorial ``ptb_word_lm.py``
     """
     def __init__(
         self,
@@ -1003,13 +1088,13 @@ class RNNLayer(Layer):
         n_hidden = 100,
         n_steps = 5,
         return_last = False,
-        is_reshape = True,
+        # is_reshape = True,
         cell_init_args = {},
         name = 'rnn_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        n_in = layer.n_units
+        # n_in = layer.n_units
         self.n_units = n_hidden
 
         print("  tensorlayer:Instantiate RNNLayer %s: cell_fn:%s n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, cell_fn, n_hidden,
@@ -1018,8 +1103,8 @@ class RNNLayer(Layer):
         # self.inputs.get_shape().with_rank(2)
         # self.inputs.get_shape().with_rank(3)
 
-        if is_reshape:
-            self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
+        # if is_reshape:
+        #     self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
 
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
 
@@ -1030,11 +1115,23 @@ class RNNLayer(Layer):
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             print("     non specified batch_size, use a tensor instead.")
+        self.batch_size = batch_size
 
+
+        # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
+        # This builds an unrolled LSTM for tutorial purposes only.
+        # In general, use the rnn() or state_saving_rnn() from rnn.py.
+        #
+        # The alternative version of the code below is:
+        #
+        # from tensorflow.models.rnn import rnn
+        # inputs = [tf.squeeze(input_, [1])
+        #           for input_ in tf.split(1, num_steps, inputs)]
+        # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
         outputs = []
-        cell = cell_fn(num_units=n_hidden, **cell_init_args)
-        state = cell.zero_state(batch_size, dtype=tf.float32)
-        self.initial_state = state
+        self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
+        self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
+        state = self.initial_state
         with tf.variable_scope(name) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
@@ -1058,17 +1155,21 @@ class RNNLayer(Layer):
         #     print('all_var', p.get_shape(), p.name)
 
         if return_last:
-            "Many to one"
+            # 2D Tensor [batch_size, n_hidden]
             self.outputs = outputs[-1]
         else:
-            "Many to many : Synced sequence input and output"
+            # 3D Tensor [batch_size_rnn, n_steps, n_hidden]
+            # Akara:
             self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
+            # PTB tutorial:
+            # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
 
-        self.state = state
+        self.final_state = state
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
+        # print(type(self.outputs))
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
 
@@ -1220,6 +1321,7 @@ class ReshapeLayer(Layer):
     def __init__(
         self,
         layer = None,
+        shape = [],
         name ='reshape_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1255,8 +1357,10 @@ class MaxoutLayer(Layer):
         n_in = layer.n_units
         self.n_units = n_units
         print("  tensorlayer:Instantiate MaxoutLayer %s: %d" % (self.name, self.n_units))
-        W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
-        b = tf.Variable(tf.zeros([n_units]), name='b')
+        with tf.variable_scope(name) as vs:
+            pass
+            # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
+            # b = tf.Variable(tf.zeros([n_units]), name='b')
 
         # self.outputs = act(tf.matmul(self.inputs, W) + b)
         # https://www.tensorflow.org/versions/r0.9/api_docs/python/array_ops.html#pack
@@ -1284,7 +1388,8 @@ class GaussianNoiseLayer(Layer):
         self.inputs = layer.outputs
         self.n_units = layer.n_units
         print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
-
+        with tf.variable_scope(name) as vs:
+            pass
 
 # rnn
 class BidirectionalRNNLayer(Layer):
@@ -1354,6 +1459,8 @@ class BidirectionalRNNLayer(Layer):
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape()))
 
 
+        with tf.variable_scope(name) as vs:
+            pass
 # cnn
 class Conv3dLayer(Layer):
     """
@@ -1402,8 +1509,10 @@ class Conv3dLayer(Layer):
         shape = [],
         strides=[],
         padding='SAME',
-        W_init = tf.truncated_normal,
-        b_init = tf.zeros,
+        # W_init = tf.truncated_normal,
+        # b_init = tf.zeros,
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
         name ='cnn_layer',
@@ -1413,8 +1522,11 @@ class Conv3dLayer(Layer):
         # n_in = layer.n_units
         print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
-        W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
-        b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+        with tf.variable_scope(name) as vs:
+            # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+            # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
 
         self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
