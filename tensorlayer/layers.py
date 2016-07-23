@@ -99,6 +99,12 @@ def initialize_rnn_state(state):
         state = state.eval()
         return state
 
+def print_all_variables():
+    """Print all trainable and non-trainable variables
+    without initialize_all_variables()"""
+    for idx, v in enumerate(tf.all_variables()):
+        print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
+
 # Basic layer
 class Layer(object):
     """
@@ -134,10 +140,11 @@ class Layer(object):
 
     # @instancemethod
     def print_params(self):
-        ''' Print all info of parameters in the network '''
+        ''' Print all info of parameters in the network after initialize_all_variables()'''
         for i, p in enumerate(self.all_params):
-            print("  param %d: %s (mean: %f, median: %f, std: %f)" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std()))
+            print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
         print("  num of params: %d" % self.count_params())
+
 
     # @instancemethod
     def print_layers(self):
@@ -386,6 +393,10 @@ class EmbeddingInputlayer(Layer):
         The size of vocabulary, number of words.
     embedding_size : int
         The number of embedding dimensions.
+    E_init : embedding initializer
+        The initializer for initializing the embedding matrix.
+    E_init_args : a dictionary
+        The arguments for embedding initializer
     name : a string or None
         An optional name to attach to this layer.
 
@@ -446,6 +457,8 @@ class EmbeddingInputlayer(Layer):
         inputs = None,
         vocabulary_size = 80000,
         embedding_size = 200,
+        E_init = tf.random_uniform_initializer(-0.1, 0.1),
+        E_init_args = {},
         name ='embedding_layer',
     ):
         Layer.__init__(self, name=name)
@@ -457,8 +470,9 @@ class EmbeddingInputlayer(Layer):
             # embeddings = tf.Variable(
             #     tf.random_uniform(shape=[vocabulary_size, embedding_size]))
             embeddings = tf.get_variable(name='embeddings',
-                        shape=(vocabulary_size, embedding_size),
-                        initializer=tf.random_uniform_initializer())
+                                    shape=(vocabulary_size, embedding_size),
+                                    initializer=E_init,
+                                    **E_init_args)
         embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -1032,6 +1046,10 @@ class RNNLayer(Layer):
     #     Reshape the inputs to 3 dimension tensor.\n
     #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
     #     If input is [batch_size * n_steps, n_features], we need to reshape it.
+    return_seq_2d : boolen
+        When return_last = False\n
+            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1041,11 +1059,18 @@ class RNNLayer(Layer):
         The output of this RNN.
         return_last = False, outputs = all cell_output, which is the hidden state.
             cell_output.get_shape() = (?, n_hidden)
-    final_state : a tensor or tuple
+
+    final_state : a tensor or StateTuple
         When state_is_tuple = False,
         it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
-    initial_state : see final_state
+        You can get the final state after each iteration during training, then
+        feed it to the initial state of next iteration.
+
+    initial_state : a tensor or StateTuple
+        It is the initial state of this RNN layer, you can use it to initialize
+        your state at the begining of each epoch or iteration according to your
+        training procedure.
 
     Examples
     --------
@@ -1053,19 +1078,12 @@ class RNNLayer(Layer):
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     ...
     # ... For single RNN
-    # >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
-    #                 return_last=True, is_reshape=True, name='lstm_layer')
-    # >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
-    # ...                 act = tl.activation.identity, name='output_layer')
+    # >>> network =
     # ...
     # ...
     # ... For multiple RNNs
-    # >>> network = tl.layers.RNNLayer(x, n_hidden=200, n_steps=num_steps,
-    # ...              return_last=False, is_reshape=True, name='lstm_layer1')
-    # >>> network = tl.layers.RNNLayer(network, n_hidden=200, n_steps=num_steps,
-    # ...              return_last=True, is_reshape=False, name='lstm_layer2')
-    # >>> network = tl.layers.DenseLayer(network, n_units=n_classes,
-    # ...                 act = tl.activation.identity, name='output_layer')
+    # >>> network =
+    #
 
 
     Notes
@@ -1085,11 +1103,13 @@ class RNNLayer(Layer):
         self,
         layer = None,
         cell_fn = tf.nn.rnn_cell.BasicRNNCell,
+        cell_init_args = {},
         n_hidden = 100,
+        initializer = tf.random_uniform_initializer(-0.1, 0.1),
         n_steps = 5,
         return_last = False,
         # is_reshape = True,
-        cell_init_args = {},
+        return_seq_2d = False,
         name = 'rnn_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1132,7 +1152,8 @@ class RNNLayer(Layer):
         self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
         self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
         state = self.initial_state
-        with tf.variable_scope(name) as vs:
+        # with tf.variable_scope("model", reuse=None, initializer=initializer):
+        with tf.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
                 (cell_output, state) = cell(self.inputs[:, time_step, :], state)
@@ -1158,11 +1179,14 @@ class RNNLayer(Layer):
             # 2D Tensor [batch_size, n_hidden]
             self.outputs = outputs[-1]
         else:
-            # 3D Tensor [batch_size_rnn, n_steps, n_hidden]
-            # Akara:
-            self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
-            # PTB tutorial:
-            # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+            if return_seq_2d:
+                # PTB tutorial:
+                # 2D Tensor [n_example, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+            else:
+                # Akara:
+                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.final_state = state
 

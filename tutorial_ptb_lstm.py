@@ -9,35 +9,44 @@ from tensorflow.models.rnn.ptb import reader
 import numpy as np
 import time
 
-"""
-Example of Synced sequence input and output.
+"""Example of Synced sequence input and output.
+This is a reimpmentation of the TensorFlow official PTB example in :
+tensorflow/models/rnn/ptb
 
-The training data will be generated as follow:
-where batch_size can be seem as how many concurrent computation.
+Hao Dong: This tutorial can also be considered as pre-training the word embedding
+matrix.
+
+The training data will be generated as follow:\n
+where batch_size can be seem as how many concurrent computation.\n
+As the this example shows. The first batch learn the sequence info from 0 to 9.\n
+The second batch learn the sequence info from 10 to 19.\n
+So it ignores the info from 9 to 10 !\n
+If only if we set the batch_size = 1, it will consider all info from 0 to 20.\n
+However, if your dataset is "long" enough (a text corpus usually has billions words),
+the ignored info would not effect the final result.
+
+In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
+At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
+segments, then go through 20 segments separately.
 
 >>> train_data = [i for i in range(20)]
 >>> for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):
 >>>     x, y = batch
 >>>     print(x, '\n',y)
-... [[ 0  1  2] <---x               1st subset
+... [[ 0  1  2] <---x                       1st subset/ iteration
 ...  [10 11 12]]
 ... [[ 1  2  3] <---y
 ...  [11 12 13]]
 ...
-... [[ 3  4  5]  <--- 1st batch     2nd subset
-...  [13 14 15]] <--- 2nd batch
-... [[ 4  5  6]  <--- 1st batch
-...  [14 15 16]] <--- 2nd batch
+... [[ 3  4  5]  <--- 1st batch input       2nd subset/ iteration
+...  [13 14 15]] <--- 2nd batch input
+... [[ 4  5  6]  <--- 1st batch target
+...  [14 15 16]] <--- 2nd batch target
 ...
-... [[ 6  7  8]                     3rd subset
+... [[ 6  7  8]                             3rd subset/ iteration
 ...  [16 17 18]]
 ... [[ 7  8  9]
 ...  [17 18 19]]
->>> The first batch learn the sequence info from 0 to 9.
->>> The second batch learn the sequence info from 10 to 19.
-
-This is the reimpmentation of the TensorFlow official PTB example in
-tensorflow/models/rnn/ptb
 
 About RNN
 ----------
@@ -48,7 +57,6 @@ More TensorFlow official RNN examples can be found here
 $ RNN for PTB : https://www.tensorflow.org/versions/master/tutorials/recurrent/index.html#recurrent-neural-networks
 $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
 $ translation : tensorflow/models/rnn/translate
-
 """
 
 """Example / benchmark for building a PTB LSTM model.
@@ -88,7 +96,7 @@ $ tar xvf simple-examples.tgz
 
 flags = tf.flags
 flags.DEFINE_string(
-    "model", "medium",
+    "model", "small",
     "A type of model. Possible options are: small, medium, large.")
 FLAGS = flags.FLAGS
 
@@ -288,43 +296,47 @@ def main(_):
         then different inferences share the same parameters.
         """
         print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
-        with tf.variable_scope("model", reuse=reuse):
+        initializer = tf.random_uniform_initializer(init_scale, init_scale)
+        with tf.variable_scope("model", reuse=reuse):#, initializer=initializer):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.EmbeddingInputlayer(
                             inputs = x,
                             vocabulary_size = vocab_size,
                             embedding_size = hidden_size,
-                            name ='embedding_layer') #shape=(20, 35, 650), Correct
+                            E_init=tf.random_uniform_initializer(-init_scale, init_scale),
+                            name ='embedding_layer') # (20, 35, 650), Correct
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
             network = tl.layers.RNNLayer(network,
                             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
                             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
                             n_hidden=hidden_size,
+                            initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                             n_steps=num_steps,
                             return_last=False,
-                            # is_reshape=False,
                             name='basic_lstm_layer1')
             lstm1 = network
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
             network = tl.layers.RNNLayer(network,
                             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
-                            cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
+                            cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
                             n_hidden=hidden_size,
+                            initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                             n_steps=num_steps,
                             return_last=False,
-                            # is_reshape=False,
+                            return_seq_2d=True,
                             name='basic_lstm_layer2')
-            lstm2 = network
-            # print(network.outputs) # shape=(20, 35, 650)in ptb tutorial it is a list shape=(700, 650), need to reshape
-            network = tl.layers.ReshapeLayer(network, shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            # print(network.outputs) # shape=(700, 650)
-            # exit()
+            lstm2 = network # (20, 35, 650)  Correct
+            # if return_seq_2d=False, in the last RNN layer, you can reshape the
+            # outputs as follow:
+            # network = tl.layers.ReshapeLayer(network, shape=[-1, int(network.outputs._shape[-1])], name='reshape') # shape=(700, 650) Correct
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
             network = tl.layers.DenseLayer(network, n_units=vocab_size,
-                                act = tl.activation.identity, name='output_layer')
+                            W_init=tf.random_uniform_initializer(-init_scale, init_scale),
+                            b_init=tf.random_uniform_initializer(-init_scale, init_scale),
+                            act = tl.activation.identity, name='output_layer')
         return network, lstm1, lstm2
 
     # Inference for Training
@@ -334,15 +346,6 @@ def main(_):
     # Inference for Testing
     network_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
     sess.run(tf.initialize_all_variables())
-    # print(network.print_params())
-    # print(network.count_params())
-    # print(network.all_params)
-    # print(network_val.all_params)
-    # print(network_test.all_params)
-    # print()
-    # print(network.all_drop)
-    # print(network_val.all_drop)
-    # print(network_test.all_drop)
 
     # c, h = lstm1.final_state
     # print(c)    # Tensor(shape=(20, 650), dtype=float32)
@@ -350,11 +353,13 @@ def main(_):
 
     # Cost for Training
     logits = network.outputs
-    # print(logits)   # shape=(700, 10000)  Correct, in ptb tutorial, it is shape=(700, 10000)
-    # print(targets)  # shape=(?, 35)      in ptb tutorial, it is shape=(20, 35)
+    # print(logits)   # shape=(700, 10000)  Correct, in ptb tutorial, shape=(700, 10000)
+    # print(targets)  # shape=(?, 35)      in ptb tutorial, shape=(20, 35)
+    # print(tf.reshape(targets, [-1]))    # (?,)
+    # exit()
 
     def loss_fn(logits, targets, batch_size, num_steps):
-        loss = tf.nn.seq2seq.sequence_loss_by_example(
+        loss = tf.nn.seq2seq.sequence_loss_by_example(  # implement softmax inside
             [logits],
             [tf.reshape(targets, [-1])],
             [tf.ones([batch_size * num_steps])])
@@ -369,7 +374,8 @@ def main(_):
     cost_test = loss_fn(network_val.outputs, targets, batch_size=1, num_steps=1)
 
     # Truncated Backpropagation for training
-    lr = tf.Variable(0.0, trainable=False)
+    with tf.variable_scope('learning_rate'):
+        lr = tf.Variable(0.0, trainable=False)
     tvars = tf.trainable_variables()
     grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars),
                                       max_grad_norm)
@@ -378,46 +384,37 @@ def main(_):
 
     sess.run(tf.initialize_all_variables())
 
+    network.print_params()
+    network.print_layers()
+    tl.layers.print_all_variables()
+
+
     print("\nStart learning the language model")
     for i in range(max_max_epoch):
         new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
         sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
+        # Training
         print("Epoch: %d Learning rate: %.3f" % (i + 1, sess.run(lr)))
-        # train_perplexity = run_epoch(sess, m, train_data, train_op,
-        #                            verbose=True)
-        # train_perplexity = run_epoch(sess, cost=cost, final_state=, input_data, targets, initial_state, num_steps, batch_size, data, eval_op, verbose=False):
-
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
         start_time = time.time()
         costs = 0.0; iters = 0
-        # state = initial_state.eval()
-        state_lstm1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
-        state_lstm2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
-        # print(state_lstm2.shape)      # (20, 1300)
-        # print(lstm1.initial_state)    # (20, 1300)
-        # exit()
+        state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)   # reset the state at the begining of every epoch
+        state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
+
         for step, (x, y) in enumerate(reader.ptb_iterator(train_data, batch_size,
                                                         num_steps)):
-            print(input_data)
-            print(targets)
-            print(type(x), x.shape, x.dtype)
-            print(type(y), y.shape, y.dtype)
-            # exit()
-            _cost, _ = sess.run([cost,  train_op],
-                                     {input_data: x,
-                                      targets: y,
-                                      })
+            feed_dict = {input_data: x, targets: y,
+                        lstm1.initial_state: state1,
+                        lstm2.initial_state: state2,
+                        }
+            feed_dict.update( network.all_drop )    # For training, enable dropout
+            _cost, state1, state2, _ = sess.run([cost, lstm1.final_state, lstm2.final_state,  train_op],
+                                            feed_dict=feed_dict) # BUG
 
-            # _cost, state_lstm1, state_lstm2, _ = sess.run([cost, lstm1.final_state, lstm2.final_state, train_op],
-            #                          {input_data: x,
-            #                           targets: y,
-            #                           lstm1.initial_state: state_lstm1,
-            #                           lstm2.initial_state: state_lstm2,
-            #                           })
             costs += _cost; iters += num_steps
 
-            if verbose and step % (epoch_size // 10) == 10:
+            if step % (epoch_size // 10) == 10:
                 print("%.3f perplexity: %.3f speed: %.0f wps" %
                     (step * 1.0 / epoch_size, np.exp(costs / iters),
                     iters * batch_size / (time.time() - start_time)))
@@ -426,12 +423,96 @@ def main(_):
         print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
 
 
+        # Validing
+        epoch_size = ((len(valid_data) // batch_size) - 1) // num_steps
+        start_time = time.time()
+        costs = 0.0; iters = 0
+        state1 = tl.layers.initialize_rnn_state(lstm1_val.initial_state)   # reset the state at the begining of every epoch
+        state2 = tl.layers.initialize_rnn_state(lstm2_val.initial_state)
 
-    #    valid_perplexity = run_epoch(sess, mvalid, valid_data, tf.no_op())
-    #    print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
+        for step, (x, y) in enumerate(reader.ptb_iterator(valid_data, batch_size,
+                                                        num_steps)):
+            feed_dict = {input_data: x, targets: y,
+                        lstm1_val.initial_state: state1,
+                        lstm2_val.initial_state: state2,
+                        }
+            # feed_dict.update( network_val.all_drop )    # For training, enable dropout
+            _cost, state1, state2, _ = sess.run([cost_val, lstm1_val.final_state, lstm2_val.final_state,  tf.no_op()],
+                                            feed_dict=feed_dict) # BUG
+
+            costs += _cost; iters += num_steps
+        valid_perplexity = np.exp(costs / iters)
+        print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
+
+
+    # Testing
+    epoch_size = ((len(test_data) // 1) - 1) // 1
+    start_time = time.time()
+    costs = 0.0; iters = 0
+    state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)   # reset the state at the begining of every epoch
+    state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
+
+    for step, (x, y) in enumerate(reader.ptb_iterator(test_data, batch_size=1,
+                                                    num_steps=1)):
+        feed_dict = {input_data_test: x, targets: y,
+                    lstm1_test.initial_state: state1,
+                    lstm2_test.initial_state: state2,
+                    }
+        # feed_dict.update( network_val.all_drop )    # For training, enable dropout
+        _cost, state1, state2, _ = sess.run([cost_test, lstm1_test.final_state, lstm2_test.final_state,  tf.no_op()],
+                                        feed_dict=feed_dict) # BUG
+
+        costs += _cost; iters += num_steps
+    test_perplexity = np.exp(costs / iters)
+    print("Test Perplexity: %.3f" % (test_perplexity))
+# def run_epoch(session, m, data, eval_op, verbose=False):
+#   """Runs the model on the given data."""
+#   epoch_size = ((len(data) // m.batch_size) - 1) // m.num_steps
+#   start_time = time.time()
+#   costs = 0.0
+#   iters = 0
+#   state = m.initial_state.eval()
+#   state2 = m.initial_state2.eval()
+#   for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
+#                                                     m.num_steps)):
+#     cost, state, state2, _ = session.run([m.cost, m.final_state, m.final_state2, eval_op],
+#                                  {m.input_data: x,
+#                                   m.targets: y,
+#                                   m.initial_state: state,
+#                                   m.initial_state2: state2})
+#     costs += cost
+#     iters += m.num_steps
+#
+#     if verbose and step % (epoch_size // 10) == 10:
+#       print("%.3f perplexity: %.3f speed: %.0f wps" %
+#             (step * 1.0 / epoch_size, np.exp(costs / iters),
+#              iters * m.batch_size / (time.time() - start_time)))
+#
+#   return np.exp(costs / iters)
+
+
+    ## original
+    #     print("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
+    #     train_perplexity = run_epoch(session, m, train_data, m.train_op,
+    #                                verbose=True)
+    #     print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
+    #     valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op())
+    #     print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
     #
-    # test_perplexity = run_epoch(sess, mtest, test_data, tf.no_op())
+    # test_perplexity = run_epoch(session, mtest, test_data, tf.no_op())
     # print("Test Perplexity: %.3f" % test_perplexity)
+
 
 if __name__ == "__main__":
     tf.app.run()
+
+## medium
+# Start learning the language model         INCORRECT
+# Epoch: 1 Learning rate: 1.000
+# 0.008 perplexity: 12055.703 speed: 481 wps
+# 0.107 perplexity: 1435.919 speed: 443 wps
+# 0.206 perplexity: 1053.871 speed: 453 wps
+# 0.306 perplexity: 872.658 speed: 457 wps
+# 0.405 perplexity: 773.015 speed: 457 wps
+# 0.505 perplexity: 703.303 speed: 458 wps
+# 0.604 perplexity: 642.311 speed: 459 wps

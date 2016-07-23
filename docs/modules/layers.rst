@@ -29,6 +29,8 @@ you to apply ``tf.nn.lrn`` on ``Layer.outputs``.
    flatten_reshape
    clear_layers_name
    set_name_reuse
+   print_all_variables
+   initialize_rnn_state
 
 
 Basic layer
@@ -93,3 +95,5 @@ Helper functions
 .. autofunction:: flatten_reshape
 .. autofunction:: clear_layers_name
 .. autofunction:: set_name_reuse
+.. autofunction:: print_all_variables
+.. autofunction:: initialize_rnn_state

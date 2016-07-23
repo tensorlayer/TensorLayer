@@ -31,7 +31,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 -
 
-####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对开发感兴趣可把微信号发送到haodong_cs@163.com。
+####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对人工智能非常感兴趣可把微信号发送到 haodong_cs@163.com 申请加入。
 
 ####🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face. 
 
@@ -328,13 +328,13 @@ This library requires Tensorflow (version >= 0.8) to be installed: *[Tensorflow 
 
 **<font color="grey"> GPU Setup: </font>**
 
-GPU-version of Tensorflow requires CUDA and CuDNN to be installed.
+GPU-version of Tensorflow requires CUDA and cuDNN to be installed.
 
-*[CUDA, CuDNN installation instructions](https://www.tensorflow.org/versions/r0.9/get_started/os_setup.html#optional-install-cuda-gpus-on-linux)*.
+*[CUDA, CuDNN installation instructions](https://www.tensorflow.org/versions/master/get_started/os_setup.html#optional-install-cuda-gpus-on-linux)*.
 
 *[CUDA download](https://developer.nvidia.com/cuda-downloads)*.
 
-*[CuDNN download](https://developer.nvidia.com/cudnn)*.
+*[cuDNN download](https://developer.nvidia.com/cudnn)*.
 
 **<font color="grey"> TensorLayer Installation: </font>**
 
