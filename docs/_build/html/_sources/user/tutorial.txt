@@ -40,7 +40,9 @@ Run the MNIST example
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
-included in the source distribution of TensorLayer.
+included in the source distribution of TensorLayer. MNIST dataset is
+handwritten digits that is commonly used for training various
+image processing systems, each of digit has 28x28 pixels.
 
 We assume that you have already run through the :ref:`installation`. If you
 haven't done so already, get a copy of the source tree of TensorLayer, and navigate
