@@ -7,7 +7,9 @@ Tutorial
 For deep learning, this tutorial will walk you through building a handwritten
 digits classifier using the MNIST dataset, arguably the "Hello World" of neural
 networks. For reinforcement learning, we will let computer learns to play Pong
-game from the original screen inputs.
+game from the original screen inputs. For nature language processing, we start
+from word embedding, and then describe language modeling and machine
+translation.
 
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
@@ -40,7 +42,7 @@ Run the MNIST example
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
-included in the source distribution of TensorLayer. MNIST dataset is
+included in the source distribution of TensorLayer. MNIST dataset contains 60000
 handwritten digits that is commonly used for training various
 image processing systems, each of digit has 28x28 pixels.
 
