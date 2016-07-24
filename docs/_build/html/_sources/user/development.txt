@@ -49,7 +49,7 @@ you are welcome to contribute your method to TensorLayer.
 Report bugs
 ~~~~~~~~~~~
 
-Report bugs at the `GitHub <https://github.com/zsdonghao/TensorLayer>`_,
+Report bugs at the `GitHub`_,
 If you are reporting a bug, please include:
 
 * your TensorLayer and TensorFlow version.
