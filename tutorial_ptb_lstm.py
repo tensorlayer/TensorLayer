@@ -13,24 +13,29 @@ import time
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
-Hao Dong: This tutorial can also be considered as pre-training the word embedding
-matrix.
+The batch_size can be seem as how many concurrent computations.\n
+As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
+The second batch learn the sequence information by using 10 to 19.\n
+So it ignores the information from 9 to 10 !\n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
 
-The training data will be generated as follow:\n
-where batch_size can be seem as how many concurrent computation.\n
-As the this example shows. The first batch learn the sequence info from 0 to 9.\n
-The second batch learn the sequence info from 10 to 19.\n
-So it ignores the info from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all info from 0 to 20.\n
-However, if your dataset is "long" enough (a text corpus usually has billions words),
-the ignored info would not effect the final result.
+The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
+batch_size reflects how many examples we consider in each iteration, while in
+PTB example, batch_size is how many concurrent processes (segments)
+for speed up computation.
+
+Some Information will be ignored if batch_size > 1, however, if your dataset
+is "long" enough (a text corpus usually has billions words), the ignored
+information would not effect the final result.
 
 In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
 At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
 segments, then go through 20 segments separately.
 
+The training data will be generated as follow:\n
+
 >>> train_data = [i for i in range(20)]
->>> for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):
+>>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
 >>>     x, y = batch
 >>>     print(x, '\n',y)
 ... [[ 0  1  2] <---x                       1st subset/ iteration
@@ -47,6 +52,9 @@ segments, then go through 20 segments separately.
 ...  [16 17 18]]
 ... [[ 7  8  9]
 ...  [17 18 19]]
+
+Hao Dong: This example can also be considered as pre-training of the word
+embedding matrix.
 
 About RNN
 ----------
@@ -96,130 +104,10 @@ $ tar xvf simple-examples.tgz
 
 flags = tf.flags
 flags.DEFINE_string(
-    "model", "small",
+    "model", "medium",
     "A type of model. Possible options are: small, medium, large.")
 FLAGS = flags.FLAGS
 
-def ptb_iterator(raw_data, batch_size, num_steps):
-    """Iterates on a list of words. Yields (Returns) the source contexts and
-    the target context by the given batch_size and num_steps (sequence_length).
-
-    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,
-    raw_data = [i for i in range(100)]
-
-    In TensorFlow's tutorial, this generates batch_size pointers into the raw
-    PTB data, and allows minibatch iteration along these pointers.
-
-    Parameters
-    ----------
-    raw_data : a list
-            the context in list format; note that context usually be
-            represented by splitting by space, and then convert to unique
-            word IDs.
-    batch_size : int
-            the batch size.
-    num_steps : int
-            the number of unrolls. i.e. sequence_length
-
-    Yields
-    ------
-    Pairs of the batched data, each a matrix of shape [batch_size, num_steps].
-    The second element of the tuple is the same data time-shifted to the
-    right by one.
-
-    Raises
-    ------
-    ValueError : if batch_size or num_steps are too high.
-
-    Examples
-    --------
-    >>> train_data = [i for i in range(20)]
-    >>> for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):
-    >>>     x, y = batch
-    >>>     print(x, '\n',y)
-    ... [[ 0  1  2] <---x   1st batch
-    ...  [10 11 12]]
-    ... [[ 1  2  3] <---y
-    ...  [11 12 13]]
-    ...
-    ... [[ 3  4  5]         2nd batch
-    ...  [13 14 15]]
-    ... [[ 4  5  6]
-    ...  [14 15 16]]
-    ...
-    ... [[ 6  7  8]         3rd batch
-    ...  [16 17 18]]
-    ... [[ 7  8  9]
-    ...  [17 18 19]]
-
-    Code Reference
-    --------------
-    tensorflow/models/rnn/ptb/reader.py
-    """
-    raw_data = np.array(raw_data, dtype=np.int32)
-
-    data_len = len(raw_data)
-    batch_len = data_len // batch_size
-    data = np.zeros([batch_size, batch_len], dtype=np.int32)
-    for i in range(batch_size):
-        data[i] = raw_data[batch_len * i:batch_len * (i + 1)]
-
-    epoch_size = (batch_len - 1) // num_steps
-
-    if epoch_size == 0:
-        raise ValueError("epoch_size == 0, decrease batch_size or num_steps")
-
-    for i in range(epoch_size):
-        x = data[:, i*num_steps:(i+1)*num_steps]
-        y = data[:, i*num_steps+1:(i+1)*num_steps+1]
-        yield (x, y)
-
-
-
-
-def run_epoch_original(session, m, data, eval_op, verbose=False):
-  """Runs the model on the given data."""
-  epoch_size = ((len(data) // m.batch_size) - 1) // m.num_steps
-  start_time = time.time()
-  costs = 0.0
-  iters = 0
-  state = m.initial_state.eval()
-  for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
-                                                    m.num_steps)):
-    cost, state, _ = session.run([m.cost, m.final_state, eval_op],
-                                 {m.input_data: x,
-                                  m.targets: y,
-                                  m.initial_state: state})
-    costs += cost
-    iters += m.num_steps
-
-    if verbose and step % (epoch_size // 10) == 10:
-      print("%.3f perplexity: %.3f speed: %.0f wps" %
-            (step * 1.0 / epoch_size, np.exp(costs / iters),
-             iters * m.batch_size / (time.time() - start_time)))
-
-  return np.exp(costs / iters)
-
-def run_epoch(sess, cost, final_state, input_data, targets, initial_state, num_steps, batch_size, data, eval_op, verbose=False):
-    """Runs the model on the given data."""
-    epoch_size = ((len(data) // m.batch_size) - 1) // m.num_steps
-    start_time = time.time()
-    costs = 0.0; iters = 0
-    state = initial_state.eval()
-    for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
-                                                    m.num_steps)):
-        cost, state, _ = sess.run([cost, final_state, eval_op],
-                                 {input_data: x,
-                                  targets: y,
-                                  initial_state: state})
-        costs += cost; iters += num_steps
-
-        if verbose and step % (epoch_size // 10) == 10:
-            print("%.3f perplexity: %.3f speed: %.0f wps" %
-                (step * 1.0 / epoch_size, np.exp(costs / iters),
-                iters * batch_size / (time.time() - start_time)))
-
-    return np.exp(costs / iters)
 
 
 def main(_):
@@ -230,20 +118,6 @@ def main(_):
     of zeros and gets updated after reading each word. Also, for computational
     reasons, we will process data in mini-batches of size batch_size.
     """
-    train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
-    # train_data = train_data[0:int(100000/2)]    # for fast testing
-    print('len(train_data) {}'.format(len(train_data))) # 929589 a list of int
-    print('len(valid_data) {}'.format(len(valid_data))) # 73760  a list of int
-    print('len(test_data)  {}'.format(len(test_data)))  # 82430  a list of int
-    print('vocab_size      {}'.format(vocab_size))      # 10000
-    # exit()
-
-    sess = tf.InteractiveSession()
-
-    # config = SmallConfig()
-    # eval_config = SmallConfig()
-    # eval_config.batch_size = 1
-    # eval_config.num_steps = 1
 
     if FLAGS.model == "small":
         init_scale = 0.1
@@ -286,92 +160,112 @@ def main(_):
     else:
         raise ValueError("Invalid model: %s", FLAGS.model)
 
-    # For words, one int represents one word, so num_steps == n_features.
-    input_data = tf.placeholder(tf.int32, [batch_size, num_steps]) # Training, Validing
-    input_data_test = tf.placeholder(tf.int32, [1, 1])     # Testing (Predicting)
-    targets = tf.placeholder(tf.int32, [None, num_steps])
+    # Load PTB dataset
+    train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
+    # train_data = train_data[0:int(100000/5)]    # for fast testing
+    print('len(train_data) {}'.format(len(train_data))) # 929589 a list of int
+    print('len(valid_data) {}'.format(len(valid_data))) # 73760  a list of int
+    print('len(test_data)  {}'.format(len(test_data)))  # 82430  a list of int
+    print('vocab_size      {}'.format(vocab_size))      # 10000
+
+    sess = tf.InteractiveSession()
+
+    # One int represents one word, the meaning of batch_size here is not the
+    # same with MNIST example, it is the number of concurrent processes for
+    # computational reasons.
+
+    # Training and Validing
+    input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
+    targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+    # Testing (Evaluation)
+    input_data_test = tf.placeholder(tf.int32, [1, 1])
+    targets_test = tf.placeholder(tf.int32, [1, 1])
 
     def inference(x, is_training, num_steps, reuse=None):
         """If reuse is True, the inferences use the existing parameters,
         then different inferences share the same parameters.
         """
-        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
+        print("\nnum_steps : %d, is_training : %s, reuse : %s" %
+                                                (num_steps, is_training, reuse))
         initializer = tf.random_uniform_initializer(init_scale, init_scale)
-        with tf.variable_scope("model", reuse=reuse):#, initializer=initializer):
+        with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.EmbeddingInputlayer(
-                            inputs = x,
-                            vocabulary_size = vocab_size,
-                            embedding_size = hidden_size,
-                            E_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                            name ='embedding_layer') # (20, 35, 650), Correct
+                        inputs = x,
+                        vocabulary_size = vocab_size,
+                        embedding_size = hidden_size,
+                        E_init = tf.random_uniform_initializer(-init_scale, init_scale),
+                        name ='embedding_layer')
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
             network = tl.layers.RNNLayer(network,
-                            cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
-                            cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
-                            n_hidden=hidden_size,
-                            initializer=tf.random_uniform_initializer(-init_scale, init_scale),
-                            n_steps=num_steps,
-                            return_last=False,
-                            name='basic_lstm_layer1')
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
+                        n_hidden=hidden_size,
+                        initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+                        n_steps=num_steps,
+                        return_last=False,
+                        name='basic_lstm_layer1')
             lstm1 = network
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
             network = tl.layers.RNNLayer(network,
-                            cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
-                            cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
-                            n_hidden=hidden_size,
-                            initializer=tf.random_uniform_initializer(-init_scale, init_scale),
-                            n_steps=num_steps,
-                            return_last=False,
-                            return_seq_2d=True,
-                            name='basic_lstm_layer2')
-            lstm2 = network # (20, 35, 650)  Correct
-            # if return_seq_2d=False, in the last RNN layer, you can reshape the
-            # outputs as follow:
-            # network = tl.layers.ReshapeLayer(network, shape=[-1, int(network.outputs._shape[-1])], name='reshape') # shape=(700, 650) Correct
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
+                        n_hidden=hidden_size,
+                        initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+                        n_steps=num_steps,
+                        return_last=False,
+                        return_seq_2d=True,
+                        name='basic_lstm_layer2')
+            lstm2 = network
+            # Alternatively, if return_seq_2d=False, in the above RNN layer,
+            # you can reshape the outputs as follow:
+            # network = tl.layers.ReshapeLayer(network,
+            #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
-            network = tl.layers.DenseLayer(network, n_units=vocab_size,
-                            W_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                            b_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                            act = tl.activation.identity, name='output_layer')
+            network = tl.layers.DenseLayer(network,
+                        n_units=vocab_size,
+                        W_init=tf.random_uniform_initializer(-init_scale, init_scale),
+                        b_init=tf.random_uniform_initializer(-init_scale, init_scale),
+                        act = tl.activation.identity, name='output_layer')
         return network, lstm1, lstm2
 
     # Inference for Training
-    network, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
+    network, lstm1, lstm2 = inference(input_data,
+                            is_training=True, num_steps=num_steps, reuse=None)
     # Inference for Validating
-    network_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
-    # Inference for Testing
-    network_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
+    network_val, lstm1_val, lstm2_val = inference(input_data,
+                            is_training=False, num_steps=num_steps, reuse=True)
+    # Inference for Testing (Evaluation)
+    network_test, lstm1_test, lstm2_test = inference(input_data_test,
+                            is_training=False, num_steps=1, reuse=True)
+
     sess.run(tf.initialize_all_variables())
 
-    # c, h = lstm1.final_state
-    # print(c)    # Tensor(shape=(20, 650), dtype=float32)
-    # print(h)    # Tensor(shape=(20, 650), dtype=float32)
-
-    # Cost for Training
-    logits = network.outputs
-    # print(logits)   # shape=(700, 10000)  Correct, in ptb tutorial, shape=(700, 10000)
-    # print(targets)  # shape=(?, 35)      in ptb tutorial, shape=(20, 35)
-    # print(tf.reshape(targets, [-1]))    # (?,)
-    # exit()
-
-    def loss_fn(logits, targets, batch_size, num_steps):
-        loss = tf.nn.seq2seq.sequence_loss_by_example(  # implement softmax inside
-            [logits],
+    def loss_fn(outputs, targets, batch_size, num_steps):
+        # Returns the cost function of Cross-entropy of two sequences, implement
+        # softmax internally.
+        # outputs : 2D tensor [batch_size*num_steps, n_units of output layer]
+        # targets : 2D tensor [batch_size, num_steps], need to be reshaped.
+        # batch_size : RNN batch_size, number of concurrent processes.
+        # n_examples = batch_size * num_steps
+        # so
+        # cost is the averaged cost of each mini-batch (concurrent process).
+        loss = tf.nn.seq2seq.sequence_loss_by_example(
+            [outputs],
             [tf.reshape(targets, [-1])],
             [tf.ones([batch_size * num_steps])])
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets, batch_size=batch_size, num_steps=num_steps)
+    cost = loss_fn(network.outputs, targets, batch_size, num_steps)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets, batch_size=batch_size, num_steps=num_steps)
-    # Cost for Testing
-    cost_test = loss_fn(network_val.outputs, targets, batch_size=1, num_steps=1)
+    cost_val = loss_fn(network_val.outputs, targets, batch_size, num_steps)
+    # Cost for Testing (Evaluation)
+    cost_test = loss_fn(network_test.outputs, targets_test, 1, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -388,9 +282,10 @@ def main(_):
     network.print_layers()
     tl.layers.print_all_variables()
 
-
-    print("\nStart learning the language model")
+    print("\nStart learning a language model by using PTB dataset")
     for i in range(max_max_epoch):
+        # decreases the initial learning rate after several
+        # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
         new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
         sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
@@ -399,120 +294,252 @@ def main(_):
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
         start_time = time.time()
         costs = 0.0; iters = 0
-        state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)   # reset the state at the begining of every epoch
+        # reset all states at the begining of every epoch
+        state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
-
-        for step, (x, y) in enumerate(reader.ptb_iterator(train_data, batch_size,
-                                                        num_steps)):
+        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data,
+                                                    batch_size, num_steps)):
             feed_dict = {input_data: x, targets: y,
                         lstm1.initial_state: state1,
                         lstm2.initial_state: state2,
                         }
-            feed_dict.update( network.all_drop )    # For training, enable dropout
-            _cost, state1, state2, _ = sess.run([cost, lstm1.final_state, lstm2.final_state,  train_op],
-                                            feed_dict=feed_dict) # BUG
-
+            # For training, enable dropout
+            feed_dict.update( network.all_drop )
+            _cost, state1, state2, _ = sess.run([cost,
+                                            lstm1.final_state,
+                                            lstm2.final_state,
+                                            train_op],
+                                            feed_dict=feed_dict
+                                            )
             costs += _cost; iters += num_steps
 
             if step % (epoch_size // 10) == 10:
                 print("%.3f perplexity: %.3f speed: %.0f wps" %
                     (step * 1.0 / epoch_size, np.exp(costs / iters),
                     iters * batch_size / (time.time() - start_time)))
-
         train_perplexity = np.exp(costs / iters)
         print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
 
-
         # Validing
-        epoch_size = ((len(valid_data) // batch_size) - 1) // num_steps
         start_time = time.time()
         costs = 0.0; iters = 0
-        state1 = tl.layers.initialize_rnn_state(lstm1_val.initial_state)   # reset the state at the begining of every epoch
+        # reset all states at the begining of every epoch
+        state1 = tl.layers.initialize_rnn_state(lstm1_val.initial_state)
         state2 = tl.layers.initialize_rnn_state(lstm2_val.initial_state)
-
-        for step, (x, y) in enumerate(reader.ptb_iterator(valid_data, batch_size,
-                                                        num_steps)):
+        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data,
+                                                    batch_size, num_steps)):
             feed_dict = {input_data: x, targets: y,
                         lstm1_val.initial_state: state1,
                         lstm2_val.initial_state: state2,
                         }
-            # feed_dict.update( network_val.all_drop )    # For training, enable dropout
-            _cost, state1, state2, _ = sess.run([cost_val, lstm1_val.final_state, lstm2_val.final_state,  tf.no_op()],
-                                            feed_dict=feed_dict) # BUG
-
+            _cost, state1, state2, _ = sess.run([cost_val,
+                                            lstm1_val.final_state,
+                                            lstm2_val.final_state,
+                                            tf.no_op()],
+                                            feed_dict=feed_dict
+                                            )
             costs += _cost; iters += num_steps
         valid_perplexity = np.exp(costs / iters)
         print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
 
 
+    print("Evaluation")
     # Testing
-    epoch_size = ((len(test_data) // 1) - 1) // 1
+    # go through the test set step by step, it will take a while.
     start_time = time.time()
     costs = 0.0; iters = 0
-    state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)   # reset the state at the begining of every epoch
+    # reset all states at the begining
+    state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
     state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
-
-    for step, (x, y) in enumerate(reader.ptb_iterator(test_data, batch_size=1,
-                                                    num_steps=1)):
-        feed_dict = {input_data_test: x, targets: y,
+    for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data,
+                                            batch_size=1, num_steps=1)):
+        feed_dict = {input_data_test: x, targets_test: y,
                     lstm1_test.initial_state: state1,
                     lstm2_test.initial_state: state2,
                     }
-        # feed_dict.update( network_val.all_drop )    # For training, enable dropout
-        _cost, state1, state2, _ = sess.run([cost_test, lstm1_test.final_state, lstm2_test.final_state,  tf.no_op()],
-                                        feed_dict=feed_dict) # BUG
-
-        costs += _cost; iters += num_steps
+        _cost, state1, state2 = sess.run([cost_test,
+                                        lstm1_test.final_state,
+                                        lstm2_test.final_state],
+                                        feed_dict=feed_dict
+                                        )
+        costs += _cost; iters += 1
     test_perplexity = np.exp(costs / iters)
-    print("Test Perplexity: %.3f" % (test_perplexity))
-# def run_epoch(session, m, data, eval_op, verbose=False):
-#   """Runs the model on the given data."""
-#   epoch_size = ((len(data) // m.batch_size) - 1) // m.num_steps
-#   start_time = time.time()
-#   costs = 0.0
-#   iters = 0
-#   state = m.initial_state.eval()
-#   state2 = m.initial_state2.eval()
-#   for step, (x, y) in enumerate(reader.ptb_iterator(data, m.batch_size,
-#                                                     m.num_steps)):
-#     cost, state, state2, _ = session.run([m.cost, m.final_state, m.final_state2, eval_op],
-#                                  {m.input_data: x,
-#                                   m.targets: y,
-#                                   m.initial_state: state,
-#                                   m.initial_state2: state2})
-#     costs += cost
-#     iters += m.num_steps
-#
-#     if verbose and step % (epoch_size // 10) == 10:
-#       print("%.3f perplexity: %.3f speed: %.0f wps" %
-#             (step * 1.0 / epoch_size, np.exp(costs / iters),
-#              iters * m.batch_size / (time.time() - start_time)))
-#
-#   return np.exp(costs / iters)
-
-
-    ## original
-    #     print("Epoch: %d Learning rate: %.3f" % (i + 1, session.run(m.lr)))
-    #     train_perplexity = run_epoch(session, m, train_data, m.train_op,
-    #                                verbose=True)
-    #     print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
-    #     valid_perplexity = run_epoch(session, mvalid, valid_data, tf.no_op())
-    #     print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
-    #
-    # test_perplexity = run_epoch(session, mtest, test_data, tf.no_op())
-    # print("Test Perplexity: %.3f" % test_perplexity)
+    print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))
 
 
 if __name__ == "__main__":
     tf.app.run()
 
-## medium
-# Start learning the language model         INCORRECT
+## log of SmallConfig
+# Start learning a language model by using PTB dataset
 # Epoch: 1 Learning rate: 1.000
-# 0.008 perplexity: 12055.703 speed: 481 wps
-# 0.107 perplexity: 1435.919 speed: 443 wps
-# 0.206 perplexity: 1053.871 speed: 453 wps
-# 0.306 perplexity: 872.658 speed: 457 wps
-# 0.405 perplexity: 773.015 speed: 457 wps
-# 0.505 perplexity: 703.303 speed: 458 wps
-# 0.604 perplexity: 642.311 speed: 459 wps
+# 0.004 perplexity: 5512.735 speed: 4555 wps
+# 0.104 perplexity: 841.289 speed: 8823 wps
+# 0.204 perplexity: 626.273 speed: 9292 wps
+# 0.304 perplexity: 505.628 speed: 9472 wps
+# 0.404 perplexity: 435.580 speed: 9551 wps
+# 0.504 perplexity: 390.108 speed: 9555 wps
+# 0.604 perplexity: 351.379 speed: 9546 wps
+# 0.703 perplexity: 324.846 speed: 9579 wps
+# 0.803 perplexity: 303.824 speed: 9574 wps
+# 0.903 perplexity: 284.468 speed: 9551 wps
+# Epoch: 1 Train Perplexity: 269.981
+# Epoch: 1 Valid Perplexity: 178.561
+# Epoch: 2 Learning rate: 1.000
+# 0.004 perplexity: 211.632 speed: 7697 wps
+# 0.104 perplexity: 151.509 speed: 9488 wps
+# 0.204 perplexity: 158.947 speed: 9674 wps
+# 0.304 perplexity: 153.963 speed: 9806 wps
+# 0.404 perplexity: 150.938 speed: 9817 wps
+# 0.504 perplexity: 148.413 speed: 9824 wps
+# 0.604 perplexity: 143.763 speed: 9765 wps
+# 0.703 perplexity: 141.616 speed: 9731 wps
+# 0.803 perplexity: 139.618 speed: 9781 wps
+# 0.903 perplexity: 135.880 speed: 9735 wps
+# Epoch: 2 Train Perplexity: 133.771
+# Epoch: 2 Valid Perplexity: 142.595
+# Epoch: 3 Learning rate: 1.000
+# 0.004 perplexity: 146.902 speed: 8345 wps
+# 0.104 perplexity: 105.647 speed: 9572 wps
+# 0.204 perplexity: 114.261 speed: 9585 wps
+# 0.304 perplexity: 111.237 speed: 9586 wps
+# 0.404 perplexity: 110.181 speed: 9605 wps
+# 0.504 perplexity: 109.383 speed: 9601 wps
+# 0.604 perplexity: 106.722 speed: 9635 wps
+# 0.703 perplexity: 106.075 speed: 9597 wps
+# 0.803 perplexity: 105.481 speed: 9624 wps
+# 0.903 perplexity: 103.262 speed: 9618 wps
+# Epoch: 3 Train Perplexity: 102.272
+# Epoch: 3 Valid Perplexity: 131.884
+# Epoch: 4 Learning rate: 1.000
+# 0.004 perplexity: 118.127 speed: 7867 wps
+# 0.104 perplexity: 85.530 speed: 9330 wps
+# 0.204 perplexity: 93.559 speed: 9399 wps
+# 0.304 perplexity: 91.141 speed: 9386 wps
+# 0.404 perplexity: 90.668 speed: 9462 wps
+# 0.504 perplexity: 90.366 speed: 9516 wps
+# 0.604 perplexity: 88.479 speed: 9477 wps
+# 0.703 perplexity: 88.275 speed: 9533 wps
+# 0.803 perplexity: 88.091 speed: 9560 wps
+# 0.903 perplexity: 86.430 speed: 9516 wps
+# Epoch: 4 Train Perplexity: 85.839
+# Epoch: 4 Valid Perplexity: 128.408
+# Epoch: 5 Learning rate: 1.000
+# 0.004 perplexity: 100.077 speed: 7682 wps
+# 0.104 perplexity: 73.856 speed: 9197 wps
+# 0.204 perplexity: 81.242 speed: 9266 wps
+# 0.304 perplexity: 79.315 speed: 9375 wps
+# 0.404 perplexity: 79.009 speed: 9439 wps
+# 0.504 perplexity: 78.874 speed: 9377 wps
+# 0.604 perplexity: 77.430 speed: 9436 wps
+# 0.703 perplexity: 77.415 speed: 9417 wps
+# 0.803 perplexity: 77.424 speed: 9407 wps
+# 0.903 perplexity: 76.083 speed: 9407 wps
+# Epoch: 5 Train Perplexity: 75.719
+# Epoch: 5 Valid Perplexity: 127.057
+# Epoch: 6 Learning rate: 0.500
+# 0.004 perplexity: 87.561 speed: 7130 wps
+# 0.104 perplexity: 64.202 speed: 9753 wps
+# 0.204 perplexity: 69.518 speed: 9537 wps
+# 0.304 perplexity: 66.868 speed: 9647 wps
+# 0.404 perplexity: 65.766 speed: 9538 wps
+# 0.504 perplexity: 64.967 speed: 9537 wps
+# 0.604 perplexity: 63.090 speed: 9565 wps
+# 0.703 perplexity: 62.415 speed: 9544 wps
+# 0.803 perplexity: 61.751 speed: 9504 wps
+# 0.903 perplexity: 60.027 speed: 9482 wps
+# Epoch: 6 Train Perplexity: 59.127
+# Epoch: 6 Valid Perplexity: 120.339
+# Epoch: 7 Learning rate: 0.250
+# 0.004 perplexity: 72.069 speed: 7683 wps
+# 0.104 perplexity: 53.331 speed: 9526 wps
+# 0.204 perplexity: 57.897 speed: 9572 wps
+# 0.304 perplexity: 55.557 speed: 9491 wps
+# 0.404 perplexity: 54.597 speed: 9483 wps
+# 0.504 perplexity: 53.817 speed: 9471 wps
+# 0.604 perplexity: 52.147 speed: 9511 wps
+# 0.703 perplexity: 51.473 speed: 9497 wps
+# 0.803 perplexity: 50.788 speed: 9521 wps
+# 0.903 perplexity: 49.203 speed: 9515 wps
+# Epoch: 7 Train Perplexity: 48.303
+# Epoch: 7 Valid Perplexity: 120.782
+# Epoch: 8 Learning rate: 0.125
+# 0.004 perplexity: 63.503 speed: 8425 wps
+# 0.104 perplexity: 47.324 speed: 9433 wps
+# 0.204 perplexity: 51.525 speed: 9653 wps
+# 0.304 perplexity: 49.405 speed: 9520 wps
+# 0.404 perplexity: 48.532 speed: 9487 wps
+# 0.504 perplexity: 47.800 speed: 9610 wps
+# 0.604 perplexity: 46.282 speed: 9554 wps
+# 0.703 perplexity: 45.637 speed: 9536 wps
+# 0.803 perplexity: 44.972 speed: 9493 wps
+# 0.903 perplexity: 43.506 speed: 9496 wps
+# Epoch: 8 Train Perplexity: 42.653
+# Epoch: 8 Valid Perplexity: 122.119
+# Epoch: 9 Learning rate: 0.062
+# 0.004 perplexity: 59.375 speed: 7158 wps
+# 0.104 perplexity: 44.223 speed: 9275 wps
+# 0.204 perplexity: 48.269 speed: 9459 wps
+# 0.304 perplexity: 46.273 speed: 9564 wps
+# 0.404 perplexity: 45.450 speed: 9604 wps
+# 0.504 perplexity: 44.749 speed: 9604 wps
+# 0.604 perplexity: 43.308 speed: 9619 wps
+# 0.703 perplexity: 42.685 speed: 9647 wps
+# 0.803 perplexity: 42.022 speed: 9673 wps
+# 0.903 perplexity: 40.616 speed: 9678 wps
+# Epoch: 9 Train Perplexity: 39.792
+# Epoch: 9 Valid Perplexity: 123.170
+# Epoch: 10 Learning rate: 0.031
+# 0.004 perplexity: 57.333 speed: 7183 wps
+# 0.104 perplexity: 42.631 speed: 9592 wps
+# 0.204 perplexity: 46.580 speed: 9518 wps
+# 0.304 perplexity: 44.625 speed: 9569 wps
+# 0.404 perplexity: 43.832 speed: 9576 wps
+# 0.504 perplexity: 43.153 speed: 9571 wps
+# 0.604 perplexity: 41.761 speed: 9557 wps
+# 0.703 perplexity: 41.159 speed: 9524 wps
+# 0.803 perplexity: 40.494 speed: 9527 wps
+# 0.903 perplexity: 39.111 speed: 9558 wps
+# Epoch: 10 Train Perplexity: 38.298
+# Epoch: 10 Valid Perplexity: 123.658
+# Epoch: 11 Learning rate: 0.016
+# 0.004 perplexity: 56.238 speed: 7190 wps
+# 0.104 perplexity: 41.771 speed: 9171 wps
+# 0.204 perplexity: 45.656 speed: 9415 wps
+# 0.304 perplexity: 43.719 speed: 9472 wps
+# 0.404 perplexity: 42.941 speed: 9483 wps
+# 0.504 perplexity: 42.269 speed: 9494 wps
+# 0.604 perplexity: 40.903 speed: 9530 wps
+# 0.703 perplexity: 40.314 speed: 9545 wps
+# 0.803 perplexity: 39.654 speed: 9580 wps
+# 0.903 perplexity: 38.287 speed: 9597 wps
+# Epoch: 11 Train Perplexity: 37.477
+# Epoch: 11 Valid Perplexity: 123.523
+# Epoch: 12 Learning rate: 0.008
+# 0.004 perplexity: 55.552 speed: 7317 wps
+# 0.104 perplexity: 41.267 speed: 9234 wps
+# 0.204 perplexity: 45.119 speed: 9461 wps
+# 0.304 perplexity: 43.204 speed: 9519 wps
+# 0.404 perplexity: 42.441 speed: 9453 wps
+# 0.504 perplexity: 41.773 speed: 9536 wps
+# 0.604 perplexity: 40.423 speed: 9555 wps
+# 0.703 perplexity: 39.836 speed: 9576 wps
+# 0.803 perplexity: 39.181 speed: 9579 wps
+# 0.903 perplexity: 37.827 speed: 9554 wps
+# Epoch: 12 Train Perplexity: 37.020
+# Epoch: 12 Valid Perplexity: 123.192
+# Epoch: 13 Learning rate: 0.004
+# 0.004 perplexity: 55.124 speed: 8234 wps
+# 0.104 perplexity: 40.970 speed: 9391 wps
+# 0.204 perplexity: 44.804 speed: 9525 wps
+# 0.304 perplexity: 42.912 speed: 9512 wps
+# 0.404 perplexity: 42.162 speed: 9536 wps
+# 0.504 perplexity: 41.500 speed: 9630 wps
+# 0.604 perplexity: 40.159 speed: 9591 wps
+# 0.703 perplexity: 39.574 speed: 9575 wps
+# 0.803 perplexity: 38.921 speed: 9613 wps
+# 0.903 perplexity: 37.575 speed: 9629 wps
+# Epoch: 13 Train Perplexity: 36.771
+# Epoch: 13 Valid Perplexity: 122.917
+# Evaluation
+# Test Perplexity: 116.723 took 124.06s

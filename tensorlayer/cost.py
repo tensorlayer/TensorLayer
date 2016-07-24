@@ -10,7 +10,8 @@ from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
 def cross_entropy(output, target):
-    """Return the cost function of Cross-entropy of two distributions.
+    """Returns the cost function of Cross-entropy of two distributions, implement
+    softmax internally.
 
     Parameters
     ----------

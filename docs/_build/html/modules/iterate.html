@@ -160,6 +160,9 @@
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.iterate.seq_minibatches" title="tensorlayer.iterate.seq_minibatches"><code class="xref py py-obj docutils literal"><span class="pre">seq_minibatches</span></code></a>(inputs,&nbsp;targets,&nbsp;batch_size,&nbsp;...)</td>
 <td>Generate a generator that return a batch of sequence inputs and targets.</td>
 </tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.ptb_iterator" title="tensorlayer.iterate.ptb_iterator"><code class="xref py py-obj docutils literal"><span class="pre">ptb_iterator</span></code></a>(raw_data,&nbsp;batch_size,&nbsp;num_steps)</td>
+<td>Iterates on a list of words.</td>
+</tr>
 </tbody>
 </table>
 <div class="section" id="iteration-functions">
@@ -226,6 +229,58 @@ shows.</p>
 <span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.iterate.ptb_iterator">
+<code class="descclassname">tensorlayer.iterate.</code><code class="descname">ptb_iterator</code><span class="sig-paren">(</span><em>raw_data</em>, <em>batch_size</em>, <em>num_steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#ptb_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.ptb_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Iterates on a list of words. Yields (Returns) the source contexts and</dt>
+<dd><p class="first">the target context by the given batch_size and num_steps (sequence_length).</p>
+<p>see <code class="docutils literal"><span class="pre">PTB</span> <span class="pre">tutorial</span></code>.</p>
+<p>e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,
+raw_data = [i for i in range(100)]</p>
+<p>In TensorFlow&#8217;s tutorial, this generates batch_size pointers into the raw
+PTB data, and allows minibatch iteration along these pointers.</p>
+<dl class="docutils">
+<dt>raw_data</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>the context in list format; note that context usually be
+represented by splitting by space, and then convert to unique
+word IDs.</dd>
+<dt>batch_size</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>the batch size.</dd>
+<dt>num_steps</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>the number of unrolls. i.e. sequence_length</dd>
+</dl>
+<p>Pairs of the batched data, each a matrix of shape [batch_size, num_steps].
+The second element of the tuple is the same data time-shifted to the
+right by one.</p>
+<p>ValueError : if batch_size or num_steps are too high.</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">ptb_iterator</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;</span>
+</pre></div>
+</div>
+</dd>
+<dt>&#8216;,y)</dt>
+<dd><p class="first">... [[ 0  1  2] &lt;&#8212;x                       1st subset/ iteration
+...  [10 11 12]]
+... [[ 1  2  3] &lt;&#8212;y
+...  [11 12 13]]
+...
+... [[ 3  4  5]  &lt;&#8212; 1st batch input       2nd subset/ iteration
+...  [13 14 15]] &lt;&#8212; 2nd batch input
+... [[ 4  5  6]  &lt;&#8212; 1st batch target
+...  [14 15 16]] &lt;&#8212; 2nd batch target
+...
+... [[ 6  7  8]                             3rd subset/ iteration
+...  [16 17 18]]
+... [[ 7  8  9]
+...  [17 18 19]]</p>
+<p class="last">tensorflow/models/rnn/ptb/reader.py</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

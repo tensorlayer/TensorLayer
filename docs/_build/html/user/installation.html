@@ -88,7 +88,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#id2">TensorFlow</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#tensorflow-release">TensorFlow release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tensorflow-release">TensorFlow release</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tensorlayer">TensorLayer</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#gpu-support">GPU support</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#cuda">CUDA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">TensorFlow</a></li>
@@ -210,6 +213,16 @@ If you want to use GPU with Mac OX, you need to compile TensorFlow from source.<
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">For ARM processor architecture, you also need to install TensorFlow from source.</p>
+</div>
+<div class="section" id="tensorlayer">
+<h3>TensorLayer<a class="headerlink" href="#tensorlayer" title="Permalink to this headline">¶</a></h3>
+<p>Hao Dong highly recommend you to install TensorLayer as follow.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip3 install . -e
+</pre></div>
+</div>
+<p>This command will run the <code class="docutils literal"><span class="pre">setup.py</span></code> to install TensorLayer. The <code class="docutils literal"><span class="pre">-e</span></code> allows
+you to edit the scripts in tensorlayer folder, this help you to extend and modify
+TensorLayer easily.</p>
 </div>
 </div>
 <div class="section" id="gpu-support">

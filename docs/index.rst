@@ -1,5 +1,12 @@
 Welcome to TensorLayer
 =======================================
+
+
+
+.. image:: user/my_figs/img_tensorlayer.png
+  :scale: 25 %
+  :align: center
+
 TensorLayer is a transparent Deep Learning and Reinforcement Learning library
 built on the top of Google TensorFlow. It was designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to

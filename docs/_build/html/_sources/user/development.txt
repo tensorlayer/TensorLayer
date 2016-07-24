@@ -6,8 +6,7 @@ The TensorLayer project was started by Hao Dong, Imperial College London in Jun
 `Akara Supratak <https://github.com/akaraspt>`_,
 `Hao Dong <https://github.com/zsdonghao>`_,
 `Simiao Yu <https://github.com/zsdonghao>`_,)
-and numerous additional contributors on `GitHub
-<https://github.com/zsdonghao/TensorLayer>`_,
+and numerous additional contributors on `GitHub`_,
 
 As an open-source project by researchers for researchers and engineers, we highly welcome
 contributions! Every bit helps and will be credited.
@@ -108,6 +107,15 @@ following commands:
 
     cd docs
     make html
+
+If you want to re-generate the whole docs, run the following commands:
+
+.. code :: bash
+
+    cd docs
+    make clean
+    make html
+
 
 Afterwards, open ``docs/_build/html/index.html`` to view the documentation as
 it would appear on `readthedocs <http://tensorlayer.readthedocs.org/>`_. If you

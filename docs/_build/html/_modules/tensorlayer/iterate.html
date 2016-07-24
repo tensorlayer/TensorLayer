@@ -236,6 +236,82 @@
         <span class="n">flatten_targets</span> <span class="o">=</span> <span class="n">seq_targets</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">targets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
         <span class="k">yield</span> <span class="n">flatten_inputs</span><span class="p">,</span> <span class="n">flatten_targets</span></div>
 
+<div class="viewcode-block" id="ptb_iterator"><a class="viewcode-back" href="../../modules/iterate.html#tensorlayer.iterate.ptb_iterator">[docs]</a><span class="k">def</span> <span class="nf">ptb_iterator</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterates on a list of words. Yields (Returns) the source contexts and</span>
+<span class="sd">    the target context by the given batch_size and num_steps (sequence_length).\n</span>
+<span class="sd">    see ``PTB tutorial``.</span>
+
+<span class="sd">    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,</span>
+<span class="sd">    raw_data = [i for i in range(100)]</span>
+
+<span class="sd">    In TensorFlow&#39;s tutorial, this generates batch_size pointers into the raw</span>
+<span class="sd">    PTB data, and allows minibatch iteration along these pointers.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw_data : a list</span>
+<span class="sd">            the context in list format; note that context usually be</span>
+<span class="sd">            represented by splitting by space, and then convert to unique</span>
+<span class="sd">            word IDs.</span>
+<span class="sd">    batch_size : int</span>
+<span class="sd">            the batch size.</span>
+<span class="sd">    num_steps : int</span>
+<span class="sd">            the number of unrolls. i.e. sequence_length</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    Pairs of the batched data, each a matrix of shape [batch_size, num_steps].</span>
+<span class="sd">    The second element of the tuple is the same data time-shifted to the</span>
+<span class="sd">    right by one.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError : if batch_size or num_steps are too high.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; train_data = [i for i in range(20)]</span>
+<span class="sd">    &gt;&gt;&gt; for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):</span>
+<span class="sd">    &gt;&gt;&gt;     x, y = batch</span>
+<span class="sd">    &gt;&gt;&gt;     print(x, &#39;\n&#39;,y)</span>
+<span class="sd">    ... [[ 0  1  2] &lt;---x                       1st subset/ iteration</span>
+<span class="sd">    ...  [10 11 12]]</span>
+<span class="sd">    ... [[ 1  2  3] &lt;---y</span>
+<span class="sd">    ...  [11 12 13]]</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... [[ 3  4  5]  &lt;--- 1st batch input       2nd subset/ iteration</span>
+<span class="sd">    ...  [13 14 15]] &lt;--- 2nd batch input</span>
+<span class="sd">    ... [[ 4  5  6]  &lt;--- 1st batch target</span>
+<span class="sd">    ...  [14 15 16]] &lt;--- 2nd batch target</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... [[ 6  7  8]                             3rd subset/ iteration</span>
+<span class="sd">    ...  [16 17 18]]</span>
+<span class="sd">    ... [[ 7  8  9]</span>
+<span class="sd">    ...  [17 18 19]]</span>
+
+<span class="sd">    Code Reference</span>
+<span class="sd">    --------------</span>
+<span class="sd">    tensorflow/models/rnn/ptb/reader.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+    <span class="n">batch_len</span> <span class="o">=</span> <span class="n">data_len</span> <span class="o">//</span> <span class="n">batch_size</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">batch_len</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[</span><span class="n">batch_len</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="n">batch_len</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">epoch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_steps</span>
+
+    <span class="k">if</span> <span class="n">epoch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;epoch_size == 0, decrease batch_size or num_steps&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epoch_size</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="o">*</span><span class="n">num_steps</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="o">*</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+
 
 <span class="c1"># def minibatches_for_sequence2D(inputs, targets, batch_size, sequence_length, stride=1):</span>
 <span class="c1">#     &quot;&quot;&quot;</span>

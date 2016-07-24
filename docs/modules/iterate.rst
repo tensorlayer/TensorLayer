@@ -7,6 +7,7 @@
 
    minibatches
    seq_minibatches
+   ptb_iterator
 
 
 Iteration functions
@@ -14,3 +15,4 @@ Iteration functions
 
 .. autofunction:: minibatches
 .. autofunction:: seq_minibatches
+.. autofunction:: ptb_iterator

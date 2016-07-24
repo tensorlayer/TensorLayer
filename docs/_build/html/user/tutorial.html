@@ -86,8 +86,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#before-we-start">Before we start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-mnist-example">Run the MNIST example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-the-pong-game-example">Run the Pong Game example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-the-word2vec-example">Run the Word2Vec example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#understand-the-mnist-example">Understand the MNIST example</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#preface">Preface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loading-data">Loading data</a></li>
@@ -105,33 +103,48 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-pong-game-example">Run the Pong Game example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#understand-reinforcement-learning">Understand Reinforcement learning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pong-game">Pong Game</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#policy-network">Policy Network</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#policy-gradient">Policy Gradient</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Loss and update expressions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">What Next?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">What Next?</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#understand-natural-language-processing">Understand Natural Language Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-word2vec-example">Run the Word2Vec example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-word-embedding">Understand Word Embedding</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#word-embedding">Word Embedding</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Loss and update expressions</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#many-to-one">Many to One</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id8">Dataset iteration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id9">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#load-an-embedding-matrix">Load an Embedding matrix</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-ptb-example">Run the PTB example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-lstm">Understand LSTM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#recurrent-neural-network">Recurrent Neural Network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#synced-sequence-input-and-output">Synced sequence input and output</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id11">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#predicting">Predicting</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">What Next?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-translation-example">Run the Translation example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understand-translation">Understand Translation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#many-to-many-seq2seq">Many to Many (Seq2seq)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id10">Dataset iteration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">Loss and update expressions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">Dataset iteration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15">Loss and update expressions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">What Next?</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#more-info">More info</a></li>
@@ -222,6 +235,7 @@ able to use TensorLayer. If you&#8217;re new to TensorFlow, going through that t
 </div>
 <div class="section" id="run-the-mnist-example">
 <h2>Run the MNIST example<a class="headerlink" href="#run-the-mnist-example" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/mnist.jpeg" id="fig-0601"><img alt="../_images/mnist.jpeg" class="align-center" id="fig-0601" src="../_images/mnist.jpeg" style="width: 2252.0px; height: 712.0px;" /></a>
 <p>In the first part of the tutorial, we will just run the MNIST example that&#8217;s
 included in the source distribution of TensorLayer.</p>
 <p>We assume that you have already run through the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>. If you
@@ -305,83 +319,6 @@ Select different models from <code class="docutils literal"><span class="pre">if
 </pre></div>
 </div>
 </div>
-<div class="section" id="run-the-pong-game-example">
-<h2>Run the Pong Game example<a class="headerlink" href="#run-the-pong-game-example" title="Permalink to this headline">¶</a></h2>
-<p>In the second part of the tutorial, we will run the Deep Reinforcement Learning
-example that is introduced by Karpathy in <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">Deep Reinforcement Learning: Pong from Pixels</a>.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_atari_pong.py
-</pre></div>
-</div>
-<p>Before running the tutorial code, you need to install <a class="reference external" href="https://gym.openai.com/docs">OpenAI gym environment</a>
-which is a benchmark for Reinforcement Learning.
-If everything is set up correctly, you will get an output like the following:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>[2016-07-12 09:31:59,760] Making new env: Pong-v0
-  tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-  tensorlayer:Instantiate DenseLayer relu1: 200, &lt;function relu at 0x1119471e0&gt;
-  tensorlayer:Instantiate DenseLayer output_layer: 3, &lt;function identity at 0x114bd39d8&gt;
-  param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
-  param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
-  param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  num of params: 1280803
-  layer 0: Tensor(&quot;Relu:0&quot;, shape=(?, 200), dtype=float32)
-  layer 1: Tensor(&quot;add_1:0&quot;, shape=(?, 3), dtype=float32)
-episode 0: game 0 took 0.17381s, reward: -1.000000
-episode 0: game 1 took 0.12629s, reward: 1.000000  !!!!!!!!
-episode 0: game 2 took 0.17082s, reward: -1.000000
-episode 0: game 3 took 0.08944s, reward: -1.000000
-episode 0: game 4 took 0.09446s, reward: -1.000000
-episode 0: game 5 took 0.09440s, reward: -1.000000
-episode 0: game 6 took 0.32798s, reward: -1.000000
-episode 0: game 7 took 0.74437s, reward: -1.000000
-episode 0: game 8 took 0.43013s, reward: -1.000000
-episode 0: game 9 took 0.42496s, reward: -1.000000
-episode 0: game 10 took 0.37128s, reward: -1.000000
-episode 0: game 11 took 0.08979s, reward: -1.000000
-episode 0: game 12 took 0.09138s, reward: -1.000000
-episode 0: game 13 took 0.09142s, reward: -1.000000
-episode 0: game 14 took 0.09639s, reward: -1.000000
-episode 0: game 15 took 0.09852s, reward: -1.000000
-episode 0: game 16 took 0.09984s, reward: -1.000000
-episode 0: game 17 took 0.09575s, reward: -1.000000
-episode 0: game 18 took 0.09416s, reward: -1.000000
-episode 0: game 19 took 0.08674s, reward: -1.000000
-episode 0: game 20 took 0.09628s, reward: -1.000000
-resetting env. episode reward total was -20.000000. running mean: -20.000000
-episode 1: game 0 took 0.09910s, reward: -1.000000
-episode 1: game 1 took 0.17056s, reward: -1.000000
-episode 1: game 2 took 0.09306s, reward: -1.000000
-episode 1: game 3 took 0.09556s, reward: -1.000000
-episode 1: game 4 took 0.12520s, reward: 1.000000  !!!!!!!!
-episode 1: game 5 took 0.17348s, reward: -1.000000
-episode 1: game 6 took 0.09415s, reward: -1.000000
-</pre></div>
-</div>
-<p>This example allow computer to learn how to play Pong game from the screen inputs,
-just like human behavior. After training for 15,000 episodes, the computer can
-win 20% of the games. The computer win 35% of the games at 20,000 episode,
-we can seen the computer learn faster and faster as it has more winning data to
-train. If you run it for 30,000 episode, it start to win.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">render</span> <span class="o">=</span> <span class="bp">False</span>
-<span class="n">resume</span> <span class="o">=</span> <span class="bp">False</span>
-</pre></div>
-</div>
-<p>Setting &#8216;render&#8217; to &#8216;True&#8217;, if you want to display the game environment. When
-you run the code again, you can set &#8216;resume&#8217; to &#8216;True&#8217;, the code will load the
-existing model and train the model basic on it.</p>
-</div>
-<div class="section" id="run-the-word2vec-example">
-<h2>Run the Word2Vec example<a class="headerlink" href="#run-the-word2vec-example" title="Permalink to this headline">¶</a></h2>
-<p>In the third part of the tutorial, we will run</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_word2vec_basic.py
-</pre></div>
-</div>
-<p>If everything is set up correctly, you will get an output in the end.</p>
-<div class="figure" id="fig-0601">
-<img alt="user/_static/my_figs/tsne.png" src="user/_static/my_figs/tsne.png" />
-</div>
-<img alt="user/_static/my_figs/tsne.png" src="user/_static/my_figs/tsne.png" />
-</div>
 <div class="section" id="understand-the-mnist-example">
 <h2>Understand the MNIST example<a class="headerlink" href="#understand-the-mnist-example" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s now investigate what&#8217;s needed to make that happen! To follow along, open
@@ -408,7 +345,8 @@ when using Denoising Autoencoder.</p>
 to download the MNIST dataset (if it hasn&#8217;t been downloaded yet) and return it
 in the form of regular numpy arrays. There is no TensorLayer involved at all, so
 for the purpose of this tutorial, we can regard it as:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> \
+                  <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">))</span>
 </pre></div>
 </div>
 <p><code class="docutils literal"><span class="pre">X_train.shape</span></code> is <code class="docutils literal"><span class="pre">(50000,</span> <span class="pre">784)</span></code>, to be interpreted as: 50,000
@@ -417,7 +355,8 @@ length of <code class="docutils literal"><span class="pre">X_train</span></code>
 the digit between 0 and 9 depicted in the image (according to the human
 annotator who drew that digit).</p>
 <p>For Convolutional Neural Network example, the MNIST can be load as 4D version as follow:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> \
+            <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
 <p><code class="docutils literal"><span class="pre">X_train.shape</span></code> is <code class="docutils literal"><span class="pre">(50000,</span> <span class="pre">28,</span> <span class="pre">28,</span> <span class="pre">1)</span></code> which represents 50,000 images with 1 channel, 28 rows and 28 columns each.
@@ -485,7 +424,10 @@ again:</p>
 </div>
 <p>Finally, we&#8217;ll add the fully-connected output layer which the <code class="docutils literal"><span class="pre">n_units</span></code> equals to
 the number of classes.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+                              <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                              <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                              <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As mentioned above, each layer is linked to its incoming layer(s), so we only
@@ -508,7 +450,11 @@ The Autoencoder can be defined as follow, where an Autoencoder is represented by
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;denoising1&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sigmoid1&#39;</span><span class="p">)</span>
-<span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
+<span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+                                    <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                                    <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span>
+                                    <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To train the <code class="docutils literal"><span class="pre">DenseLayer</span></code>, simply run <code class="docutils literal"><span class="pre">ReconLayer.pretrain()</span></code>, if using denoising Autoencoder, the name of
@@ -518,7 +464,16 @@ the Autoencoder can be implemented by using KL divergence, while for rectifer, L
 can make the output to be sparse. So the default behaviour of <code class="docutils literal"><span class="pre">ReconLayer</span></code> only provide KLD and cross-entropy for sigmoid
 activation function and L1 of activation outputs and mean-squared-error for rectifing activation function.
 We recommend you to modify <code class="docutils literal"><span class="pre">ReconLayer</span></code> to achieve your own pre-train metrice.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span> <span class="n">denoise_name</span><span class="o">=</span><span class="s1">&#39;denoising1&#39;</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span>
+                      <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                      <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+                      <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span>
+                      <span class="n">denoise_name</span><span class="o">=</span><span class="s1">&#39;denoising1&#39;</span><span class="p">,</span>
+                      <span class="n">n_epoch</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                      <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+                      <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                      <span class="n">save</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                      <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In addition, the script <code class="docutils literal"><span class="pre">main_test_stacked_denoise_AE()</span></code> shows how to stacked multiple Autoencoder to one network and then
@@ -533,7 +488,7 @@ layer.</p>
 max-pooling of factor 2 in both dimensions. And then apply a <code class="docutils literal"><span class="pre">Conv2dLayer</span></code> with
 64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
 the 4D output to 1D vector by using <code class="docutils literal"><span class="pre">FlattenLayer</span></code>, and apply a dropout with 50%
-to last hidden layer.</p>
+to last hidden layer. The <code class="docutils literal"><span class="pre">?</span></code> represents arbitrary batch_size.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2dLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
                         <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
@@ -559,11 +514,16 @@ to last hidden layer.</p>
                         <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;SAME&#39;</span><span class="p">,</span>
                         <span class="n">pool</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">max_pool</span><span class="p">,</span>
                         <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;pool_layer2&#39;</span><span class="p">,)</span>   <span class="c1"># output: (?, 7, 7, 64)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">FlattenLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;flatten_layer&#39;</span><span class="p">)</span>                                <span class="c1"># output: (?, 3136)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>                              <span class="c1"># output: (?, 3136)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>           <span class="c1"># output: (?, 256)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>                              <span class="c1"># output: (?, 256)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>    <span class="c1"># output: (?, 10)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">FlattenLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;flatten_layer&#39;</span><span class="p">)</span>
+                                                <span class="c1"># output: (?, 3136)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
+                                                <span class="c1"># output: (?, 3136)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+                                                <span class="c1"># output: (?, 256)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
+                                                <span class="c1"># output: (?, 256)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+                                                <span class="c1"># output: (?, 10)</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -596,7 +556,8 @@ given number of items. More iteration function can be found in <code class="docu
 </div>
 <p>More cost or regularization can be applied here, take <code class="docutils literal"><span class="pre">main_test_layers()</span></code> for example,
 to apply max-norm on the weight matrices, we can add the following line:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+              <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Depending on the problem you are solving, you will need different loss functions,
@@ -605,7 +566,8 @@ see <a class="reference internal" href="../modules/cost.html#module-tensorlayer.
 for training the network. TensorLayer do not provide many optimizer, we used TensorFlow&#8217;s
 optimizer instead:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">train_params</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">all_params</span>
-<span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">beta1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">beta2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">use_locking</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
+<span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">beta1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">beta2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">use_locking</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For training the network, we fed data and the keeping probabilities to the <code class="docutils literal"><span class="pre">feed_dict</span></code>.</p>
@@ -640,6 +602,72 @@ to use the Layer.outputs).</p>
 </div>
 </div>
 </div>
+<div class="section" id="run-the-pong-game-example">
+<h2>Run the Pong Game example<a class="headerlink" href="#run-the-pong-game-example" title="Permalink to this headline">¶</a></h2>
+<p>In the second part of the tutorial, we will run the Deep Reinforcement Learning
+example that is introduced by Karpathy in <a class="reference external" href="http://karpathy.github.io/2016/05/31/rl/">Deep Reinforcement Learning: Pong from Pixels</a>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_atari_pong.py
+</pre></div>
+</div>
+<p>Before running the tutorial code, you need to install <a class="reference external" href="https://gym.openai.com/docs">OpenAI gym environment</a>
+which is a benchmark for Reinforcement Learning.
+If everything is set up correctly, you will get an output like the following:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>[2016-07-12 09:31:59,760] Making new env: Pong-v0
+  tensorlayer:Instantiate InputLayer input_layer (?, 6400)
+  tensorlayer:Instantiate DenseLayer relu1: 200, &lt;function relu at 0x1119471e0&gt;
+  tensorlayer:Instantiate DenseLayer output_layer: 3, &lt;function identity at 0x114bd39d8&gt;
+  param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
+  param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
+  param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  num of params: 1280803
+  layer 0: Tensor(&quot;Relu:0&quot;, shape=(?, 200), dtype=float32)
+  layer 1: Tensor(&quot;add_1:0&quot;, shape=(?, 3), dtype=float32)
+episode 0: game 0 took 0.17381s, reward: -1.000000
+episode 0: game 1 took 0.12629s, reward: 1.000000  !!!!!!!!
+episode 0: game 2 took 0.17082s, reward: -1.000000
+episode 0: game 3 took 0.08944s, reward: -1.000000
+episode 0: game 4 took 0.09446s, reward: -1.000000
+episode 0: game 5 took 0.09440s, reward: -1.000000
+episode 0: game 6 took 0.32798s, reward: -1.000000
+episode 0: game 7 took 0.74437s, reward: -1.000000
+episode 0: game 8 took 0.43013s, reward: -1.000000
+episode 0: game 9 took 0.42496s, reward: -1.000000
+episode 0: game 10 took 0.37128s, reward: -1.000000
+episode 0: game 11 took 0.08979s, reward: -1.000000
+episode 0: game 12 took 0.09138s, reward: -1.000000
+episode 0: game 13 took 0.09142s, reward: -1.000000
+episode 0: game 14 took 0.09639s, reward: -1.000000
+episode 0: game 15 took 0.09852s, reward: -1.000000
+episode 0: game 16 took 0.09984s, reward: -1.000000
+episode 0: game 17 took 0.09575s, reward: -1.000000
+episode 0: game 18 took 0.09416s, reward: -1.000000
+episode 0: game 19 took 0.08674s, reward: -1.000000
+episode 0: game 20 took 0.09628s, reward: -1.000000
+resetting env. episode reward total was -20.000000. running mean: -20.000000
+episode 1: game 0 took 0.09910s, reward: -1.000000
+episode 1: game 1 took 0.17056s, reward: -1.000000
+episode 1: game 2 took 0.09306s, reward: -1.000000
+episode 1: game 3 took 0.09556s, reward: -1.000000
+episode 1: game 4 took 0.12520s, reward: 1.000000  !!!!!!!!
+episode 1: game 5 took 0.17348s, reward: -1.000000
+episode 1: game 6 took 0.09415s, reward: -1.000000
+</pre></div>
+</div>
+<p>This example allow computer to learn how to play Pong game from the screen inputs,
+just like human behavior. After training for 15,000 episodes, the computer can
+win 20% of the games. The computer win 35% of the games at 20,000 episode,
+we can seen the computer learn faster and faster as it has more winning data to
+train. If you run it for 30,000 episode, it start to win.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">render</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">resume</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>Setting &#8216;render&#8217; to &#8216;True&#8217;, if you want to display the game environment. When
+you run the code again, you can set &#8216;resume&#8217; to &#8216;True&#8217;, the code will load the
+existing model and train the model basic on it.</p>
+<a class="reference internal image-reference" href="../_images/pong_game.jpeg" id="id2"><img alt="../_images/pong_game.jpeg" class="align-center" id="id2" src="../_images/pong_game.jpeg" style="width: 280.8px; height: 368.4px;" /></a>
+</div>
 <div class="section" id="understand-reinforcement-learning">
 <h2>Understand Reinforcement learning<a class="headerlink" href="#understand-reinforcement-learning" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="pong-game">
@@ -661,10 +689,14 @@ do (move UP or DOWN); in Karpathy&#8217;s code, he only defined 2 actions, UP an
 and using a single simgoid output;
 In order to make our tutorial more generic, we defined 3 actions which are UP,
 DOWN and STOP (do nothing) by using 3 softmax outputs.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>     <span class="c1"># observation for training</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># observation for training</span>
+<span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>
+
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">states_batch_pl</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span>
+                                <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                        <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 <span class="n">probs</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
 <span class="n">sampling_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
 </pre></div>
@@ -690,8 +722,8 @@ from 0, we calculate the label value by minus 1.</p>
 there are many way to do</p>
 <p>Q-learning xxxxx</p>
 <p>AlphaGo is using xxxx</p>
-<div class="section" id="id3">
-<h4>Dataset iteration<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id4">
+<h4>Dataset iteration<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>In Reinforcement Learning, we consider a final decision as an episode.
 In Pong game, a episode is a few dozen games, because the games go up to score
 of 21 for either player. Then the batch size is how many episode we consider
@@ -699,12 +731,13 @@ to update the model.
 In the tutorial, we train a 2-layer policy network with 200 hidden layer units
 using RMSProp on batches of 10 episodes.</p>
 </div>
-<div class="section" id="id4">
-<h4>Loss and update expressions<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id5">
+<h4>Loss and update expressions<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>Continuing, we create a loss expression to be minimized in training:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">actions_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">])</span>
 <span class="n">discount_rewards_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">])</span>
-<span class="n">loss</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">rein</span><span class="o">.</span><span class="n">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">actions_batch_pl</span><span class="p">,</span> <span class="n">discount_rewards_batch_pl</span><span class="p">)</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">rein</span><span class="o">.</span><span class="n">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">actions_batch_pl</span><span class="p">,</span>
+                                              <span class="n">discount_rewards_batch_pl</span><span class="p">)</span>
 <span class="o">...</span>
 <span class="o">...</span>
 <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -724,8 +757,8 @@ between its output and its true action. The final loss in a batch is the sum of
 all loss of the actions.</p>
 </div>
 </div>
-<div class="section" id="id5">
-<h3>What Next?<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>What Next?<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <p>The tutorial above shows how you can build your own agent, end-to-end.
 While it has reasonable quality, the default parameters will not give you
 the best agent model. Here are a few things you can improve.</p>
@@ -738,34 +771,394 @@ different way.</p>
 <p>Finally, you can try the model on different tasks (games).</p>
 </div>
 </div>
-<div class="section" id="understand-natural-language-processing">
-<h2>Understand Natural Language Processing<a class="headerlink" href="#understand-natural-language-processing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="run-the-word2vec-example">
+<h2>Run the Word2Vec example<a class="headerlink" href="#run-the-word2vec-example" title="Permalink to this headline">¶</a></h2>
+<p>In this part of the tutorial, we train a matrix for words, where each word can
+be represented by a unique row vector in the matrix. In the end, similar words
+will have similar vectors. Then as we plot out the words into a two-dimensional
+plane, words that are similar end up clustering nearby each other</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_word2vec_basic.py
+</pre></div>
+</div>
+<p>If everything is set up correctly, you will get an output in the end.</p>
+<a class="reference internal image-reference" href="../_images/tsne.png" id="id7"><img alt="../_images/tsne.png" class="align-center" id="id7" src="../_images/tsne.png" style="width: 441.5px; height: 436.5px;" /></a>
+</div>
+<div class="section" id="understand-word-embedding">
+<h2>Understand Word Embedding<a class="headerlink" href="#understand-word-embedding" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="word-embedding">
 <h3>Word Embedding<a class="headerlink" href="#word-embedding" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id6">
-<h4>Dataset iteration<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>Hao Dong highly recommend you to read Colah&#8217;s blog <a class="reference external" href="http://colah.github.io/posts/2014-07-NLP-RNNs-Representations/">Word Representations</a> to
+understand why we want to use a vector representation, and how to compute the
+vectors.</p>
+<p>Train an embedding matrix</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># train_inputs is a row vector, a input is an integer id of single word.</span>
+<span class="c1"># train_labels is a column vector, a label is an integer id of single word.</span>
+<span class="c1"># valid_dataset is a column vector, a valid set is an integer id of single word.</span>
+<span class="n">train_inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">])</span>
+<span class="n">train_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">valid_dataset</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="n">valid_examples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+<span class="c1"># Look up embeddings for inputs.</span>
+<span class="n">emb_net</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Word2vecEmbeddingInputlayer</span><span class="p">(</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">train_inputs</span><span class="p">,</span>
+        <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_labels</span><span class="p">,</span>
+        <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="n">vocabulary_size</span><span class="p">,</span>
+        <span class="n">embedding_size</span> <span class="o">=</span> <span class="n">embedding_size</span><span class="p">,</span>
+        <span class="n">num_sampled</span> <span class="o">=</span> <span class="n">num_sampled</span><span class="p">,</span>
+        <span class="n">nce_loss_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">E_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="n">minval</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">E_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">nce_W_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">truncated_normal_initializer</span><span class="p">(</span>
+                          <span class="n">stddev</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">embedding_size</span><span class="p">))),</span>
+        <span class="n">nce_W_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">nce_b_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">constant_initializer</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">nce_b_init_args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;word2vec_layer&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">nce_cost</span>
+</pre></div>
 </div>
-<div class="section" id="id7">
-<h4>Loss and update expressions<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
-<div class="section" id="many-to-one">
-<h3>Many to One<a class="headerlink" href="#many-to-one" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="id8">
 <h4>Dataset iteration<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
 </div>
 <div class="section" id="id9">
 <h4>Loss and update expressions<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 </div>
+<div class="section" id="load-an-embedding-matrix">
+<h4>Load an Embedding matrix<a class="headerlink" href="#load-an-embedding-matrix" title="Permalink to this headline">¶</a></h4>
+<p>In the end of training the embedding matrix,</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_generate_text.py
+</pre></div>
 </div>
-<div class="section" id="many-to-many-seq2seq">
-<h3>Many to Many (Seq2seq)<a class="headerlink" href="#many-to-many-seq2seq" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id10">
-<h4>Dataset iteration<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">load_params</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model_file_name</span><span class="o">+</span><span class="s1">&#39;.npz&#39;</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">])</span>
+<span class="n">y_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">emb_net</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">EmbeddingInputlayer</span><span class="p">(</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span>
+                <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="n">vocabulary_size</span><span class="p">,</span>
+                <span class="n">embedding_size</span> <span class="o">=</span> <span class="n">embedding_size</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;embedding_layer&#39;</span><span class="p">)</span>
+
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">initialize_all_variables</span><span class="p">())</span>
+
+<span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">assign_params</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="p">[</span><span class="n">load_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">emb_net</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="run-the-ptb-example">
+<h2>Run the PTB example<a class="headerlink" href="#run-the-ptb-example" title="Permalink to this headline">¶</a></h2>
+<p>Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
+including &#8220;Empirical Evaluation and Combination of Advanced Language
+Modeling Techniques&#8221;, &#8220;Recurrent Neural Network Regularization&#8221;.
+It consists of 929k training words, 73k validation words, and 82k test
+words. It has 10k words in its vocabulary.</p>
+<p>The PTB example is trying to show how to train a recurrent neural network on a
+challenging task of language modeling.</p>
+<p>Given a sentence &#8220;I am from Imperial College London&#8221;, the model can learn to
+predict &#8220;Imperial College London&#8221; from &#8220;from Imperial College&#8221;. In other
+word, it predict next words in a text given a history of previous words.
+In this case, <code class="docutils literal"><span class="pre">num_steps</span> <span class="pre">(sequence</span> <span class="pre">length)</span></code> is 3.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_ptb_lstm.py
+</pre></div>
+</div>
+<p>The script provides three settings (small, medium, large), larger model has
+better performance, you can choice different setting in:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">flags</span><span class="o">.</span><span class="n">DEFINE_string</span><span class="p">(</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;A type of model. Possible options are: small, medium, large.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you choice small setting, you can see:</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Epoch: 1 Learning rate: 1.000
+0.004 perplexity: 5220.213 speed: 7635 wps
+0.104 perplexity: 828.871 speed: 8469 wps
+0.204 perplexity: 614.071 speed: 8839 wps
+0.304 perplexity: 495.485 speed: 8889 wps
+0.404 perplexity: 427.381 speed: 8940 wps
+0.504 perplexity: 383.063 speed: 8920 wps
+0.604 perplexity: 345.135 speed: 8920 wps
+0.703 perplexity: 319.263 speed: 8949 wps
+0.803 perplexity: 298.774 speed: 8975 wps
+0.903 perplexity: 279.817 speed: 8986 wps
+Epoch: 1 Train Perplexity: 265.558
+Epoch: 1 Valid Perplexity: 178.436
+...
+Epoch: 13 Learning rate: 0.004
+0.004 perplexity: 56.122 speed: 8594 wps
+0.104 perplexity: 40.793 speed: 9186 wps
+0.204 perplexity: 44.527 speed: 9117 wps
+0.304 perplexity: 42.668 speed: 9214 wps
+0.404 perplexity: 41.943 speed: 9269 wps
+0.504 perplexity: 41.286 speed: 9271 wps
+0.604 perplexity: 39.989 speed: 9244 wps
+0.703 perplexity: 39.403 speed: 9236 wps
+0.803 perplexity: 38.742 speed: 9229 wps
+0.903 perplexity: 37.430 speed: 9240 wps
+Epoch: 13 Train Perplexity: 36.643
+Epoch: 13 Valid Perplexity: 121.475
+Test Perplexity: 116.716
+</pre></div>
+</div>
+<p>The PTB example proves RNN is able to modeling language, but this example
+did not do something practical. However, you should read through this example
+and <code class="docutils literal"><span class="pre">Understand</span> <span class="pre">LSTM</span></code> in order to understand the basic of RNN.
+After that, you learn how to generate text, how to achieve language translation
+and how to build a questions answering system by using RNN.</p>
+</div>
+<div class="section" id="understand-lstm">
+<h2>Understand LSTM<a class="headerlink" href="#understand-lstm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="recurrent-neural-network">
+<h3>Recurrent Neural Network<a class="headerlink" href="#recurrent-neural-network" title="Permalink to this headline">¶</a></h3>
+<p>Hao Dong personally think Karpathy&#8217;s blog is the best material to
+<a class="reference external" href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">Understand Recurrent Neural Network</a> , after reading that, Colah&#8217;s blog can
+help you to <a class="reference external" href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">Understand LSTM Network</a> which can solve The Problem of Long-Term
+Dependencies. We do not describe more about RNN, please read through these blogs
+before you go on.</p>
+<img alt="../_images/karpathy_rnn.jpeg" id="id10" src="../_images/karpathy_rnn.jpeg" />
+<p>(Image from Karpathy&#8217;s blog)</p>
+</div>
+<div class="section" id="synced-sequence-input-and-output">
+<h3>Synced sequence input and output<a class="headerlink" href="#synced-sequence-input-and-output" title="Permalink to this headline">¶</a></h3>
+<p>The model in PTB example is a typically type of synced sequence input and output,
+which was described by Karpathy as
+&#8220;(5) Synced sequence input and output (e.g. video classification where we wish
+to label each frame of the video). Notice that in every case are no pre-specified
+constraints on the lengths sequences because the recurrent transformation (green)
+is fixed and can be applied as many times as we like.&#8221;</p>
+<p>The model is built as follow. Firstly, transfer the words into word vectors by
+looking up an embedding matrix. In this tutorial, no pre-training on embedding
+matrix. Secondly, we stacked two LSTMs together use dropout among the embedding
+layer, LSTM layers and output layer for regularization. The model provides
+a sequence of softmax outputs during training.</p>
+<p>The first LSTM layer outputs [batch_size, num_steps, hidden_size] for stacking
+another LSTM after it. The second LSTM layer outputs [batch_size*num_steps, hidden_size]
+for stacking DenseLayer after it, then compute the softmax outputs of each example,
+i.e. n_examples = batch_size*num_steps.</p>
+<p>To understand the PTB tutorial, you can also read <a class="reference external" href="https://www.tensorflow.org/versions/r0.9/tutorials/recurrent/index.html#recurrent-neural-networks">TensorFlow PTB tutorial</a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">EmbeddingInputlayer</span><span class="p">(</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span>
+            <span class="n">vocabulary_size</span> <span class="o">=</span> <span class="n">vocab_size</span><span class="p">,</span>
+            <span class="n">embedding_size</span> <span class="o">=</span> <span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">E_init</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="o">-</span><span class="n">init_scale</span><span class="p">,</span> <span class="n">init_scale</span><span class="p">),</span>
+            <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;embedding_layer&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">is_training</span><span class="p">:</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep_prob</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+            <span class="n">cell_fn</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">rnn_cell</span><span class="o">.</span><span class="n">BasicLSTMCell</span><span class="p">,</span>
+            <span class="n">cell_init_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;forget_bias&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+            <span class="n">n_hidden</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="o">-</span><span class="n">init_scale</span><span class="p">,</span> <span class="n">init_scale</span><span class="p">),</span>
+            <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+            <span class="n">return_last</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;basic_lstm_layer1&#39;</span><span class="p">)</span>
+<span class="n">lstm1</span> <span class="o">=</span> <span class="n">network</span>
+<span class="k">if</span> <span class="n">is_training</span><span class="p">:</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep_prob</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+            <span class="n">cell_fn</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">rnn_cell</span><span class="o">.</span><span class="n">BasicLSTMCell</span><span class="p">,</span>
+            <span class="n">cell_init_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;forget_bias&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">},</span>
+            <span class="n">n_hidden</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="o">-</span><span class="n">init_scale</span><span class="p">,</span> <span class="n">init_scale</span><span class="p">),</span>
+            <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+            <span class="n">return_last</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+            <span class="n">return_seq_2d</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;basic_lstm_layer2&#39;</span><span class="p">)</span>
+<span class="n">lstm2</span> <span class="o">=</span> <span class="n">network</span>
+<span class="k">if</span> <span class="n">is_training</span><span class="p">:</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="n">keep_prob</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop3&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+            <span class="n">n_units</span><span class="o">=</span><span class="n">vocab_size</span><span class="p">,</span>
+            <span class="n">W_init</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="o">-</span><span class="n">init_scale</span><span class="p">,</span> <span class="n">init_scale</span><span class="p">),</span>
+            <span class="n">b_init</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_uniform_initializer</span><span class="p">(</span><span class="o">-</span><span class="n">init_scale</span><span class="p">,</span> <span class="n">init_scale</span><span class="p">),</span>
+            <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
 <div class="section" id="id11">
-<h4>Loss and update expressions<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<h4>Dataset iteration<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>The batch_size can be seem as how many concurrent computations.
+As the following example shows, the first batch learn the sequence information by using 0 to 9.
+The second batch learn the sequence information by using 10 to 19.
+So it ignores the information from 9 to 10 !n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.</p>
+<p>The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
+batch_size reflects how many examples we consider in each iteration, while in
+PTB example, batch_size is how many concurrent processes (segments)
+for speed up computation.</p>
+<p>Some Information will be ignored if batch_size &gt; 1, however, if your dataset
+is &#8220;long&#8221; enough (a text corpus usually has billions words), the ignored
+information would not effect the final result.</p>
+<p>In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
+At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
+segments, then go through 20 segments separately.</p>
+<p>The training data will be generated as follow:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">train_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">ptb_iterator</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
 </div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>... [[ 0  1  2] &lt;---x                       1st subset/ iteration
+...  [10 11 12]]
+... [[ 1  2  3] &lt;---y
+...  [11 12 13]]
+...
+... [[ 3  4  5]  &lt;--- 1st batch input       2nd subset/ iteration
+...  [13 14 15]] &lt;--- 2nd batch input
+... [[ 4  5  6]  &lt;--- 1st batch target
+...  [14 15 16]] &lt;--- 2nd batch target
+...
+... [[ 6  7  8]                             3rd subset/ iteration
+...  [16 17 18]]
+... [[ 7  8  9]
+...  [17 18 19]]
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This example can also be considered as pre-training of the word embedding matrix.</p>
+</div>
+</div>
+<div class="section" id="id12">
+<h4>Loss and update expressions<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<p>The cost function is the averaged cost of each mini-batch:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">loss_fn</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
+    <span class="c1"># Returns the cost function of Cross-entropy of two sequences, implement</span>
+    <span class="c1"># softmax internally.</span>
+    <span class="c1"># outputs : 2D tensor [batch_size*num_steps, n_units of output layer]</span>
+    <span class="c1"># targets : 2D tensor [batch_size, num_steps], need to be reshaped.</span>
+    <span class="c1"># n_examples = batch_size * num_steps</span>
+    <span class="c1"># so</span>
+    <span class="c1"># cost is the averaged cost of each mini-batch (concurrent process).</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">seq2seq</span><span class="o">.</span><span class="n">sequence_loss_by_example</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">outputs</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])],</span>
+        <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">num_steps</span><span class="p">])])</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span>
+    <span class="k">return</span> <span class="n">cost</span>
+
+<span class="c1"># Cost for Training</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For updating, this example decreases the initial learning rate after several
+epoachs (defined by <code class="docutils literal"><span class="pre">max_epoch</span></code>), by multipling a <code class="docutils literal"><span class="pre">lr_decay</span></code>. In addition,
+truncated backpropagation clips values of gradients by the ratio of the sum of
+their norms, so as to make the learning process tractable.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Truncated Backpropagation for training</span>
+<span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">variable_scope</span><span class="p">(</span><span class="s1">&#39;learning_rate&#39;</span><span class="p">):</span>
+    <span class="n">lr</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">tvars</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">trainable_variables</span><span class="p">()</span>
+<span class="n">grads</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_global_norm</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">gradients</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">tvars</span><span class="p">),</span>
+                                  <span class="n">max_grad_norm</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
+<span class="n">train_op</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">apply_gradients</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">tvars</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Then at the beginning of each epoch, we assign a new learning rate:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">new_lr_decay</span> <span class="o">=</span> <span class="n">lr_decay</span> <span class="o">**</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="n">max_epoch</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+<span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">lr</span><span class="p">,</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">new_lr_decay</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>At the begining of each epoch, all states of LSTMs need to be resetted (initialized),
+then after each iteration, the new final states need to be assigned as the initial
+states of next iteration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">state1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">initialize_rnn_state</span><span class="p">(</span><span class="n">lstm1</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
+<span class="n">state2</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">initialize_rnn_state</span><span class="p">(</span><span class="n">lstm2</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">ptb_iterator</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span>
+                                            <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)):</span>
+    <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">input_data</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+                <span class="n">lstm1</span><span class="o">.</span><span class="n">initial_state</span><span class="p">:</span> <span class="n">state1</span><span class="p">,</span>
+                <span class="n">lstm2</span><span class="o">.</span><span class="n">initial_state</span><span class="p">:</span> <span class="n">state2</span><span class="p">,</span>
+                <span class="p">}</span>
+    <span class="c1"># For training, enable dropout</span>
+    <span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
+    <span class="n">_cost</span><span class="p">,</span> <span class="n">state1</span><span class="p">,</span> <span class="n">state2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">cost</span><span class="p">,</span>
+                                    <span class="n">lstm1</span><span class="o">.</span><span class="n">final_state</span><span class="p">,</span>
+                                    <span class="n">lstm2</span><span class="o">.</span><span class="n">final_state</span><span class="p">,</span>
+                                    <span class="n">train_op</span><span class="p">],</span>
+                                    <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span>
+                                    <span class="p">)</span>
+    <span class="n">costs</span> <span class="o">+=</span> <span class="n">_cost</span><span class="p">;</span> <span class="n">iters</span> <span class="o">+=</span> <span class="n">num_steps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="predicting">
+<h4>Predicting<a class="headerlink" href="#predicting" title="Permalink to this headline">¶</a></h4>
+<p>After training the model, we no long consider the number of steps (sequence length),
+i.e. <code class="docutils literal"><span class="pre">batch_size,</span> <span class="pre">num_steps</span></code> are <code class="docutils literal"><span class="pre">1</span></code>. Then we can predict the next word step
+by step, instead of predict a sequence of words from a sequence of words.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">input_data_test</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">targets_test</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="o">...</span>
+<span class="n">network_test</span><span class="p">,</span> <span class="n">lstm1_test</span><span class="p">,</span> <span class="n">lstm2_test</span> <span class="o">=</span> <span class="n">inference</span><span class="p">(</span><span class="n">input_data_test</span><span class="p">,</span>
+                      <span class="n">is_training</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">reuse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">cost_test</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">network_test</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="n">targets_test</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Evaluation&quot;</span><span class="p">)</span>
+<span class="c1"># Testing</span>
+<span class="c1"># go through the test set step by step, it will take a while.</span>
+<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">costs</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span> <span class="n">iters</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># reset all states at the begining</span>
+<span class="n">state1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">initialize_rnn_state</span><span class="p">(</span><span class="n">lstm1_test</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
+<span class="n">state2</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">initialize_rnn_state</span><span class="p">(</span><span class="n">lstm2_test</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">ptb_iterator</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span>
+                                        <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">)):</span>
+    <span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">input_data_test</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="n">targets_test</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
+                <span class="n">lstm1_test</span><span class="o">.</span><span class="n">initial_state</span><span class="p">:</span> <span class="n">state1</span><span class="p">,</span>
+                <span class="n">lstm2_test</span><span class="o">.</span><span class="n">initial_state</span><span class="p">:</span> <span class="n">state2</span><span class="p">,</span>
+                <span class="p">}</span>
+    <span class="n">_cost</span><span class="p">,</span> <span class="n">state1</span><span class="p">,</span> <span class="n">state2</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">cost_test</span><span class="p">,</span>
+                                    <span class="n">lstm1_test</span><span class="o">.</span><span class="n">final_state</span><span class="p">,</span>
+                                    <span class="n">lstm2_test</span><span class="o">.</span><span class="n">final_state</span><span class="p">],</span>
+                                    <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span>
+                                    <span class="p">)</span>
+    <span class="n">costs</span> <span class="o">+=</span> <span class="n">_cost</span><span class="p">;</span> <span class="n">iters</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">test_perplexity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">costs</span> <span class="o">/</span> <span class="n">iters</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Test Perplexity: </span><span class="si">%.3f</span><span class="s2"> took </span><span class="si">%.2f</span><span class="s2">s&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">test_perplexity</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id13">
+<h3>What Next?<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>Now, you understand Synced sequence input and output. Let think about
+Many to one (Sequence input and one output), we can also use &#8220;I am from Imperial&#8221;
+to predict the next word &#8220;College&#8221; right? Please try your best to build a text
+generator, which give some seed words to generate context, some people even used
+Many to one model to automatically generate papers !</p>
+<p>Karpathy&#8217;s blog :
+&#8220;(3) Sequence input (e.g. sentiment analysis where a given sentence is
+classified as expressing positive or negative sentiment). &#8220;</p>
+</div>
+</div>
+<div class="section" id="run-the-translation-example">
+<h2>Run the Translation example<a class="headerlink" href="#run-the-translation-example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_translate.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="understand-translation">
+<h2>Understand Translation<a class="headerlink" href="#understand-translation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="many-to-many-seq2seq">
+<h3>Many to Many (Seq2seq)<a class="headerlink" href="#many-to-many-seq2seq" title="Permalink to this headline">¶</a></h3>
+<p>Karpathy&#8217;s blog :
+&#8220;(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
+reads a sentence in English and then outputs a sentence in French).&#8221;</p>
+<div class="section" id="id14">
+<h4>Dataset iteration<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+</div>
+<div class="section" id="id15">
+<h4>Loss and update expressions<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>What Next?<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
 <div class="section" id="more-info">

@@ -288,7 +288,8 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...    )
     >>> cost = emb_net.nce_cost
     >>> train_params = emb_net.all_params
-    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(
+    ...                                             cost, var_list=train_params)
     >>> normalized_embeddings = emb_net.normalized_embeddings
 
     References
@@ -389,6 +390,7 @@ class EmbeddingInputlayer(Layer):
     ----------
     inputs : placeholder
         For word inputs. integer index format.
+        a 2D tensor : [batch_size, num_steps(num_words)]
     vocabulary_size : int
         The size of vocabulary, number of words.
     embedding_size : int
@@ -404,8 +406,7 @@ class EmbeddingInputlayer(Layer):
     -----------------------
     outputs : a tensor
         The outputs of embedding layer.
-        if inputs : [batch_size, num_steps (num_words)]
-        the outputs : [batch_size, num_steps (num_words), embedding_size]
+        the outputs 3D tensor : [batch_size, num_steps(num_words), embedding_size]
 
     Examples
     --------
@@ -510,8 +511,10 @@ class DenseLayer(Layer):
     Examples
     --------
     >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1',
-    ...            W_init=tf.random_normal, W_init_args={'mean':1.0, 'stddev':1.0})
+    >>> network = tl.layers.DenseLayer(network,
+    ...                 n_units=800, act = tf.nn.relu, name='relu1',
+    ...                 W_init=tf.random_normal,
+    ...                 W_init_args={'mean':1.0, 'stddev':1.0})
 
     Notes
     -----
@@ -586,9 +589,13 @@ class ReconLayer(DenseLayer):
     Examples
     --------
     >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=196, act=tf.nn.sigmoid, name='sigmoid1')
-    >>> recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784, act=tf.nn.sigmoid, name='recon_layer1')
-    >>> recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=1200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+    >>> network = tl.layers.DenseLayer(network, n_units=196,
+    ...                                 act=tf.nn.sigmoid, name='sigmoid1')
+    >>> recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784,
+    ...                                 act=tf.nn.sigmoid, name='recon_layer1')
+    >>> recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
+    ...                         denoise_name=None, n_epoch=1200, batch_size=128,
+    ...                         print_freq=10, save=True, save_name='w1pre_')
 
     Methods
     -------
@@ -948,7 +955,8 @@ class Conv2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         # n_in = layer.n_units
-        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
+        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
+                            (self.name, str(shape), str(strides), padding, act))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -1005,7 +1013,8 @@ class PoolLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         # n_in = layer.n_units
-        print("  tensorlayer:Instantiate PoolLayer %s: %s, %s, %s, %s" % (self.name, str(ksize), str(strides), padding, pool))
+        print("  tensorlayer:Instantiate PoolLayer %s: %s, %s, %s, %s" %
+                            (self.name, str(ksize), str(strides), padding, pool))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding)
 
@@ -1042,7 +1051,7 @@ class RNNLayer(Layer):
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    # is_reshape : boolen
+    # is_reshape : boolen (deprecate)
     #     Reshape the inputs to 3 dimension tensor.\n
     #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
     #     If input is [batch_size * n_steps, n_features], we need to reshape it.
@@ -1117,8 +1126,8 @@ class RNNLayer(Layer):
         # n_in = layer.n_units
         self.n_units = n_hidden
 
-        print("  tensorlayer:Instantiate RNNLayer %s: cell_fn:%s n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, cell_fn, n_hidden,
-            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape()))
+        print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn))
 
         # self.inputs.get_shape().with_rank(2)
         # self.inputs.get_shape().with_rank(3)
@@ -1130,7 +1139,7 @@ class RNNLayer(Layer):
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     batch_size of rnn : %d" % batch_size)
+            print("     RNN batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]

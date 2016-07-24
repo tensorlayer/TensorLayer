@@ -16,7 +16,8 @@ def main_test_cnn_naive():
     model_file_name = "model_cifar10_naive.ckpt"
     resume = False # load model, resume from previous checkpoint?
 
-    X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
+    X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(
+                                        shape=(-1, 32, 32, 3), plotable=False)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int32)
@@ -33,7 +34,9 @@ def main_test_cnn_naive():
 
     batch_size = 128
 
-    x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])   # [batch_size, height, width, channels]
+
+    x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
+                                # [batch_size, height, width, channels]
     y_ = tf.placeholder(tf.int32, shape=[batch_size,])
 
     network = tl.layers.InputLayer(x, name='input_layer')
@@ -71,10 +74,15 @@ def main_test_cnn_naive():
                         pool = tf.nn.max_pool,
                         name ='pool_layer2',)   # output: (?, 8, 8, 64)
 
-    network = tl.layers.FlattenLayer(network, name='flatten_layer')                                # output: (?, 4096)
-    network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu, name='relu1')           # output: (?, 384)
-    network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu, name='relu2')           # output: (?, 192)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
+    network = tl.layers.FlattenLayer(network, name='flatten_layer')
+                                                            # output: (?, 4096)
+    network = tl.layers.DenseLayer(network, n_units=384,
+                            act = tf.nn.relu, name='relu1') # output: (?, 384)
+    network = tl.layers.DenseLayer(network, n_units=192,
+                            act = tf.nn.relu, name='relu2') # output: (?, 192)
+    network = tl.layers.DenseLayer(network, n_units=10,
+                            act = tl.activation.identity,
+                            name='output_layer')            # output: (?, 10)
 
     y = network.outputs
 
@@ -107,7 +115,8 @@ def main_test_cnn_naive():
 
     for epoch in range(n_epoch):
         start_time = time.time()
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate.minibatches(
+                                X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
             sess.run(train_op, feed_dict=feed_dict)
@@ -115,7 +124,8 @@ def main_test_cnn_naive():
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+            for X_train_a, y_train_a in tl.iterate.minibatches(
+                                    X_train, y_train, batch_size, shuffle=True):
                 dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
@@ -125,7 +135,8 @@ def main_test_cnn_naive():
             print("   train loss: %f" % (train_loss/ n_batch))
             print("   train acc: %f" % (train_acc/ n_batch))
             test_loss, test_acc, n_batch = 0, 0, 0
-            for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
+            for X_test_a, y_test_a in tl.iterate.minibatches(
+                                    X_test, y_test, batch_size, shuffle=True):
                 dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x: X_test_a, y_: y_test_a}
                 feed_dict.update(dp_dict)
@@ -137,7 +148,8 @@ def main_test_cnn_naive():
                 pass
                 # tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("# You should change visualize.CNN(), if you want to save the feature images for different dataset")
+                raise Exception("# You should change visualize.CNN(), \
+                if you want to save the feature images for different dataset")
 
         if (epoch + 1) % 1 == 0:
             print("Save model " + "!"*10);
@@ -181,7 +193,8 @@ def main_test_cnn_advanced():
     model_file_name = "model_cifar10_advanced.ckpt"
     resume = False # load model, resume from previous checkpoint?
 
-    X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
+    X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(
+                                        shape=(-1, 32, 32, 3), plotable=False)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     y_train = np.asarray(y_train, dtype=np.int32)
@@ -261,13 +274,18 @@ def main_test_cnn_advanced():
                         name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
     network = tl.layers.FlattenLayer(network, name='flatten_layer')                        # output: (batch_size, 2304)
     network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
-                        W_init=tf.truncated_normal_initializer(stddev=0.04), W_init_args={},
-                        b_init=tf.constant_initializer(value=0.1), b_init_args={}, name='relu1')       # output: (batch_size, 384)
+                        W_init=tf.truncated_normal_initializer(stddev=0.04),
+                        W_init_args={},
+                        b_init=tf.constant_initializer(value=0.1),
+                        b_init_args={}, name='relu1')       # output: (batch_size, 384)
     network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
-                        W_init=tf.truncated_normal_initializer(stddev=0.04), W_init_args={},
-                        b_init=tf.constant_initializer(value=0.1), b_init_args={}, name='relu2')       # output: (batch_size, 192)
+                        W_init=tf.truncated_normal_initializer(stddev=0.04),
+                        W_init_args={},
+                        b_init=tf.constant_initializer(value=0.1),
+                        b_init_args={}, name='relu2')       # output: (batch_size, 192)
     network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity,
-                        W_init=tf.truncated_normal_initializer(stddev=1/192.0), W_init_args={},
+                        W_init=tf.truncated_normal_initializer(stddev=1/192.0),
+                        W_init_args={},
                         b_init = tf.constant_initializer(value=0.0),
                         name='output_layer')    # output: (batch_size, 10)
     y = network.outputs
@@ -314,7 +332,8 @@ def main_test_cnn_advanced():
 
     for epoch in range(n_epoch):
         start_time = time.time()
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate.minibatches(
+                                    X_train, y_train, batch_size, shuffle=True):
             X_train_a = sess.run(distorted_images_op, feed_dict={x: X_train_a})[0][1:]  # preprocess the training images, took about 0.11s per batch (128)
             feed_dict = {x_crop: X_train_a, y_: y_train_a}
             feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
@@ -323,7 +342,8 @@ def main_test_cnn_advanced():
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
-            for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+            for X_train_a, y_train_a in tl.iterate.minibatches(
+                                    X_train, y_train, batch_size, shuffle=True):
                 X_train_a = sess.run(central_images_op, feed_dict={x: X_train_a})[0][1:]  # preprocess the images for evaluation
                 dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x_crop: X_train_a, y_: y_train_a}
@@ -334,7 +354,8 @@ def main_test_cnn_advanced():
             print("   train loss: %f" % (train_loss/ n_batch))
             print("   train acc: %f" % (train_acc/ n_batch))
             test_loss, test_acc, n_batch = 0, 0, 0
-            for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
+            for X_test_a, y_test_a in tl.iterate.minibatches(
+                                    X_test, y_test, batch_size, shuffle=True):
                 X_test_a = sess.run(central_images_op, feed_dict={x: X_test_a})[0][1:]  # preprocess the images for evaluation
                 dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
                 feed_dict = {x_crop: X_test_a, y_: y_test_a}
@@ -347,7 +368,8 @@ def main_test_cnn_advanced():
                 pass
                 # tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("# You should change visualize.CNN(), if you want to save the feature images for different dataset")
+                raise Exception("# You should change visualize.CNN(), if you \
+                        want to save the feature images for different dataset")
 
         if (epoch + 1) % (print_freq * 5) == 0:
             print("Save model " + "!"*10)

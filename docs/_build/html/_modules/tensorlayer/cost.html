@@ -155,7 +155,8 @@
 
 <span class="c1">## Cost Functions</span>
 <div class="viewcode-block" id="cross_entropy"><a class="viewcode-back" href="../../modules/cost.html#tensorlayer.cost.cross_entropy">[docs]</a><span class="k">def</span> <span class="nf">cross_entropy</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the cost function of cross-entropy of two distributions.</span>
+    <span class="sd">&quot;&quot;&quot;Returns the cost function of Cross-entropy of two distributions, implement</span>
+<span class="sd">    softmax internally.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -179,6 +180,20 @@
         <span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">net_output_tf</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">),</span><span class="n">target_tf</span><span class="p">),</span>
                              <span class="n">tf</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">net_output_tf</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">target_tf</span><span class="p">)))</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">cross_entropy</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cross_entropy_mean&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="mean_squre_error"><a class="viewcode-back" href="../../modules/cost.html#tensorlayer.cost.mean_squre_error">[docs]</a><span class="k">def</span> <span class="nf">mean_squre_error</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the cost function of Mean-squre-error of two distributions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    output : tensorflow variable</span>
+<span class="sd">        A distribution with shape: [None, n_feature].</span>
+<span class="sd">    target : tensorflow variable</span>
+<span class="sd">        A distribution with shape: [None, n_feature].</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mse</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squared_difference</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x_recon</span><span class="p">),</span> <span class="n">reduction_indices</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">mse</span><span class="p">)</span></div>
 
 <span class="c1">## Regularization Functions</span>
 <div class="viewcode-block" id="li_regularizer"><a class="viewcode-back" href="../../modules/cost.html#tensorlayer.cost.li_regularizer">[docs]</a><span class="k">def</span> <span class="nf">li_regularizer</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>

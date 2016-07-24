@@ -197,7 +197,7 @@ you to apply <code class="docutils literal"><span class="pre">tf.nn.lrn</span></
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-obj docutils literal"><span class="pre">PoolLayer</span></code></a>([layer,&nbsp;ksize,&nbsp;strides,&nbsp;padding,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.PoolLayer" title="tensorlayer.layers.PoolLayer"><code class="xref py py-class docutils literal"><span class="pre">PoolLayer</span></code></a> class is a 2D Pooling layer.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.RNNLayer" title="tensorlayer.layers.RNNLayer"><code class="xref py py-obj docutils literal"><span class="pre">RNNLayer</span></code></a>([layer,&nbsp;cell_fn,&nbsp;n_hidden,&nbsp;...])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.RNNLayer" title="tensorlayer.layers.RNNLayer"><code class="xref py py-obj docutils literal"><span class="pre">RNNLayer</span></code></a>([layer,&nbsp;cell_fn,&nbsp;cell_init_args,&nbsp;...])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.RNNLayer" title="tensorlayer.layers.RNNLayer"><code class="xref py py-class docutils literal"><span class="pre">RNNLayer</span></code></a> class is a RNN layer, you can implement vanilla RNN, LSTM and GRU with it.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.FlattenLayer" title="tensorlayer.layers.FlattenLayer"><code class="xref py py-obj docutils literal"><span class="pre">FlattenLayer</span></code></a>([layer,&nbsp;name])</td>
@@ -206,11 +206,23 @@ you to apply <code class="docutils literal"><span class="pre">tf.nn.lrn</span></
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-obj docutils literal"><span class="pre">ConcatLayer</span></code></a>([layer,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.ConcatLayer" title="tensorlayer.layers.ConcatLayer"><code class="xref py py-class docutils literal"><span class="pre">ConcatLayer</span></code></a> class is layer which concat (merge) two or more <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> to a single class:<cite>DenseLayer</cite>.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReshapeLayer</span></code></a>([layer,&nbsp;name])</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-obj docutils literal"><span class="pre">ReshapeLayer</span></code></a>([layer,&nbsp;shape,&nbsp;name])</td>
 <td>The <a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-class docutils literal"><span class="pre">ReshapeLayer</span></code></a> class is layer which reshape the tensor.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.flatten_reshape" title="tensorlayer.layers.flatten_reshape"><code class="xref py py-obj docutils literal"><span class="pre">flatten_reshape</span></code></a>(variable)</td>
 <td>Reshapes high-dimension input to a vector.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.clear_layers_name" title="tensorlayer.layers.clear_layers_name"><code class="xref py py-obj docutils literal"><span class="pre">clear_layers_name</span></code></a>()</td>
+<td>Clear all layer names in set_keep[&#8216;_layers_name_list&#8217;], enable layer name reuse.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.set_name_reuse" title="tensorlayer.layers.set_name_reuse"><code class="xref py py-obj docutils literal"><span class="pre">set_name_reuse</span></code></a>([enable])</td>
+<td>Enable or disable reuse layer name.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.layers.print_all_variables" title="tensorlayer.layers.print_all_variables"><code class="xref py py-obj docutils literal"><span class="pre">print_all_variables</span></code></a>()</td>
+<td>Print all trainable and non-trainable variables</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.layers.initialize_rnn_state" title="tensorlayer.layers.initialize_rnn_state"><code class="xref py py-obj docutils literal"><span class="pre">initialize_rnn_state</span></code></a>(state)</td>
+<td>Return the initialized RNN state.</td>
 </tr>
 </tbody>
 </table>
@@ -258,7 +270,7 @@ n_features is not important.</dd>
 <h2>Word Embedding Input layer<a class="headerlink" href="#word-embedding-input-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.Word2vecEmbeddingInputlayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform&gt;</em>, <em>E_init_args={'minval': -1.0</em>, <em>'maxval': 1.0}</em>, <em>nce_W_init=&lt;function truncated_normal&gt;</em>, <em>nce_W_init_args={'stddev': 0.03}</em>, <em>nce_b_init=&lt;function zeros&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Word2vecEmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>train_labels=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>num_sampled=64</em>, <em>nce_loss_args={}</em>, <em>E_init=&lt;function random_uniform_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>E_init_args={}</em>, <em>nce_W_init=&lt;function truncated_normal_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>nce_W_init_args={}</em>, <em>nce_b_init=&lt;function constant_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>nce_b_init_args={}</em>, <em>name='word2vec_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Word2vecEmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.Word2vecEmbeddingInputlayer" title="tensorlayer.layers.Word2vecEmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">Word2vecEmbeddingInputlayer</span></code></a> class is a fully connected layer,
 for Word Embedding. Words are input as integer index.
 The output is the embedded word vector.</p>
@@ -284,9 +296,9 @@ The output is the embedded word vector.</p>
 <dt>nce_W_init_args</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for initializing the nce decoder weight matrix.</dd>
 <dt>nce_b_init</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">NCE decoder biases initializer</span><dd>The initializer for initializing the nce decoder bias vector.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">NCE decoder biases initializer</span><dd>The initializer for tf.get_variable() of the nce decoder bias vector.</dd>
 <dt>nce_b_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for initializing the nce decoder bias vector.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for tf.get_variable() of the nce decoder bias vector.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
@@ -335,7 +347,8 @@ The output is the embedded word vector.</p>
 <span class="gp">... </span>   <span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cost</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">nce_cost</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_params</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">all_params</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">GradientDescentOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span>
+<span class="gp">... </span>                                            <span class="n">cost</span><span class="p">,</span> <span class="n">var_list</span><span class="o">=</span><span class="n">train_params</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">normalized_embeddings</span> <span class="o">=</span> <span class="n">emb_net</span><span class="o">.</span><span class="n">normalized_embeddings</span>
 </pre></div>
 </div>
@@ -344,7 +357,7 @@ The output is the embedded word vector.</p>
 
 <dl class="class">
 <dt id="tensorlayer.layers.EmbeddingInputlayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">EmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>name='embedding_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#EmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.EmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">EmbeddingInputlayer</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>vocabulary_size=80000</em>, <em>embedding_size=200</em>, <em>E_init=&lt;function random_uniform_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>E_init_args={}</em>, <em>name='embedding_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#EmbeddingInputlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.EmbeddingInputlayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.EmbeddingInputlayer" title="tensorlayer.layers.EmbeddingInputlayer"><code class="xref py py-class docutils literal"><span class="pre">EmbeddingInputlayer</span></code></a> class is a fully connected layer,
 for Word Embedding. Words are input as integer index.
 The output is the embedded word vector.</p>
@@ -354,17 +367,23 @@ class:<cite>Word2vecEmbeddingInputlayer</cite>.</p>
 <p>Note that, do not update this embedding matrix.</p>
 <dl class="docutils">
 <dt>inputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">placeholder</span><dd>For word inputs. integer index format.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">placeholder</span><dd>For word inputs. integer index format.
+a 2D tensor : [batch_size, num_steps(num_words)]</dd>
 <dt>vocabulary_size</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The size of vocabulary, number of words.</dd>
 <dt>embedding_size</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The number of embedding dimensions.</dd>
+<dt>E_init</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">embedding initializer</span><dd>The initializer for initializing the embedding matrix.</dd>
+<dt>E_init_args</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>The arguments for embedding initializer</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
 <dl class="docutils">
 <dt>outputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a tensor</span><dd>The outputs of embedding layer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor</span><dd>The outputs of embedding layer.
+the outputs 3D tensor : [batch_size, num_steps(num_words), embedding_size]</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vocabulary_size</span> <span class="o">=</span> <span class="mi">50000</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">embedding_size</span> <span class="o">=</span> <span class="mi">200</span>
@@ -416,7 +435,7 @@ class:<cite>Word2vecEmbeddingInputlayer</cite>.</p>
 <h2>Dense layer<a class="headerlink" href="#dense-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.DenseLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>W_init=&lt;function xavier_init&gt;</em>, <em>b_init=&lt;function zeros&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='dense_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DenseLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>W_init=&lt;function truncated_normal_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>b_init=&lt;function constant_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='dense_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DenseLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a> class is a fully connected layer.</p>
 <dl class="docutils">
 <dt>layer</dt>
@@ -430,15 +449,17 @@ class:<cite>Word2vecEmbeddingInputlayer</cite>.</p>
 <dt>b_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights tf.get_variable.</dd>
 <dt>b_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases tf.get_variable.</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">,</span>
-<span class="gp">... </span>           <span class="n">W_init</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">,</span> <span class="n">W_init_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;stddev&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">W_init</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">random_normal</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">W_init_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;stddev&#39;</span><span class="p">:</span><span class="mf">1.0</span><span class="p">})</span>
 </pre></div>
 </div>
 <p>If the input to this layer has more than two axes, it need to flatten the
@@ -465,9 +486,13 @@ Normally, for sigmoid layer, the reconstruction activation is sigmoid;
 for rectifying layer, the reconstruction activation is softplus.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">196</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sigmoid1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span> <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span> <span class="n">denoise_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">196</span><span class="p">,</span>
+<span class="gp">... </span>                                <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;sigmoid1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReconLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">x_recon</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">784</span><span class="p">,</span>
+<span class="gp">... </span>                                <span class="n">act</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recon_layer1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recon_layer1</span><span class="o">.</span><span class="n">pretrain</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_val</span><span class="o">=</span><span class="n">X_val</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">denoise_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_epoch</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="n">print_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="s1">&#39;w1pre_&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="docutils">
@@ -512,7 +537,7 @@ values to zero by a given keeping probability.</p>
 
 <dl class="class">
 <dt id="tensorlayer.layers.DropconnectDenseLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropconnectDenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>W_init=&lt;function xavier_init&gt;</em>, <em>b_init=&lt;function zeros&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='dropconnect_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropconnectDenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropconnectDenseLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">DropconnectDenseLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>keep=0.5</em>, <em>n_units=100</em>, <em>act=&lt;function relu&gt;</em>, <em>W_init=&lt;function truncated_normal_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>b_init=&lt;function constant_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='dropconnect_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#DropconnectDenseLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.DropconnectDenseLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.DropconnectDenseLayer" title="tensorlayer.layers.DropconnectDenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DropconnectDenseLayer</span></code></a> class is <cite>DenseLayer</cite> with DropConnect
 behaviour which randomly remove connection between this layer to previous
 layer by a given keeping probability.</p>
@@ -530,9 +555,9 @@ layer by a given keeping probability.</p>
 <dt>b_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights tf.get_variable().</dd>
 <dt>b_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases tf.get_variable().</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
@@ -550,7 +575,7 @@ layer by a given keeping probability.</p>
 <h2>Convolutional layer<a class="headerlink" href="#convolutional-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.Conv2dLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv2dLayer</code><span class="sig-paren">(</span><em>layer=None, act=&lt;function relu&gt;, shape=[5, 5, 1, 100], strides=[1, 1, 1, 1], padding='SAME', W_init=&lt;function truncated_normal&gt;, b_init=&lt;function zeros&gt;, W_init_args={}, b_init_args={}, name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv2dLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv2dLayer</code><span class="sig-paren">(</span><em>layer=None, act=&lt;function relu&gt;, shape=[5, 5, 1, 100], strides=[1, 1, 1, 1], padding='SAME', W_init=&lt;function truncated_normal_initializer.&lt;locals&gt;._initializer&gt;, b_init=&lt;function constant_initializer.&lt;locals&gt;._initializer&gt;, W_init_args={}, b_init_args={}, name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv2dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv2dLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> class is a 2D CNN layer.</p>
 <dl class="docutils">
 <dt>layer</dt>
@@ -572,9 +597,9 @@ layer by a given keeping probability.</p>
 <dt>b_init</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">biases initializer</span><dd>The initializer for initializing the bias vector.</dd>
 <dt>W_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the weights tf.get_variable().</dd>
 <dt>b_init_args</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases initializer.</dd>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>The arguments for the biases tf.get_variable().</dd>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
@@ -627,7 +652,7 @@ layer by a given keeping probability.</p>
 <h2>Recurrent layer<a class="headerlink" href="#recurrent-layer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.RNNLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">RNNLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>cell_fn=&lt;class 'tensorflow.python.ops.rnn_cell.BasicRNNCell'&gt;</em>, <em>n_hidden=100</em>, <em>n_steps=5</em>, <em>return_last=False</em>, <em>is_reshape=True</em>, <em>cell_init_args={}</em>, <em>name='rnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#RNNLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.RNNLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">RNNLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>cell_fn=&lt;class 'tensorflow.python.ops.rnn_cell.BasicRNNCell'&gt;</em>, <em>cell_init_args={}</em>, <em>n_hidden=100</em>, <em>initializer=&lt;function random_uniform_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>n_steps=5</em>, <em>return_last=False</em>, <em>return_seq_2d=False</em>, <em>name='rnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#RNNLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.RNNLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.RNNLayer" title="tensorlayer.layers.RNNLayer"><code class="xref py py-class docutils literal"><span class="pre">RNNLayer</span></code></a> class is a RNN layer, you can implement vanilla RNN,
 LSTM and GRU with it.</p>
 <dl class="docutils">
@@ -651,11 +676,19 @@ LSTM and GRU with it.</p>
 <p>If False, return all outputs, &#8220;Synced sequence input and output&#8221;</p>
 <p class="last">In other word, if you want to apply one or more RNN(s) on this layer, set to False.</p>
 </dd>
-<dt>is_reshape</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">boolen</span><dd><p class="first">Reshape the inputs to 3 dimension tensor.</p>
-<p>If input is［batch_size, n_steps, n_features], we do not need to reshape it.</p>
-<p class="last">If input is [batch_size * n_steps, n_features], we need to reshape it.</p>
-</dd>
+</dl>
+<p># is_reshape : boolen (deprecate)
+#     Reshape the inputs to 3 dimension tensor.</p>
+<p>#     If input is［batch_size, n_steps, n_features], we do not need to reshape it.</p>
+<p>#     If input is [batch_size * n_steps, n_features], we need to reshape it.
+return_seq_2d : boolen</p>
+<blockquote>
+<div><p>When return_last = False</p>
+<blockquote>
+<div>if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.</div></blockquote>
+</div></blockquote>
+<dl class="docutils">
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
@@ -666,29 +699,28 @@ return_last = False, outputs = all cell_output, which is the hidden state.</p>
 <blockquote class="last">
 <div>cell_output.get_shape() = (?, n_hidden)</div></blockquote>
 </dd>
-<dt>state</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a tensor</span><dd><p class="first">When state_is_tuple = False,
+<dt>final_state</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor or StateTuple</span><dd><p class="first">When state_is_tuple = False,
 it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].</p>
-<p class="last">When state_is_tuple = True, it stores two elements: (c, h), in that order.</p>
+<p class="last">When state_is_tuple = True, it stores two elements: (c, h), in that order.
+You can get the final state after each iteration during training, then
+feed it to the initial state of next iteration.</p>
 </dd>
+<dt>initial_state</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a tensor or StateTuple</span><dd>It is the initial state of this RNN layer, you can use it to initialize
+your state at the begining of each epoch or iteration according to your
+training procedure.</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 <span class="gp">...</span>
-<span class="gp">... </span><span class="n">For</span> <span class="n">single</span> <span class="n">RNN</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
-<span class="go">                return_last=True, is_reshape=True, name=&#39;lstm_layer&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
-<span class="gp">... </span>                <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
-<span class="gp">...</span>
-<span class="gp">...</span>
-<span class="gp">... </span><span class="n">For</span> <span class="n">multiple</span> <span class="n">RNNs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
-<span class="gp">... </span>             <span class="n">return_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_reshape</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lstm_layer1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">RNNLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
-<span class="gp">... </span>             <span class="n">return_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_reshape</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;lstm_layer2&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">n_classes</span><span class="p">,</span>
-<span class="gp">... </span>                <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="go"># ... For single RNN</span>
+<span class="go"># &gt;&gt;&gt; network =</span>
+<span class="go"># ...</span>
+<span class="go"># ...</span>
+<span class="go"># ... For multiple RNNs</span>
+<span class="go"># &gt;&gt;&gt; network =</span>
+<span class="go">#</span>
 </pre></div>
 </div>
 <p>If the input to this layer has more than two axes, we need to flatten the
@@ -696,6 +728,7 @@ input by using <a class="reference internal" href="#tensorlayer.layers.FlattenLa
 <p><a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html">Neural Network RNN Cells in TensorFlow</a></p>
 <p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py">tensorflow/python/ops/rnn.py</a></p>
 <p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py">tensorflow/python/ops/rnn_cell.py</a></p>
+<p>see TensorFlow tutorial <code class="docutils literal"><span class="pre">ptb_word_lm.py</span></code></p>
 </dd></dl>
 
 </div>
@@ -772,7 +805,7 @@ etc on the top of it.</p>
 
 <dl class="class">
 <dt id="tensorlayer.layers.ReshapeLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">ReshapeLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>shape=[]</em>, <em>name='reshape_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#ReshapeLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.ReshapeLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <a class="reference internal" href="#tensorlayer.layers.ReshapeLayer" title="tensorlayer.layers.ReshapeLayer"><code class="xref py py-class docutils literal"><span class="pre">ReshapeLayer</span></code></a> class is layer which reshape the tensor.</p>
 <dl class="docutils">
 <dt>layer</dt>
@@ -782,6 +815,18 @@ etc on the top of it.</p>
 <dt>name</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>An optional name to attach to this layer.</dd>
 </dl>
+<p>... The core of this layer is <code class="docutils literal"><span class="pre">tf.reshape</span></code>.
+... Use TensorFlow only:
+&gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[None, 3])
+&gt;&gt;&gt; y = tf.reshape(x, shape=[-1, 3, 3])
+&gt;&gt;&gt; sess = tf.InteractiveSession()
+&gt;&gt;&gt; print(sess.run(y, feed_dict={x:[[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6]]}))
+... [[[ 1.  1.  1.]
+... [ 2.  2.  2.]
+... [ 3.  3.  3.]]
+... [[ 4.  4.  4.]
+... [ 5.  5.  5.]
+... [ 6.  6.  6.]]]</p>
 </dd></dl>
 
 </div>
@@ -789,7 +834,7 @@ etc on the top of it.</p>
 <h2>Developing or Untested<a class="headerlink" href="#developing-or-untested" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="tensorlayer.layers.Conv3dLayer">
-<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv3dLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>shape=[]</em>, <em>strides=[]</em>, <em>padding='SAME'</em>, <em>W_init=&lt;function truncated_normal&gt;</em>, <em>b_init=&lt;function zeros&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv3dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv3dLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">tensorlayer.layers.</code><code class="descname">Conv3dLayer</code><span class="sig-paren">(</span><em>layer=None</em>, <em>act=&lt;function relu&gt;</em>, <em>shape=[]</em>, <em>strides=[]</em>, <em>padding='SAME'</em>, <em>W_init=&lt;function truncated_normal_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>b_init=&lt;function constant_initializer.&lt;locals&gt;._initializer&gt;</em>, <em>W_init_args={}</em>, <em>b_init_args={}</em>, <em>name='cnn_layer'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#Conv3dLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.Conv3dLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Untested</p>
 <p>The <a class="reference internal" href="#tensorlayer.layers.Conv3dLayer" title="tensorlayer.layers.Conv3dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv3dLayer</span></code></a> class is a 3D CNN layer.</p>
 <dl class="docutils">
@@ -898,6 +943,46 @@ It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]</
 <span class="gp">...</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.layers.clear_layers_name">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">clear_layers_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#clear_layers_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.clear_layers_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all layer names in set_keep[&#8216;_layers_name_list&#8217;],
+enable layer name reuse.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">clear_layers_name</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network2</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network2</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network2</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.layers.set_name_reuse">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">set_name_reuse</code><span class="sig-paren">(</span><em>enable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#set_name_reuse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.set_name_reuse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable or disable reuse layer name. By default, each layer must has unique
+name. When you want two or more input placeholder (inference) share the same
+model parameters, you need to enable layer name reuse, then allow the
+parameters have same name scope.</p>
+<p>see <code class="docutils literal"><span class="pre">tutorial_ptb_lstm.py</span></code> for example.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.layers.print_all_variables">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">print_all_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#print_all_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.print_all_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print all trainable and non-trainable variables
+without initialize_all_variables()</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.layers.initialize_rnn_state">
+<code class="descclassname">tensorlayer.layers.</code><code class="descname">initialize_rnn_state</code><span class="sig-paren">(</span><em>state</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/layers.html#initialize_rnn_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.layers.initialize_rnn_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the initialized RNN state.
+The input is LSTMStateTuple or State of RNNCells.</p>
 </dd></dl>
 
 </div>

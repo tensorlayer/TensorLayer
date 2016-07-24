@@ -156,21 +156,24 @@
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.cross_entropy" title="tensorlayer.cost.cross_entropy"><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy</span></code></a>(output,&nbsp;target)</td>
-<td>Return the cost function of cross-entropy of two distributions.</td>
+<td>Returns the cost function of Cross-entropy of two distributions, implement softmax internally.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.li_regularizer" title="tensorlayer.cost.li_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">li_regularizer</span></code></a>(scale)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.mean_squre_error" title="tensorlayer.cost.mean_squre_error"><code class="xref py py-obj docutils literal"><span class="pre">mean_squre_error</span></code></a>(output,&nbsp;target)</td>
+<td>Return the cost function of Mean-squre-error of two distributions.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.li_regularizer" title="tensorlayer.cost.li_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">li_regularizer</span></code></a>(scale)</td>
 <td>li regularization removes the neurons of previous layer, &#8216;i&#8217; represents &#8216;inputs&#8217;.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.lo_regularizer" title="tensorlayer.cost.lo_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">lo_regularizer</span></code></a>(scale)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.lo_regularizer" title="tensorlayer.cost.lo_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">lo_regularizer</span></code></a>(scale)</td>
 <td>lo regularization removes the neurons of current layer, &#8216;o&#8217; represents outputs</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_regularizer" title="tensorlayer.cost.maxnorm_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_regularizer</span></code></a>([scale])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_regularizer" title="tensorlayer.cost.maxnorm_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_regularizer</span></code></a>([scale])</td>
 <td>Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_o_regularizer" title="tensorlayer.cost.maxnorm_o_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_o_regularizer</span></code></a>(scale)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_o_regularizer" title="tensorlayer.cost.maxnorm_o_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_o_regularizer</span></code></a>(scale)</td>
 <td>Max-norm output regularization removes the neurons of current layer.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_i_regularizer" title="tensorlayer.cost.maxnorm_i_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_i_regularizer</span></code></a>(scale)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_i_regularizer" title="tensorlayer.cost.maxnorm_i_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_i_regularizer</span></code></a>(scale)</td>
 <td>Max-norm input regularization removes the neurons of previous layer.</td>
 </tr>
 </tbody>
@@ -180,7 +183,8 @@
 <dl class="function">
 <dt id="tensorlayer.cost.cross_entropy">
 <code class="descclassname">tensorlayer.cost.</code><code class="descname">cross_entropy</code><span class="sig-paren">(</span><em>output</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#cross_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.cross_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the cost function of cross-entropy of two distributions.</p>
+<dd><p>Returns the cost function of Cross-entropy of two distributions, implement
+softmax internally.</p>
 <dl class="docutils">
 <dt>output</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
@@ -192,6 +196,18 @@
 </div>
 <p>About cross-entropy: <a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">wiki</a>.</p>
 <p>The code is borrowed from: <a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">here</a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.cost.mean_squre_error">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">mean_squre_error</code><span class="sig-paren">(</span><em>output</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#mean_squre_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.mean_squre_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cost function of Mean-squre-error of two distributions.</p>
+<dl class="docutils">
+<dt>output</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+<dt>target</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+</dl>
 </dd></dl>
 
 </div>
