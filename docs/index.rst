@@ -17,6 +17,11 @@ This documentation is not only for describing how to use the library but also
 a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.
 
+.. note::
+   If you got problem to read the docs online, you could download the project
+   on github, then go to ``/docs/_build/html/index.html`` to read the docs
+   offline.
+
 User Guide
 ------------
 

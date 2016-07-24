@@ -721,7 +721,7 @@ If everything is set up correctly, you will get an output in the end.
 .. _fig_0601:
 
 .. image:: my_figs/tsne.png
-  :scale: 50 %
+  :scale: 100 %
   :align: center
 
 
