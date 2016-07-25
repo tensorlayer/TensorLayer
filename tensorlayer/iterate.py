@@ -60,8 +60,9 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
 
     Examples
     --------
+    >>> Synced sequence input and output.
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
-    >>> y = np.asarray([0,1,2,3,4,5])
+    >>> y = np.asarray([0, 1, 2, 3, 4, 5])
     >>> for batch in tl.iterate.seq_minibatches(inputs=X, targets=y, batch_size=2, seq_length=2, stride=1):
     >>>     print(batch)
     ... (array([['a', 'a'],
@@ -74,6 +75,27 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ...         ['d', 'd'],
     ...         ['e', 'e']],
     ...         dtype='<U1'), array([2, 3, 3, 4]))
+    ...
+    ...
+    >>> Many to One
+    >>> return_last = True
+    >>> num_steps = 2
+    >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
+    >>> Y = np.asarray([0,1,2,3,4,5])
+    >>> for batch in tl.iterate.seq_minibatches(inputs=X, targets=Y, batch_size=2, seq_length=num_steps, stride=1):
+    >>>     x, y = batch
+    >>>     if return_last:
+    >>>         tmp_y = y.reshape((-1, num_steps) + y.shape[1:])
+    >>>     y = tmp_y[:, -1]
+    >>>     print(x, y)
+    ... [['a' 'a']
+    ... ['b' 'b']
+    ... ['b' 'b']
+    ... ['c' 'c']] [1 2]
+    ... [['c' 'c']
+    ... ['d' 'd']
+    ... ['d' 'd']
+    ... ['e' 'e']] [3 4]
     """
     assert len(inputs) == len(targets)
     n_loads = (batch_size * stride) + (seq_length - stride)

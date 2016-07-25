@@ -205,8 +205,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Synced sequence input and output.</span>
 <span class="sd">    &gt;&gt;&gt; X = np.asarray([[&#39;a&#39;,&#39;a&#39;], [&#39;b&#39;,&#39;b&#39;], [&#39;c&#39;,&#39;c&#39;], [&#39;d&#39;,&#39;d&#39;], [&#39;e&#39;,&#39;e&#39;], [&#39;f&#39;,&#39;f&#39;]])</span>
-<span class="sd">    &gt;&gt;&gt; y = np.asarray([0,1,2,3,4,5])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.asarray([0, 1, 2, 3, 4, 5])</span>
 <span class="sd">    &gt;&gt;&gt; for batch in tl.iterate.seq_minibatches(inputs=X, targets=y, batch_size=2, seq_length=2, stride=1):</span>
 <span class="sd">    &gt;&gt;&gt;     print(batch)</span>
 <span class="sd">    ... (array([[&#39;a&#39;, &#39;a&#39;],</span>
@@ -219,6 +220,27 @@
 <span class="sd">    ...         [&#39;d&#39;, &#39;d&#39;],</span>
 <span class="sd">    ...         [&#39;e&#39;, &#39;e&#39;]],</span>
 <span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([2, 3, 3, 4]))</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; Many to One</span>
+<span class="sd">    &gt;&gt;&gt; return_last = True</span>
+<span class="sd">    &gt;&gt;&gt; num_steps = 2</span>
+<span class="sd">    &gt;&gt;&gt; X = np.asarray([[&#39;a&#39;,&#39;a&#39;], [&#39;b&#39;,&#39;b&#39;], [&#39;c&#39;,&#39;c&#39;], [&#39;d&#39;,&#39;d&#39;], [&#39;e&#39;,&#39;e&#39;], [&#39;f&#39;,&#39;f&#39;]])</span>
+<span class="sd">    &gt;&gt;&gt; Y = np.asarray([0,1,2,3,4,5])</span>
+<span class="sd">    &gt;&gt;&gt; for batch in tl.iterate.seq_minibatches(inputs=X, targets=Y, batch_size=2, seq_length=num_steps, stride=1):</span>
+<span class="sd">    &gt;&gt;&gt;     x, y = batch</span>
+<span class="sd">    &gt;&gt;&gt;     if return_last:</span>
+<span class="sd">    &gt;&gt;&gt;         tmp_y = y.reshape((-1, num_steps) + y.shape[1:])</span>
+<span class="sd">    &gt;&gt;&gt;     y = tmp_y[:, -1]</span>
+<span class="sd">    &gt;&gt;&gt;     print(x, y)</span>
+<span class="sd">    ... [[&#39;a&#39; &#39;a&#39;]</span>
+<span class="sd">    ... [&#39;b&#39; &#39;b&#39;]</span>
+<span class="sd">    ... [&#39;b&#39; &#39;b&#39;]</span>
+<span class="sd">    ... [&#39;c&#39; &#39;c&#39;]] [1 2]</span>
+<span class="sd">    ... [[&#39;c&#39; &#39;c&#39;]</span>
+<span class="sd">    ... [&#39;d&#39; &#39;d&#39;]</span>
+<span class="sd">    ... [&#39;d&#39; &#39;d&#39;]</span>
+<span class="sd">    ... [&#39;e&#39; &#39;e&#39;]] [3 4]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
     <span class="n">n_loads</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">stride</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">seq_length</span> <span class="o">-</span> <span class="n">stride</span><span class="p">)</span>

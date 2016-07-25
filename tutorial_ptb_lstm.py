@@ -109,7 +109,6 @@ flags.DEFINE_string(
 FLAGS = flags.FLAGS
 
 
-
 def main(_):
     """
     The core of the model consists of an LSTM cell that processes one word at
@@ -543,3 +542,34 @@ if __name__ == "__main__":
 # Epoch: 13 Valid Perplexity: 122.917
 # Evaluation
 # Test Perplexity: 116.723 took 124.06s
+
+## MediumConfig
+# Epoch: 1 Learning rate: 1.000
+# 0.008 perplexity: 5173.547 speed: 6469 wps
+# 0.107 perplexity: 1219.527 speed: 6453 wps
+# 0.206 perplexity: 866.163 speed: 6441 wps
+# 0.306 perplexity: 695.163 speed: 6428 wps
+# 0.405 perplexity: 598.464 speed: 6420 wps
+# 0.505 perplexity: 531.875 speed: 6422 wps
+# 0.604 perplexity: 477.079 speed: 6425 wps
+# 0.704 perplexity: 438.297 speed: 6428 wps
+# 0.803 perplexity: 407.928 speed: 6425 wps
+# 0.903 perplexity: 381.264 speed: 6429 wps
+# Epoch: 1 Train Perplexity: 360.795
+# Epoch: 1 Valid Perplexity: 208.854
+# ...
+# Epoch: 39 Learning rate: 0.001
+# 0.008 perplexity: 56.618 speed: 6357 wps
+# 0.107 perplexity: 43.375 speed: 6341 wps
+# 0.206 perplexity: 47.873 speed: 6336 wps
+# 0.306 perplexity: 46.408 speed: 6337 wps
+# 0.405 perplexity: 46.327 speed: 6337 wps
+# 0.505 perplexity: 46.115 speed: 6335 wps
+# 0.604 perplexity: 45.323 speed: 6336 wps
+# 0.704 perplexity: 45.286 speed: 6337 wps
+# 0.803 perplexity: 45.174 speed: 6336 wps
+# 0.903 perplexity: 44.334 speed: 6336 wps
+# Epoch: 39 Train Perplexity: 44.021
+# Epoch: 39 Valid Perplexity: 87.516
+# Evaluation
+# Test Perplexity: 83.858 took 167.58s

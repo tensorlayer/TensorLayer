@@ -1269,7 +1269,7 @@
         <span class="n">Layer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">outputs</span>
         <span class="c1"># n_in = layer.n_units</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_units</span> <span class="o">=</span> <span class="n">n_hidden</span>
+        <span class="c1"># self.n_units = n_hidden</span>
 
         <span class="k">print</span><span class="p">(</span><span class="s2">&quot;  tensorlayer:Instantiate RNNLayer </span><span class="si">%s</span><span class="s2">: n_hidden:</span><span class="si">%d</span><span class="s2">, n_steps:</span><span class="si">%d</span><span class="s2">, in_dim:</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">, cell_fn:</span><span class="si">%s</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span>
             <span class="n">n_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">get_shape</span><span class="p">()</span><span class="o">.</span><span class="n">ndims</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">get_shape</span><span class="p">(),</span> <span class="n">cell_fn</span><span class="p">))</span>
@@ -1350,7 +1350,6 @@
         <span class="c1"># print(type(self.outputs))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_layers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="n">rnn_variables</span> <span class="p">)</span></div>
-
 
 
 <span class="c1"># Shape layer</span>

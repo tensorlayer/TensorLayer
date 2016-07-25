@@ -77,7 +77,7 @@ TensorLayer
 Hao Dong highly recommend you to install TensorLayer as follow.
 
 .. code-block:: bash
-
+  cd to the root of the git tree
   pip3 install . -e
 
 This command will run the ``setup.py`` to install TensorLayer. The ``-e`` allows

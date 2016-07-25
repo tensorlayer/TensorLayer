@@ -882,7 +882,7 @@ Understand LSTM
 Recurrent Neural Network
 -------------------------
 
-Hao Dong personally think Karpathy's blog is the best material to
+Hao Dong personally think Andrey Karpathy's blog is the best material to
 `Understand Recurrent Neural Network`_ , after reading that, Colah's blog can
 help you to `Understand LSTM Network`_ which can solve The Problem of Long-Term
 Dependencies. We do not describe more about RNN, please read through these blogs
@@ -892,7 +892,7 @@ before you go on.
 
 .. image:: my_figs/karpathy_rnn.jpeg
 
-(Image from Karpathy's blog)
+Image by Andrey Karpathy
 
 
 Synced sequence input and output

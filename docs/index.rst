@@ -6,8 +6,10 @@ Welcome to TensorLayer
 .. image:: user/my_figs/img_tensorlayer.png
   :scale: 25 %
   :align: center
+  :target: https://github.com/zsdonghao/tensorlayer
 
-TensorLayer is a transparent Deep Learning and Reinforcement Learning library
+`TensorLayer <https://github.com/zsdonghao/tensorlayer>`_ is a transparent
+Deep Learning and Reinforcement Learning library
 built on the top of Google TensorFlow. It was designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to
 extended and modified, suitable for both machine learning researches and

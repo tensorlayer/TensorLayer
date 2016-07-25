@@ -1124,7 +1124,7 @@ class RNNLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         # n_in = layer.n_units
-        self.n_units = n_hidden
+        # self.n_units = n_hidden
 
         print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn))
@@ -1205,7 +1205,6 @@ class RNNLayer(Layer):
         # print(type(self.outputs))
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
-
 
 
 # Shape layer
