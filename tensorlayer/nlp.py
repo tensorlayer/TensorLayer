@@ -11,6 +11,7 @@ from .layers import set_keep
 import collections
 import random
 import numpy as np
+import warnings
 
 def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_index=0):
     """Generate a training batch for the Skip-Gram model.
@@ -90,8 +91,45 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
 
 
+def sample(a, temperature=1.0):
+    """Sample an index from a probability array.
 
+    Parameters
+    ----------
+    a : a list
+        List of probabilities.
+    temperature : float
+        The higher the more uniform.
+        When a = [0.1, 0.2, 0.7],
+            temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]
+            temperature = 1.0, the distribution will be the same
+            temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]
 
+    Note
+    ------
+    No matter what is the temperature and input list, the sum of all probabilities will be one.
+    Even if input list = [1, 100, 200], the sum of all probabilities will still be one.
+
+    For large vocabulary_size, choice a higher temperature to avoid error.
+    """
+    try:
+        if temperature == 1:
+            return np.argmax(np.random.multinomial(1, a, 1))
+        else:
+            a = np.log(a) / temperature
+            a = np.exp(a) / np.sum(np.exp(a))
+            return np.argmax(np.random.multinomial(1, a, 1))
+    except:
+        # np.set_printoptions(threshold=np.nan)
+        # print(a)
+        # print(np.sum(a))
+        # print(np.max(a))
+        # print(np.min(a))
+        message = "For large vocabulary_size, choice a higher temperature to avoid error."
+        warnings.warn(message, Warning)
+        a = np.log(a) / 10
+        a = np.exp(a) / np.sum(np.exp(a))
+        return np.argmax(np.random.multinomial(1, a, 1))
 
 
 

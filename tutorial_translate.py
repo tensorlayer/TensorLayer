@@ -19,17 +19,20 @@
 
 """Sequence-to-sequence model with an attention mechanism for multiple buckets.
 
-This class implements a multi-layer recurrent neural network as encoder,
+This example implements a multi-layer recurrent neural network as encoder,
 and an attention-based decoder. This is the same as the model described in
-this paper: http://arxiv.org/abs/1412.7449 - please look there for details,
+this paper:
+    “Grammar as a Foreign Language”
+    http://arxiv.org/abs/1412.7449 - please look there for details,
 or into the seq2seq library for complete model implementation.
 This example also allows to use GRU cells in addition to LSTM cells, and
 sampled softmax to handle large output vocabulary size. A single-layer
 version of this model, but with bi-directional encoder, was presented in
-http://arxiv.org/abs/1409.0473
+    “Neural Machine Translation by Jointly Learning to Align and Translate”
+    http://arxiv.org/abs/1409.0473
 and sampled softmax is described in Section 3 of the following paper.
-http://arxiv.org/abs/1412.2007
-
+    “On Using Very Large Target Vocabulary for Neural Machine Translation”
+    http://arxiv.org/abs/1412.2007
 
 References
 -----------

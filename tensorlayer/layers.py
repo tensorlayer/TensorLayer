@@ -87,17 +87,24 @@ def initialize_rnn_state(state):
     """
     if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
         # when state_is_tuple=True for LSTM
-        c = state.c.eval()
-        h = state.h.eval()
-        return (c, h)
+        # c = state.c.eval()
+        # h = state.h.eval()
+        # return (c, h)
+        # print(state)
+        # print(state[0])
+        new_state = state
+        new_state[0].assign(state[0].eval())
+        new_state[1].assign(state[1].eval())
+        # state[0] = state[0].eval()
+        # state[1] = state[1].eval()
         # state.c = state.c.eval()
         # state.h = state.h.eval()
-        # return state
+        return new_state
     else:
         # when state_is_tuple=False for LSTM
         # or other RNNs
-        state = state.eval()
-        return state
+        new_state = state.eval()
+        return new_state
 
 def print_all_variables():
     """Print all trainable and non-trainable variables

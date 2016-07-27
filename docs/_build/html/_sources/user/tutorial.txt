@@ -1144,6 +1144,13 @@ Karpathy's blog :
 classified as expressing positive or negative sentiment). "
 
 
+
+
+
+
+
+
+
 Run the Translation example
 ===========================
 
@@ -1170,10 +1177,165 @@ Loss and update expressions
 What Next?
 -----------
 
+
+
+
+
+Cost Functions
+===============
+
+TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
+
+.. code-block:: python
+
+  network = tl.InputLayer(x, name='input_layer')
+  network = tl.DropoutLayer(network, keep=0.8, name='drop1')
+  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+  network = tl.DropoutLayer(network, keep=0.5, name='drop2')
+  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+  network = tl.DropoutLayer(network, keep=0.5, name='drop3')
+  network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+
+
+
+Regularization of Weights
+--------------------------
+
+After initializing the variables, the informations of network parameters can be
+observed by using ``network.print_params()``.
+
+.. code-block:: python
+
+  sess.run(tf.initialize_all_variables())
+  network.print_params()
+
+.. code-block:: text
+
+  param 0: (784, 800) (mean: -0.000000, median: 0.000004 std: 0.035524)
+  param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  param 2: (800, 800) (mean: 0.000029, median: 0.000031 std: 0.035378)
+  param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  param 4: (800, 10) (mean: 0.000673, median: 0.000763 std: 0.049373)
+  param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  num of params: 1276810
+
+
+The output of network is ``network.outputs``, then the cross entropy can be
+defined as follow. Besides, to regularize the weights,
+the ``network.all_params`` contains all parameters of the network.
+In this case, ``network.all_params = [W1, b1, W2, b2, Wout, bout]`` according
+to param 0, 1 ... 5 shown by ``network.print_params()``.
+Then max-norm regularization on W1 and W2 can be performed as follow.
+
+.. code-block:: python
+
+  y = network.outputs
+  # Alternatively, you can use tl.cost.cross_entropy(y, y_) instead.
+  cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+  cost = cross_entropy
+  cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) +
+            tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
+
+In addition, all TensorFlow's regularizers like
+``tf.contrib.layers.l2_regularizer`` can be used with TensorLayer.
+
+Regularization of Activation outputs
+--------------------------------------
+
+Instance method ``network.print_layers()`` prints all outputs of different
+layers in order. To achieve regularization on activation output, you can use
+``network.all_layers`` which contains all outputs of different layers.
+If you want to apply L1 penalty on the activations of first hidden layer,
+just simply add ``tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])``
+to the cost function.
+
+.. code-block:: python
+
+  network.print_layers()
+
+.. code-block:: text
+
+  layer 0: Tensor("dropout/mul_1:0", shape=(?, 784), dtype=float32)
+  layer 1: Tensor("Relu:0", shape=(?, 800), dtype=float32)
+  layer 2: Tensor("dropout_1/mul_1:0", shape=(?, 800), dtype=float32)
+  layer 3: Tensor("Relu_1:0", shape=(?, 800), dtype=float32)
+  layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
+  layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
+
+
+
+
+
+
+Easy to Modify
+================
+
+Modifying Pre-train Behaviour
+------------------------------
+
+Greedy layer-wise pretrain is an important task for deep neural network
+initialization, while there are many kinds of pre-train metrics according
+to different architectures and applications.
+
+For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
+can be implemented by using KL divergence as the following code,
+but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
+the sparsity can be implemented by using the L1 regularization of activation output.
+
+.. code-block:: python
+
+  # Vanilla Sparse Autoencoder
+  beta = 4
+  rho = 0.15
+  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
+  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
+          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
+
+
+For this reason, TensorLayer provides a simple way to modify or design your
+own pre-train metrice. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
+to define the reconstruction layer and cost function, to define your own cost
+function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
+To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
+By default, ``ReconLayer`` only updates the weights and biases of previous 1
+layer by using ``self.train_params = self.all _params[-4:]``, where the 4
+parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``. If you want
+to update the parameters of previous 2 layers, simply modify ``[-4:]`` to ``[-6:]``.
+
+
+.. code-block:: python
+
+  ReconLayer.__init__(...):
+      ...
+      self.train_params = self.all_params[-4:]
+      ...
+  	self.cost = mse + L1_a + L2_w
+
+
+Adding Customized Layer
+-------------------------
+
+Contribute useful ``Layer`` as an developer. The source code of TensorLayer is
+easy to understand, open ``tensorlayer/layer.py`` and read ``DenseLayer``, you
+can fully understand how it work.
+
+
+Adding Customized Regularizer
+------------------------------
+
+See tensorlayer/cost.py
+
+
+
+
+
+
+
+
 More info
 ==========
 
-For more information on what you can do with TensorLayer's layers, just continue
+For more information on what you can do with TensorLayer, just continue
 reading through readthedocs.
 Finally, the reference lists and explains as follow.
 

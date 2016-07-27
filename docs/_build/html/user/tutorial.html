@@ -147,6 +147,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#id16">What Next?</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#cost-functions">Cost Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#regularization-of-weights">Regularization of Weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#regularization-of-activation-outputs">Regularization of Activation outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#easy-to-modify">Easy to Modify</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-pre-train-behaviour">Modifying Pre-train Behaviour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-customized-layer">Adding Customized Layer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-customized-regularizer">Adding Customized Regularizer</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#more-info">More info</a></li>
 </ul>
 </li>
@@ -1165,9 +1176,123 @@ reads a sentence in English and then outputs a sentence in French).&#8221;</p>
 <h3>What Next?<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 </div>
 </div>
+<div class="section" id="cost-functions">
+<h2>Cost Functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
+<p>TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu2&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop3&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="regularization-of-weights">
+<h3>Regularization of Weights<a class="headerlink" href="#regularization-of-weights" title="Permalink to this headline">¶</a></h3>
+<p>After initializing the variables, the informations of network parameters can be
+observed by using <code class="docutils literal"><span class="pre">network.print_params()</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">initialize_all_variables</span><span class="p">())</span>
+<span class="n">network</span><span class="o">.</span><span class="n">print_params</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>param 0: (784, 800) (mean: -0.000000, median: 0.000004 std: 0.035524)
+param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+param 2: (800, 800) (mean: 0.000029, median: 0.000031 std: 0.035378)
+param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+param 4: (800, 10) (mean: 0.000673, median: 0.000763 std: 0.049373)
+param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+num of params: 1276810
+</pre></div>
+</div>
+<p>The output of network is <code class="docutils literal"><span class="pre">network.outputs</span></code>, then the cross entropy can be
+defined as follow. Besides, to regularize the weights,
+the <code class="docutils literal"><span class="pre">network.all_params</span></code> contains all parameters of the network.
+In this case, <code class="docutils literal"><span class="pre">network.all_params</span> <span class="pre">=</span> <span class="pre">[W1,</span> <span class="pre">b1,</span> <span class="pre">W2,</span> <span class="pre">b2,</span> <span class="pre">Wout,</span> <span class="pre">bout]</span></code> according
+to param 0, 1 ... 5 shown by <code class="docutils literal"><span class="pre">network.print_params()</span></code>.
+Then max-norm regularization on W1 and W2 can be performed as follow.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
+<span class="c1"># Alternatively, you can use tl.cost.cross_entropy(y, y_) instead.</span>
+<span class="n">cross_entropy</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_</span><span class="p">))</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">cross_entropy</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+          <span class="n">tl</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">maxnorm_regularizer</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In addition, all TensorFlow&#8217;s regularizers like
+<code class="docutils literal"><span class="pre">tf.contrib.layers.l2_regularizer</span></code> can be used with TensorLayer.</p>
+</div>
+<div class="section" id="regularization-of-activation-outputs">
+<h3>Regularization of Activation outputs<a class="headerlink" href="#regularization-of-activation-outputs" title="Permalink to this headline">¶</a></h3>
+<p>Instance method <code class="docutils literal"><span class="pre">network.print_layers()</span></code> prints all outputs of different
+layers in order. To achieve regularization on activation output, you can use
+<code class="docutils literal"><span class="pre">network.all_layers</span></code> which contains all outputs of different layers.
+If you want to apply L1 penalty on the activations of first hidden layer,
+just simply add <code class="docutils literal"><span class="pre">tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])</span></code>
+to the cost function.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span><span class="o">.</span><span class="n">print_layers</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-text"><div class="highlight"><pre><span></span>layer 0: Tensor(&quot;dropout/mul_1:0&quot;, shape=(?, 784), dtype=float32)
+layer 1: Tensor(&quot;Relu:0&quot;, shape=(?, 800), dtype=float32)
+layer 2: Tensor(&quot;dropout_1/mul_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 3: Tensor(&quot;Relu_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 4: Tensor(&quot;dropout_2/mul_1:0&quot;, shape=(?, 800), dtype=float32)
+layer 5: Tensor(&quot;add_2:0&quot;, shape=(?, 10), dtype=float32)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="easy-to-modify">
+<h2>Easy to Modify<a class="headerlink" href="#easy-to-modify" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="modifying-pre-train-behaviour">
+<h3>Modifying Pre-train Behaviour<a class="headerlink" href="#modifying-pre-train-behaviour" title="Permalink to this headline">¶</a></h3>
+<p>Greedy layer-wise pretrain is an important task for deep neural network
+initialization, while there are many kinds of pre-train metrics according
+to different architectures and applications.</p>
+<p>For example, the pre-train process of <a class="reference external" href="http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity">Vanilla Sparse Autoencoder</a>
+can be implemented by using KL divergence as the following code,
+but for <a class="reference external" href="http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf">Deep Rectifier Network</a>,
+the sparsity can be implemented by using the L1 regularization of activation output.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Vanilla Sparse Autoencoder</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="n">p_hat</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">activation_out</span><span class="p">,</span> <span class="n">reduction_indices</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">KLD</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">p_hat</span><span class="p">))</span>
+        <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span><span class="o">/</span> <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">p_hat</span><span class="p">)))</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>For this reason, TensorLayer provides a simple way to modify or design your
+own pre-train metrice. For Autoencoder, TensorLayer uses <code class="docutils literal"><span class="pre">ReconLayer.__init__()</span></code>
+to define the reconstruction layer and cost function, to define your own cost
+function, just simply modify the <code class="docutils literal"><span class="pre">self.cost</span></code> in <code class="docutils literal"><span class="pre">ReconLayer.__init__()</span></code>.
+To creat your own cost expression please read <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html">Tensorflow Math</a>.
+By default, <code class="docutils literal"><span class="pre">ReconLayer</span></code> only updates the weights and biases of previous 1
+layer by using <code class="docutils literal"><span class="pre">self.train_params</span> <span class="pre">=</span> <span class="pre">self.all</span> <span class="pre">_params[-4:]</span></code>, where the 4
+parameters are <code class="docutils literal"><span class="pre">[W_encoder,</span> <span class="pre">b_encoder,</span> <span class="pre">W_decoder,</span> <span class="pre">b_decoder]</span></code>. If you want
+to update the parameters of previous 2 layers, simply modify <code class="docutils literal"><span class="pre">[-4:]</span></code> to <code class="docutils literal"><span class="pre">[-6:]</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ReconLayer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">train_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_params</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span>
+    <span class="o">...</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">mse</span> <span class="o">+</span> <span class="n">L1_a</span> <span class="o">+</span> <span class="n">L2_w</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-customized-layer">
+<h3>Adding Customized Layer<a class="headerlink" href="#adding-customized-layer" title="Permalink to this headline">¶</a></h3>
+<p>Contribute useful <code class="docutils literal"><span class="pre">Layer</span></code> as an developer. The source code of TensorLayer is
+easy to understand, open <code class="docutils literal"><span class="pre">tensorlayer/layer.py</span></code> and read <code class="docutils literal"><span class="pre">DenseLayer</span></code>, you
+can fully understand how it work.</p>
+</div>
+<div class="section" id="adding-customized-regularizer">
+<h3>Adding Customized Regularizer<a class="headerlink" href="#adding-customized-regularizer" title="Permalink to this headline">¶</a></h3>
+<p>See tensorlayer/cost.py</p>
+</div>
+</div>
 <div class="section" id="more-info">
 <h2>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h2>
-<p>For more information on what you can do with TensorLayer&#8217;s layers, just continue
+<p>For more information on what you can do with TensorLayer, just continue
 reading through readthedocs.
 Finally, the reference lists and explains as follow.</p>
 <p>layers (<a class="reference internal" href="../modules/layers.html#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a>),</p>

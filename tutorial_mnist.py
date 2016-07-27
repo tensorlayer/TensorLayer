@@ -372,6 +372,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
+                # visualize the 1st hidden layer during fine-tune
                 tl.visualize.W(network.all_params[0].eval(), second=10,
                             saveable=True, shape=[28, 28],
                             name='w1_'+str(epoch+1), fig_idx=2012)

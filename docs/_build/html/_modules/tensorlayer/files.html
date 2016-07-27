@@ -155,6 +155,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">visualize</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
+<span class="kn">import</span> <span class="nn">six</span>
 
 <span class="c1">## Load dataset functions</span>
 <div class="viewcode-block" id="load_mnist_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_mnist_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">)):</span>
@@ -623,14 +624,41 @@
 
     <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span></div>
 
+<div class="viewcode-block" id="load_nietzsche_dataset"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.load_nietzsche_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_nietzsche_dataset</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Load Nietzsche dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;https://s3.amazonaws.com/text-datasets/&#39;</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Downloading </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">urlretrieve</span><span class="p">(</span><span class="n">source</span> <span class="o">+</span> <span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;nietzsche.txt&quot;</span><span class="p">):</span>
+        <span class="n">download</span><span class="p">(</span><span class="s2">&quot;nietzsche.txt&quot;</span><span class="p">)</span>
+
+    <span class="c1"># return read_words(&quot;nietzsche.txt&quot;, replace = [&#39;&#39;, &#39;&#39;])</span>
+    <span class="c1"># with tf.gfile.GFile(&quot;nietzsche.txt&quot;, &quot;r&quot;) as f:</span>
+    <span class="c1">#     return f.read()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;nietzsche.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">words</span></div>
+
+
 <span class="c1">## Vector representations of words</span>
-<div class="viewcode-block" id="read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_words">[docs]</a><span class="k">def</span> <span class="nf">read_words</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_words">[docs]</a><span class="k">def</span> <span class="nf">read_words</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;eos&gt;&#39;</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;File to list format context.</span>
+<span class="sd">    Note that: this script can not handle punctuations.</span>
+<span class="sd">    For customized read_words method, see ``tutorial_generate_text.py``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    filename : a string</span>
-<span class="sd">        a file path (like .txt file),</span>
+<span class="sd">        A file path (like .txt file),</span>
+<span class="sd">    replace : a list</span>
+<span class="sd">        [original string, target string], to disable replace use [&#39;&#39;, &#39;&#39;]</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    --------</span>
@@ -643,7 +671,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">gfile</span><span class="o">.</span><span class="n">GFile</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;eos&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="o">*</span><span class="n">replace</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="simple_read_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.simple_read_words">[docs]</a><span class="k">def</span> <span class="nf">simple_read_words</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;nietzsche.txt&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Standard way to read context from file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;nietzsche.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">words</span></div>
 
 <div class="viewcode-block" id="read_analogies_file"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.read_analogies_file">[docs]</a><span class="k">def</span> <span class="nf">read_analogies_file</span><span class="p">(</span><span class="n">eval_file</span><span class="o">=</span><span class="s1">&#39;questions-words.txt&#39;</span><span class="p">,</span> <span class="n">word2id</span><span class="o">=</span><span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Reads through an analogy question file, return its id format.</span>
@@ -808,7 +843,7 @@
     <span class="n">count</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">unk_count</span>
     <span class="n">reverse_dictionary</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">dictionary</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
     <span class="k">if</span> <span class="n">printable</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Real vocabulary size    {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Real vocabulary size    </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">words</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Limited vocabulary size {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vocabulary_size</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">reverse_dictionary</span></div>
 
@@ -845,14 +880,22 @@
 <span class="sd">    ---------------</span>
 <span class="sd">    `tensorflow.models.rnn.ptb.reader &lt;https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if isinstance(data[0], six.string_types):</span>
+    <span class="c1">#     print(type(data[0]))</span>
+    <span class="c1">#     # exit()</span>
+    <span class="c1">#     print(data[0])</span>
+    <span class="c1">#     print(word_to_id)</span>
+    <span class="c1">#     return [word_to_id[str(word)] for word in data]</span>
+    <span class="c1"># else:</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">word_to_id</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span></div>
+
     <span class="c1"># if isinstance(data[0], str):</span>
     <span class="c1">#     # print(&#39;is a string object&#39;)</span>
     <span class="c1">#     return [word_to_id[word] for word in data]</span>
     <span class="c1"># else:#if isinstance(s, bytes):</span>
     <span class="c1">#     # print(&#39;is a unicode object&#39;)</span>
     <span class="c1">#     # print(data[0])</span>
-    <span class="c1">#     return [word_to_id[str(word)] for word in data]</span>
+    <span class="c1">#     return [word_to_id[str(word)] f</span>
 
 <div class="viewcode-block" id="word_ids_to_words"><a class="viewcode-back" href="../../modules/files.html#tensorlayer.files.word_ids_to_words">[docs]</a><span class="k">def</span> <span class="nf">word_ids_to_words</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">id_to_word</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Given a context (ids) in list format and the vocabulary,</span>

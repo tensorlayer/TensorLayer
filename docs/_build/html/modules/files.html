@@ -174,7 +174,13 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.load_imbd_dataset" title="tensorlayer.files.load_imbd_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_imbd_dataset</span></code></a>([path,&nbsp;nb_words,&nbsp;...])</td>
 <td>Load IMDB dataset</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename)</td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.load_nietzsche_dataset" title="tensorlayer.files.load_nietzsche_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_nietzsche_dataset</span></code></a>()</td>
+<td>Load Nietzsche dataset</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.simple_read_words" title="tensorlayer.files.simple_read_words"><code class="xref py py-obj docutils literal"><span class="pre">simple_read_words</span></code></a>([filename])</td>
+<td>Standard way to read context from file.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.files.read_words" title="tensorlayer.files.read_words"><code class="xref py py-obj docutils literal"><span class="pre">read_words</span></code></a>(filename[,&nbsp;replace])</td>
 <td>File to list format context.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.files.read_analogies_file" title="tensorlayer.files.read_analogies_file"><code class="xref py py-obj docutils literal"><span class="pre">read_analogies_file</span></code></a>([eval_file,&nbsp;word2id])</td>
@@ -341,21 +347,36 @@ e.g. [.... &#8216;their&#8217;, &#8216;families&#8217;, &#8216;who&#8217;, &#821
 <p><a class="reference external" href="https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py">Modify from keras.</a></p>
 </dd></dl>
 
+<dl class="function">
+<dt id="tensorlayer.files.load_nietzsche_dataset">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">load_nietzsche_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#load_nietzsche_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.load_nietzsche_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load Nietzsche dataset</p>
+</dd></dl>
+
 </div>
 <div class="section" id="vector-representations-of-words">
 <h2>Vector representations of words<a class="headerlink" href="#vector-representations-of-words" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="tensorlayer.files.simple_read_words">
+<code class="descclassname">tensorlayer.files.</code><code class="descname">simple_read_words</code><span class="sig-paren">(</span><em>filename='nietzsche.txt'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#simple_read_words"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.simple_read_words" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard way to read context from file.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="tensorlayer.files.read_words">
-<code class="descclassname">tensorlayer.files.</code><code class="descname">read_words</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#read_words"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.read_words" title="Permalink to this definition">¶</a></dt>
-<dd><p>File to list format context.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>filename</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>a file path (like .txt file),</dd>
-</dl>
-<p>The context in a list, split by &#8216; &#8216; by default, and use &#8216;&lt;eos&gt;&#8217; to represent &#8216;</p>
-</div></blockquote>
+<code class="descclassname">tensorlayer.files.</code><code class="descname">read_words</code><span class="sig-paren">(</span><em>filename, replace=['\n', '&lt;eos&gt;']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/files.html#read_words"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.files.read_words" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>File to list format context.</dt>
+<dd><p class="first">Note that: this script can not handle punctuations.
+For customized read_words method, see <code class="docutils literal"><span class="pre">tutorial_generate_text.py</span></code>.</p>
 <dl class="docutils">
+<dt>filename</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>A file path (like .txt file),</dd>
+<dt>replace</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>[original string, target string], to disable replace use [&#8216;&#8217;, &#8216;&#8217;]</dd>
+</dl>
+<p class="last">The context in a list, split by &#8216; &#8216; by default, and use &#8216;&lt;eos&gt;&#8217; to represent &#8216;</p>
+</dd>
 <dt>&#8216;.</dt>
 <dd><p class="first">e.g. [... &#8216;how&#8217;, &#8216;useful&#8217;, &#8216;it&#8217;, &#8220;&#8216;s&#8221; ... ]</p>
 <p class="last"><a class="reference external" href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb">tensorflow.models.rnn.ptb.reader</a></p>

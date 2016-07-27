@@ -56,6 +56,9 @@ import tensorflow as tf
 import tensorlayer as tl
 import time
 
+flags = tf.flags
+flags.DEFINE_string("model", "one", "A type of model.")
+FLAGS = flags.FLAGS
 
 
 def main_word2vec_basic():
@@ -63,75 +66,74 @@ def main_word2vec_basic():
     """ Step 1: Download the data, read the context into a list of strings.
     Set hyperparameters.
     """
+
     words = tl.files.load_matt_mahoney_text8_dataset()
     data_size = len(words)
     print('Data size', data_size) # print(words)    # b'their', b'families', b'who', b'were', b'expelled', b'from', b'jerusalem',
 
     resume = False  # load existing model, data and dictionaries
 
-    # toy setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
-    vocabulary_size = 50000 # maximum number of word in vocabulary
-    batch_size = 128
-    embedding_size = 128  # Dimension of the embedding vector (hidden layer).
-    skip_window = 1       # How many words to consider left and right.
-    num_skips = 2         # How many times to reuse an input to generate a label.
-                          #     (should be double of 'skip_window' so as to
-                          #     use both left and right words)
-    num_sampled = 64      # Number of negative examples to sample.
-                          #     more negative samples, higher loss
-    learning_rate = 1.0
-    n_epoch = 20
-    model_file_name = "model_word2vec_50k_128"
-    # Eval 2084/15851 accuracy = 15.7%
-
-    # better (tensorflow/models/embedding/word2vec.py)
-    # vocabulary_size = 80000
-    # batch_size = 20     # Note: small batch_size need more steps for a Epoch
-    # embedding_size = 200
-    # skip_window = 5
-    # num_skips = 10
-    # num_sampled = 100
-    # learning_rate = 0.2
-    # n_epoch = 15
-    # model_file_name = "model_word2vec_80k_200"
-    # 7.9%
-
-    # better (tensorflow/models/embedding/word2vec_optimized.py)
-    # vocabulary_size = 80000
-    # batch_size = 500
-    # embedding_size = 200
-    # skip_window = 5
-    # num_skips = 10
-    # num_sampled = 25
-    # learning_rate = 0.025
-    # n_epoch = 20
-    # model_file_name = "model_word2vec_80k_200_opt"
-    # bad 0%
-
-    # see: Learning word embeddings efficiently with noise-contrastive estimation
-    # vocabulary_size = 80000
-    # batch_size = 100
-    # embedding_size = 600
-    # skip_window = 5
-    # num_skips = 10
-    # num_sampled = 25
-    # learning_rate = 0.03
-    # n_epoch = 200 * 10
-    # model_file_name = "model_word2vec_80k_600"
-    # bad bad
-
-    # vocabulary_size = 50000 # maximum number of word in vocabulary
-    # batch_size = 128
-    # embedding_size = 200  # Dimension of the embedding vector (hidden layer).
-    # skip_window = 1       # How many words to consider left and right.
-    # num_skips = 2         # How many times to reuse an input to generate a label.
-    #                       #     (should be double of 'skip_window' so as to
-    #                       #     use both left and right words)
-    # num_sampled = 64      # Number of negative examples to sample.
-    #                       #     more negative samples, higher loss
-    # learning_rate = 0.001
-    # n_epoch = 20
-    # model_file_name = "model_word2vec_50k_200"
+    if FLAGS.model == "one":
+        # toy setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
+        vocabulary_size = 50000 # maximum number of word in vocabulary
+        batch_size = 128
+        embedding_size = 128  # Dimension of the embedding vector (hidden layer).
+        skip_window = 1       # How many words to consider left and right.
+        num_skips = 2         # How many times to reuse an input to generate a label.
+                              #     (should be double of 'skip_window' so as to
+                              #     use both left and right words)
+        num_sampled = 64      # Number of negative examples to sample.
+                              #     more negative samples, higher loss
+        learning_rate = 1.0
+        n_epoch = 20
+        model_file_name = "model_word2vec_50k_128"
+        # Eval 2084/15851 accuracy = 15.7%
+    if FLAGS.model == "two":
+        # better (tensorflow/models/embedding/word2vec.py)
+        vocabulary_size = 80000
+        batch_size = 20     # Note: small batch_size need more steps for a Epoch
+        embedding_size = 200
+        skip_window = 5
+        num_skips = 10
+        num_sampled = 100
+        learning_rate = 0.2
+        n_epoch = 15
+        model_file_name = "model_word2vec_80k_200"
+        # 7.9%
+    if FLAGS.model == "three":
+        # better (tensorflow/models/embedding/word2vec_optimized.py)
+        vocabulary_size = 80000
+        batch_size = 500
+        embedding_size = 200
+        skip_window = 5
+        num_skips = 10
+        num_sampled = 25
+        learning_rate = 0.025
+        n_epoch = 20
+        model_file_name = "model_word2vec_80k_200_opt"
+        # bad 0%
+    if FLAGS.model == "four":
+        # see: Learning word embeddings efficiently with noise-contrastive estimation
+        vocabulary_size = 80000
+        batch_size = 100
+        embedding_size = 600
+        skip_window = 5
+        num_skips = 10
+        num_sampled = 25
+        learning_rate = 0.03
+        n_epoch = 200 * 10
+        model_file_name = "model_word2vec_80k_600"
+        # bad bad
+    if FLAGS.model == "five":
+        vocabulary_size = 50000
+        batch_size = 128
+        embedding_size = 200
+        skip_window = 1
+        num_skips = 2
+        num_sampled = 64
+        learning_rate = 0.001
+        n_epoch = 20
+        model_file_name = "model_word2vec_50k_200"
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
 

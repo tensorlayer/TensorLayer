@@ -10,7 +10,9 @@
    load_ptb_dataset
    load_matt_mahoney_text8_dataset
    load_imbd_dataset
+   load_nietzsche_dataset
 
+   simple_read_words
    read_words
    read_analogies_file
    build_vocab
@@ -39,10 +41,12 @@ Load dataset functions
 .. autofunction:: load_ptb_dataset
 .. autofunction:: load_matt_mahoney_text8_dataset
 .. autofunction:: load_imbd_dataset
+.. autofunction:: load_nietzsche_dataset
 
 Vector representations of words
 -------------------------------
 
+.. autofunction:: simple_read_words
 .. autofunction:: read_words
 .. autofunction:: read_analogies_file
 .. autofunction:: build_vocab

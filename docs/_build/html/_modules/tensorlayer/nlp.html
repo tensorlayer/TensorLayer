@@ -156,6 +156,7 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <div class="viewcode-block" id="generate_skip_gram_batch"><a class="viewcode-back" href="../../modules/nlp.html#tensorlayer.nlp.generate_skip_gram_batch">[docs]</a><span class="k">def</span> <span class="nf">generate_skip_gram_batch</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_skips</span><span class="p">,</span> <span class="n">skip_window</span><span class="p">,</span> <span class="n">data_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate a training batch for the Skip-Gram model.</span>
@@ -235,8 +236,45 @@
 
 
 
+<span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sample an index from a probability array.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : a list</span>
+<span class="sd">        List of probabilities.</span>
+<span class="sd">    temperature : float</span>
+<span class="sd">        The higher the more uniform.</span>
+<span class="sd">        When a = [0.1, 0.2, 0.7],</span>
+<span class="sd">            temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]</span>
+<span class="sd">            temperature = 1.0, the distribution will be the same</span>
+<span class="sd">            temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]</span>
 
+<span class="sd">    Note</span>
+<span class="sd">    ------</span>
+<span class="sd">    No matter what is the temperature and input list, the sum of all probabilities will be one.</span>
+<span class="sd">    Even if input list = [1, 100, 200], the sum of all probabilities will still be one.</span>
+
+<span class="sd">    For large vocabulary_size, choice a higher temperature to avoid error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">temperature</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">temperature</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="c1"># np.set_printoptions(threshold=np.nan)</span>
+        <span class="c1"># print(a)</span>
+        <span class="c1"># print(np.sum(a))</span>
+        <span class="c1"># print(np.max(a))</span>
+        <span class="c1"># print(np.min(a))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;For large vocabulary_size, choice a higher temperature to avoid error.&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="ne">Warning</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
 
 

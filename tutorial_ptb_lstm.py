@@ -100,6 +100,13 @@ PTB dataset from Tomas Mikolov's webpage:
 
 $ wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
 $ tar xvf simple-examples.tgz
+
+
+A) use the zero_state function on the cell object
+
+B) for an rnn, all time steps share weights. We use one matrix to keep all
+gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
+
 """
 
 flags = tf.flags
@@ -289,7 +296,7 @@ def main(_):
         sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
         # Training
-        print("Epoch: %d Learning rate: %.3f" % (i + 1, sess.run(lr)))
+        print("Epoch: %d/%d Learning rate: %.3f" % (i + 1, max_max_epoch, sess.run(lr)))
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
         start_time = time.time()
         costs = 0.0; iters = 0
@@ -317,7 +324,8 @@ def main(_):
                     (step * 1.0 / epoch_size, np.exp(costs / iters),
                     iters * batch_size / (time.time() - start_time)))
         train_perplexity = np.exp(costs / iters)
-        print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
+        print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch,
+                                                            train_perplexity))
 
         # Validing
         start_time = time.time()
@@ -339,7 +347,8 @@ def main(_):
                                             )
             costs += _cost; iters += num_steps
         valid_perplexity = np.exp(costs / iters)
-        print("Epoch: %d Valid Perplexity: %.3f" % (i + 1, valid_perplexity))
+        print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch,
+                                                            valid_perplexity))
 
 
     print("Evaluation")

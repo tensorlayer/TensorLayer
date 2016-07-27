@@ -82,7 +82,7 @@ TensorLayer provides large amount of state-of-the-art Layers including Dropout, 
 All placeholder and variables can be initialized by the same way with Tensorflow's tutorial. For details please read *[tensorflow-placeholder](https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#placeholder)*, *[tensorflow-variables](https://www.tensorflow.org/versions/master/how_tos/variables/index.html)* and *[tensorflow-math](https://www.tensorflow.org/versions/r0.9/api_docs/python/math_ops.html)*.
 
 ```python
-# For MNIST example, 28*28 images have 784 pixels, i.e, 784 inputs.
+# For MNIST example, 28x28 images have 784 pixels, i.e, 784 inputs.
 import tensorflow as tf
 import tensorlayer as tl
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
@@ -270,8 +270,9 @@ The output of network is **<font color="grey">network.outputs</font>**, then the
 y = network.outputs
 cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 cost = cross_entropy
-cost = cost + maxnorm_regularizer(1.0)(network.all_params[0]) + maxnorm_regularizer(1.0)(network.all_params[2])
+cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
 ```
+In addition, all TensorFlow's regularizers like **<font color="grey">tf.contrib.layers.l2_regularizer</font>** can be used with TensorLayer.
 
 **<font color="grey"> Regularization of Activation Outputs: </font>**
 
@@ -292,7 +293,7 @@ For more powerful functions, please go to *[readthedocs](http://tensorlayer.read
 **<font color="grey"> Modifying Pre-train Behaviour: </font>**
 
 
-Greedy layer-wise pretrain is an important task for deep neural network initialization, while there are many kinds of pre-train metrices according to different architectures and applications.
+Greedy layer-wise pretrain is an important task for deep neural network initialization, while there are many kinds of pre-train metrics according to different architectures and applications.
 
 For example, the pre-train process of *[Vanilla Sparse Autoencoder](http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity)* can be implemented by using KL divergence as the following code, but for *[Deep Rectifier Network](http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf)*, the sparsity can be implemented by using the L1 regularization of activation output.
 
@@ -317,7 +318,7 @@ ReconLayer.__init__(...):
 
 **<font color="grey"> Adding Customized Regularizer: </font>**
 
-
+See tensorlayer/cost.py
 
 
 # Installation

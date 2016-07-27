@@ -10,6 +10,7 @@ import re
 from . import visualize
 import collections
 from six.moves import xrange
+import six
 
 ## Load dataset functions
 def load_mnist_dataset(shape=(-1,784)):
@@ -478,14 +479,41 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 
     return X_train, y_train, X_test, y_test
 
+def load_nietzsche_dataset():
+    """Load Nietzsche dataset
+    """
+    if sys.version_info[0] == 2:
+        from urllib import urlretrieve
+    else:
+        from urllib.request import urlretrieve
+
+    def download(filename, source='https://s3.amazonaws.com/text-datasets/'):
+        print("Downloading %s" % filename)
+        urlretrieve(source + filename, filename)
+
+    if not os.path.exists("nietzsche.txt"):
+        download("nietzsche.txt")
+
+    # return read_words("nietzsche.txt", replace = ['', ''])
+    # with tf.gfile.GFile("nietzsche.txt", "r") as f:
+    #     return f.read()
+    with open("nietzsche.txt", "r") as f:
+        words = f.read()
+        return words
+
+
 ## Vector representations of words
-def read_words(filename):
+def read_words(filename, replace = ['\n', '<eos>']):
     """File to list format context.
+    Note that: this script can not handle punctuations.
+    For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
     ----------
     filename : a string
-        a file path (like .txt file),
+        A file path (like .txt file),
+    replace : a list
+        [original string, target string], to disable replace use ['', '']
 
     Returns
     --------
@@ -498,7 +526,14 @@ def read_words(filename):
 
     """
     with tf.gfile.GFile(filename, "r") as f:
-        return f.read().replace("\n", "<eos>").split()
+        return f.read().replace(*replace).split()
+
+def simple_read_words(filename="nietzsche.txt"):
+    """Standard way to read context from file.
+    """
+    with open("nietzsche.txt", "r") as f:
+        words = f.read()
+        return words
 
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     """Reads through an analogy question file, return its id format.
@@ -663,7 +698,7 @@ def build_words_dataset(words, vocabulary_size=50000, printable=True):
     count[0][1] = unk_count
     reverse_dictionary = dict(zip(dictionary.values(), dictionary.keys()))
     if printable:
-        print('Real vocabulary size    {}'.format(len(collections.Counter(words).keys())))
+        print('Real vocabulary size    %d' % len(collections.Counter(words).keys()))
         print('Limited vocabulary size {}'.format(vocabulary_size))
     return data, count, dictionary, reverse_dictionary
 
@@ -700,14 +735,22 @@ def words_to_word_ids(data, word_to_id):
     ---------------
     `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
+    # if isinstance(data[0], six.string_types):
+    #     print(type(data[0]))
+    #     # exit()
+    #     print(data[0])
+    #     print(word_to_id)
+    #     return [word_to_id[str(word)] for word in data]
+    # else:
     return [word_to_id[word] for word in data]
+
     # if isinstance(data[0], str):
     #     # print('is a string object')
     #     return [word_to_id[word] for word in data]
     # else:#if isinstance(s, bytes):
     #     # print('is a unicode object')
     #     # print(data[0])
-    #     return [word_to_id[str(word)] for word in data]
+    #     return [word_to_id[str(word)] f
 
 def word_ids_to_words(data, id_to_word):
     """Given a context (ids) in list format and the vocabulary,
