@@ -1306,7 +1306,7 @@ The ``vocab40000.fr`` (381KB) is stored one-item-per-line as follow.
   a
   par
 
-The ``vocab40000.eb`` (344KB) is stored one-item-per-line as follow.
+The ``vocab40000.en`` (344KB) is stored one-item-per-line as follow.
 
 .. code-block:: text
 
