@@ -98,12 +98,13 @@ def sample(a, temperature=1.0):
     ----------
     a : a list
         List of probabilities.
-    temperature : float
+    temperature : float or None
         The higher the more uniform.
         When a = [0.1, 0.2, 0.7],
             temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]
-            temperature = 1.0, the distribution will be the same
+            temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]
             temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]
+        If None, it will be ``np.argmax(a)``
 
     Note
     ------
@@ -112,9 +113,12 @@ def sample(a, temperature=1.0):
 
     For large vocabulary_size, choice a higher temperature to avoid error.
     """
+    b = np.copy(a)
     try:
         if temperature == 1:
             return np.argmax(np.random.multinomial(1, a, 1))
+        if temperature is None:
+            return np.argmax(a)
         else:
             a = np.log(a) / temperature
             a = np.exp(a) / np.sum(np.exp(a))
@@ -125,15 +129,27 @@ def sample(a, temperature=1.0):
         # print(np.sum(a))
         # print(np.max(a))
         # print(np.min(a))
-        message = "For large vocabulary_size, choice a higher temperature to avoid error."
+        # exit()
+        message = "For large vocabulary_size, choice a higher temperature\
+         to avoid log error. Hint : use ``sample_top``. "
         warnings.warn(message, Warning)
-        a = np.log(a) / 10
-        a = np.exp(a) / np.sum(np.exp(a))
-        return np.argmax(np.random.multinomial(1, a, 1))
+        # print(a)
+        # print(b)
+        return np.argmax(np.random.multinomial(1, b, 1))
 
 
 
-
+def sample_top(a, top_k=10):
+    """Sample from ``top_k`` probabilities.
+    """
+    a = np.array(a)
+    idx = np.argsort(a)[::-1]
+    idx = idx[:top_k]
+    # a = a[idx]
+    probs = a[idx]
+    probs = probs / np.sum(probs)
+    choice = np.random.choice(idx, p=probs)
+    return choice
 
 
 

@@ -157,6 +157,12 @@
 <tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.nlp.generate_skip_gram_batch" title="tensorlayer.nlp.generate_skip_gram_batch"><code class="xref py py-obj docutils literal"><span class="pre">generate_skip_gram_batch</span></code></a>(data,&nbsp;batch_size,&nbsp;...)</td>
 <td>Generate a training batch for the Skip-Gram model.</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.nlp.sample" title="tensorlayer.nlp.sample"><code class="xref py py-obj docutils literal"><span class="pre">sample</span></code></a>(a[,&nbsp;temperature])</td>
+<td>Sample an index from a probability array.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.nlp.sample_top" title="tensorlayer.nlp.sample_top"><code class="xref py py-obj docutils literal"><span class="pre">sample_top</span></code></a>(a[,&nbsp;top_k])</td>
+<td>Sample from <code class="docutils literal"><span class="pre">top_k</span></code> probabilities.</td>
+</tr>
 </tbody>
 </table>
 <div class="section" id="word-embedding-functions">
@@ -204,6 +210,34 @@ In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.</p>
 </pre></div>
 </div>
 <p><a class="reference external" href="https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words">TensorFlow word2vec tutorial</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.nlp.sample">
+<code class="descclassname">tensorlayer.nlp.</code><code class="descname">sample</code><span class="sig-paren">(</span><em>a</em>, <em>temperature=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/nlp.html#sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.nlp.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample an index from a probability array.</p>
+<dl class="docutils">
+<dt>a</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>List of probabilities.</dd>
+<dt>temperature</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float or None</span><dd><p class="first">The higher the more uniform.
+When a = [0.1, 0.2, 0.7],</p>
+<blockquote>
+<div>temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]
+temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]
+temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]</div></blockquote>
+<p class="last">If None, it will be <code class="docutils literal"><span class="pre">np.argmax(a)</span></code></p>
+</dd>
+</dl>
+<p>No matter what is the temperature and input list, the sum of all probabilities will be one.
+Even if input list = [1, 100, 200], the sum of all probabilities will still be one.</p>
+<p>For large vocabulary_size, choice a higher temperature to avoid error.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.nlp.sample_top">
+<code class="descclassname">tensorlayer.nlp.</code><code class="descname">sample_top</code><span class="sig-paren">(</span><em>a</em>, <em>top_k=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/nlp.html#sample_top"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.nlp.sample_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample from <code class="docutils literal"><span class="pre">top_k</span></code> probabilities.</p>
 </dd></dl>
 
 </div>

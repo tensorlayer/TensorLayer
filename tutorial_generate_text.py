@@ -27,21 +27,23 @@ import re
 def customized_clean_str(string):
     """
     Tokenization/string cleaning for all datasets except for SST.
-    Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data
     """
     string = re.sub(r"\n", " ", string)         # '\n'      --> ' '
-    string = re.sub(r"\'s", " 's", string)      # it's      --> it 's
-    string = re.sub(r"\’s", " 's", string)
+    string = re.sub(r"\'s", " \'s", string)      # it's      --> it 's
+    string = re.sub(r"\’s", " \'s", string)
     string = re.sub(r"\'ve", " have", string)   # they've   --> they have
     string = re.sub(r"\’ve", " have", string)
-    string = re.sub(r"n\'t", " not", string)    # can't     --> can not
-    string = re.sub(r"n\’t", " not", string)
+    string = re.sub(r"\'t", " not", string)    # can't     --> can not
+    string = re.sub(r"\’t", " not", string)
     string = re.sub(r"\'re", " are", string)    # they're   --> they are
     string = re.sub(r"\’re", " are", string)
     string = re.sub(r"\'d", "", string)         # I'd (I had, I would) --> I
     string = re.sub(r"\’d", "", string)
     string = re.sub(r"\'ll", " will", string)   # I'll      --> I will
     string = re.sub(r"\’ll", " will", string)
+    string = re.sub(r"\“", "  ", string)       # “a”       --> “ a ”
+    string = re.sub(r"\”", "  ", string)
+    string = re.sub(r"\"", "  ", string)       # "a"       --> " a "
     string = re.sub(r"\'", "  ", string)        # they'     --> they '
     string = re.sub(r"\’", "  ", string)        # they’     --> they ’
     string = re.sub(r"\.", " . ", string)       # they.     --> they .
@@ -68,21 +70,23 @@ def customized_clean_str(string):
 def customized_clean_str_(string):
     """
     Tokenization/string cleaning for all datasets except for SST.
-    Original taken from https://github.com/yoonkim/CNN_sentence/blob/master/process_data
     """
     string = re.sub(r"\n", " ", string)         # '\n'      --> ' '
-    string = re.sub(r"\'s", " 's", string)      # it's      --> it 's
-    string = re.sub(r"\’s", " 's", string)
+    string = re.sub(r"\'s", " \'s", string)      # it's      --> it 's
+    string = re.sub(r"\’s", " \'s", string)
     string = re.sub(r"\'ve", " have", string)   # they've   --> they have
     string = re.sub(r"\’ve", " have", string)
-    string = re.sub(r"n\'t", " not", string)    # can't     --> can not
-    string = re.sub(r"n\’t", " not", string)
+    string = re.sub(r"\'t", " not", string)    # can't     --> can not
+    string = re.sub(r"\’t", " not", string)
     string = re.sub(r"\'re", " are", string)    # they're   --> they are
     string = re.sub(r"\’re", " are", string)
     string = re.sub(r"\'d", "", string)         # I'd (I had, I would) --> I
     string = re.sub(r"\’d", "", string)
     string = re.sub(r"\'ll", " will", string)   # I'll      --> I will
     string = re.sub(r"\’ll", " will", string)
+    string = re.sub(r"\“", " “ ", string)       # “a”       --> “ a ”
+    string = re.sub(r"\”", " ” ", string)
+    string = re.sub(r"\"", " “ ", string)       # "a"       --> " a "
     string = re.sub(r"\'", " ' ", string)        # they'     --> they '
     string = re.sub(r"\’", " ' ", string)        # they’     --> they '
     string = re.sub(r"\.", " . ", string)       # they.     --> they .
@@ -183,50 +187,27 @@ def main_lstm_generate_text():
     """Generate text by Synced sequence input and output.
     """
     # rnn model and update  (describtion: see tutorial_ptb_lstm.py)
-    # init_scale = 0.05
-    # learning_rate = 1.0
-    # max_grad_norm = 5
-    # num_steps = 35
-    # hidden_size = 650
-    # max_epoch = 6
-    # max_max_epoch = 100
-    # keep_prob = 0.5
-    # lr_decay = 0.95
-    # batch_size = 20
     init_scale = 0.1
-    learning_rate = 1.0
+    learning_rate = 1.0 * 0.2
     max_grad_norm = 5
-    num_steps = 20
+    num_steps = 5
     hidden_size = 200
     max_epoch = 4
     max_max_epoch = 100
     keep_prob = 0.8
-    lr_decay = 0.95
+    lr_decay = 0.9
     batch_size = 20
-    # word embedding
-    vocab_size = 8000
+    ## word embedding
+    vocab_size = 4000
     embedding_size = 200
-    # text generation
-    diversity_list = [0.5, 1.0, 1.7, 3.0] # BUG ! when 0.5
-    print_length = 50
+    ## text generation
+    # diversity_list = [None, 1.0]
+    top_k_list = [5, 10, 50, 100]
+    print_length = 100
 
     resume = True  # load existing model, data and dictionaries
     model_file_name = "model_generate_text"
 
-    # print("Load existing embedding matrix and dictionaries")
-    # model_file_name = "model_word2vec_50k_200"
-    # all_var = files.load_npy_to_any(name=model_file_name+'.npy')
-    # data = all_var['data']; count = all_var['count']
-    # dictionary = all_var['dictionary']
-    # reverse_dictionary = all_var['reverse_dictionary']
-    # files.save_vocab(count, name='vocab_'+model_file_name+'.txt')
-    # del all_var, data, count
-    # load_params = files.load_npz(name=model_file_name+'.npz')
-    # pretrain_embedding_params = load_params[0]
-
-    # data, count, dictionary, reverse_dictionary = \
-    #         tl.files.build_words_dataset(words, vocabulary_size=vocab_size,
-    #                                                         printable=True)
     if resume:
         print("Load existing data and dictionaries" + "!"*10)
         all_var = tl.files.load_npy_to_any(name=model_file_name+'.npy')
@@ -235,15 +216,18 @@ def main_lstm_generate_text():
         reverse_dictionary = all_var['reverse_dictionary']
     else:
         print("Load data and creat dictionaries ....")
+        ## You can read any txt file by using this:
         # words = customized_read_words(input_fpath="tensorlayer/data/trump_twitter.txt")
+        ## Alternatively, you can use the Nietzsche dataset as follow:
         words = tl.files.load_nietzsche_dataset()
         words = customized_clean_str(words)
         words = words.split()
+        ## Build the data and dictionaries from word to id and id to word.
         data, count, dictionary, reverse_dictionary = \
                     tl.files.build_words_dataset(words, vocab_size, True)
         data = customized_word2ids(words, dictionary, unk_key = 'UNK')
         data = np.asarray(data)
-        del words
+        del words   # save memory
 
     print('Data size %d' % len(data))
     print('Most 5 common words (+UNK)', count[:5])
@@ -253,10 +237,8 @@ def main_lstm_generate_text():
 
     print('len(train_data) {}'.format(len(train_data)))
 
-
-    # seed = 'I think you are'
-    # seed = "But to speak seriously, there are good grounds for"
-    seed = "Well I think you are right but"
+    # Set the seed to generate sentence.
+    seed = "That is great, I think"
     seed = customized_clean_str(seed).split()
     print('seed : %s' % seed)
 
@@ -311,8 +293,8 @@ def main_lstm_generate_text():
                         return_seq_2d=True,
                         name='basic_lstm_layer2')
             lstm2 = network
-            # Alternatively, if return_seq_2d=False, in the above RNN layer,
-            # you can reshape the outputs as follow:
+            ## Alternatively, if return_seq_2d=False, in the above RNN layer,
+            ## you can reshape the outputs as follow:
             # network = tl.layers.ReshapeLayer(network,
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
             if is_training:
@@ -330,8 +312,8 @@ def main_lstm_generate_text():
     # Inference for Testing (Evaluation), generate text
     network_test, lstm1_test, lstm2_test = inference(input_data_test,
                             is_training=False, num_steps=1, reuse=True)
-    y = network_test.outputs
-    y_soft = tf.nn.softmax(y)
+    y_linear = network_test.outputs
+    y_soft = tf.nn.softmax(y_linear)
     # y_id = tf.argmax(tf.nn.softmax(y), 1)
 
     sess.run(tf.initialize_all_variables())
@@ -351,19 +333,19 @@ def main_lstm_generate_text():
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
-    # Cost for Training
+    ## Cost for Training
     cost = loss_fn(network.outputs, targets, batch_size, num_steps)
 
-    # Truncated Backpropagation for training
+    ## Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
         lr = tf.Variable(0.0, trainable=False)
-    # You can get all trainable parameters as follow.
+    ## You can get all trainable parameters as follow.
     # tvars = tf.trainable_variables()
-    # Alternatively, you can specific the parameters for training as follw.
-    #   tvars = network.all_params      $ all parameters
-    #   tvars = network.all_params[1:]  $ parameters except embedding matrix
+    ## Alternatively, you can specific the parameters for training as follw.
+    #  tvars = network.all_params      $ all parameters
+    #  tvars = network.all_params[1:]  $ parameters except embedding matrix
+    ## Train the whole network.
     tvars = network.all_params
-    #
     grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars),
                                       max_grad_norm)
     optimizer = tf.train.GradientDescentOptimizer(lr)
@@ -387,14 +369,12 @@ def main_lstm_generate_text():
         new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
         sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
-        # Training
         print("Epoch: %d/%d Learning rate: %.8f" % (i + 1, max_max_epoch, sess.run(lr)))
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
-        # print(epoch_
 
         start_time = time.time()
         costs = 0.0; iters = 0
-        # reset all states at the begining of every epoch
+        ## reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data,
@@ -403,7 +383,7 @@ def main_lstm_generate_text():
                         lstm1.initial_state: state1,
                         lstm2.initial_state: state2,
                         }
-            # For training, enable dropout
+            ## For training, enable dropout
             feed_dict.update( network.all_drop )
             _cost, state1, state2, _ = sess.run([cost,
                                             lstm1.final_state,
@@ -422,7 +402,8 @@ def main_lstm_generate_text():
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch,
                                                             train_perplexity))
 
-        for diversity in diversity_list:
+        # for diversity in diversity_list:
+        for top_k in top_k_list:
             # Testing, generate some text from a given seed.
             state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
             state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
@@ -435,7 +416,7 @@ def main_lstm_generate_text():
                             lstm1_test.initial_state: state1,
                             lstm2_test.initial_state: state2,
                             }
-                _, state1, state2 = sess.run([y_soft, #y_id,
+                _, state1, state2 = sess.run([y_soft, #y_linear, #y_soft, #y_id,
                                             lstm1_test.final_state,
                                             lstm2_test.final_state],
                                             feed_dict=feed_dict
@@ -448,17 +429,24 @@ def main_lstm_generate_text():
                             lstm1_test.initial_state: state1,
                             lstm2_test.initial_state: state2,
                             }
-                out, state1, state2 = sess.run([y_soft, #y_id,
+                out, state1, state2 = sess.run([y_soft, #y_linear, #y_soft, #y_id,
                                                 lstm1_test.final_state,
                                                 lstm2_test.final_state],
                                                 feed_dict=feed_dict
                                                 )
-                a_id = tl.nlp.sample(out[0], diversity)
+                ## Without sampling
+                # a_id = np.argmax(out[0])
+                ## Sample from all words, if vocab_size is large,
+                # this may have numeric error.
+                # a_id = tl.nlp.sample(out[0], diversity)
+                ## Sample from the top k words.
+                a_id = tl.nlp.sample_top(out[0], top_k=top_k)
 
                 outs_id.append(a_id)
             sentence = tl.files.word_ids_to_words(outs_id, reverse_dictionary)
             sentence = " ".join(sentence)
-            print(diversity, ':', sentence)
+            # print(diversity, ':', sentence)
+            print(top_k, ':', sentence)
 
         if i % 5 == 0:
             print("Save model, data and dictionaries" + "!"*10);
@@ -471,9 +459,9 @@ def main_lstm_generate_text():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    # How to use a pretrained embedding matrix.
+    ## How to use a pretrained embedding matrix.
     # main_how_to_use_embedding_layer()
-    # How to generate text from a given context.
+    ## How to generate text from a given context.
     main_lstm_generate_text()
 
 

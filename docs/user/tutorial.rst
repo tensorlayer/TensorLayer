@@ -1154,9 +1154,242 @@ classified as expressing positive or negative sentiment). "
 Run the Translation example
 ===========================
 
-.. code-block:: bash
+.. code-block:: python
 
   python tutorial_translate.py
+
+This script is going to training a neural network to translate English to French.
+If everything is correct, you will see.
+
+- Download WMT English-to-French translation data, includes training and testing data.
+- Create vocabulary files for English and French from training data.
+- Create the tokenized training and testing data from original training and
+  testing data.
+
+.. code-block:: bash
+
+  Load or Download WMT English-to-French translation > wmt
+  wmt/giga-fren.release2
+  wmt/newstest2013
+  wmt/vocab40000.fr
+  wmt/vocab40000.en
+  Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
+    processing line 100000
+    processing line 200000
+    processing line 300000
+    processing line 400000
+    processing line 500000
+    processing line 600000
+    processing line 700000
+    processing line 800000
+    processing line 900000
+    processing line 1000000
+    processing line 1100000
+    processing line 1200000
+    ...
+    processing line 22500000
+  Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
+    processing line 100000
+    ...
+    processing line 22500000
+
+  ...
+
+Firstly, we download English-to-French translation data from the WMT'15
+Website. The training and testing data as follow. The training data is used to
+train the model, the testing data is used to XXXX.
+
+.. code-block:: text
+
+  wmt/training-giga-fren.tar  <-- Training data for English-to-French (2.6GB)
+                                  giga-fren.release2.* are extracted from it.
+  wmt/dev-v2.tgz              <-- Testing data for different language (21.4MB)
+                                  newstest2013.* are extracted from it.
+
+  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+  wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+As ``giga-fren.release2.*`` are the training data, ``giga-fren.release2.fr`` look as follow.
+
+.. code-block:: text
+
+  Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
+  Plan du site
+  Rétroaction
+  Crédits
+  English
+  Qu’est-ce que la lumière?
+  La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
+  Le ciel des premiers habitants La vision contemporaine de l'Univers L’astronomie pour tous
+  Bande dessinée
+  Liens
+  Glossaire
+  Observatoires
+  ...
+
+While ``giga-fren.release2.en`` look as follow, we can see words or sentences
+are separated by ``|`` or ``\n``.
+
+.. code-block:: text
+
+  Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
+  Site map
+  Feedback
+  Credits
+  Français
+  What is light ?
+  The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
+  The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
+  Cartoon
+  Links
+  Glossary
+  Observatories
+
+
+The testing data ``newstest2013.en`` and ``newstest2013.fr`` look as follow.
+
+.. code-block:: text
+
+  newstest2013.en :
+  A Republican strategy to counter the re-election of Obama
+  Republican leaders justified their policy by the need to combat electoral fraud.
+  However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
+
+  newstest2013.fr :
+  Une stratégie républicaine pour contrer la réélection d'Obama
+  Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
+  Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
+
+
+After downloading the dataset, it start to create vocabulary files,
+``vocab40000.fr`` and ``vocab40000.en`` from the training data ``giga-fren.release2.fr``
+and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
+reflects the vocabulary size.
+
+The ``vocab40000.fr`` (381KB) is stored one-item-per-line as follow.
+
+.. code-block:: text
+
+  _PAD
+  _GO
+  _EOS
+  _UNK
+  de
+  ,
+  .
+  '
+  la
+  et
+  des
+  les
+  à
+  le
+  du
+  l
+  en
+  )
+  d
+  0
+  (
+  00
+  pour
+  dans
+  un
+  que
+  une
+  sur
+  au
+  0000
+  a
+  par
+
+The ``vocab40000.eb`` (344KB) is stored one-item-per-line as follow.
+
+.. code-block:: text
+
+  _PAD
+  _GO
+  _EOS
+  _UNK
+  the
+  .
+  ,
+  of
+  and
+  to
+  in
+  a
+  )
+  (
+  0
+  for
+  00
+  that
+  is
+  on
+  The
+  0000
+  be
+  by
+  with
+  or
+  :
+  as
+  "
+  000
+  are
+  ;
+
+
+And then, we start to create the tokenized training and testing data for both
+English and French. It will take a while as well.
+
+.. code-block:: text
+
+  Tokenizing data in wmt/giga-fren.release2.fr
+    tokenizing line 100000
+    tokenizing line 200000
+    tokenizing line 300000
+    tokenizing line 400000
+    ...
+    tokenizing line 22500000
+  Tokenizing data in wmt/giga-fren.release2.en
+    tokenizing line 100000
+    tokenizing line 200000
+    tokenizing line 300000
+    tokenizing line 400000
+    ...
+    tokenizing line 22500000
+  Tokenizing data in wmt/newstest2013.fr
+  Tokenizing data in wmt/newstest2013.en
+
+
+In the end, all files we have as follow.
+
+.. code-block:: text
+
+  wmt/training-giga-fren.tar  <-- Compressed Training data for English-to-French (2.6GB)
+                                  giga-fren.release2.* are extracted from it.
+  wmt/dev-v2.tgz              <-- Compressed Testing data for different language (21.4MB)
+                                  newstest2013.* are extracted from it.
+
+  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+  wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+  wmt/vocab40000.fr           <-- Vocabulary of French      (381KB)
+  wmt/vocab40000.en           <-- Vocabulary of English     (344KB)
+
+  wmt/giga-fren.release2.ids40000.fr   <-- Tokenized Training data of French (2.81GB)
+  wmt/giga-fren.release2.ids40000.en   <-- Tokenized Training data of English (2.38GB)
+
+  wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
+  wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
 
 Understand Translation
 ======================

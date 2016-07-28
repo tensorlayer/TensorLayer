@@ -1154,7 +1154,218 @@ classified as expressing positive or negative sentiment). &#8220;</p>
 </div>
 <div class="section" id="run-the-translation-example">
 <h2>Run the Translation example<a class="headerlink" href="#run-the-translation-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_translate.py
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">tutorial_translate</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This script is going to training a neural network to translate English to French.
+If everything is correct, you will see.</p>
+<ul class="simple">
+<li>Download WMT English-to-French translation data, includes training and testing data.</li>
+<li>Create vocabulary files for English and French from training data.</li>
+<li>Create the tokenized training and testing data from original training and
+testing data.</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>Load or Download WMT English-to-French translation &gt; wmt
+wmt/giga-fren.release2
+wmt/newstest2013
+wmt/vocab40000.fr
+wmt/vocab40000.en
+Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
+  processing line 100000
+  processing line 200000
+  processing line 300000
+  processing line 400000
+  processing line 500000
+  processing line 600000
+  processing line 700000
+  processing line 800000
+  processing line 900000
+  processing line 1000000
+  processing line 1100000
+  processing line 1200000
+  ...
+  processing line 22500000
+Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
+  processing line 100000
+  ...
+  processing line 22500000
+
+...
+</pre></div>
+</div>
+<p>Firstly, we download English-to-French translation data from the WMT&#8216;15
+Website. The training and testing data as follow. The training data is used to
+train the model, the testing data is used to XXXX.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>wmt/training-giga-fren.tar  &lt;-- Training data for English-to-French (2.6GB)
+                                giga-fren.release2.* are extracted from it.
+wmt/dev-v2.tgz              &lt;-- Testing data for different language (21.4MB)
+                                newstest2013.* are extracted from it.
+
+wmt/giga-fren.release2.fr   &lt;-- Training data of French   (4.57GB)
+wmt/giga-fren.release2.en   &lt;-- Training data of English  (3.79GB)
+
+wmt/newstest2013.fr         &lt;-- Testing data of French    (393KB)
+wmt/newstest2013.en         &lt;-- Testing data of English   (333KB)
+</pre></div>
+</div>
+<p>As <code class="docutils literal"><span class="pre">giga-fren.release2.*</span></code> are the training data, <code class="docutils literal"><span class="pre">giga-fren.release2.fr</span></code> look as follow.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
+Plan du site
+Rétroaction
+Crédits
+English
+Qu’est-ce que la lumière?
+La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
+Le ciel des premiers habitants La vision contemporaine de l&#39;Univers L’astronomie pour tous
+Bande dessinée
+Liens
+Glossaire
+Observatoires
+...
+</pre></div>
+</div>
+<p>While <code class="docutils literal"><span class="pre">giga-fren.release2.en</span></code> look as follow, we can see words or sentences
+are separated by <code class="docutils literal"><span class="pre">|</span></code> or <code class="docutils literal"><span class="pre">\n</span></code>.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
+Site map
+Feedback
+Credits
+Français
+What is light ?
+The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
+The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
+Cartoon
+Links
+Glossary
+Observatories
+</pre></div>
+</div>
+<p>The testing data <code class="docutils literal"><span class="pre">newstest2013.en</span></code> and <code class="docutils literal"><span class="pre">newstest2013.fr</span></code> look as follow.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>newstest2013.en :
+A Republican strategy to counter the re-election of Obama
+Republican leaders justified their policy by the need to combat electoral fraud.
+However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
+
+newstest2013.fr :
+Une stratégie républicaine pour contrer la réélection d&#39;Obama
+Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
+Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
+</pre></div>
+</div>
+<p>After downloading the dataset, it start to create vocabulary files,
+<code class="docutils literal"><span class="pre">vocab40000.fr</span></code> and <code class="docutils literal"><span class="pre">vocab40000.en</span></code> from the training data <code class="docutils literal"><span class="pre">giga-fren.release2.fr</span></code>
+and <code class="docutils literal"><span class="pre">giga-fren.release2.en</span></code>, usually it will take a while. The number <code class="docutils literal"><span class="pre">40000</span></code>
+reflects the vocabulary size.</p>
+<p>The <code class="docutils literal"><span class="pre">vocab40000.fr</span></code> (381KB) is stored one-item-per-line as follow.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>_PAD
+_GO
+_EOS
+_UNK
+de
+,
+.
+&#39;
+la
+et
+des
+les
+à
+le
+du
+l
+en
+)
+d
+0
+(
+00
+pour
+dans
+un
+que
+une
+sur
+au
+0000
+a
+par
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">vocab40000.eb</span></code> (344KB) is stored one-item-per-line as follow.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>_PAD
+_GO
+_EOS
+_UNK
+the
+.
+,
+of
+and
+to
+in
+a
+)
+(
+0
+for
+00
+that
+is
+on
+The
+0000
+be
+by
+with
+or
+:
+as
+&quot;
+000
+are
+;
+</pre></div>
+</div>
+<p>And then, we start to create the tokenized training and testing data for both
+English and French. It will take a while as well.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Tokenizing data in wmt/giga-fren.release2.fr
+  tokenizing line 100000
+  tokenizing line 200000
+  tokenizing line 300000
+  tokenizing line 400000
+  ...
+  tokenizing line 22500000
+Tokenizing data in wmt/giga-fren.release2.en
+  tokenizing line 100000
+  tokenizing line 200000
+  tokenizing line 300000
+  tokenizing line 400000
+  ...
+  tokenizing line 22500000
+Tokenizing data in wmt/newstest2013.fr
+Tokenizing data in wmt/newstest2013.en
+</pre></div>
+</div>
+<p>In the end, all files we have as follow.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>wmt/training-giga-fren.tar  &lt;-- Compressed Training data for English-to-French (2.6GB)
+                                giga-fren.release2.* are extracted from it.
+wmt/dev-v2.tgz              &lt;-- Compressed Testing data for different language (21.4MB)
+                                newstest2013.* are extracted from it.
+
+wmt/giga-fren.release2.fr   &lt;-- Training data of French   (4.57GB)
+wmt/giga-fren.release2.en   &lt;-- Training data of English  (3.79GB)
+
+wmt/newstest2013.fr         &lt;-- Testing data of French    (393KB)
+wmt/newstest2013.en         &lt;-- Testing data of English   (333KB)
+
+wmt/vocab40000.fr           &lt;-- Vocabulary of French      (381KB)
+wmt/vocab40000.en           &lt;-- Vocabulary of English     (344KB)
+
+wmt/giga-fren.release2.ids40000.fr   &lt;-- Tokenized Training data of French (2.81GB)
+wmt/giga-fren.release2.ids40000.en   &lt;-- Tokenized Training data of English (2.38GB)
+
+wmt/newstest2013.ids40000.fr         &lt;-- Tokenized Testing data of French (268KB)
+wmt/newstest2013.ids40000.en         &lt;-- Tokenized Testing data of English (232KB)
 </pre></div>
 </div>
 </div>

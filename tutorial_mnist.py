@@ -23,8 +23,8 @@ $ Set all keeping probabilities to 1 for evaluating and testing.
 >>> feed_dict.update(dp_dict)
 
 Alternatively, if you don't want to use placeholder to control them, you can
-build different inference for training, evaluating and testing,
-and all inferences share same model parameters.
+build different inferences for training, evaluating and testing,
+and all inferences share the same model parameters.
 (see tutorial_ptb_lstm.py)
 
 """
