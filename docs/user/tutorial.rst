@@ -1269,7 +1269,7 @@ After downloading the dataset, it start to create vocabulary files,
 and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
 reflects the vocabulary size.
 
-The ``vocab40000.fr`` (381KB) is stored one-item-per-line as follow.
+The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
 
 .. code-block:: text
 
@@ -1306,7 +1306,7 @@ The ``vocab40000.fr`` (381KB) is stored one-item-per-line as follow.
   a
   par
 
-The ``vocab40000.en`` (344KB) is stored one-item-per-line as follow.
+The ``vocab40000.en`` (344KB) stores one-item-per-line as follow.
 
 .. code-block:: text
 
@@ -1349,22 +1349,22 @@ English and French. It will take a while as well.
 
 .. code-block:: text
 
-  Tokenizing data in wmt/giga-fren.release2.fr
+  Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
     tokenizing line 100000
     tokenizing line 200000
     tokenizing line 300000
     tokenizing line 400000
     ...
     tokenizing line 22500000
-  Tokenizing data in wmt/giga-fren.release2.en
+  Tokenizing data in wmt/giga-fren.release2.en  <-- Training data of English
     tokenizing line 100000
     tokenizing line 200000
     tokenizing line 300000
     tokenizing line 400000
     ...
     tokenizing line 22500000
-  Tokenizing data in wmt/newstest2013.fr
-  Tokenizing data in wmt/newstest2013.en
+  Tokenizing data in wmt/newstest2013.fr        <-- Testing data of French
+  Tokenizing data in wmt/newstest2013.en        <-- Testing data of English
 
 
 In the end, all files we have as follow.
@@ -1391,18 +1391,277 @@ In the end, all files we have as follow.
   wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
   wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
 
+
+Now, read all tokenized data into buckets and compute their sizes.
+
+.. code-block:: text
+
+  Reading development (testing) data into buckets
+  dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
+  en word_ids: [13388, 4, 949]
+  en context: [b'Preventing', b'the', b'disease']
+  fr word_ids: [23113, 8, 910, 2]
+  fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
+
+  Reading training data into buckets (limit: 0).
+    reading data line 100000
+    reading data line 200000
+    reading data line 300000
+    reading data line 400000
+    reading data line 500000
+    reading data line 600000
+    reading data line 700000
+    reading data line 800000
+    ...
+    reading data line 22400000
+    reading data line 22500000
+  train_bucket_sizes: [239121, 1344322, 5239557, 10445326]
+  train_total_size: 17268326.0
+  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
+  train data: (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
+  en word_ids: [1368, 3344]
+  en context: [b'Site', b'map']
+  fr word_ids: [1089, 14, 261, 2]
+  fr context: [b'Plan', b'du', b'site', b'_EOS']
+
+
+
+
+Start training by using the tokenized bucket data, the training process can
+only be terminated by stop the program.
+When ``steps_per_checkpoint = 10`` you will see.
+
+.. code-block:: text
+
+  global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
+    eval: bucket 0 perplexity 5887.75
+    eval: bucket 1 perplexity 3891.96
+    eval: bucket 2 perplexity 3748.77
+    eval: bucket 3 perplexity 4940.10
+  global step 20 learning rate 0.5000 step-time 20.38 perplexity 28761.36
+    eval: bucket 0 perplexity 10137.01
+    eval: bucket 1 perplexity 12809.90
+    eval: bucket 2 perplexity 15758.65
+    eval: bucket 3 perplexity 26760.93
+  global step 30 learning rate 0.5000 step-time 20.64 perplexity 6372.95
+    eval: bucket 0 perplexity 1789.80
+    eval: bucket 1 perplexity 1690.00
+    eval: bucket 2 perplexity 2190.18
+    eval: bucket 3 perplexity 3808.12
+  global step 40 learning rate 0.5000 step-time 16.10 perplexity 3418.93
+    eval: bucket 0 perplexity 4778.76
+    eval: bucket 1 perplexity 3698.90
+    eval: bucket 2 perplexity 3902.37
+    eval: bucket 3 perplexity 22612.44
+  global step 50 learning rate 0.5000 step-time 14.84 perplexity 1811.02
+    eval: bucket 0 perplexity 644.72
+    eval: bucket 1 perplexity 759.16
+    eval: bucket 2 perplexity 984.18
+    eval: bucket 3 perplexity 1585.68
+  global step 60 learning rate 0.5000 step-time 19.76 perplexity 1580.55
+    eval: bucket 0 perplexity 1724.84
+    eval: bucket 1 perplexity 2292.24
+    eval: bucket 2 perplexity 2698.52
+    eval: bucket 3 perplexity 3189.30
+  global step 70 learning rate 0.5000 step-time 17.16 perplexity 1250.57
+    eval: bucket 0 perplexity 298.55
+    eval: bucket 1 perplexity 502.04
+    eval: bucket 2 perplexity 645.44
+    eval: bucket 3 perplexity 604.29
+  global step 80 learning rate 0.5000 step-time 18.50 perplexity 793.90
+    eval: bucket 0 perplexity 2056.23
+    eval: bucket 1 perplexity 1344.26
+    eval: bucket 2 perplexity 767.82
+    eval: bucket 3 perplexity 649.38
+  global step 90 learning rate 0.5000 step-time 12.61 perplexity 541.57
+    eval: bucket 0 perplexity 180.86
+    eval: bucket 1 perplexity 350.99
+    eval: bucket 2 perplexity 326.85
+    eval: bucket 3 perplexity 383.22
+  global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
+    eval: bucket 0 perplexity 216.63
+    eval: bucket 1 perplexity 348.96
+    eval: bucket 2 perplexity 318.20
+    eval: bucket 3 perplexity 389.92
+  ...
+
+
+After training the model, you can play with the
+
+
+
+
+
+
+
 Understand Translation
 ======================
 
-Many to Many (Seq2seq)
------------------------
+Seq2seq
+---------
 
-Karpathy's blog :
+Basics
+^^^^^^
+
+Sequence to sequence is a type of "Many to many" but different with Synced
+sequence input and output in PTB tutorial. Seq2seq generates sequence output
+after feeding all sequence inputs. The following two methods can improve the
+accuracy:
+ - Reversing the inputs
+ - Attention mechanism
+
+To speed up the computation, we used:
+
+ - Sampled softmax
+
+Karpathy's blog described Seq2seq as:
 "(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
 reads a sentence in English and then outputs a sentence in French)."
 
+.. _fig_0601:
+
+.. image:: my_figs/basic_seq2seq.png
+  :scale: 100 %
+  :align: center
+
+As the above figure shows, the encoder inputs, decoder inputs and targets are:
+
+.. code-block:: text
+
+   encoder_input =  A    B    C
+   decoder_input =  <go> W    X    Y    Z
+   targets       =  W    X    Y    Z    <eos>
+
+   Note: in the code, the size of targets is one smaller than the size
+   of decoder_input, not like this figure.
+
+Papers
+^^^^^^^^
+
+The English-to-French example implements a multi-layer recurrent neural
+network as encoder, and an Attention-based decoder.
+It is the same as the model described in this paper:
+ - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
+
+The example uses sampled softmax to handle large output vocabulary size.
+In this case, as ``target_vocab_size=4000``, for vocabularies smaller
+than ``512``, it might be a better idea to just use a standard softmax loss.
+Sampled softmax is described in Section 3 of the this paper:
+ - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
+
+Reversing the inputs and Multi-layer cells have been successfully used in
+sequence-to-sequence models for translation has beed described in this paper:
+ - `Sequence to Sequence Learning with Neural Networks <http://arxiv.org/abs/1409.3215>`_
+
+Attention mechanism allows the decoder more direct access to the input, it was
+described in this paper:
+ - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+Alternatively, the model can also be implemented by a single-layer
+version, but with Bi-directional encoder, was presented in this paper:
+ - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+
+
+Implementation
+---------------
+
+Bucketing and Padding
+^^^^^^^^^^^^^^^^^^^^^
+
+Bucketing is a method to efficiently handle sentences of different length.
+When translating English to French, we will have English sentences of
+different lengths ``L1`` on input, and French sentences of different
+lengths ``L2`` on output. We should in principle create a seq2seq model
+for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
+lengths of an English and French sentence.
+
+For find the closest bucket for each pair, then we could just pad every
+sentence with a special PAD symbol in the end if the bucket is bigger
+than the sentence
+
+We use a number of buckets and pad to the closest one for efficiency.
+In this example, we used 4 buckets.
+
+.. code-block:: python
+
+  buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+
+If the input is an English sentence with ``3`` tokens, and the corresponding
+output is a French sentence with ``6`` tokens, then they will be put in the
+first bucket and padded to length ``5`` for encoder inputs (English sentence),
+and length ``10`` for decoder inputs.
+If we have an English sentence with 8 tokens and the corresponding French
+sentence has 18 tokens, then they will be fit into ``(20, 25)`` bucket.
+
+In other word, bucket ``(I, O)`` is ``(encoder_input_size, decoder_inputs_size)``.
+
+Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
+we fit it into bucket ``(5, 10)``.
+The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
+and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
+are decoder inputs shifted by one.
+
+
+.. code-block:: text
+
+  bucket = (I, O) = (5, 10)
+  encoder_inputs = [PAD PAD "." "go" "I"]                       <-- I
+  decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- O
+  targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- O - 1
+  target_weights = ????                                         <-- O
+
+
+Special vocabulary symbols, punctuation and digits
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The special vocabulary symbols in this example are:
+
+.. code-block:: python
+
+  _PAD = b"_PAD"
+  _GO = b"_GO"
+  _EOS = b"_EOS"
+  _UNK = b"_UNK"
+  PAD_ID = 0      <-- index (row number) in vocabulary
+  GO_ID = 1
+  EOS_ID = 2
+  UNK_ID = 3
+  _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
+
+.. code-block:: text
+
+          ID    MEANINGS
+  _PAD    0     Padding, empty word
+  _GO     1     1st element of decoder_inputs
+  _EOS    2     End of Sentence of targets
+  _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
+
+
+
+
+For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
+should be consistent, if ``True`` all digits will be replaced by ``0``. Like
+``123`` to ``000```, `9` to `0` and `19762` to `00000`, then `0`, `00`, `000`
+will be the words in the vocabulary. Otherwise, if ``False``, different digits
+will be seem in the vocabulary, then the vocabulary size will be very big.
+The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``,
+see ``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``.
+
+For word split, the regular expression is
+``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use
+``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
+``tl.files.basic_tokenizer()`` which the default tokenizer of
+``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``.
+
+
+All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
+of both English and French.
+
 Dataset iteration
 ^^^^^^^^^^^^^^^^^
+
+
 
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

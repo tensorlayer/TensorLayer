@@ -58,6 +58,7 @@ from six.moves import xrange
 
 def read_data(source_path, target_path, buckets, EOS_ID, max_size=None):
   """Read data from source and target files and put into buckets.
+  Corresponding source data and target data in the same line.
 
   Args:
     source_path: path to the files with token-ids for the source language.
@@ -95,7 +96,8 @@ def read_data(source_path, target_path, buckets, EOS_ID, max_size=None):
 
 
 def main_train():
-    """Compare with Word2vec example, the dataset in this example is large,
+    """Step 1 : Download Training and Testing data.
+    Compare with Word2vec example, the dataset in this example is large,
     so we use TensorFlow's gfile functions to speed up the pre-processing.
     """
     data_dir = "wmt"           # Data directory
@@ -107,6 +109,8 @@ def main_train():
     print("Training data : %s" % train_path)   # wmt/giga-fren.release2
     print("Testing data : %s" % dev_path)     # wmt/newstest2013
 
+    """Step 2 : Create Vocabularies for both Training and Testing data.
+    """
     ## Create vocabulary file (if it does not exist yet) from data file.
     _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])") # regular expression for word spliting. in basic_tokenizer.
     _DIGIT_RE = re.compile(br"\d")  # regular expression for search digits
@@ -131,6 +135,8 @@ def main_train():
                     en_vocab_size, tokenizer=None, normalize_digits=True,
                     _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
 
+    """ Step 3 : Tokenize Training and Testing data.
+    """
     ## Create tokenized file for the training data by using the vocabulary file.
     # normalize_digits=True means set all digits to zero, so as to reduce
     # vocabulary size.
@@ -157,7 +163,7 @@ def main_train():
                                     tokenizer=None, normalize_digits=True,
                                     UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
-    # You can get the word_to_id dictionary and id_to_word list as follow.
+    ## You can get the word_to_id dictionary and id_to_word list as follow.
     # vocab, rev_vocab = tl.files.initialize_vocabulary(en_vocab_path)
     # print(vocab)
     # {b'cat': 1, b'dog': 0, b'bird': 2}
@@ -170,14 +176,33 @@ def main_train():
     fr_dev = fr_dev_ids_path
 
 
-
-    """After download and tokenized the training/testing data and
-    create the vocabularies for English and French.
-    We can read the data into buckets and compute their size, and then
-    build the model.
+    """Step 4 : Load both tokenized Training and Testing data into buckets
+    and compute their size.
     """
     print()
+    # Bucketing is a method to efficiently handle sentences of different length.
+    # When translating English to French, we will have English sentences of
+    # different lengths I on input, and French sentences of different
+    # lengths O on output. We should in principle create a seq2seq model
+    # for every pair (I, O+1) of lengths of an English and French sentence.
+    #
+    # For find the closest bucket for each pair, then we could just pad every
+    # sentence with a special PAD symbol in the end if the bucket is bigger
+    # than the sentence
+    #
     # We use a number of buckets and pad to the closest one for efficiency.
+    #
+    # If the input is an English sentence with 3 tokens, and the corresponding
+    # output is a French sentence with 6 tokens, then they will be put in the
+    # first bucket and padded to length 5 for encoder inputs (English sentence),
+    # and length 10 for decoder inputs.
+    # If we have an English sentence with 8 tokens and the corresponding French
+    # sentence has 18 tokens, then they will be fit into (20, 25) bucket.
+    #
+    # Given a pair [["I", "go", "."], ["Je", "vais", "."]] in tokenized format.
+    # The training data of encoder inputs representing [PAD PAD "." "go" "I"]
+    # and decoder inputs [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD].
+    # see ``get_batch()``
     buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
 
     num_layers = 3
@@ -187,61 +212,62 @@ def main_train():
     max_gradient_norm = 5.0
     batch_size = 64
     num_samples = 512
-    max_train_data_size = 100000     # Limit on the size of training data (0: no limit). DH: for fast testing, set a value
-    steps_per_checkpoint = 200  # Print, save frequence
+    max_train_data_size = 0     # Limit on the size of training data (0: no limit). DH: for fast testing, set a value
+    steps_per_checkpoint = 10        # Print, save frequence
+    plot_data = True
 
-    ## Read all tokenized data into buckets and compute their sizes.
-    # i.e. read all training data to memory.
-    print ("Reading development (testing)  data")
+    print ("Reading development (testing) data into buckets")
     dev_set = read_data(en_dev, fr_dev, buckets, EOS_ID)
 
-    # Visualize the development (testing) data
-    print('dev data:', buckets[0], dev_set[0][0])    # (5, 10), [[13388, 4, 949], [23113, 8, 910, 2]]
-    vocab_en, rev_vocab_en = tl.files.initialize_vocabulary(en_vocab_path)
-    context = tl.files.word_ids_to_words(dev_set[0][0][0], rev_vocab_en)
-    word_ids = tl.files.words_to_word_ids(context, vocab_en)
-    print('en word_ids:', word_ids) # [13388, 4, 949]
-    print('en context:', context)   # [b'Preventing', b'the', b'disease']
-    vocab_fr, rev_vocab_fr = tl.files.initialize_vocabulary(fr_vocab_path)
-    context = tl.files.word_ids_to_words(dev_set[0][0][1], rev_vocab_fr)
-    word_ids = tl.files.words_to_word_ids(context, vocab_fr)
-    print('fr word_ids:', word_ids) # [23113, 8, 910, 2]
-    print('fr context:', context)   # [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
-    print()
-    # exit()
+    if plot_data:
+        # Visualize the development (testing) data
+        print('dev data:', buckets[0], dev_set[0][0])    # (5, 10), [[13388, 4, 949], [23113, 8, 910, 2]]
+        vocab_en, rev_vocab_en = tl.files.initialize_vocabulary(en_vocab_path)
+        context = tl.files.word_ids_to_words(dev_set[0][0][0], rev_vocab_en)
+        word_ids = tl.files.words_to_word_ids(context, vocab_en)
+        print('en word_ids:', word_ids) # [13388, 4, 949]
+        print('en context:', context)   # [b'Preventing', b'the', b'disease']
+        vocab_fr, rev_vocab_fr = tl.files.initialize_vocabulary(fr_vocab_path)
+        context = tl.files.word_ids_to_words(dev_set[0][0][1], rev_vocab_fr)
+        word_ids = tl.files.words_to_word_ids(context, vocab_fr)
+        print('fr word_ids:', word_ids) # [23113, 8, 910, 2]
+        print('fr context:', context)   # [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
+        print()
 
-    print ("Reading training data (limit: %d)." % max_train_data_size)
+    print ("Reading training data  into buckets (limit: %d)." % max_train_data_size)
     train_set = read_data(en_train, fr_train, buckets, EOS_ID, max_train_data_size)
+    if plot_data:
+        # Visualize the training data
+        print('train data:', buckets[0], train_set[0][0])   # (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
+        context = tl.files.word_ids_to_words(train_set[0][0][0], rev_vocab_en)
+        word_ids = tl.files.words_to_word_ids(context, vocab_en)
+        print('en word_ids:', word_ids) # [1368, 3344]
+        print('en context:', context)   # [b'Site', b'map']
+        context = tl.files.word_ids_to_words(train_set[0][0][1], rev_vocab_fr)
+        word_ids = tl.files.words_to_word_ids(context, vocab_fr)
+        print('fr word_ids:', word_ids) # [1089, 14, 261, 2]
+        print('fr context:', context)   # [b'Plan', b'du', b'site', b'_EOS']
+        print()
+
     train_bucket_sizes = [len(train_set[b]) for b in xrange(len(buckets))]
     train_total_size = float(sum(train_bucket_sizes))
-    print('train_bucket_sizes:', train_bucket_sizes)    # [5807, 9719, 28191, 43465]    when max_train_data_size=100000
-    print('train_total_size:', train_total_size)        # 87182                          when max_train_data_size=100000
+    print('the num of training data in each buckets:', train_bucket_sizes)    # [239121, 1344322, 5239557, 10445326]
+    print('the num of training data:', train_total_size)        # 17268326.0
 
     # A bucket scale is a list of increasing numbers from 0 to 1 that we'll use
     # to select a bucket. Length of [scale[i], scale[i+1]] is proportional to
     # the size if i-th training bucket, as used later.
     train_buckets_scale = [sum(train_bucket_sizes[:i + 1]) / train_total_size
                            for i in xrange(len(train_bucket_sizes))]
-    print('train_buckets_scale:',train_buckets_scale)   # [0.0666077860108738, 0.1780872198389576, 0.5014452524603703, 1.0]  when max_train_data_size=100000
-
-    # Visualize the training data
-    print('train data:', buckets[0], train_set[0][0])   # (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
-    context = tl.files.word_ids_to_words(train_set[0][0][0], rev_vocab_en)
-    word_ids = tl.files.words_to_word_ids(context, vocab_en)
-    print('en word_ids:', word_ids) # [1368, 3344]
-    print('en context:', context)   # [b'Site', b'map']
-    context = tl.files.word_ids_to_words(train_set[0][0][1], rev_vocab_fr)
-    word_ids = tl.files.words_to_word_ids(context, vocab_fr)
-    print('fr word_ids:', word_ids) # [1089, 14, 261, 2]
-    print('fr context:', context)   # [b'Plan', b'du', b'site', b'_EOS']
-    print()
+    print('train_buckets_scale:',train_buckets_scale)   # [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
 
 
-    exit()
-    # placeholders using buckets
-    encoder_inputs = []
-    decoder_inputs = []
+
+    # list of placeholders for different buckets
+    encoder_inputs = [] # encoder inputs
+    decoder_inputs = [] #
     target_weights = []
+    # None is
     for i in xrange(buckets[-1][0]):  # Last bucket is the biggest one.
         encoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
                                                 name="encoder{0}".format(i)))
@@ -255,6 +281,11 @@ def main_train():
     targets = [decoder_inputs[i + 1]
                for i in xrange(len(decoder_inputs) - 1)]
 
+    # Give [["I", "go", "."], ["Je", "vais", "."]]  bucket = (I, O) = (5, 10)
+    # encoder_inputs = [PAD PAD "." "go" "I"]                           <-- I
+    # decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]     <-- O
+    # targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]        <-- O - 1
+    # target_weights =                                                  <-- O
     print(len(encoder_inputs))  # 40
     print(len(decoder_inputs))  # 51
     print(len(targets))         # 50
@@ -275,29 +306,34 @@ def main_train():
         #   forward_only=forward_only):
     def inference(source_vocab_size, target_vocab_size, buckets, size,
                                         num_layers, is_train=True):
+        # Use sampled softmax to handle large output vocabulary
         # If we use sampled softmax, we need an output projection.
         output_projection = None
         softmax_loss_function = None
-        # Sampled softmax only makes sense if we sample less than vocabulary size.
+        # If 0 < num_samples < target_vocab_size, we use sampled softmax,
+        # Otherwise,
+        # In this case, as target_vocab_size=4000, for vocabularies smaller
+        # than 512, it might be a better idea to just use a standard softmax loss.
         if num_samples > 0 and num_samples < target_vocab_size:
             w = tf.get_variable("proj_w", [size, target_vocab_size])
             w_t = tf.transpose(w)
             b = tf.get_variable("proj_b", [target_vocab_size])
             output_projection = (w, b)
-            def sampled_loss(inputs, labels):
+
+            def sampled_loss(inputs, labels, num_samples, target_vocab_size):
                 labels = tf.reshape(labels, [-1, 1])
                 return tf.nn.sampled_softmax_loss(w_t, b, inputs, labels, num_samples,
                     target_vocab_size)
             softmax_loss_function = sampled_loss
 
-        network = tl.layers.RNNLayer(network,
-                    cell_fn=tf.nn.rnn_cell.GRUCell,
-                    cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
-                    n_hidden=size,
-                    initializer=tf.random_uniform_initializer(-0.1, 0.1),
-                    n_steps=num_steps,
-                    return_last=False,
-                    name='basic_lstm_layer1')
+        # network = tl.layers.RNNLayer(network,
+        #             cell_fn=tf.nn.rnn_cell.GRUCell,
+        #             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
+        #             n_hidden=size,
+        #             initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        #             n_steps=num_steps,
+        #             return_last=False,
+        #             name='basic_lstm_layer1')
 
 
 

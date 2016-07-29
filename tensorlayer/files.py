@@ -507,7 +507,9 @@ def load_nietzsche_dataset():
 
 def load_wmt_en_fr_dataset(data_dir="wmt"):
     """It will download English-to-French translation data from the WMT'15
-    Website. Returns the directories of training data and test data.
+    Website (10^9-French-English corpus), and the 2013 news test from
+    the same site as development set.
+    Returns the directories of training data and test data.
 
     Parameters
     ----------

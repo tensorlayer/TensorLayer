@@ -6,7 +6,7 @@
 import tensorflow as tf
 
 def identity(x):
-    """The identity activation function.
+    """The identity activation function
 
     Parameters
     ----------

@@ -117,6 +117,11 @@ If you want to re-generate the whole docs, run the following commands:
     make html
 
 
+To write the docs, we recommend you to install `Local RTD VM <http://docs.readthedocs.io/en/latest/custom_installs/local_rtd_vm.html>`_.
+
+
+
+
 Afterwards, open ``docs/_build/html/index.html`` to view the documentation as
 it would appear on `readthedocs <http://tensorlayer.readthedocs.org/>`_. If you
 changed a lot and seem to get misleading error messages or warnings, run
