@@ -1,6 +1,14 @@
 :mod:`tensorlayer.cost`
 =======================
 
+To make TensorLayer simple, we minimize the number of cost functions as much as
+we can. So we encourage you to use TensorFlow's function.
+For example, you can implement L1, L2 and sum regularization by
+``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
+``tf.contrib.layers.sum_regularizer``.
+
+https://www.tensorflow.org/versions/r0.10/api_docs/index.html
+
 .. automodule:: tensorlayer.cost
 
 .. autosummary::

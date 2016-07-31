@@ -1,6 +1,12 @@
 :mod:`tensorlayer.activation`
 ==============================
 
+To make TensorLayer simple, we minimize the number of cost functions as much as
+we can. So we encourage you to use TensorFlow's function. TensorFlow provides
+``tf.nn.relu``, ``tf.nn.relu6``, ``tf.nn.elu``, ``tf.nn.softplus``,
+``tf.nn.softsign`` and so on.
+
+
 .. automodule:: tensorlayer.activation
 
 .. autosummary::

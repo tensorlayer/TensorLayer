@@ -1681,12 +1681,12 @@ must be consistent, if <code class="docutils literal"><span class="pre">True</sp
 Otherwise, if <code class="docutils literal"><span class="pre">False</span></code>, different digits
 will be seem in the vocabulary, then the vocabulary size will be very big.
 The regular expression to find digits is <code class="docutils literal"><span class="pre">_DIGIT_RE</span> <span class="pre">=</span> <span class="pre">re.compile(br&quot;\d&quot;)</span></code>.
-(see <code class="docutils literal"><span class="pre">tl.files.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.files.data_to_token_ids()</span></code>)</p>
+(see <code class="docutils literal"><span class="pre">tl.nlp.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.nlp.data_to_token_ids()</span></code>)</p>
 <p>For word split, the regular expression is
 <code class="docutils literal"><span class="pre">_WORD_SPLIT</span> <span class="pre">=</span> <span class="pre">re.compile(b&quot;([.,!?\&quot;':;)(])&quot;)</span></code>, this means use
 <code class="docutils literal"><span class="pre">[</span> <span class="pre">.</span> <span class="pre">,</span> <span class="pre">!</span> <span class="pre">?</span> <span class="pre">&quot;</span> <span class="pre">'</span> <span class="pre">:</span> <span class="pre">;</span> <span class="pre">)</span> <span class="pre">(</span> <span class="pre">]</span></code> and space to split the sentence, see
-<code class="docutils literal"><span class="pre">tl.files.basic_tokenizer()</span></code> which is the default tokenizer of
-<code class="docutils literal"><span class="pre">tl.files.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.files.data_to_token_ids()</span></code>.</p>
+<code class="docutils literal"><span class="pre">tl.nlp.basic_tokenizer()</span></code> which is the default tokenizer of
+<code class="docutils literal"><span class="pre">tl.nlp.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.nlp.data_to_token_ids()</span></code>.</p>
 <p>All punctuation marks, such as <code class="docutils literal"><span class="pre">.</span> <span class="pre">,</span> <span class="pre">)</span> <span class="pre">(</span></code> are all reserved in the vocabularies
 of both English and French.</p>
 </div>
