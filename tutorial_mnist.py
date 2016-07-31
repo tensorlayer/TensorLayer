@@ -8,7 +8,8 @@ from tensorlayer.layers import set_keep
 import numpy as np
 import time
 
-"""
+"""Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
+
 This tutorial uses placeholder to control all keeping probabilities,
 so we need to set the non-one probabilities during training, and set them to 1
 during evaluating and testing.
@@ -27,6 +28,7 @@ build different inferences for training, evaluating and testing,
 and all inferences share the same model parameters.
 (see tutorial_ptb_lstm.py)
 
+tensorflow (0.9.0)
 """
 
 def main_test_layers(model='relu'):

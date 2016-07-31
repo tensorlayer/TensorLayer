@@ -12,6 +12,8 @@ import time
 """
 More TensorFlow official SyntaxNet tutorials can be found here:
 # https://www.tensorflow.org/versions/master/tutorials/syntaxnet/index.html#syntaxnet
+
+tensorflow (0.9.0)
 """
 
 def main_test_syntaxnet():

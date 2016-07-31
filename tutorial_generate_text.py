@@ -16,6 +16,7 @@
 """Example of Synced sequence input and output.
 Generate text using LSTM.
 
+tensorflow (0.9.0)
 """
 
 import tensorflow as tf
@@ -24,9 +25,10 @@ import numpy as np
 import time
 import re
 
-def customized_clean_str(string):
-    """
-    Tokenization/string cleaning for all datasets except for SST.
+_UNK = "_UNK"
+
+def basic_clean_str(string):
+    """Tokenization/string cleaning for a datasets.
     """
     string = re.sub(r"\n", " ", string)         # '\n'      --> ' '
     string = re.sub(r"\'s", " \'s", string)      # it's      --> it 's
@@ -67,9 +69,8 @@ def customized_clean_str(string):
     string = re.sub(r"\s{2,}", " ", string)     # Akara is    handsome --> Akara is handsome
     return string.strip().lower()               # lowercase
 
-def customized_clean_str_(string):
-    """
-    Tokenization/string cleaning for all datasets except for SST.
+def customized_clean_str(string):
+    """Tokenization/string cleaning for a datasets.
     """
     string = re.sub(r"\n", " ", string)         # '\n'      --> ' '
     string = re.sub(r"\'s", " \'s", string)      # it's      --> it 's
@@ -118,8 +119,10 @@ def customized_read_words(input_fpath):#, dictionary):
     # Split each word
     return words.split()
 
-def customized_word2ids(words, dictionary, unk_key = 'UNK'):
-    # Convert from words into indices of the specified dictionary
+def customized_word2ids(words, dictionary, unk_key = _UNK):
+    """Convert from words into indices of the specified dictionary.
+    Unknown words = unk_key.
+    """
     word_ids = []
     for word in words:
         if dictionary.get(word) is not None:
@@ -134,8 +137,8 @@ def main_how_to_use_embedding_layer():
     """
     ## Step 1: Build the embedding matrix and load the existing embedding matrix.
     vocabulary_size = 50000
-    embedding_size = 200
-    model_file_name = "model_word2vec_50k_200"
+    embedding_size = 128
+    model_file_name = "model_word2vec_50k_128"
     batch_size = None
 
     print("Load existing embedding matrix and dictionaries")
@@ -144,7 +147,7 @@ def main_how_to_use_embedding_layer():
     dictionary = all_var['dictionary']
     reverse_dictionary = all_var['reverse_dictionary']
 
-    tl.files.save_vocab(count, name='vocab_'+model_file_name+'.txt')
+    tl.nlp.save_vocab(count, name='vocab_'+model_file_name+'.txt')
 
     del all_var, data, count
 
@@ -171,9 +174,9 @@ def main_how_to_use_embedding_layer():
     word_id = dictionary[word]
     print('word_id:', word_id)
 
-    words = [b'i', b'am', b'hao', b'dong']
-    word_ids = tl.files.words_to_word_ids(words, dictionary)
-    context = tl.files.word_ids_to_words(word_ids, reverse_dictionary)
+    words = [b'i', b'am', b'tensor', b'layer']
+    word_ids = tl.nlp.words_to_word_ids(words, dictionary, unk_key = _UNK)
+    context = tl.nlp.word_ids_to_words(word_ids, reverse_dictionary)
     print('word_ids:', word_ids)
     print('context:', context)
 
@@ -188,9 +191,9 @@ def main_lstm_generate_text():
     """
     # rnn model and update  (describtion: see tutorial_ptb_lstm.py)
     init_scale = 0.1
-    learning_rate = 1.0 * 0.2
+    learning_rate = 1.0
     max_grad_norm = 5
-    num_steps = 5
+    num_steps = 4
     hidden_size = 200
     max_epoch = 4
     max_max_epoch = 100
@@ -198,14 +201,14 @@ def main_lstm_generate_text():
     lr_decay = 0.9
     batch_size = 20
     ## word embedding
-    vocab_size = 4000
+    vocab_size = 10000
     embedding_size = 200
     ## text generation
     # diversity_list = [None, 1.0]
     top_k_list = [5, 10, 50, 100]
     print_length = 100
 
-    resume = True  # load existing model, data and dictionaries
+    resume = False  # load existing model, data and dictionaries
     model_file_name = "model_generate_text"
 
     if resume:
@@ -220,12 +223,12 @@ def main_lstm_generate_text():
         # words = customized_read_words(input_fpath="tensorlayer/data/trump_twitter.txt")
         ## Alternatively, you can use the Nietzsche dataset as follow:
         words = tl.files.load_nietzsche_dataset()
-        words = customized_clean_str(words)
+        words = basic_clean_str(words)
         words = words.split()
         ## Build the data and dictionaries from word to id and id to word.
         data, count, dictionary, reverse_dictionary = \
-                    tl.files.build_words_dataset(words, vocab_size, True)
-        data = customized_word2ids(words, dictionary, unk_key = 'UNK')
+                    tl.nlp.build_words_dataset(words, vocab_size, True, _UNK)
+        data = customized_word2ids(words, dictionary, unk_key = _UNK)
         data = np.asarray(data)
         del words   # save memory
 
@@ -238,8 +241,8 @@ def main_lstm_generate_text():
     print('len(train_data) {}'.format(len(train_data)))
 
     # Set the seed to generate sentence.
-    seed = "That is great, I think"
-    seed = customized_clean_str(seed).split()
+    seed = "it should be good"
+    seed = basic_clean_str(seed).split()
     print('seed : %s' % seed)
 
     sess = tf.InteractiveSession()
@@ -408,7 +411,7 @@ def main_lstm_generate_text():
             state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
             state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
             # prepare the seed
-            outs_id = tl.files.words_to_word_ids(seed, dictionary)
+            outs_id = tl.nlp.words_to_word_ids(seed, dictionary, _UNK)
             # feed the seed to initialize the state for generation.
             for ids in outs_id[:-1]:
                 a_id = np.asarray(ids).reshape(1,1)
@@ -443,7 +446,7 @@ def main_lstm_generate_text():
                 a_id = tl.nlp.sample_top(out[0], top_k=top_k)
 
                 outs_id.append(a_id)
-            sentence = tl.files.word_ids_to_words(outs_id, reverse_dictionary)
+            sentence = tl.nlp.word_ids_to_words(outs_id, reverse_dictionary)
             sentence = " ".join(sentence)
             # print(diversity, ':', sentence)
             print(top_k, ':', sentence)

@@ -11,25 +11,16 @@
    load_matt_mahoney_text8_dataset
    load_imbd_dataset
    load_nietzsche_dataset
-
-   simple_read_words
-   read_words
-   read_analogies_file
-   build_vocab
-   build_reverse_dictionary
-   build_words_dataset
-   words_to_word_ids
-   word_ids_to_words
-   save_vocab
+   load_wmt_en_fr_dataset
 
    save_npz
    load_npz
    assign_params
 
-   npz_to_W_pdf
+   save_any_to_npy
+   save_any_to_npy
 
-   save_any_to_npy
-   save_any_to_npy
+   npz_to_W_pdf
 
    load_file_list
 
@@ -42,19 +33,8 @@ Load dataset functions
 .. autofunction:: load_matt_mahoney_text8_dataset
 .. autofunction:: load_imbd_dataset
 .. autofunction:: load_nietzsche_dataset
+.. autofunction:: load_wmt_en_fr_dataset
 
-Vector representations of words
--------------------------------
-
-.. autofunction:: simple_read_words
-.. autofunction:: read_words
-.. autofunction:: read_analogies_file
-.. autofunction:: build_vocab
-.. autofunction:: build_reverse_dictionary
-.. autofunction:: build_words_dataset
-.. autofunction:: words_to_word_ids
-.. autofunction:: word_ids_to_words
-.. autofunction:: save_vocab
 
 Load and save network
 ----------------------
@@ -70,11 +50,11 @@ Load and save variables
 
 
 Visualizing npz file
----------------------------------------
+----------------------
 .. autofunction:: npz_to_W_pdf
 
 
 Helper functions
-----------------------
+------------------
 
 .. autofunction:: load_file_list

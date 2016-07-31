@@ -65,6 +65,8 @@ More TensorFlow official RNN examples can be found here
 $ RNN for PTB : https://www.tensorflow.org/versions/master/tutorials/recurrent/index.html#recurrent-neural-networks
 $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
 $ translation : tensorflow/models/rnn/translate
+
+tensorflow (0.9.0)
 """
 
 """Example / benchmark for building a PTB LSTM model.

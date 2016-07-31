@@ -146,7 +146,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#implementation">Implementation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#bucketing-and-padding">Bucketing and Padding</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#special-vocabulary-symbols-punctuation-and-digits">Special vocabulary symbols, punctuation and digits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#special-vocabulary-symbols-punctuations-and-digits">Special vocabulary symbols, punctuations and digits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sampled-softmax">Sampled softmax</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id16">Dataset iteration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id17">Loss and update expressions</a></li>
 </ul>
@@ -1458,10 +1459,83 @@ global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
   eval: bucket 1 perplexity 348.96
   eval: bucket 2 perplexity 318.20
   eval: bucket 3 perplexity 389.92
+global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
+  eval: bucket 0 perplexity 8049.85
+  eval: bucket 1 perplexity 1677.24
+  eval: bucket 2 perplexity 936.98
+  eval: bucket 3 perplexity 657.46
+global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
+  eval: bucket 0 perplexity 189.22
+  eval: bucket 1 perplexity 360.69
+  eval: bucket 2 perplexity 410.57
+  eval: bucket 3 perplexity 456.40
+global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
+  eval: bucket 0 perplexity 196.93
+  eval: bucket 1 perplexity 655.18
+  eval: bucket 2 perplexity 860.44
+  eval: bucket 3 perplexity 1062.36
+global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
+  eval: bucket 0 perplexity 391.88
+  eval: bucket 1 perplexity 339.09
+  eval: bucket 2 perplexity 320.08
+  eval: bucket 3 perplexity 376.44
+global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
+  eval: bucket 0 perplexity 269.16
+  eval: bucket 1 perplexity 286.51
+  eval: bucket 2 perplexity 391.78
+  eval: bucket 3 perplexity 485.23
+global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
+  eval: bucket 0 perplexity 137.00
+  eval: bucket 1 perplexity 198.85
+  eval: bucket 2 perplexity 276.58
+  eval: bucket 3 perplexity 357.78
+global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
+  eval: bucket 0 perplexity 1051.29
+  eval: bucket 1 perplexity 626.64
+  eval: bucket 2 perplexity 496.32
+  eval: bucket 3 perplexity 458.85
+global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
+  eval: bucket 0 perplexity 178.12
+  eval: bucket 1 perplexity 299.86
+  eval: bucket 2 perplexity 294.84
+  eval: bucket 3 perplexity 296.46
+global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
+  eval: bucket 0 perplexity 860.60
+  eval: bucket 1 perplexity 910.16
+  eval: bucket 2 perplexity 909.24
+  eval: bucket 3 perplexity 786.04
+global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
+  eval: bucket 0 perplexity 152.13
+  eval: bucket 1 perplexity 234.41
+  eval: bucket 2 perplexity 249.66
+  eval: bucket 3 perplexity 285.95
+...
+global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
+  eval: bucket 0 perplexity 78.45
+  eval: bucket 1 perplexity 108.40
+  eval: bucket 2 perplexity 137.83
+  eval: bucket 3 perplexity 173.53
+global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
+  eval: bucket 0 perplexity 78.37
+  eval: bucket 1 perplexity 119.72
+  eval: bucket 2 perplexity 169.11
+  eval: bucket 3 perplexity 202.89
+global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
+  eval: bucket 0 perplexity 76.52
+  eval: bucket 1 perplexity 125.97
+  eval: bucket 2 perplexity 150.13
+  eval: bucket 3 perplexity 181.07
 ...
 </pre></div>
 </div>
-<p>After training the model, you can play with the</p>
+<p>After training the model for 350000 steps, you can play with the translation by switch
+<code class="docutils literal"><span class="pre">train()</span></code> to <code class="docutils literal"><span class="pre">decode()</span></code>. You type in a English sentence, the program will outputs
+a French sentence.</p>
+<div class="highlight-text"><div class="highlight"><pre><span></span>Reading model parameters from wmt/translate.ckpt-XXX
+&gt; hello
+....
+</pre></div>
+</div>
 </div>
 <div class="section" id="understand-translation">
 <h2>Understand Translation<a class="headerlink" href="#understand-translation" title="Permalink to this headline">¶</a></h2>
@@ -1579,8 +1653,8 @@ target_weights = ????                                         &lt;-- O
 </pre></div>
 </div>
 </div>
-<div class="section" id="special-vocabulary-symbols-punctuation-and-digits">
-<h4>Special vocabulary symbols, punctuation and digits<a class="headerlink" href="#special-vocabulary-symbols-punctuation-and-digits" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="special-vocabulary-symbols-punctuations-and-digits">
+<h4>Special vocabulary symbols, punctuations and digits<a class="headerlink" href="#special-vocabulary-symbols-punctuations-and-digits" title="Permalink to this headline">¶</a></h4>
 <p>The special vocabulary symbols in this example are:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">_PAD</span> <span class="o">=</span> <span class="n">b</span><span class="s2">&quot;_PAD&quot;</span>
 <span class="n">_GO</span> <span class="o">=</span> <span class="n">b</span><span class="s2">&quot;_GO&quot;</span>
@@ -1601,19 +1675,23 @@ _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
 </pre></div>
 </div>
 <p>For digits, the <code class="docutils literal"><span class="pre">normalize_digits</span></code> of creating vocabularies and tokenized dataset
-should be consistent, if <code class="docutils literal"><span class="pre">True</span></code> all digits will be replaced by <code class="docutils literal"><span class="pre">0</span></code>. Like
-<code class="docutils literal"><span class="pre">123</span></code> to <code class="docutils literal"><span class="pre">000`</span></code>, <cite>9</cite> to <cite>0</cite> and <cite>19762</cite> to <cite>00000</cite>, then <cite>0</cite>, <cite>00</cite>, <cite>000</cite>
-will be the words in the vocabulary. Otherwise, if <code class="docutils literal"><span class="pre">False</span></code>, different digits
+must be consistent, if <code class="docutils literal"><span class="pre">True</span></code> all digits will be replaced by <code class="docutils literal"><span class="pre">0</span></code>. Like
+<code class="docutils literal"><span class="pre">123</span></code> to <code class="docutils literal"><span class="pre">000`</span></code>, <cite>9</cite> to <cite>0</cite> and <cite>1990-05</cite> to <cite>0000-00</cite>, then <cite>000</cite>, <cite>0</cite> and
+<cite>0000-00</cite> etc will be the words in the vocabulary (see <code class="docutils literal"><span class="pre">vocab40000.en</span></code>).
+Otherwise, if <code class="docutils literal"><span class="pre">False</span></code>, different digits
 will be seem in the vocabulary, then the vocabulary size will be very big.
-The regular expression to find digits is <code class="docutils literal"><span class="pre">_DIGIT_RE</span> <span class="pre">=</span> <span class="pre">re.compile(br&quot;\d&quot;)</span></code>,
-see <code class="docutils literal"><span class="pre">tl.files.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.files.data_to_token_ids()</span></code>.</p>
+The regular expression to find digits is <code class="docutils literal"><span class="pre">_DIGIT_RE</span> <span class="pre">=</span> <span class="pre">re.compile(br&quot;\d&quot;)</span></code>.
+(see <code class="docutils literal"><span class="pre">tl.files.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.files.data_to_token_ids()</span></code>)</p>
 <p>For word split, the regular expression is
 <code class="docutils literal"><span class="pre">_WORD_SPLIT</span> <span class="pre">=</span> <span class="pre">re.compile(b&quot;([.,!?\&quot;':;)(])&quot;)</span></code>, this means use
 <code class="docutils literal"><span class="pre">[</span> <span class="pre">.</span> <span class="pre">,</span> <span class="pre">!</span> <span class="pre">?</span> <span class="pre">&quot;</span> <span class="pre">'</span> <span class="pre">:</span> <span class="pre">;</span> <span class="pre">)</span> <span class="pre">(</span> <span class="pre">]</span></code> and space to split the sentence, see
-<code class="docutils literal"><span class="pre">tl.files.basic_tokenizer()</span></code> which the default tokenizer of
+<code class="docutils literal"><span class="pre">tl.files.basic_tokenizer()</span></code> which is the default tokenizer of
 <code class="docutils literal"><span class="pre">tl.files.create_vocabulary()</span></code> and <code class="docutils literal"><span class="pre">tl.files.data_to_token_ids()</span></code>.</p>
 <p>All punctuation marks, such as <code class="docutils literal"><span class="pre">.</span> <span class="pre">,</span> <span class="pre">)</span> <span class="pre">(</span></code> are all reserved in the vocabularies
 of both English and French.</p>
+</div>
+<div class="section" id="sampled-softmax">
+<h4>Sampled softmax<a class="headerlink" href="#sampled-softmax" title="Permalink to this headline">¶</a></h4>
 </div>
 <div class="section" id="id16">
 <h4>Dataset iteration<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>

@@ -8,6 +8,11 @@ from tensorlayer.layers import set_keep
 import numpy as np
 import time
 
+"""Example of CNN
+
+tensorflow (0.9.0)
+"""
+
 
 def main_test_cnn_naive():
     """Without any distorting, whitening and cropping for training data.

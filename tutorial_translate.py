@@ -43,6 +43,8 @@ https://www.tensorflow.org/versions/r0.9/tutorials/seq2seq/index.html
 Data
 ----
 http://www.statmt.org/wmt10/
+
+tensorflow (0.9.0)
 """
 
 import tensorflow as tf
@@ -101,6 +103,7 @@ def main_train():
     so we use TensorFlow's gfile functions to speed up the pre-processing.
     """
     data_dir = "wmt"           # Data directory
+    train_dir = "wmt"          # Model directory save_dir
     fr_vocab_size = 40000      # French vocabulary size
     en_vocab_size = 40000      # English vocabulary size
 
@@ -114,6 +117,7 @@ def main_train():
     ## Create vocabulary file (if it does not exist yet) from data file.
     _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])") # regular expression for word spliting. in basic_tokenizer.
     _DIGIT_RE = re.compile(br"\d")  # regular expression for search digits
+    normalize_digits = True         # replace all digits to 0
     # Special vocabulary symbols
     _PAD = b"_PAD"  #
     _GO = b"_GO"    # start to generate the output sentence
@@ -129,11 +133,11 @@ def main_train():
     print("Vocabulary of French : %s" % fr_vocab_path)    # wmt/vocab40000.fr
     print("Vocabulary of English : %s" % en_vocab_path)   # wmt/vocab40000.en
     tl.files.create_vocabulary(fr_vocab_path, train_path + ".fr",
-                    fr_vocab_size, tokenizer=None, normalize_digits=True,
-                    _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
+                fr_vocab_size, tokenizer=None, normalize_digits=normalize_digits,
+                _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
     tl.files.create_vocabulary(en_vocab_path, train_path + ".en",
-                    en_vocab_size, tokenizer=None, normalize_digits=True,
-                    _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
+                en_vocab_size, tokenizer=None, normalize_digits=normalize_digits,
+                _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
 
     """ Step 3 : Tokenize Training and Testing data.
     """
@@ -145,11 +149,11 @@ def main_train():
     print("Tokenized Training data of French : %s" % fr_train_ids_path)    # wmt/giga-fren.release2.ids40000.fr
     print("Tokenized Training data of English : %s" % en_train_ids_path)   # wmt/giga-fren.release2.ids40000.fr
     tl.files.data_to_token_ids(train_path + ".fr", fr_train_ids_path, fr_vocab_path,
-                                    tokenizer=None, normalize_digits=True,
-                                    UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
+                                tokenizer=None, normalize_digits=normalize_digits,
+                                UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
     tl.files.data_to_token_ids(train_path + ".en", en_train_ids_path, en_vocab_path,
-                                    tokenizer=None, normalize_digits=True,
-                                    UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
+                                tokenizer=None, normalize_digits=normalize_digits,
+                                UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
     ## and also, we should create tokenized file for the development (testing) data.
     fr_dev_ids_path = dev_path + (".ids%d.fr" % fr_vocab_size)
@@ -157,11 +161,11 @@ def main_train():
     print("Tokenized Testing data of French : %s" % fr_dev_ids_path)    # wmt/newstest2013.ids40000.fr
     print("Tokenized Testing data of English : %s" % en_dev_ids_path)   # wmt/newstest2013.ids40000.en
     tl.files.data_to_token_ids(dev_path + ".fr", fr_dev_ids_path, fr_vocab_path,
-                                    tokenizer=None, normalize_digits=True,
-                                    UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
+                                tokenizer=None, normalize_digits=normalize_digits,
+                                UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
     tl.files.data_to_token_ids(dev_path + ".en", en_dev_ids_path, en_vocab_path,
-                                    tokenizer=None, normalize_digits=True,
-                                    UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
+                                tokenizer=None, normalize_digits=normalize_digits,
+                                UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
     ## You can get the word_to_id dictionary and id_to_word list as follow.
     # vocab, rev_vocab = tl.files.initialize_vocabulary(en_vocab_path)
@@ -262,10 +266,10 @@ def main_train():
     print('train_buckets_scale:',train_buckets_scale)   # [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
 
 
-
-    # list of placeholders for different buckets
-    encoder_inputs = [] # encoder inputs
-    decoder_inputs = [] #
+    """Step 5 : Create a list of placeholders for different buckets
+    """
+    encoder_inputs = []
+    decoder_inputs = []
     target_weights = []
     # None is
     for i in xrange(buckets[-1][0]):  # Last bucket is the biggest one.
@@ -277,7 +281,7 @@ def main_train():
         target_weights.append(tf.placeholder(tf.float32, shape=[None],
                                                 name="weight{0}".format(i)))
 
-    # Our targets are decoder inputs shifted by one.
+    # Our targets are decoder inputs shifted by one (remove the GO symbol)
     targets = [decoder_inputs[i + 1]
                for i in xrange(len(decoder_inputs) - 1)]
 
@@ -348,12 +352,49 @@ def main_train():
 
 
 
+def self_test_dh():
+  """Test the translation model."""
+  with tf.Session() as sess:
+    print("Self-test for neural translation model.")
+    # Create model with vocabularies of 10, 2 small buckets, 2 layers of 32.
+    buckets = [(3, 3), (6, 6)]
+    num_layers = 2
+    hidden_size = 32
+    source_vocab_size = target_vocab_size = 10
+    max_gradient_norm = 5.0
+    batch_size = 32
+    learning_rate = 0.3
+    learning_rate_decay_factor = 0.99
+    num_samples = 8
+
+    model = seq2seq_model.Seq2SeqModel(source_vocab_size, target_vocab_size,
+                                buckets, hidden_size, num_layers,
+                                max_gradient_norm, batch_size, learning_rate,
+                                learning_rate_decay_factor, use_lstm=False,
+                                num_samples=num_samples, forward_only=False)
+    sess.run(tf.initialize_all_variables())
+
+    # Fake data set for both the (3, 3) and (6, 6) bucket.
+    data_set = ([([0, 1], [2, 2]), ([2, 3], [4]), ([5], [6])],
+                [([1, 1, 2, 3, 4], [2, 2, 2, 2, 2]), ([3, 3, 4], [5, 6])])
+    for _ in xrange(5):  # Train the fake model for 5 steps.
+      bucket_id = random.choice([0, 1]) # random choice bucket 0 or 1
+      encoder_inputs, decoder_inputs, target_weights = model.get_batch(
+          data_set, bucket_id)
+      print('what is the data')
+      print(encoder_inputs, len(encoder_inputs), len(encoder_inputs[0]))
+      print(decoder_inputs, len(decoder_inputs), len(decoder_inputs[0]))
+      print(target_weights, len(target_weights), len(target_weights[0]))
+      model.step(sess, encoder_inputs, decoder_inputs, target_weights,
+                 bucket_id, False)
+
 
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     try:
         main_train()
+        # self_test_dh()
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
         tl.ops.exit_tf(sess)

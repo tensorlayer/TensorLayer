@@ -20,7 +20,7 @@ This is the minimalistic reimplementation of
 tensorflow/examples/tutorials/word2vec/word2vec_basic.py
 This basic example contains the code needed to download some data,
 train on it a bit and visualize the result by using t-SNE.
-234567§
+
 Once you get comfortable with reading and running the basic version,
 you can graduate to
 tensorflow/models/embedding/word2vec.py
@@ -37,6 +37,7 @@ Link
 ------
 https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words
 
+tensorflow (0.9.0)
 """
 
 
@@ -66,6 +67,7 @@ def main_word2vec_basic():
     print('Data size', data_size) # print(words)    # b'their', b'families', b'who', b'were', b'expelled', b'from', b'jerusalem',
 
     resume = False  # load existing model, data and dictionaries
+    _UNK = "_UNK"
 
     if FLAGS.model == "one":
         # toy setting (tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
@@ -83,7 +85,7 @@ def main_word2vec_basic():
         model_file_name = "model_word2vec_50k_128"
         # Eval 2084/15851 accuracy = 15.7%
     if FLAGS.model == "two":
-        # better (tensorflow/models/embedding/word2vec.py)
+        # (tensorflow/models/embedding/word2vec.py)
         vocabulary_size = 80000
         batch_size = 20     # Note: small batch_size need more steps for a Epoch
         embedding_size = 200
@@ -95,7 +97,7 @@ def main_word2vec_basic():
         model_file_name = "model_word2vec_80k_200"
         # 7.9%
     if FLAGS.model == "three":
-        # better (tensorflow/models/embedding/word2vec_optimized.py)
+        # (tensorflow/models/embedding/word2vec_optimized.py)
         vocabulary_size = 80000
         batch_size = 500
         embedding_size = 200
@@ -117,17 +119,7 @@ def main_word2vec_basic():
         learning_rate = 0.03
         n_epoch = 200 * 10
         model_file_name = "model_word2vec_80k_600"
-        # bad bad
-    if FLAGS.model == "five":
-        vocabulary_size = 50000
-        batch_size = 128
-        embedding_size = 200
-        skip_window = 1
-        num_skips = 2
-        num_sampled = 64
-        learning_rate = 0.001
-        n_epoch = 20
-        model_file_name = "model_word2vec_50k_200"
+        # bad
 
     num_steps = int((data_size/batch_size) * n_epoch)   # total number of iteration
 
@@ -147,7 +139,7 @@ def main_word2vec_basic():
         reverse_dictionary = all_var['reverse_dictionary']
     else:
         data, count, dictionary, reverse_dictionary = \
-                    tl.files.build_words_dataset(words, vocabulary_size, True)
+                    tl.nlp.build_words_dataset(words, vocabulary_size, True, _UNK)
 
     print('Most 5 common words (+UNK)', count[:5]) # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]]) # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
@@ -235,7 +227,7 @@ def main_word2vec_basic():
     emb_net.print_layers()
 
     # save vocabulary to txt
-    tl.files.save_vocab(count, name='vocab_text8.txt')
+    tl.nlp.save_vocab(count, name='vocab_text8.txt')
 
     average_loss = 0
 
@@ -296,14 +288,14 @@ def main_word2vec_basic():
     print()
     final_embeddings = normalized_embeddings.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
-                plot_only=500, second=5, saveable=True, name='word2vec_basic')
+                plot_only=500, second=5, saveable=False, name='word2vec_basic')
 
     """ Step 7: Evaluate by analogy questions.
         see tensorflow/models/embedding/word2vec_optimized.py
     """
     print()
     #   from tensorflow/models/embedding/word2vec.py
-    analogy_questions = tl.files.read_analogies_file( \
+    analogy_questions = tl.nlp.read_analogies_file( \
                 eval_file='questions-words.txt', word2id=dictionary)
     # The eval feeds three vectors of word ids for a, b, c, each of
     # which is of size N, where N is the number of analogies we want to
@@ -346,16 +338,16 @@ def main_word2vec_basic():
         limit = start + 2500
         sub = analogy_questions[start:limit, :] # question
         idx = predict(sub)      # 4 answers for each question
-        # print('question:', tl.files.word_ids_to_words(sub[0], reverse_dictionary))
-        # print('answers:', tl.files.word_ids_to_words(idx[0], reverse_dictionary))
+        # print('question:', tl.nlp.word_ids_to_words(sub[0], reverse_dictionary))
+        # print('answers:', tl.nlp.word_ids_to_words(idx[0], reverse_dictionary))
         start = limit
         for question in xrange(sub.shape[0]):
             for j in xrange(n_answer):
                 # if one of the top 4 answers in correct, win !
                 if idx[question, j] == sub[question, 3]:
                     # Bingo! We predicted correctly. E.g., [italy, rome, france, paris].
-                    print(j+1, tl.files.word_ids_to_words([idx[question, j]], reverse_dictionary) \
-                        , ':', tl.files.word_ids_to_words(sub[question, :], reverse_dictionary))
+                    print(j+1, tl.nlp.word_ids_to_words([idx[question, j]], reverse_dictionary) \
+                        , ':', tl.nlp.word_ids_to_words(sub[question, :], reverse_dictionary))
                     correct += 1
                     break
                 elif idx[question, j] in sub[question, :3]:

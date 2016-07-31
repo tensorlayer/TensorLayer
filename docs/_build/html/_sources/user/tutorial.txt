@@ -1483,10 +1483,85 @@ When ``steps_per_checkpoint = 10`` you will see.
     eval: bucket 1 perplexity 348.96
     eval: bucket 2 perplexity 318.20
     eval: bucket 3 perplexity 389.92
+  global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
+    eval: bucket 0 perplexity 8049.85
+    eval: bucket 1 perplexity 1677.24
+    eval: bucket 2 perplexity 936.98
+    eval: bucket 3 perplexity 657.46
+  global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
+    eval: bucket 0 perplexity 189.22
+    eval: bucket 1 perplexity 360.69
+    eval: bucket 2 perplexity 410.57
+    eval: bucket 3 perplexity 456.40
+  global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
+    eval: bucket 0 perplexity 196.93
+    eval: bucket 1 perplexity 655.18
+    eval: bucket 2 perplexity 860.44
+    eval: bucket 3 perplexity 1062.36
+  global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
+    eval: bucket 0 perplexity 391.88
+    eval: bucket 1 perplexity 339.09
+    eval: bucket 2 perplexity 320.08
+    eval: bucket 3 perplexity 376.44
+  global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
+    eval: bucket 0 perplexity 269.16
+    eval: bucket 1 perplexity 286.51
+    eval: bucket 2 perplexity 391.78
+    eval: bucket 3 perplexity 485.23
+  global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
+    eval: bucket 0 perplexity 137.00
+    eval: bucket 1 perplexity 198.85
+    eval: bucket 2 perplexity 276.58
+    eval: bucket 3 perplexity 357.78
+  global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
+    eval: bucket 0 perplexity 1051.29
+    eval: bucket 1 perplexity 626.64
+    eval: bucket 2 perplexity 496.32
+    eval: bucket 3 perplexity 458.85
+  global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
+    eval: bucket 0 perplexity 178.12
+    eval: bucket 1 perplexity 299.86
+    eval: bucket 2 perplexity 294.84
+    eval: bucket 3 perplexity 296.46
+  global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
+    eval: bucket 0 perplexity 860.60
+    eval: bucket 1 perplexity 910.16
+    eval: bucket 2 perplexity 909.24
+    eval: bucket 3 perplexity 786.04
+  global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
+    eval: bucket 0 perplexity 152.13
+    eval: bucket 1 perplexity 234.41
+    eval: bucket 2 perplexity 249.66
+    eval: bucket 3 perplexity 285.95
+  ...
+  global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
+    eval: bucket 0 perplexity 78.45
+    eval: bucket 1 perplexity 108.40
+    eval: bucket 2 perplexity 137.83
+    eval: bucket 3 perplexity 173.53
+  global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
+    eval: bucket 0 perplexity 78.37
+    eval: bucket 1 perplexity 119.72
+    eval: bucket 2 perplexity 169.11
+    eval: bucket 3 perplexity 202.89
+  global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
+    eval: bucket 0 perplexity 76.52
+    eval: bucket 1 perplexity 125.97
+    eval: bucket 2 perplexity 150.13
+    eval: bucket 3 perplexity 181.07
   ...
 
 
-After training the model, you can play with the
+After training the model for 350000 steps, you can play with the translation by switch
+``train()`` to ``decode()``. You type in a English sentence, the program will outputs
+a French sentence.
+
+
+.. code-block:: text
+
+  Reading model parameters from wmt/translate.ckpt-XXX
+  > hello
+  ....
 
 
 
@@ -1612,7 +1687,7 @@ are decoder inputs shifted by one.
   target_weights = ????                                         <-- O
 
 
-Special vocabulary symbols, punctuation and digits
+Special vocabulary symbols, punctuations and digits
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The special vocabulary symbols in this example are:
@@ -1638,28 +1713,34 @@ The special vocabulary symbols in this example are:
   _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
 
 
-
-
 For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
-should be consistent, if ``True`` all digits will be replaced by ``0``. Like
-``123`` to ``000```, `9` to `0` and `19762` to `00000`, then `0`, `00`, `000`
-will be the words in the vocabulary. Otherwise, if ``False``, different digits
+must be consistent, if ``True`` all digits will be replaced by ``0``. Like
+``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
+`0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
+Otherwise, if ``False``, different digits
 will be seem in the vocabulary, then the vocabulary size will be very big.
-The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``,
-see ``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``.
+The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
+(see ``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``)
 
 For word split, the regular expression is
 ``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use
 ``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
-``tl.files.basic_tokenizer()`` which the default tokenizer of
+``tl.files.basic_tokenizer()`` which is the default tokenizer of
 ``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``.
 
 
 All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
 of both English and French.
 
+
+
+Sampled softmax
+^^^^^^^^^^^^^^^
+
+
 Dataset iteration
 ^^^^^^^^^^^^^^^^^
+
 
 
 
@@ -1668,6 +1749,17 @@ Loss and update expressions
 
 What Next?
 -----------
+
+
+
+
+
+
+
+
+
+
+
 
 
 
