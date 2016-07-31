@@ -1644,16 +1644,16 @@ sentence has 18 tokens, then they will be fit into <code class="docutils literal
 we fit it into bucket <code class="docutils literal"><span class="pre">(5,</span> <span class="pre">10)</span></code>.
 The training data of encoder inputs representing <code class="docutils literal"><span class="pre">[PAD</span> <span class="pre">PAD</span> <span class="pre">&quot;.&quot;</span> <span class="pre">&quot;go&quot;</span> <span class="pre">&quot;I&quot;]</span></code>
 and decoder inputs <code class="docutils literal"><span class="pre">[GO</span> <span class="pre">&quot;Je&quot;</span> <span class="pre">&quot;vais&quot;</span> <span class="pre">&quot;.&quot;</span> <span class="pre">EOS</span> <span class="pre">PAD</span> <span class="pre">PAD</span> <span class="pre">PAD</span> <span class="pre">PAD</span> <span class="pre">PAD]</span></code>. The targets
-are decoder inputs shifted by one. The target weights are the mask of
-<code class="docutils literal"><span class="pre">decoder_inputs</span></code> telling which words are not <code class="docutils literal"><span class="pre">_GO</span></code> and <code class="docutils literal"><span class="pre">_PAD</span></code>.</p>
+are decoder inputs shifted by one. The <code class="docutils literal"><span class="pre">target_weights</span></code> is the mask of
+<code class="docutils literal"><span class="pre">targets</span></code>.</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>bucket = (I, O) = (5, 10)
-encoder_inputs = [PAD PAD &quot;.&quot; &quot;go&quot; &quot;I&quot;]                       &lt;-- 5 * batch_size
-decoder_inputs = [GO &quot;Je&quot; &quot;vais&quot; &quot;.&quot; EOS PAD PAD PAD PAD PAD] &lt;-- 10 * batch_size
-target_weights = [    1     1     1   1   0 0 0 0 0 0 0]      &lt;-- 10 * batch_size
-targets        = [&quot;Je&quot; &quot;vais&quot; &quot;.&quot; EOS PAD PAD PAD PAD PAD]    &lt;-- 9 * batch_size
+encoder_inputs = [PAD PAD &quot;.&quot; &quot;go&quot; &quot;I&quot;]                       &lt;-- 5  x batch_size
+decoder_inputs = [GO &quot;Je&quot; &quot;vais&quot; &quot;.&quot; EOS PAD PAD PAD PAD PAD] &lt;-- 10 x batch_size
+target_weights = [1   1     1     1   0 0 0 0 0 0 0]          &lt;-- 10 x batch_size
+targets        = [&quot;Je&quot; &quot;vais&quot; &quot;.&quot; EOS PAD PAD PAD PAD PAD]    &lt;-- 9  x batch_size
 </pre></div>
 </div>
-<p>In this script, each sentence are represented by a row, so assume
+<p>In this script, one sentence is represented by one row, so assume
 <code class="docutils literal"><span class="pre">batch_size</span> <span class="pre">=</span> <span class="pre">3</span></code>, <code class="docutils literal"><span class="pre">bucket</span> <span class="pre">=</span> <span class="pre">(5,</span> <span class="pre">10)</span></code> the training data will look like:</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>encoder_inputs    decoder_inputs    target_weights    targets
 0    0    0       1    1    1       1    1    1       87   71   16748
@@ -1670,6 +1670,8 @@ targets        = [&quot;Je&quot; &quot;vais&quot; &quot;.&quot; EOS PAD PAD PAD 
 where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
 </pre></div>
 </div>
+<p>During training,</p>
+<p>During prediction,</p>
 </div>
 <div class="section" id="special-vocabulary-symbols-punctuations-and-digits">
 <h4>Special vocabulary symbols, punctuations and digits<a class="headerlink" href="#special-vocabulary-symbols-punctuations-and-digits" title="Permalink to this headline">¶</a></h4>

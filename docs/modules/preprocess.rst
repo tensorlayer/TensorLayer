@@ -1,6 +1,8 @@
 :mod:`tensorlayer.preprocess`
 ============================
 
+Data preprocessing.
+
 .. automodule:: tensorlayer.preprocess
 
 .. autosummary::

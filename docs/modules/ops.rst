@@ -1,6 +1,8 @@
 :mod:`tensorlayer.ops`
 ======================
 
+Operation system.
+
 .. automodule:: tensorlayer.ops
 
 .. autosummary::

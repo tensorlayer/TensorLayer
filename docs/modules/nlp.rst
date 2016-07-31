@@ -1,6 +1,8 @@
 :mod:`tensorlayer.nlp`
 ======================
 
+Natural Language Processing and Word Representation.
+
 .. automodule:: tensorlayer.nlp
 
 .. autosummary::

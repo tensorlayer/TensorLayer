@@ -1,6 +1,8 @@
 :mod:`tensorlayer.rein`
 ==============================
 
+Reinforcement Learning.
+
 .. automodule:: tensorlayer.rein
 
 .. autosummary::

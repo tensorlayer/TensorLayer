@@ -1675,20 +1675,20 @@ Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
 we fit it into bucket ``(5, 10)``.
 The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
 and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
-are decoder inputs shifted by one. The target weights are the mask of
-``decoder_inputs`` telling which words are not ``_GO`` and ``_PAD``.
+are decoder inputs shifted by one. The ``target_weights`` is the mask of
+``targets``.
 
 
 .. code-block:: text
 
   bucket = (I, O) = (5, 10)
-  encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5 * batch_size
-  decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 * batch_size
-  target_weights = [    1     1     1   1   0 0 0 0 0 0 0]      <-- 10 * batch_size
-  targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9 * batch_size
+  encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5  x batch_size
+  decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 x batch_size
+  target_weights = [1   1     1     1   0 0 0 0 0 0 0]          <-- 10 x batch_size
+  targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
 
 
-In this script, each sentence are represented by a row, so assume
+In this script, one sentence is represented by one row, so assume
 ``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
 
 .. code-block:: text
@@ -1706,6 +1706,11 @@ In this script, each sentence are represented by a row, so assume
                     0    0    0       0    0    0
 
   where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
+
+During training,
+
+
+During prediction,
 
 
 Special vocabulary symbols, punctuations and digits

@@ -1,6 +1,9 @@
 :mod:`tensorlayer.iterate`
 ==========================
 
+Data iteration.
+
+
 .. automodule:: tensorlayer.iterate
 
 .. autosummary::
