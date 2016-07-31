@@ -1720,13 +1720,13 @@ must be consistent, if ``True`` all digits will be replaced by ``0``. Like
 Otherwise, if ``False``, different digits
 will be seem in the vocabulary, then the vocabulary size will be very big.
 The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
-(see ``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``)
+(see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
 
 For word split, the regular expression is
 ``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use
 ``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
-``tl.files.basic_tokenizer()`` which is the default tokenizer of
-``tl.files.create_vocabulary()`` and ``tl.files.data_to_token_ids()``.
+``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
+``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
 
 
 All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies

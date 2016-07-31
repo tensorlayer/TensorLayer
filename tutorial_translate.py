@@ -132,10 +132,10 @@ def main_train():
     en_vocab_path = os.path.join(data_dir, "vocab%d.en" % en_vocab_size)
     print("Vocabulary of French : %s" % fr_vocab_path)    # wmt/vocab40000.fr
     print("Vocabulary of English : %s" % en_vocab_path)   # wmt/vocab40000.en
-    tl.files.create_vocabulary(fr_vocab_path, train_path + ".fr",
+    tl.nlp.create_vocabulary(fr_vocab_path, train_path + ".fr",
                 fr_vocab_size, tokenizer=None, normalize_digits=normalize_digits,
                 _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
-    tl.files.create_vocabulary(en_vocab_path, train_path + ".en",
+    tl.nlp.create_vocabulary(en_vocab_path, train_path + ".en",
                 en_vocab_size, tokenizer=None, normalize_digits=normalize_digits,
                 _DIGIT_RE=_DIGIT_RE, _START_VOCAB=_START_VOCAB)
 
@@ -148,10 +148,10 @@ def main_train():
     en_train_ids_path = train_path + (".ids%d.en" % en_vocab_size)
     print("Tokenized Training data of French : %s" % fr_train_ids_path)    # wmt/giga-fren.release2.ids40000.fr
     print("Tokenized Training data of English : %s" % en_train_ids_path)   # wmt/giga-fren.release2.ids40000.fr
-    tl.files.data_to_token_ids(train_path + ".fr", fr_train_ids_path, fr_vocab_path,
+    tl.nlp.data_to_token_ids(train_path + ".fr", fr_train_ids_path, fr_vocab_path,
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
-    tl.files.data_to_token_ids(train_path + ".en", en_train_ids_path, en_vocab_path,
+    tl.nlp.data_to_token_ids(train_path + ".en", en_train_ids_path, en_vocab_path,
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
@@ -160,7 +160,7 @@ def main_train():
     en_dev_ids_path = dev_path + (".ids%d.en" % en_vocab_size)
     print("Tokenized Testing data of French : %s" % fr_dev_ids_path)    # wmt/newstest2013.ids40000.fr
     print("Tokenized Testing data of English : %s" % en_dev_ids_path)   # wmt/newstest2013.ids40000.en
-    tl.files.data_to_token_ids(dev_path + ".fr", fr_dev_ids_path, fr_vocab_path,
+    tl.nlp.data_to_token_ids(dev_path + ".fr", fr_dev_ids_path, fr_vocab_path,
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
     tl.files.data_to_token_ids(dev_path + ".en", en_dev_ids_path, en_vocab_path,
@@ -168,7 +168,7 @@ def main_train():
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
     ## You can get the word_to_id dictionary and id_to_word list as follow.
-    # vocab, rev_vocab = tl.files.initialize_vocabulary(en_vocab_path)
+    # vocab, rev_vocab = tl.nlp.initialize_vocabulary(en_vocab_path)
     # print(vocab)
     # {b'cat': 1, b'dog': 0, b'bird': 2}
     # print(rev_vocab)
@@ -226,14 +226,14 @@ def main_train():
     if plot_data:
         # Visualize the development (testing) data
         print('dev data:', buckets[0], dev_set[0][0])    # (5, 10), [[13388, 4, 949], [23113, 8, 910, 2]]
-        vocab_en, rev_vocab_en = tl.files.initialize_vocabulary(en_vocab_path)
-        context = tl.files.word_ids_to_words(dev_set[0][0][0], rev_vocab_en)
-        word_ids = tl.files.words_to_word_ids(context, vocab_en)
+        vocab_en, rev_vocab_en = tl.nlp.initialize_vocabulary(en_vocab_path)
+        context = tl.nlp.word_ids_to_words(dev_set[0][0][0], rev_vocab_en)
+        word_ids = tl.nlp.words_to_word_ids(context, vocab_en)
         print('en word_ids:', word_ids) # [13388, 4, 949]
         print('en context:', context)   # [b'Preventing', b'the', b'disease']
-        vocab_fr, rev_vocab_fr = tl.files.initialize_vocabulary(fr_vocab_path)
-        context = tl.files.word_ids_to_words(dev_set[0][0][1], rev_vocab_fr)
-        word_ids = tl.files.words_to_word_ids(context, vocab_fr)
+        vocab_fr, rev_vocab_fr = tl.nlp.initialize_vocabulary(fr_vocab_path)
+        context = tl.nlp.word_ids_to_words(dev_set[0][0][1], rev_vocab_fr)
+        word_ids = tl.nlp.words_to_word_ids(context, vocab_fr)
         print('fr word_ids:', word_ids) # [23113, 8, 910, 2]
         print('fr context:', context)   # [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
         print()
@@ -243,12 +243,12 @@ def main_train():
     if plot_data:
         # Visualize the training data
         print('train data:', buckets[0], train_set[0][0])   # (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
-        context = tl.files.word_ids_to_words(train_set[0][0][0], rev_vocab_en)
-        word_ids = tl.files.words_to_word_ids(context, vocab_en)
+        context = tl.nlp.word_ids_to_words(train_set[0][0][0], rev_vocab_en)
+        word_ids = tl.nlp.words_to_word_ids(context, vocab_en)
         print('en word_ids:', word_ids) # [1368, 3344]
         print('en context:', context)   # [b'Site', b'map']
-        context = tl.files.word_ids_to_words(train_set[0][0][1], rev_vocab_fr)
-        word_ids = tl.files.words_to_word_ids(context, vocab_fr)
+        context = tl.nlp.word_ids_to_words(train_set[0][0][1], rev_vocab_fr)
+        word_ids = tl.nlp.words_to_word_ids(context, vocab_fr)
         print('fr word_ids:', word_ids) # [1089, 14, 261, 2]
         print('fr context:', context)   # [b'Plan', b'du', b'site', b'_EOS']
         print()

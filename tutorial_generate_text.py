@@ -119,18 +119,6 @@ def customized_read_words(input_fpath):#, dictionary):
     # Split each word
     return words.split()
 
-def customized_word2ids(words, dictionary, unk_key = _UNK):
-    """Convert from words into indices of the specified dictionary.
-    Unknown words = unk_key.
-    """
-    word_ids = []
-    for word in words:
-        if dictionary.get(word) is not None:
-            word_ids.append(dictionary[word])
-        else:
-            word_ids.append(dictionary[unk_key])
-    return word_ids
-
 def main_how_to_use_embedding_layer():
     """How to use Embedding layer, and how to convert IDs to vector,
     IDs to words, etc.
@@ -175,7 +163,7 @@ def main_how_to_use_embedding_layer():
     print('word_id:', word_id)
 
     words = [b'i', b'am', b'tensor', b'layer']
-    word_ids = tl.nlp.words_to_word_ids(words, dictionary, unk_key = _UNK)
+    word_ids = tl.nlp.words_to_word_ids(words, dictionary, _UNK)
     context = tl.nlp.word_ids_to_words(word_ids, reverse_dictionary)
     print('word_ids:', word_ids)
     print('context:', context)
@@ -228,7 +216,7 @@ def main_lstm_generate_text():
         ## Build the data and dictionaries from word to id and id to word.
         data, count, dictionary, reverse_dictionary = \
                     tl.nlp.build_words_dataset(words, vocab_size, True, _UNK)
-        data = customized_word2ids(words, dictionary, unk_key = _UNK)
+        # data = tl.nlp.words_to_word_ids(words, dictionary, unk_key = _UNK)
         data = np.asarray(data)
         del words   # save memory
 

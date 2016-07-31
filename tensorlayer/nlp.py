@@ -400,7 +400,6 @@ def words_to_word_ids(data, word_to_id, unk_key = 'UNK'):
     #     return [word_to_id[str(word)] for word in data]
     # else:
 
-
     word_ids = []
     for word in data:
         if word_to_id.get(word) is not None:
