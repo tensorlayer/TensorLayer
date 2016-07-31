@@ -281,7 +281,7 @@ def main_train():
         target_weights.append(tf.placeholder(tf.float32, shape=[None],
                                                 name="weight{0}".format(i)))
 
-    # Our targets are decoder inputs shifted by one (remove the GO symbol)
+    # Our targets are decoder inputs shifted by one (DH: remove the GO symbol)
     targets = [decoder_inputs[i + 1]
                for i in xrange(len(decoder_inputs) - 1)]
 
