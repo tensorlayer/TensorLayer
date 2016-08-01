@@ -1559,9 +1559,9 @@ a French sentence.
 
 .. code-block:: text
 
-  Reading model parameters from wmt/translate.ckpt-XXX
-  > hello
-  ....
+  Reading model parameters from wmt/translate.ckpt-340000
+  >  Who is the president of the United States?
+  Qui est le président des États-Unis ?
 
 
 

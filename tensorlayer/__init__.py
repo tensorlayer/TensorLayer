@@ -13,7 +13,7 @@ except ImportError:
 from . import activation
 from . import cost
 from . import files
-from . import init
+# from . import init
 from . import iterate
 from . import layers
 from . import ops

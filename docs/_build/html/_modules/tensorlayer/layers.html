@@ -95,7 +95,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules/init.html"><code class="docutils literal"><span class="pre">tensorlayer.init</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules/ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
 </ul>
@@ -150,7 +149,7 @@
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">init</span>
+<span class="c1"># from . import init</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">visualize</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">files</span>
@@ -163,7 +162,7 @@
 <span class="c1">#     &quot;DenseLayer&quot;,</span>
 <span class="c1"># ]</span>
 
-<span class="c1">## Dynamically creat variable for keep prob</span>
+<span class="c1">## Dynamically creat variables for keep prob</span>
 <span class="c1"># set_keep = locals()</span>
 <span class="n">set_keep</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>
 <span class="n">set_keep</span><span class="p">[</span><span class="s1">&#39;_layers_name_list&#39;</span><span class="p">]</span> <span class="o">=</span><span class="p">[]</span>

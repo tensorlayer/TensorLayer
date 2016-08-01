@@ -56,7 +56,6 @@ method, this part of the documentation is for you.
   modules/visualize
   modules/files
   modules/utils
-  modules/init
   modules/preprocess
   modules/ops
 

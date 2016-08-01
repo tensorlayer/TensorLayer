@@ -5,7 +5,7 @@
 
 import tensorflow as tf
 import time
-from . import init
+# from . import init
 from . import visualize
 from . import utils
 from . import files
@@ -18,7 +18,7 @@ import numpy as np
 #     "DenseLayer",
 # ]
 
-## Dynamically creat variable for keep prob
+## Dynamically creat variables for keep prob
 # set_keep = locals()
 set_keep = globals()
 set_keep['_layers_name_list'] =[]
