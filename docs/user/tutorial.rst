@@ -1951,8 +1951,6 @@ Finally, the reference lists and explains as follow.
 
 layers (:mod:`tensorlayer.layers`),
 
-weight initializers (:mod:`tensorlayer.init`),
-
 activation (:mod:`tensorlayer.activation`),
 
 natural language processing (:mod:`tensorlayer.nlp`),
