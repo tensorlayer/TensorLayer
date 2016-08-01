@@ -388,7 +388,7 @@ if __name__ == '__main__':
     try:
         # main_test_cnn_naive()
         main_test_cnn_advanced()
-        tl.ops.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.ops.exit_tf(sess)   # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
         tl.ops.exit_tf(sess)

@@ -564,33 +564,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
         tl.ops.exit_tf(sess)
-
-
-
-
-
-
-
-
-
-
-# act       / n_units / pre-train              / train                     / test acc
-
-# relu      / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.77  98.80
-#                     / None                   / e500 adam 1e-4 b128 d255  / 98.77
-#                                                   max-norm               /
-#                     / None                   / e500 adam 1e-4 b128 d255  / 98.58
-#                                                   max-norm out           /
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  / 98.7881      Note: relu can reach it's best performance without pre-train
-#                     / P_o instead of L2_w    / e500 adam 1e-4 b128 d255  / 98.6779
-
-# sig       / 800-800 / None                   / e500 adam 1e-4 b128 d255  / 98.6579
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  / 98.6879
-#                     / P_o instead of L2_w    / e500 adam 1e-4 b128 d255  /
-
-# resnet+relu/784-784 / None                   / e500 adam 1e-4 b128 d255  / 98.73
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  /
-
-# dropcon+relu/800-800/ None                   / e150 adam 1e-4 b128 d255  / 98.00 no more increase
-#                                                P_o instead of L2_w 0.001
-#                     / e100 adam 1e-3 b128 d5 / e500 adam 1e-4 b128 d255  /
