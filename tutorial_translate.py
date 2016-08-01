@@ -40,6 +40,9 @@ References
 tensorflow/models/rnn/translate
 https://www.tensorflow.org/versions/r0.9/tutorials/seq2seq/index.html
 
+tf.nn.seq2seq
+https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/seq2seq.py
+
 Data
 ----
 http://www.statmt.org/wmt10/

@@ -142,22 +142,18 @@ class Layer(object):
             self.name = name
             set_keep['_layers_name_list'].append(name)
 
-    @instancemethod
     def print_params(self):
         ''' Print all info of parameters in the network after initialize_all_variables()'''
         for i, p in enumerate(self.all_params):
             print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
         print("  num of params: %d" % self.count_params())
 
-
-    @instancemethod
     def print_layers(self):
         ''' Print all info of layers in the network '''
         for i, p in enumerate(self.all_layers):
             # print(vars(p))
             print("  layer %d: %s" % (i, str(p)))
 
-    @instancemethod
     def count_params(self):
         ''' Return the number of parameters in the network '''
         n_params = 0
@@ -1241,7 +1237,7 @@ class FlattenLayer(Layer):
         self.outputs = flatten_reshape(self.inputs)
         self.n_units = int(self.outputs._shape[-1])
         print("  tensorlayer:Instantiate FlattenLayer %s, %d" % (self.name, self.n_units))
-        self.all_layers = list(layer.all_layers)    
+        self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )

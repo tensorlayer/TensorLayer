@@ -1689,7 +1689,7 @@ are decoder inputs shifted by one. The ``target_weights`` is the mask of
   targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
 
 
-In this script, one sentence is represented by one row, so assume
+In this script, one sentence is represented by one column, so assume
 ``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
 
 .. code-block:: text

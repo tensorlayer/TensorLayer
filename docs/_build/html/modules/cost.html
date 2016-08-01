@@ -147,46 +147,135 @@
            <div itemprop="articleBody">
             
   <div class="section" id="tensorlayer-cost">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code><a class="headerlink" href="#tensorlayer-cost" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a><a class="headerlink" href="#tensorlayer-cost" title="Permalink to this headline">¶</a></h1>
 <p>To make TensorLayer simple, we minimize the number of cost functions as much as
 we can. So we encourage you to use TensorFlow&#8217;s function.
 For example, you can implement L1, L2 and sum regularization by
 <code class="docutils literal"><span class="pre">tf.contrib.layers.l1_regularizer</span></code>, <code class="docutils literal"><span class="pre">tf.contrib.layers.l2_regularizer</span></code> and
 <code class="docutils literal"><span class="pre">tf.contrib.layers.sum_regularizer</span></code>, see <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/index.html">TensorFlow API</a>.</p>
-<table border="1" class="longtable docutils">
+<span class="target" id="module-tensorlayer.cost"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.cross_entropy" title="tensorlayer.cost.cross_entropy"><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy</span></code></a>(output,&nbsp;target)</td>
+<td>Returns the cost function of Cross-entropy of two distributions, implement softmax internally.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mean_squared_error</span></code></td>
-<td></td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">mean_squared_error</span></code>(output,&nbsp;target)</td>
+<td>Return the cost function of Mean-squre-error of two distributions.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">li_regularizer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.li_regularizer" title="tensorlayer.cost.li_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">li_regularizer</span></code></a>(scale)</td>
+<td>li regularization removes the neurons of previous layer, &#8216;i&#8217; represents &#8216;inputs&#8217;.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">lo_regularizer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.lo_regularizer" title="tensorlayer.cost.lo_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">lo_regularizer</span></code></a>(scale)</td>
+<td>lo regularization removes the neurons of current layer, &#8216;o&#8217; represents outputs</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_regularizer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_regularizer" title="tensorlayer.cost.maxnorm_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_regularizer</span></code></a>([scale])</td>
+<td>Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_o_regularizer</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_o_regularizer" title="tensorlayer.cost.maxnorm_o_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_o_regularizer</span></code></a>(scale)</td>
+<td>Max-norm output regularization removes the neurons of current layer.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_i_regularizer</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.cost.maxnorm_i_regularizer" title="tensorlayer.cost.maxnorm_i_regularizer"><code class="xref py py-obj docutils literal"><span class="pre">maxnorm_i_regularizer</span></code></a>(scale)</td>
+<td>Max-norm input regularization removes the neurons of previous layer.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="cost-functions">
 <h2>Cost functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.cost.cross_entropy">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">cross_entropy</code><span class="sig-paren">(</span><em>output</em>, <em>target</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#cross_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.cross_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the cost function of Cross-entropy of two distributions, implement
+softmax internally.</p>
+<dl class="docutils">
+<dt>output</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+<dt>target</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensorflow variable</span><dd>A distribution with shape: [None, n_feature].</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ce</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">y_logits</span><span class="p">,</span> <span class="n">y_target_logits</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>About cross-entropy: <a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">wiki</a>.</p>
+<p>The code is borrowed from: <a class="reference external" href="https://en.wikipedia.org/wiki/Cross_entropy">here</a>.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="regularization-functions">
 <h2>Regularization functions<a class="headerlink" href="#regularization-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.cost.li_regularizer">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">li_regularizer</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#li_regularizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.li_regularizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>li regularization removes the neurons of previous layer, &#8216;i&#8217; represents &#8216;inputs&#8217;.</p>
+<p>Returns a function that can be used to apply group li regularization to weights.</p>
+<p>The implementation follows <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">TensorFlow contrib</a>.</p>
+<dl class="docutils">
+<dt>scale</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</dd>
+</dl>
+<p>A function with signature <cite>li(weights, name=None)</cite> that apply L1 regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.cost.lo_regularizer">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">lo_regularizer</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#lo_regularizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.lo_regularizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>lo regularization removes the neurons of current layer, &#8216;o&#8217; represents outputs</p>
+<p>Returns a function that can be used to apply group lo regularization to weights.</p>
+<p>The implementation follows <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">TensorFlow contrib</a>.</p>
+<dl class="docutils">
+<dt>scale</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</dd>
+</dl>
+<p>A function with signature <cite>lo(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.cost.maxnorm_regularizer">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">maxnorm_regularizer</code><span class="sig-paren">(</span><em>scale=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#maxnorm_regularizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.maxnorm_regularizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max-norm regularization returns a function that can be used
+to apply max-norm regularization to weights.
+About max-norm: <a class="reference external" href="https://en.wikipedia.org/wiki/Matrix_norm#Max_norm">wiki</a>.</p>
+<p>The implementation follows <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">TensorFlow contrib</a>.</p>
+<dl class="docutils">
+<dt>scale</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</dd>
+</dl>
+<p>A function with signature <cite>mn(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.cost.maxnorm_o_regularizer">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">maxnorm_o_regularizer</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#maxnorm_o_regularizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.maxnorm_o_regularizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max-norm output regularization removes the neurons of current layer.</p>
+<p>Returns a function that can be used to apply max-norm regularization to each column of weight matrix.</p>
+<p>The implementation follows <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">TensorFlow contrib</a>.</p>
+<dl class="docutils">
+<dt>scale</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</dd>
+</dl>
+<p>A function with signature <cite>mn_o(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.cost.maxnorm_i_regularizer">
+<code class="descclassname">tensorlayer.cost.</code><code class="descname">maxnorm_i_regularizer</code><span class="sig-paren">(</span><em>scale</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/cost.html#maxnorm_i_regularizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.cost.maxnorm_i_regularizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max-norm input regularization removes the neurons of previous layer.</p>
+<p>Returns a function that can be used to apply max-norm regularization to each row of weight matrix.</p>
+<p>The implementation follows <a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py">TensorFlow contrib</a>.</p>
+<dl class="docutils">
+<dt>scale</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>A scalar multiplier <cite>Tensor</cite>. 0.0 disables the regularizer.</dd>
+</dl>
+<p>A function with signature <cite>mn_i(weights, name=None)</cite> that apply Lo regularization.</p>
+<p>ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.</p>
+</dd></dl>
+
 </div>
 </div>
 

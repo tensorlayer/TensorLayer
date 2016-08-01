@@ -146,24 +146,96 @@
            <div itemprop="articleBody">
             
   <div class="section" id="tensorlayer-preprocess">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.preprocess</span></code><a class="headerlink" href="#tensorlayer-preprocess" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-tensorlayer.preprocess" title="tensorlayer.preprocess"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a><a class="headerlink" href="#tensorlayer-preprocess" title="Permalink to this headline">¶</a></h1>
 <p>Data preprocessing, more Tensor functions about image, signal processing can be found in <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/index.html">TensorFlow API</a></p>
-<table border="1" class="longtable docutils">
+<span class="target" id="module-tensorlayer.preprocess"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">distorted_images</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.preprocess.distorted_images" title="tensorlayer.preprocess.distorted_images"><code class="xref py py-obj docutils literal"><span class="pre">distorted_images</span></code></a>([images,&nbsp;height,&nbsp;width])</td>
+<td>Distort images for generating more training data.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">crop_central_whiten_images</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.preprocess.crop_central_whiten_images" title="tensorlayer.preprocess.crop_central_whiten_images"><code class="xref py py-obj docutils literal"><span class="pre">crop_central_whiten_images</span></code></a>([images,&nbsp;height,&nbsp;...])</td>
+<td>Crop the central of image, and normailize it for test data.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="images">
 <h2>Images<a class="headerlink" href="#images" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tensorlayer.preprocess.distorted_images">
+<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">distorted_images</code><span class="sig-paren">(</span><em>images=None</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#distorted_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.distorted_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distort images for generating more training data.</p>
+<p>They are cropped to height * width pixels randomly.</p>
+<p>They are approximately whitened to make the model insensitive to dynamic range.</p>
+<p>Randomly flip the image from left to right.</p>
+<p>Randomly distort the image brightness.</p>
+<p>Randomly distort the image contrast.</p>
+<p>Whiten (Normalize) the images.</p>
+<dl class="docutils">
+<dt>images</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">4D Tensor</span><dd>The tensor or placeholder of images</dd>
+<dt>height</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The height for random crop.</dd>
+<dt>width: int</dt>
+<dd>The width for random crop.</dd>
+</dl>
+<dl class="docutils">
+<dt>result</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tuple of Tensor</span><dd>(Tensor for distorted images, Tensor for while loop index)</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_cifar10_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">plotable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">InteractiveSession</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distorted_images_op</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">distorted_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">initialize_all_variables</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">batch_size</span><span class="p">,:,:,:]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distorted_images</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">distorted_images_op</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">images2d</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">,:,:,:],</span> <span class="n">second</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cifar10&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">20212</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">images2d</span><span class="p">(</span><span class="n">distorted_images</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">10</span><span class="p">,:,:,:],</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;distorted_images&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">23012</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first image in &#8216;distorted_images&#8217; should be removed.</p>
+<p><a class="reference external" href="https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py">tensorflow.models.image.cifar10.cifar10_input</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tensorlayer.preprocess.crop_central_whiten_images">
+<code class="descclassname">tensorlayer.preprocess.</code><code class="descname">crop_central_whiten_images</code><span class="sig-paren">(</span><em>images=None</em>, <em>height=24</em>, <em>width=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/preprocess.html#crop_central_whiten_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.preprocess.crop_central_whiten_images" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crop the central of image, and normailize it for test data.</p>
+<p>They are cropped to central of height * width pixels.</p>
+<p>Whiten (Normalize) the images.</p>
+<dl class="docutils">
+<dt>images</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">4D Tensor</span><dd>The tensor or placeholder of images</dd>
+<dt>height</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The height for central crop.</dd>
+<dt>width: int</dt>
+<dd>The width for central crop.</dd>
+</dl>
+<dl class="docutils">
+<dt>result</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tuple Tensor</span><dd>(Tensor for distorted images, Tensor for while loop index)</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_cifar10_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">plotable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sess</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">InteractiveSession</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central_images_op</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">crop_central_whiten_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">initialize_all_variables</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">batch_size</span><span class="p">,:,:,:]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">central_images</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">central_images_op</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">images2d</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9</span><span class="p">,:,:,:],</span> <span class="n">second</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;cifar10&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">20212</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">visualize</span><span class="o">.</span><span class="n">images2d</span><span class="p">(</span><span class="n">central_images</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">10</span><span class="p">,:,:,:],</span> <span class="n">second</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">saveable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;central_images&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fig_idx</span><span class="o">=</span><span class="mi">23012</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first image in &#8216;central_images&#8217; should be removed.</p>
+<p>tensorflow.models.image.cifar10.cifar10_input</p>
+</dd></dl>
+
 </div>
 </div>
 
