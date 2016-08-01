@@ -31,9 +31,9 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 -
 
-####🇨🇳为了促进华人开发者的交流速度，我们建立了微信群及多种交流渠道，您若对人工智能非常感兴趣可把微信号发送到 haodong_cs@163.com 申请加入。
+####🇨🇳为了促进华人开发者的交流速度，我们建立了多种交流渠道，您若对人工智能非常感兴趣可把微信号发送到 haodong_cs@163.com 申请加入。
 
-####🇬🇧If you are from Imperial College or other London Univeristies, we would like to discuss face to face. 
+####🇬🇧If you are in London, we can discuss face to face.
 
 ####🇹🇭เพื่อความสะดวกในการอภิปรายของประสิทธิภาพของนักพัฒนาไทยที่เรากำลังสร้างแพลตฟอร์มการสื่อสาร.
 
@@ -99,7 +99,7 @@ network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='rel
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
 network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-network = tl.layers.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
 # Start training
 ...
 ```
@@ -149,7 +149,7 @@ network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='rel
 recon_layer2 = tl.layers.ReconLayer(network, x_recon=x_recon1, n_units=800, act = tf.nn.softplus, name='recon_layer2')
 # 3rd layer
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-network = tl.layers.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
 
 sess.run(tf.initialize_all_variables())
 
@@ -207,7 +207,7 @@ network = tl.layers.FlattenLayer(network, name='flatten_layer')                 
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')                              # output: (?, 3136)
 network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')           # output: (?, 256)
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
-network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')    # output: (?, 10)
+network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
 ```
 For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
@@ -245,7 +245,7 @@ network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
 network = tl.DropoutLayer(network, keep=0.5, name='drop2')
 network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
 network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+network = tl.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
 ```
 
 **<font color="grey"> Regularization of Weights: </font>**
