@@ -414,21 +414,21 @@ some optimizations.</p>
 </pre></div>
 </div>
 <p>The foundation of each neural network in TensorLayer is an
-<a class="reference internal" href="../modules/layers.html#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> instance
+<code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code> instance
 representing the input data that will subsequently be fed to the network. Note
 that the <code class="docutils literal"><span class="pre">InputLayer</span></code> is not tied to any specific data yet.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Before adding the first hidden layer, we&#8217;ll apply 20% dropout to the input
-data. This is realized via a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> instance:</p>
+data. This is realized via a <code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code> instance:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that the first constructor argument is the incoming layer, the second
 argument is the keeping probability for the activation value. Now we&#8217;ll proceed
 with the first fully-connected hidden layer of 800 units. Note
-that when stacking a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a>.</p>
+that when stacking a <code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -506,7 +506,7 @@ fine-tune.</p>
 <p>Finally, the <code class="docutils literal"><span class="pre">main_test_cnn_layer()</span></code> script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
 layer.</p>
-<p>At the begin, we add a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> with 32 filters of size 5x5 on top, follow by
+<p>At the begin, we add a <code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code> with 32 filters of size 5x5 on top, follow by
 max-pooling of factor 2 in both dimensions. And then apply a <code class="docutils literal"><span class="pre">Conv2dLayer</span></code> with
 64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
 the 4D output to 1D vector by using <code class="docutils literal"><span class="pre">FlattenLayer</span></code>, and apply a dropout with 50%
@@ -544,7 +544,8 @@ to last hidden layer. The <code class="docutils literal"><span class="pre">?</sp
                                                 <span class="c1"># output: (?, 256)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
                                                 <span class="c1"># output: (?, 256)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
                                                 <span class="c1"># output: (?, 10)</span>
 </pre></div>
 </div>
@@ -583,7 +584,7 @@ to apply max-norm on the weight matrices, we can add the following line:</p>
 </pre></div>
 </div>
 <p>Depending on the problem you are solving, you will need different loss functions,
-see <a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a> for more.</p>
+see <code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code> for more.</p>
 <p>Having the model and the loss function defined, we create update expressions
 for training the network. TensorLayer do not provide many optimizer, we used TensorFlow&#8217;s
 optimizer instead:</p>
@@ -1732,7 +1733,7 @@ of both English and French.</p>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu2&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop3&#39;</span><span class="p">)</span>
-<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="regularization-of-weights">
@@ -1842,18 +1843,17 @@ can fully understand how it work.</p>
 <p>For more information on what you can do with TensorLayer, just continue
 reading through readthedocs.
 Finally, the reference lists and explains as follow.</p>
-<p>layers (<a class="reference internal" href="../modules/layers.html#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a>),</p>
-<p>weight initializers (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.init</span></code>),</p>
-<p>activation (<a class="reference internal" href="../modules/activation.html#module-tensorlayer.activation" title="tensorlayer.activation"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.activation</span></code></a>),</p>
+<p>layers (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code>),</p>
+<p>activation (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.activation</span></code>),</p>
 <p>natural language processing (<a class="reference internal" href="../modules/nlp.html#module-tensorlayer.nlp" title="tensorlayer.nlp"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.nlp</span></code></a>),</p>
 <p>reinforcement learning (<a class="reference internal" href="../modules/rein.html#module-tensorlayer.rein" title="tensorlayer.rein"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.rein</span></code></a>),</p>
-<p>cost expressions and regularizers (<a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a>),</p>
+<p>cost expressions and regularizers (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code>),</p>
 <p>load and save files (<a class="reference internal" href="../modules/files.html#module-tensorlayer.files" title="tensorlayer.files"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.files</span></code></a>),</p>
-<p>operating system (<a class="reference internal" href="../modules/ops.html#module-tensorlayer.ops" title="tensorlayer.ops"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.ops</span></code></a>),</p>
+<p>operating system (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.ops</span></code>),</p>
 <p>helper functions (<a class="reference internal" href="../modules/utils.html#module-tensorlayer.utils" title="tensorlayer.utils"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.utils</span></code></a>),</p>
 <p>visualization (<a class="reference internal" href="../modules/visualize.html#module-tensorlayer.visualize" title="tensorlayer.visualize"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.visualize</span></code></a>),</p>
 <p>iteration functions (<a class="reference internal" href="../modules/iterate.html#module-tensorlayer.iterate" title="tensorlayer.iterate"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.iterate</span></code></a>),</p>
-<p>preprocessing functions (<a class="reference internal" href="../modules/preprocess.html#module-tensorlayer.preprocess" title="tensorlayer.preprocess"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a>),</p>
+<p>preprocessing functions (<code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.preprocess</span></code>),</p>
 </div>
 </div>
 

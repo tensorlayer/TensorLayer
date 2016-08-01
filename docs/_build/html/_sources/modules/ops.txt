@@ -1,7 +1,7 @@
 :mod:`tensorlayer.ops`
 ======================
 
-Operation system.
+Operation system, more functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 .. automodule:: tensorlayer.ops
 

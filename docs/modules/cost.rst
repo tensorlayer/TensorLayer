@@ -13,7 +13,7 @@ For example, you can implement L1, L2 and sum regularization by
 .. autosummary::
 
    cross_entropy
-   mean_squre_error
+   mean_squared_error
    li_regularizer
    lo_regularizer
    maxnorm_regularizer

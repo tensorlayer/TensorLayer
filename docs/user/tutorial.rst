@@ -387,7 +387,8 @@ to last hidden layer. The ``?`` represents arbitrary batch_size.
                                                     # output: (?, 256)
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
                                                     # output: (?, 256)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.identity, name='output_layer')
+    network = tl.layers.DenseLayer(network, n_units=10,
+                    act = tl.activation.identity, name='output_layer')
                                                     # output: (?, 10)
 
 
@@ -1804,7 +1805,7 @@ TensorLayer provides a simple way to creat you own cost function. Take a MLP bel
   network = tl.DropoutLayer(network, keep=0.5, name='drop2')
   network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
   network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-  network = tl.DenseLayer(network, n_units=10, act = identity, name='output_layer')
+  network = tl.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
 
 
 

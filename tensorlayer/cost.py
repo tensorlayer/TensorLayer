@@ -36,7 +36,7 @@ def cross_entropy(output, target):
                              tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
         return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
 
-def mean_squre_error(output, target):
+def mean_squared_error(output, target):
     """Return the cost function of Mean-squre-error of two distributions.
 
     Parameters
@@ -98,7 +98,6 @@ def li_regularizer(scale):
     return standard_ops.mul(
           my_scale,
           standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
-        #   standard_ops.reduce_mean(standard_ops.sqrt(standard_ops.reduce_mean(tf.square(weights), 1))),
           name=scope)
   return li
 
@@ -147,7 +146,6 @@ def lo_regularizer(scale):
       return standard_ops.mul(
           my_scale,
           standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
-        #   standard_ops.reduce_mean(standard_ops.sqrt(standard_ops.reduce_mean(tf.square(weights), 0))),
           name=scope)
   return lo
 
