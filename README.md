@@ -7,23 +7,23 @@
     </div>
 </div>
 -->
-<a href="http://tensorlayer.readthedocs.io">
+<a href="http://tlayer.readthedocs.io">
 <div align="center">
-	<img src="img/img_tensorlayer.png" width="30%" height="30%"/>
+	<img src="img/img_tlayer.png" width="30%" height="30%"/>
 </div>
 </a>
 
 
-# TensorLayer: Deep learning and Reinforcement learning library for TensorFlow.
+# TLayer: Deep learning and Reinforcement learning library for Researcher and Engineer.
 
-TensorLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
+TLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
 
-TensorLayer features include:
+TLayer features include:
 
 - Fast prototyping through highly modular built-in neural network layers, pre-train metrices, regularizers, optimizers, cost functions...
 - Implemented by straightforward code, easy to modify and extend by yourself...
-- Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for machine learning researches...
+- Other wraping libraries for TensorFlow are easy to merged into TLayer, suitable for machine learning researches...
 - Many official examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
 - The running speed would not decrease compare with pure TensorFlow codes...
 
@@ -37,7 +37,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 ####🇹🇭เพื่อความสะดวกในการอภิปรายของประสิทธิภาพของนักพัฒนาไทยที่เรากำลังสร้างแพลตฟอร์มการสื่อสาร.
 
-####🌍You can join our TensorLayer Group on Facebook.
+####🌍You can join our TLayer Group on Facebook.
 -
 
 # Table of Contents
@@ -46,15 +46,15 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 0. [Easy to Modify](#Easytomodify)
 0. [Installation](#Installation)
 0. [Ways to Contribute](#Waystocontribute)
-0. [Online Documentation](http://tensorlayer.readthedocs.io/en/latest/)
-0. [Download Documentation](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
+0. [Online Documentation](http://tlayer.readthedocs.io/en/latest/)
+0. [Download Documentation](https://media.readthedocs.org/pdf/tlayer/latest/tlayer.pdf)
 
 --
 # Library Structure
 
 ```
 <folder>
-├── tensorlayer  		<--- library source code
+├── tlayer  		    <--- library source code
 │
 ├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
 ├── docs 				<--- readthedocs folder
@@ -66,7 +66,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ```
 --
 # Overview
-More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file then read it locally.
+More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[Read the Docs](http://tlayer.readthedocs.io/en/latest/)*, you can also download the docs file then read it locally.
 
 0. [Fully Connected Network](#)
 0. [Convolutional Neural Network](#)
@@ -75,7 +75,7 @@ More examples about Deep Learning, Reinforcement Learning and Nature Language Pr
 0. [Cost Function](#)
 
 ### *Fully Connected Network*
-TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
+TLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
 
 **<font color="grey"> Placeholder: </font>**
 
@@ -84,7 +84,7 @@ All placeholder and variables can be initialized by the same way with Tensorflow
 ```python
 # For MNIST example, 28x28 images have 784 pixels, i.e, 784 inputs.
 import tensorflow as tf
-import tensorlayer as tl
+import tlayer as tl
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 ```
@@ -209,14 +209,14 @@ network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='rel
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')                              # output: (?, 256)
 network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')    # output: (?, 10)
 ```
-For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[Read the Docs](http://tlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Recurrent Neural Network*
 
 **<font color="grey"> LSTM: </font>**
 
-For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[Read the Docs](http://tlayer.readthedocs.io/en/latest/)*.
 
 
 ### *Reinforcement Learning*
@@ -236,7 +236,7 @@ network = tl.layers.DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='
 
 ### *Cost Function*
 
-TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
+TLayer provides a simple way to creat you own cost function. Take a MLP below for example.
 
 ```python
 network = tl.InputLayer(x, name='input_layer')
@@ -272,7 +272,7 @@ cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y,
 cost = cross_entropy
 cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
 ```
-In addition, all TensorFlow's regularizers like **<font color="grey">tf.contrib.layers.l2_regularizer</font>** can be used with TensorLayer.
+In addition, all TensorFlow's regularizers like **<font color="grey">tf.contrib.layers.l2_regularizer</font>** can be used with TLayer.
 
 **<font color="grey"> Regularization of Activation Outputs: </font>**
 
@@ -287,7 +287,7 @@ network.print_layers()
 >> layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
 >> layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
 ```
-For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
+For more powerful functions, please go to *[Read the Docs](http://tlayer.readthedocs.io/en/latest/)*.
 
 # Easy to Modify
 **<font color="grey"> Modifying Pre-train Behaviour: </font>**
@@ -305,7 +305,7 @@ p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
 KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
 ```
 
-For this reason, TensorLayer provides a simple way to modify or design your own pre-train metrice. For Autoencoder, TensorLayer uses **ReconLayer.*__*init__()** to define the reconstruction layer and cost function, to define your own cost function, just simply modify the **self.cost** in **ReconLayer.*__*init__()**. To creat your own cost expression please read *[Tensorflow Math](https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html)*. By default, **ReconLayer** only updates the weights and biases of previous 1 layer by using **self.train_params = self.all _params[-4:]**, where the 4 parameters are [W_encoder, b_encoder, W_decoder, b_decoder]. If you want to update the parameters of previous 2 layers, simply modify **[-4:]** to **[-6:]**.
+For this reason, TLayer provides a simple way to modify or design your own pre-train metrice. For Autoencoder, TLayer uses **ReconLayer.*__*init__()** to define the reconstruction layer and cost function, to define your own cost function, just simply modify the **self.cost** in **ReconLayer.*__*init__()**. To creat your own cost expression please read *[Tensorflow Math](https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html)*. By default, **ReconLayer** only updates the weights and biases of previous 1 layer by using **self.train_params = self.all _params[-4:]**, where the 4 parameters are [W_encoder, b_encoder, W_decoder, b_decoder]. If you want to update the parameters of previous 2 layers, simply modify **[-4:]** to **[-6:]**.
 
 
 ```python    
@@ -318,7 +318,7 @@ ReconLayer.__init__(...):
 
 **<font color="grey"> Adding Customized Regularizer: </font>**
 
-See tensorlayer/cost.py
+See tlayer/cost.py
 
 
 # Installation
@@ -337,9 +337,9 @@ GPU-version of Tensorflow requires CUDA and cuDNN to be installed.
 
 *[cuDNN download](https://developer.nvidia.com/cudnn)*.
 
-**<font color="grey"> TensorLayer Installation: </font>**
+**<font color="grey"> TLayer Installation: </font>**
 
-You can install TensorLayer as follow, more detail in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
+You can install TLayer as follow, more detail in [Read the Docs](http://tlayer.readthedocs.io/en/latest/user/installation.html).
 
 ```python
 python setup.py install
@@ -350,15 +350,13 @@ pip install . -e
 
 # Ways to Contribute
 
-TensorLayer begins as an internal repository at Imperial College Lodnon, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
+TLayer begins as an internal repository at Imperial College Lodnon, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
 
-Your method can be merged into TensorLayer, if you can prove your method xxx
-
-Test script with detailed descriptions is required
+Your method can be merged into TLayer, if you can prove it is better than the existing methods. Test script with detailed descriptions is required.
 
 
 # Online Documentation
-The documentation is placed in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/).
+The documentation is placed in [Read the Docs](http://tlayer.readthedocs.io/en/latest/).
 
 # Download Documentation
-Alternatively you can download the documentation via [Read the Docs](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) as well.
+Alternatively you can download the documentation via [Read the Docs](https://media.readthedocs.org/pdf/tlayer/latest/tlayer.pdf) as well.

@@ -7,6 +7,7 @@ import os
 import numpy as np
 import sys
 from . import visualize
+from . import nlp
 import collections
 from six.moves import xrange
 import six
@@ -335,14 +336,14 @@ def load_ptb_dataset():
     valid_path = os.path.join(data_path, "ptb.valid.txt")
     test_path = os.path.join(data_path, "ptb.test.txt")
 
-    word_to_id = build_vocab(read_words(train_path))
+    word_to_id = nlp.build_vocab(nlp.read_words(train_path))
 
-    train_data = words_to_word_ids(read_words(train_path), word_to_id)
-    valid_data = words_to_word_ids(read_words(valid_path), word_to_id)
-    test_data = words_to_word_ids(read_words(test_path), word_to_id)
+    train_data = nlp.words_to_word_ids(nlp.read_words(train_path), word_to_id)
+    valid_data = nlp.words_to_word_ids(nlp.read_words(valid_path), word_to_id)
+    test_data = nlp.words_to_word_ids(nlp.read_words(test_path), word_to_id)
     vocabulary = len(word_to_id)
 
-    # print(read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
+    # print(nlp.read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
     # print(train_data)                 # ...  214,         5,    23,    1,       2]
     # print(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
     # print(vocabulary)                 # 10000
@@ -498,7 +499,7 @@ def load_nietzsche_dataset():
     if not os.path.exists("nietzsche.txt"):
         download("nietzsche.txt")
 
-    # return read_words("nietzsche.txt", replace = ['', ''])
+    # return nlp.read_words("nietzsche.txt", replace = ['', ''])
     # with tf.gfile.GFile("nietzsche.txt", "r") as f:
     #     return f.read()
     with open("nietzsche.txt", "r") as f:
@@ -614,7 +615,7 @@ def save_npz(save_dict={}, name='model.npz'):
     ... Loading param3, (800,)
     ... Loading param4, (800, 10)
     ... Loading param5, (10,)
-    >>> put parameters into a TensorLayer network, please see assign_params()
+    >>> put parameters into a TLayer network, please see assign_params()
 
     References
     ----------
@@ -658,7 +659,7 @@ def load_npz(path='', name='model.npz'):
     return params
 
 def assign_params(sess, params, network):
-    """Assign the given parameters to the TensorLayer network.
+    """Assign the given parameters to the TLayer network.
 
     Parameters
     ----------

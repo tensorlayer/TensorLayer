@@ -1,4 +1,4 @@
- # Copyright 2016 TensorLayer. All Rights Reserved.
+ # Copyright 2016 TLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ tensorflow (0.9.0)
 """
 
 import tensorflow as tf
-import tensorlayer as tl
+import tlayer as tl
 import numpy as np
 import time
 import re
@@ -119,7 +119,7 @@ def customized_read_words(input_fpath):#, dictionary):
     # Split each word
     return words.split()
 
-def main_how_to_use_embedding_layer():
+def main_restore_embedding_layer():
     """How to use Embedding layer, and how to convert IDs to vector,
     IDs to words, etc.
     """
@@ -208,7 +208,7 @@ def main_lstm_generate_text():
     else:
         print("Load data and creat dictionaries ....")
         ## You can read any txt file by using this:
-        # words = customized_read_words(input_fpath="tensorlayer/data/trump_twitter.txt")
+        # words = customized_read_words(input_fpath="tlayer/data/trump_twitter.txt")
         ## Alternatively, you can use the Nietzsche dataset as follow:
         words = tl.files.load_nietzsche_dataset()
         words = basic_clean_str(words)
@@ -446,13 +446,11 @@ def main_lstm_generate_text():
                 'dictionary': dictionary, 'reverse_dictionary':
                 reverse_dictionary}, name=model_file_name+'.npy')
 
-
-
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    ## How to use a pretrained embedding matrix.
-    # main_how_to_use_embedding_layer()
-    ## How to generate text from a given context.
+    """Restore a pretrained embedding matrix."""
+    # main_restore_embedding_layer()
+    """How to generate text from a given context."""
     main_lstm_generate_text()
 
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.utils &mdash; TensorLayer 1.1 documentation</title>
+  <title>tlayer.utils &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
-        <link rel="next" title="tensorlayer.preprocess" href="preprocess.html"/>
-        <link rel="prev" title="tensorlayer.files" href="files.html"/> 
+        <link rel="next" title="tlayer.preprocess" href="preprocess.html"/>
+        <link rel="prev" title="tlayer.files" href="files.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -87,22 +87,22 @@
 <li class="toctree-l1"><a class="reference internal" href="../user/development.html">Development</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#evaluation-functions">Evaluation functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#class-balancing-functions">Class balancing functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#helper-functions">Helper functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -133,7 +133,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></li>
+    <li><code class="docutils literal"><span class="pre">tlayer.utils</span></code></li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -147,83 +147,33 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-tensorlayer.utils">
-<span id="tensorlayer-utils"></span><h1><a class="reference internal" href="#module-tensorlayer.utils" title="tensorlayer.utils"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.utils</span></code></a><a class="headerlink" href="#module-tensorlayer.utils" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="tlayer-utils">
+<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.utils</span></code><a class="headerlink" href="#tlayer-utils" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.utils.evaluation" title="tensorlayer.utils.evaluation"><code class="xref py py-obj docutils literal"><span class="pre">evaluation</span></code></a>([y_test,&nbsp;y_predict,&nbsp;n_classes])</td>
-<td>Input the predicted results, targets results and the number of class, return the confusion matrix, F1-score of each class, accuracy and macro F1-score.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">evaluation</span></code></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.utils.class_balancing_oversample" title="tensorlayer.utils.class_balancing_oversample"><code class="xref py py-obj docutils literal"><span class="pre">class_balancing_oversample</span></code></a>([X_train,&nbsp;...])</td>
-<td>Input the features and labels, return the features and labels after oversampling.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">class_balancing_oversample</span></code></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.utils.dict_to_one" title="tensorlayer.utils.dict_to_one"><code class="xref py py-obj docutils literal"><span class="pre">dict_to_one</span></code></a>([dp_dict])</td>
-<td>Input a dictionary, return a dictionary that all items are set to one, use for disable dropout, dropconnect layer and so on.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dict_to_one</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="evaluation-functions">
 <h2>Evaluation functions<a class="headerlink" href="#evaluation-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.utils.evaluation">
-<code class="descclassname">tensorlayer.utils.</code><code class="descname">evaluation</code><span class="sig-paren">(</span><em>y_test=None</em>, <em>y_predict=None</em>, <em>n_classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/utils.html#evaluation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.utils.evaluation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input the predicted results, targets results and
-the number of class, return the confusion matrix, F1-score of each class,
-accuracy and macro F1-score.</p>
-<dl class="docutils">
-<dt>y_test</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>target results</dd>
-<dt>y_predict</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>predicted results</dd>
-<dt>n_classes</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>number of classes</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c_mat</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">f1_macro</span> <span class="o">=</span> <span class="n">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 <div class="section" id="class-balancing-functions">
 <h2>Class balancing functions<a class="headerlink" href="#class-balancing-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.utils.class_balancing_oversample">
-<code class="descclassname">tensorlayer.utils.</code><code class="descname">class_balancing_oversample</code><span class="sig-paren">(</span><em>X_train=None</em>, <em>y_train=None</em>, <em>printable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/utils.html#class_balancing_oversample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.utils.class_balancing_oversample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input the features and labels, return the features and labels after oversampling.</p>
-<dl class="docutils">
-<dt>X_train</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>Features, each row is an example</dd>
-<dt>y_train</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>Labels</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 <div class="section" id="helper-functions">
 <h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.utils.dict_to_one">
-<code class="descclassname">tensorlayer.utils.</code><code class="descname">dict_to_one</code><span class="sig-paren">(</span><em>dp_dict={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/utils.html#dict_to_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.utils.dict_to_one" title="Permalink to this definition">¶</a></dt>
-<dd><p>Input a dictionary, return a dictionary that all items are set to one,
-use for disable dropout, dropconnect layer and so on.</p>
-<dl class="docutils">
-<dt>dp_dict</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>keeping probabilities</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 </div>
 
@@ -234,10 +184,10 @@ use for disable dropout, dropconnect layer and so on.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="preprocess.html" class="btn btn-neutral float-right" title="tensorlayer.preprocess" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="preprocess.html" class="btn btn-neutral float-right" title="tlayer.preprocess" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="files.html" class="btn btn-neutral" title="tensorlayer.files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="files.html" class="btn btn-neutral" title="tlayer.files" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -88,7 +88,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     ----------
     `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
     """
-    print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
+    print("  TLayer: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
     return sess

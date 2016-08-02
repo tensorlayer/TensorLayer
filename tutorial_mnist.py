@@ -3,8 +3,8 @@
 
 
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
+import tlayer as tl
+from tlayer.layers import set_keep
 import numpy as np
 import time
 
@@ -92,7 +92,7 @@ def main_test_layers(model='relu'):
     y = network.outputs
     y_op = tf.argmax(tf.nn.softmax(y), 1)
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    # Alternatively, you can use TensorLayer's function to compute cost:
+    # Alternatively, you can use TLayer's function to compute cost:
     # cost = tf.cost.cross_entropy(y, y_)
 
     # You can add more penalty to the cost function as follow.
@@ -102,7 +102,7 @@ def main_test_layers(model='relu'):
 
     params = network.all_params
     # train
-    n_epoch = 500
+    n_epoch = 200
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
@@ -172,7 +172,8 @@ def main_test_layers(model='relu'):
     # You can only save one parameter as follow.
     # tl.files.save_npz([network.all_params[0]] , name='model.npz')
     # Then, restore the parameters as follow.
-    # load_params = tl.utils.load_npz(path='', name='model.npz')
+    # load_params = tl.files.load_npz(path='', name='model.npz')
+    # tl.files.assign_params(sess, load_params, network)
 
     # In the end, close TensorFlow session.
     sess.close()
@@ -233,7 +234,9 @@ def main_test_denoise_AE(model='relu'):
                             batch_size=128, print_freq=10, save=True,
                             save_name='w1pre_')
     # You can also disable denoisong by setting denoise_name=None.
-    # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name=None, n_epoch=500, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+    # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
+    #                           denoise_name=None, n_epoch=500, batch_size=128,
+    #                           print_freq=10, save=True, save_name='w1pre_')
 
     # Add ops to save and restore all the variables.
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
@@ -244,7 +247,6 @@ def main_test_denoise_AE(model='relu'):
     sess.close()
 
 def main_test_stacked_denoise_AE(model='relu'):
-    # Load MNIST dataset
     X_train, y_train, X_val, y_val, X_test, y_test = \
                                 tl.files.load_mnist_dataset(shape=(-1,784))
 
@@ -322,12 +324,12 @@ def main_test_stacked_denoise_AE(model='relu'):
     network.print_params()
     print("\nPre-train Layer 1")
     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
-                            denoise_name='denoising1', n_epoch=100,
+                            denoise_name='denoising1', n_epoch=200,
                             batch_size=128, print_freq=10, save=True,
                             save_name='w1pre_')
     print("\nPre-train Layer 2")
     recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
-                            denoise_name='denoising1', n_epoch=100,
+                            denoise_name='denoising1', n_epoch=200,
                             batch_size=128, print_freq=10, save=False)
     print("\nAll Network Params after pre-train")
     network.print_params()
@@ -407,13 +409,13 @@ def main_test_stacked_denoise_AE(model='relu'):
     sess.close()
 
 def main_test_cnn_layer():
-    '''
-        Reimplementation of the tensorflow official MNIST CNN tutorials:
+    """Reimplementation of the TensorFlow official MNIST CNN tutorials:
         # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
         # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
         More TensorFlow official CNN tutorials can be found here:
+        # tutorial_cifar10.py
         # https://www.tensorflow.org/versions/master/tutorials/deep_cnn/index.html
-    '''
+    """
     X_train, y_train, X_val, y_val, X_test, y_test = \
                     tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
@@ -485,7 +487,7 @@ def main_test_cnn_layer():
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # train
-    n_epoch = 100
+    n_epoch = 200
     learning_rate = 0.0001
     print_freq = 10
 
@@ -555,12 +557,15 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
     sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.3)
     try:
+        """Dropout and Dropconnect"""
         main_test_layers(model='relu')                # model = relu, dropconnect
-        # main_test_denoise_AE(model='sigmoid')            # model = relu, sigmoid
-        # main_test_stacked_denoise_AE(model='relu')    # model = relu, sigmoid
+        """Single Denoising Autoencoder"""
+        # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
+        """Stacked Denoising Autoencoder"""
+        # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
+        """CNN"""
         # main_test_cnn_layer()
-        # tl.files.npz_to_W_pdf(path='/Users/haodong/Documents/Projects/python-workspace/tensorlayer/可视化/npz_file/', regx='w1pre_[0-9]+\.(npz)')
-        tl.ops.exit_tf(sess)                              # close sess, tensorboard and nvidia-process
+        tl.ops.exit_tf(sess)      # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
         tl.ops.exit_tf(sess)

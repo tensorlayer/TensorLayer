@@ -1,9 +1,9 @@
-:mod:`tensorlayer.visualize`
+:mod:`tlayer.visualize`
 ============================
 
 Data Visualization.
 
-.. automodule:: tensorlayer.visualize
+.. automodule:: tlayer.visualize
 
 .. autosummary::
 

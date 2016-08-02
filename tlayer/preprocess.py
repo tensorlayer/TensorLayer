@@ -3,7 +3,7 @@
 
 
 import tensorflow as tf
-import tensorlayer as tl
+import tlayer as tl
 import numpy as np
 import time
 import numbers

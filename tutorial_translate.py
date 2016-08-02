@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 
-# Copyright 2016 The TensoLayer Contributors. All Rights Reserved.
+# Copyright 2016 The TLayer Contributors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ tensorflow (0.9.0)
 """
 
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
+import tlayer as tl
+from tlayer.layers import set_keep
 import numpy as np
 import time
 import os

@@ -1,5 +1,5 @@
 """
-Deep learning and Reinforcement learning library for TensorFlow
+Deep learning and Reinforcement learning library for Researcher and Engineer
 """
 # from __future__ import absolute_import
 

@@ -32,7 +32,7 @@
   
     <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
         <link rel="next" title="Tutorial" href="tutorial.html"/>
-        <link rel="prev" title="Welcome to TensorLayer" href="../index.html"/> 
+        <link rel="prev" title="Welcome to TLayer" href="../index.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -89,7 +89,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#tensorflow-release">TensorFlow release</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#tensorlayer">TensorLayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tlayer">TLayer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#gpu-support">GPU support</a><ul>
@@ -104,17 +104,17 @@
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -161,7 +161,7 @@
             
   <div class="section" id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>TensorLayer has some prerequisites that need to be installed first, including
+<p>TLayer has some prerequisites that need to be installed first, including
 <a class="reference external" href="https://www.tensorflow.org">TensorFlow</a>, numpy and matplotlib. For GPU
 support CUDA and cuDNN are required.</p>
 <p>If you run into any trouble, please check the <a class="reference external" href="https://www.tensorflow.org/versions/master/get_started/os_setup.html">TensorFlow installation
@@ -172,7 +172,7 @@ Mac OX and Linux, or ask for help on <a class="reference external" href="mailto:
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="python-pip">
 <h3>Python + pip<a class="headerlink" href="#python-pip" title="Permalink to this headline">¶</a></h3>
-<p>TensorLayer is build on the top of Python-version TensorFlow. Please install
+<p>TLayer is build on the top of Python-version TensorFlow. Please install
 Python first.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -213,16 +213,16 @@ If you want to use GPU with Mac OX, you need to compile TensorFlow from source.<
 <p class="first admonition-title">Warning</p>
 <p class="last">For ARM processor architecture, you also need to install TensorFlow from source.</p>
 </div>
-<div class="section" id="tensorlayer">
-<h3>TensorLayer<a class="headerlink" href="#tensorlayer" title="Permalink to this headline">¶</a></h3>
-<p>Hao Dong highly recommend you to install TensorLayer as follow.</p>
+<div class="section" id="tlayer">
+<h3>TLayer<a class="headerlink" href="#tlayer" title="Permalink to this headline">¶</a></h3>
+<p>Hao Dong highly recommend you to install TLayer as follow.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">cd</span> to the root of the git tree
 pip3 install . -e
 </pre></div>
 </div>
-<p>This command will run the <code class="docutils literal"><span class="pre">setup.py</span></code> to install TensorLayer. The <code class="docutils literal"><span class="pre">-e</span></code> allows
-you to edit the scripts in tensorlayer folder, this help you to extend and modify
-TensorLayer easily.</p>
+<p>This command will run the <code class="docutils literal"><span class="pre">setup.py</span></code> to install TLayer. The <code class="docutils literal"><span class="pre">-e</span></code> allows
+you to edit the scripts in <code class="docutils literal"><span class="pre">tlayer</span></code> folder, this help you to extend and modify
+TLayer easily.</p>
 </div>
 </div>
 <div class="section" id="gpu-support">
@@ -271,7 +271,7 @@ NVIDIA after registering as a developer (it take a while):
         <a href="tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral" title="Welcome to TensorLayer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral" title="Welcome to TLayer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

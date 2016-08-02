@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.iterate &mdash; TensorLayer 1.1 documentation</title>
+  <title>tlayer.iterate &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
-        <link rel="next" title="tensorlayer.cost" href="cost.html"/>
-        <link rel="prev" title="tensorlayer.rein" href="rein.html"/> 
+        <link rel="next" title="tlayer.cost" href="cost.html"/>
+        <link rel="prev" title="tlayer.rein" href="rein.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -87,20 +87,20 @@
 <li class="toctree-l1"><a class="reference internal" href="../user/development.html">Development</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#iteration-functions">Iteration functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -131,7 +131,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></li>
+    <li><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -145,166 +145,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tensorlayer-iterate">
-<h1><a class="reference internal" href="#module-tensorlayer.iterate" title="tensorlayer.iterate"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.iterate</span></code></a><a class="headerlink" href="#tensorlayer-iterate" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="tlayer-iterate">
+<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.iterate</span></code><a class="headerlink" href="#tlayer-iterate" title="Permalink to this headline">¶</a></h1>
 <p>Data iteration.</p>
-<span class="target" id="module-tensorlayer.iterate"></span><table border="1" class="longtable docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.minibatches" title="tensorlayer.iterate.minibatches"><code class="xref py py-obj docutils literal"><span class="pre">minibatches</span></code></a>([inputs,&nbsp;targets,&nbsp;batch_size,&nbsp;...])</td>
-<td>Generate a generator that input a group of example in 2D numpy.array and their labels, return the examples and labels by the given batchsize.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">minibatches</span></code></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.iterate.seq_minibatches" title="tensorlayer.iterate.seq_minibatches"><code class="xref py py-obj docutils literal"><span class="pre">seq_minibatches</span></code></a>(inputs,&nbsp;targets,&nbsp;batch_size,&nbsp;...)</td>
-<td>Generate a generator that return a batch of sequence inputs and targets.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">seq_minibatches</span></code></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.iterate.ptb_iterator" title="tensorlayer.iterate.ptb_iterator"><code class="xref py py-obj docutils literal"><span class="pre">ptb_iterator</span></code></a>(raw_data,&nbsp;batch_size,&nbsp;num_steps)</td>
-<td>Iterates on a list of words.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">ptb_iterator</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="iteration-functions">
 <h2>Iteration functions<a class="headerlink" href="#iteration-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.iterate.minibatches">
-<code class="descclassname">tensorlayer.iterate.</code><code class="descname">minibatches</code><span class="sig-paren">(</span><em>inputs=None</em>, <em>targets=None</em>, <em>batch_size=None</em>, <em>shuffle=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#minibatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.minibatches" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a generator that input a group of example in 2D numpy.array and
-their labels, return the examples and labels by the given batchsize.</p>
-<dl class="docutils">
-<dt>inputs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last upperalpha simple" start="24">
-<li>The input features, every row is a example.</li>
-</ol>
-</dd>
-<dt>targets</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd><ol class="first last loweralpha simple" start="25">
-<li>The labels of inputs, every row is a example.</li>
-</ol>
-</dd>
-<dt>batch_size</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>The batch size.</dd>
-<dt>shuffle</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span><dd>Indicating whether to use a shuffling queue, shuffle the dataset before return.</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span>
-<span class="gp">... </span>       <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]],</span>
-<span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span>
-<span class="gp">... </span><span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span>
-<span class="gp">... </span>       <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">]],</span>
-<span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
-<span class="gp">... </span><span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">],</span>
-<span class="gp">... </span>       <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">]],</span>
-<span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]))</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="tensorlayer.iterate.seq_minibatches">
-<code class="descclassname">tensorlayer.iterate.</code><code class="descname">seq_minibatches</code><span class="sig-paren">(</span><em>inputs</em>, <em>targets</em>, <em>batch_size</em>, <em>seq_length</em>, <em>stride=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#seq_minibatches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.seq_minibatches" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a generator that return a batch of sequence inputs and targets.
-It is for the &#8220;Synced sequence input and output&#8221; as
-<a class="reference external" href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">Karpathy RNN Blog</a>
-shows.</p>
-<p>If batch_size = 100, seq_length = 5, a return input will have 500 rows (examples).</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Synced</span> <span class="n">sequence</span> <span class="nb">input</span> <span class="ow">and</span> <span class="n">output</span><span class="o">.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">seq_minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seq_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span>
-<span class="gp">... </span>       <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">]],</span>
-<span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="gp">... </span><span class="p">(</span><span class="n">array</span><span class="p">([[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">]],</span>
-<span class="gp">... </span>        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;U1&#39;</span><span class="p">),</span> <span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
-<span class="gp">...</span>
-<span class="gp">...</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Many</span> <span class="n">to</span> <span class="n">One</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">return_last</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">num_steps</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="s1">&#39;d&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">,</span><span class="s1">&#39;e&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span><span class="s1">&#39;f&#39;</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">seq_minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seq_length</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="n">return_last</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>        <span class="n">tmp_y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">y</span> <span class="o">=</span> <span class="n">tmp_y</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">[[</span><span class="s1">&#39;a&#39;</span> <span class="s1">&#39;a&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;b&#39;</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;b&#39;</span> <span class="s1">&#39;b&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;c&#39;</span> <span class="s1">&#39;c&#39;</span><span class="p">]]</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">2</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[[</span><span class="s1">&#39;c&#39;</span> <span class="s1">&#39;c&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;d&#39;</span> <span class="s1">&#39;d&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;d&#39;</span> <span class="s1">&#39;d&#39;</span><span class="p">]</span>
-<span class="gp">... </span><span class="p">[</span><span class="s1">&#39;e&#39;</span> <span class="s1">&#39;e&#39;</span><span class="p">]]</span> <span class="p">[</span><span class="mi">3</span> <span class="mi">4</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="tensorlayer.iterate.ptb_iterator">
-<code class="descclassname">tensorlayer.iterate.</code><code class="descname">ptb_iterator</code><span class="sig-paren">(</span><em>raw_data</em>, <em>batch_size</em>, <em>num_steps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/iterate.html#ptb_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.iterate.ptb_iterator" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Iterates on a list of words. Yields (Returns) the source contexts and</dt>
-<dd><p class="first">the target context by the given batch_size and num_steps (sequence_length).</p>
-<p>see <code class="docutils literal"><span class="pre">PTB</span> <span class="pre">tutorial</span></code>.</p>
-<p>e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,
-raw_data = [i for i in range(100)]</p>
-<p>In TensorFlow&#8217;s tutorial, this generates batch_size pointers into the raw
-PTB data, and allows minibatch iteration along these pointers.</p>
-<dl class="docutils">
-<dt>raw_data</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>the context in list format; note that context usually be
-represented by splitting by space, and then convert to unique
-word IDs.</dd>
-<dt>batch_size</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>the batch size.</dd>
-<dt>num_steps</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>the number of unrolls. i.e. sequence_length</dd>
-</dl>
-<p>Pairs of the batched data, each a matrix of shape [batch_size, num_steps].
-The second element of the tuple is the same data time-shifted to the
-right by one.</p>
-<p>ValueError : if batch_size or num_steps are too high.</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">train_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">ptb_iterator</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_steps</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">batch</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;</span>
-</pre></div>
-</div>
-</dd>
-<dt>&#8216;,y)</dt>
-<dd><p class="first">... [[ 0  1  2] &lt;&#8212;x                       1st subset/ iteration
-...  [10 11 12]]
-... [[ 1  2  3] &lt;&#8212;y
-...  [11 12 13]]
-...
-... [[ 3  4  5]  &lt;&#8212; 1st batch input       2nd subset/ iteration
-...  [13 14 15]] &lt;&#8212; 2nd batch input
-... [[ 4  5  6]  &lt;&#8212; 1st batch target
-...  [14 15 16]] &lt;&#8212; 2nd batch target
-...
-... [[ 6  7  8]                             3rd subset/ iteration
-...  [16 17 18]]
-... [[ 7  8  9]
-...  [17 18 19]]</p>
-<p class="last">tensorflow/models/rnn/ptb/reader.py</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 </div>
 
@@ -315,10 +177,10 @@ right by one.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="cost.html" class="btn btn-neutral float-right" title="tensorlayer.cost" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cost.html" class="btn btn-neutral float-right" title="tlayer.cost" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="rein.html" class="btn btn-neutral" title="tensorlayer.rein" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="rein.html" class="btn btn-neutral" title="tlayer.rein" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

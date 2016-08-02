@@ -3,8 +3,8 @@
 
 
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
+import tlayer as tl
+from tlayer.layers import set_keep
 import numpy as np
 import time
 

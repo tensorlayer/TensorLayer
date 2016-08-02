@@ -5,7 +5,6 @@
 
 import tensorflow as tf
 import time
-# from . import init
 from . import visualize
 from . import utils
 from . import files
@@ -197,7 +196,7 @@ class InputLayer(Layer):
             self.n_units = n_features
         else:
             self.n_units = int(inputs._shape[1])
-        print("  tensorlayer:Instantiate InputLayer %s %s" % (self.name, inputs._shape))
+        print("  TLayer:Instantiate InputLayer %s %s" % (self.name, inputs._shape))
 
         self.outputs = inputs
 
@@ -252,7 +251,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Examples
     --------
-    >>> Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    >>> Without TLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
     >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
     >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
     >>> embeddings = tf.Variable(
@@ -268,7 +267,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...               num_sampled=num_sampled, num_classes=vocabulary_size,
     ...               num_true=1))
 
-    >>> With TensorLayer : see tutorial_word2vec_basic.py
+    >>> With TLayer : see tutorial_word2vec_basic.py
     >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
     >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
     >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
@@ -315,7 +314,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = inputs
         self.n_units = embedding_size
-        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  TLayer:Instantiate Word2vecEmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -447,7 +446,7 @@ class EmbeddingInputlayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = inputs
         self.n_units = embedding_size
-        print("  tensorlayer:Instantiate EmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  TLayer:Instantiate EmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name) as vs:
             embeddings = tf.get_variable(name='embeddings',
@@ -499,7 +498,7 @@ class DenseLayer(Layer):
     ...                 name ='relu_layer'
     ...                 )
     ...
-    >>> Without TensorLayer, you can do as follow.
+    >>> Without TLayer, you can do as follow.
     >>> W = tf.Variable(
     ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
@@ -527,7 +526,7 @@ class DenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
+        print("  TLayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
@@ -616,7 +615,7 @@ class ReconLayer(DenseLayer):
         act = tf.nn.softplus,
     ):
         DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
-        print("     tensorlayer:  %s is a ReconLayer" % self.name)
+        print("     TLayer:  %s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -699,7 +698,7 @@ class ReconLayer(DenseLayer):
         # get your own pre-train method.
         #
         # ====================================================
-        print("     tensorlayer:  %s start pretrain" % self.name)
+        print("     TLayer:  %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:
             print("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
@@ -775,7 +774,7 @@ class DropoutLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
+        print("  TLayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
 
         # The name of placeholder for keep_prob is the same with the name
         # of the Layer.
@@ -864,7 +863,7 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act))
+        print("  TLayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
@@ -935,7 +934,7 @@ class Conv2dLayer(Layer):
     ...                   pool = tf.nn.max_pool,
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
     ...
-    >>> Without TensorLayer, you can initialize the parameters as follow.
+    >>> Without TLayer, you can initialize the parameters as follow.
     >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
     >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
@@ -957,7 +956,7 @@ class Conv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
+        print("  TLayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
                             (self.name, str(shape), str(strides), padding, act))
 
         with tf.variable_scope(name) as vs:
@@ -1010,7 +1009,7 @@ class PoolLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PoolLayer %s: %s, %s, %s, %s" %
+        print("  TLayer:Instantiate PoolLayer %s: %s, %s, %s, %s" %
                             (self.name, str(ksize), str(strides), padding, pool))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding)
@@ -1120,7 +1119,7 @@ class RNNLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+        print("  TLayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn))
 
         # You can get the dimension by .get_shape() or ._shape, and check the
@@ -1236,7 +1235,7 @@ class FlattenLayer(Layer):
         self.inputs = layer.outputs
         self.outputs = flatten_reshape(self.inputs)
         self.n_units = int(self.outputs._shape[-1])
-        print("  tensorlayer:Instantiate FlattenLayer %s, %d" % (self.name, self.n_units))
+        print("  TLayer:Instantiate FlattenLayer %s, %d" % (self.name, self.n_units))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -1262,10 +1261,10 @@ class ConcatLayer(Layer):
     >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
     >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
     >>> network = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
-    ...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
-    ...     tensorlayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
+    ...     TLayer:Instantiate InputLayer input_layer (?, 784)
+    ...     TLayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
+    ...     TLayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
+    ...     TLayer:Instantiate ConcatLayer concat_layer, 1100
     ...
     >>> sess.run(tf.initialize_all_variables())
     >>> network.print_params()
@@ -1290,7 +1289,7 @@ class ConcatLayer(Layer):
             self.inputs.append(l.outputs)
         self.outputs = tf.concat(1, self.inputs)
         self.n_units = int(self.outputs._shape[-1])
-        print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
+        print("  TLayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -1339,7 +1338,7 @@ class ReshapeLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        print("  tensorlayer:Instantiate ReshapeLayer %s" % (self.name))
+        print("  TLayer:Instantiate ReshapeLayer %s" % (self.name))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -1366,7 +1365,7 @@ class MaxoutLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate MaxoutLayer %s: %d" % (self.name, self.n_units))
+        print("  TLayer:Instantiate MaxoutLayer %s: %d" % (self.name, self.n_units))
         with tf.variable_scope(name) as vs:
             pass
             # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
@@ -1396,7 +1395,7 @@ class GaussianNoiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
+        print("  TLayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
         with tf.variable_scope(name) as vs:
             pass
 
@@ -1463,7 +1462,7 @@ class BidirectionalRNNLayer(Layer):
         self.inputs = layer.outputs
         self.n_units = n_hidden
 
-        print("  tensorlayer:Instantiate BidirectionalRNNLayer %s: n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, n_hidden,
+        print("  TLayer:Instantiate BidirectionalRNNLayer %s: n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape()))
 
 
@@ -1527,7 +1526,7 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
+        print("  TLayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')

@@ -1,17 +1,17 @@
-Welcome to TensorLayer
+Welcome to TLayer
 =======================================
 
 
 
-.. image:: user/my_figs/img_tensorlayer.png
+.. image:: user/my_figs/img_tlayer.png
   :scale: 25 %
   :align: center
-  :target: https://github.com/zsdonghao/tensorlayer
+  :target: https://github.com/zsdonghao/tlayer
 
-`TensorLayer <https://github.com/zsdonghao/tensorlayer>`_ is a transparent
+`TLayer <https://github.com/zsdonghao/tlayer>`_ is a transparent
 Deep Learning and Reinforcement Learning library
 built on the top of Google TensorFlow. It was designed to provide a higher-level
-API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to
+API to TensorFlow in order to speed-up experimentations. TLayer is easy to
 extended and modified, suitable for both machine learning researches and
 applications.
 
@@ -27,8 +27,8 @@ Reinforcement Learning and Natural Language Processing etc.
 User Guide
 ------------
 
-The TensorLayer user guide explains how to install TensorFlow, CUDA and cuDNN,
-how to build and train neural networks using TensorLayer, and how to contribute
+The TLayer user guide explains how to install TensorFlow, CUDA and cuDNN,
+how to build and train neural networks using TLayer, and how to contribute
 to the library as a developer.
 
 .. toctree::
@@ -67,4 +67,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _GitHub: https://github.com/zsdonghao/tlayer

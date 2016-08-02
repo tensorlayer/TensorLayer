@@ -15,9 +15,9 @@ def cross_entropy(output, target):
 
     Parameters
     ----------
-    output : tensorflow variable
+    output : Tensorflow variable
         A distribution with shape: [None, n_feature].
-    target : tensorflow variable
+    target : Tensorflow variable
         A distribution with shape: [None, n_feature].
 
     Examples

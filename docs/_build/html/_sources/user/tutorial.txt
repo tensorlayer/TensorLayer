@@ -13,14 +13,14 @@ translation.
 
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
-    will understand how TensorLayer work. After that, we recommend you to read
+    will understand how TLayer work. After that, we recommend you to read
     the codes for tutorial directly.
 
 Before we start
 ===============
 
 The tutorial assumes that you are somewhat familiar with neural networks and
-TensorFlow (the library which TensorLayer is built on top of). You can try to learn
+TensorFlow (the library which TLayer is built on top of). You can try to learn
 both at once from the `Deeplearning Tutorial`_.
 
 For a more slow-paced introduction to artificial neural networks, we recommend
@@ -29,7 +29,7 @@ al., `Neural Networks and Deep Learning`_ by Michael Nielsen.
 
 To learn more about TensorFlow, have a look at the `TensorFlow tutorial`_. You will not
 need all of it, but a basic understanding of how TensorFlow works is required to be
-able to use TensorLayer. If you're new to TensorFlow, going through that tutorial.
+able to use TLayer. If you're new to TensorFlow, going through that tutorial.
 
 
 Run the MNIST example
@@ -42,12 +42,12 @@ Run the MNIST example
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
-included in the source distribution of TensorLayer. MNIST dataset contains 60000
+included in the source distribution of TLayer. MNIST dataset contains 60000
 handwritten digits that is commonly used for training various
 image processing systems, each of digit has 28x28 pixels.
 
 We assume that you have already run through the :ref:`installation`. If you
-haven't done so already, get a copy of the source tree of TensorLayer, and navigate
+haven't done so already, get a copy of the source tree of TLayer, and navigate
 to the folder in a terminal window. Enter the folder and run the ``tutorial_mnist.py``
 example script:
 
@@ -59,7 +59,7 @@ If everything is set up correctly, you will get an output like the following:
 
 .. code-block:: text
 
-  tensorlayer: GPU MEM Fraction 0.300000
+  TLayer: GPU MEM Fraction 0.300000
   Downloading train-images-idx3-ubyte.gz
   Downloading train-labels-idx1-ubyte.gz
   Downloading t10k-images-idx3-ubyte.gz
@@ -73,13 +73,13 @@ If everything is set up correctly, you will get an output like the following:
   y_test.shape (10000,)
   X float32   y int64
 
-  tensorlayer:Instantiate InputLayer input_layer (?, 784)
-  tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-  tensorlayer:Instantiate DenseLayer relu1: 800, <function relu at 0x11281cb70>
-  tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer relu2: 800, <function relu at 0x11281cb70>
-  tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer output_layer: 10, <function identity at 0x115e099d8>
+  TLayer:Instantiate InputLayer input_layer (?, 784)
+  TLayer:Instantiate DropoutLayer drop1: keep: 0.800000
+  TLayer:Instantiate DenseLayer relu1: 800, <function relu at 0x11281cb70>
+  TLayer:Instantiate DropoutLayer drop2: keep: 0.500000
+  TLayer:Instantiate DenseLayer relu2: 800, <function relu at 0x11281cb70>
+  TLayer:Instantiate DropoutLayer drop3: keep: 0.500000
+  TLayer:Instantiate DenseLayer output_layer: 10, <function identity at 0x115e099d8>
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
   param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
@@ -145,20 +145,20 @@ up the source code.
 Preface
 -------
 
-The first thing you might notice is that besides TensorLayer, we also import numpy
+The first thing you might notice is that besides TLayer, we also import numpy
 and tensorflow:
 
 .. code-block:: python
 
   import tensorflow as tf
-  import tensorlayer as tl
-  from tensorlayer.layers import set_keep
+  import tlayer as tl
+  from tlayer.layers import set_keep
   import numpy as np
   import time
 
 
-As we know, TensorLayer is built on top of TensorFlow, it is meant as a supplement helping
-with some tasks, not as a replacement. You will always mix TensorLayer with some
+As we know, TLayer is built on top of TensorFlow, it is meant as a supplement helping
+with some tasks, not as a replacement. You will always mix TLayer with some
 vanilla TensorFlow code. The ``set_keep`` is used to access the placeholder of keeping probabilities
 when using Denoising Autoencoder.
 
@@ -168,7 +168,7 @@ Loading data
 
 The first piece of code defines a function ``load_mnist_dataset()``. Its purpose is
 to download the MNIST dataset (if it hasn't been downloaded yet) and return it
-in the form of regular numpy arrays. There is no TensorLayer involved at all, so
+in the form of regular numpy arrays. There is no TLayer involved at all, so
 for the purpose of this tutorial, we can regard it as:
 
 .. code-block:: python
@@ -195,7 +195,7 @@ Channel one is because it is a grey scale image, every pixel have only one value
 Building the model
 ------------------
 
-This is where TensorLayer steps in. It allows you to define an arbitrarily
+This is where TLayer steps in. It allows you to define an arbitrarily
 structured neural network by creating and stacking or merging layers.
 Since every layer knows its immediate incoming layers, the output layer (or
 output layers) of a network double as a handle to the network as a whole, so
@@ -229,8 +229,8 @@ some optimizations.
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
-The foundation of each neural network in TensorLayer is an
-:class:`InputLayer <tensorlayer.layers.InputLayer>` instance
+The foundation of each neural network in TLayer is an
+:class:`InputLayer <tlayer.layers.InputLayer>` instance
 representing the input data that will subsequently be fed to the network. Note
 that the ``InputLayer`` is not tied to any specific data yet.
 
@@ -240,7 +240,7 @@ that the ``InputLayer`` is not tied to any specific data yet.
 
 Before adding the first hidden layer, we'll apply 20% dropout to the input
 data. This is realized via a :class:`DropoutLayer
-<tensorlayer.layers.DropoutLayer>` instance:
+<tlayer.layers.DropoutLayer>` instance:
 
 .. code-block:: python
 
@@ -249,7 +249,7 @@ data. This is realized via a :class:`DropoutLayer
 Note that the first constructor argument is the incoming layer, the second
 argument is the keeping probability for the activation value. Now we'll proceed
 with the first fully-connected hidden layer of 800 units. Note
-that when stacking a :class:`DenseLayer <tensorlayer.layers.DenseLayer>`.
+that when stacking a :class:`DenseLayer <tlayer.layers.DenseLayer>`.
 
 .. code-block:: python
 
@@ -259,7 +259,7 @@ Again, the first constructor argument means that we're stacking ``network`` on
 top of ``network``.
 ``n_units`` simply gives the number of units for this fully-connected layer.
 ``act`` takes an activation function, several of which are defined
-in :mod:`tensorflow.nn` and `tensorlayer.activation`. Here we've chosen the rectifier, so
+in :mod:`tensorflow.nn` and `tlayer.activation`. Here we've chosen the rectifier, so
 we'll obtain ReLUs. We'll now add dropout of 50%, another 800-unit dense layer and 50% dropout
 again:
 
@@ -280,7 +280,7 @@ the number of classes.
                                   name='output_layer')
 
 As mentioned above, each layer is linked to its incoming layer(s), so we only
-need the output layer(s) to access a network in TensorLayer:
+need the output layer(s) to access a network in TLayer:
 
 .. code-block:: python
 
@@ -345,7 +345,7 @@ max pooling stages, a fully-connected hidden layer and a fully-connected output
 layer.
 
 At the begin, we add a :class:`Conv2dLayer
-<tensorlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
+<tlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
 max-pooling of factor 2 in both dimensions. And then apply a ``Conv2dLayer`` with
 64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
 the 4D output to 1D vector by using ``FlattenLayer``, and apply a dropout with 50%
@@ -410,7 +410,7 @@ Dataset iteration
 
 An iteration function for synchronously iterating over two
 numpy arrays of input data and targets, respectively, in mini-batches of a
-given number of items. More iteration function can be found in ``tensorlayer.iterate``
+given number of items. More iteration function can be found in ``tlayer.iterate``
 
 .. code-block:: python
 
@@ -438,10 +438,10 @@ to apply max-norm on the weight matrices, we can add the following line:
                   tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
 
 Depending on the problem you are solving, you will need different loss functions,
-see :mod:`tensorlayer.cost` for more.
+see :mod:`tlayer.cost` for more.
 
 Having the model and the loss function defined, we create update expressions
-for training the network. TensorLayer do not provide many optimizer, we used TensorFlow's
+for training the network. TLayer do not provide many optimizer, we used TensorFlow's
 optimizer instead:
 
 .. code-block:: python
@@ -509,9 +509,9 @@ If everything is set up correctly, you will get an output like the following:
 .. code-block:: text
 
   [2016-07-12 09:31:59,760] Making new env: Pong-v0
-    tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-    tensorlayer:Instantiate DenseLayer relu1: 200, <function relu at 0x1119471e0>
-    tensorlayer:Instantiate DenseLayer output_layer: 3, <function identity at 0x114bd39d8>
+    TLayer:Instantiate InputLayer input_layer (?, 6400)
+    TLayer:Instantiate DenseLayer relu1: 200, <function relu at 0x1119471e0>
+    TLayer:Instantiate DenseLayer output_layer: 3, <function identity at 0x114bd39d8>
     param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
     param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
     param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
@@ -1795,7 +1795,7 @@ What Next?
 Cost Functions
 ===============
 
-TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
+TLayer provides a simple way to creat you own cost function. Take a MLP below for example.
 
 .. code-block:: python
 
@@ -1848,7 +1848,7 @@ Then max-norm regularization on W1 and W2 can be performed as follow.
             tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
 
 In addition, all TensorFlow's regularizers like
-``tf.contrib.layers.l2_regularizer`` can be used with TensorLayer.
+``tf.contrib.layers.l2_regularizer`` can be used with TLayer.
 
 Regularization of Activation outputs
 --------------------------------------
@@ -1903,8 +1903,8 @@ the sparsity can be implemented by using the L1 regularization of activation out
           + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
 
 
-For this reason, TensorLayer provides a simple way to modify or design your
-own pre-train metrice. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
+For this reason, TLayer provides a simple way to modify or design your
+own pre-train metrice. For Autoencoder, TLayer uses ``ReconLayer.__init__()``
 to define the reconstruction layer and cost function, to define your own cost
 function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
 To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
@@ -1926,15 +1926,15 @@ to update the parameters of previous 2 layers, simply modify ``[-4:]`` to ``[-6:
 Adding Customized Layer
 -------------------------
 
-Contribute useful ``Layer`` as an developer. The source code of TensorLayer is
-easy to understand, open ``tensorlayer/layer.py`` and read ``DenseLayer``, you
+Contribute useful ``Layer`` as an developer. The source code of TLayer is
+easy to understand, open ``tlayer/layer.py`` and read ``DenseLayer``, you
 can fully understand how it work.
 
 
 Adding Customized Regularizer
 ------------------------------
 
-See tensorlayer/cost.py
+See tlayer/cost.py
 
 
 
@@ -1946,31 +1946,31 @@ See tensorlayer/cost.py
 More info
 ==========
 
-For more information on what you can do with TensorLayer, just continue
+For more information on what you can do with TLayer, just continue
 reading through readthedocs.
 Finally, the reference lists and explains as follow.
 
-layers (:mod:`tensorlayer.layers`),
+layers (:mod:`tlayer.layers`),
 
-activation (:mod:`tensorlayer.activation`),
+activation (:mod:`tlayer.activation`),
 
-natural language processing (:mod:`tensorlayer.nlp`),
+natural language processing (:mod:`tlayer.nlp`),
 
-reinforcement learning (:mod:`tensorlayer.rein`),
+reinforcement learning (:mod:`tlayer.rein`),
 
-cost expressions and regularizers (:mod:`tensorlayer.cost`),
+cost expressions and regularizers (:mod:`tlayer.cost`),
 
-load and save files (:mod:`tensorlayer.files`),
+load and save files (:mod:`tlayer.files`),
 
-operating system (:mod:`tensorlayer.ops`),
+operating system (:mod:`tlayer.ops`),
 
-helper functions (:mod:`tensorlayer.utils`),
+helper functions (:mod:`tlayer.utils`),
 
-visualization (:mod:`tensorlayer.visualize`),
+visualization (:mod:`tlayer.visualize`),
 
-iteration functions (:mod:`tensorlayer.iterate`),
+iteration functions (:mod:`tlayer.iterate`),
 
-preprocessing functions (:mod:`tensorlayer.preprocess`),
+preprocessing functions (:mod:`tlayer.preprocess`),
 
 
 

@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf8 -*-
+
 
 """
 To understand Reinforcement Learning, we let computer to learn how to play
@@ -22,7 +25,7 @@ tensorflow (0.9.0)
 import gym
 import tensorflow as tf
 import numpy as np
-import tensorlayer as tl
+import tlayer as tl
 import time
 
 # hyperparameters

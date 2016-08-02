@@ -3,8 +3,8 @@
 
 
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
+import tlayer as tl
+from tlayer.layers import set_keep
 from tensorflow.models.rnn.ptb import reader
 import numpy as np
 import time
@@ -113,7 +113,7 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 flags = tf.flags
 flags.DEFINE_string(
-    "model", "medium",
+    "model", "small",
     "A type of model. Possible options are: small, medium, large.")
 FLAGS = flags.FLAGS
 

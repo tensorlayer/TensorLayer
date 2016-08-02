@@ -172,17 +172,17 @@
 <li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/rein.html"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="../modules/ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -238,37 +238,37 @@ translation.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For experts: Read the source code of <code class="docutils literal"><span class="pre">InputLayer</span></code> and <code class="docutils literal"><span class="pre">DenseLayer</span></code>, you
-will understand how TensorLayer work. After that, we recommend you to read
+will understand how TLayer work. After that, we recommend you to read
 the codes for tutorial directly.</p>
 </div>
 <div class="section" id="before-we-start">
 <h2>Before we start<a class="headerlink" href="#before-we-start" title="Permalink to this headline">¶</a></h2>
 <p>The tutorial assumes that you are somewhat familiar with neural networks and
-TensorFlow (the library which TensorLayer is built on top of). You can try to learn
+TensorFlow (the library which TLayer is built on top of). You can try to learn
 both at once from the <a class="reference external" href="http://deeplearning.stanford.edu/tutorial/">Deeplearning Tutorial</a>.</p>
 <p>For a more slow-paced introduction to artificial neural networks, we recommend
 <a class="reference external" href="http://cs231n.github.io/">Convolutional Neural Networks for Visual Recognition</a> by Andrej Karpathy et
 al., <a class="reference external" href="http://neuralnetworksanddeeplearning.com/">Neural Networks and Deep Learning</a> by Michael Nielsen.</p>
 <p>To learn more about TensorFlow, have a look at the <a class="reference external" href="https://www.tensorflow.org/versions/r0.9/tutorials/index.html">TensorFlow tutorial</a>. You will not
 need all of it, but a basic understanding of how TensorFlow works is required to be
-able to use TensorLayer. If you&#8217;re new to TensorFlow, going through that tutorial.</p>
+able to use TLayer. If you&#8217;re new to TensorFlow, going through that tutorial.</p>
 </div>
 <div class="section" id="run-the-mnist-example">
 <h2>Run the MNIST example<a class="headerlink" href="#run-the-mnist-example" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="../_images/mnist.jpeg" id="fig-0601"><img alt="../_images/mnist.jpeg" class="align-center" id="fig-0601" src="../_images/mnist.jpeg" style="width: 2252.0px; height: 712.0px;" /></a>
 <p>In the first part of the tutorial, we will just run the MNIST example that&#8217;s
-included in the source distribution of TensorLayer. MNIST dataset contains 60000
+included in the source distribution of TLayer. MNIST dataset contains 60000
 handwritten digits that is commonly used for training various
 image processing systems, each of digit has 28x28 pixels.</p>
 <p>We assume that you have already run through the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a>. If you
-haven&#8217;t done so already, get a copy of the source tree of TensorLayer, and navigate
+haven&#8217;t done so already, get a copy of the source tree of TLayer, and navigate
 to the folder in a terminal window. Enter the folder and run the <code class="docutils literal"><span class="pre">tutorial_mnist.py</span></code>
 example script:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>python tutorial_mnist.py
 </pre></div>
 </div>
 <p>If everything is set up correctly, you will get an output like the following:</p>
-<div class="highlight-text"><div class="highlight"><pre><span></span>tensorlayer: GPU MEM Fraction 0.300000
+<div class="highlight-text"><div class="highlight"><pre><span></span>TLayer: GPU MEM Fraction 0.300000
 Downloading train-images-idx3-ubyte.gz
 Downloading train-labels-idx1-ubyte.gz
 Downloading t10k-images-idx3-ubyte.gz
@@ -282,13 +282,13 @@ X_test.shape (10000, 784)
 y_test.shape (10000,)
 X float32   y int64
 
-tensorlayer:Instantiate InputLayer input_layer (?, 784)
-tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-tensorlayer:Instantiate DenseLayer relu1: 800, &lt;function relu at 0x11281cb70&gt;
-tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-tensorlayer:Instantiate DenseLayer relu2: 800, &lt;function relu at 0x11281cb70&gt;
-tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-tensorlayer:Instantiate DenseLayer output_layer: 10, &lt;function identity at 0x115e099d8&gt;
+TLayer:Instantiate InputLayer input_layer (?, 784)
+TLayer:Instantiate DropoutLayer drop1: keep: 0.800000
+TLayer:Instantiate DenseLayer relu1: 800, &lt;function relu at 0x11281cb70&gt;
+TLayer:Instantiate DropoutLayer drop2: keep: 0.500000
+TLayer:Instantiate DenseLayer relu2: 800, &lt;function relu at 0x11281cb70&gt;
+TLayer:Instantiate DropoutLayer drop3: keep: 0.500000
+TLayer:Instantiate DenseLayer output_layer: 10, &lt;function identity at 0x115e099d8&gt;
 
 param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
 param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
@@ -347,17 +347,17 @@ Select different models from <code class="docutils literal"><span class="pre">if
 up the source code.</p>
 <div class="section" id="preface">
 <h3>Preface<a class="headerlink" href="#preface" title="Permalink to this headline">¶</a></h3>
-<p>The first thing you might notice is that besides TensorLayer, we also import numpy
+<p>The first thing you might notice is that besides TLayer, we also import numpy
 and tensorflow:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">tensorlayer</span> <span class="kn">as</span> <span class="nn">tl</span>
-<span class="kn">from</span> <span class="nn">tensorlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
+<span class="kn">import</span> <span class="nn">tlayer</span> <span class="kn">as</span> <span class="nn">tl</span>
+<span class="kn">from</span> <span class="nn">tlayer.layers</span> <span class="kn">import</span> <span class="n">set_keep</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">time</span>
 </pre></div>
 </div>
-<p>As we know, TensorLayer is built on top of TensorFlow, it is meant as a supplement helping
-with some tasks, not as a replacement. You will always mix TensorLayer with some
+<p>As we know, TLayer is built on top of TensorFlow, it is meant as a supplement helping
+with some tasks, not as a replacement. You will always mix TLayer with some
 vanilla TensorFlow code. The <code class="docutils literal"><span class="pre">set_keep</span></code> is used to access the placeholder of keeping probabilities
 when using Denoising Autoencoder.</p>
 </div>
@@ -365,7 +365,7 @@ when using Denoising Autoencoder.</p>
 <h3>Loading data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h3>
 <p>The first piece of code defines a function <code class="docutils literal"><span class="pre">load_mnist_dataset()</span></code>. Its purpose is
 to download the MNIST dataset (if it hasn&#8217;t been downloaded yet) and return it
-in the form of regular numpy arrays. There is no TensorLayer involved at all, so
+in the form of regular numpy arrays. There is no TLayer involved at all, so
 for the purpose of this tutorial, we can regard it as:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> \
                   <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">))</span>
@@ -386,7 +386,7 @@ Channel one is because it is a grey scale image, every pixel have only one value
 </div>
 <div class="section" id="building-the-model">
 <h3>Building the model<a class="headerlink" href="#building-the-model" title="Permalink to this headline">¶</a></h3>
-<p>This is where TensorLayer steps in. It allows you to define an arbitrarily
+<p>This is where TLayer steps in. It allows you to define an arbitrarily
 structured neural network by creating and stacking or merging layers.
 Since every layer knows its immediate incoming layers, the output layer (or
 output layers) of a network double as a handle to the network as a whole, so
@@ -413,22 +413,22 @@ some optimizations.</p>
 <span class="n">y_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;y_&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The foundation of each neural network in TensorLayer is an
-<a class="reference internal" href="../modules/layers.html#tensorlayer.layers.InputLayer" title="tensorlayer.layers.InputLayer"><code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code></a> instance
+<p>The foundation of each neural network in TLayer is an
+<code class="xref py py-class docutils literal"><span class="pre">InputLayer</span></code> instance
 representing the input data that will subsequently be fed to the network. Note
 that the <code class="docutils literal"><span class="pre">InputLayer</span></code> is not tied to any specific data yet.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Before adding the first hidden layer, we&#8217;ll apply 20% dropout to the input
-data. This is realized via a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DropoutLayer" title="tensorlayer.layers.DropoutLayer"><code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code></a> instance:</p>
+data. This is realized via a <code class="xref py py-class docutils literal"><span class="pre">DropoutLayer</span></code> instance:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that the first constructor argument is the incoming layer, the second
 argument is the keeping probability for the activation value. Now we&#8217;ll proceed
 with the first fully-connected hidden layer of 800 units. Note
-that when stacking a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.DenseLayer" title="tensorlayer.layers.DenseLayer"><code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code></a>.</p>
+that when stacking a <code class="xref py py-class docutils literal"><span class="pre">DenseLayer</span></code>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -436,7 +436,7 @@ that when stacking a <a class="reference internal" href="../modules/layers.html#
 top of <code class="docutils literal"><span class="pre">network</span></code>.
 <code class="docutils literal"><span class="pre">n_units</span></code> simply gives the number of units for this fully-connected layer.
 <code class="docutils literal"><span class="pre">act</span></code> takes an activation function, several of which are defined
-in <code class="xref py py-mod docutils literal"><span class="pre">tensorflow.nn</span></code> and <cite>tensorlayer.activation</cite>. Here we&#8217;ve chosen the rectifier, so
+in <code class="xref py py-mod docutils literal"><span class="pre">tensorflow.nn</span></code> and <cite>tlayer.activation</cite>. Here we&#8217;ve chosen the rectifier, so
 we&#8217;ll obtain ReLUs. We&#8217;ll now add dropout of 50%, another 800-unit dense layer and 50% dropout
 again:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop2&#39;</span><span class="p">)</span>
@@ -453,7 +453,7 @@ the number of classes.</p>
 </pre></div>
 </div>
 <p>As mentioned above, each layer is linked to its incoming layer(s), so we only
-need the output layer(s) to access a network in TensorLayer:</p>
+need the output layer(s) to access a network in TLayer:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
 <span class="n">y_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">cost</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sparse_softmax_cross_entropy_with_logits</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_</span><span class="p">))</span>
@@ -506,7 +506,7 @@ fine-tune.</p>
 <p>Finally, the <code class="docutils literal"><span class="pre">main_test_cnn_layer()</span></code> script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
 layer.</p>
-<p>At the begin, we add a <a class="reference internal" href="../modules/layers.html#tensorlayer.layers.Conv2dLayer" title="tensorlayer.layers.Conv2dLayer"><code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code></a> with 32 filters of size 5x5 on top, follow by
+<p>At the begin, we add a <code class="xref py py-class docutils literal"><span class="pre">Conv2dLayer</span></code> with 32 filters of size 5x5 on top, follow by
 max-pooling of factor 2 in both dimensions. And then apply a <code class="docutils literal"><span class="pre">Conv2dLayer</span></code> with
 64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
 the 4D output to 1D vector by using <code class="docutils literal"><span class="pre">FlattenLayer</span></code>, and apply a dropout with 50%
@@ -564,7 +564,7 @@ a training loop over the MNIST dataset by using cross-entropy only.</p>
 <h4>Dataset iteration<a class="headerlink" href="#dataset-iteration" title="Permalink to this headline">¶</a></h4>
 <p>An iteration function for synchronously iterating over two
 numpy arrays of input data and targets, respectively, in mini-batches of a
-given number of items. More iteration function can be found in <code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></p>
+given number of items. More iteration function can be found in <code class="docutils literal"><span class="pre">tlayer.iterate</span></code></p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">tl</span><span class="o">.</span><span class="n">iterate</span><span class="o">.</span><span class="n">minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batchsize</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -584,9 +584,9 @@ to apply max-norm on the weight matrices, we can add the following line:</p>
 </pre></div>
 </div>
 <p>Depending on the problem you are solving, you will need different loss functions,
-see <a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a> for more.</p>
+see <code class="xref py py-mod docutils literal"><span class="pre">tlayer.cost</span></code> for more.</p>
 <p>Having the model and the loss function defined, we create update expressions
-for training the network. TensorLayer do not provide many optimizer, we used TensorFlow&#8217;s
+for training the network. TLayer do not provide many optimizer, we used TensorFlow&#8217;s
 optimizer instead:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">train_params</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">all_params</span>
 <span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">AdamOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">beta1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">beta2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
@@ -636,9 +636,9 @@ example that is introduced by Karpathy in <a class="reference external" href="ht
 which is a benchmark for Reinforcement Learning.
 If everything is set up correctly, you will get an output like the following:</p>
 <div class="highlight-text"><div class="highlight"><pre><span></span>[2016-07-12 09:31:59,760] Making new env: Pong-v0
-  tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-  tensorlayer:Instantiate DenseLayer relu1: 200, &lt;function relu at 0x1119471e0&gt;
-  tensorlayer:Instantiate DenseLayer output_layer: 3, &lt;function identity at 0x114bd39d8&gt;
+  TLayer:Instantiate InputLayer input_layer (?, 6400)
+  TLayer:Instantiate DenseLayer relu1: 200, &lt;function relu at 0x1119471e0&gt;
+  TLayer:Instantiate DenseLayer output_layer: 3, &lt;function identity at 0x114bd39d8&gt;
   param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
   param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
   param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
@@ -1726,7 +1726,7 @@ of both English and French.</p>
 </div>
 <div class="section" id="cost-functions">
 <h2>Cost Functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
-<p>TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.</p>
+<p>TLayer provides a simple way to creat you own cost function. Take a MLP below for example.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DropoutLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;drop1&#39;</span><span class="p">)</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
@@ -1768,7 +1768,7 @@ Then max-norm regularization on W1 and W2 can be performed as follow.</p>
 </pre></div>
 </div>
 <p>In addition, all TensorFlow&#8217;s regularizers like
-<code class="docutils literal"><span class="pre">tf.contrib.layers.l2_regularizer</span></code> can be used with TensorLayer.</p>
+<code class="docutils literal"><span class="pre">tf.contrib.layers.l2_regularizer</span></code> can be used with TLayer.</p>
 </div>
 <div class="section" id="regularization-of-activation-outputs">
 <h3>Regularization of Activation outputs<a class="headerlink" href="#regularization-of-activation-outputs" title="Permalink to this headline">¶</a></h3>
@@ -1810,8 +1810,8 @@ the sparsity can be implemented by using the L1 regularization of activation out
         <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">tf</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span> <span class="n">rho</span><span class="p">)</span><span class="o">/</span> <span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">p_hat</span><span class="p">)))</span> <span class="p">)</span>
 </pre></div>
 </div>
-<p>For this reason, TensorLayer provides a simple way to modify or design your
-own pre-train metrice. For Autoencoder, TensorLayer uses <code class="docutils literal"><span class="pre">ReconLayer.__init__()</span></code>
+<p>For this reason, TLayer provides a simple way to modify or design your
+own pre-train metrice. For Autoencoder, TLayer uses <code class="docutils literal"><span class="pre">ReconLayer.__init__()</span></code>
 to define the reconstruction layer and cost function, to define your own cost
 function, just simply modify the <code class="docutils literal"><span class="pre">self.cost</span></code> in <code class="docutils literal"><span class="pre">ReconLayer.__init__()</span></code>.
 To creat your own cost expression please read <a class="reference external" href="https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html">Tensorflow Math</a>.
@@ -1829,31 +1829,31 @@ to update the parameters of previous 2 layers, simply modify <code class="docuti
 </div>
 <div class="section" id="adding-customized-layer">
 <h3>Adding Customized Layer<a class="headerlink" href="#adding-customized-layer" title="Permalink to this headline">¶</a></h3>
-<p>Contribute useful <code class="docutils literal"><span class="pre">Layer</span></code> as an developer. The source code of TensorLayer is
-easy to understand, open <code class="docutils literal"><span class="pre">tensorlayer/layer.py</span></code> and read <code class="docutils literal"><span class="pre">DenseLayer</span></code>, you
+<p>Contribute useful <code class="docutils literal"><span class="pre">Layer</span></code> as an developer. The source code of TLayer is
+easy to understand, open <code class="docutils literal"><span class="pre">tlayer/layer.py</span></code> and read <code class="docutils literal"><span class="pre">DenseLayer</span></code>, you
 can fully understand how it work.</p>
 </div>
 <div class="section" id="adding-customized-regularizer">
 <h3>Adding Customized Regularizer<a class="headerlink" href="#adding-customized-regularizer" title="Permalink to this headline">¶</a></h3>
-<p>See tensorlayer/cost.py</p>
+<p>See tlayer/cost.py</p>
 </div>
 </div>
 <div class="section" id="more-info">
 <h2>More info<a class="headerlink" href="#more-info" title="Permalink to this headline">¶</a></h2>
-<p>For more information on what you can do with TensorLayer, just continue
+<p>For more information on what you can do with TLayer, just continue
 reading through readthedocs.
 Finally, the reference lists and explains as follow.</p>
-<p>layers (<a class="reference internal" href="../modules/layers.html#module-tensorlayer.layers" title="tensorlayer.layers"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.layers</span></code></a>),</p>
-<p>activation (<a class="reference internal" href="../modules/activation.html#module-tensorlayer.activation" title="tensorlayer.activation"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.activation</span></code></a>),</p>
-<p>natural language processing (<a class="reference internal" href="../modules/nlp.html#module-tensorlayer.nlp" title="tensorlayer.nlp"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.nlp</span></code></a>),</p>
-<p>reinforcement learning (<a class="reference internal" href="../modules/rein.html#module-tensorlayer.rein" title="tensorlayer.rein"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.rein</span></code></a>),</p>
-<p>cost expressions and regularizers (<a class="reference internal" href="../modules/cost.html#module-tensorlayer.cost" title="tensorlayer.cost"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.cost</span></code></a>),</p>
-<p>load and save files (<a class="reference internal" href="../modules/files.html#module-tensorlayer.files" title="tensorlayer.files"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.files</span></code></a>),</p>
-<p>operating system (<a class="reference internal" href="../modules/ops.html#module-tensorlayer.ops" title="tensorlayer.ops"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.ops</span></code></a>),</p>
-<p>helper functions (<a class="reference internal" href="../modules/utils.html#module-tensorlayer.utils" title="tensorlayer.utils"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.utils</span></code></a>),</p>
-<p>visualization (<a class="reference internal" href="../modules/visualize.html#module-tensorlayer.visualize" title="tensorlayer.visualize"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.visualize</span></code></a>),</p>
-<p>iteration functions (<a class="reference internal" href="../modules/iterate.html#module-tensorlayer.iterate" title="tensorlayer.iterate"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.iterate</span></code></a>),</p>
-<p>preprocessing functions (<a class="reference internal" href="../modules/preprocess.html#module-tensorlayer.preprocess" title="tensorlayer.preprocess"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a>),</p>
+<p>layers (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.layers</span></code>),</p>
+<p>activation (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.activation</span></code>),</p>
+<p>natural language processing (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.nlp</span></code>),</p>
+<p>reinforcement learning (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.rein</span></code>),</p>
+<p>cost expressions and regularizers (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.cost</span></code>),</p>
+<p>load and save files (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.files</span></code>),</p>
+<p>operating system (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.ops</span></code>),</p>
+<p>helper functions (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.utils</span></code>),</p>
+<p>visualization (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.visualize</span></code>),</p>
+<p>iteration functions (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.iterate</span></code>),</p>
+<p>preprocessing functions (<code class="xref py py-mod docutils literal"><span class="pre">tlayer.preprocess</span></code>),</p>
 </div>
 </div>
 

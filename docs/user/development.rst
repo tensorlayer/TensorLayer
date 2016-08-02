@@ -1,7 +1,7 @@
 Development
 ===========
 
-The TensorLayer project was started by Hao Dong, Imperial College London in Jun
+The TLayer project was started by Hao Dong, Imperial College London in Jun
 2016. It is developed by a core team (in alphabetical order:
 `Akara Supratak <https://github.com/akaraspt>`_,
 `Hao Dong <https://github.com/zsdonghao>`_,
@@ -13,12 +13,12 @@ contributions! Every bit helps and will be credited.
 
 
 
-.. _TensorLayer-philosopy:
+.. _TLayer-philosopy:
 
 Philosophy
 ----------
 
-TensorLayer grew out of a need to combine the flexibility of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
+TLayer grew out of a need to combine the flexibility of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
 
 * **Simplicity**: Be easy to use, easy to extend and modify, to facilitate use
   in research and engineering.
@@ -40,7 +40,7 @@ Your method
 ~~~~~~~~~~~~~
 
 If you publish a new method in term of Deep learning and Reinforcement learning,
-you are welcome to contribute your method to TensorLayer.
+you are welcome to contribute your method to TLayer.
 
 * Explain how it would work, and link to a scientific paper if applicable.
 * Keep the scope as narrow as possible, to make it easier to implement.
@@ -52,12 +52,12 @@ Report bugs
 Report bugs at the `GitHub`_,
 If you are reporting a bug, please include:
 
-* your TensorLayer and TensorFlow version.
+* your TLayer and TensorFlow version.
 * steps to reproduce the bug, ideally reduced to a few Python commands.
 * the results you obtain, and the results you expected instead.
 
 If you are unsure whether the behavior you experience is a bug, or if you are
-unsure whether it is related to TensorLayer or TensorFlow, please just ask on `our
+unsure whether it is related to TLayer or TensorFlow, please just ask on `our
 mailing list`_ first.
 
 
@@ -65,7 +65,7 @@ Fix bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bug reports. Anything tagged with "bug" is
-open to whoever wants to implement it. If you discover a bug in TensorLayer you can
+open to whoever wants to implement it. If you discover a bug in TLayer you can
 fix yourself, by all means feel free to just implement a fix and not report it
 first.
 
@@ -93,7 +93,7 @@ GitHub, then click the *Edit this file* link to edit the file in your browser
 and send us a Pull Request. All you need for this is a free GitHub account.
 
 For any more substantial changes, please follow the steps below to setup
-TensorLayer for development.
+TLayer for development.
 
 
 Documentation
@@ -123,7 +123,7 @@ To write the docs, we recommend you to install `Local RTD VM <http://docs.readth
 
 
 Afterwards, open ``docs/_build/html/index.html`` to view the documentation as
-it would appear on `readthedocs <http://tensorlayer.readthedocs.org/>`_. If you
+it would appear on `readthedocs <http://tlayer.readthedocs.org/>`_. If you
 changed a lot and seem to get misleading error messages or warnings, run
 ``make clean html`` to force Sphinx to recreate all files from scratch.
 
@@ -139,7 +139,7 @@ syntax and conventions used, please refer to the following documents:
 Testing
 ~~~~~~~
 
-TensorLayer has a code coverage of 100%, which has proven very helpful in the past,
+TLayer has a code coverage of 100%, which has proven very helpful in the past,
 but also creates some duties:
 
 * Whenever you change any code, you should test whether it breaks existing
@@ -165,5 +165,5 @@ GitHub will close it when your request is merged.
 
 
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _GitHub: https://github.com/zsdonghao/tlayer
 .. _our mailing list: hao.dong11@imperial.ac.uk

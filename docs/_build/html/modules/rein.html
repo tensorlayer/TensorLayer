@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>tensorlayer.rein &mdash; TensorLayer 1.1 documentation</title>
+  <title>tlayer.rein &mdash; TensorLayer 1.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="TensorLayer 1.1 documentation" href="../index.html"/>
-        <link rel="next" title="tensorlayer.iterate" href="iterate.html"/>
-        <link rel="prev" title="tensorlayer.nlp" href="nlp.html"/> 
+        <link rel="next" title="tlayer.iterate" href="iterate.html"/>
+        <link rel="prev" title="tlayer.nlp" href="nlp.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -87,21 +87,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../user/development.html">Development</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tensorlayer.layers</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tensorlayer.activation</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tensorlayer.nlp</span></code></a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reward-functions">Reward functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cost-functions">Cost functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tensorlayer.iterate</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tensorlayer.cost</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tensorlayer.visualize</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tensorlayer.files</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tensorlayer.utils</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tensorlayer.preprocess</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tensorlayer.ops</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
 </ul>
 
             
@@ -132,7 +132,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html">Docs</a> &raquo;</li>
       
-    <li><code class="docutils literal"><span class="pre">tensorlayer.rein</span></code></li>
+    <li><code class="docutils literal"><span class="pre">tlayer.rein</span></code></li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -146,76 +146,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tensorlayer-rein">
-<h1><a class="reference internal" href="#module-tensorlayer.rein" title="tensorlayer.rein"><code class="xref py py-mod docutils literal"><span class="pre">tensorlayer.rein</span></code></a><a class="headerlink" href="#tensorlayer-rein" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="tlayer-rein">
+<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.rein</span></code><a class="headerlink" href="#tlayer-rein" title="Permalink to this headline">¶</a></h1>
 <p>Reinforcement Learning.</p>
-<span class="target" id="module-tensorlayer.rein"></span><table border="1" class="longtable docutils">
+<table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#tensorlayer.rein.discount_episode_rewards" title="tensorlayer.rein.discount_episode_rewards"><code class="xref py py-obj docutils literal"><span class="pre">discount_episode_rewards</span></code></a>(rewards[,&nbsp;gamma])</td>
-<td>Take 1D float array of rewards and compute discounted rewards for an episode.</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">discount_episode_rewards</span></code></td>
+<td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#tensorlayer.rein.cross_entropy_reward_loss" title="tensorlayer.rein.cross_entropy_reward_loss"><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy_reward_loss</span></code></a>(logits,&nbsp;actions,&nbsp;...)</td>
-<td>Calculate the loss for Policy Gradient Network.</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy_reward_loss</span></code></td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="reward-functions">
 <h2>Reward functions<a class="headerlink" href="#reward-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.rein.discount_episode_rewards">
-<code class="descclassname">tensorlayer.rein.</code><code class="descname">discount_episode_rewards</code><span class="sig-paren">(</span><em>rewards</em>, <em>gamma=0.99</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/rein.html#discount_episode_rewards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.rein.discount_episode_rewards" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take 1D float array of rewards and compute discounted rewards for an
-episode. When encount a non-zero value, consider as the end a of an episode.</p>
-<dl class="docutils">
-<dt>rewards</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">numpy list</span><dd>a list of rewards</dd>
-<dt>gamma</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>discounted factor</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.9</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">discount_rewards</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">rein</span><span class="o">.</span><span class="n">discount_episode_rewards</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">discount_rewards</span><span class="p">)</span>
-<span class="gp">... </span><span class="p">[</span> <span class="mf">0.72899997</span>  <span class="mf">0.81</span>        <span class="mf">0.89999998</span>  <span class="mf">1.</span>          <span class="mf">0.72899997</span>  <span class="mf">0.81</span>
-<span class="gp">... </span><span class="mf">0.89999998</span>  <span class="mf">1.</span>          <span class="mf">0.72899997</span>  <span class="mf">0.81</span>        <span class="mf">0.89999998</span>  <span class="mf">1.</span>        <span class="p">]</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 <div class="section" id="cost-functions">
 <h2>Cost functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="tensorlayer.rein.cross_entropy_reward_loss">
-<code class="descclassname">tensorlayer.rein.</code><code class="descname">cross_entropy_reward_loss</code><span class="sig-paren">(</span><em>logits</em>, <em>actions</em>, <em>rewards</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tensorlayer/rein.html#cross_entropy_reward_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tensorlayer.rein.cross_entropy_reward_loss" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the loss for Policy Gradient Network.</p>
-<dl class="docutils">
-<dt>logits</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The network outputs without softmax. This function implements softmax
-inside.</dd>
-<dt>actions</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The agent actions.</dd>
-<dt>rewards</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The rewards.</dd>
-</dl>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>   <span class="c1"># observation for training</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">states_batch_pl</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">probs</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sampling_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">actions_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">discount_rewards_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span> <span class="o">=</span> <span class="n">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">actions_batch_pl</span><span class="p">,</span> <span class="n">discount_rewards_batch_pl</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">RMSPropOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">decay_rate</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 </div>
 </div>
 
@@ -226,10 +178,10 @@ inside.</dd>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="iterate.html" class="btn btn-neutral float-right" title="tensorlayer.iterate" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="iterate.html" class="btn btn-neutral float-right" title="tlayer.iterate" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="nlp.html" class="btn btn-neutral" title="tensorlayer.nlp" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="nlp.html" class="btn btn-neutral" title="tlayer.nlp" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

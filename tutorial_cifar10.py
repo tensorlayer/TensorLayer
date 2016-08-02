@@ -3,8 +3,8 @@
 
 
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
+import tlayer as tl
+from tlayer.layers import set_keep
 import numpy as np
 import time
 
@@ -38,7 +38,6 @@ def main_test_cnn_naive():
     sess = tf.InteractiveSession()
 
     batch_size = 128
-
 
     x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
                                 # [batch_size, height, width, channels]
@@ -386,7 +385,9 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
     sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = .5)
     try:
+        """Without image distorting"""
         # main_test_cnn_naive()
+        """With image distorting"""
         main_test_cnn_advanced()
         tl.ops.exit_tf(sess)   # close sess, tensorboard and nvidia-process
     except KeyboardInterrupt:
