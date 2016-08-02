@@ -3,34 +3,14 @@ Development
 
 The TLayer project was started by Hao Dong, Imperial College London in Jun
 2016. It is developed by a core team (in alphabetical order:
-`Akara Supratak <https://github.com/akaraspt>`_,
-`Hao Dong <https://github.com/zsdonghao>`_,
+`Akara Supratak <https://akaraspt.github.io>`_,
+`Hao Dong <https://zsdonghao.github.io>`_,
 `Simiao Yu <https://github.com/zsdonghao>`_,)
 and numerous additional contributors on `GitHub`_,
 
-As an open-source project by researchers for researchers and engineers, we highly welcome
-contributions! Every bit helps and will be credited.
-
-
-
-.. _TLayer-philosopy:
-
-Philosophy
-----------
-
-TLayer grew out of a need to combine the flexibility of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
-
-* **Simplicity**: Be easy to use, easy to extend and modify, to facilitate use
-  in research and engineering.
-
-* **High-Speed**: The running speed under GPU support is the same with
-  pure TensorFlow script. The simplicity do not sacrifice the performance.
-
-* **Compatibility**: A network is abstracted to regularization, cost and outputs
-  of each layer. Easy to work with other TensorFlow libraries.
-
-* **Transparency**: Do not hide TensorFlow behind abstractions. Try to rely on
-  TensorFlow's functionality where possible, and follow TensorFlow's conventions.
+As an open-source project by researchers for researchers and engineers,
+we highly welcome contributions!
+Every bit helps and will be credited.
 
 
 What to contribute
@@ -105,6 +85,9 @@ following commands:
 
 .. code:: bash
 
+    pip install Sphinx
+    sphinx-quickstart
+    
     cd docs
     make html
 

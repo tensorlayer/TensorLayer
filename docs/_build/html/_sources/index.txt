@@ -2,27 +2,65 @@ Welcome to TLayer
 =======================================
 
 
-
 .. image:: user/my_figs/img_tlayer.png
   :scale: 25 %
   :align: center
   :target: https://github.com/zsdonghao/tlayer
 
-`TLayer <https://github.com/zsdonghao/tlayer>`_ is a transparent
-Deep Learning and Reinforcement Learning library
-built on the top of Google TensorFlow. It was designed to provide a higher-level
-API to TensorFlow in order to speed-up experimentations. TLayer is easy to
-extended and modified, suitable for both machine learning researches and
-applications.
+`TLayer <https://github.com/zsdonghao/tlayer>`_ was designed for both Researchers
+and Engineers, it is a transparent library built on the top of Google TensorFlow.
+It was designed to provide a higher-level
+API to TensorFlow in order to speed-up experimentations and developments.
+TLayer is easy to extended and modified.
+In addition, we provides mass examples and tutorials
+to help you to find the one you need in your project.
 
-This documentation is not only for describing how to use the library but also
+The `documentation <http://tlayer.readthedocs.io/en/latest/user/tutorial.html>`_
+is not only for describing how to use TLayer but also
 a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.
+
+
+.. _TLayer-philosopy:
+
+Philosophy
+----------
+
+TLayer grew out of a need to combine the flexibility of TensorFlow with the
+availability of the right building blocks for training neural networks.
+Its development is guided by a number of design goals:
+
+
+* **Transparency**: Do not hide TensorFlow behind abstractions. Try to rely on
+  TensorFlow's functionality where possible, and follow TensorFlow's conventions.
+  Do not hide training process, all iteration, initialization can be managed
+  by user.
+
+* **Tensor**: Neural networks perform on multidimensional data arrays which are
+  referred to as "tensors".
+
+* **TPU**: Tensor Processing Unit is a custom ASIC built specifically for
+  machine learning and tailored for TensorFlow.
+
+* **Distribution**: Distributed Machine Learning is the default function of TensorFlow.
+
+* **Compatibility**: A network is abstracted to regularization, cost and outputs
+  of each layer. Easy to work with other TensorFlow libraries.
+
+* **Simplicity**: Be easy to use, easy to extend and modify, to facilitate use
+  in Research and Engineering.
+
+* **High-Speed**: The running speed under GPU support is the same with
+  TensorFlow only. The simplicity do not sacrifice the performance.
+
+
 
 .. note::
    If you got problem to read the docs online, you could download the project
    on github, then go to ``/docs/_build/html/index.html`` to read the docs
    offline.
+
+
 
 User Guide
 ------------
@@ -37,6 +75,7 @@ to the library as a developer.
   user/installation
   user/tutorial
   user/development
+  user/more
 
 API Reference
 -------------

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to TLayer &mdash; TensorLayer 1.1 documentation</title>
+  <title>Welcome to TLayer &mdash; TLayer 1.1 documentation</title>
   
 
   
@@ -30,7 +30,7 @@
   
 
   
-    <link rel="top" title="TensorLayer 1.1 documentation" href="#"/>
+    <link rel="top" title="TLayer 1.1 documentation" href="#"/>
         <link rel="next" title="Installation" href="user/installation.html"/> 
 
   
@@ -49,7 +49,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> TensorLayer
+            <a href="#" class="icon icon-home"> TLayer
           
 
           
@@ -84,6 +84,10 @@
 <li class="toctree-l1"><a class="reference internal" href="user/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user/development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html">Your Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#competitions">Competitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#applications">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#recruitment">Recruitment</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules/layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
@@ -110,7 +114,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">TensorLayer</a>
+        <a href="#">TLayer</a>
       </nav>
 
 
@@ -143,21 +147,46 @@
             
   <div class="section" id="welcome-to-tlayer">
 <h1>Welcome to TLayer<a class="headerlink" href="#welcome-to-tlayer" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://github.com/zsdonghao/tlayer"><img alt="user/my_figs/img_tlayer.png" class="align-center" src="user/my_figs/img_tlayer.png" /></a>
-<p><a class="reference external" href="https://github.com/zsdonghao/tlayer">TLayer</a> is a transparent
-Deep Learning and Reinforcement Learning library
-built on the top of Google TensorFlow. It was designed to provide a higher-level
-API to TensorFlow in order to speed-up experimentations. TLayer is easy to
-extended and modified, suitable for both machine learning researches and
-applications.</p>
-<p>This documentation is not only for describing how to use the library but also
+<a class="reference external image-reference" href="https://github.com/zsdonghao/tlayer"><img alt="_images/img_tlayer.png" class="align-center" src="_images/img_tlayer.png" style="width: 260.5px; height: 254.75px;" /></a>
+<p><a class="reference external" href="https://github.com/zsdonghao/tlayer">TLayer</a> was designed for both Researchers
+and Engineers, it is a transparent library built on the top of Google TensorFlow.
+It was designed to provide a higher-level
+API to TensorFlow in order to speed-up experimentations and developments.
+TLayer is easy to extended and modified.
+In addition, we provides mass examples and tutorials
+to help you to find the one you need in your project.</p>
+<p>The <a class="reference external" href="http://tlayer.readthedocs.io/en/latest/user/tutorial.html">documentation</a>
+is not only for describing how to use TLayer but also
 a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.</p>
+<div class="section" id="philosophy">
+<span id="tlayer-philosopy"></span><h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h2>
+<p>TLayer grew out of a need to combine the flexibility of TensorFlow with the
+availability of the right building blocks for training neural networks.
+Its development is guided by a number of design goals:</p>
+<ul class="simple">
+<li><strong>Transparency</strong>: Do not hide TensorFlow behind abstractions. Try to rely on
+TensorFlow&#8217;s functionality where possible, and follow TensorFlow&#8217;s conventions.
+Do not hide training process, all iteration, initialization can be managed
+by user.</li>
+<li><strong>Tensor</strong>: Neural networks perform on multidimensional data arrays which are
+referred to as &#8220;tensors&#8221;.</li>
+<li><strong>TPU</strong>: Tensor Processing Unit is a custom ASIC built specifically for
+machine learning and tailored for TensorFlow.</li>
+<li><strong>Distribution</strong>: Distributed Machine Learning is the default function of TensorFlow.</li>
+<li><strong>Compatibility</strong>: A network is abstracted to regularization, cost and outputs
+of each layer. Easy to work with other TensorFlow libraries.</li>
+<li><strong>Simplicity</strong>: Be easy to use, easy to extend and modify, to facilitate use
+in Research and Engineering.</li>
+<li><strong>High-Speed</strong>: The running speed under GPU support is the same with
+TensorFlow only. The simplicity do not sacrifice the performance.</li>
+</ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If you got problem to read the docs online, you could download the project
 on github, then go to <code class="docutils literal"><span class="pre">/docs/_build/html/index.html</span></code> to read the docs
 offline.</p>
+</div>
 </div>
 <div class="section" id="user-guide">
 <h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
@@ -190,9 +219,18 @@ to the library as a developer.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user/development.html">Development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user/development.html#philosophy">Philosophy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user/development.html#what-to-contribute">What to contribute</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user/development.html#how-to-contribute">How to contribute</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html">Your Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#competitions">Competitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#applications">Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/more.html#cnn-lstm-for-biosignal">CNN+LSTM for Biosignal</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user/more.html#recruitment">Recruitment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user/more.html#data-science-institute-imperial-college-london">Data Science Institute, Imperial College London</a></li>
 </ul>
 </li>
 </ul>
@@ -300,7 +338,7 @@ method, this part of the documentation is for you.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, TensorLayer contributors.
+        &copy; Copyright 2016, TLayer Contributors.
 
     </p>
   </div>

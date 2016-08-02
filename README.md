@@ -14,7 +14,7 @@
 </a>
 
 
-# TLayer: Deep learning and Reinforcement learning library for Researcher and Engineer.
+# TLayer: Deep learning and Reinforcement learning library for Researchers and Engineers.
 
 TLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
@@ -26,6 +26,9 @@ TLayer features include:
 - Other wraping libraries for TensorFlow are easy to merged into TLayer, suitable for machine learning researches...
 - Many official examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
 - The running speed would not decrease compare with pure TensorFlow codes...
+
+
+
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
