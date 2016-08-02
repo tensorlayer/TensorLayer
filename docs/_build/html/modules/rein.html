@@ -151,27 +151,75 @@
            <div itemprop="articleBody">
             
   <div class="section" id="tlayer-rein">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.rein</span></code><a class="headerlink" href="#tlayer-rein" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-tlayer.rein" title="tlayer.rein"><code class="xref py py-mod docutils literal"><span class="pre">tlayer.rein</span></code></a><a class="headerlink" href="#tlayer-rein" title="Permalink to this headline">¶</a></h1>
 <p>Reinforcement Learning.</p>
-<table border="1" class="longtable docutils">
+<span class="target" id="module-tlayer.rein"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">discount_episode_rewards</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.rein.discount_episode_rewards" title="tlayer.rein.discount_episode_rewards"><code class="xref py py-obj docutils literal"><span class="pre">discount_episode_rewards</span></code></a>(rewards[,&nbsp;gamma])</td>
+<td>Take 1D float array of rewards and compute discounted rewards for an episode.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy_reward_loss</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.rein.cross_entropy_reward_loss" title="tlayer.rein.cross_entropy_reward_loss"><code class="xref py py-obj docutils literal"><span class="pre">cross_entropy_reward_loss</span></code></a>(logits,&nbsp;actions,&nbsp;...)</td>
+<td>Calculate the loss for Policy Gradient Network.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="reward-functions">
 <h2>Reward functions<a class="headerlink" href="#reward-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.rein.discount_episode_rewards">
+<code class="descclassname">tlayer.rein.</code><code class="descname">discount_episode_rewards</code><span class="sig-paren">(</span><em>rewards</em>, <em>gamma=0.99</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/rein.html#discount_episode_rewards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.rein.discount_episode_rewards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take 1D float array of rewards and compute discounted rewards for an
+episode. When encount a non-zero value, consider as the end a of an episode.</p>
+<dl class="docutils">
+<dt>rewards</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy list</span><dd>a list of rewards</dd>
+<dt>gamma</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">float</span><dd>discounted factor</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rewards</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">discount_rewards</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">rein</span><span class="o">.</span><span class="n">discount_episode_rewards</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">discount_rewards</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">[</span> <span class="mf">0.72899997</span>  <span class="mf">0.81</span>        <span class="mf">0.89999998</span>  <span class="mf">1.</span>          <span class="mf">0.72899997</span>  <span class="mf">0.81</span>
+<span class="gp">... </span><span class="mf">0.89999998</span>  <span class="mf">1.</span>          <span class="mf">0.72899997</span>  <span class="mf">0.81</span>        <span class="mf">0.89999998</span>  <span class="mf">1.</span>        <span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="cost-functions">
 <h2>Cost functions<a class="headerlink" href="#cost-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.rein.cross_entropy_reward_loss">
+<code class="descclassname">tlayer.rein.</code><code class="descname">cross_entropy_reward_loss</code><span class="sig-paren">(</span><em>logits</em>, <em>actions</em>, <em>rewards</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/rein.html#cross_entropy_reward_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.rein.cross_entropy_reward_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the loss for Policy Gradient Network.</p>
+<dl class="docutils">
+<dt>logits</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor</span><dd>The network outputs without softmax. This function implements softmax
+inside.</dd>
+<dt>actions</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The agent actions.</dd>
+<dt>rewards</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tensor/ placeholder</span><dd>The rewards.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">states_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">D</span><span class="p">])</span>   <span class="c1"># observation for training</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">InputLayer</span><span class="p">(</span><span class="n">states_batch_pl</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;input_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;relu1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">network</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DenseLayer</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">n_units</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">act</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">activation</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;output_layer&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probs</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">outputs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sampling_prob</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">actions_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">discount_rewards_batch_pl</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span> <span class="o">=</span> <span class="n">cross_entropy_reward_loss</span><span class="p">(</span><span class="n">probs</span><span class="p">,</span> <span class="n">actions_batch_pl</span><span class="p">,</span> <span class="n">discount_rewards_batch_pl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">RMSPropOptimizer</span><span class="p">(</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">decay_rate</span><span class="p">)</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

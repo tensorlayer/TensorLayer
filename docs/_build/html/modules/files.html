@@ -154,72 +154,333 @@
            <div itemprop="articleBody">
             
   <div class="section" id="tlayer-files">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.files</span></code><a class="headerlink" href="#tlayer-files" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-tlayer.files" title="tlayer.files"><code class="xref py py-mod docutils literal"><span class="pre">tlayer.files</span></code></a><a class="headerlink" href="#tlayer-files" title="Permalink to this headline">¶</a></h1>
 <p>Load benchmark dataset, save and restore model, save and load variables.</p>
-<table border="1" class="longtable docutils">
+<span class="target" id="module-tlayer.files"></span><table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">load_mnist_dataset</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.load_mnist_dataset" title="tlayer.files.load_mnist_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_mnist_dataset</span></code></a>([shape])</td>
+<td>Automatically download MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">load_cifar10_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.load_cifar10_dataset" title="tlayer.files.load_cifar10_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_cifar10_dataset</span></code></a>([shape,&nbsp;plotable,&nbsp;second])</td>
+<td>The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with 6000 images per class.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">load_ptb_dataset</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.load_ptb_dataset" title="tlayer.files.load_ptb_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_ptb_dataset</span></code></a>()</td>
+<td>Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers, including &#8220;Empirical Evaluation and Combination of Advanced Language Modeling Techniques&#8221;, &#8220;Recurrent Neural Network Regularization&#8221;.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">load_matt_mahoney_text8_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.load_matt_mahoney_text8_dataset" title="tlayer.files.load_matt_mahoney_text8_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_matt_mahoney_text8_dataset</span></code></a>()</td>
+<td>Download a text file from Matt Mahoney&#8217;s website if not present, and make sure it&#8217;s the right size.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">load_imbd_dataset</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.load_imbd_dataset" title="tlayer.files.load_imbd_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_imbd_dataset</span></code></a>([path,&nbsp;nb_words,&nbsp;...])</td>
+<td>Load IMDB dataset</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">load_nietzsche_dataset</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.load_nietzsche_dataset" title="tlayer.files.load_nietzsche_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_nietzsche_dataset</span></code></a>()</td>
+<td>Load Nietzsche dataset</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">load_wmt_en_fr_dataset</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.load_wmt_en_fr_dataset" title="tlayer.files.load_wmt_en_fr_dataset"><code class="xref py py-obj docutils literal"><span class="pre">load_wmt_en_fr_dataset</span></code></a>([data_dir])</td>
+<td>It will download English-to-French translation data from the WMT&#8216;15 Website (10^9-French-English corpus), and the 2013 news test from the same site as development set.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_npz</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.save_npz" title="tlayer.files.save_npz"><code class="xref py py-obj docutils literal"><span class="pre">save_npz</span></code></a>([save_dict,&nbsp;name])</td>
+<td>Input parameters and the file name, save parameters into .npz file.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">load_npz</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.load_npz" title="tlayer.files.load_npz"><code class="xref py py-obj docutils literal"><span class="pre">load_npz</span></code></a>([path,&nbsp;name])</td>
+<td>Load the parameters of a Model saved by tl.files.save_npz().</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">assign_params</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.assign_params" title="tlayer.files.assign_params"><code class="xref py py-obj docutils literal"><span class="pre">assign_params</span></code></a>(sess,&nbsp;params,&nbsp;network)</td>
+<td>Assign the given parameters to the TLayer network.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.save_any_to_npy" title="tlayer.files.save_any_to_npy"><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></a>([save_dict,&nbsp;name])</td>
+<td>Save variables to .npy file.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.save_any_to_npy" title="tlayer.files.save_any_to_npy"><code class="xref py py-obj docutils literal"><span class="pre">save_any_to_npy</span></code></a>([save_dict,&nbsp;name])</td>
+<td>Save variables to .npy file.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">npz_to_W_pdf</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.files.npz_to_W_pdf" title="tlayer.files.npz_to_W_pdf"><code class="xref py py-obj docutils literal"><span class="pre">npz_to_W_pdf</span></code></a>([path,&nbsp;regx])</td>
+<td>Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">load_file_list</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.files.load_file_list" title="tlayer.files.load_file_list"><code class="xref py py-obj docutils literal"><span class="pre">load_file_list</span></code></a>([path,&nbsp;regx])</td>
+<td>Return a file list in a folder by given a path and regular expression.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="load-dataset-functions">
 <h2>Load dataset functions<a class="headerlink" href="#load-dataset-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.files.load_mnist_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_mnist_dataset</code><span class="sig-paren">(</span><em>shape=(-1</em>, <em>784)</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_mnist_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_mnist_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Automatically download MNIST dataset
+and return the training, validation and test set with 50000, 10000 and 10000
+digit images respectively.</p>
+<dl class="docutils">
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span><dd>The shape of digit images</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_mnist_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">784</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_cifar10_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_cifar10_dataset</code><span class="sig-paren">(</span><em>shape=(-1</em>, <em>32</em>, <em>32</em>, <em>3)</em>, <em>plotable=False</em>, <em>second=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_cifar10_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_cifar10_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with
+6000 images per class. There are 50000 training images and 10000 test images.</p>
+<p>The dataset is divided into five training batches and one test batch, each with
+10000 images. The test batch contains exactly 1000 randomly-selected images from
+each class. The training batches contain the remaining images in random order,
+but some training batches may contain more images from one class than another.
+Between them, the training batches contain exactly 5000 images from each class.</p>
+<dl class="docutils">
+<dt>shape</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">tupe</span><dd>The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32*32*3)</dd>
+<dt>plotable</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">True, False</span><dd>Whether to plot some image examples.</dd>
+<dt>second</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>If &#8216;plotable&#8217; is True, &#8216;second&#8217; is the display time.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_cifar10_dataset</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">plotable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>CIFAR-10 images can only be display without color change under uint8.
+&gt;&gt;&gt; X_train = np.asarray(X_train, dtype=np.uint8)
+&gt;&gt;&gt; plt.ion()
+&gt;&gt;&gt; fig = plt.figure(1232)
+&gt;&gt;&gt; count = 1
+&gt;&gt;&gt; for row in range(10):
+&gt;&gt;&gt;     for col in range(10):
+&gt;&gt;&gt;         a = fig.add_subplot(10, 10, count)
+&gt;&gt;&gt;         plt.imshow(X_train[count-1], interpolation=&#8217;nearest&#8217;)
+&gt;&gt;&gt;         plt.gca().xaxis.set_major_locator(plt.NullLocator())    # 不显示刻度(tick)
+&gt;&gt;&gt;         plt.gca().yaxis.set_major_locator(plt.NullLocator())
+&gt;&gt;&gt;         count = count + 1
+&gt;&gt;&gt; plt.draw()
+&gt;&gt;&gt; plt.pause(3)</p>
+<p><a class="reference external" href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR website</a></p>
+<p><a class="reference external" href="https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz">Code download link</a></p>
+<p><a class="reference external" href="https://teratail.com/questions/28932">Code references</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_ptb_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_ptb_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_ptb_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_ptb_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
+including &#8220;Empirical Evaluation and Combination of Advanced Language
+Modeling Techniques&#8221;, &#8220;Recurrent Neural Network Regularization&#8221;.</p>
+<p>It consists of 929k training words, 73k validation words, and 82k test
+words. It has 10k words in its vocabulary.</p>
+<p>In &#8220;Recurrent Neural Network Regularization&#8221;, they trained regularized LSTMs
+of two sizes; these are denoted the medium LSTM and large LSTM. Both LSTMs
+have two layers and are unrolled for 35 steps. They initialize the hidden
+states to zero. They then use the final hidden states of the current
+minibatch as the initial hidden state of the subsequent minibatch
+(successive minibatches sequentially traverse the training set).
+The size of each minibatch is 20.</p>
+<p>The medium LSTM has 650 units per layer and its parameters are initialized
+uniformly in [−0.05, 0.05]. They apply 50% dropout on the non-recurrent
+connections. They train the LSTM for 39 epochs with a learning rate of 1,
+and after 6 epochs they decrease it by a factor of 1.2 after each epoch.
+They clip the norm of the gradients (normalized by minibatch size) at 5.</p>
+<p>The large LSTM has 1500 units per layer and its parameters are initialized
+uniformly in [−0.04, 0.04]. We apply 65% dropout on the non-recurrent
+connections. They train the model for 55 epochs with a learning rate of 1;
+after 14 epochs they start to reduce the learning rate by a factor of 1.15
+after each epoch. They clip the norm of the gradients (normalized by
+minibatch size) at 10.</p>
+<p>tensorflow.models.rnn.ptb import reader</p>
+<p><a class="reference external" href="http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz">Manual download</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_matt_mahoney_text8_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_matt_mahoney_text8_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_matt_mahoney_text8_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_matt_mahoney_text8_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download a text file from Matt Mahoney&#8217;s website
+if not present, and make sure it&#8217;s the right size.
+Extract the first file enclosed in a zip file as a list of words.
+This dataset can be used for Word Embedding.</p>
+<dl class="docutils">
+<dt>word_list</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a list</span><dd>a list of string (word).
+e.g. [.... &#8216;their&#8217;, &#8216;families&#8217;, &#8216;who&#8217;, &#8216;were&#8217;, &#8216;expelled&#8217;, &#8216;from&#8217;, &#8216;jerusalem&#8217;, ...]</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">words</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_matt_mahoney_text8_dataset</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Data size&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_imbd_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_imbd_dataset</code><span class="sig-paren">(</span><em>path='imdb.pkl'</em>, <em>nb_words=None</em>, <em>skip_top=0</em>, <em>maxlen=None</em>, <em>test_split=0.2</em>, <em>seed=113</em>, <em>start_char=1</em>, <em>oov_char=2</em>, <em>index_from=3</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_imbd_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_imbd_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load IMDB dataset</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_imbd_dataset</span><span class="p">(</span>
+<span class="gp">... </span>                                <span class="n">nb_words</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span> <span class="n">test_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;X_train.shape&#39;</span><span class="p">,</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">20000</span><span class="p">,)</span>  <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">74</span><span class="p">,</span> <span class="o">...</span> <span class="mi">1033</span><span class="p">,</span> <span class="mi">507</span><span class="p">,</span> <span class="mi">27</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="o">...</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">1053</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span><span class="o">..</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y_train.shape&#39;</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">20000</span><span class="p">,)</span>  <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="o">...</span><span class="p">,</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py">Modify from keras.</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_nietzsche_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_nietzsche_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_nietzsche_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_nietzsche_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load Nietzsche dataset</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_wmt_en_fr_dataset">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_wmt_en_fr_dataset</code><span class="sig-paren">(</span><em>data_dir='wmt'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_wmt_en_fr_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_wmt_en_fr_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>It will download English-to-French translation data from the WMT&#8216;15
+Website (10^9-French-English corpus), and the 2013 news test from
+the same site as development set.
+Returns the directories of training data and test data.</p>
+<dl class="docutils">
+<dt>data_dir</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>The directory to store the dataset.</dd>
+</dl>
+<p>Code modified from /tensorflow/models/rnn/translation/data_utils.py</p>
+<p>Usually, it will take a long time to download this dataset.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="load-and-save-network">
 <h2>Load and save network<a class="headerlink" href="#load-and-save-network" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.files.save_npz">
+<code class="descclassname">tlayer.files.</code><code class="descname">save_npz</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#save_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.save_npz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.</p>
+<dl class="docutils">
+<dt>save_dict</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a dictionary</span><dd>Parameters want to be saved.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>The name of the .npz file.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_npz</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">all_params</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">File</span> <span class="n">saved</span> <span class="n">to</span><span class="p">:</span> <span class="n">model_test</span><span class="o">.</span><span class="n">npz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">load_params</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;model_test.npz&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param0</span><span class="p">,</span> <span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param1</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param2</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param3</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param4</span><span class="p">,</span> <span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">... </span><span class="n">Loading</span> <span class="n">param5</span><span class="p">,</span> <span class="p">(</span><span class="mi">10</span><span class="p">,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">put</span> <span class="n">parameters</span> <span class="n">into</span> <span class="n">a</span> <span class="n">TLayer</span> <span class="n">network</span><span class="p">,</span> <span class="n">please</span> <span class="n">see</span> <span class="n">assign_params</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez">Saving dictionary using numpy</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.load_npz">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_npz</code><span class="sig-paren">(</span><em>path=''</em>, <em>name='model.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_npz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_npz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the parameters of a Model saved by tl.files.save_npz().</p>
+<dl class="docutils">
+<dt>path</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>Folder path to .npz file.</dd>
+<dt>name</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>The name of the .npz file.</dd>
+</dl>
+<dl class="docutils">
+<dt>params</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">list</span><dd>A list of parameters in order.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">see</span> <span class="n">save_npz</span> <span class="ow">and</span> <span class="n">assign_params</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez">Saving dictionary using numpy</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="tlayer.files.assign_params">
+<code class="descclassname">tlayer.files.</code><code class="descname">assign_params</code><span class="sig-paren">(</span><em>sess</em>, <em>params</em>, <em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#assign_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.assign_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assign the given parameters to the TLayer network.</p>
+<p>sess : TensorFlow Session
+params : list</p>
+<blockquote>
+<div>A list of parameters in order.</div></blockquote>
+<dl class="docutils">
+<dt>network</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier"><code class="xref py py-class docutils literal"><span class="pre">Layer</span></code> class</span><dd>The network to be assigned</dd>
+</dl>
+<p>... Save your network as follow:
+&gt;&gt;&gt; tl.files.save_npz(network.all_params, name=&#8217;model_test.npz&#8217;)
+&gt;&gt;&gt; network.print_params()
+...
+... Next time, load and assign your network as follow:
+&gt;&gt;&gt; sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign
+&gt;&gt;&gt; load_params = tl.files.load_npz(name=&#8217;model_test.npz&#8217;)
+&gt;&gt;&gt; tl.files.assign_params(sess, load_params, network)
+&gt;&gt;&gt; network.print_params()</p>
+<p><a class="reference external" href="http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable">Assign value to a TensorFlow variable</a></p>
+</dd></dl>
+
 </div>
 <div class="section" id="load-and-save-variables">
 <h2>Load and save variables<a class="headerlink" href="#load-and-save-variables" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.files.save_any_to_npy">
+<code class="descclassname">tlayer.files.</code><code class="descname">save_any_to_npy</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='any.npy'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#save_any_to_npy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.save_any_to_npy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save variables to .npy file.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_any_to_npy</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npy_to_any</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="descclassname">tlayer.files.</code><code class="descname">save_any_to_npy</code><span class="sig-paren">(</span><em>save_dict={}</em>, <em>name='any.npy'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#save_any_to_npy"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Save variables to .npy file.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">save_any_to_npy</span><span class="p">(</span><span class="n">save_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]},</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_npy_to_any</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;test.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="visualizing-npz-file">
 <h2>Visualizing npz file<a class="headerlink" href="#visualizing-npz-file" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.files.npz_to_W_pdf">
+<code class="descclassname">tlayer.files.</code><code class="descname">npz_to_W_pdf</code><span class="sig-paren">(</span><em>path=None</em>, <em>regx='w1pre_[0-9]+\\.(npz)'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#npz_to_W_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.npz_to_W_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().</p>
+<dl class="docutils">
+<dt>path</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>A folder path to npz files.</dd>
+<dt>regx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>Regx for the file name.</dd>
+</dl>
+<p>... convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+&gt;&gt;&gt; tl.files.npz_to_W_pdf(path=&#8217;/Users/.../npz_file/&#8217;, regx=&#8217;w1pre_[0-9]+.(npz)&#8217;)</p>
+</dd></dl>
+
 </div>
 <div class="section" id="helper-functions">
 <h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.files.load_file_list">
+<code class="descclassname">tlayer.files.</code><code class="descname">load_file_list</code><span class="sig-paren">(</span><em>path=None</em>, <em>regx='\\.npz'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/files.html#load_file_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.files.load_file_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a file list in a folder by given a path and regular expression.</p>
+<dl class="docutils">
+<dt>path</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string or None</span><dd>A folder path.</dd>
+<dt>regx</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string</span><dd>The regx of file name.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_list</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">load_file_list</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regx</span><span class="o">=</span><span class="s1">&#39;w1pre_[0-9]+\.(npz)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

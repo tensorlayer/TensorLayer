@@ -151,33 +151,83 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="tlayer-utils">
-<h1><code class="xref py py-mod docutils literal"><span class="pre">tlayer.utils</span></code><a class="headerlink" href="#tlayer-utils" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-tlayer.utils">
+<span id="tlayer-utils"></span><h1><a class="reference internal" href="#module-tlayer.utils" title="tlayer.utils"><code class="xref py py-mod docutils literal"><span class="pre">tlayer.utils</span></code></a><a class="headerlink" href="#module-tlayer.utils" title="Permalink to this headline">¶</a></h1>
 <table border="1" class="longtable docutils">
 <colgroup>
 <col width="10%" />
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">evaluation</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.utils.evaluation" title="tlayer.utils.evaluation"><code class="xref py py-obj docutils literal"><span class="pre">evaluation</span></code></a>([y_test,&nbsp;y_predict,&nbsp;n_classes])</td>
+<td>Input the predicted results, targets results and the number of class, return the confusion matrix, F1-score of each class, accuracy and macro F1-score.</td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">class_balancing_oversample</span></code></td>
-<td></td>
+<tr class="row-even"><td><a class="reference internal" href="#tlayer.utils.class_balancing_oversample" title="tlayer.utils.class_balancing_oversample"><code class="xref py py-obj docutils literal"><span class="pre">class_balancing_oversample</span></code></a>([X_train,&nbsp;...])</td>
+<td>Input the features and labels, return the features and labels after oversampling.</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">dict_to_one</span></code></td>
-<td></td>
+<tr class="row-odd"><td><a class="reference internal" href="#tlayer.utils.dict_to_one" title="tlayer.utils.dict_to_one"><code class="xref py py-obj docutils literal"><span class="pre">dict_to_one</span></code></a>([dp_dict])</td>
+<td>Input a dictionary, return a dictionary that all items are set to one, use for disable dropout, dropconnect layer and so on.</td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="evaluation-functions">
 <h2>Evaluation functions<a class="headerlink" href="#evaluation-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.utils.evaluation">
+<code class="descclassname">tlayer.utils.</code><code class="descname">evaluation</code><span class="sig-paren">(</span><em>y_test=None</em>, <em>y_predict=None</em>, <em>n_classes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/utils.html#evaluation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.utils.evaluation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input the predicted results, targets results and
+the number of class, return the confusion matrix, F1-score of each class,
+accuracy and macro F1-score.</p>
+<dl class="docutils">
+<dt>y_test</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>target results</dd>
+<dt>y_predict</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array or list</span><dd>predicted results</dd>
+<dt>n_classes</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">int</span><dd>number of classes</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c_mat</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">acc</span><span class="p">,</span> <span class="n">f1_macro</span> <span class="o">=</span> <span class="n">evaluation</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_predict</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="class-balancing-functions">
 <h2>Class balancing functions<a class="headerlink" href="#class-balancing-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.utils.class_balancing_oversample">
+<code class="descclassname">tlayer.utils.</code><code class="descname">class_balancing_oversample</code><span class="sig-paren">(</span><em>X_train=None</em>, <em>y_train=None</em>, <em>printable=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/utils.html#class_balancing_oversample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.utils.class_balancing_oversample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input the features and labels, return the features and labels after oversampling.</p>
+<dl class="docutils">
+<dt>X_train</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>Features, each row is an example</dd>
+<dt>y_train</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">numpy.array</span><dd>Labels</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">class_balancing_oversample</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">printable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="helper-functions">
 <h2>Helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="tlayer.utils.dict_to_one">
+<code class="descclassname">tlayer.utils.</code><code class="descname">dict_to_one</code><span class="sig-paren">(</span><em>dp_dict={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/tlayer/utils.html#dict_to_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tlayer.utils.dict_to_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input a dictionary, return a dictionary that all items are set to one,
+use for disable dropout, dropconnect layer and so on.</p>
+<dl class="docutils">
+<dt>dp_dict</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dictionary</span><dd>keeping probabilities</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dp_dict</span> <span class="o">=</span> <span class="n">dict_to_one</span><span class="p">(</span> <span class="n">network</span><span class="o">.</span><span class="n">all_drop</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dp_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

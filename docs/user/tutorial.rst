@@ -13,14 +13,14 @@ translation.
 
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
-    will understand how TLayer work. After that, we recommend you to read
+    will understand how `TLayer`_ work. After that, we recommend you to read
     the codes for tutorial directly.
 
 Before we start
 ===============
 
 The tutorial assumes that you are somewhat familiar with neural networks and
-TensorFlow (the library which TLayer is built on top of). You can try to learn
+TensorFlow (the library which `TLayer`_ is built on top of). You can try to learn
 both at once from the `Deeplearning Tutorial`_.
 
 For a more slow-paced introduction to artificial neural networks, we recommend
@@ -29,7 +29,7 @@ al., `Neural Networks and Deep Learning`_ by Michael Nielsen.
 
 To learn more about TensorFlow, have a look at the `TensorFlow tutorial`_. You will not
 need all of it, but a basic understanding of how TensorFlow works is required to be
-able to use TLayer. If you're new to TensorFlow, going through that tutorial.
+able to use `TLayer`_. If you're new to TensorFlow, going through that tutorial.
 
 
 Run the MNIST example
@@ -42,7 +42,7 @@ Run the MNIST example
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
-included in the source distribution of TLayer. MNIST dataset contains 60000
+included in the source distribution of `TLayer`_. MNIST dataset contains 60000
 handwritten digits that is commonly used for training various
 image processing systems, each of digit has 28x28 pixels.
 
@@ -1973,8 +1973,7 @@ iteration functions (:mod:`tlayer.iterate`),
 preprocessing functions (:mod:`tlayer.preprocess`),
 
 
-
-
+.. _TLayer: https://github.com/zsdonghao/tlayer/
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/
