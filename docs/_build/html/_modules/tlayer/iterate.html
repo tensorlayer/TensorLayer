@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tlayer.iterate &mdash; TLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TLayer 1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html">Your Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#competitions">Competitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#applications">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#recruitment">Recruitment</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">TLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tlayer.iterate</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tlayer.iterate</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
+
+<div class="viewcode-block" id="minibatches"><a class="viewcode-back" href="../../modules/iterate.html#tlayer.iterate.minibatches">[docs]</a><span class="k">def</span> <span class="nf">minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a generator that input a group of example in 2D numpy.array and</span>
+<span class="sd">    their labels, return the examples and labels by the given batchsize.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    inputs : numpy.array</span>
+<span class="sd">        (X) The input features, every row is a example.</span>
+<span class="sd">    targets : numpy.array</span>
+<span class="sd">        (y) The labels of inputs, every row is a example.</span>
+<span class="sd">    batch_size : int</span>
+<span class="sd">        The batch size.</span>
+<span class="sd">    shuffle : boolean</span>
+<span class="sd">        Indicating whether to use a shuffling queue, shuffle the dataset before return.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X = np.asarray([[&#39;a&#39;,&#39;a&#39;], [&#39;b&#39;,&#39;b&#39;], [&#39;c&#39;,&#39;c&#39;], [&#39;d&#39;,&#39;d&#39;], [&#39;e&#39;,&#39;e&#39;], [&#39;f&#39;,&#39;f&#39;]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.asarray([0,1,2,3,4,5])</span>
+<span class="sd">    &gt;&gt;&gt; for batch in tl.iterate.minibatches(inputs=X, targets=y, batch_size=2, shuffle=False):</span>
+<span class="sd">    &gt;&gt;&gt;     print(batch)</span>
+<span class="sd">    ... (array([[&#39;a&#39;, &#39;a&#39;],</span>
+<span class="sd">    ...        [&#39;b&#39;, &#39;b&#39;]],</span>
+<span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([0, 1]))</span>
+<span class="sd">    ... (array([[&#39;c&#39;, &#39;c&#39;],</span>
+<span class="sd">    ...        [&#39;d&#39;, &#39;d&#39;]],</span>
+<span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([2, 3]))</span>
+<span class="sd">    ... (array([[&#39;e&#39;, &#39;e&#39;],</span>
+<span class="sd">    ...        [&#39;f&#39;, &#39;f&#39;]],</span>
+<span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([4, 5]))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">))</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-</span> <span class="n">batch_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">excerpt</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">start_idx</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">excerpt</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">inputs</span><span class="p">[</span><span class="n">excerpt</span><span class="p">],</span> <span class="n">targets</span><span class="p">[</span><span class="n">excerpt</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="seq_minibatches"><a class="viewcode-back" href="../../modules/iterate.html#tlayer.iterate.seq_minibatches">[docs]</a><span class="k">def</span> <span class="nf">seq_minibatches</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a generator that return a batch of sequence inputs and targets.</span>
+<span class="sd">    It is for the &quot;Synced sequence input and output&quot; as</span>
+<span class="sd">    `Karpathy RNN Blog &lt;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&gt;`_</span>
+<span class="sd">    shows.</span>
+
+<span class="sd">    If batch_size = 100, seq_length = 5, a return input will have 500 rows (examples).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; Synced sequence input and output.</span>
+<span class="sd">    &gt;&gt;&gt; X = np.asarray([[&#39;a&#39;,&#39;a&#39;], [&#39;b&#39;,&#39;b&#39;], [&#39;c&#39;,&#39;c&#39;], [&#39;d&#39;,&#39;d&#39;], [&#39;e&#39;,&#39;e&#39;], [&#39;f&#39;,&#39;f&#39;]])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.asarray([0, 1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; for batch in tl.iterate.seq_minibatches(inputs=X, targets=y, batch_size=2, seq_length=2, stride=1):</span>
+<span class="sd">    &gt;&gt;&gt;     print(batch)</span>
+<span class="sd">    ... (array([[&#39;a&#39;, &#39;a&#39;],</span>
+<span class="sd">    ...        [&#39;b&#39;, &#39;b&#39;],</span>
+<span class="sd">    ...         [&#39;b&#39;, &#39;b&#39;],</span>
+<span class="sd">    ...         [&#39;c&#39;, &#39;c&#39;]],</span>
+<span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([0, 1, 1, 2]))</span>
+<span class="sd">    ... (array([[&#39;c&#39;, &#39;c&#39;],</span>
+<span class="sd">    ...         [&#39;d&#39;, &#39;d&#39;],</span>
+<span class="sd">    ...         [&#39;d&#39;, &#39;d&#39;],</span>
+<span class="sd">    ...         [&#39;e&#39;, &#39;e&#39;]],</span>
+<span class="sd">    ...         dtype=&#39;&lt;U1&#39;), array([2, 3, 3, 4]))</span>
+<span class="sd">    ...</span>
+<span class="sd">    ...</span>
+<span class="sd">    &gt;&gt;&gt; Many to One</span>
+<span class="sd">    &gt;&gt;&gt; return_last = True</span>
+<span class="sd">    &gt;&gt;&gt; num_steps = 2</span>
+<span class="sd">    &gt;&gt;&gt; X = np.asarray([[&#39;a&#39;,&#39;a&#39;], [&#39;b&#39;,&#39;b&#39;], [&#39;c&#39;,&#39;c&#39;], [&#39;d&#39;,&#39;d&#39;], [&#39;e&#39;,&#39;e&#39;], [&#39;f&#39;,&#39;f&#39;]])</span>
+<span class="sd">    &gt;&gt;&gt; Y = np.asarray([0,1,2,3,4,5])</span>
+<span class="sd">    &gt;&gt;&gt; for batch in tl.iterate.seq_minibatches(inputs=X, targets=Y, batch_size=2, seq_length=num_steps, stride=1):</span>
+<span class="sd">    &gt;&gt;&gt;     x, y = batch</span>
+<span class="sd">    &gt;&gt;&gt;     if return_last:</span>
+<span class="sd">    &gt;&gt;&gt;         tmp_y = y.reshape((-1, num_steps) + y.shape[1:])</span>
+<span class="sd">    &gt;&gt;&gt;     y = tmp_y[:, -1]</span>
+<span class="sd">    &gt;&gt;&gt;     print(x, y)</span>
+<span class="sd">    ... [[&#39;a&#39; &#39;a&#39;]</span>
+<span class="sd">    ... [&#39;b&#39; &#39;b&#39;]</span>
+<span class="sd">    ... [&#39;b&#39; &#39;b&#39;]</span>
+<span class="sd">    ... [&#39;c&#39; &#39;c&#39;]] [1 2]</span>
+<span class="sd">    ... [[&#39;c&#39; &#39;c&#39;]</span>
+<span class="sd">    ... [&#39;d&#39; &#39;d&#39;]</span>
+<span class="sd">    ... [&#39;d&#39; &#39;d&#39;]</span>
+<span class="sd">    ... [&#39;e&#39; &#39;e&#39;]] [3 4]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+    <span class="n">n_loads</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">stride</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">seq_length</span> <span class="o">-</span> <span class="n">stride</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_loads</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">stride</span><span class="p">)):</span>
+        <span class="n">seq_inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">)</span> <span class="o">+</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                              <span class="n">dtype</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">seq_targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">seq_length</span><span class="p">)</span> <span class="o">+</span> <span class="n">targets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+                               <span class="n">dtype</span><span class="o">=</span><span class="n">targets</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b_idx</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="n">start_seq_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="p">(</span><span class="n">b_idx</span> <span class="o">*</span> <span class="n">stride</span><span class="p">)</span>
+            <span class="n">end_seq_idx</span> <span class="o">=</span> <span class="n">start_seq_idx</span> <span class="o">+</span> <span class="n">seq_length</span>
+            <span class="n">seq_inputs</span><span class="p">[</span><span class="n">b_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="n">start_seq_idx</span><span class="p">:</span><span class="n">end_seq_idx</span><span class="p">]</span>
+            <span class="n">seq_targets</span><span class="p">[</span><span class="n">b_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">targets</span><span class="p">[</span><span class="n">start_seq_idx</span><span class="p">:</span><span class="n">end_seq_idx</span><span class="p">]</span>
+        <span class="n">flatten_inputs</span> <span class="o">=</span> <span class="n">seq_inputs</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">flatten_targets</span> <span class="o">=</span> <span class="n">seq_targets</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">targets</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">yield</span> <span class="n">flatten_inputs</span><span class="p">,</span> <span class="n">flatten_targets</span></div>
+
+<div class="viewcode-block" id="ptb_iterator"><a class="viewcode-back" href="../../modules/iterate.html#tlayer.iterate.ptb_iterator">[docs]</a><span class="k">def</span> <span class="nf">ptb_iterator</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterates on a list of words. Yields (Returns) the source contexts and</span>
+<span class="sd">    the target context by the given batch_size and num_steps (sequence_length).\n</span>
+<span class="sd">    see ``PTB tutorial``.</span>
+
+<span class="sd">    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,</span>
+<span class="sd">    raw_data = [i for i in range(100)]</span>
+
+<span class="sd">    In TensorFlow&#39;s tutorial, this generates batch_size pointers into the raw</span>
+<span class="sd">    PTB data, and allows minibatch iteration along these pointers.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw_data : a list</span>
+<span class="sd">            the context in list format; note that context usually be</span>
+<span class="sd">            represented by splitting by space, and then convert to unique</span>
+<span class="sd">            word IDs.</span>
+<span class="sd">    batch_size : int</span>
+<span class="sd">            the batch size.</span>
+<span class="sd">    num_steps : int</span>
+<span class="sd">            the number of unrolls. i.e. sequence_length</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    Pairs of the batched data, each a matrix of shape [batch_size, num_steps].</span>
+<span class="sd">    The second element of the tuple is the same data time-shifted to the</span>
+<span class="sd">    right by one.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError : if batch_size or num_steps are too high.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; train_data = [i for i in range(20)]</span>
+<span class="sd">    &gt;&gt;&gt; for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):</span>
+<span class="sd">    &gt;&gt;&gt;     x, y = batch</span>
+<span class="sd">    &gt;&gt;&gt;     print(x, &#39;\n&#39;,y)</span>
+<span class="sd">    ... [[ 0  1  2] &lt;---x                       1st subset/ iteration</span>
+<span class="sd">    ...  [10 11 12]]</span>
+<span class="sd">    ... [[ 1  2  3] &lt;---y</span>
+<span class="sd">    ...  [11 12 13]]</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... [[ 3  4  5]  &lt;--- 1st batch input       2nd subset/ iteration</span>
+<span class="sd">    ...  [13 14 15]] &lt;--- 2nd batch input</span>
+<span class="sd">    ... [[ 4  5  6]  &lt;--- 1st batch target</span>
+<span class="sd">    ...  [14 15 16]] &lt;--- 2nd batch target</span>
+<span class="sd">    ...</span>
+<span class="sd">    ... [[ 6  7  8]                             3rd subset/ iteration</span>
+<span class="sd">    ...  [16 17 18]]</span>
+<span class="sd">    ... [[ 7  8  9]</span>
+<span class="sd">    ...  [17 18 19]]</span>
+
+<span class="sd">    Code Reference</span>
+<span class="sd">    --------------</span>
+<span class="sd">    tensorflow/models/rnn/ptb/reader.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+    <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+    <span class="n">batch_len</span> <span class="o">=</span> <span class="n">data_len</span> <span class="o">//</span> <span class="n">batch_size</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">batch_len</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[</span><span class="n">batch_len</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="n">batch_len</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+    <span class="n">epoch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">num_steps</span>
+
+    <span class="k">if</span> <span class="n">epoch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;epoch_size == 0, decrease batch_size or num_steps&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epoch_size</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="o">*</span><span class="n">num_steps</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_steps</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="o">*</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">num_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># def minibatches_for_sequence2D(inputs, targets, batch_size, sequence_length, stride=1):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Input a group of example in 2D numpy.array and their labels.</span>
+<span class="c1">#     Return the examples and labels by the given batchsize, sequence_length.</span>
+<span class="c1">#     Use for RNN.</span>
+<span class="c1">#</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     inputs : numpy.array</span>
+<span class="c1">#         (X) The input features, every row is a example.</span>
+<span class="c1">#     targets : numpy.array</span>
+<span class="c1">#         (y) The labels of inputs, every row is a example.</span>
+<span class="c1">#     batchsize : int</span>
+<span class="c1">#         The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</span>
+<span class="c1">#     sequence_length : int</span>
+<span class="c1">#         The sequence length</span>
+<span class="c1">#     stride : int</span>
+<span class="c1">#         The stride step</span>
+<span class="c1">#</span>
+<span class="c1">#     Examples</span>
+<span class="c1">#     --------</span>
+<span class="c1">#     &gt;&gt;&gt; sequence_length = 2</span>
+<span class="c1">#     &gt;&gt;&gt; batch_size = 4</span>
+<span class="c1">#     &gt;&gt;&gt; stride = 1</span>
+<span class="c1">#     &gt;&gt;&gt; X_train = np.asarray([[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],[22,23,24]])</span>
+<span class="c1">#     &gt;&gt;&gt; y_train = np.asarray([&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;])</span>
+<span class="c1">#     &gt;&gt;&gt; print(&#39;X_train = %s&#39; % X_train)</span>
+<span class="c1">#     &gt;&gt;&gt; print(&#39;y_train = %s&#39; % y_train)</span>
+<span class="c1">#     &gt;&gt;&gt; for batch in minibatches_for_sequence2D(X_train, y_train, batch_size=batch_size, sequence_length=sequence_length, stride=stride):</span>
+<span class="c1">#     &gt;&gt;&gt;     inputs, targets = batch</span>
+<span class="c1">#     &gt;&gt;&gt;     print(inputs)</span>
+<span class="c1">#     &gt;&gt;&gt;     print(targets)</span>
+<span class="c1">#     ... [[ 1.  2.  3.]</span>
+<span class="c1">#     ... [ 4.  5.  6.]</span>
+<span class="c1">#     ... [ 4.  5.  6.]</span>
+<span class="c1">#     ... [ 7.  8.  9.]]</span>
+<span class="c1">#     ... [1 2]</span>
+<span class="c1">#     ... [[  4.   5.   6.]</span>
+<span class="c1">#     ... [  7.   8.   9.]</span>
+<span class="c1">#     ... [  7.   8.   9.]</span>
+<span class="c1">#     ... [ 10.  11.  12.]]</span>
+<span class="c1">#     ... [2 3]</span>
+<span class="c1">#     ... ...</span>
+<span class="c1">#     ... [[ 16.  17.  18.]</span>
+<span class="c1">#     ... [ 19.  20.  21.]</span>
+<span class="c1">#     ... [ 19.  20.  21.]</span>
+<span class="c1">#     ... [ 22.  23.  24.]]</span>
+<span class="c1">#     ... [6 7]</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     print(&#39;len(targets)=%d batch_size=%d sequence_length=%d stride=%d&#39; % (len(targets), batch_size, sequence_length, stride))</span>
+<span class="c1">#     assert len(inputs) == len(targets), &#39;1 feature vector have 1 target vector/value&#39; #* sequence_length</span>
+<span class="c1">#     # assert int(batch_size % sequence_length) == 0, &#39;batch_size % sequence_length must == 0\</span>
+<span class="c1">#     # batch_size is number of examples rather than number of targets&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     # print(inputs.shape, len(inputs), len(inputs[0]))</span>
+<span class="c1">#</span>
+<span class="c1">#     n_targets = int(batch_size/sequence_length)</span>
+<span class="c1">#     # n_targets = int(np.ceil(batch_size/sequence_length))</span>
+<span class="c1">#     X = np.empty(shape=(0,len(inputs[0])), dtype=np.float32)</span>
+<span class="c1">#     y = np.zeros(shape=(1, n_targets), dtype=np.int32)</span>
+<span class="c1">#</span>
+<span class="c1">#     for idx in range(sequence_length, len(inputs), stride):  # go through all example during 1 epoch</span>
+<span class="c1">#         for n in range(n_targets):   # for num of target</span>
+<span class="c1">#             X = np.concatenate((X, inputs[idx-sequence_length+n:idx+n]))</span>
+<span class="c1">#             y[0][n] = targets[idx-1+n]</span>
+<span class="c1">#             # y = np.vstack((y, targets[idx-1+n]))</span>
+<span class="c1">#         yield X, y[0]</span>
+<span class="c1">#         X = np.empty(shape=(0,len(inputs[0])))</span>
+<span class="c1">#         # y = np.empty(shape=(1,0))</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def minibatches_for_sequence4D(inputs, targets, batch_size, sequence_length, stride=1): #</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Input a group of example in 4D numpy.array and their labels.</span>
+<span class="c1">#     Return the examples and labels by the given batchsize, sequence_length.</span>
+<span class="c1">#     Use for RNN.</span>
+<span class="c1">#</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     inputs : numpy.array</span>
+<span class="c1">#         (X) The input features, every row is a example.</span>
+<span class="c1">#     targets : numpy.array</span>
+<span class="c1">#         (y) The labels of inputs, every row is a example.</span>
+<span class="c1">#     batchsize : int</span>
+<span class="c1">#         The batch size must be a multiple of sequence_length: int(batch_size % sequence_length) == 0</span>
+<span class="c1">#     sequence_length : int</span>
+<span class="c1">#         The sequence length</span>
+<span class="c1">#     stride : int</span>
+<span class="c1">#         The stride step</span>
+<span class="c1">#</span>
+<span class="c1">#     Examples</span>
+<span class="c1">#     --------</span>
+<span class="c1">#     &gt;&gt;&gt; sequence_length = 2</span>
+<span class="c1">#     &gt;&gt;&gt; batch_size = 2</span>
+<span class="c1">#     &gt;&gt;&gt; stride = 1</span>
+<span class="c1">#     &gt;&gt;&gt; X_train = np.asarray([[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],[22,23,24]])</span>
+<span class="c1">#     &gt;&gt;&gt; y_train = np.asarray([&#39;0&#39;,&#39;1&#39;,&#39;2&#39;,&#39;3&#39;,&#39;4&#39;,&#39;5&#39;,&#39;6&#39;,&#39;7&#39;])</span>
+<span class="c1">#     &gt;&gt;&gt; X_train = np.expand_dims(X_train, axis=1)</span>
+<span class="c1">#     &gt;&gt;&gt; X_train = np.expand_dims(X_train, axis=3)</span>
+<span class="c1">#     &gt;&gt;&gt; for batch in minibatches_for_sequence4D(X_train, y_train, batch_size=batch_size, sequence_length=sequence_length, stride=stride):</span>
+<span class="c1">#     &gt;&gt;&gt;     inputs, targets = batch</span>
+<span class="c1">#     &gt;&gt;&gt;     print(inputs)</span>
+<span class="c1">#     &gt;&gt;&gt;     print(targets)</span>
+<span class="c1">#     ... [[[[ 1.]</span>
+<span class="c1">#     ...    [ 2.]</span>
+<span class="c1">#     ...    [ 3.]]]</span>
+<span class="c1">#     ... [[[ 4.]</span>
+<span class="c1">#     ...   [ 5.]</span>
+<span class="c1">#     ...   [ 6.]]]]</span>
+<span class="c1">#     ... [1]</span>
+<span class="c1">#     ... [[[[ 4.]</span>
+<span class="c1">#     ...    [ 5.]</span>
+<span class="c1">#     ...    [ 6.]]]</span>
+<span class="c1">#     ... [[[ 7.]</span>
+<span class="c1">#     ...   [ 8.]</span>
+<span class="c1">#     ...   [ 9.]]]]</span>
+<span class="c1">#     ... [2]</span>
+<span class="c1">#     ... ...</span>
+<span class="c1">#     ... [[[[ 19.]</span>
+<span class="c1">#     ...    [ 20.]</span>
+<span class="c1">#     ...    [ 21.]]]</span>
+<span class="c1">#     ... [[[ 22.]</span>
+<span class="c1">#     ...   [ 23.]</span>
+<span class="c1">#     ...   [ 24.]]]]</span>
+<span class="c1">#     ... [7]</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     print(&#39;len(targets)=%d batch_size=%d sequence_length=%d stride=%d&#39; % (len(targets), batch_size, sequence_length, stride))</span>
+<span class="c1">#     assert len(inputs) == len(targets), &#39;1 feature vector have 1 target vector/value&#39; #* sequence_length</span>
+<span class="c1">#     # assert int(batch_size % sequence_length) == 0, &#39;in LSTM, batch_size % sequence_length must == 0\</span>
+<span class="c1">#     # batch_size is number of X_train rather than number of targets&#39;</span>
+<span class="c1">#     assert stride &gt;= 1, &#39;stride must be &gt;=1, at least move 1 step for each iternation&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#     n_example, n_channels, width, height = inputs.shape</span>
+<span class="c1">#     print(&#39;n_example=%d n_channels=%d width=%d height=%d&#39; % (n_example, n_channels, width, height))</span>
+<span class="c1">#</span>
+<span class="c1">#     n_targets = int(np.ceil(batch_size/sequence_length)) # 实际为 batchsize/sequence_length + 1</span>
+<span class="c1">#     print(n_targets)</span>
+<span class="c1">#     X = np.zeros(shape=(batch_size, n_channels, width, height), dtype=np.float32)</span>
+<span class="c1">#     # X = np.zeros(shape=(n_targets, sequence_length, n_channels, width, height), dtype=np.float32)</span>
+<span class="c1">#     y = np.zeros(shape=(1,n_targets), dtype=np.int32)</span>
+<span class="c1">#     # y = np.empty(shape=(0,1), dtype=np.float32)</span>
+<span class="c1">#     # time.sleep(2)</span>
+<span class="c1">#     for idx in range(sequence_length, n_example-n_targets+2, stride):  # go through all example during 1 epoch</span>
+<span class="c1">#         for n in range(n_targets):   # for num of target</span>
+<span class="c1">#             # print(idx+n, inputs[idx-sequence_length+n : idx+n].shape)</span>
+<span class="c1">#             X[n*sequence_length : (n+1)*sequence_length] = inputs[idx+n-sequence_length : idx+n]</span>
+<span class="c1">#             # X[n] = inputs[idx-sequence_length+n:idx+n]</span>
+<span class="c1">#             y[0][n] = targets[idx+n-1]</span>
+<span class="c1">#             # y = np.vstack((y, targets[idx-1+n]))</span>
+<span class="c1">#         # y = targets[idx: idx+n_targets]</span>
+<span class="c1">#         yield X, y[0]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TLayer Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

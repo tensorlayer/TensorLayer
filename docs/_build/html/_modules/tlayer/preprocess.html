@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tlayer.preprocess &mdash; TLayer 1.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="TLayer 1.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TLayer
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html">Your Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#competitions">Competitions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#applications">Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../user/more.html#recruitment">Recruitment</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/layers.html"><code class="docutils literal"><span class="pre">tlayer.layers</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/activation.html"><code class="docutils literal"><span class="pre">tlayer.activation</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/nlp.html"><code class="docutils literal"><span class="pre">tlayer.nlp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/rein.html"><code class="docutils literal"><span class="pre">tlayer.rein</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/iterate.html"><code class="docutils literal"><span class="pre">tlayer.iterate</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/cost.html"><code class="docutils literal"><span class="pre">tlayer.cost</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/visualize.html"><code class="docutils literal"><span class="pre">tlayer.visualize</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/files.html"><code class="docutils literal"><span class="pre">tlayer.files</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/utils.html"><code class="docutils literal"><span class="pre">tlayer.utils</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/preprocess.html"><code class="docutils literal"><span class="pre">tlayer.preprocess</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/ops.html"><code class="docutils literal"><span class="pre">tlayer.ops</span></code></a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">TLayer</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>tlayer.preprocess</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tlayer.preprocess</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/python</span>
+<span class="c1"># -*- coding: utf8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">tlayer</span> <span class="kn">as</span> <span class="nn">tl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numbers</span>
+
+
+<div class="viewcode-block" id="distorted_images"><a class="viewcode-back" href="../../modules/preprocess.html#tlayer.preprocess.distorted_images">[docs]</a><span class="k">def</span> <span class="nf">distorted_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Distort images for generating more training data.</span>
+
+<span class="sd">    Features</span>
+<span class="sd">    ---------</span>
+<span class="sd">    They are cropped to height * width pixels randomly.</span>
+
+<span class="sd">    They are approximately whitened to make the model insensitive to dynamic range.</span>
+
+<span class="sd">    Randomly flip the image from left to right.</span>
+
+<span class="sd">    Randomly distort the image brightness.</span>
+
+<span class="sd">    Randomly distort the image contrast.</span>
+
+<span class="sd">    Whiten (Normalize) the images.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : 4D Tensor</span>
+<span class="sd">        The tensor or placeholder of images</span>
+<span class="sd">    height : int</span>
+<span class="sd">        The height for random crop.</span>
+<span class="sd">    width: int</span>
+<span class="sd">        The width for random crop.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : tuple of Tensor</span>
+<span class="sd">        (Tensor for distorted images, Tensor for while loop index)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)</span>
+<span class="sd">    &gt;&gt;&gt; sess = tf.InteractiveSession()</span>
+<span class="sd">    &gt;&gt;&gt; batch_size = 128</span>
+<span class="sd">    &gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])</span>
+<span class="sd">    &gt;&gt;&gt; distorted_images_op = tl.preprocess.distorted_images(images=x, height=24, width=24)</span>
+<span class="sd">    &gt;&gt;&gt; sess.run(tf.initialize_all_variables())</span>
+<span class="sd">    &gt;&gt;&gt; feed_dict={x: X_train[0:batch_size,:,:,:]}</span>
+<span class="sd">    &gt;&gt;&gt; distorted_images, idx = sess.run(distorted_images_op, feed_dict=feed_dict)</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name=&#39;cifar10&#39;, dtype=np.uint8, fig_idx=20212)</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.images2d(distorted_images[1:10,:,:,:], second=10, saveable=False, name=&#39;distorted_images&#39;, dtype=None, fig_idx=23012)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ------</span>
+<span class="sd">    The first image in &#39;distorted_images&#39; should be removed.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    -----------</span>
+<span class="sd">    `tensorflow.models.image.cifar10.cifar10_input &lt;https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;unknow batch_size of images&#39;</span><span class="p">)</span>
+    <span class="n">distorted_x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">distorted_x</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">distorted_x</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="c1"># 1. Randomly crop a [height, width] section of the image.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">random_crop</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="p">[</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+        <span class="c1"># 2. Randomly flip the image horizontally.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">random_flip_left_right</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># 3. Randomly change brightness.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">random_brightness</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">max_delta</span><span class="o">=</span><span class="mi">63</span><span class="p">)</span>
+        <span class="c1"># 4. Randomly change contrast.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">random_contrast</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="mf">1.8</span><span class="p">)</span>
+        <span class="c1"># 5. Subtract off the mean and divide by the variance of the pixels.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">per_image_whitening</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># 6. Append the image to a batch.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">distorted_x</span><span class="p">,</span> <span class="n">image</span><span class="p">]),</span> <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">while_loop</span><span class="p">(</span><span class="n">cond</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">loop_vars</span><span class="o">=</span><span class="p">(</span><span class="n">distorted_x</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">parallel_iterations</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="crop_central_whiten_images"><a class="viewcode-back" href="../../modules/preprocess.html#tlayer.preprocess.crop_central_whiten_images">[docs]</a><span class="k">def</span> <span class="nf">crop_central_whiten_images</span><span class="p">(</span><span class="n">images</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">24</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Crop the central of image, and normailize it for test data.</span>
+
+<span class="sd">    They are cropped to central of height * width pixels.</span>
+
+<span class="sd">    Whiten (Normalize) the images.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    images : 4D Tensor</span>
+<span class="sd">        The tensor or placeholder of images</span>
+<span class="sd">    height : int</span>
+<span class="sd">        The height for central crop.</span>
+<span class="sd">    width: int</span>
+<span class="sd">        The width for central crop.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    result : tuple Tensor</span>
+<span class="sd">        (Tensor for distorted images, Tensor for while loop index)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)</span>
+<span class="sd">    &gt;&gt;&gt; sess = tf.InteractiveSession()</span>
+<span class="sd">    &gt;&gt;&gt; batch_size = 128</span>
+<span class="sd">    &gt;&gt;&gt; x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])</span>
+<span class="sd">    &gt;&gt;&gt; central_images_op = tl.preprocess.crop_central_whiten_images(images=x, height=24, width=24)</span>
+<span class="sd">    &gt;&gt;&gt; sess.run(tf.initialize_all_variables())</span>
+<span class="sd">    &gt;&gt;&gt; feed_dict={x: X_train[0:batch_size,:,:,:]}</span>
+<span class="sd">    &gt;&gt;&gt; central_images, idx = sess.run(central_images_op, feed_dict=feed_dict)</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name=&#39;cifar10&#39;, dtype=np.uint8, fig_idx=20212)</span>
+<span class="sd">    &gt;&gt;&gt; tl.visualize.images2d(central_images[1:10,:,:,:], second=10, saveable=False, name=&#39;central_images&#39;, dtype=None, fig_idx=23012)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ------</span>
+<span class="sd">    The first image in &#39;central_images&#39; should be removed.</span>
+
+<span class="sd">    Code References</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    tensorflow.models.image.cifar10.cifar10_input</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;unknow batch_size of images&#39;</span><span class="p">)</span>
+    <span class="n">central_x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">constant</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">c</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">central_x</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">central_x</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="c1"># 1. Crop the central [height, width] of the image.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">resize_image_with_crop_or_pad</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+        <span class="c1"># 2. Subtract off the mean and divide by the variance of the pixels.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">per_image_whitening</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># 5. Append the image to a batch.</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">central_x</span><span class="p">,</span> <span class="n">image</span><span class="p">]),</span> <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">while_loop</span><span class="p">(</span><span class="n">cond</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">loop_vars</span><span class="o">=</span><span class="p">(</span><span class="n">central_x</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">parallel_iterations</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="c1">#</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, TLayer Contributors.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'1.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
