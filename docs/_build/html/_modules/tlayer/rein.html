@@ -155,7 +155,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">xrange</span>
 
-<div class="viewcode-block" id="discount_episode_rewards"><a class="viewcode-back" href="../../modules/rein.html#tlayer.rein.discount_episode_rewards">[docs]</a><span class="k">def</span> <span class="nf">discount_episode_rewards</span><span class="p">(</span><span class="n">rewards</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">):</span>
+<div class="viewcode-block" id="discount_episode_rewards"><a class="viewcode-back" href="../../modules/rein.html#tlayer.rein.discount_episode_rewards">[docs]</a><span class="k">def</span> <span class="nf">discount_episode_rewards</span><span class="p">(</span><span class="n">rewards</span><span class="o">=</span><span class="p">[],</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Take 1D float array of rewards and compute discounted rewards for an</span>
 <span class="sd">    episode. When encount a non-zero value, consider as the end a of an episode.</span>
 

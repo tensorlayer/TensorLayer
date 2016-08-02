@@ -15,7 +15,8 @@ def exit_tf(sess=None):
 
     Parameters
     ----------
-    sess : a session instance of tensorflow
+    sess : a session instance of TensorFlow
+        TensorFlow session
     """
     text = "Close tensorboard and nvidia-process if available"
     sess.close()
@@ -41,7 +42,8 @@ def clear_all(printable=True):
 
     Parameters
     ----------
-    printable : if True, print all deleted variables.
+    printable : boolean
+        If True, print all deleted variables.
     """
     print('clear all .....................................')
     gl = globals().copy()
@@ -81,8 +83,10 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 
     Parameters
     ----------
-    sess : a :sess instance of tensorflow
-    gpu_fraction : float (0 ~ 1], fraction of GPU memory
+    sess : a session instance of TensorFlow
+        TensorFlow session
+    gpu_fraction : a float
+        Fraction of GPU memory, (0 ~ 1]
 
     References
     ----------

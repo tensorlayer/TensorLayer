@@ -93,7 +93,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
 
 ## Sampling functions
-def sample(a, temperature=1.0):
+def sample(a=[], temperature=1.0):
     """Sample an index from a probability array.
 
     Parameters
@@ -139,8 +139,15 @@ def sample(a, temperature=1.0):
         # print(b)
         return np.argmax(np.random.multinomial(1, b, 1))
 
-def sample_top(a, top_k=10):
+def sample_top(a=[], top_k=10):
     """Sample from ``top_k`` probabilities.
+
+    Parameters
+    ----------
+    a : a list
+        List of probabilities.
+    top_k : int
+        Number of candidates to be considered.
     """
     a = np.array(a)
     idx = np.argsort(a)[::-1]
@@ -160,7 +167,7 @@ def simple_read_words(filename="nietzsche.txt"):
         words = f.read()
         return words
 
-def read_words(filename, replace = ['\n', '<eos>']):
+def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     """File to list format context.
     Note that: this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
@@ -289,7 +296,7 @@ def build_reverse_dictionary(word_to_id):
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
 
-def build_words_dataset(words, vocabulary_size=50000, printable=True, unk_key = 'UNK'):
+def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key = 'UNK'):
     """Build the words dictionary and replace rare words with 'UNK' token.
     The most common word has the smallest integer id.
 
@@ -356,7 +363,7 @@ def build_words_dataset(words, vocabulary_size=50000, printable=True, unk_key = 
             "the limited vocabulary_size must be less than or equal to the read vocabulary_size"
     return data, count, dictionary, reverse_dictionary
 
-def words_to_word_ids(data, word_to_id, unk_key = 'UNK'):
+def words_to_word_ids(data=[], word_to_id={}, unk_key = 'UNK'):
     """Given a context (words) in list format and the vocabulary,
     Returns a list of IDs to represent the context.
 
@@ -437,7 +444,7 @@ def word_ids_to_words(data, id_to_word):
     """
     return [id_to_word[i] for i in data]
 
-def save_vocab(count, name='vocab.txt'):
+def save_vocab(count=[], name='vocab.txt'):
     """Save the vocabulary to a file so the model can be reloaded.
 
     Parameters

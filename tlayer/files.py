@@ -120,7 +120,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     plotable : True, False
         Whether to plot some image examples.
     second : int
-        If 'plotable' is True, 'second' is the display time.
+        If ``plotable`` is True, ``second`` is the display time.
 
     Examples
     --------
@@ -485,7 +485,8 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
     return X_train, y_train, X_test, y_test
 
 def load_nietzsche_dataset():
-    """Load Nietzsche dataset
+    """Load Nietzsche dataset.
+    Returns a string.
     """
     if sys.version_info[0] == 2:
         from urllib import urlretrieve
@@ -644,7 +645,7 @@ def load_npz(path='', name='model.npz'):
 
     Examples
     --------
-    >>> see save_npz and assign_params
+    See save_npz and assign_params
 
     References
     ----------
@@ -666,7 +667,7 @@ def assign_params(sess, params, network):
     sess : TensorFlow Session
     params : list
         A list of parameters in order.
-    network : :class:`Layer` class
+    network : a :class:`Layer` class
         The network to be assigned
 
     Examples

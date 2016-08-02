@@ -1046,10 +1046,6 @@ class RNNLayer(Layer):
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    # is_reshape : boolen (deprecate)
-    #     Reshape the inputs to 3 dimension tensor.\n
-    #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
-    #     If input is [batch_size * n_steps, n_features], we need to reshape it.
     return_seq_2d : boolen
         When return_last = False\n
             if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
@@ -1127,6 +1123,10 @@ class RNNLayer(Layer):
         # self.inputs.get_shape().with_rank(2)
         # self.inputs.get_shape().with_rank(3)
 
+        # is_reshape : boolen (deprecate)
+        #     Reshape the inputs to 3 dimension tensor.\n
+        #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
+        #     If input is [batch_size * n_steps, n_features], we need to reshape it.
         # if is_reshape:
         #     self.inputs = tf.reshape(self.inputs, shape=[-1, n_steps, int(self.inputs._shape[-1])])
 
@@ -1317,7 +1317,7 @@ class ReshapeLayer(Layer):
     Examples
     --------
     ... The core of this layer is ``tf.reshape``.
-    ... Use TensorFlow only:
+    ... Use TensorFlow only :
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()

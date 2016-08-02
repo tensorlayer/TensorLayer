@@ -114,7 +114,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
         yield flatten_inputs, flatten_targets
 
 def ptb_iterator(raw_data, batch_size, num_steps):
-    """Iterates on a list of words. Yields (Returns) the source contexts and
+    """
+    Iterates on a list of words. Yields (Returns) the source contexts and
     the target context by the given batch_size and num_steps (sequence_length).\n
     see ``PTB tutorial``.
 
@@ -143,14 +144,14 @@ def ptb_iterator(raw_data, batch_size, num_steps):
 
     Raises
     ------
-    ValueError : if batch_size or num_steps are too high.
+    ValueError, if batch_size or num_steps are too high.
 
     Examples
     --------
     >>> train_data = [i for i in range(20)]
     >>> for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):
     >>>     x, y = batch
-    >>>     print(x, '\n',y)
+    >>>     print(x, "\n",y)
     ... [[ 0  1  2] <---x                       1st subset/ iteration
     ...  [10 11 12]]
     ... [[ 1  2  3] <---y

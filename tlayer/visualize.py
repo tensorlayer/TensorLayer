@@ -20,11 +20,11 @@ def W(W=None, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=239
         The display second(s) for the image(s), if saveable is False.
     saveable : boolen
         Save or plot the figure.
-    shape: list with 2 int
+    shape : a list with 2 int
         The shape of feature image, MNIST is [28, 80].
     name : a string
         A name to save the image, if saveable is True.
-    fig_idx: int
+    fig_idx : int
         matplotlib figure index.
 
     Examples
@@ -82,7 +82,7 @@ def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
-    fig_idx: int
+    fig_idx : int
         matplotlib figure index.
 
     Examples
@@ -118,7 +118,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
-    fig_idx: int
+    fig_idx : int
         matplotlib figure index.
 
     Examples
@@ -182,7 +182,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None,
         A name to save the image, if saveable is True.
     dtype : None or numpy data type
         The data type for displaying the images.
-    fig_idx: int
+    fig_idx : int
         matplotlib figure index.
 
     Examples
@@ -248,7 +248,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500,
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
-    fig_idx: int
+    fig_idx : int
         matplotlib figure index.
 
     Examples

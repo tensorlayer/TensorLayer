@@ -32,7 +32,7 @@ def distorted_images(images=None, height=24, width=24):
         The tensor or placeholder of images
     height : int
         The height for random crop.
-    width: int
+    width : int
         The width for random crop.
 
     Returns

@@ -163,7 +163,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sess : a session instance of tensorflow</span>
+<span class="sd">    sess : a session instance of TensorFlow</span>
+<span class="sd">        TensorFlow session</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Close tensorboard and nvidia-process if available&quot;</span>
     <span class="n">sess</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -189,7 +190,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    printable : if True, print all deleted variables.</span>
+<span class="sd">    printable : boolean</span>
+<span class="sd">        If True, print all deleted variables.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;clear all .....................................&#39;</span><span class="p">)</span>
     <span class="n">gl</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -229,8 +231,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sess : a :sess instance of tensorflow</span>
-<span class="sd">    gpu_fraction : float (0 ~ 1], fraction of GPU memory</span>
+<span class="sd">    sess : a session instance of TensorFlow</span>
+<span class="sd">        TensorFlow session</span>
+<span class="sd">    gpu_fraction : a float</span>
+<span class="sd">        Fraction of GPU memory, (0 ~ 1]</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

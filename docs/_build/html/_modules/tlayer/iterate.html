@@ -262,7 +262,8 @@
         <span class="k">yield</span> <span class="n">flatten_inputs</span><span class="p">,</span> <span class="n">flatten_targets</span></div>
 
 <div class="viewcode-block" id="ptb_iterator"><a class="viewcode-back" href="../../modules/iterate.html#tlayer.iterate.ptb_iterator">[docs]</a><span class="k">def</span> <span class="nf">ptb_iterator</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Iterates on a list of words. Yields (Returns) the source contexts and</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Iterates on a list of words. Yields (Returns) the source contexts and</span>
 <span class="sd">    the target context by the given batch_size and num_steps (sequence_length).\n</span>
 <span class="sd">    see ``PTB tutorial``.</span>
 
@@ -291,14 +292,14 @@
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    ValueError : if batch_size or num_steps are too high.</span>
+<span class="sd">    ValueError, if batch_size or num_steps are too high.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; train_data = [i for i in range(20)]</span>
 <span class="sd">    &gt;&gt;&gt; for batch in ptb_iterator(train_data, batch_size=2, num_steps=3):</span>
 <span class="sd">    &gt;&gt;&gt;     x, y = batch</span>
-<span class="sd">    &gt;&gt;&gt;     print(x, &#39;\n&#39;,y)</span>
+<span class="sd">    &gt;&gt;&gt;     print(x, &quot;\n&quot;,y)</span>
 <span class="sd">    ... [[ 0  1  2] &lt;---x                       1st subset/ iteration</span>
 <span class="sd">    ...  [10 11 12]]</span>
 <span class="sd">    ... [[ 1  2  3] &lt;---y</span>

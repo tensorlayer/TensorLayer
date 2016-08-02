@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 
-def discount_episode_rewards(rewards, gamma=0.99):
+def discount_episode_rewards(rewards=[], gamma=0.99):
     """ Take 1D float array of rewards and compute discounted rewards for an
     episode. When encount a non-zero value, consider as the end a of an episode.
 

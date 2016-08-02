@@ -268,7 +268,7 @@
 <span class="sd">    plotable : True, False</span>
 <span class="sd">        Whether to plot some image examples.</span>
 <span class="sd">    second : int</span>
-<span class="sd">        If &#39;plotable&#39; is True, &#39;second&#39; is the display time.</span>
+<span class="sd">        If ``plotable`` is True, ``second`` is the display time.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -633,7 +633,8 @@
     <span class="k">return</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span></div>
 
 <div class="viewcode-block" id="load_nietzsche_dataset"><a class="viewcode-back" href="../../modules/files.html#tlayer.files.load_nietzsche_dataset">[docs]</a><span class="k">def</span> <span class="nf">load_nietzsche_dataset</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Load Nietzsche dataset</span>
+    <span class="sd">&quot;&quot;&quot;Load Nietzsche dataset.</span>
+<span class="sd">    Returns a string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">urlretrieve</span>
@@ -792,7 +793,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; see save_npz and assign_params</span>
+<span class="sd">    See save_npz and assign_params</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -814,7 +815,7 @@
 <span class="sd">    sess : TensorFlow Session</span>
 <span class="sd">    params : list</span>
 <span class="sd">        A list of parameters in order.</span>
-<span class="sd">    network : :class:`Layer` class</span>
+<span class="sd">    network : a :class:`Layer` class</span>
 <span class="sd">        The network to be assigned</span>
 
 <span class="sd">    Examples</span>
