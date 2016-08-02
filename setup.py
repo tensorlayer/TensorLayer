@@ -17,7 +17,7 @@ setup(
     packages = find_packages(),
     install_requires=install_requires,
     # scripts=['tutorial_mnist.py'],
-    description = "Deep learning and Reinforcement learning library for Researcher and Engineer",
+    description = "Deep learning and Reinforcement learning library for Researchers and Engineers",
     keywords = "deep learning, reinforcement learning, tensorflow",
     platform=['any'],
 )

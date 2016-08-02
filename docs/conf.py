@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# TensorLayer documentation build configuration file, created by
-# sphinx-quickstart on Thu Jun 16 15:53:34 2016.
+# TLayer documentation build configuration file, created by
+# sphinx-quickstart on Tue Aug  2 15:30:55 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -17,17 +17,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os, sys
+sys.path.insert(0, os.path.abspath("../"))
 
-
-# import mock
-# import sys
-#
-# MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate']
-# for mod_name in MOCK_MODULES:
-#     sys.modules[mod_name] = mock.Mock()
 
 # -- General configuration ------------------------------------------------
 
@@ -38,7 +30,13 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    'sphinx.ext.doctest',
+    'sphinx.ext.coverage',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -57,9 +55,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'TensorLayer'
-copyright = '2016, TensorLayer contributors'
-author = 'TensorLayer contributors'
+project = 'TLayer'
+copyright = '2016, TLayer Contributors'
+author = 'TLayer Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -142,7 +140,7 @@ todo_include_todos = False
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'TensorLayer v1.1'
+# html_title = 'TLayer v1.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -242,7 +240,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'TensorLayerdoc'
+htmlhelp_basename = 'TLayerdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -268,8 +266,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'TensorLayer.tex', 'TensorLayer Documentation',
-     'TensorLayer contributors', 'manual'),
+    (master_doc, 'TLayer.tex', 'TLayer Documentation',
+     'TLayer Contributors', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -304,7 +302,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'tensorlayer', 'TensorLayer Documentation',
+    (master_doc, 'tlayer', 'TLayer Documentation',
      [author], 1)
 ]
 
@@ -319,8 +317,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'TensorLayer', 'TensorLayer Documentation',
-     author, 'TensorLayer', 'One line description of project.',
+    (master_doc, 'TLayer', 'TLayer Documentation',
+     author, 'TLayer', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -330,9 +328,100 @@ texinfo_documents = [
 
 # If false, no module index is generated.
 #
+# texinfo_domain_indices = True
+
+# How to display URL addresses: 'footnote', 'no', or 'inline'.
+#
+# texinfo_show_urls = 'footnote'
+
+# If true, do not generate a @detailmenu in the "Top" node's menu.
+#
+# texinfo_no_detailmenu = False
 
 
+# -- Options for Epub output ----------------------------------------------
 
+# Bibliographic Dublin Core info.
+epub_title = project
+epub_author = author
+epub_publisher = author
+epub_copyright = copyright
+
+# The basename for the epub file. It defaults to the project name.
+# epub_basename = project
+
+# The HTML theme for the epub output. Since the default themes are not
+# optimized for small screen space, using the same theme for HTML and epub
+# output is usually not wise. This defaults to 'epub', a theme designed to save
+# visual space.
+#
+# epub_theme = 'epub'
+
+# The language of the text. It defaults to the language option
+# or 'en' if the language is not set.
+#
+# epub_language = ''
+
+# The scheme of the identifier. Typical schemes are ISBN or URL.
+# epub_scheme = ''
+
+# The unique identifier of the text. This can be a ISBN number
+# or the project homepage.
+#
+# epub_identifier = ''
+
+# A unique identification for the text.
+#
+# epub_uid = ''
+
+# A tuple containing the cover image and cover page html template filenames.
+#
+# epub_cover = ()
+
+# A sequence of (type, uri, title) tuples for the guide element of content.opf.
+#
+# epub_guide = ()
+
+# HTML files that should be inserted before the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#
+# epub_pre_files = []
+
+# HTML files that should be inserted after the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#
+# epub_post_files = []
+
+# A list of files that should not be packed into the epub file.
+epub_exclude_files = ['search.html']
+
+# The depth of the table of contents in toc.ncx.
+#
+# epub_tocdepth = 3
+
+# Allow duplicate toc entries.
+#
+# epub_tocdup = True
+
+# Choose between 'default' and 'includehidden'.
+#
+# epub_tocscope = 'default'
+
+# Fix unsupported image types using the Pillow.
+#
+# epub_fix_images = False
+
+# Scale large images.
+#
+# epub_max_image_width = 0
+
+# How to display URL addresses: 'footnote', 'no', or 'inline'.
+#
+# epub_show_urls = 'inline'
+
+# If false, no index is generated.
+#
+# epub_use_index = True
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
               'sphinx.ext.intersphinx',
@@ -346,17 +435,3 @@ extensions = ['sphinx.ext.autodoc',
 pygments_style = 'sphinx'
 html_theme = "sphinx_rtd_theme"
 html_theme_path = ["_themes", ]
-# html_theme_options = {
-#     "rightsidebar": "true",
-#     "relbarbgcolor": "black"
-# }
-
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-#
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-#
-# texinfo_no_detailmenu = False
