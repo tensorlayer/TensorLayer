@@ -1,15 +1,18 @@
-.. _tutorial:
+.. _more:
 
-=================
+============
+More
+============
+
+
 Your Contribution
 =================
 
 There are many functions need to be contributed such as
 Maxout, ResNet, Bi-directional RNN, Neural Turing Machine etc.
-Please push on Github, every bit helps and will be credited.
+Please push on `GitHub`_, every bit helps and will be credited.
 
 
-============
 Competitions
 ============
 
@@ -17,7 +20,6 @@ Coming soon
 
 
 
-============
 Applications
 ============
 
@@ -39,7 +41,7 @@ Implementation
 Citation
 ^^^^^^^^
 
-===========
+
 Recruitment
 ===========
 
@@ -69,7 +71,7 @@ and other ways to
 
 
 
-
+.. _GitHub: https://github.com/zsdonghao/tlayer
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/

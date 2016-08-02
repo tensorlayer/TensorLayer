@@ -1316,8 +1316,8 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
-    ... The core of this layer is ``tf.reshape``.
-    ... Use TensorFlow only :
+    >>> The core of this layer is ``tf.reshape``.
+    >>> Use TensorFlow only :
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()
