@@ -61,7 +61,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 │
 ├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
 ├── docs 				<--- readthedocs folder
-│   └── _build
+│   └── _build          <--- not included in the remote repo but can be generated in `docs` using `make html`
 │   	 └──html
 │			 └──index.html <--- homepage of the documentation
 ├── tutorials_*.py	 	<--- tutorials include NLP, DL, RL etc.
@@ -359,7 +359,11 @@ Your method can be merged into TLayer, if you can prove it is better than the ex
 
 
 # Online Documentation
-The documentation is placed in [Read the Docs](http://tlayer.readthedocs.io/en/latest/).
+The documentation is placed in [Read the Docs](http://tlayer.readthedocs.io/en/latest/). To generate the documentation yourself, do this:
+```shell
+cd docs
+make html
+```
 
 # Download Documentation
 Alternatively you can download the documentation via [Read the Docs](https://media.readthedocs.org/pdf/tlayer/latest/tlayer.pdf) as well.
