@@ -7,18 +7,23 @@ Welcome to TLayer
   :align: center
   :target: https://github.com/zsdonghao/tlayer
 
-`TLayer <https://github.com/zsdonghao/tlayer>`_ was designed for both Researchers
+`TLayer`_ was designed for both Researchers
 and Engineers, it is a transparent library built on the top of Google TensorFlow.
 It was designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations and developments.
-TLayer is easy to extended and modified.
+`TLayer`_ is easy to extended and modified.
 In addition, we provides mass examples and tutorials
 to help you to find the one you need in your project.
 
 The `documentation <http://tlayer.readthedocs.io/en/latest/user/tutorial.html>`_
-is not only for describing how to use TLayer but also
+is not only for describing how to use `TLayer`_ but also
 a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.
+
+However, different with other inflexible TensorFlow wrappers,
+`TLayer`_ assumes that you are somewhat familiar with Neural Networks and TensorFlow.
+A basic understanding of how TensorFlow works is required to be
+able to use `TLayer`_ skillfully.
 
 
 .. _TLayer-philosopy:
@@ -26,7 +31,7 @@ Reinforcement Learning and Natural Language Processing etc.
 Philosophy
 ----------
 
-TLayer grew out of a need to combine the flexibility of TensorFlow with the
+`TLayer`_ grew out of a need to combine the flexibility of TensorFlow with the
 availability of the right building blocks for training neural networks.
 Its development is guided by a number of design goals:
 
@@ -107,3 +112,7 @@ Indices and tables
 * :ref:`search`
 
 .. _GitHub: https://github.com/zsdonghao/tlayer
+
+
+
+.. _TLayer: https://github.com/zsdonghao/tlayer/
