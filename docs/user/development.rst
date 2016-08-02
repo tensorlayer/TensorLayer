@@ -8,7 +8,7 @@ The TLayer project was started by Hao Dong, Imperial College London in Jun
 `Simiao Yu <https://github.com/zsdonghao>`_,)
 and numerous additional contributors on `GitHub`_,
 
-As an open-source project by researchers for researchers and engineers,
+As an open-source project by Researchers for Researchers and Engineers,
 we highly welcome contributions!
 Every bit helps and will be credited.
 
@@ -87,7 +87,7 @@ following commands:
 
     pip install Sphinx
     sphinx-quickstart
-    
+
     cd docs
     make html
 

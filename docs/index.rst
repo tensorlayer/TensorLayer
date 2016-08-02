@@ -62,8 +62,9 @@ Its development is guided by a number of design goals:
 
 .. note::
    If you got problem to read the docs online, you could download the project
-   on github, then go to ``/docs/_build/html/index.html`` to read the docs
-   offline.
+   on `GitHub`_, then go to ``/docs/_build/html/index.html`` to read the docs
+   offline. The ``_build`` folder can be generated in `docs` using `make html`.
+
 
 
 
@@ -111,8 +112,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
 .. _GitHub: https://github.com/zsdonghao/tlayer
-
-
-
 .. _TLayer: https://github.com/zsdonghao/tlayer/

@@ -62,7 +62,10 @@ The installation instructions of TensorFlow are written to be very detailed on T
 However, there are something need to be considered.
 
 TensorFlow release
-===========================
+====================
+
+TensorFlow
+-----------
 
 `TensorFlow <https://www.tensorflow.org/versions/master/get_started/os_setup.html>`_ only officially
 supports GPU acceleration for Linux at present.
@@ -72,7 +75,7 @@ If you want to use GPU with Mac OX, you need to compile TensorFlow from source.
   For ARM processor architecture, you also need to install TensorFlow from source.
 
 TLayer
-------------
+--------
 
 Hao Dong highly recommend you to install TLayer as follow.
 
@@ -108,9 +111,6 @@ Install the latest CUDA and cuDNN available from NVIDIA:
 After installation, make sure ``/usr/local/cuda/bin`` is in your ``PATH`` (use ``echo #PATH`` to check), and
 ``nvcc --version`` works. Also ensure ``/usr/local/cuda/lib64`` is in your
 ``LD_LIBRARY_PATH``, so the CUDA libraries can be found.
-
-TensorFlow
--------------
 
 If CUDA is set up correctly, the following command should print some GPU information on
 the terminal:
