@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# TLayer documentation build configuration file, created by
+# TuneLayer documentation build configuration file, created by
 # sphinx-quickstart on Tue Aug  2 15:30:55 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -55,9 +55,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'TLayer'
-copyright = '2016, TLayer Contributors'
-author = 'TLayer Contributors'
+project = 'TuneLayer'
+copyright = '2016, TuneLayer Contributors'
+author = 'TuneLayer Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -140,7 +140,7 @@ todo_include_todos = False
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'TLayer v1.1'
+# html_title = 'TuneLayer v1.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
@@ -240,7 +240,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'TLayerdoc'
+htmlhelp_basename = 'TuneLayerdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -266,8 +266,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'TLayer.tex', 'TLayer Documentation',
-     'TLayer Contributors', 'manual'),
+    (master_doc, 'TuneLayer.tex', 'TuneLayer Documentation',
+     'TuneLayer Contributors', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -302,7 +302,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'tlayer', 'TLayer Documentation',
+    (master_doc, 'tunelayer', 'TuneLayer Documentation',
      [author], 1)
 ]
 
@@ -317,8 +317,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'TLayer', 'TLayer Documentation',
-     author, 'TLayer', 'One line description of project.',
+    (master_doc, 'TuneLayer', 'TuneLayer Documentation',
+     author, 'TuneLayer', 'One line description of project.',
      'Miscellaneous'),
 ]
 

@@ -4,7 +4,7 @@
 Installation
 ============
 
-TLayer has some prerequisites that need to be installed first, including
+TuneLayer has some prerequisites that need to be installed first, including
 `TensorFlow <https://www.tensorflow.org>`_, numpy and matplotlib. For GPU
 support CUDA and cuDNN are required.
 
@@ -21,7 +21,7 @@ Prerequisites
 Python + pip
 -------------
 
-TLayer is build on the top of Python-version TensorFlow. Please install
+TuneLayer is build on the top of Python-version TensorFlow. Please install
 Python first.
 
 .. note::
@@ -74,19 +74,19 @@ If you want to use GPU with Mac OX, you need to compile TensorFlow from source.
 .. warning::
   For ARM processor architecture, you also need to install TensorFlow from source.
 
-TLayer
---------
+TuneLayer
+---------
 
-Hao Dong highly recommend you to install TLayer as follow.
+Hao Dong highly recommend you to install TuneLayer as follow.
 
 .. code-block:: bash
 
   cd to the root of the git tree
   pip3 install . -e
 
-This command will run the ``setup.py`` to install TLayer. The ``-e`` allows
-you to edit the scripts in ``tlayer`` folder, this help you to extend and modify
-TLayer easily.
+This command will run the ``setup.py`` to install TuneLayer. The ``-e`` allows
+you to edit the scripts in ``tunelayer`` folder, this help you to extend and modify
+TuneLayer easily.
 
 
 GPU support

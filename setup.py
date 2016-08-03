@@ -7,12 +7,12 @@ install_requires = [
 ]
 
 setup(
-    name = "tlayer",
+    name = "tunelayer",
     version = "1.1",
     include_package_data=True,
-    author='TLayer Contributors',
+    author='TuneLayer Contributors',
     author_email='hao.dong11@imperial.ac.uk',
-    url = "https://github.com/zsdonghao/tlayer" ,
+    url = "https://github.com/zsdonghao/tunelayer" ,
     license = "apache" ,
     packages = find_packages(),
     install_requires=install_requires,

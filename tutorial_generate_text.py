@@ -1,4 +1,4 @@
- # Copyright 2016 TLayer. All Rights Reserved.
+ # Copyright 2016 TuneLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ tensorflow (0.9.0)
 """
 
 import tensorflow as tf
-import tlayer as tl
+import tunelayer as tl
 import numpy as np
 import time
 import re
@@ -208,7 +208,7 @@ def main_lstm_generate_text():
     else:
         print("Load data and creat dictionaries ....")
         ## You can read any txt file by using this:
-        # words = customized_read_words(input_fpath="tlayer/data/trump_twitter.txt")
+        # words = customized_read_words(input_fpath="tunelayer/data/trump_twitter.txt")
         ## Alternatively, you can use the Nietzsche dataset as follow:
         words = tl.files.load_nietzsche_dataset()
         words = basic_clean_str(words)

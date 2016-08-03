@@ -25,7 +25,7 @@ tensorflow (0.9.0)
 import gym
 import tensorflow as tf
 import numpy as np
-import tlayer as tl
+import tunelayer as tl
 import time
 
 # hyperparameters

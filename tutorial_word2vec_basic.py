@@ -1,4 +1,4 @@
- # Copyright 2016 TLayer. All Rights Reserved.
+ # Copyright 2016 TuneLayer. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import random
 import numpy as np
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
-import tlayer as tl
+import tunelayer as tl
 import time
 
 flags = tf.flags
@@ -217,7 +217,7 @@ def main_word2vec_basic():
     sess.run(tf.initialize_all_variables())
     if resume:
         print("Load existing model" + "!"*10)
-        # instead of using TensorFlow saver, we use TLayer to load a model
+        # instead of using TensorFlow saver, we use TuneLayer to load a model
         # saver = tf.train.Saver()
         # saver.restore(sess, model_file_name+'.ckpt')
         load_params = tl.files.load_npz(name=model_file_name+'.npz')
@@ -266,7 +266,7 @@ def main_word2vec_basic():
 
         if (step % (print_freq * 20) == 0) and (step != 0):
             print("Save model, data and dictionaries" + "!"*10);
-            # instead of using TensorFlow saver, we use TLayer to save a model
+            # instead of using TensorFlow saver, we use TuneLayer to save a model
             # saver = tf.train.Saver()
             # save_path = saver.save(sess, model_file_name+'.ckpt')
             tl.files.save_npz(emb_net.all_params, name=model_file_name+'.npz')

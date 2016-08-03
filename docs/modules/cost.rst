@@ -1,14 +1,14 @@
-:mod:`tlayer.cost`
+:mod:`tunelayer.cost`
 =======================
 
-To make TLayer simple, we minimize the number of cost functions as much as
+To make TuneLayer simple, we minimize the number of cost functions as much as
 we can. So we encourage you to use TensorFlow's function.
 For example, you can implement L1, L2 and sum regularization by
 ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 
-.. automodule:: tlayer.cost
+.. automodule:: tunelayer.cost
 
 .. autosummary::
 

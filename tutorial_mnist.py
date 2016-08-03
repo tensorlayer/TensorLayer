@@ -3,8 +3,8 @@
 
 
 import tensorflow as tf
-import tlayer as tl
-from tlayer.layers import set_keep
+import tunelayer as tl
+from tunelayer.layers import set_keep
 import numpy as np
 import time
 
@@ -92,7 +92,7 @@ def main_test_layers(model='relu'):
     y = network.outputs
     y_op = tf.argmax(tf.nn.softmax(y), 1)
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    # Alternatively, you can use TLayer's function to compute cost:
+    # Alternatively, you can use TuneLayer's function to compute cost:
     # cost = tf.cost.cross_entropy(y, y_)
 
     # You can add more penalty to the cost function as follow.

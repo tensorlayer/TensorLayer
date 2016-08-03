@@ -1,9 +1,9 @@
-:mod:`tlayer.nlp`
+:mod:`tunelayer.nlp`
 ======================
 
 Natural Language Processing and Word Representation.
 
-.. automodule:: tlayer.nlp
+.. automodule:: tunelayer.nlp
 
 .. autosummary::
 

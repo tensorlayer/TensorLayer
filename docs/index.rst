@@ -1,37 +1,37 @@
-Welcome to TLayer
+Welcome to TuneLayer
 =======================================
 
 
-.. image:: user/my_figs/img_tlayer.png
+.. image:: user/my_figs/img_tunelayer.png
   :scale: 25 %
   :align: center
-  :target: https://github.com/zsdonghao/tlayer
+  :target: https://github.com/zsdonghao/tunelayer
 
-`TLayer`_ was designed for both Researchers
+`TuneLayer`_ was designed for both Researchers
 and Engineers, it is a transparent library built on the top of Google TensorFlow.
 It was designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations and developments.
-`TLayer`_ is easy to extended and modified.
+`TuneLayer`_ is easy to extended and modified.
 In addition, we provides mass examples and tutorials
 to help you to find the one you need in your project.
 
-The `documentation <http://tlayer.readthedocs.io/en/latest/user/tutorial.html>`_
-is not only for describing how to use `TLayer`_ but also
+The `documentation <http://tunelayer.readthedocs.io/en/latest/user/tutorial.html>`_
+is not only for describing how to use `TuneLayer`_ but also
 a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.
 
 However, different with other inflexible TensorFlow wrappers,
-`TLayer`_ assumes that you are somewhat familiar with Neural Networks and TensorFlow.
+`TuneLayer`_ assumes that you are somewhat familiar with Neural Networks and TensorFlow.
 A basic understanding of how TensorFlow works is required to be
-able to use `TLayer`_ skillfully.
+able to use `TuneLayer`_ skillfully.
 
 
-.. _TLayer-philosopy:
+.. _TuneLayer-philosopy:
 
 Philosophy
 ----------
 
-`TLayer`_ grew out of a need to combine the flexibility of TensorFlow with the
+`TuneLayer`_ grew out of a need to combine the flexibility of TensorFlow with the
 availability of the right building blocks for training neural networks.
 Its development is guided by a number of design goals:
 
@@ -71,8 +71,8 @@ Its development is guided by a number of design goals:
 User Guide
 ------------
 
-The TLayer user guide explains how to install TensorFlow, CUDA and cuDNN,
-how to build and train neural networks using TLayer, and how to contribute
+The TuneLayer user guide explains how to install TensorFlow, CUDA and cuDNN,
+how to build and train neural networks using TuneLayer, and how to contribute
 to the library as a developer.
 
 .. toctree::
@@ -113,5 +113,5 @@ Indices and tables
 * :ref:`search`
 
 
-.. _GitHub: https://github.com/zsdonghao/tlayer
-.. _TLayer: https://github.com/zsdonghao/tlayer/
+.. _GitHub: https://github.com/zsdonghao/tunelayer
+.. _TuneLayer: https://github.com/zsdonghao/tunelayer/

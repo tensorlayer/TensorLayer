@@ -1,10 +1,10 @@
-:mod:`tlayer.iterate`
+:mod:`tunelayer.iterate`
 ==========================
 
 Data iteration.
 
 
-.. automodule:: tlayer.iterate
+.. automodule:: tunelayer.iterate
 
 .. autosummary::
 

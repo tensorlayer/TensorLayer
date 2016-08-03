@@ -1,9 +1,9 @@
-:mod:`tlayer.rein`
+:mod:`tunelayer.rein`
 ==============================
 
 Reinforcement Learning.
 
-.. automodule:: tlayer.rein
+.. automodule:: tunelayer.rein
 
 .. autosummary::
 

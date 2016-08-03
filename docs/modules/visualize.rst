@@ -1,9 +1,9 @@
-:mod:`tlayer.visualize`
+:mod:`tunelayer.visualize`
 ============================
 
 Data Visualization.
 
-.. automodule:: tlayer.visualize
+.. automodule:: tunelayer.visualize
 
 .. autosummary::
 
