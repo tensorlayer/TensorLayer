@@ -93,7 +93,7 @@ def main_test_layers(model='relu'):
     y_op = tf.argmax(tf.nn.softmax(y), 1)
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
     # Alternatively, you can use TuneLayer's function to compute cost:
-    # cost = tf.cost.cross_entropy(y, y_)
+    # cost = tl.cost.cross_entropy(y, y_)
 
     # You can add more penalty to the cost function as follow.
     # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
