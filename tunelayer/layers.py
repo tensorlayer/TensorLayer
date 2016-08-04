@@ -86,19 +86,25 @@ def initialize_rnn_state(state):
     """
     if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
         # when state_is_tuple=True for LSTM
-        # c = state.c.eval()
-        # h = state.h.eval()
-        # return (c, h)
         # print(state)
-        # print(state[0])
-        new_state = state
-        new_state[0].assign(state[0].eval())
-        new_state[1].assign(state[1].eval())
-        # state[0] = state[0].eval()
-        # state[1] = state[1].eval()
-        # state.c = state.c.eval()
-        # state.h = state.h.eval()
-        return new_state
+        # print(state.c)
+        # print(state.h)
+        # print(state.c.eval())
+        # print(state.h.eval())
+        # exit()
+        c = state.c.eval()
+        h = state.h.eval()
+        return (c, h)
+        # # print(state)
+        # # print(state[0])
+        # new_state = state
+        # new_state[0].assign(state[0].eval())
+        # new_state[1].assign(state[1].eval())
+        # # state[0] = state[0].eval()
+        # # state[1] = state[1].eval()
+        # # state.c = state.c.eval()
+        # # state.h = state.h.eval()
+        # return new_state
     else:
         # when state_is_tuple=False for LSTM
         # or other RNNs
