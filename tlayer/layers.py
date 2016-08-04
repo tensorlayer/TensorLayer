@@ -672,8 +672,8 @@ class ReconLayer(DenseLayer):
             # self.cost = ce + L2_w + KLD
             # ----------------------------------------------------
             # Mean-squared-error was used in Vanilla AE
-            # print('     use: mse, L2_w, KLD')
-            # self.cost = mse + L2_w + KLD
+            print('     use: mse, L2_w, KLD')
+            self.cost = mse + L2_w + KLD
             # ----------------------------------------------------
             # Add DropNeuro penalty (P_o) can remove neurons of AE
             # print('     use: mse, L2_w, KLD, P_o')
@@ -681,8 +681,8 @@ class ReconLayer(DenseLayer):
             # ----------------------------------------------------
             # Add DropNeuro penalty (P_i) can remove neurons of previous layer
             #   If previous layer is InputLayer, it means remove useless features
-            print('     use: mse, L2_w, KLD, P_i')
-            self.cost = mse + L2_w + KLD + P_i
+            # print('     use: mse, L2_w, KLD, P_i')
+            # self.cost = mse + L2_w + KLD + P_i
         else:
             raise Exception("Don't support the given reconstruct activation function")
 
