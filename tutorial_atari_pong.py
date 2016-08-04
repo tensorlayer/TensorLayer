@@ -22,10 +22,10 @@ http://karpathy.github.io/2016/05/31/rl/
 tensorflow (0.9.0)
 """
 
-import gym
 import tensorflow as tf
+import tensorlayer as tl
+import gym
 import numpy as np
-import tunelayer as tl
 import time
 
 # hyperparameters

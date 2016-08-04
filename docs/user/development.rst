@@ -1,7 +1,7 @@
 Development
 ===========
 
-The TuneLayer project was started by Hao Dong, Imperial College London in Jun
+The TensorLayer project was started by Hao Dong, Imperial College London in Jun
 2016. It is developed by a core team (in alphabetical order:
 `Akara Supratak <https://akaraspt.github.io>`_,
 `Hao Dong <https://zsdonghao.github.io>`_,
@@ -20,7 +20,7 @@ Your method
 ~~~~~~~~~~~~~
 
 If you publish a new method in term of Deep learning and Reinforcement learning,
-you are welcome to contribute your method to TuneLayer.
+you are welcome to contribute your method to TensorLayer.
 
 * Explain how it would work, and link to a scientific paper if applicable.
 * Keep the scope as narrow as possible, to make it easier to implement.
@@ -32,12 +32,12 @@ Report bugs
 Report bugs at the `GitHub`_,
 If you are reporting a bug, please include:
 
-* your TuneLayer and TensorFlow version.
+* your TensorLayer and TensorFlow version.
 * steps to reproduce the bug, ideally reduced to a few Python commands.
 * the results you obtain, and the results you expected instead.
 
 If you are unsure whether the behavior you experience is a bug, or if you are
-unsure whether it is related to TuneLayer or TensorFlow, please just ask on `our
+unsure whether it is related to TensorLayer or TensorFlow, please just ask on `our
 mailing list`_ first.
 
 
@@ -45,7 +45,7 @@ Fix bugs
 ~~~~~~~~
 
 Look through the GitHub issues for bug reports. Anything tagged with "bug" is
-open to whoever wants to implement it. If you discover a bug in TuneLayer you can
+open to whoever wants to implement it. If you discover a bug in TensorLayer you can
 fix yourself, by all means feel free to just implement a fix and not report it
 first.
 
@@ -73,7 +73,7 @@ GitHub, then click the *Edit this file* link to edit the file in your browser
 and send us a Pull Request. All you need for this is a free GitHub account.
 
 For any more substantial changes, please follow the steps below to setup
-TuneLayer for development.
+TensorLayer for development.
 
 
 Documentation
@@ -106,7 +106,7 @@ To write the docs, we recommend you to install `Local RTD VM <http://docs.readth
 
 
 Afterwards, open ``docs/_build/html/index.html`` to view the documentation as
-it would appear on `readthedocs <http://tunelayer.readthedocs.org/>`_. If you
+it would appear on `readthedocs <http://tensorlayer.readthedocs.org/>`_. If you
 changed a lot and seem to get misleading error messages or warnings, run
 ``make clean html`` to force Sphinx to recreate all files from scratch.
 
@@ -122,7 +122,7 @@ syntax and conventions used, please refer to the following documents:
 Testing
 ~~~~~~~
 
-TuneLayer has a code coverage of 100%, which has proven very helpful in the past,
+TensorLayer has a code coverage of 100%, which has proven very helpful in the past,
 but also creates some duties:
 
 * Whenever you change any code, you should test whether it breaks existing
@@ -148,5 +148,5 @@ GitHub will close it when your request is merged.
 
 
 
-.. _GitHub: https://github.com/zsdonghao/tunelayer
+.. _GitHub: https://github.com/zsdonghao/tensorlayer
 .. _our mailing list: hao.dong11@imperial.ac.uk

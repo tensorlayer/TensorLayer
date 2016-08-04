@@ -7,12 +7,12 @@ install_requires = [
 ]
 
 setup(
-    name = "tunelayer",
+    name = "tensorlayer",
     version = "1.1",
     include_package_data=True,
-    author='TuneLayer Contributors',
+    author='TensorLayer Contributors',
     author_email='hao.dong11@imperial.ac.uk',
-    url = "https://github.com/zsdonghao/tunelayer" ,
+    url = "https://github.com/zsdonghao/tensorlayer" ,
     license = "apache" ,
     packages = find_packages(),
     install_requires=install_requires,

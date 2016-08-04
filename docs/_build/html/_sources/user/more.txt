@@ -23,7 +23,7 @@ Coming soon
 Applications
 ============
 
-There are some good applications implemented by TuneLayer.
+There are some good applications implemented by TensorLayer.
 You may able to find some useful examples for your project.
 If you want to share your application, please contact hao.dong11@imperial.ac.uk.
 
@@ -71,7 +71,7 @@ and other ways to
 
 
 
-.. _GitHub: https://github.com/zsdonghao/tunelayer
+.. _GitHub: https://github.com/zsdonghao/tensorlayer
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/
