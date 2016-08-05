@@ -22,6 +22,12 @@ Natural Language Processing and Word Representation.
    word_ids_to_words
    save_vocab
 
+   basic_tokenizer
+   create_vocabulary
+   initialize_vocabulary
+   sentence_to_token_ids
+   data_to_token_ids
+
 
 Iteration functions
 --------------------
@@ -49,7 +55,11 @@ Vector representations of words
 .. autofunction:: word_ids_to_words
 .. autofunction:: save_vocab
 
-Advanced functions for translation
------------------------------------
+Functions for translation
+---------------------------
 
-Coming soon
+.. autofunction:: basic_tokenizer
+.. autofunction:: create_vocabulary
+.. autofunction:: initialize_vocabulary
+.. autofunction:: sentence_to_token_ids
+.. autofunction:: data_to_token_ids

@@ -1169,11 +1169,14 @@ If everything is correct, you will see.
 
 .. code-block:: bash
 
+  Prepare raw data
   Load or Download WMT English-to-French translation > wmt
-  wmt/giga-fren.release2
-  wmt/newstest2013
-  wmt/vocab40000.fr
-  wmt/vocab40000.en
+  Training data : wmt/giga-fren.release2
+  Testing data : wmt/newstest2013
+
+  Create vocabularies
+  Vocabulary of French : wmt/vocab40000.fr
+  Vocabulary of English : wmt/vocab40000.en
   Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
     processing line 100000
     processing line 200000
@@ -1350,6 +1353,7 @@ English and French. It will take a while as well.
 
 .. code-block:: text
 
+  Tokenize data
   Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
     tokenizing line 100000
     tokenizing line 200000
@@ -1397,14 +1401,14 @@ Now, read all tokenized data into buckets and compute their sizes.
 
 .. code-block:: text
 
-  Reading development (testing) data into buckets
+  Read development (test) data into buckets
   dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
   en word_ids: [13388, 4, 949]
   en context: [b'Preventing', b'the', b'disease']
   fr word_ids: [23113, 8, 910, 2]
   fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
 
-  Reading training data into buckets (limit: 0).
+  Read training data into buckets (limit: 0)
     reading data line 100000
     reading data line 200000
     reading data line 300000
@@ -1425,7 +1429,9 @@ Now, read all tokenized data into buckets and compute their sizes.
   fr word_ids: [1089, 14, 261, 2]
   fr context: [b'Plan', b'du', b'site', b'_EOS']
 
-
+  the num of training data in each buckets: [239121, 1344322, 5239557, 10445326]
+  the num of training data: 17268326
+  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
 
 
 Start training by using the tokenized bucket data, the training process can
@@ -1433,6 +1439,8 @@ only be terminated by stop the program.
 When ``steps_per_checkpoint = 10`` you will see.
 
 .. code-block:: text
+
+  Create Embedding Attention Seq2seq Model
 
   global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
     eval: bucket 0 perplexity 5887.75
@@ -1554,7 +1562,7 @@ When ``steps_per_checkpoint = 10`` you will see.
 
 
 After training the model for 350000 steps, you can play with the translation by switch
-``train()`` to ``decode()``. You type in a English sentence, the program will outputs
+``main_train()`` to ``main_decode()``. You type in a English sentence, the program will outputs
 a French sentence.
 
 
@@ -1576,10 +1584,22 @@ Understand Translation
 Seq2seq
 ---------
 
+Sequence to sequence model is commonly be used to translate a language to another.
+Actually it can do many thing you can't imagine, we can translate
+a long sentence into short and simple sentence, for example, translation going
+from Shakespeare to modern English.
+With CNN, we can also translate a video into a sentence, i.e. video captioning.
+
+If you just want to use Seq2seq, the only think you need to consider is the
+data format including how to split the words, how to tokenize the words etc.
+In this tutorial, we described a lot about data formating.
+
+
+
 Basics
 ^^^^^^
 
-Sequence to sequence is a type of "Many to many" but different with Synced
+Sequence to sequence model is a type of "Many to many" but different with Synced
 sequence input and output in PTB tutorial. Seq2seq generates sequence output
 after feeding all sequence inputs. The following two methods can improve the
 accuracy:
@@ -1708,10 +1728,8 @@ In this script, one sentence is represented by one column, so assume
 
   where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
 
-During training,
-
-
-During prediction,
+During training, the decoder inputs are the targets; while,
+during prediction, the next decoder input is the last decoder output.
 
 
 Special vocabulary symbols, punctuations and digits
@@ -1764,18 +1782,28 @@ of both English and French.
 Sampled softmax
 ^^^^^^^^^^^^^^^
 
+Sampled softmax is a method to reduce the computation of cost so as to
+handle large output vocabulary. Instead of compute the cross-entropy of large
+output, we compute the loss from samples of ``num_samples``.
+
 
 Dataset iteration
 ^^^^^^^^^^^^^^^^^
 
-
+The iteration is done by ``EmbeddingAttentionSeq2seqWrapper.get_batch``, which get a random batch of data
+from the specified bucket, prepare for step. The data
 
 
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The ``EmbeddingAttentionSeq2seqWrapper`` has built in SGD optimizer.
+
+
 What Next?
 -----------
+
+Try other applications.
 
 
 

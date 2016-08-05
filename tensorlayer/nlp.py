@@ -479,7 +479,7 @@ def save_vocab(count=[], name='vocab.txt'):
             f.write("%s %d\n" % (tf.compat.as_text(count[i][0]), count[i][1]))
     print("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd))
 
-## Advanced functions for translation
+## Functions for translation
 def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
   """Very basic tokenizer: split the sentence into a list of tokens.
 

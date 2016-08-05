@@ -622,10 +622,17 @@ def save_npz(save_dict={}, name='model.npz'):
     ----------
     `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
-    rename_dict = {}
+    ## save params into a dictionary
+    # rename_dict = {}
+    # for k, value in enumerate(save_dict):
+    #     rename_dict.update({'param'+str(k) : value.eval()})
+    # np.savez(name, **rename_dict)
+    # print('Model is saved to: %s' % name)
+    ## save params into a list
+    save_list = []
     for k, value in enumerate(save_dict):
-        rename_dict.update({'param'+str(k) : value.eval()})
-    np.savez(name, **rename_dict)
+        save_list.append( value.eval() )
+    np.savez(name, params=save_list)
     print('Model is saved to: %s' % name)
 
 def load_npz(path='', name='model.npz'):
@@ -651,13 +658,23 @@ def load_npz(path='', name='model.npz'):
     ----------
     `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
+    ## if save_npz save params into a dictionary
+    # d = np.load( path+name )
+    # params = []
+    # print('Load Model')
+    # for key, val in sorted( d.items() ):
+    #     params.append(val)
+    #     print('Loading %s, %s' % (key, str(val.shape)))
+    # return params
+    ## if save_npz save params into a list
     d = np.load( path+name )
-    params = []
-    print('Load Model')
-    for key, val in sorted( d.items() ):
-        params.append(val)
-        print('Loading %s, %s' % (key, str(val.shape)))
-    return params
+    # for val in sorted( d.items() ):
+    #     params = val
+    #     return params
+    return d['params']
+    # print(d.items()[0][1]['params'])
+    # exit()
+    # return d.items()[0][1]['params']
 
 def assign_params(sess, params, network):
     """Assign the given parameters to the TLayer network.

@@ -54,11 +54,50 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
 import numpy as np
+import random
+import math
 import time
 import os
 import re
 import sys
 from six.moves import xrange
+
+# Data directory and vocabularies size
+data_dir = "wmt"                # Data directory
+train_dir = "wmt"               # Model directory save_dir
+fr_vocab_size = 40000           # French vocabulary size
+en_vocab_size = 40000           # English vocabulary size
+# Create vocabulary file (if it does not exist yet) from data file.
+_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])") # regular expression for word spliting. in basic_tokenizer.
+_DIGIT_RE = re.compile(br"\d")  # regular expression for search digits
+normalize_digits = True         # replace all digits to 0
+# Special vocabulary symbols
+_PAD = b"_PAD"                  # Padding
+_GO = b"_GO"                    # start to generate the output sentence
+_EOS = b"_EOS"                  # end of sentence of the output sentence
+_UNK = b"_UNK"                  # unknown word
+PAD_ID = 0                      # index (row number) in vocabulary
+GO_ID = 1
+EOS_ID = 2
+UNK_ID = 3
+_START_VOCAB = [_PAD, _GO, _EOS, _UNK]
+plot_data = True
+# Model
+buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+num_layers = 3
+size = 1024
+# Training
+learning_rate = 0.5
+learning_rate_decay_factor = 0.99
+max_gradient_norm = 5.0             # Truncated backpropagation
+batch_size = 64
+num_samples = 512                   # Sampled softmax
+max_train_data_size = 100             # Limit on the size of training data (0: no limit). DH: for fast testing, set a value
+steps_per_checkpoint = 10           # Print, save frequence
+# Save model
+model_file_name = "model_translate_enfr"
+resume = False
+is_npz = False                     # if true save by npz file, otherwise ckpt file
 
 
 def read_data(source_path, target_path, buckets, EOS_ID, max_size=None):
@@ -105,32 +144,16 @@ def main_train():
     Compare with Word2vec example, the dataset in this example is large,
     so we use TensorFlow's gfile functions to speed up the pre-processing.
     """
-    data_dir = "wmt"           # Data directory
-    train_dir = "wmt"          # Model directory save_dir
-    fr_vocab_size = 40000      # French vocabulary size
-    en_vocab_size = 40000      # English vocabulary size
-
-    ## Download or Load data
+    print()
+    print("Prepare raw data")
     train_path, dev_path = tl.files.load_wmt_en_fr_dataset(data_dir=data_dir)
     print("Training data : %s" % train_path)   # wmt/giga-fren.release2
     print("Testing data : %s" % dev_path)     # wmt/newstest2013
 
     """Step 2 : Create Vocabularies for both Training and Testing data.
     """
-    ## Create vocabulary file (if it does not exist yet) from data file.
-    _WORD_SPLIT = re.compile(b"([.,!?\"':;)(])") # regular expression for word spliting. in basic_tokenizer.
-    _DIGIT_RE = re.compile(br"\d")  # regular expression for search digits
-    normalize_digits = True         # replace all digits to 0
-    # Special vocabulary symbols
-    _PAD = b"_PAD"  #
-    _GO = b"_GO"    # start to generate the output sentence
-    _EOS = b"_EOS"  # end of sentence of the output sentence
-    _UNK = b"_UNK"  # unknown word
-    PAD_ID = 0      # index (row number) in vocabulary
-    GO_ID = 1
-    EOS_ID = 2
-    UNK_ID = 3
-    _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
+    print()
+    print("Create vocabularies")
     fr_vocab_path = os.path.join(data_dir, "vocab%d.fr" % fr_vocab_size)
     en_vocab_path = os.path.join(data_dir, "vocab%d.en" % en_vocab_size)
     print("Vocabulary of French : %s" % fr_vocab_path)    # wmt/vocab40000.fr
@@ -144,7 +167,9 @@ def main_train():
 
     """ Step 3 : Tokenize Training and Testing data.
     """
-    ## Create tokenized file for the training data by using the vocabulary file.
+    print()
+    print("Tokenize data")
+    # Create tokenized file for the training data by using the vocabulary file.
     # normalize_digits=True means set all digits to zero, so as to reduce
     # vocabulary size.
     fr_train_ids_path = train_path + (".ids%d.fr" % fr_vocab_size)
@@ -158,7 +183,7 @@ def main_train():
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
-    ## and also, we should create tokenized file for the development (testing) data.
+    # we should also create tokenized file for the development (testing) data.
     fr_dev_ids_path = dev_path + (".ids%d.fr" % fr_vocab_size)
     en_dev_ids_path = dev_path + (".ids%d.en" % en_vocab_size)
     print("Tokenized Testing data of French : %s" % fr_dev_ids_path)    # wmt/newstest2013.ids40000.fr
@@ -166,11 +191,11 @@ def main_train():
     tl.nlp.data_to_token_ids(dev_path + ".fr", fr_dev_ids_path, fr_vocab_path,
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
-    tl.files.data_to_token_ids(dev_path + ".en", en_dev_ids_path, en_vocab_path,
+    tl.nlp.data_to_token_ids(dev_path + ".en", en_dev_ids_path, en_vocab_path,
                                 tokenizer=None, normalize_digits=normalize_digits,
                                 UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
 
-    ## You can get the word_to_id dictionary and id_to_word list as follow.
+    # You can get the word_to_id dictionary and id_to_word list as follow.
     # vocab, rev_vocab = tl.nlp.initialize_vocabulary(en_vocab_path)
     # print(vocab)
     # {b'cat': 1, b'dog': 0, b'bird': 2}
@@ -182,48 +207,35 @@ def main_train():
     en_dev = en_dev_ids_path
     fr_dev = fr_dev_ids_path
 
-
     """Step 4 : Load both tokenized Training and Testing data into buckets
     and compute their size.
+
+    Bucketing is a method to efficiently handle sentences of different length.
+    When translating English to French, we will have English sentences of
+    different lengths I on input, and French sentences of different
+    lengths O on output. We should in principle create a seq2seq model
+    for every pair (I, O+1) of lengths of an English and French sentence.
+
+    For find the closest bucket for each pair, then we could just pad every
+    sentence with a special PAD symbol in the end if the bucket is bigger
+    than the sentence
+
+    We use a number of buckets and pad to the closest one for efficiency.
+
+    If the input is an English sentence with 3 tokens, and the corresponding
+    output is a French sentence with 6 tokens, then they will be put in the
+    first bucket and padded to length 5 for encoder inputs (English sentence),
+    and length 10 for decoder inputs.
+    If we have an English sentence with 8 tokens and the corresponding French
+    sentence has 18 tokens, then they will be fit into (20, 25) bucket.
+
+    Given a pair [["I", "go", "."], ["Je", "vais", "."]] in tokenized format.
+    The training data of encoder inputs representing [PAD PAD "." "go" "I"]
+    and decoder inputs [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD].
+    see ``get_batch()``
     """
     print()
-    # Bucketing is a method to efficiently handle sentences of different length.
-    # When translating English to French, we will have English sentences of
-    # different lengths I on input, and French sentences of different
-    # lengths O on output. We should in principle create a seq2seq model
-    # for every pair (I, O+1) of lengths of an English and French sentence.
-    #
-    # For find the closest bucket for each pair, then we could just pad every
-    # sentence with a special PAD symbol in the end if the bucket is bigger
-    # than the sentence
-    #
-    # We use a number of buckets and pad to the closest one for efficiency.
-    #
-    # If the input is an English sentence with 3 tokens, and the corresponding
-    # output is a French sentence with 6 tokens, then they will be put in the
-    # first bucket and padded to length 5 for encoder inputs (English sentence),
-    # and length 10 for decoder inputs.
-    # If we have an English sentence with 8 tokens and the corresponding French
-    # sentence has 18 tokens, then they will be fit into (20, 25) bucket.
-    #
-    # Given a pair [["I", "go", "."], ["Je", "vais", "."]] in tokenized format.
-    # The training data of encoder inputs representing [PAD PAD "." "go" "I"]
-    # and decoder inputs [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD].
-    # see ``get_batch()``
-    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-
-    num_layers = 3
-    size = 1024
-    learning_rate = 0.5
-    learning_rate_decay_factor = 0.99
-    max_gradient_norm = 5.0
-    batch_size = 64
-    num_samples = 512
-    max_train_data_size = 0     # Limit on the size of training data (0: no limit). DH: for fast testing, set a value
-    steps_per_checkpoint = 10        # Print, save frequence
-    plot_data = True
-
-    print ("Reading development (testing) data into buckets")
+    print ("Read development (test) data into buckets")
     dev_set = read_data(en_dev, fr_dev, buckets, EOS_ID)
 
     if plot_data:
@@ -239,9 +251,9 @@ def main_train():
         word_ids = tl.nlp.words_to_word_ids(context, vocab_fr)
         print('fr word_ids:', word_ids) # [23113, 8, 910, 2]
         print('fr context:', context)   # [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
-        print()
 
-    print ("Reading training data  into buckets (limit: %d)." % max_train_data_size)
+    print()
+    print ("Read training data into buckets (limit: %d)" % max_train_data_size)
     train_set = read_data(en_train, fr_train, buckets, EOS_ID, max_train_data_size)
     if plot_data:
         # Visualize the training data
@@ -258,8 +270,8 @@ def main_train():
 
     train_bucket_sizes = [len(train_set[b]) for b in xrange(len(buckets))]
     train_total_size = float(sum(train_bucket_sizes))
-    print('the num of training data in each buckets:', train_bucket_sizes)    # [239121, 1344322, 5239557, 10445326]
-    print('the num of training data:', train_total_size)        # 17268326.0
+    print('the num of training data in each buckets: %s' % train_bucket_sizes)    # [239121, 1344322, 5239557, 10445326]
+    print('the num of training data: %d' % train_total_size)        # 17268326.0
 
     # A bucket scale is a list of increasing numbers from 0 to 1 that we'll use
     # to select a bucket. Length of [scale[i], scale[i+1]] is proportional to
@@ -269,93 +281,168 @@ def main_train():
     print('train_buckets_scale:',train_buckets_scale)   # [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
 
 
-    """Step 5 : Create a list of placeholders for different buckets
+    """Step 6 : Create model
     """
-    encoder_inputs = []
-    decoder_inputs = []
-    target_weights = []
-    # None is
-    for i in xrange(buckets[-1][0]):  # Last bucket is the biggest one.
-        encoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
-                                                name="encoder{0}".format(i)))
-    for i in xrange(buckets[-1][1] + 1):
-        decoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
-                                                name="decoder{0}".format(i)))
-        target_weights.append(tf.placeholder(tf.float32, shape=[None],
-                                                name="weight{0}".format(i)))
+    print()
+    print("Create Embedding Attention Seq2seq Model")
+    with tf.variable_scope("model", reuse=None):
+        model = tl.layers.EmbeddingAttentionSeq2seqWrapper(
+                          en_vocab_size,
+                          fr_vocab_size,
+                          buckets,
+                          size,
+                          num_layers,
+                          max_gradient_norm,
+                          batch_size,
+                          learning_rate,
+                          learning_rate_decay_factor,
+                          forward_only=False)    # is_train = True
 
-    # Our targets are decoder inputs shifted by one (DH: remove the GO symbol)
-    targets = [decoder_inputs[i + 1]
-               for i in xrange(len(decoder_inputs) - 1)]
+    sess.run(tf.initialize_all_variables())
+    # model.print_params()
+    tl.layers.print_all_variables()
 
-    # Give [["I", "go", "."], ["Je", "vais", "."]]  bucket = (I, O) = (5, 10)
-    # encoder_inputs = [PAD PAD "." "go" "I"]                           <-- I
-    # decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]     <-- O
-    # targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]        <-- O - 1
-    # target_weights =                                                  <-- O
-    print(len(encoder_inputs))  # 40
-    print(len(decoder_inputs))  # 51
-    print(len(targets))         # 50
-    print(len(target_weights))  # 51
-    exit()
+    if resume:
+        print("Load existing model" + "!"*10)
+        if is_npz:
+            # instead of using TensorFlow saver, we can use TensorLayer to restore a model
+            load_params = tl.files.load_npz(name=model_file_name+'.npz')
+            tl.files.assign_params(sess, load_params, model)
+        else:
+            saver = tf.train.Saver()
+            saver.restore(sess, model_file_name+'.ckpt')
+
+    """Step 7 : Training
+    """
+    print()
+    step_time, loss = 0.0, 0.0
+    current_step = 0
+    previous_losses = []
+    while True:
+        # Choose a bucket according to data distribution. We pick a random number
+        # in [0, 1] and use the corresponding interval in train_buckets_scale.
+        random_number_01 = np.random.random_sample()
+        bucket_id = min([i for i in xrange(len(train_buckets_scale))
+                       if train_buckets_scale[i] > random_number_01])
+
+        # Get a batch and make a step.
+        # randomly pick ``batch_size`` training examples from a random bucket_id
+        # the data format is described in readthedocs tutorial
+        start_time = time.time()
+        encoder_inputs, decoder_inputs, target_weights = model.get_batch(
+                train_set, bucket_id, PAD_ID, GO_ID, EOS_ID, UNK_ID)
+
+        _, step_loss, _ = model.step(sess, encoder_inputs, decoder_inputs,
+                                   target_weights, bucket_id, False)
+        step_time += (time.time() - start_time) / steps_per_checkpoint
+        loss += step_loss / steps_per_checkpoint
+        current_step += 1
+
+        # Once in a while, we save checkpoint, print statistics, and run evals.
+        if current_step % steps_per_checkpoint == 0:
+            # Print statistics for the previous epoch.
+            perplexity = math.exp(loss) if loss < 300 else float('inf')
+            print ("global step %d learning rate %.4f step-time %.2f perplexity "
+                "%.2f" % (model.global_step.eval(), model.learning_rate.eval(),
+                            step_time, perplexity))
+            # Decrease learning rate if no improvement was seen over last 3 times.
+            if len(previous_losses) > 2 and loss > max(previous_losses[-3:]):
+                sess.run(model.learning_rate_decay_op)
+            previous_losses.append(loss)
+
+            # Save model
+            if is_npz:
+                tl.files.save_npz(model.all_params, name=model_file_name+'.npz')
+            else:
+                print('Model is saved to: %s' % model_file_name+'.ckpt')
+                checkpoint_path = os.path.join(train_dir, model_file_name+'.ckpt')
+                model.saver.save(sess, checkpoint_path, global_step=model.global_step)
+
+            step_time, loss = 0.0, 0.0
+            # Run evals on development set and print their perplexity.
+            for bucket_id in xrange(len(buckets)):
+                if len(dev_set[bucket_id]) == 0:
+                    print("  eval: empty bucket %d" % (bucket_id))
+                    continue
+                encoder_inputs, decoder_inputs, target_weights = model.get_batch(
+                        dev_set, bucket_id, PAD_ID, GO_ID, EOS_ID, UNK_ID)
+                _, eval_loss, _ = model.step(sess, encoder_inputs, decoder_inputs,
+                                               target_weights, bucket_id, True)
+                eval_ppx = math.exp(eval_loss) if eval_loss < 300 else float('inf')
+                print("  eval: bucket %d perplexity %.2f" % (bucket_id, eval_ppx))
+            sys.stdout.flush()
 
 
-    # print("Creating %d layers of %d units." % (num_layers, size))
+def main_decode():
+    # Create model and load parameters.
+    with tf.variable_scope("model", reuse=None):
+        model_eval = tl.layers.EmbeddingAttentionSeq2seqWrapper(
+                      source_vocab_size = en_vocab_size,
+                      target_vocab_size = fr_vocab_size,
+                      buckets = buckets,
+                      size = size,
+                      num_layers = num_layers,
+                      max_gradient_norm = max_gradient_norm,
+                      batch_size = 1,  # We decode one sentence at a time.
+                      learning_rate = learning_rate,
+                      learning_rate_decay_factor = learning_rate_decay_factor,
+                      forward_only = True) # is_train = False
 
-    # def(source_vocab_size, target_vocab_size, buckets, size,
-    #          num_layers, max_gradient_norm, batch_size, learning_rate,
-    #          learning_rate_decay_factor, use_lstm=False,
-    #          num_samples=512, forward_only=False):
-        #   model = seq2seq_model.Seq2SeqModel(
-        #   FLAGS.en_vocab_size, FLAGS.fr_vocab_size, _buckets,
-        #   FLAGS.size, FLAGS.num_layers, FLAGS.max_gradient_norm, FLAGS.batch_size,
-        #   FLAGS.learning_rate, FLAGS.learning_rate_decay_factor,
-        #   forward_only=forward_only):
-    def inference(source_vocab_size, target_vocab_size, buckets, size,
-                                        num_layers, is_train=True):
-        # Use sampled softmax to handle large output vocabulary
-        # If we use sampled softmax, we need an output projection.
-        output_projection = None
-        softmax_loss_function = None
-        # If 0 < num_samples < target_vocab_size, we use sampled softmax,
-        # Otherwise,
-        # In this case, as target_vocab_size=4000, for vocabularies smaller
-        # than 512, it might be a better idea to just use a standard softmax loss.
-        if num_samples > 0 and num_samples < target_vocab_size:
-            w = tf.get_variable("proj_w", [size, target_vocab_size])
-            w_t = tf.transpose(w)
-            b = tf.get_variable("proj_b", [target_vocab_size])
-            output_projection = (w, b)
+    sess.run(tf.initialize_all_variables())
 
-            def sampled_loss(inputs, labels, num_samples, target_vocab_size):
-                labels = tf.reshape(labels, [-1, 1])
-                return tf.nn.sampled_softmax_loss(w_t, b, inputs, labels, num_samples,
-                    target_vocab_size)
-            softmax_loss_function = sampled_loss
+    if is_npz:
+        print("Load parameters from npz")
+        # instead of using TensorFlow saver, we can use TensorLayer to restore a model
+        load_params = tl.files.load_npz(name=model_file_name+'.npz')
+        tl.files.assign_params(sess, load_params, model_eval)
+    else:
+        print("Load parameters from ckpt")
+        # saver = tf.train.Saver()
+        # saver.restore(sess, model_file_name+'.ckpt')
+        ckpt = tf.train.get_checkpoint_state(train_dir)
+        if ckpt and tf.gfile.Exists(ckpt.model_checkpoint_path):
+            print("Reading model parameters from %s" % ckpt.model_checkpoint_path)
+            model_eval.saver.restore(sess, ckpt.model_checkpoint_path)
+        else:
+            raise Exception("no %s exist" % model_checkpoint_path)
 
-        # network = tl.layers.RNNLayer(network,
-        #             cell_fn=tf.nn.rnn_cell.GRUCell,
-        #             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
-        #             n_hidden=size,
-        #             initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        #             n_steps=num_steps,
-        #             return_last=False,
-        #             name='basic_lstm_layer1')
+    # model_eval.print_params()
+    tl.layers.print_all_variables()
 
+    # Load vocabularies.
+    en_vocab_path = os.path.join(data_dir, "vocab%d.en" % en_vocab_size)
+    fr_vocab_path = os.path.join(data_dir, "vocab%d.fr" % fr_vocab_size)
+    en_vocab, _ = tl.nlp.initialize_vocabulary(en_vocab_path)
+    _, rev_fr_vocab = tl.nlp.initialize_vocabulary(fr_vocab_path)
 
+    # Decode from standard input.
+    sys.stdout.write("> ")
+    sys.stdout.flush()
+    sentence = sys.stdin.readline()
+    while sentence:
+      # Get token-ids for the input sentence.
+      token_ids = tl.nlp.sentence_to_token_ids(tf.compat.as_bytes(sentence), en_vocab)
+      # Which bucket does it belong to?
+      bucket_id = min([b for b in xrange(len(buckets))
+                       if buckets[b][0] > len(token_ids)])
+      # Get a 1-element batch to feed the sentence to the model.
+      encoder_inputs, decoder_inputs, target_weights = model_eval.get_batch(
+          {bucket_id: [(token_ids, [])]}, bucket_id, PAD_ID, GO_ID, EOS_ID, UNK_ID)
+      # Get output logits for the sentence.
+      _, _, output_logits = model_eval.step(sess, encoder_inputs, decoder_inputs,
+                                       target_weights, bucket_id, True)
+      # This is a greedy decoder - outputs are just argmaxes of output_logits.
+      outputs = [int(np.argmax(logit, axis=1)) for logit in output_logits]
+      # If there is an EOS symbol in outputs, cut them at that point.
+      if EOS_ID in outputs:
+        outputs = outputs[:outputs.index(EOS_ID)]
+      # Print out French sentence corresponding to outputs.
+      print(" ".join([tf.compat.as_str(rev_fr_vocab[output]) for output in outputs]))
+      print("> ", end="")
+      sys.stdout.flush()
+      sentence = sys.stdin.readline()
 
-    model = inference(en_vocab_size, fr_vocab_size, buckets, size,
-                                        num_layers, is_train=True)
-
-    # loss and updates
-    learning_rate = tf.Variable(float(learning_rate), trainable=False)
-    learning_rate_decay_op = learning_rate.assign(
-                    learning_rate * learning_rate_decay_factor)
-    global_step = tf.Variable(0, trainable=False)
-
-
-
-def self_test_dh():
+def main_test():
   """Test the translation model."""
   with tf.Session() as sess:
     print("Self-test for neural translation model.")
@@ -365,12 +452,14 @@ def self_test_dh():
     hidden_size = 32
     source_vocab_size = target_vocab_size = 10
     max_gradient_norm = 5.0
-    batch_size = 32
+    batch_size = 3
     learning_rate = 0.3
     learning_rate_decay_factor = 0.99
     num_samples = 8
 
-    model = seq2seq_model.Seq2SeqModel(source_vocab_size, target_vocab_size,
+    model = tl.layers.EmbeddingAttentionSeq2seqWrapper(
+                                source_vocab_size,
+                                target_vocab_size,
                                 buckets, hidden_size, num_layers,
                                 max_gradient_norm, batch_size, learning_rate,
                                 learning_rate_decay_factor, use_lstm=False,
@@ -383,7 +472,7 @@ def self_test_dh():
     for _ in xrange(5):  # Train the fake model for 5 steps.
       bucket_id = random.choice([0, 1]) # random choice bucket 0 or 1
       encoder_inputs, decoder_inputs, target_weights = model.get_batch(
-          data_set, bucket_id)
+          data_set, bucket_id, PAD_ID, GO_ID, EOS_ID, UNK_ID)
       print('what is the data')
       print(encoder_inputs, len(encoder_inputs), len(encoder_inputs[0]))
       print(decoder_inputs, len(decoder_inputs), len(decoder_inputs[0]))
@@ -396,8 +485,12 @@ def self_test_dh():
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     try:
+        """ Train model """
         main_train()
-        # self_test_dh()
+        """ Play with model """
+        # main_decode()
+        """ Quick test to see data format """
+        main_test()
     except KeyboardInterrupt:
         print('\nKeyboardInterrupt')
         tl.ops.exit_tf(sess)

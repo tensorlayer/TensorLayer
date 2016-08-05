@@ -25,6 +25,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
    FlattenLayer
    ConcatLayer
    ReshapeLayer
+   EmbeddingAttentionSeq2seqWrapper
    flatten_reshape
    clear_layers_name
    set_name_reuse
@@ -79,6 +80,12 @@ Shape layer
 .. autoclass:: FlattenLayer
 .. autoclass:: ConcatLayer
 .. autoclass:: ReshapeLayer
+
+Wrapper
+----------------
+
+.. autoclass:: EmbeddingAttentionSeq2seqWrapper
+  :members:
 
 Developing or Untested
 -------------------------
