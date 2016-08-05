@@ -634,12 +634,40 @@ from 0, we calculate the label value by minus 1.
 Policy Gradient
 ---------------
 
-The key of Deep Reinforcement Learning is how to train the Policy Network,
-there are many way to do
+Policy gradient methods are end-to-end algorithms that directly learn policy
+functions mapping states to actions. An approximate policy could be learned
+directly by maximizing the expected rewards. The parameters of a policy function
+(e.g. the parameters of a policy network used in the pong example) could be
+trained and learned under the guidance of the gradient of expected rewards.
+In other words, we can gradually tune the policy function via updating its
+parameters, such that it will generate actions from given states towards
+higher rewards.
 
-Q-learning xxxxx
+An alternative method to policy gradient is Deep Q-Learning (DQN). It is based
+on Q-Learning that tries to learn a value function (called Q function) mapping
+states and actions to some value. DQN employs a deep neural network to represent
+the Q function as a function approximator. The training is done by minimizing
+temporal-difference errors. A neurobiologically inspired mechanism called
+“experience replay” is typically used along with DQN to help improve its
+stability caused by the use of non-linear function approximator.
 
-AlphaGo is using xxxx
+You can check the following papers to gain better understandings about Reinforcement Learning.
+
+ - `Reinforcement Learning: An Introduction. Richard S. Sutton and Andrew G. Barto <https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html>`_
+ - `Deep Reinforcement Learning. David Silver, Google DeepMind <http://www.iclr.cc/lib/exe/fetch.php?media=iclr2015:silver-iclr2015.pdf>`_
+ - `UCL Course on RL <http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html>`_
+
+
+The most successful applications of Deep Reinforcement Learning in recent years
+include DQN with experience replay to play Atari games and AlphaGO
+that for the first time beats world-class professional GO players.
+AlphaGO used the policy gradient method to train its policy network that is
+similar to the example of Pong game.
+
+ - `Atari - Playing Atari with Deep Reinforcement Learning <https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf>`_
+ - `Atari - Human-level control through deep reinforcement learning <http://www.nature.com/nature/journal/v518/n7540/full/nature14236.html>`_
+ - `AlphaGO - Mastering the game of Go with deep neural networks and tree search <http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html>`_
+
 
 
 Dataset iteration
