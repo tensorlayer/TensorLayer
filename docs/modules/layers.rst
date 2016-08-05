@@ -90,6 +90,8 @@ Wrapper
 Developing or Untested
 -------------------------
 
+We highly welcome contributions! Every bit helps and will be credited.
+
 .. autoclass:: Conv3dLayer
 .. autoclass:: MaxoutLayer
 .. autoclass:: GaussianNoiseLayer

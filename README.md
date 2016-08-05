@@ -18,6 +18,7 @@
 
 TensorLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
+🆕Machine translation tutorial is released
 
 TensorLayer features include:
 
@@ -26,8 +27,6 @@ TensorLayer features include:
 - Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for machine learning researches...
 - Many official examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, ResNet... are given, suitable for machine learning applications...
 - The running speed would not decrease compare with pure TensorFlow codes...
-
-
 
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
@@ -40,6 +39,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 ####🇹🇭เพื่อความสะดวกในการอภิปรายของประสิทธิภาพของนักพัฒนาไทยที่เรากำลังสร้างแพลตฟอร์มการสื่อสาร.
 
+
 -
 
 # Table of Contents
@@ -50,13 +50,16 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 0. [Ways to Contribute](#Waystocontribute)
 0. [Online Documentation](http://tensorlayer.readthedocs.io/en/latest/)
 0. [Download PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
+0. [Download Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
+0. [Download HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
+
 
 --
 # Library Structure
 
 ```
 <folder>
-├── tensorlayer  		    <--- library source code
+├── tensorlayer  		<--- library source code
 │
 ├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
 ├── docs 				<--- readthedocs folder
@@ -216,9 +219,9 @@ For more powerful functions, please go to *[Read the Docs](http://tensorlayer.re
 
 ### *Recurrent Neural Network*
 
-**<font color="grey"> LSTM: </font>**
+**<font color="grey"> LSTM: </font>** 
 
-For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
+Please go to *[Understand LSTM](http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html#run-the-ptb-example)*.
 
 
 ### *Reinforcement Learning*
@@ -234,6 +237,9 @@ network = tl.layers.InputLayer(x, name='input_layer')
 network = tl.layers.DenseLayer(network, n_units= H , act = tf.nn.relu, name='relu_layer')
 network = tl.layers.DenseLayer(network, n_units= 1 , act = tf.nn.sigmoid, name='output_layer')
 ```
+
+For RL part, please read *[Policy Gradient](http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html#understand-reinforcement-learning)*.
+
 
 
 ### *Cost Function*
@@ -365,4 +371,8 @@ make html
 ```
 
 # Download Documentation
-Alternatively you can download the documentation via [Read the Docs](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) as well.
+You can download the documentation via [Read the Docs](http://tensorlayer.readthedocs.io/).
+
+0. [Download PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
+0. [Download Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
+0. [Download HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
