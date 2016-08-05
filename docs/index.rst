@@ -25,6 +25,7 @@ However, different with other inflexible TensorFlow wrappers,
 A basic understanding of how TensorFlow works is required to be
 able to use `TensorLayer`_ skillfully.
 
+xxx
 
 .. _TensorLayer-philosopy:
 
@@ -57,7 +58,7 @@ Its development is guided by a number of design goals:
   into TensorLayer, suitable for Researches.
 
 * **Simplicity**: Be easy to use, extend and modify, to facilitate use
-  in Research and Engineering. 
+  in Research and Engineering.
 
 * **High-Speed**: The running speed under GPU support is the same with
   TensorFlow only. The simplicity do not sacrifice the performance.
