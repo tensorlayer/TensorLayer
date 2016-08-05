@@ -7,13 +7,14 @@ Welcome to TensorLayer
   :align: center
   :target: https://github.com/zsdonghao/tensorlayer
 
-`TensorLayer`_ was designed for both Researchers
+`TensorLayer`_ is designed to use by both Researchers
 and Engineers, it is a transparent library built on the top of Google TensorFlow.
-It was designed to provide a higher-level
+It is designed to provide a higher-level
 API to TensorFlow in order to speed-up experimentations and developments.
-`TensorLayer`_ is easy to extended and modified.
-In addition, we provides mass examples and tutorials
-to help you to find the one you need in your project.
+`TensorLayer`_ is easy to be extended and modified.
+In addition, we provide many examples and tutorials
+to help you to go through deep learning and reinforcement learning.
+
 
 The `documentation <http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html>`_
 is not only for describing how to use `TensorLayer`_ but also
@@ -32,10 +33,9 @@ able to use `TensorLayer`_ skillfully.
 Philosophy
 ----------
 
-`TensorLayer`_ grew out of a need to combine the flexibility of TensorFlow with the
+`TensorLayer`_ grow out of a need to combine the flexibility of TensorFlow with the
 availability of the right building blocks for training neural networks.
 Its development is guided by a number of design goals:
-
 
 * **Transparency**: Do not hide TensorFlow behind abstractions. Try to rely on
   TensorFlow's functionality where possible, and follow TensorFlow's conventions.
@@ -64,12 +64,10 @@ Its development is guided by a number of design goals:
   TensorFlow only. The simplicity do not sacrifice the performance.
 
 
-
 .. note::
-   If you got problem to read the docs online, you could download the project
+   If you got problem to read the docs online, you could download the repository
    on `GitHub`_, then go to ``/docs/_build/html/index.html`` to read the docs
    offline. The ``_build`` folder can be generated in ``docs`` using ``make html``.
-
 
 
 
