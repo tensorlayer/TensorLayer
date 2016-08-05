@@ -25,7 +25,7 @@ However, different with other inflexible TensorFlow wrappers,
 A basic understanding of how TensorFlow works is required to be
 able to use `TensorLayer`_ skillfully.
 
-xxx
+
 
 .. _TensorLayer-philosopy:
 
