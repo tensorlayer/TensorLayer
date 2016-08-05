@@ -1,7 +1,7 @@
-:mod:`tunelayer.utils`
+:mod:`tensorlayer.utils`
 ========================
 
-.. automodule:: tunelayer.utils
+.. automodule:: tensorlayer.utils
 
 .. autosummary::
 

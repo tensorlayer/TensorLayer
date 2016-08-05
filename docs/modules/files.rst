@@ -1,10 +1,10 @@
-:mod:`tunelayer.files`
+:mod:`tensorlayer.files`
 ========================
 
 Load benchmark dataset, save and restore model, save and load variables.
 
 
-.. automodule:: tunelayer.files
+.. automodule:: tensorlayer.files
 
 .. autosummary::
 

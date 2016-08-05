@@ -1,5 +1,5 @@
 License
-===================
+=======
 
 Copyright (c) 2016 The TensorLayer Contributors.  All rights reserved.
 
@@ -207,5 +207,5 @@ Copyright (c) 2016 The TensorLayer Contributors.  All rights reserved.
 
 
 Contact
-===================
+=======
 Questions? Please contact hao.dong11@imperial.ac.uk

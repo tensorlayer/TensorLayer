@@ -1,9 +1,9 @@
-:mod:`tunelayer.ops`
+:mod:`tensorlayer.ops`
 ======================
 
 Operation system, more functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
-.. automodule:: tunelayer.ops
+.. automodule:: tensorlayer.ops
 
 .. autosummary::
 

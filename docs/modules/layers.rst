@@ -1,13 +1,13 @@
-:mod:`tunelayer.layers`
+:mod:`tensorlayer.layers`
 =========================
 
-To make TuneLayer simple, we minimize the number of layer classes as much as
+To make TensorLayer simple, we minimize the number of layer classes as much as
 we can. So we encourage you to use TensorFlow's function.
 For example, we do not provide layer for local response normalization, we suggest
 you to apply ``tf.nn.lrn`` on ``Layer.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_
 
-.. automodule:: tunelayer.layers
+.. automodule:: tensorlayer.layers
 
 .. autosummary::
 
