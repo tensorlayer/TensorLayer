@@ -1983,14 +1983,14 @@ Adding Customized Layer
 -------------------------
 
 Contribute useful ``Layer`` as an developer. The source code of TensorLayer is
-easy to understand, open ``tensorlayer/layer.py`` and read ``DenseLayer``, you
+easy to understand, open :mod:`tensorlayer/layer.py` and read ``DenseLayer``, you
 can fully understand how it work.
 
 
 Adding Customized Regularizer
 ------------------------------
 
-See tensorlayer/cost.py
+See :mod:`tensorlayer/cost.py`.
 
 
 
