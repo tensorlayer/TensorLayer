@@ -35,10 +35,9 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 ####🇨🇳为了促进华人开发者的交流速度，我们建立了多种交流渠道，您可把微信号发送到 haodong_cs@163.com 申请加入。
 
-####🇬🇧If you are in London, we can discuss face to face.
-
 ####🇹🇭เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
 
+####🇬🇧If you are in London, we can discuss face to face.
 
 -
 
