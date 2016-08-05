@@ -45,7 +45,7 @@ Input layer
   :members:
 
 Word Embedding Input layer
-----------------
+---------------------------
 
 .. autoclass:: Word2vecEmbeddingInputlayer
 .. autoclass:: EmbeddingInputlayer
