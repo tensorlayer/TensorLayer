@@ -14,11 +14,11 @@
 </a>
 
 
-# TensorLayer: Deep learning and Reinforcement learning library for Researchers and Engineers.
+# TensorLayer: Deep learning and Reinforcement learning library for Researchers and Engineers. 
 
 TensorLayer is a transparent Deep Learning and Reinforcement Learning library built on the top of [Google TensorFlow](https://www.tensorflow.org). It was designed to provide a higher-level API to TensorFlow in order to speed-up experimentations. TensorLayer is easy to extended and modified, suitable for both machine learning researches and applications. Welcome contribution!
 
-🆕Machine translation tutorial is released
+🆕🆕🆕 Machine translation tutorial is released.
 
 TensorLayer features include:
 

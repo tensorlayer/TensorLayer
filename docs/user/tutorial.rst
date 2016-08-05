@@ -313,7 +313,7 @@ The Autoencoder can be defined as follow, where an Autoencoder is represented by
                                         name='recon_layer1')
 
 To train the ``DenseLayer``, simply run ``ReconLayer.pretrain()``, if using denoising Autoencoder, the name of
-corrosion layer (a ``DropoutLayer``) need to be specified as follow. To save the feature images, set ``save`` to True.
+corrosion layer (a ``DropoutLayer``) need to be specified as follow. To save the feature images, set ``save`` to ``True``.
 There are many kinds of pre-train metrices according to different architectures and applications. For sigmoid activation,
 the Autoencoder can be implemented by using KL divergence, while for rectifer, L1 regularization of activation outputs
 can make the output to be sparse. So the default behaviour of ``ReconLayer`` only provide KLD and cross-entropy for sigmoid
@@ -560,8 +560,8 @@ train. If you run it for 30,000 episode, it start to win.
   render = False
   resume = False
 
-Setting 'render' to 'True', if you want to display the game environment. When
-you run the code again, you can set 'resume' to 'True', the code will load the
+Setting ``render`` to ``True``, if you want to display the game environment. When
+you run the code again, you can set ``resume`` to ``True``, the code will load the
 existing model and train the model basic on it.
 
 
