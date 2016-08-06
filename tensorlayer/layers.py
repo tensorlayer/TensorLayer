@@ -1438,26 +1438,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     version of this model, but with bi-directional encoder, was presented in
         “Neural Machine Translation by Jointly Learning to Align and Translate”
         http://arxiv.org/abs/1409.0473
-    and sampled softmax is described in Section 3 of the following paper.
+    The sampled softmax is described in Section 3 of the following paper.
         “On Using Very Large Target Vocabulary for Neural Machine Translation”
         http://arxiv.org/abs/1412.2007
-  """
-
-  def __init__(self,
-               source_vocab_size,
-               target_vocab_size,
-               buckets,
-               size,
-               num_layers,
-               max_gradient_norm,
-               batch_size,
-               learning_rate,
-               learning_rate_decay_factor,
-               use_lstm=False,
-               num_samples=512,
-               forward_only=False,
-               name='wrapper'):
-    """Create the model.
 
     Parameters
     ----------
@@ -1480,7 +1463,23 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     num_samples : number of samples for sampled softmax.
     forward_only : if set, we do not construct the backward pass in the model.
     name : string
-    """
+
+  """
+
+  def __init__(self,
+               source_vocab_size,
+               target_vocab_size,
+               buckets,
+               size,
+               num_layers,
+               max_gradient_norm,
+               batch_size,
+               learning_rate,
+               learning_rate_decay_factor,
+               use_lstm=False,
+               num_samples=512,
+               forward_only=False,
+               name='wrapper'):
     Layer.__init__(self)#, name=name)
 
     self.source_vocab_size = source_vocab_size
@@ -1605,12 +1604,12 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 
     Returns
     --------
-      A triple consisting of gradient norm (or None if we did not do backward),
-      average perplexity, and the outputs.
+    A triple consisting of gradient norm (or None if we did not do backward),
+    average perplexity, and the outputs.
 
     Raises
     --------
-      ValueError : if length of encoder_inputs, decoder_inputs, or
+    ValueError : if length of encoder_inputs, decoder_inputs, or
         target_weights disagrees with bucket size for the specified bucket_id.
     """
     # Check if the sizes match.
