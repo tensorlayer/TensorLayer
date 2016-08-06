@@ -505,7 +505,7 @@ class DenseLayer(Layer):
     ...                 W_init=tf.truncated_normal_initializer(stddev=0.1),
     ...                 name ='relu_layer'
     ...                 )
-    ...
+
     >>> Without TensorLayer, you can do as follow.
     >>> W = tf.Variable(
     ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
@@ -926,22 +926,22 @@ class Conv2dLayer(Layer):
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     >>> network = tl.layers.Conv2dLayer(network,
-    >>>                   act = tf.nn.relu,
-    >>>                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-    >>>                   strides=[1, 1, 1, 1],
-    >>>                   padding='SAME',
-    >>>                   W_init = tf.truncated_normal,
-    >>>                   W_init_args = {'mean' : 1, 'stddev':3},
-    >>>                   b_init = tf.zeros,
-    >>>                   b_init_args = {'name' : 'bias'},
-    >>>                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    ...                   act = tf.nn.relu,
+    ...                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    ...                   strides=[1, 1, 1, 1],
+    ...                   padding='SAME',
+    ...                   W_init = tf.truncated_normal,
+    ...                   W_init_args = {'mean' : 1, 'stddev':3},
+    ...                   b_init = tf.zeros,
+    ...                   b_init_args = {'name' : 'bias'},
+    ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
     >>> network = tl.layers.PoolLayer(network,
     ...                   ksize=[1, 2, 2, 1],
     ...                   strides=[1, 2, 2, 1],
     ...                   padding='SAME',
     ...                   pool = tf.nn.max_pool,
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    ...
+
     >>> Without TensorLayer, you can initialize the parameters as follow.
     >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
     >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
@@ -1082,17 +1082,85 @@ class RNNLayer(Layer):
 
     Examples
     --------
-    >>> x = tf.placeholder(tf.float32, shape=[None, D])
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    ...
-    # ... For single RNN
-    # >>> network =
-    # ...
-    # ...
-    # ... For multiple RNNs
-    # >>> network =
-    #
+    >>> For words
+    >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
+    >>> network = tl.layers.EmbeddingInputlayer(
+    ...                 inputs = input_data,
+    ...                 vocabulary_size = vocab_size,
+    ...                 embedding_size = hidden_size,
+    ...                 E_init = tf.random_uniform_initializer(-init_scale, init_scale),
+    ...                 name ='embedding_layer')
+    >>> if is_training:
+    >>>     network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
+    >>> network = tl.layers.RNNLayer(network,
+    ...             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+    ...             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
+    ...             n_hidden=hidden_size,
+    ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+    ...             n_steps=num_steps,
+    ...             return_last=False,
+    ...             name='basic_lstm_layer1')
+    >>> lstm1 = network
+    >>> if is_training:
+    >>>     network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
+    >>> network = tl.layers.RNNLayer(network,
+    ...             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+    ...             cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
+    ...             n_hidden=hidden_size,
+    ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+    ...             n_steps=num_steps,
+    ...             return_last=False,
+    ...             return_seq_2d=True,
+    ...             name='basic_lstm_layer2')
+    >>> lstm2 = network
+    >>> if is_training:
+    >>>     network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
+    >>> network = tl.layers.DenseLayer(network,
+    ...             n_units=vocab_size,
+    ...             W_init=tf.random_uniform_initializer(-init_scale, init_scale),
+    ...             b_init=tf.random_uniform_initializer(-init_scale, init_scale),
+    ...             act = tl.activation.identity, name='output_layer')
 
+    >>> For CNN+LSTM
+    >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.Conv2dLayer(network,
+    ...                         act = tf.nn.relu,
+    ...                         shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    ...                         strides=[1, 2, 2, 1],
+    ...                         padding='SAME',
+    ...                         name ='cnn_layer1')
+    >>> network = tl.layers.PoolLayer(network,
+    ...                         ksize=[1, 2, 2, 1],
+    ...                         strides=[1, 2, 2, 1],
+    ...                         padding='SAME',
+    ...                         pool = tf.nn.max_pool,
+    ...                         name ='pool_layer1')
+    >>> network = tl.layers.Conv2dLayer(network,
+    ...                         act = tf.nn.relu,
+    ...                         shape = [5, 5, 32, 10], # 10 features for each 5x5 patch
+    ...                         strides=[1, 2, 2, 1],
+    ...                         padding='SAME',
+    ...                         name ='cnn_layer2')
+    >>> network = tl.layers.PoolLayer(network,
+    ...                         ksize=[1, 2, 2, 1],
+    ...                         strides=[1, 2, 2, 1],
+    ...                         padding='SAME',
+    ...                         pool = tf.nn.max_pool,
+    ...                         name ='pool_layer2')
+    >>> network = tl.layers.FlattenLayer(network, name='flatten_layer')
+    >>> network = tl.layers.ReshapeLayer(network, shape=[-1, num_steps, int(network.outputs._shape[-1])])
+    >>> rnn1 = tl.layers.RNNLayer(network,
+    ...                         cell_fn=tf.nn.rnn_cell.LSTMCell,
+    ...                         cell_init_args={},
+    ...                         n_hidden=200,
+    ...                         initializer=tf.random_uniform_initializer(-0.1, 0.1),
+    ...                         n_steps=num_steps,
+    ...                         return_last=False,
+    ...                         return_seq_2d=True,
+    ...                         name='rnn_layer')
+    >>> network = tl.layers.DenseLayer(rnn1, n_units=3,
+    ...                         act = tl.activation.identity, name='output_layer')
 
     Notes
     -----
@@ -1105,7 +1173,7 @@ class RNNLayer(Layer):
     `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_\n
     `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
 
-    see TensorFlow tutorial ``ptb_word_lm.py``
+    see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm.py`` and ``tutorial_generate_text.py``
     """
     def __init__(
         self,
