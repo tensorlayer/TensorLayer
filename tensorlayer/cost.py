@@ -52,7 +52,7 @@ def mean_squared_error(output, target):
 
 ## Regularization Functions
 def li_regularizer(scale):
-  """li regularization removes the neurons of previous layer, 'i' represents 'inputs'.\n
+  """li regularization removes the neurons of previous layer, `i` represents `inputs`.\n
   Returns a function that can be used to apply group li regularization to weights.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
@@ -69,7 +69,7 @@ def li_regularizer(scale):
 
   Raises
   ------
-  ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError: if scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops
@@ -102,7 +102,7 @@ def li_regularizer(scale):
   return li
 
 def lo_regularizer(scale):
-  """lo regularization removes the neurons of current layer, 'o' represents outputs\n
+  """lo regularization removes the neurons of current layer, `o` represents `outputs`\n
   Returns a function that can be used to apply group lo regularization to weights.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
