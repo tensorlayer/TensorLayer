@@ -317,10 +317,9 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     data : a list of integer
         The context in a list of ids
     count : a list of tuple and list
-        count[0] is a list : the number of rare words
-        count[1:] are tuples : the number of occurrence of each word
-        e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677),
-                                        (b'and', 416629), (b'one', 411764)]
+        count[0] is a list : the number of rare words\n
+        count[1:] are tuples : the number of occurrence of each word\n
+        e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     dictionary : a dictionary
         word_to_id, mapping words to unique IDs.
     reverse_dictionary : a dictionary
@@ -449,10 +448,9 @@ def save_vocab(count=[], name='vocab.txt'):
     Parameters
     ----------
     count : a list of tuple and list
-        count[0] is a list : the number of rare words
-        count[1:] are tuples : the number of occurrence of each word
-        e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677),
-                                        (b'and', 416629), (b'one', 411764)]
+        count[0] is a list : the number of rare words\n
+        count[1:] are tuples : the number of occurrence of each word\n
+        e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
 
     Examples
     ---------
@@ -487,10 +485,10 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
   sentence : tensorflow.python.platform.gfile.GFile Object
   _WORD_SPLIT : regular expression for word spliting.
 
-  see create_vocabulary
-
+  
   Examples
   --------
+  >>> see create_vocabulary
   >>> from tensorflow.python.platform import gfile
   >>> train_path = "wmt/giga-fren.release2"
   >>> with gfile.GFile(train_path + ".en", mode="rb") as f:
@@ -527,12 +525,12 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
 
   Parameters
   -----------
-    vocabulary_path : path where the vocabulary will be created.
-    data_path : data file that will be used to create vocabulary.
-    max_vocabulary_size : limit on the size of the created vocabulary.
-    tokenizer : a function to use to tokenize each data sentence;
+  vocabulary_path : path where the vocabulary will be created.
+  data_path : data file that will be used to create vocabulary.
+  max_vocabulary_size : limit on the size of the created vocabulary.
+  tokenizer : a function to use to tokenize each data sentence.
         if None, basic_tokenizer will be used.
-    normalize_digits : Boolean
+  normalize_digits : Boolean
         if true, all digits are replaced by 0s.
 
   References
@@ -576,17 +574,14 @@ def initialize_vocabulary(vocabulary_path):
 
   Parameters
   -----------
-    vocabulary_path : path to the file containing the vocabulary.
+  vocabulary_path : path to the file containing the vocabulary.
 
   Returns
   --------
-    a pair: the vocabulary (a dictionary mapping string to integers), and
-    the reversed vocabulary (a list, which reverses the vocabulary mapping).
-
-    vocab : a dictionary
-        Word to id.
-    rev_vocab : a list
-        Id to word.
+  vocab : a dictionary
+        Word to id. A dictionary mapping string to integers.
+  rev_vocab : a list
+        Id to word. The reversed vocabulary (a list, which reverses the vocabulary mapping).
 
   Examples
   --------
@@ -602,7 +597,7 @@ def initialize_vocabulary(vocabulary_path):
 
   Raises
   -------
-    ValueError: if the provided vocabulary_path does not exist.
+  ValueError: if the provided vocabulary_path does not exist.
   """
   if gfile.Exists(vocabulary_path):
     rev_vocab = []
@@ -625,18 +620,18 @@ def sentence_to_token_ids(sentence, vocabulary,
 
   Parameters
   -----------
-    sentence :  tensorflow.python.platform.gfile.GFile Object
+  sentence :  tensorflow.python.platform.gfile.GFile Object
         The sentence in bytes format to convert to token-ids.\n
         see basic_tokenizer(), data_to_token_ids()
-    vocabulary : a dictionary mapping tokens to integers.
-    tokenizer : a function to use to tokenize each sentence;
+  vocabulary : a dictionary mapping tokens to integers.
+  tokenizer : a function to use to tokenize each sentence;
         If None, basic_tokenizer will be used.
-    normalize_digits : Boolean
+  normalize_digits : Boolean
         If true, all digits are replaced by 0s.
 
   Returns
   --------
-    A list of integers, the token-ids for the sentence.
+  A list of integers, the token-ids for the sentence.
   """
 
   if tokenizer:
@@ -659,12 +654,12 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
 
   Parameters
   -----------
-    data_path: path to the data file in one-sentence-per-line format.
-    target_path: path where the file with token-ids will be created.
-    vocabulary_path: path to the vocabulary file.
-    tokenizer: a function to use to tokenize each sentence;
+  data_path: path to the data file in one-sentence-per-line format.
+  target_path: path where the file with token-ids will be created.
+  vocabulary_path: path to the vocabulary file.
+  tokenizer: a function to use to tokenize each sentence;
       if None, basic_tokenizer will be used.
-    normalize_digits: Boolean; if true, all digits are replaced by 0s.
+  normalize_digits: Boolean; if true, all digits are replaced by 0s.
 
   References
   ----------
