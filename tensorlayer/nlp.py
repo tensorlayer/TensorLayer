@@ -265,8 +265,7 @@ def build_vocab(data):
     Returns
     --------
     word_to_id : a dictionary
-        mapping words to unique IDs.
-        e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
+        mapping words to unique IDs. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
 
     Code References
     ---------------
