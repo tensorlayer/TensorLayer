@@ -42,7 +42,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     data_index : an int
         Index of the context location.
 
-    Example
+    Examples
     --------
     >>> Setting num_skips=2, skip_window=1, use the right and left words.
     >>> In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
@@ -218,7 +218,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
              word ids.
              questions_skipped: questions skipped due to unknown words.
 
-    Example
+    Examples
     -------
     >>> eval_file should be in this format :
     >>> : capital-common-countries
@@ -402,7 +402,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key = 'UNK'):
     --------
     A list of IDs to represent the context.
 
-    Example
+    Examples
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000
