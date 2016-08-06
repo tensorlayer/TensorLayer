@@ -101,11 +101,11 @@ def sample(a=[], temperature=1.0):
     a : a list
         List of probabilities.
     temperature : float or None
-        The higher the more uniform.
-        When a = [0.1, 0.2, 0.7],
-            temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]
-            temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]
-            temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]
+        The higher the more uniform.\n
+        When a = [0.1, 0.2, 0.7],\n
+            temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]\n
+            temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]\n
+            temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]\n
         If None, it will be ``np.argmax(a)``
 
     Note
@@ -162,6 +162,15 @@ def sample_top(a=[], top_k=10):
 ## Vector representations of words
 def simple_read_words(filename="nietzsche.txt"):
     """Read context from file without any preprocessing.
+    
+    Parameters
+    ----------
+    filename : a string
+        A file path (like .txt file)
+    
+    Returns
+    --------
+    The context in a string
     """
     with open("nietzsche.txt", "r") as f:
         words = f.read()
@@ -169,7 +178,7 @@ def simple_read_words(filename="nietzsche.txt"):
 
 def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     """File to list format context.
-    Note that: this script can not handle punctuations.
+    Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
@@ -195,12 +204,17 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     """Reads through an analogy question file, return its id format.
 
+    Parameters
+    ----------
     eval_data : a string
         The file name.
     word2id : a dictionary
         Mapping words to unique IDs.
-    Returns:
-    questions: a [n, 4] numpy array containing the analogy question's
+        
+        
+    Return
+    --------
+    analogy_questions : a [n, 4] numpy array containing the analogy question's
              word ids.
              questions_skipped: questions skipped due to unknown words.
 
@@ -253,9 +267,9 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
 
 def build_vocab(data):
     """Build vocabulary.
-        Given the context in list format
-        Return the vocabulary, which is a dictionary for word to id.
-        e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
+    Given the context in list format.
+    Return the vocabulary, which is a dictionary for word to id.
+    e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
 
     Parameters
     ----------
@@ -291,6 +305,17 @@ def build_vocab(data):
 def build_reverse_dictionary(word_to_id):
     """Given a dictionary for converting word to integer id.
     Returns a reverse dictionary for converting a id to word.
+    
+    Parameters
+    ----------
+    word_to_id : dictionary
+        mapping words to unique ids
+
+    Returns
+    --------
+    reverse_dictionary : a dictionary
+        mapping ids to words
+    
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
@@ -330,8 +355,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000
-    >>> data, count, dictionary, reverse_dictionary = \
-    ...     tl.nlp.build_words_dataset(words, vocabulary_size)
+    >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size)
 
     Code References
     -----------------
