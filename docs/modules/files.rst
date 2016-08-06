@@ -21,7 +21,7 @@ Load benchmark dataset, save and restore model, save and load variables.
    assign_params
 
    save_any_to_npy
-   save_any_to_npy
+   load_npy_to_any
 
    npz_to_W_pdf
 
@@ -49,7 +49,7 @@ Load and save network
 Load and save variables
 ------------------------
 .. autofunction:: save_any_to_npy
-.. autofunction:: save_any_to_npy
+.. autofunction:: load_npy_to_any
 
 
 Visualizing npz file
