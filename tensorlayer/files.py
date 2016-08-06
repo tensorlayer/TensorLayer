@@ -296,6 +296,10 @@ def load_ptb_dataset():
     after 14 epochs they start to reduce the learning rate by a factor of 1.15
     after each epoch. They clip the norm of the gradients (normalized by
     minibatch size) at 10.
+    
+    Examples
+    --------
+    >>> train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
 
     Code References
     ---------------
@@ -359,7 +363,7 @@ def load_matt_mahoney_text8_dataset():
     Returns
     --------
     word_list : a list
-        a list of string (word).
+        a list of string (word).\n
         e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
 
     Example
@@ -487,6 +491,13 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 def load_nietzsche_dataset():
     """Load Nietzsche dataset.
     Returns a string.
+    
+    Examples
+    --------
+    >>> see tutorial_generate_text.py
+    >>> words = tl.files.load_nietzsche_dataset()
+    >>> words = basic_clean_str(words)
+    >>> words = words.split()
     """
     if sys.version_info[0] == 2:
         from urllib import urlretrieve
@@ -689,7 +700,7 @@ def assign_params(sess, params, network):
 
     Examples
     --------
-    ... Save your network as follow:
+    >>> Save your network as follow:
     >>> tl.files.save_npz(network.all_params, name='model_test.npz')
     >>> network.print_params()
     ...
@@ -746,7 +757,7 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
 
     Examples
     --------
-    ... convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+    >>> Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
     >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
     """
     file_list = load_file_list(path=path, regx=regx)
