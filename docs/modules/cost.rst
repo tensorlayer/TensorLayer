@@ -24,7 +24,7 @@ Cost functions
 ----------------
 
 .. autofunction:: cross_entropy
-.. autofunction:: mean_squre_error
+.. autofunction:: mean_squared_error
 
 
 Regularization functions
