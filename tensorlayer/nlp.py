@@ -44,8 +44,8 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
     Example
     --------
-    Setting num_skips=2, skip_window=1, use the right and left words.
-    In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
+    >>> Setting num_skips=2, skip_window=1, use the right and left words.
+    >>> In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
 
     >>> data = [1,2,3,4,5,6,7,8,9,10,11]
     >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(    \
@@ -462,7 +462,7 @@ def word_ids_to_words(data, id_to_word):
 
     Examples
     ---------
-    see words_to_word_ids
+    >>> see words_to_word_ids
     """
     return [id_to_word[i] for i in data]
 
@@ -609,7 +609,7 @@ def initialize_vocabulary(vocabulary_path):
 
   Examples
   --------
-  ... Assume 'test' contains
+  >>> Assume 'test' contains
   ... dog
   ... cat
   ... bird
