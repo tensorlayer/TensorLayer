@@ -31,7 +31,7 @@ TensorLayer grow out of a need to combine the flexibility of TensorFlow with the
  - Tutorial: Providing mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
  - TPU: Tensor Processing Unit is a custom ASIC built specifically for machine learning and tailored for TensorFlow.
  - Distribution: Distributed Machine Learning is the default function of TensorFlow.
- - Compatibility: A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for Researches.
+ - Compatibility: A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for Researchers.
  - Simplicity: Be easy to use, extend and modify, to facilitate use in Research and Engineering.
  - High-Speed: The running speed under GPU support is the same with TensorFlow only. The simplicity do not sacrifice the performance.
 
