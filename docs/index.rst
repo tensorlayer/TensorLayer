@@ -55,7 +55,7 @@ Its development is guided by a number of design goals:
 
 * **Compatibility**: A network is abstracted to regularization, cost and outputs
   of each layer. Other wraping libraries for TensorFlow are easy to merged
-  into TensorLayer, suitable for Researches.
+  into TensorLayer, suitable for Researchers.
 
 * **Simplicity**: Be easy to use, extend and modify, to facilitate use
   in Research and Engineering.
