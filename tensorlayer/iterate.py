@@ -52,10 +52,6 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     """
     Generate a generator that return a batch of sequence inputs and targets.
-    It is for the "Synced sequence input and output" as
-    `Karpathy RNN Blog <http://karpathy.github.io/2015/05/21/rnn-effectiveness/>`_
-    shows.
-
     If ``batch_size = 100, seq_length = 5``, one return will have ``500`` rows (examples).
 
     Examples
