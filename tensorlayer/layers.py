@@ -930,10 +930,10 @@ class Conv2dLayer(Layer):
     ...                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
     ...                   strides=[1, 1, 1, 1],
     ...                   padding='SAME',
-    ...                   W_init = tf.truncated_normal,
-    ...                   W_init_args = {'mean' : 1, 'stddev':3},
-    ...                   b_init = tf.zeros,
-    ...                   b_init_args = {'name' : 'bias'},
+    ...                   W_init=tf.truncated_normal_initializer(stddev=5e-2),
+    ...                   W_init_args={},
+    ...                   b_init = tf.constant_initializer(value=0.0),
+    ...                   b_init_args = {},
     ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
     >>> network = tl.layers.PoolLayer(network,
     ...                   ksize=[1, 2, 2, 1],
