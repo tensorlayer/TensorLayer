@@ -621,7 +621,7 @@ def initialize_vocabulary(vocabulary_path):
 
   Raises
   -------
-  ValueError: if the provided vocabulary_path does not exist.
+  ValueError : if the provided vocabulary_path does not exist.
   """
   if gfile.Exists(vocabulary_path):
     rev_vocab = []

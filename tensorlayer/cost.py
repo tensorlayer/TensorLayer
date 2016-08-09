@@ -69,7 +69,7 @@ def li_regularizer(scale):
 
   Raises
   ------
-  ValueError: if scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops
@@ -117,7 +117,7 @@ def lo_regularizer(scale):
 
   Raises
   ------
-  ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops
@@ -166,7 +166,7 @@ def maxnorm_regularizer(scale=1.0):
 
   Raises
   --------
-  ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops
@@ -210,7 +210,7 @@ def maxnorm_o_regularizer(scale):
 
   Raises
   ---------
-  ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops
@@ -254,7 +254,7 @@ def maxnorm_i_regularizer(scale):
 
   Raises
   ---------
-  ValueError: If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
   """
   import numbers
   from tensorflow.python.framework import ops

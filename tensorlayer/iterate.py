@@ -140,7 +140,7 @@ def ptb_iterator(raw_data, batch_size, num_steps):
 
     Raises
     ------
-    ValueError, if batch_size or num_steps are too high.
+    ValueError : if batch_size or num_steps are too high.
 
     Examples
     --------
