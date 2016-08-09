@@ -162,12 +162,12 @@ def sample_top(a=[], top_k=10):
 ## Vector representations of words
 def simple_read_words(filename="nietzsche.txt"):
     """Read context from file without any preprocessing.
-    
+
     Parameters
     ----------
     filename : a string
         A file path (like .txt file)
-    
+
     Returns
     --------
     The context in a string
@@ -210,8 +210,8 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
         The file name.
     word2id : a dictionary
         Mapping words to unique IDs.
-        
-        
+
+
     Return
     --------
     analogy_questions : a [n, 4] numpy array containing the analogy question's
@@ -305,7 +305,7 @@ def build_vocab(data):
 def build_reverse_dictionary(word_to_id):
     """Given a dictionary for converting word to integer id.
     Returns a reverse dictionary for converting a id to word.
-    
+
     Parameters
     ----------
     word_to_id : dictionary
@@ -315,7 +315,7 @@ def build_reverse_dictionary(word_to_id):
     --------
     reverse_dictionary : a dictionary
         mapping ids to words
-    
+
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
@@ -509,7 +509,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
   sentence : tensorflow.python.platform.gfile.GFile Object
   _WORD_SPLIT : regular expression for word spliting.
 
-  
+
   Examples
   --------
   >>> see create_vocabulary
@@ -678,12 +678,12 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
 
   Parameters
   -----------
-  data_path: path to the data file in one-sentence-per-line format.
-  target_path: path where the file with token-ids will be created.
-  vocabulary_path: path to the vocabulary file.
-  tokenizer: a function to use to tokenize each sentence;
+  data_path : path to the data file in one-sentence-per-line format.
+  target_path : path where the file with token-ids will be created.
+  vocabulary_path : path to the vocabulary file.
+  tokenizer : a function to use to tokenize each sentence;
       if None, basic_tokenizer will be used.
-  normalize_digits: Boolean; if true, all digits are replaced by 0s.
+  normalize_digits : Boolean; if true, all digits are replaced by 0s.
 
   References
   ----------
