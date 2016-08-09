@@ -68,7 +68,7 @@ TensorFlow
 -----------
 
 `TensorFlow <https://www.tensorflow.org/versions/master/get_started/os_setup.html>`_ only officially
-supports GPU acceleration for Linux at present.
+supports GPU acceleration for Linux and Mac OX at present.
 If you want to use GPU with Mac OX, you need to compile TensorFlow from source.
 
 .. warning::

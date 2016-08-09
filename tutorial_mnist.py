@@ -1,11 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
-
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
-import numpy as np
 import time
 
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
@@ -36,11 +35,11 @@ def main_test_layers(model='relu'):
                                     tl.files.load_mnist_dataset(shape=(-1,784))
 
     X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
+    y_train = np.asarray(y_train, dtype=np.int32)
     X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
+    y_val = np.asarray(y_val, dtype=np.int32)
     X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
+    y_test = np.asarray(y_test, dtype=np.int32)
 
     print('X_train.shape', X_train.shape)
     print('y_train.shape', y_train.shape)
@@ -54,7 +53,7 @@ def main_test_layers(model='relu'):
 
     # placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+    y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input_layer')
