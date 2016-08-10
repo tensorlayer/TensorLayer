@@ -354,14 +354,19 @@ GPU-version of Tensorflow requires CUDA and cuDNN to be installed.
 
 **<font color="grey"> TensorLayer Installation: </font>**
 
-You can install TensorLayer as follow, more detail in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
+The simplest way to install TensorLayer is as follow.
+
+```python
+pip install git+https://github.com/zsdonghao/tensorlayer.git
+```
+
+If you want to modify or extend TensorLayer, you can download the repo and install it as follow, more detail in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
 
 ```python
 python setup.py install
 or
 pip install . -e
 ```
-
 
 # Ways to Contribute
 

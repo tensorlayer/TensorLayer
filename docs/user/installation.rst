@@ -77,7 +77,14 @@ If you want to use GPU with Mac OX, you need to compile TensorFlow from source.
 TensorLayer
 -----------
 
-Hao Dong highly recommend you to install TensorLayer as follow.
+The simplest way to install TensorLayer is as follow.
+
+.. code-block:: bash
+
+  pip install git+https://github.com/zsdonghao/tensorlayer.git
+
+If you want to modify or extend TensorLayer, you can download the repo
+and install it as follow.
 
 .. code-block:: bash
 
@@ -85,7 +92,7 @@ Hao Dong highly recommend you to install TensorLayer as follow.
   pip3 install . -e
 
 This command will run the ``setup.py`` to install TensorLayer. The ``-e`` allows
-you to edit the scripts in ``tensorlayer`` folder, this help you to extend and modify
+you to edit the scripts in ``tensorlayer`` folder, it help you to extend and modify
 TensorLayer easily.
 
 
