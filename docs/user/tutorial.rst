@@ -342,7 +342,7 @@ Convolutional Neural Network (CNN)
 
 Finally, the ``main_test_cnn_layer()`` script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
-layer.
+layer. More CNN examples can be found in the tutorial scripts, like ``tutorial_cifar10.py``.
 
 At the begin, we add a :class:`Conv2dLayer
 <tensorlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
