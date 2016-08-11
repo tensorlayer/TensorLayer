@@ -121,7 +121,7 @@ def main_test_layers(model='relu'):
         for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train,
                                                     batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )    # enable all dropout/dropconnect/denoising layers
+            feed_dict.update( network.all_drop )    # enable dropout or dropconnect layers
             sess.run(train_op, feed_dict=feed_dict)
 
             # The optional feed_dict argument allows the caller to override the value of tensors in the graph. Each key in feed_dict can be one of the following types:
@@ -346,7 +346,7 @@ def main_test_stacked_denoise_AE(model='relu'):
         for X_train_a, y_train_a in tl.iterate.minibatches(
                                     X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
+            feed_dict.update( network.all_drop )     # enable dropout layers
             feed_dict[set_keep['denoising1']] = 1    # disable denoising layer
             sess.run(train_op, feed_dict=feed_dict)
 
@@ -355,7 +355,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             train_loss, train_acc, n_batch = 0, 0, 0
             for X_train_a, y_train_a in tl.iterate.minibatches(
                                     X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -367,7 +367,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             val_loss, val_acc, n_batch = 0, 0, 0
             for X_val_a, y_val_a in tl.iterate.minibatches(
                                         X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -388,7 +388,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     test_loss, test_acc, n_batch = 0, 0, 0
     for X_test_a, y_test_a in tl.iterate.minibatches(
                                 X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout layers
+        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -506,7 +506,7 @@ def main_test_cnn_layer():
         for X_train_a, y_train_a in tl.iterate.minibatches(
                                     X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )        # enable all dropout/dropconnect/denoising layers
+            feed_dict.update( network.all_drop )        # enable dropout layers
             sess.run(train_op, feed_dict=feed_dict)
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
@@ -514,7 +514,7 @@ def main_test_cnn_layer():
             train_loss, train_acc, n_batch = 0, 0, 0
             for X_train_a, y_train_a in tl.iterate.minibatches(
                                     X_train, y_train, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
                 feed_dict = {x: X_train_a, y_: y_train_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -524,7 +524,7 @@ def main_test_cnn_layer():
             val_loss, val_acc, n_batch = 0, 0, 0
             for X_val_a, y_val_a in tl.iterate.minibatches(
                                         X_val, y_val, batch_size, shuffle=True):
-                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+                dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
                 feed_dict = {x: X_val_a, y_: y_val_a}
                 feed_dict.update(dp_dict)
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
@@ -542,7 +542,7 @@ def main_test_cnn_layer():
     test_loss, test_acc, n_batch = 0, 0, 0
     for X_test_a, y_test_a in tl.iterate.minibatches(
                                 X_test, y_test, batch_size, shuffle=True):
-        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable all dropout/dropconnect/denoising layers
+        dp_dict = tl.utils.dict_to_one( network.all_drop )    # disable dropout layers
         feed_dict = {x: X_test_a, y_: y_test_a}
         feed_dict.update(dp_dict)
         err, ac = sess.run([cost, acc], feed_dict=feed_dict)

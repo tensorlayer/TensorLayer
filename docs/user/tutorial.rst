@@ -763,6 +763,11 @@ Word Embedding
 Hao Dong highly recommend you to read Colah's blog `Word Representations`_ to
 understand why we want to use a vector representation, and how to compute the
 vectors. (For chinese reader please `click <http://dataunion.org/9331.html>`_.
+More details about word2vec can be found in
+`Word2vec Parameter Learning Explained <http://arxiv.org/abs/1411.2738>`_.
+
+
+
 
 Bascially, training an embedding matrix is an unsupervised learning. As every word
 is refected by an unique ID, which is the row index of the embedding matrix,
