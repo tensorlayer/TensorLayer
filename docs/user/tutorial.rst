@@ -762,9 +762,16 @@ Word Embedding
 
 Hao Dong highly recommend you to read Colah's blog `Word Representations`_ to
 understand why we want to use a vector representation, and how to compute the
-vectors.
+vectors. (For chinese reader please `click <http://dataunion.org/9331.html>`_.
 
-Train an embedding matrix
+Bascially, training an embedding matrix is an unsupervised learning. As every word
+is refected by an unique ID, which is the row index of the embedding matrix,
+a word can be converted into a vector, it can better represent the meaning.
+For example, there seems to be a constant male-female difference vector:
+``woman − man = queen - king``, this means one dimension in the vector represents gender.
+
+
+The model can be created as follow.
 
 .. code-block:: python
 
@@ -792,26 +799,57 @@ Train an embedding matrix
           nce_b_init_args = {},
           name ='word2vec_layer',
       )
-  cost = emb_net.nce_cost
 
-Dataset iteration
-^^^^^^^^^^^^^^^^^
-
-
-Loss and update expressions
+Dataset iteration and loss
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-Load an Embedding matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In the end of training the embedding matrix,
-
-.. code-block:: bash
-
-  python tutorial_generate_text.py
+Word2vec uses Negative Sampling and Skip-Gram model for training.
+Noise-Contrastive Estimation Loss (NCE) can help to reduce the computation
+of loss. Skip-Gram inverts context and targets, tries to predict each context
+word from its target word. We use ``tl.nlp.generate_skip_gram_batch`` to
+generate training data as follow.
 
 .. code-block:: python
+
+  cost = emb_net.nce_cost
+  train_params = emb_net.all_params
+
+  train_op = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=0.1,
+            use_locking=False).minimize(cost, var_list=train_params)
+
+  data_index = 0
+  while (step < num_steps):
+    batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
+                  data=data, batch_size=batch_size, num_skips=num_skips,
+                  skip_window=skip_window, data_index=data_index)
+    feed_dict = {train_inputs : batch_inputs, train_labels : batch_labels}
+    _, loss_val = sess.run([train_op, cost], feed_dict=feed_dict)
+
+
+Restore existing Embedding matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the end of training the embedding matrix, we save the matrix and
+corresponding dictionaries. Then next time, we can restore the matrix and
+directories as follow.
+(see ``main_restore_embedding_layer()`` in ``tutorial_generate_text.py``)
+
+.. code-block:: python
+
+  vocabulary_size = 50000
+  embedding_size = 128
+  model_file_name = "model_word2vec_50k_128"
+  batch_size = None
+
+  print("Load existing embedding matrix and dictionaries")
+  all_var = tl.files.load_npy_to_any(name=model_file_name+'.npy')
+  data = all_var['data']; count = all_var['count']
+  dictionary = all_var['dictionary']
+  reverse_dictionary = all_var['reverse_dictionary']
+
+  tl.nlp.save_vocab(count, name='vocab_'+model_file_name+'.txt')
+
+  del all_var, data, count
 
   load_params = tl.files.load_npz(name=model_file_name+'.npz')
 
@@ -827,9 +865,6 @@ In the end of training the embedding matrix,
   sess.run(tf.initialize_all_variables())
 
   tl.files.assign_params(sess, [load_params[0]], emb_net)
-
-
-
 
 
 
