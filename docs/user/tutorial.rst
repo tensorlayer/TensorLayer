@@ -16,6 +16,7 @@ translation.
     will understand how `TensorLayer`_ work. After that, we recommend you to read
     the codes for tutorial directly.
 
+
 Before we start
 ===============
 
@@ -207,7 +208,9 @@ First, we'll define a function that creates a Multi-Layer Perceptron (MLP) of
 a fixed architecture, explaining all the steps in detail. We'll then implement
 a Denosing Autoencoder (DAE), after that we will then stack all Denoising Autoencoder and
 supervised fine-tune them. Finally, we'll show how to create a
-Convolutional Neural Network (CNN).
+Convolutional Neural Network (CNN). In addition, a simple example for MNIST
+dataset in ``tutorial_mnist_simple.py``, a CNN example for CIFAR-10 dataset in
+``tutorial_cifar10.py``.
 
 
 Multi-Layer Perceptron (MLP)
@@ -1203,10 +1206,12 @@ What Next?
 -----------
 
 Now, you understand Synced sequence input and output. Let think about
-Many to one (Sequence input and one output), we can also use "I am from Imperial"
-to predict the next word "College" right? Please try your best to build a text
-generator, which give some seed words to generate context, some people even used
-Many to one model to automatically generate papers !
+Many to one (Sequence input and one output), LSTM is able to predict
+the next word "English" from "I am from London, I speak ..".
+
+Please read and understand the code of ``tutorial_generate_text.py``,
+it show you how to restore a pre-trained Embedding matrix and how to learn text
+generation from a given context.
 
 Karpathy's blog :
 "(3) Sequence input (e.g. sentiment analysis where a given sentence is
