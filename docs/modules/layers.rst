@@ -67,6 +67,10 @@ Convolutional layer
 --------------------
 
 .. autoclass:: Conv2dLayer
+
+Pooling layer
+--------------------
+
 .. autoclass:: PoolLayer
 
 Recurrent layer
