@@ -10,7 +10,7 @@ def identity(x):
 
     Parameters
     ----------
-    x : a tensor outputs
+    x : a tensor input
         input(s)
     """
     return x
@@ -20,7 +20,7 @@ def ramp(x=None, v_min=0, v_max=1, name=None):
 
     Parameters
     ----------
-    x : a tensor outputs
+    x : a tensor input
         input(s)
     v_min : float
         if input(s) smaller than v_min, change inputs to v_min
