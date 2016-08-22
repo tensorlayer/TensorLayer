@@ -20,27 +20,6 @@ Coming soon
 
 
 
-Applications
-============
-
-There are some good applications implemented by TensorLayer.
-You may able to find some useful examples for your project.
-If you want to share your application, please contact hao.dong11@imperial.ac.uk.
-
-CNN+LSTM for Biosignal
-------------------------
-
-Author : `Akara Supratak <https://akaraspt.github.io>`_
-
-Introduction
-^^^^^^^^^^^^
-
-Implementation
-^^^^^^^^^^^^^^
-
-Citation
-^^^^^^^^
-
 
 Recruitment
 ===========

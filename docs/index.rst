@@ -83,6 +83,7 @@ to the library as a developer.
 
   user/installation
   user/tutorial
+  user/example
   user/development
   user/more
 
