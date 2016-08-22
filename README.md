@@ -370,7 +370,7 @@ pip install . -e
 
 # Ways to Contribute
 
-TensorLayer begins as an internal repository at Imperial College Lodnon, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
+TensorLayer begins as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
 
 Your method can be merged into TensorLayer, if you can prove it is better than the existing methods. Test script with detailed descriptions is required.
 

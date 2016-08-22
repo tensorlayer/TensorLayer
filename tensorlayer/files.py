@@ -31,6 +31,7 @@ def load_mnist_dataset(shape=(-1,784)):
     Examples
     --------
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
     """
     # We first define a download function, supporting both Python 2 and 3.
     if sys.version_info[0] == 2:
@@ -296,7 +297,11 @@ def load_ptb_dataset():
     after 14 epochs they start to reduce the learning rate by a factor of 1.15
     after each epoch. They clip the norm of the gradients (normalized by
     minibatch size) at 10.
-    
+
+    Returns
+    --------
+    train_data, valid_data, test_data, vocabulary size
+
     Examples
     --------
     >>> train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
@@ -491,7 +496,7 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 def load_nietzsche_dataset():
     """Load Nietzsche dataset.
     Returns a string.
-    
+
     Examples
     --------
     >>> see tutorial_generate_text.py

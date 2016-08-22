@@ -5,8 +5,8 @@ The TensorLayer project was started by Hao Dong, Imperial College London in Jun
 2016. It is developed by a core team (in alphabetical order:
 `Akara Supratak <https://akaraspt.github.io>`_,
 `Hao Dong <https://zsdonghao.github.io>`_,
-`Simiao Yu <https://github.com/zsdonghao>`_,)
-and numerous additional contributors on `GitHub`_,
+`Simiao Yu <https://github.com/zsdonghao>`_)
+and numerous additional contributors on `GitHub`_.
 
 As an open-source project by Researchers for Researchers and Engineers,
 we highly welcome contributions!
