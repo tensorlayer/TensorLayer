@@ -10,7 +10,7 @@ Basics
 
  - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see ``tutorial_mnist_simple.py`` on `GitHub`_.
 
-Computer Version
+Computer Vision
 ==================
 
  - Denoising Autoencoder (MNIST). A multi-layer perceptron implementation for MNIST classification task, see ``tutorial_mnist.py`` on `GitHub`_.
