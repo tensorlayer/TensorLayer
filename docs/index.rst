@@ -22,7 +22,7 @@ a tutorial to walk through different type of Neural Networks, Deep
 Reinforcement Learning and Natural Language Processing etc.
 In addition, TensorLayer's tutorial also include all modularized implementation of Google TensorFlow Deep
 Learning tutorial, so you could read TensorFlow Deep Learning tutorial as the same time
-`[EN] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[CN] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
+`[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
 
 
 However, different with other inflexible TensorFlow wrappers,
