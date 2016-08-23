@@ -1,5 +1,5 @@
-API - Preprocessing Functions
-=============================
+API - Preprocessing
+=========================
 
 Data preprocessing, more Tensor functions about image, signal processing can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_
 
