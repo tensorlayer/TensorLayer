@@ -16,7 +16,7 @@ def cross_entropy(output, target):
     Parameters
     ----------
     output : Tensorflow variable
-        A distribution with shape: [None, n_feature]. 
+        A distribution with shape: [None, n_feature].
     target : Tensorflow variable
         A distribution with shape: [None, n_feature].
 
@@ -30,11 +30,12 @@ def cross_entropy(output, target):
     The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
     with tf.name_scope("cross_entropy_loss"):
-        net_output_tf = output
-        target_tf = target
-        cross_entropy = tf.add(tf.mul(tf.log(net_output_tf, name=None),target_tf),
-                             tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
-        return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
+        # net_output_tf = output
+        # target_tf = target
+        # cross_entropy = tf.add(tf.mul(tf.log(net_output_tf, name=None),target_tf),
+        #                      tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
+        # return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(output, target))
 
 def mean_squared_error(output, target):
     """Return the cost function of Mean-squre-error of two distributions.
@@ -47,8 +48,9 @@ def mean_squared_error(output, target):
         A distribution with shape: [None, n_feature].
 
     """
-    mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
-    return tf.reduce_mean(mse)
+    with tf.name_scope("mean_squared_error_loss"):
+        mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
+        return tf.reduce_mean(mse)
 
 ## Regularization Functions
 def li_regularizer(scale):

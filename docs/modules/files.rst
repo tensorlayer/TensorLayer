@@ -2,6 +2,26 @@ API - Load, Save Model and Data
 ===================================
 
 Load benchmark dataset, save and restore model, save and load variables.
+TensorFlow provides ``.ckpt`` file format to save and restore the models, while
+we suggest to use standard python file format ``.npz`` to save models for the
+sake of cross-platform.
+
+
+.. code-block:: python
+
+  # save model as .ckpt
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "model.ckpt")
+  # restore model from .ckpt
+  saver = tf.train.Saver()
+  saver.restore(sess, "model.ckpt")
+
+  # save model as .npz
+  tl.files.save_npz(network.all_params , name='model.npz')
+  # restore model from .npz
+  load_params = tl.files.load_npz(path='', name='model.npz')
+  tl.files.assign_params(sess, load_params, network)
+
 
 
 .. automodule:: tensorlayer.files

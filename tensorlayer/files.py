@@ -102,6 +102,12 @@ def load_mnist_dataset(shape=(-1,784)):
 
     # We just return all the arrays in order, as expected in main().
     # (It doesn't matter how we do this as long as we can read them again.)
+    X_train = np.asarray(X_train, dtype=np.float32)
+    y_train = np.asarray(y_train, dtype=np.int32)
+    X_val = np.asarray(X_val, dtype=np.float32)
+    y_val = np.asarray(y_val, dtype=np.int32)
+    X_test = np.asarray(X_test, dtype=np.float32)
+    y_test = np.asarray(y_test, dtype=np.int32)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
