@@ -30,9 +30,15 @@ The initialization of a network is done by input layer, then we can stacked laye
 as follow, then a network is a ``Layer`` class.
 The most important properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
 The ``all_params`` is a list which store all pointers of all network parameters in order,
-the following script define a 3 layer network, then ``all_params = [W1, b1, W2, b2, W_out, b_out]``.
+the following script define a 3 layer network, then:
+
+``all_params`` = [W1, b1, W2, b2, W_out, b_out]
+
 The ``all_layers`` is a list which store all pointers of the outputs of all layers,
-in the following network, ``all_layers = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]``
+in the following network:
+
+``all_layers`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
+
 where ``?`` reflects any batch size. You can print the layer information and parameters information by
 using ``network.print_layers()`` and ``network.print_params()``.
 To count the number of parameters in a network, run ``network.count_params()``.
