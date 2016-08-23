@@ -12,7 +12,7 @@ from word embedding, and then describe language modeling and machine
 translation.
 
 This tutorial includes all modularized implementation of Google TensorFlow Deep
-Learning tutorial, so you could read TensorFlow tutorial as the same time
+Learning tutorial, so you could read TensorFlow Deep Learning tutorial as the same time
 `[EN] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[CN] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
 
 .. note::
