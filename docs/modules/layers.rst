@@ -139,7 +139,7 @@ At the end, as a layer with parameter, we also need to append the parameters int
           The arguments for the biases tf.get_variable.
       name : a string or None
           An optional name to attach to this layer.
-
+      """
       def __init__(
           self,
           layer = None,
