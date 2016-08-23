@@ -103,8 +103,8 @@ Max or Mean Pooling layer
 Recurrent layer
 ------------------
 
-Recurrent layer for any cell
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Recurrent layer for any cell (LSTM, GRU etc)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RNNLayer
 
