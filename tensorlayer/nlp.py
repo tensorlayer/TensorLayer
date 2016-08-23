@@ -48,8 +48,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     >>> In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
 
     >>> data = [1,2,3,4,5,6,7,8,9,10,11]
-    >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(    \
-        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
+    >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     >>> print(batch)
     ... [2 2 3 3 4 4 5 5]
     >>> print(labels)
