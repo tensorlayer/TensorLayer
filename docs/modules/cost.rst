@@ -1,4 +1,4 @@
-:mod:`tensorlayer.cost`
+API - Cost Functions
 =======================
 
 To make TensorLayer simple, we minimize the number of cost functions as much as

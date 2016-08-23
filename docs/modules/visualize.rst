@@ -1,5 +1,5 @@
-:mod:`tensorlayer.visualize`
-============================
+API - Data, Model Visualization
+================================
 
 TensorFlow provides `TensorBoard <https://www.tensorflow.org/versions/master/how_tos/summaries_and_tensorboard/index.html>`_
 to visualize the model, activations etc. Here we provide more functions for data visualization.

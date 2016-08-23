@@ -1,4 +1,4 @@
-:mod:`tensorlayer.iterate`
+API - Iteration Functions
 ==========================
 
 Data iteration.

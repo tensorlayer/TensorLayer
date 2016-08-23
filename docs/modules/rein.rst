@@ -1,4 +1,4 @@
-:mod:`tensorlayer.rein`
+API - Reinforcement Learning
 ==============================
 
 Reinforcement Learning.
