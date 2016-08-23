@@ -1,5 +1,5 @@
-:mod:`tensorlayer.activation`
-==============================
+API - Activations
+=========================
 
 To make TensorLayer simple, we minimize the number of activation functions as much as
 we can. So we encourage you to use TensorFlow's function. TensorFlow provides

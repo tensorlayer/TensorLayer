@@ -1,4 +1,4 @@
-:mod:`tensorlayer.layers`
+API - Layers
 =========================
 
 To make TensorLayer simple, we minimize the number of layer classes as much as
