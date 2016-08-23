@@ -11,6 +11,10 @@ game from the original screen inputs. For nature language processing, we start
 from word embedding, and then describe language modeling and machine
 translation.
 
+This tutorial includes all modularized implementation of Google TensorFlow Deep
+Learning tutorial, so you could read TensorFlow tutorial as the same time
+[EN] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[CN] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
+
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
     will understand how `TensorLayer`_ work. After that, we recommend you to read
