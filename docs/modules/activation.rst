@@ -8,8 +8,8 @@ we can. So we encourage you to use TensorFlow's function. TensorFlow provides
 `here <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#activation-functions>`_.
 
 
-Creating custom layers
-------------------------
+Creating custom activation
+---------------------------
 
 To implement a custom activation function in TensorLayer is very easy.
 
