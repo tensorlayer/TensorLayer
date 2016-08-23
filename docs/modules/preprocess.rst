@@ -14,6 +14,12 @@ Data preprocessing, more Tensor functions about image, signal processing can be 
 Images
 --------------------
 
+For training data
+^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: distorted_images
+
+For testing data
+^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: crop_central_whiten_images

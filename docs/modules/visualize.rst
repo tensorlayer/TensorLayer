@@ -14,12 +14,15 @@ to visualize the model, activations etc. Here we provide more functions for data
    images2d
    tsne_embedding
 
-Visualize weights
---------------------
+Visualize model parameters
+------------------------------
 
 .. autofunction:: W
 
 .. autofunction:: CNN2d
+
+Visualize data
+-----------------
 
 .. autofunction:: frame
 

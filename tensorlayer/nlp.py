@@ -219,7 +219,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
              questions_skipped: questions skipped due to unknown words.
 
     Examples
-    -------
+    ---------
     >>> eval_file should be in this format :
     >>> : capital-common-countries
     >>> Athens Greece Baghdad Iraq
@@ -608,7 +608,7 @@ def initialize_vocabulary(vocabulary_path):
         Id to word. The reversed vocabulary (a list, which reverses the vocabulary mapping).
 
   Examples
-  --------
+  ---------
   >>> Assume 'test' contains
   ... dog
   ... cat

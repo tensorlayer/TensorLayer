@@ -50,25 +50,68 @@ sake of cross-platform.
 Load dataset functions
 ------------------------
 
+MNIST
+^^^^^^^
+
 .. autofunction:: load_mnist_dataset
+
+CIFAR-10
+^^^^^^^^^^^^
+
 .. autofunction:: load_cifar10_dataset
+
+Penn TreeBank (PTB)
+^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: load_ptb_dataset
+
+Matt Mahoney's text8
+^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: load_matt_mahoney_text8_dataset
+
+IMBD
+^^^^^^^^^^^
+
 .. autofunction:: load_imbd_dataset
+
+Nietzsche
+^^^^^^^^^^^^^^
+
 .. autofunction:: load_nietzsche_dataset
+
+
+English-to-French translation data from the WMT'15 Website
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: load_wmt_en_fr_dataset
 
 
 Load and save network
 ----------------------
 
+Save network as .npz
+^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: save_npz
+
+Load network from .npz
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: load_npz
 .. autofunction:: assign_params
 
 Load and save variables
 ------------------------
+
+Save variables as .npy
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: save_any_to_npy
+
+Load variables from .npy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: load_npy_to_any
 
 

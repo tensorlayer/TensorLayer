@@ -1,4 +1,4 @@
-API - Iteration 
+API - Iteration
 ==========================
 
 Data iteration.
@@ -13,9 +13,14 @@ Data iteration.
    ptb_iterator
 
 
-Iteration functions
+Non-time series
 --------------------
 
 .. autofunction:: minibatches
+
+
+Time series
+----------------------
+
 .. autofunction:: seq_minibatches
 .. autofunction:: ptb_iterator
