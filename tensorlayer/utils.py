@@ -178,6 +178,8 @@ def predict(sess, network, X, x, y_op):
     Examples
     --------
     >>> see tutorial_mnist_simple.py
+    >>> y = network.outputs
+    >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
     >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
     """
     dp_dict = dict_to_one( network.all_drop )    # disable noise layers
