@@ -4,30 +4,21 @@
 
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
-import numpy as np
 import time
 
 """Examples of MLP.
-
-tensorflow (0.9.0)
 """
 
 def main():
+    # prepare dataset
     X_train, y_train, X_val, y_val, X_test, y_test = \
                                     tl.files.load_mnist_dataset(shape=(-1,784))
-
-    n_epoch = 200
-    batch_size = 500
-    learning_rate = 0.0001
-    print_freq = 10
-    is_val = True
-
     sess = tf.InteractiveSession()
-
+    # define placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
     y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
+    # define the network
     network = tl.layers.InputLayer(x, name='input_layer')
     network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
     network = tl.layers.DenseLayer(network, n_units=800,
@@ -39,67 +30,34 @@ def main():
     network = tl.layers.DenseLayer(network, n_units=10,
                                     act = tl.activation.identity,
                                     name='output_layer')
-
+    # define cost function and metric.
     y = network.outputs
+    cost = tl.cost.cross_entropy(y, y_)
+    correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+    acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     y_op = tf.argmax(tf.nn.softmax(y), 1)
 
-    cost = tl.cost.cross_entropy(y, y_)
-
+    # define the optimizer
     train_params = network.all_params
-§
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
+    train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
                                 epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
+    # initialize all variables
     sess.run(tf.initialize_all_variables())
 
+    # print network information
     network.print_params()
     network.print_layers()
-    print(network.all_params)
-    print(network.all_layers)
-    print(network.all_drop)
 
-    print('   learning_rate: %f' % learning_rate)
-    print('   batch_size: %d' % batch_size)
+    # train the network
+    tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+                acc=acc, batch_size=500, n_epoch=500, print_freq=5,
+                X_val=X_val, y_val=y_val, eval_train=False)
 
-    start_time_begin = time.time()
-    for epoch in range(n_epoch):
-        start_time = time.time()
-        loss_ep = 0; n_step = 0
-        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train,
-                                                    batch_size, shuffle=True):
-            feed_dict = {x: X_train_a, y_: y_train_a}
-            feed_dict.update( network.all_drop )    # enable dropout
-            loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
-            loss_ep += loss
-            n_step += 1
-        loss_ep = loss_ep/ n_step
+    # evaluation
+    tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
-
-        if is_val:
-            if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
-                dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable dropout
-                feed_dict = {x: X_train, y_: y_train}
-                feed_dict.update(dp_dict)
-                print("   train loss: %f" % sess.run(cost, feed_dict=feed_dict))
-                dp_dict = tl.utils.dict_to_one( network.all_drop )
-                feed_dict = {x: X_val, y_: y_val}
-                feed_dict.update(dp_dict)
-                print("   val loss: %f" % sess.run(cost, feed_dict=feed_dict))
-                print("   val acc: %f" % np.mean(y_val ==
-                                        sess.run(y_op, feed_dict=feed_dict)))
-        else:
-            print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
-    print("Total training time: %f" % (time.time() - start_time_begin))
-
-    print('Evaluation')
-    dp_dict = tl.utils.dict_to_one( network.all_drop )
-    feed_dict = {x: X_test, y_: y_test}
-    feed_dict.update(dp_dict)
-    print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
-    print("   test acc: %f" % np.mean(y_test == sess.run(y_op,
-                                                        feed_dict=feed_dict)))
-
+    # save the network to .npz file
     tl.files.save_npz(network.all_params , name='model.npz')
     sess.close()
 

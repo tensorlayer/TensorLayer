@@ -37,6 +37,73 @@ need all of it, but a basic understanding of how TensorFlow works is required to
 able to use `TensorLayer`_. If you're new to TensorFlow, going through that tutorial.
 
 
+TensorLayer is simple
+=======================
+
+The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
+We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
+if you want to understand the details and be a machine learning expert, we suggest you to train the network by using ``sess.run()`` instead.
+see ``tutorial_mnist.py`` .
+
+
+.. code-block:: python
+
+  import tensorflow as tf
+  import tensorlayer as tl
+  import time
+
+  sess = tf.InteractiveSession()
+  X_train, y_train, X_val, y_val, X_test, y_test = \
+                                  tl.files.load_mnist_dataset(shape=(-1,784))
+  sess = tf.InteractiveSession()
+  # define placeholder
+  x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+  y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+
+  # define the network
+  network = tl.layers.InputLayer(x, name='input_layer')
+  network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+  network = tl.layers.DenseLayer(network, n_units=800,
+                                  act = tf.nn.relu, name='relu1')
+  network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+  network = tl.layers.DenseLayer(network, n_units=800,
+                                  act = tf.nn.relu, name='relu2')
+  network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+  network = tl.layers.DenseLayer(network, n_units=10,
+                                  act = tl.activation.identity,
+                                  name='output_layer')
+  # define cost function and metric.
+  y = network.outputs
+  cost = tl.cost.cross_entropy(y, y_)
+  correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+  acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+  y_op = tf.argmax(tf.nn.softmax(y), 1)
+
+  # define the optimizer
+  train_params = network.all_params
+  train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
+                              epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+
+  # initialize all variables
+  sess.run(tf.initialize_all_variables())
+
+  # print network information
+  network.print_params()
+  network.print_layers()
+
+  # train the network
+  tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+              acc=acc, batch_size=500, n_epoch=500, print_freq=5,
+              X_val=X_val, y_val=y_val, eval_train=False)
+
+  # evaluation
+  tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+
+  # save the network to .npz file
+  tl.files.save_npz(network.all_params , name='model.npz')
+  sess.close()
+
+
 Run the MNIST example
 =====================
 
@@ -745,7 +812,7 @@ Run the Word2Vec example
 In this part of the tutorial, we train a matrix for words, where each word can
 be represented by a unique row vector in the matrix. In the end, similar words
 will have similar vectors. Then as we plot out the words into a two-dimensional
-plane, words that are similar end up clustering nearby each other
+plane, words that are similar end up clustering nearby each other.
 
 .. code-block:: bash
 
@@ -767,7 +834,7 @@ Understand Word Embedding
 Word Embedding
 ----------------
 
-Hao Dong highly recommend you to read Colah's blog `Word Representations`_ to
+We highly recommend you to read Colah's blog `Word Representations`_ to
 understand why we want to use a vector representation, and how to compute the
 vectors. (For chinese reader please `click <http://dataunion.org/9331.html>`_.
 More details about word2vec can be found in
@@ -819,7 +886,7 @@ Word2vec uses Negative Sampling and Skip-Gram model for training.
 Noise-Contrastive Estimation Loss (NCE) can help to reduce the computation
 of loss. Skip-Gram inverts context and targets, tries to predict each context
 word from its target word. We use ``tl.nlp.generate_skip_gram_batch`` to
-generate training data as follow.
+generate training data as follow, see ``tutorial_generate_text.py`` .
 
 .. code-block:: python
 
@@ -896,7 +963,7 @@ challenging task of language modeling.
 Given a sentence "I am from Imperial College London", the model can learn to
 predict "Imperial College London" from "from Imperial College". In other
 word, it predict next words in a text given a history of previous words.
-In this case, ``num_steps (sequence length)`` is 3.
+In previous example , ``num_steps (sequence length)`` is 3.
 
 .. code-block:: bash
 
@@ -947,7 +1014,7 @@ If you choice small setting, you can see:
 
 The PTB example proves RNN is able to modeling language, but this example
 did not do something practical. However, you should read through this example
-and ``Understand LSTM`` in order to understand the basic of RNN.
+and “Understand LSTM” in order to understand the basic of RNN.
 After that, you learn how to generate text, how to achieve language translation
 and how to build a questions answering system by using RNN.
 
@@ -958,9 +1025,10 @@ Understand LSTM
 Recurrent Neural Network
 -------------------------
 
-Hao Dong personally think Andrey Karpathy's blog is the best material to
+We personally think Andrey Karpathy's blog is the best material to
 `Understand Recurrent Neural Network`_ , after reading that, Colah's blog can
-help you to `Understand LSTM Network`_ which can solve The Problem of Long-Term
+help you to `Understand LSTM Network`_ `[chinese] <http://dataunion.org/9331.html>`_
+which can solve The Problem of Long-Term
 Dependencies. We do not describe more about RNN, please read through these blogs
 before you go on.
 
@@ -982,15 +1050,15 @@ constraints on the lengths sequences because the recurrent transformation (green
 is fixed and can be applied as many times as we like."
 
 The model is built as follow. Firstly, transfer the words into word vectors by
-looking up an embedding matrix. In this tutorial, no pre-training on embedding
+looking up an embedding matrix, in this tutorial, no pre-training on embedding
 matrix. Secondly, we stacked two LSTMs together use dropout among the embedding
-layer, LSTM layers and output layer for regularization. The model provides
-a sequence of softmax outputs during training.
+layer, LSTM layers and output layer for regularization. In the last layer,
+the model provides a sequence of softmax outputs.
 
 The first LSTM layer outputs [batch_size, num_steps, hidden_size] for stacking
 another LSTM after it. The second LSTM layer outputs [batch_size*num_steps, hidden_size]
-for stacking DenseLayer after it, then compute the softmax outputs of each example,
-i.e. n_examples = batch_size*num_steps.
+for stacking DenseLayer after it, then compute the softmax outputs of each example
+（n_examples = batch_size*num_steps).
 
 To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 <https://www.tensorflow.org/versions/r0.9/tutorials/recurrent/index.html#recurrent-neural-networks>`_.
@@ -1047,7 +1115,7 @@ The second batch learn the sequence information by using 10 to 19.
 So it ignores the information from 9 to 10 !\n
 If only if we set the batch_size = 1, it will consider all information from 0 to 20.
 
-The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
+The meaning of batch_size here is not the same with the batch_size in MNIST example. In MNIST example,
 batch_size reflects how many examples we consider in each iteration, while in
 PTB example, batch_size is how many concurrent processes (segments)
 for speed up computation.
@@ -1056,11 +1124,11 @@ Some Information will be ignored if batch_size > 1, however, if your dataset
 is "long" enough (a text corpus usually has billions words), the ignored
 information would not effect the final result.
 
-In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
-At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
+In PTB tutorial, we set batch_size = 20, so we cut the dataset into 20 segments.
+At the beginning of each epoch, we initialize (reset) the 20 RNN states for 20
 segments, then go through 20 segments separately.
 
-The training data will be generated as follow:
+A example of generating training data as follow:
 
 .. code-block:: python
 

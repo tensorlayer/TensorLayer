@@ -1,9 +1,189 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
-
-
-
+import tensorflow as tf
+from . import iterate
 import numpy as np
+import time
+
+
+def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None, y_val=None, eval_train=True):
+    """
+    Traing a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
+
+    Parameters
+    ----------
+    sess : TensorFlow session
+        sess = tf.InteractiveSession()
+    network : a TensorLayer layer
+        the network will be trained
+    train_op : a TensorFlow optimizer
+        like tf.train.AdamOptimizer
+    X_train : numpy array
+        the input of training data
+    y_train : numpy array
+        the target of training data
+    x : placeholder
+        for inputs
+    y_ : placeholder
+        for targets
+    acc : the TensorFlow expression of accuracy (or other metric) or None
+        if None, would not display the metric
+    batch_size : int
+        batch size for training and evaluating
+    n_epoch : int
+        the number of training epochs
+    print_freq : int
+        display the training information every ``print_freq`` epochs
+    X_val : numpy array or None
+        the input of validation data
+    y_val : numpy array or None
+        the target of validation data
+    eval_train : boolen
+        if X_val and y_val are not None, it refects whether to evaluate the training data
+
+    Examples
+    --------
+    >>> see tutorial_mnist_simple.py
+    >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+    ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
+    ...            X_val=X_val, y_val=y_val, eval_train=False)
+    """
+    print("Start training the network ...")
+    start_time_begin = time.time()
+    for epoch in range(n_epoch):
+        start_time = time.time()
+        loss_ep = 0; n_step = 0
+        for X_train_a, y_train_a in iterate.minibatches(X_train, y_train,
+                                                    batch_size, shuffle=True):
+            feed_dict = {x: X_train_a, y_: y_train_a}
+            feed_dict.update( network.all_drop )    # enable noise layers
+            loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
+            loss_ep += loss
+            n_step += 1
+        loss_ep = loss_ep/ n_step
+
+        if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
+            if (X_val is not None) and (y_val is not None):
+                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+                if eval_train is True:
+                    train_loss, train_acc, n_batch = 0, 0, 0
+                    for X_train_a, y_train_a in iterate.minibatches(
+                                            X_train, y_train, batch_size, shuffle=True):
+                        dp_dict = dict_to_one( network.all_drop )    # disable noise layers
+                        feed_dict = {x: X_train_a, y_: y_train_a}
+                        feed_dict.update(dp_dict)
+                        if acc is not None:
+                            err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+                            train_acc += ac
+                        else:
+                            err = sess.run(cost, feed_dict=feed_dict)
+                        train_loss += err;  n_batch += 1
+                    print("   train loss: %f" % (train_loss/ n_batch))
+                    if acc is not None:
+                        print("   train acc: %f" % (train_acc/ n_batch))
+                val_loss, val_acc, n_batch = 0, 0, 0
+                for X_val_a, y_val_a in iterate.minibatches(
+                                            X_val, y_val, batch_size, shuffle=True):
+                    dp_dict = dict_to_one( network.all_drop )    # disable noise layers
+                    feed_dict = {x: X_val_a, y_: y_val_a}
+                    feed_dict.update(dp_dict)
+                    if acc is not None:
+                        err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+                        val_acc += ac
+                    else:
+                        err = sess.run(cost, feed_dict=feed_dict)
+                    val_loss += err; n_batch += 1
+                print("   val loss: %f" % (val_loss/ n_batch))
+                if acc is not None:
+                    print("   val acc: %f" % (val_acc/ n_batch))
+            else:
+                print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
+    print("Total training time: %f" % (time.time() - start_time_begin))
+
+
+def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
+    """
+    Test a given non time-series network by the given test data and metric.
+
+    Parameters
+    ----------
+    sess : TensorFlow session
+        sess = tf.InteractiveSession()
+    network : a TensorLayer layer
+        the network will be trained
+    acc : the TensorFlow expression of accuracy (or other metric) or None
+        if None, would not display the metric
+    X_test : numpy array
+        the input of test data
+    y_test : numpy array
+        the target of test data
+    x : placeholder
+        for inputs
+    y_ : placeholder
+        for targets
+    batch_size : int or None
+        batch size for testing, when dataset is large, we should use minibatche for testing.
+        when dataset is small, we can set it to None.
+    cost : the TensorFlow expression of cost or None
+        if None, would not display the cost
+
+    Examples
+    --------
+    >>> see tutorial_mnist_simple.py
+    >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+    """
+    print('Start testing the network ...')
+    if batch_size is None:
+        dp_dict = dict_to_one( network.all_drop )
+        feed_dict = {x: X_test, y_: y_test}
+        feed_dict.update(dp_dict)
+        if cost is not None:
+            print("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
+        print("   test acc: %f" % sess.run(acc, feed_dict=feed_dict))
+            # print("   test acc: %f" % np.mean(y_test == sess.run(y_op,
+            #                                           feed_dict=feed_dict)))
+    else:
+        test_loss, test_acc, n_batch = 0, 0, 0
+        for X_test_a, y_test_a in iterate.minibatches(
+                                    X_test, y_test, batch_size, shuffle=True):
+            dp_dict = dict_to_one( network.all_drop )    # disable noise layers
+            feed_dict = {x: X_test_a, y_: y_test_a}
+            feed_dict.update(dp_dict)
+            if cost is not None:
+                err, ac = sess.run([cost, acc], feed_dict=feed_dict)
+                val_loss += err
+            else:
+                ac = sess.run(acc, feed_dict=feed_dict)
+            test_acc += ac; n_batch += 1
+        if cost is not None:
+            print("   test loss: %f" % (test_loss/ n_batch))
+        print("   test acc: %f" % (test_acc/ n_batch))
+
+
+def predict(sess, network, X, x, y_op):
+    """
+    Return the predict results of given non time-series network.
+
+    Parameters
+    ----------
+    sess : TensorFlow session
+        sess = tf.InteractiveSession()
+    network : a TensorLayer layer
+        the network will be trained
+    X : numpy array
+        the input
+    y_op : placeholder
+        the argmax expression of softmax outputs
+
+    Examples
+    --------
+    >>> see tutorial_mnist_simple.py
+    >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
+    """
+    dp_dict = dict_to_one( network.all_drop )    # disable noise layers
+    feed_dict = {x: X,}
+    feed_dict.update(dp_dict)
+    return sess.run(y_op, feed_dict=feed_dict)
 
 ## Evaluation
 def evaluation(y_test=None, y_predict=None, n_classes=None):
@@ -127,6 +307,8 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
         print('the occurrence number of each stage after oversampling: %s' % c.most_common())
     # ================ End of Classes balancing
     return X_train, y_train
+
+
 
 
 #

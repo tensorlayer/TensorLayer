@@ -5,9 +5,20 @@ API - Utility
 
 .. autosummary::
 
+   fit
+   test
+   predict
    evaluation
    class_balancing_oversample
    dict_to_one
+
+Training, testing and predicting
+----------------------------------
+
+.. autofunction:: fit
+.. autofunction:: test
+.. autofunction:: predict
+
 
 Evaluation functions
 ---------------------
