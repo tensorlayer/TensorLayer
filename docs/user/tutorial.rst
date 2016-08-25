@@ -43,7 +43,7 @@ TensorLayer is simple
 The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
 We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
 if you want to understand the details and be a machine learning expert, we suggest you to train the network by using
-TensorFlow's method like ``sess.run()``, see ``tutorial_mnist.py`` for more details.
+TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more details.
 
 
 .. code-block:: python

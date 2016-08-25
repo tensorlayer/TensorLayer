@@ -151,9 +151,13 @@ class Layer(object):
 
     def print_params(self):
         ''' Print all info of parameters in the network after initialize_all_variables()'''
-        for i, p in enumerate(self.all_params):
-            print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
-        print("  num of params: %d" % self.count_params())
+        try:
+            for i, p in enumerate(self.all_params):
+                print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
+            print("  num of params: %d" % self.count_params())
+        except:
+            raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
+
 
     def print_layers(self):
         ''' Print all info of layers in the network '''
