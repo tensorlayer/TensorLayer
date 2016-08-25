@@ -197,6 +197,58 @@ The following is an example implementation of a layer that multiplies its input 
           self.all_layers.extend( [self.outputs] )
 
 
+Modifying Pre-train Behaviour
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Greedy layer-wise pretrain is an important task for deep neural network
+initialization, while there are many kinds of pre-train methods according
+to different network architectures and applications.
+
+For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
+can be implemented by using KL divergence (for sigmoid) as the following code,
+but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
+the sparsity can be implemented by using the L1 regularization of activation output.
+
+.. code-block:: python
+
+  # Vanilla Sparse Autoencoder
+  beta = 4
+  rho = 0.15
+  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
+  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
+          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
+
+
+There are many pre-train methods, for this reason, TensorLayer provides a simple way to modify or design your
+own pre-train method. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
+to define the reconstruction layer and cost function, to define your own cost
+function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
+To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
+By default, ``ReconLayer`` only updates the weights and biases of previous 1
+layer by using ``self.train_params = self.all _params[-4:]``, where the 4
+parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``, where
+``W_encoder, b_encoder`` belong to previous DenseLayer, ``W_decoder, b_decoder``
+belong to this ReconLayer.
+In addition, if you want to update the parameters of previous 2 layers at the same time, simply modify ``[-4:]`` to ``[-6:]``.
+
+
+.. code-block:: python
+
+  ReconLayer.__init__(...):
+      ...
+      self.train_params = self.all_params[-4:]
+      ...
+  	self.cost = mse + L1_a + L2_w
+
+
+
+
+
+
+
+
+
+
 
 .. automodule:: tensorlayer.layers
 

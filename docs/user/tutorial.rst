@@ -42,8 +42,8 @@ TensorLayer is simple
 
 The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
 We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
-if you want to understand the details and be a machine learning expert, we suggest you to train the network by using ``sess.run()`` instead.
-see ``tutorial_mnist.py`` .
+if you want to understand the details and be a machine learning expert, we suggest you to train the network by using
+TensorFlow's method like ``sess.run()``, see ``tutorial_mnist.py`` for more details.
 
 
 .. code-block:: python
@@ -53,6 +53,8 @@ see ``tutorial_mnist.py`` .
   import time
 
   sess = tf.InteractiveSession()
+
+  # prepare data
   X_train, y_train, X_val, y_val, X_test, y_test = \
                                   tl.files.load_mnist_dataset(shape=(-1,784))
   sess = tf.InteractiveSession()
@@ -285,7 +287,7 @@ dataset in ``tutorial_mnist_simple.py``, a CNN example for CIFAR-10 dataset in
 
 
 Multi-Layer Perceptron (MLP)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------
 
 The first script, ``main_test_layers()``, creates an MLP of two hidden layers of
 800 units each, followed by a softmax output layer of 10 units. It applies 20%
@@ -366,7 +368,7 @@ Here, ``network.outputs`` is the 10 identity outputs from the network (in one ho
 output represents the class index. While ``cost`` is the cross-entropy between target and predicted labels.
 
 Denoising Autoencoder (DAE)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------
 
 Autoencoder is a unsupervised learning models which able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
@@ -412,7 +414,7 @@ fine-tune.
 
 
 Convolutional Neural Network (CNN)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------
 
 Finally, the ``main_test_cnn_layer()`` script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
@@ -890,6 +892,7 @@ generate training data as follow, see ``tutorial_generate_text.py`` .
 
 .. code-block:: python
 
+  # NCE cost expression is provided by Word2vecEmbeddingInputlayer
   cost = emb_net.nce_cost
   train_params = emb_net.all_params
 
@@ -1164,6 +1167,7 @@ The cost function is the averaged cost of each mini-batch:
 
 .. code-block:: python
 
+  # See tensorlayer.cost.cross_entropy_seq() for more details
   def loss_fn(outputs, targets, batch_size, num_steps):
       # Returns the cost function of Cross-entropy of two sequences, implement
       # softmax internally.
@@ -1184,7 +1188,7 @@ The cost function is the averaged cost of each mini-batch:
 
 
 For updating, this example decreases the initial learning rate after several
-epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``. In addition,
+epochs (defined by ``max_epoch``), by multiplying a ``lr_decay``. In addition,
 truncated backpropagation clips values of gradients by the ratio of the sum of
 their norms, so as to make the learning process tractable.
 
@@ -1200,7 +1204,8 @@ their norms, so as to make the learning process tractable.
   train_op = optimizer.apply_gradients(zip(grads, tvars))
 
 
-Then at the beginning of each epoch, we assign a new learning rate:
+If the epoch index greater than ``max_epoch``, decrease the learning rate
+by multipling ``lr_decay``.
 
 .. code-block:: python
 
@@ -1208,12 +1213,13 @@ Then at the beginning of each epoch, we assign a new learning rate:
   sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
 
-At the begining of each epoch, all states of LSTMs need to be resetted (initialized),
-then after each iteration, the new final states need to be assigned as the initial
-states of next iteration:
+At the beginning of each epoch, all states of LSTMs need to be reseted
+(initialized) to zero states, then after each iteration, the LSTMs' states
+is updated, so the new LSTM states (final states) need to be assigned as the initial states of next iteration:
 
 .. code-block:: python
 
+  # set all states to zero states at the beginning of each epoch
   state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
   state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
   for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data,
@@ -1224,6 +1230,7 @@ states of next iteration:
                   }
       # For training, enable dropout
       feed_dict.update( network.all_drop )
+      # use the new states as the initial state of next iteration
       _cost, state1, state2, _ = sess.run([cost,
                                       lstm1.final_state,
                                       lstm2.final_state,
@@ -1235,9 +1242,10 @@ states of next iteration:
 Predicting
 ^^^^^^^^^^^^^
 
-After training the model, we no long consider the number of steps (sequence length),
-i.e. ``batch_size, num_steps`` are ``1``. Then we can predict the next word step
-by step, instead of predict a sequence of words from a sequence of words.
+After training the model, when we predict the next output, we no long consider
+the number of steps (sequence length), i.e. ``batch_size, num_steps`` are ``1``.
+Then we can output the next word step by step, instead of predict a sequence
+of words from a sequence of words.
 
 .. code-block:: python
 
@@ -1254,7 +1262,7 @@ by step, instead of predict a sequence of words from a sequence of words.
   # go through the test set step by step, it will take a while.
   start_time = time.time()
   costs = 0.0; iters = 0
-  # reset all states at the begining
+  # reset all states at the beginning
   state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
   state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
   for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data,
@@ -1346,7 +1354,7 @@ If everything is correct, you will see.
 
 Firstly, we download English-to-French translation data from the WMT'15
 Website. The training and testing data as follow. The training data is used to
-train the model, the testing data is used to XXXX.
+train the model, the testing data is used to evaluate the model.
 
 .. code-block:: text
 
@@ -1361,7 +1369,7 @@ train the model, the testing data is used to XXXX.
   wmt/newstest2013.fr         <-- Testing data of French    (393KB)
   wmt/newstest2013.en         <-- Testing data of English   (333KB)
 
-As ``giga-fren.release2.*`` are the training data, ``giga-fren.release2.fr`` look as follow.
+As ``giga-fren.release2.*`` are the training data, the context of ``giga-fren.release2.fr`` look as follow.
 
 .. code-block:: text
 
@@ -1455,7 +1463,7 @@ The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
   a
   par
 
-The ``vocab40000.en`` (344KB) stores one-item-per-line as follow.
+The ``vocab40000.en`` (344KB) stores one-item-per-line as follow as well.
 
 .. code-block:: text
 
@@ -1542,7 +1550,7 @@ In the end, all files we have as follow.
   wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
 
 
-Now, read all tokenized data into buckets and compute their sizes.
+Now, read all tokenized data into buckets and compute the number of data of each bucket.
 
 .. code-block:: text
 
@@ -1713,7 +1721,7 @@ a French sentence.
 
 .. code-block:: text
 
-  Reading model parameters from wmt/translate.ckpt-340000
+  Reading model parameters from wmt/translate.ckpt-350000
   >  Who is the president of the United States?
   Qui est le président des États-Unis ?
 
@@ -1735,8 +1743,9 @@ a long sentence into short and simple sentence, for example, translation going
 from Shakespeare to modern English.
 With CNN, we can also translate a video into a sentence, i.e. video captioning.
 
-If you just want to use Seq2seq, the only think you need to consider is the
-data format including how to split the words, how to tokenize the words etc.
+If you just want to use Seq2seq but not going to design a new algorithm, the
+only think you need to consider is the data format including how to split
+the words, how to tokenize the words etc.
 In this tutorial, we described a lot about data formating.
 
 
@@ -1774,7 +1783,7 @@ As the above figure shows, the encoder inputs, decoder inputs and targets are:
    targets       =  W    X    Y    Z    <eos>
 
    Note: in the code, the size of targets is one smaller than the size
-   of decoder_input, not like this figure.
+   of decoder_input, not like this figure. More details will be show later.
 
 Papers
 ^^^^^^^^
@@ -1785,7 +1794,7 @@ It is the same as the model described in this paper:
  - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
 
 The example uses sampled softmax to handle large output vocabulary size.
-In this case, as ``target_vocab_size=4000``, for vocabularies smaller
+In this example, as ``target_vocab_size=4000``, for vocabularies smaller
 than ``512``, it might be a better idea to just use a standard softmax loss.
 Sampled softmax is described in Section 3 of the this paper:
  - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
@@ -1817,12 +1826,12 @@ lengths ``L2`` on output. We should in principle create a seq2seq model
 for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
 lengths of an English and French sentence.
 
-For find the closest bucket for each pair, then we could just pad every
+To minimize the number of buckets and find the closest bucket for each pair, then we could just pad every
 sentence with a special PAD symbol in the end if the bucket is bigger
 than the sentence
 
 We use a number of buckets and pad to the closest one for efficiency.
-In this example, we used 4 buckets.
+In this example, we used 4 buckets as follow.
 
 .. code-block:: python
 
@@ -1854,7 +1863,7 @@ are decoder inputs shifted by one. The ``target_weights`` is the mask of
   targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
 
 
-In this script, one sentence is represented by one column, so assume
+In this example, one sentence is represented by one column, so assume
 ``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
 
 .. code-block:: text
@@ -1873,7 +1882,7 @@ In this script, one sentence is represented by one column, so assume
 
   where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
 
-During training, the decoder inputs are the targets; while,
+During training, the decoder inputs are the targets, while
 during prediction, the next decoder input is the last decoder output.
 
 
@@ -1904,16 +1913,17 @@ The special vocabulary symbols in this example are:
 
 
 For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
-must be consistent, if ``True`` all digits will be replaced by ``0``. Like
+must be consistent, if ``normalize_digits=True`` all digits will be replaced by ``0``. Like
 ``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
 `0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
-Otherwise, if ``False``, different digits
+
+Otherwise, if ``normalize_digits=False``, different digits
 will be seem in the vocabulary, then the vocabulary size will be very big.
 The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
 (see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
 
 For word split, the regular expression is
-``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use
+``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use the symbols like
 ``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
 ``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
 ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
@@ -1953,161 +1963,6 @@ Try other applications.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-Cost Functions
-===============
-
-TensorLayer provides a simple way to creat you own cost function. Take a MLP below for example.
-
-.. code-block:: python
-
-  network = tl.InputLayer(x, name='input_layer')
-  network = tl.DropoutLayer(network, keep=0.8, name='drop1')
-  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-  network = tl.DropoutLayer(network, keep=0.5, name='drop2')
-  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-  network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-  network = tl.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
-
-
-
-Regularization of Weights
---------------------------
-
-After initializing the variables, the informations of network parameters can be
-observed by using ``network.print_params()``.
-
-.. code-block:: python
-
-  sess.run(tf.initialize_all_variables())
-  network.print_params()
-
-.. code-block:: text
-
-  param 0: (784, 800) (mean: -0.000000, median: 0.000004 std: 0.035524)
-  param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  param 2: (800, 800) (mean: 0.000029, median: 0.000031 std: 0.035378)
-  param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  param 4: (800, 10) (mean: 0.000673, median: 0.000763 std: 0.049373)
-  param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  num of params: 1276810
-
-
-The output of network is ``network.outputs``, then the cross entropy can be
-defined as follow. Besides, to regularize the weights,
-the ``network.all_params`` contains all parameters of the network.
-In this case, ``network.all_params = [W1, b1, W2, b2, Wout, bout]`` according
-to param 0, 1 ... 5 shown by ``network.print_params()``.
-Then max-norm regularization on W1 and W2 can be performed as follow.
-
-.. code-block:: python
-
-  y = network.outputs
-  # Alternatively, you can use tl.cost.cross_entropy(y, y_) instead.
-  cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-  cost = cross_entropy
-  cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) +
-            tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
-
-In addition, all TensorFlow's regularizers like
-``tf.contrib.layers.l2_regularizer`` can be used with TensorLayer.
-
-Regularization of Activation outputs
---------------------------------------
-
-Instance method ``network.print_layers()`` prints all outputs of different
-layers in order. To achieve regularization on activation output, you can use
-``network.all_layers`` which contains all outputs of different layers.
-If you want to apply L1 penalty on the activations of first hidden layer,
-just simply add ``tf.contrib.layers.l2_regularizer(lambda_l1)(network.all_layers[1])``
-to the cost function.
-
-.. code-block:: python
-
-  network.print_layers()
-
-.. code-block:: text
-
-  layer 0: Tensor("dropout/mul_1:0", shape=(?, 784), dtype=float32)
-  layer 1: Tensor("Relu:0", shape=(?, 800), dtype=float32)
-  layer 2: Tensor("dropout_1/mul_1:0", shape=(?, 800), dtype=float32)
-  layer 3: Tensor("Relu_1:0", shape=(?, 800), dtype=float32)
-  layer 4: Tensor("dropout_2/mul_1:0", shape=(?, 800), dtype=float32)
-  layer 5: Tensor("add_2:0", shape=(?, 10), dtype=float32)
-
-
-
-
-
-
-Easy to Modify
-================
-
-Modifying Pre-train Behaviour
-------------------------------
-
-Greedy layer-wise pretrain is an important task for deep neural network
-initialization, while there are many kinds of pre-train metrics according
-to different architectures and applications.
-
-For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
-can be implemented by using KL divergence as the following code,
-but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
-the sparsity can be implemented by using the L1 regularization of activation output.
-
-.. code-block:: python
-
-  # Vanilla Sparse Autoencoder
-  beta = 4
-  rho = 0.15
-  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
-  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
-          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
-
-
-For this reason, TensorLayer provides a simple way to modify or design your
-own pre-train metrice. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
-to define the reconstruction layer and cost function, to define your own cost
-function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
-To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
-By default, ``ReconLayer`` only updates the weights and biases of previous 1
-layer by using ``self.train_params = self.all _params[-4:]``, where the 4
-parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``. If you want
-to update the parameters of previous 2 layers, simply modify ``[-4:]`` to ``[-6:]``.
-
-
-.. code-block:: python
-
-  ReconLayer.__init__(...):
-      ...
-      self.train_params = self.all_params[-4:]
-      ...
-  	self.cost = mse + L1_a + L2_w
-
-
-Adding Customized Layer
--------------------------
-
-Contribute useful ``Layer`` as an developer. The source code of TensorLayer is
-easy to understand, open :mod:`tensorlayer/layer.py` and read ``DenseLayer``, you
-can fully understand how it work.
-
-
-Adding Customized Regularizer
-------------------------------
-
-See :mod:`tensorlayer/cost.py`.
 
 
 
