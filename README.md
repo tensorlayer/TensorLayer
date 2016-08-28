@@ -18,7 +18,7 @@
 
 TensorLayer is designed to use by both Researchers and Engineers, it is a transparent library built on the top of [Google TensorFlow](https://www.tensorflow.org). It is designed to provide a higher-level API to TensorFlow in order to speed-up experimentations and developments. TensorLayer is easy to be extended and modified. In addition, we provide many examples and tutorials to help you to go through deep learning and reinforcement learning.
 
-The documentation is not only for describing how to use TensorLayer API but also a tutorial https://github.com/zsdonghao/tensorlayer#tensorlayer-deep-learning-and-reinforcement-learning-library-for-researchers-and-engineersto walk through different type of Neural Networks, Deep Reinforcement Learning and Natural Language Processing etc.
+The documentation is not only for describing how to use TensorLayer API but also a tutorial to walk through different type of Neural Networks, Deep Reinforcement Learning and Natural Language Processing etc.
 In addition, TensorLayer's tutorial also include all modularized implementation of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
 
 
