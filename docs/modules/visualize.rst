@@ -1,4 +1,4 @@
-API - Data, Model Visualization
+API - Visualize Model and Data
 ================================
 
 TensorFlow provides `TensorBoard <https://www.tensorflow.org/versions/master/how_tos/summaries_and_tensorboard/index.html>`_
