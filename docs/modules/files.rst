@@ -18,11 +18,16 @@ sake of cross-platform.
 
   # save model as .npz
   tl.files.save_npz(network.all_params , name='model.npz')
+
   # restore model from .npz
   load_params = tl.files.load_npz(path='', name='model.npz')
   tl.files.assign_params(sess, load_params, network)
 
-
+  # you can assign the pre-trained parameters as follow
+  # 1st parameter
+  tl.files.assign_params(sess, [load_params[0]], network)
+  # the first three parameters
+  tl.files.assign_params(sess, load_params[:3], network)
 
 .. automodule:: tensorlayer.files
 

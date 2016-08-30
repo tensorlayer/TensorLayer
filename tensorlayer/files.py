@@ -638,7 +638,7 @@ def save_npz(save_dict={}, name='model.npz'):
     ... Loading param3, (800,)
     ... Loading param4, (800, 10)
     ... Loading param5, (10,)
-    >>> put parameters into a TLayer network, please see assign_params()
+    >>> put parameters into a TensorLayer network, please see assign_params()
 
     References
     ----------
@@ -699,7 +699,7 @@ def load_npz(path='', name='model.npz'):
     # return d.items()[0][1]['params']
 
 def assign_params(sess, params, network):
-    """Assign the given parameters to the TLayer network.
+    """Assign the given parameters to the TensorLayer network.
 
     Parameters
     ----------
