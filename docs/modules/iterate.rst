@@ -10,6 +10,7 @@ Data iteration.
 
    minibatches
    seq_minibatches
+   seq_minibatches2
    ptb_iterator
 
 
@@ -23,4 +24,5 @@ Time series
 ----------------------
 
 .. autofunction:: seq_minibatches
+.. autofunction:: seq_minibatches2
 .. autofunction:: ptb_iterator
