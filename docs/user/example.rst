@@ -33,26 +33,27 @@ Reinforcement Learning
 
  - Deep Reinforcement Learning - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py`` on `GitHub`_.
 
-Applications
-=============
+..
+  Applications
+  =============
 
-There are some good applications implemented by TensorLayer.
-You may able to find some useful examples for your project.
-If you want to share your application, please contact hao.dong11@imperial.ac.uk.
+  There are some good applications implemented by TensorLayer.
+  You may able to find some useful examples for your project.
+  If you want to share your application, please contact hao.dong11@imperial.ac.uk.
 
-1D CNN + LSTM for Biosignal
----------------------------------
+  1D CNN + LSTM for Biosignal
+  ---------------------------------
 
-Author : `Akara Supratak <https://akaraspt.github.io>`_
+  Author : `Akara Supratak <https://akaraspt.github.io>`_
 
-Introduction
-^^^^^^^^^^^^
+  Introduction
+  ^^^^^^^^^^^^
 
-Implementation
-^^^^^^^^^^^^^^
+  Implementation
+  ^^^^^^^^^^^^^^
 
-Citation
-^^^^^^^^
+  Citation
+  ^^^^^^^^
 
 
 
