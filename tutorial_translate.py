@@ -47,9 +47,8 @@ Data
 ----
 http://www.statmt.org/wmt10/
 
-tensorflow (0.9.0)
 """
-
+from __future__ import print_function
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep

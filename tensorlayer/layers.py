@@ -516,7 +516,7 @@ class DenseLayer(Layer):
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
     >>> y = tf.nn.relu(tf.matmul(inputs, W) + b)
 
-    Notes
+    Note
     -----
     If the input to this layer has more than two axes, it need to flatten the
     input by using :class:`FlattenLayer` in this case.

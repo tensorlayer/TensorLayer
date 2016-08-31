@@ -154,7 +154,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     ----------
     `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
 
-    `Code download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
+    `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
 
     `Code references <https://teratail.com/questions/28932>`_
     """
@@ -617,12 +617,12 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
 
 
 ## Load and save network
-def save_npz(save_dict={}, name='model.npz'):
+def save_npz(save_list={}, name='model.npz'):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
     ----------
-    save_dict : a dictionary
+    save_list : a list
         Parameters want to be saved.
     name : a string or None
         The name of the .npz file.
@@ -651,10 +651,10 @@ def save_npz(save_dict={}, name='model.npz'):
     # np.savez(name, **rename_dict)
     # print('Model is saved to: %s' % name)
     ## save params into a list
-    save_list = []
-    for k, value in enumerate(save_dict):
-        save_list.append( value.eval() )
-    np.savez(name, params=save_list)
+    save_list_var = []
+    for k, value in enumerate(save_list):
+        save_list_var.append( value.eval() )
+    np.savez(name, params=save_list_var)
     print('Model is saved to: %s' % name)
 
 def load_npz(path='', name='model.npz'):
@@ -704,7 +704,7 @@ def assign_params(sess, params, network):
     Parameters
     ----------
     sess : TensorFlow Session
-    params : list
+    params : a list
         A list of parameters in order.
     network : a :class:`Layer` class
         The network to be assigned
