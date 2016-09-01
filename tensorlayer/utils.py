@@ -98,7 +98,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                     print("   val acc: %f" % (val_acc/ n_batch))
             else:
                 print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
-    print("Total training time: %f" % (time.time() - start_time_begin))
+    print("Total training time: %fs" % (time.time() - start_time_begin))
 
 
 def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):

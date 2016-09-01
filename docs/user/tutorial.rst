@@ -71,6 +71,9 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
   network = tl.layers.DenseLayer(network, n_units=800,
                                   act = tf.nn.relu, name='relu2')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+  # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
+  # speed up computation, so we use identity here.
+  # see tf.nn.sparse_softmax_cross_entropy_with_logits()
   network = tl.layers.DenseLayer(network, n_units=10,
                                   act = tl.activation.identity,
                                   name='output_layer')
