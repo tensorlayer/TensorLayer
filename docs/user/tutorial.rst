@@ -349,7 +349,10 @@ again:
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 
 Finally, we'll add the fully-connected output layer which the ``n_units`` equals to
-the number of classes.
+the number of classes. Note that, the softmax is implemented internally in ``cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))`` ,
+so as to speed up computation, so so we use identity in the last layer, more
+detail in ``tl.cost.cross_entropy()``.
+
 
 .. code-block:: python
 

@@ -55,6 +55,9 @@ def main_test_layers(model='relu'):
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
     y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
+    # Note: the softmax is implemented internally in tl.cost.cross_entropy(y, y_)
+    # to speed up computation, so we use identity in the last layer.
+    # see tf.nn.sparse_softmax_cross_entropy_with_logits()
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input_layer')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
