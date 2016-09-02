@@ -15,7 +15,7 @@ The `documentation <http://tensorlayer.readthedocs.io/en/latest/user/tutorial.ht
 
 .. _TensorLayer-philosopy:
 
-Philosophy
+Design goals
 ----------
 
 `TensorLayer`_ grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
