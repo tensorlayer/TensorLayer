@@ -14,7 +14,7 @@
 </a>
 
 
-# TensorLayer
+# TensorLayer: Deep learning and Reinforcement learning library for Researchers and Engineers.
 
 TensorLayer is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for [Google TensorFlow](https://www.tensorflow.org). It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
 
