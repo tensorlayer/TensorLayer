@@ -22,10 +22,10 @@ The documentation describes the usages of TensorLayer APIs. It is also a self-co
 
 TensorLayer grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
 
- - Transparency: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
- - Extensibility: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
- - Performance: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
- - Low learning curve: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
+ - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
+ - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
+ - **Performance**: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
+ - **Low learning curve**: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
 
 🆕🆕🆕 [Chinese documentation](http://tensorlayercn.readthedocs.io/) is released.
 
