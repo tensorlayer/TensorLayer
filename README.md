@@ -14,30 +14,20 @@
 </a>
 
 
-# TensorLayer: Deep learning and Reinforcement learning library for Researchers and Engineers. 
+# TensorLayer
 
-TensorLayer is designed to use by both Researchers and Engineers, it is a transparent library built on the top of [Google TensorFlow](https://www.tensorflow.org). It is designed to provide a higher-level API to TensorFlow in order to speed-up experimentations and developments. TensorLayer is easy to be extended and modified. In addition, we provide many examples and tutorials to help you to go through deep learning and reinforcement learning.
+TensorLayer is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for [Google TensorFlow](https://www.tensorflow.org). It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
 
-The documentation is not only for describing how to use TensorLayer API but also a tutorial to walk through different type of Neural Networks, Deep Reinforcement Learning and Natural Language Processing etc.
-In addition, TensorLayer's tutorial also include all modularized implementation of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
+The documentation describes the usages of TensorLayer APIs. It is also a self-contained document that includes a tutorial to walk through different types of neural networks, deep reinforcement learning and Natural Language Processing (NLP) etc. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
 
+TensorLayer grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
 
-However, different with other inflexible TensorFlow wrappers, TensorLayer assumes that you are somewhat familiar with Neural Networks and TensorFlow. A basic understanding of how TensorFlow works is required to be able to use TensorLayer skillfully.
+ - Transparency: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. Though have provided pre-built modules for the ease of development, TensorLayer exposes the implementation details of the TensorFlow and allows users to do low-level engine manupulations, such as training process, iteration, initialization.
+ - Extensibility: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
+ - Performance: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
+ - Low learning curve: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
 
 🆕🆕🆕 [Chinese documentation](http://tensorlayercn.readthedocs.io/) is released.
-
-TensorLayer grow out of a need to combine the flexibility of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
-
- - Transparency: Do not hide TensorFlow behind abstractions. Try to rely on TensorFlow’s functionality where possible, and follow TensorFlow’s conventions. Do not hide training process, all iteration, initialization can be managed by user.
- - Tensor: Neural networks perform on multidimensional data arrays which are referred to as “tensors”.
- - Tutorial: Providing mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
- - TPU: Tensor Processing Unit is a custom ASIC built specifically for machine learning and tailored for TensorFlow.
- - Distribution: Distributed Machine Learning is the default function of TensorFlow.
- - Compatibility: A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to merged into TensorLayer, suitable for Researchers.
- - Simplicity: Be easy to use, extend and modify, to facilitate use in Research and Engineering.
- - High-Speed: The running speed under GPU support is the same with TensorFlow only. The simplicity do not sacrifice the performance.
-
-
 
 Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
