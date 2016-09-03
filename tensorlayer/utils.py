@@ -48,6 +48,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
     ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
     ...            X_val=X_val, y_val=y_val, eval_train=False)
     """
+    assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
     print("Start training the network ...")
     start_time_begin = time.time()
     for epoch in range(n_epoch):
