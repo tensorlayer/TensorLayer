@@ -5,7 +5,6 @@
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
-from tensorflow.models.rnn.ptb import reader
 import numpy as np
 import time
 
