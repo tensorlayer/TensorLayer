@@ -68,14 +68,8 @@ However, TensorLayer has some prerequisites that need to be installed first, inc
 ├── .. 
 ```
 --
-# Overview
-More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[Read the Docs](http://tensorlayer.readthedocs.io)*, you can also download the docs file then read it locally.
-
-0. [Fully Connected Network](#)
-0. [Convolutional Neural Network](#)
-0. [Recurrent Neural Network](#)
-0. [Reinforcement Learning](#)
-0. [Cost Function](#)
+# Examples
+More examples can be found in [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 ### *Fully Connected Network*
 TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ReconLayer and so on.
