@@ -44,8 +44,6 @@ Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](h
 --
 # Installation
 
-**<font color="grey"> TensorLayer Installation: </font>**
-
 The simplest way to install TensorLayer is as follow. 
 
 ```python
