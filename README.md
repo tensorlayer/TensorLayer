@@ -289,7 +289,7 @@ network.print_layers()
 ```
 For more powerful functions, please go to *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*.
 
-# Easy to Modify
+# Easy to Modify (delete ?)
 **<font color="grey"> Modifying Pre-train Behaviour: </font>**
 
 
