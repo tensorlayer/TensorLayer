@@ -14,7 +14,7 @@
 </a>
 
 
-# TensorLayer
+# TensorLayer: Deep learning and Reinforcement learning library for Academic and Industry.
 
 TensorLayer is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for [Google TensorFlow](https://www.tensorflow.org). It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
 
@@ -40,21 +40,28 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ####🇬🇧If you are in London, we can discuss face to face.
 
 -
+# Documentation
 
-# Table of Contents
-0. [Library Structure](#Library-Structure)
-0. [Overview](#Overview)
-0. [Easy to Modify](#Easytomodify)
-0. [Installation](#Installation)
-0. [Ways to Contribute](#Waystocontribute)
-0. [Online Documentation](http://tensorlayer.readthedocs.io/en/latest/)
-0. [Download PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
-0. [Download Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
-0. [Download HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
-
+0. [Online](http://tensorlayer.readthedocs.io/en/latest/)
+0. [PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
+0. [Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
+0. [HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
 --
-# Library Structure
+# Installation
+
+**<font color="grey"> TensorLayer Installation: </font>**
+
+The simplest way to install TensorLayer is as follow. 
+
+```python
+pip install git+https://github.com/zsdonghao/tensorlayer.git
+```
+
+However, TensorLayer has some prerequisites that need to be installed first, including TensorFlow, numpy and matplotlib. For GPU support CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. Please check [detailed installation instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
+
+--
+# Repository Structure
 
 ```
 <folder>
@@ -70,7 +77,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 ```
 --
 # Overview
-More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[Read the Docs](http://tensorlayer.readthedocs.io/en/latest/)*, you can also download the docs file then read it locally.
+More examples about Deep Learning, Reinforcement Learning and Nature Language Processing available on *[Read the Docs](http://tensorlayer.readthedocs.io)*, you can also download the docs file then read it locally.
 
 0. [Fully Connected Network](#)
 0. [Convolutional Neural Network](#)
@@ -79,7 +86,7 @@ More examples about Deep Learning, Reinforcement Learning and Nature Language Pr
 0. [Cost Function](#)
 
 ### *Fully Connected Network*
-TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ResNet, Pre-train and so on.
+TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ReconLayer and so on.
 
 **<font color="grey"> Placeholder: </font>**
 
@@ -328,38 +335,6 @@ ReconLayer.__init__(...):
 See tensorlayer/cost.py
 
 
-# Installation
-
-**<font color="grey"> TensorFlow Installation: </font>**
-
-This library requires Tensorflow (version >= 0.8) to be installed: *[Tensorflow installation instructions](https://www.tensorflow.org/versions/r0.9/get_started/os_setup.html)*.
-
-**<font color="grey"> GPU Setup: </font>**
-
-GPU-version of Tensorflow requires CUDA and cuDNN to be installed.
-
-*[CUDA, CuDNN installation instructions](https://www.tensorflow.org/versions/master/get_started/os_setup.html#optional-install-cuda-gpus-on-linux)*.
-
-*[CUDA download](https://developer.nvidia.com/cuda-downloads)*.
-
-*[cuDNN download](https://developer.nvidia.com/cudnn)*.
-
-**<font color="grey"> TensorLayer Installation: </font>**
-
-The simplest way to install TensorLayer is as follow.
-
-```python
-pip install git+https://github.com/zsdonghao/tensorlayer.git
-```
-
-If you want to modify or extend TensorLayer, you can download the repo and install it as follow, more detail in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
-
-```python
-python setup.py install
-or
-pip install . -e
-```
-
 # Ways to Contribute
 
 TensorLayer begins as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
@@ -367,16 +342,4 @@ TensorLayer begins as an internal repository at Imperial College London, helping
 Your method can be merged into TensorLayer, if you can prove it is better than the existing methods. Test script with detailed descriptions is required.
 
 
-# Online Documentation
-The documentation is placed in [Read the Docs](http://tensorlayer.readthedocs.io/en/latest/). To generate the documentation yourself, do this:
-```shell
-cd docs
-make html
-```
 
-# Download Documentation
-You can download the documentation via [Read the Docs](http://tensorlayer.readthedocs.io/).
-
-0. [Download PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf)
-0. [Download Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
-0. [Download HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
