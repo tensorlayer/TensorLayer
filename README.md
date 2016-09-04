@@ -39,8 +39,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 ####🇬🇧If you are in London, we can discuss face to face.
 
--
-### Documentation [Online](http://tensorlayer.readthedocs.io/en/latest/) [PDF](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
+Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
 --
 # Installation
