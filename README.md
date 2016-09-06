@@ -45,12 +45,15 @@ Advanced user
 科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。
 
 Modularization
-- Level 1: The input of a module is the output of previous module(s)
-	Modularization makes the network easy to be modified and optimized
-- Level 2: The input of a module is the output of previous module(s)
-	Modularization makes the network easy to be modified and optimized
-- Level 3: Module can be more complex, it could even be a dynamic module
-	Dynamic module can be seem as many networks which sharing some modules
+- Level 1: 
+	-- The input of a module is the output of previous module(s)
+	-- Modularization makes the network easy to be modified and optimized
+- Level 2: 
+	-- The input of a module is the output of previous module(s)
+	-- Modularization makes the network easy to be modified and optimized
+- Level 3: 
+	-- Module can be more complex, it could even be a dynamic module
+	-- Dynamic module can be seem as many networks which sharing some modules
 
 
 uy gu y g
