@@ -22,6 +22,29 @@ The documentation describes the usages of TensorLayer APIs. It is also a self-co
 
 TensorLayer grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
 
+
+(改这里)
+beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
+intermediate user: need to customize their models to solve their domain-specific problems.
+advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
+
+Beginner
+- Mass tutorials
+- Easy to use
+- Modular
+
+Intermediate user
+- Flexibility
+
+Advanced user
+- Extensibility
+- Train on GPU, run on anywhere
+- Performance
+
+
+
+
+
  - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
  - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
  - **Performance**: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
@@ -41,22 +64,6 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
-beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
-intermediate user: need to customize their models to solve their domain-specific problems.
-advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
-
-Beginner
-- Mass tutorials
-- Easy to use
-- Modular
-
-Intermediate user
-- Flexibility
-
-Advanced user
-- Extensibility
-- Train on GPU, run on anywhere
-- Performance
 
 
 --
