@@ -41,6 +41,24 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 
 Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
+beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
+intermediate user: need to customize their models to solve their domain-specific problems.
+advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
+
+Beginner
+- Mass tutorials
+- Easy to use
+- Modular
+
+Intermediate user
+- Flexibility
+
+Advanced user
+- Extensibility
+- Train on GPU, run on anywhere
+- Performance
+
+
 --
 # Installation
 
