@@ -43,7 +43,7 @@ Advanced user
 
 
 
-
+uy gu y g
 
  - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
  - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
