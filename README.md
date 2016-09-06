@@ -24,6 +24,7 @@ TensorLayer grow out from a need to combine the power of TensorFlow with the ava
 
 
 (改这里)
+
 beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
 intermediate user: need to customize their models to solve their domain-specific problems.
 advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
@@ -41,6 +42,15 @@ Advanced user
 - Train on GPU, run on anywhere
 - Performance
 
+科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。
+
+Modularization
+- Level 1: The input of a module is the output of previous module(s)
+	Modularization makes the network easy to be modified and optimized
+- Level 2: The input of a module is the output of previous module(s)
+	Modularization makes the network easy to be modified and optimized
+- Level 3: Module can be more complex, it could even be a dynamic module
+	Dynamic module can be seem as many networks which sharing some modules
 
 
 uy gu y g
