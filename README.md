@@ -49,8 +49,9 @@ Modularization
 	-- The input of a module is the output of previous module(s)
 	-- Modularization makes the network easy to be modified and optimized
 - Level 2: 
-	-- The input of a module is the output of previous module(s)
-	-- Modularization makes the network easy to be modified and optimized
+	-- A module can have special behavior such as cost function and pre-train method
+	-- Pre-train a module, then reuse the module to other network is common, so as to improve the accuracy or implement more complex applications
+
 - Level 3: 
 	-- Module can be more complex, it could even be a dynamic module
 	-- Dynamic module can be seem as many networks which sharing some modules
