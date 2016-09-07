@@ -237,6 +237,22 @@ def dict_to_one(dp_dict={}):
     """
     return {x: 1 for x in dp_dict}
 
+def flatten_list(list_of_list=[[],[]]):
+    """
+    Input a list of list, return a list that all items are in a list
+
+    Parameters
+    ----------
+    list_of_list : a list of list
+
+    Examples
+    --------
+    >>> tl.utils.flatten_list([[1, 2, 3],[4, 5],[6]])
+    ... [1, 2, 3, 4, 5, 6]
+    """
+    return sum(list_of_list, [])
+
+
 def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     """Input the features and labels, return the features and labels after oversampling.
 

@@ -294,7 +294,7 @@ def main_lstm_generate_text():
                         n_units=vocab_size,
                         W_init=tf.random_uniform_initializer(-init_scale, init_scale),
                         b_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                        act = tl.activation.identity, name='output_layer')
+                        act = tf.identity, name='output_layer')
         return network, lstm1, lstm2
 
     # Inference for Training

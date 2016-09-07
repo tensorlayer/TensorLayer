@@ -68,7 +68,7 @@ def main_test_layers(model='relu'):
                                         act = tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
         network = tl.layers.DenseLayer(network, n_units=10,
-                                        act = tl.activation.identity,
+                                        act = tf.identity,
                                         name='output_layer')
     elif model == 'dropconnect':
         network = tl.layers.InputLayer(x, name='input_layer')
@@ -80,7 +80,7 @@ def main_test_layers(model='relu'):
                                                 name='dropconnect_relu2')
         network = tl.layers.DropconnectDenseLayer(network, keep = 0.5,
                                                 n_units=10,
-                                                act = tl.activation.identity,
+                                                act = tf.identity,
                                                 name='output_layer')
 
     # To print all attributes of a Layer.
@@ -298,7 +298,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     # 3rd layer
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
     network = tl.layers.DenseLayer(network, n_units=10,
-                                            act = tl.activation.identity,
+                                            act = tf.identity,
                                             name='output_layer')
 
     # Define fine-tune process
@@ -477,7 +477,7 @@ def main_test_cnn_layer():
                                     act = tf.nn.relu, name='relu1')   # output: (?, 256)
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2') # output: (?, 256)
     network = tl.layers.DenseLayer(network, n_units=10,
-                                    act = tl.activation.identity,
+                                    act = tf.identity,
                                     name='output_layer')    # output: (?, 10)
 
     y = network.outputs

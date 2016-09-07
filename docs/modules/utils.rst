@@ -11,6 +11,7 @@ API - Utility
    evaluation
    class_balancing_oversample
    dict_to_one
+   flatten_list
 
 Training, testing and predicting
 ----------------------------------
@@ -36,3 +37,4 @@ Helper functions
 --------------------
 
 .. autofunction:: dict_to_one
+.. autofunction:: flatten_list

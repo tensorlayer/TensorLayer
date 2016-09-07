@@ -85,7 +85,7 @@ def main_test_cnn_naive():
     network = tl.layers.DenseLayer(network, n_units=192,
                             act = tf.nn.relu, name='relu2') # output: (?, 192)
     network = tl.layers.DenseLayer(network, n_units=10,
-                            act = tl.activation.identity,
+                            act = tf.identity,
                             name='output_layer')            # output: (?, 10)
 
     y = network.outputs
@@ -287,7 +287,7 @@ def main_test_cnn_advanced():
                         W_init_args={},
                         b_init=tf.constant_initializer(value=0.1),
                         b_init_args={}, name='relu2')       # output: (batch_size, 192)
-    network = tl.layers.DenseLayer(network, n_units=10, act = tl.activation.identity,
+    network = tl.layers.DenseLayer(network, n_units=10, act = tf.identity,
                         W_init=tf.truncated_normal_initializer(stddev=1/192.0),
                         W_init_args={},
                         b_init = tf.constant_initializer(value=0.0),

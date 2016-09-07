@@ -13,6 +13,7 @@ from . import iterate
 import numpy as np
 from six.moves import xrange
 import random
+import warnings
 
 # __all__ = [
 #     "Layer",
@@ -535,7 +536,8 @@ class DenseLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2")
+            raise Exception("The input dimension must be rank 2, please reshape of flatten it")
+
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
         print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
@@ -1360,7 +1362,7 @@ class ConcatLayer(Layer):
     """
     def __init__(
         self,
-        layer = None,
+        layer = [],
         name ='concat_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1424,8 +1426,90 @@ class ReshapeLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+## Flow control layer
+class MultiplexerLayer(Layer):
+    """
+    The :class:`MultiplexerLayer` selects one of several input and forwards the selected input into the output.
 
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    name : a string or None
+        An optional name to attach to this layer.
 
+    Field (Class Variables)
+    -----------------------
+    sel : a placeholder
+        Input an int [0, inf], which input is the output
+
+    Examples
+    --------
+    >>>
+
+    See also
+    ---------
+    tf.pack() and tf.gather() at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
+    """
+    def __init__(self,
+               layer = [],
+               name='mux_layer'):
+        Layer.__init__(self, name=name)
+        self.n_inputs = len(layer)
+
+        self.inputs = []
+        for l in layer:
+            self.inputs.append(l.outputs)
+        all_inputs = tf.pack(self.inputs) # pack means concat a list of tensor in a new dim
+
+        print("  tensorlayer:Instantiate MultiplexerLayer %s, n_inputs: %d" % (self.name, self.n_inputs))
+
+        self.sel = tf.placeholder(tf.int32)
+        self.outputs = tf.gather(all_inputs, self.sel) # [sel, :, : ...]
+
+        # print(self.outputs, vars(self.outputs))
+        #         # tf.reshape(self.outputs, shape=)
+        # exit()
+        # the same with ConcatLayer
+        self.all_layers = list(layer[0].all_layers)
+        self.all_params = list(layer[0].all_params)
+        self.all_drop = dict(layer[0].all_drop)
+
+        for i in range(1, len(layer)):
+            self.all_layers.extend(list(layer[i].all_layers))
+            self.all_params.extend(list(layer[i].all_params))
+            self.all_drop.update(dict(layer[i].all_drop))
+
+## We can Duplicate the network instead of DemultiplexerLayer
+# class DemultiplexerLayer(Layer):
+#     """
+#     The :class:`DemultiplexerLayer` takes a single input and select one of many output lines, which is connected to the input.
+#
+#     Parameters
+#     ----------
+#     layer : a list of :class:`Layer` instances
+#         The `Layer` class feeding into this layer.
+#     n_outputs : a int
+#         The number of output
+#     name : a string or None
+#         An optional name to attach to this layer.
+#
+#     Field (Class Variables)
+#     -----------------------
+#     sel : a placeholder
+#         Input int [0, inf], the
+#     outputs : a list of Tensor
+#         A list of outputs
+#
+#     Examples
+#     --------
+#     >>>
+#     """
+#     def __init__(self,
+#            layer = None,
+#            name='demux_layer'):
+#         Layer.__init__(self, name=name)
+#         self.outputs = []
 
 ## Wrapper
 class EmbeddingAttentionSeq2seqWrapper(Layer):
@@ -1466,10 +1550,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     use_lstm : if true, we use LSTM cells instead of GRU cells.
     num_samples : number of samples for sampled softmax.
     forward_only : if set, we do not construct the backward pass in the model.
-    name : string
-
+    name : a string or None
+        An optional name to attach to this layer.
   """
-
   def __init__(self,
                source_vocab_size,
                target_vocab_size,

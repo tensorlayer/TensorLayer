@@ -66,7 +66,7 @@ network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
 network = tl.layers.DenseLayer(network, n_units=H,
                                         act = tf.nn.relu, name='relu1')
 network = tl.layers.DenseLayer(network, n_units=3,
-                            act = tl.activation.identity, name='output_layer')
+                            act = tf.identity, name='output_layer')
 probs = network.outputs
 sampling_prob = tf.nn.softmax(probs)
 
