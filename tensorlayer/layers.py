@@ -118,7 +118,8 @@ def print_all_variables():
     """Print all trainable and non-trainable variables
     without initialize_all_variables()"""
     for idx, v in enumerate(tf.all_variables()):
-        print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
+        # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
+        print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 # Basic layer
 class Layer(object):
@@ -209,7 +210,7 @@ class InputLayer(Layer):
             self.n_units = n_features
         else:
             self.n_units = int(inputs._shape[1])
-        print("  tensorlayer:Instantiate InputLayer %s %s" % (self.name, inputs._shape))
+        print("  tensorlayer:Instantiate InputLayer  %s: %s" % (self.name, inputs._shape))
 
         self.outputs = inputs
 
@@ -1023,7 +1024,7 @@ class PoolLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PoolLayer %s: %s, %s, %s, %s" %
+        print("  tensorlayer:Instantiate PoolLayer   %s: %s, %s, %s, %s" %
                             (self.name, str(ksize), str(strides), padding, pool))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding)
@@ -1272,6 +1273,8 @@ class RNNLayer(Layer):
         # print(type(self.outputs))
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
+
+
 
 
 # Shape layer
@@ -1929,7 +1932,7 @@ class BidirectionalRNNLayer(Layer):
         return_last = False,
         is_reshape = True,
         cell_init_args = {'forget_bias': 1.0},#, 'input_size' : None, 'state_is_tuple' : False, 'activation' : 'tanh' },
-        name = 'basic_lstm_layer',
+        name = 'birnn_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
@@ -1941,6 +1944,71 @@ class BidirectionalRNNLayer(Layer):
 
         with tf.variable_scope(name) as vs:
             pass
+
+
+class DynamicRNNLayer(Layer):
+    """
+    Coming soon
+
+    The :class:`DynamicRNNLayer` class is a RNN layer.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    n_hidden : a int
+        The number of hidden units in the layer.
+    n_steps : a int
+        The sequence length.
+    return_last : boolen
+        If True, return the last output, "Sequence input and single output"
+        If False, return all outputs, "Synced sequence input and output"
+        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
+    cell_init_args : a dictionary
+        The arguments for the cell initializer.
+    is_reshape : boolen
+        Reshape the inputs to 3 dimension tensor.
+        If input is［batch_size, n_steps, n_features], we do not need to reshape it.
+        If input is [batch_size * n_steps, n_features], we need to reshape it.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    outputs : a tensor
+        The output of this RNN.
+    state : a tensor
+        When state_is_tuple=False
+        It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]
+
+    Examples
+    --------
+    >>>
+
+    Notes
+    -----
+
+
+    References
+    ----------
+    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+
+    """
+    def __init__(
+        self,
+        layer = None,
+        n_hidden = 100,
+        n_steps = 5,
+        return_last = False,
+        is_reshape = True,
+        cell_init_args = {'forget_bias': 1.0},#, 'input_size' : None, 'state_is_tuple' : False, 'activation' : 'tanh' },
+        name = 'basic_lstm_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        self.n_units = n_hidden
+
+
 # cnn
 class Conv3dLayer(Layer):
     """

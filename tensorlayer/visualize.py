@@ -89,7 +89,7 @@ def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
     --------
     >>> env = gym.make("Pong-v0")
     >>> observation = env.reset()
-    >>> tf.visualize.frame(observation)
+    >>> tl.visualize.frame(observation)
     """
     if saveable is False:
         plt.ion()

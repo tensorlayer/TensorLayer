@@ -751,8 +751,12 @@ def load_npy_to_any(path='', name='any.npy'):
     ---------
     see save_any_to_npy()
     """
-    npz = np.load(path+name).item()
-    return npz
+    try:
+        npy = np.load(path+name).item()
+    except:
+        npy = np.load(path+name)
+    finally:
+        return npy
 
 
 # Visualizing npz files
