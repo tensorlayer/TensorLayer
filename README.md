@@ -46,12 +46,14 @@ Advanced user
 
 
 #### milo，这是Reuse 的一个例子，其他库很难做到，但TL很容易。你帮忙看看怎么表达好？？
+
+```
 Image0 -- CNN --
                  Concate --MLP -- Softmax
 Image1 -- CNN --
 	
 	这两个CNN是同一个CNN
-
+```
 --
 
 
