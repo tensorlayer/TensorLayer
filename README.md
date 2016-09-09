@@ -93,27 +93,13 @@ pip install git+https://github.com/zsdonghao/tensorlayer.git
 However, TensorLayer has some prerequisites that need to be installed first, including TensorFlow, numpy and matplotlib. For GPU support CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. Please check [detailed installation instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
 
 --
-# Repository Structure
 
-```
-<folder>
-├── tensorlayer  		<--- library source code
-│
-├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
-├── docs 				<--- readthedocs folder
-│   └── _build          <--- not included in the remote repo but can be generated in `docs` using `make html`
-│   	 └──html
-│			 └──index.html <--- homepage of the documentation
-├── tutorials_*.py	 	<--- tutorials include NLP, DL, RL etc.
-├── .. 
-```
---
 
 # Hello World
 
-More examples can be found in [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
-We provide a lot of simple functions (like `fit()` , test()), however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like sess.run(), see tutorial_mnist.py for more details.
+We provide a lot of simple functions (like `fit()` , `test()`), however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like `sess.run()`, see `tutorial_mnist.py` for more details. More examples can be found  [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
+
 
 ```python
 import tensorflow as tf
@@ -177,8 +163,25 @@ tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
 
+
+# Repository Structure
+
+```
+<folder>
+├── tensorlayer  		<--- library source code
+│
+├── setup.py			<--- use ‘python setup.py install’ or ‘pip install . -e‘, to install
+├── docs 				<--- readthedocs folder
+│   └── _build          <--- not included in the remote repo but can be generated in `docs` using `make html`
+│   	 └──html
+│			 └──index.html <--- homepage of the documentation
+├── tutorials_*.py	 	<--- tutorials include NLP, DL, RL etc.
+├── .. 
+```
+--
+
 # Examples
-More examples can be found in [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
+More examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 ### *Fully Connected Network*
 TensorLayer provides large amount of state-of-the-art Layers including Dropout, DropConnect, ReconLayer and so on.
