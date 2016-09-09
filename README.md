@@ -25,23 +25,23 @@ TensorLayer grow out from a need to combine the power of TensorFlow with the ava
 
 (改这里)
 
-beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
+Beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
 intermediate user: need to customize their models to solve their domain-specific problems.
 advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
 
 Beginner
-- Mass tutorials
-- Easy to use
-- Modular
+- Mass tutorials : Proviced modularized implementations of Google TensorFlow's Tutorials
+- Easy to use	 : Proviced both scikit-type API and professional API
+- Modularization : Proviced Layer and Wrapper xxx
 
 Intermediate user
-- Flexibility
-- Transparency
+- Flexibility	 : 
+- Transparency   : XX Easy to implement Dynamic Structure Network
 
 Advanced user
-- Extensibility
-- Train on GPU, run on anywhere
-- Performance
+- Extensibility	 : 
+- Performance    : Same speed with pure TensorFlow xx, simplicity don't sacrifice performance
+- Cross-platform : Train on GPU, run on anywhere, from distributed 
 
 科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。
 
