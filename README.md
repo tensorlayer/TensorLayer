@@ -76,14 +76,14 @@ Image1 -- CNN --
 
 
 
- - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
+ - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs. （TPU是FPGA这类的东东，我觉得不属于Transparency吧？）
  - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
  - **Performance**: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
- - **Low learning curve**: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
+ - **Low learning curve**: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect（这个方法没啥人用，该不该去掉呢？）, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
 
 🆕🆕🆕 [Chinese documentation](http://tensorlayercn.readthedocs.io/) is released.
 
-Now, go through the [Overview](#Overview) to see how powerful it is !!!
+<!--Now, go through the [Overview](#Overview) to see how powerful it is !!!-->
 
 -
 
