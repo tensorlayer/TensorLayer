@@ -36,6 +36,7 @@ Beginner
 
 Intermediate user
 - Flexibility
+- Transparency
 
 Advanced user
 - Extensibility
