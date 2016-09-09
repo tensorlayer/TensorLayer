@@ -44,6 +44,17 @@ Advanced user
 - Performance    : Same speed with pure TensorFlow xx, simplicity don't sacrifice performance
 - Cross-platform : Train on GPU, run on anywhere, from distributed 
 
+
+#### milo，这是Reuse 的一个例子，其他库很难做到，但TL很容易。你帮忙看看怎么表达好？？
+Image0 -- CNN --
+                 Concate --MLP -- Softmax
+Image1 -- CNN --
+	
+	这两个CNN是同一个CNN
+
+--
+
+
 <!--科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。-->
 
 <!--Modularization-->
