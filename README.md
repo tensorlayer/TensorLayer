@@ -129,7 +129,7 @@ network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 # speed up computation, so we use identity here.
 # see tf.nn.sparse_softmax_cross_entropy_with_logits()
 network = tl.layers.DenseLayer(network, n_units=10,
-                                act = tl.activation.identity,
+                                act = tf.identity,
                                 name='output_layer')
 # define cost function and metric.
 y = network.outputs
