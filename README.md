@@ -23,11 +23,11 @@ The documentation describes the usages of TensorLayer APIs. It is also a self-co
 TensorLayer grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
 
 
-(改这里)
+<!--(改这里)-->
 
-Beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results
-intermediate user: need to customize their models to solve their domain-specific problems.
-advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.
+<!--Beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results-->
+<!--intermediate user: need to customize their models to solve their domain-specific problems.-->
+<!--advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.-->
 
 Beginner
 - Mass tutorials : Proviced modularized implementations of Google TensorFlow's Tutorials
@@ -43,22 +43,21 @@ Advanced user
 - Performance    : Same speed with pure TensorFlow xx, simplicity don't sacrifice performance
 - Cross-platform : Train on GPU, run on anywhere, from distributed 
 
-科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。
+<!--科研难点：RL，DL哪些是必要的模块？抽象太高灵活性不足、太低可用性不足。-->
 
-Modularization
-- Level 1: 
-	-- The input of a module is the output of previous module(s)
-	-- Modularization makes the network easy to be modified and optimized
-- Level 2: 
-	-- A module can have special behavior such as cost function and pre-train method
-	-- Pre-train a module, then reuse the module to other network is common, so as to improve the accuracy or implement more complex applications
+<!--Modularization-->
+<!--- Level 1: -->
+<!--	-- The input of a module is the output of previous module(s)-->
+<!--	-- Modularization makes the network easy to be modified and optimized-->
+<!--- Level 2: -->
+<!--	-- A module can have special behavior such as cost function and pre-train method-->
+<!--	-- Pre-train a module, then reuse the module to other network is common, so as to improve the accuracy or implement more complex applications-->
 
-- Level 3: 
-	-- Module can be more complex, it could even be a dynamic module
-	-- Dynamic module can be seem as many networks which sharing some modules
+<!--- Level 3: -->
+<!--	-- Module can be more complex, it could even be a dynamic module-->
+<!--	-- Dynamic module can be seem as many networks which sharing some modules-->
 
 
-uy gu y g
 
  - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
  - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
