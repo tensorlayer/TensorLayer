@@ -75,7 +75,7 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
   # speed up computation, so we use identity here.
   # see tf.nn.sparse_softmax_cross_entropy_with_logits()
   network = tl.layers.DenseLayer(network, n_units=10,
-                                  act = tl.activation.identity,
+                                  act = tf.identity,
                                   name='output_layer')
   # define cost function and metric.
   y = network.outputs
@@ -358,7 +358,7 @@ details in ``tl.cost.cross_entropy()``.
 
     network = tl.layers.DenseLayer(network,
                                   n_units=10,
-                                  act = tl.activation.identity,
+                                  act = tf.identity,
                                   name='output_layer')
 
 As mentioned above, each layer is linked to its incoming layer(s), so we only
@@ -470,7 +470,7 @@ to last hidden layer. The ``?`` represents arbitrary batch_size.
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
                                                     # output: (?, 256)
     network = tl.layers.DenseLayer(network, n_units=10,
-                    act = tl.activation.identity, name='output_layer')
+                    act = tf.identity, name='output_layer')
                                                     # output: (?, 10)
 
 
@@ -692,7 +692,7 @@ DOWN and STOP (do nothing) by using 3 softmax outputs.
     network = tl.layers.DenseLayer(network, n_units=H,
                                     act = tf.nn.relu, name='relu1')
     network = tl.layers.DenseLayer(network, n_units=3,
-                            act = tl.activation.identity, name='output_layer')
+                            act = tf.identity, name='output_layer')
     probs = network.outputs
     sampling_prob = tf.nn.softmax(probs)
 
@@ -1112,7 +1112,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
               n_units=vocab_size,
               W_init=tf.random_uniform_initializer(-init_scale, init_scale),
               b_init=tf.random_uniform_initializer(-init_scale, init_scale),
-              act = tl.activation.identity, name='output_layer')
+              act = tf.identity, name='output_layer')
 
 
 Dataset iteration
