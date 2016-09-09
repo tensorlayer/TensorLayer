@@ -16,6 +16,9 @@
 
 # TensorLayer: Deep learning and Reinforcement learning library for Academic and Industry.
 
+Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
+
+
 TensorLayer is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for [Google TensorFlow](https://www.tensorflow.org). It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
 
 The documentation describes the usages of TensorLayer APIs. It is also a self-contained document that includes a tutorial to walk through different types of neural networks, deep reinforcement learning and Natural Language Processing (NLP) etc. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
@@ -93,7 +96,6 @@ Image1 -- CNN --
 
 ####🇬🇧If you are in London, we can discuss face to face.
 
-Documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
 
 
