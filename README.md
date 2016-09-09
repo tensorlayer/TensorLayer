@@ -111,6 +111,10 @@ However, TensorLayer has some prerequisites that need to be installed first, inc
 
 # Hello World
 
+More examples can be found in [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
+
+We provide a lot of simple functions (like `fit()` , test()), however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like sess.run(), see tutorial_mnist.py for more details.
+
 ```python
 import tensorflow as tf
 import tensorlayer as tl
