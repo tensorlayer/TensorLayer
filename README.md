@@ -38,7 +38,9 @@ Beginner
 
 Intermediate user
 - Flexibility	 : Easy to reuse layer and 高级的模块化？（请看下面留言～～不知道如何表达好） 
-- Transparency   : XX Easy to implement Dynamic Structure Network
+- Transparency   : Easy to access training process, iteration, initialization as well as the access to Tensor components 
+- 每种 User 都写 3 个优势，让格式对齐比较好。这里我想写 Easy to implement Dynamic Structure Network（Modular neural network这种，不知道如何命名比较好）
+
 
 Advanced user
 - Extensibility	 : Easy to extend ???
