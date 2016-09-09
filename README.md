@@ -45,7 +45,7 @@ Advanced user
 - Cross-platform : Train on GPU, run on anywhere, from distributed 
 
 
-#### milo，这是Reuse 的一个例子，其他库很难做到，但TL很容易。你帮忙看看怎么表达好？？
+#### milo，这是Reuse 的一个例子，其他库很难做到，但TL很容易。你帮忙看看怎么表达好？？ 这篇Paper也是模块化的一个例子 https://arxiv.org/pdf/1511.02799v3.pdf 请看看～～ 我已经用TL实现了这篇paper，非常简单。感觉它和 https://en.wikipedia.org/wiki/Modular_neural_network 的意思是类似的，但如何才能让普罗大众听得明白呢？
 
 ```
 Image0 -- CNN --
