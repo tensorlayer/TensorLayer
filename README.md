@@ -28,7 +28,7 @@ TensorLayer grow out from a need to combine the power of TensorFlow with the ava
 <!--Beginner: almost zero pre-knowledge, want to quickly bootstrap and have quick results-->
 <!--intermediate user: need to customize their models to solve their domain-specific problems.-->
 <!--advanced: needs to easily scale out the machine learning algorithm to multiple nodes, and deploy algorithms to different platforms.-->
-### milo, 经过几天思考，和看网上的评论，我觉得整体来讲TL 的定位是面向工业界和学术界使用的。TL没可能做到Keras那么傻瓜式，但可以实现所有高级的神经网络（比如动态neural modular network... https://arxiv.org/pdf/1511.02799v3.pdf） ，所以我们要强调面相的是高级用户，用Keras写的代码根本不能产品化，但我们的可以。为了解决beginner入门难的问题，我们提供mass tutorial和 simple APIs。
+### milo, 经过几天思考，和看网上的评论，我觉得整体来讲TL 的定位是面向工业界和学术界使用的。TL没可能做到Keras那么傻瓜式，但可以实现所有高级的神经网络（比如动态neural modular network... https://arxiv.org/pdf/1511.02799v3.pdf ） ，所以我们要强调面相的是高级用户，用Keras写的代码根本不能产品化而且很多高级网络根本实现不了，但我们的可以。为了解决beginner入门难的问题，我们提供mass tutorial和 simple APIs。
 
 ### Beginner ---> Advanced user 是一个由上到下的图，先确定内容，再画图
 Beginner
