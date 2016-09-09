@@ -150,7 +150,7 @@ sess.run(tf.initialize_all_variables())
 network.print_params()
 network.print_layers()
 
-# train the network
+# train the network, we recommend to use tl.iterate.minibatches()  检查这里
 tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
             acc=acc, batch_size=500, n_epoch=500, print_freq=5,
             X_val=X_val, y_val=y_val, eval_train=False)
