@@ -1054,8 +1054,8 @@ class Conv3dLayer(Layer):
 class PoolLayer(Layer):
     """
     The :class:`PoolLayer` class is a Pooling layer, you can choose
-    ``tf.nn.max_pool`` and ``tf.nn.mean_pool`` for 2D or
-    ``tf.nn.max_pool3d()`` and ``tf.nn.mean_pool3d()`` for 3D.
+    ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D or
+    ``tf.nn.max_pool3d()`` and ``tf.nn.avg_pool3d()`` for 3D.
 
     Parameters
     ----------
