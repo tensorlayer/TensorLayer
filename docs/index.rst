@@ -58,16 +58,16 @@ method, this part of the documentation is for you.
   :maxdepth: 2
 
   modules/layers
-  modules/activation
+  modules/cost
+  modules/iterate
+  modules/utils
   modules/nlp
   modules/rein
-  modules/iterate
-  modules/cost
-  modules/visualize
   modules/files
-  modules/utils
+  modules/visualize
   modules/preprocess
   modules/ops
+  modules/activation
 
 
 Indices and tables
