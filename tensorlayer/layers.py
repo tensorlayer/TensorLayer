@@ -1013,10 +1013,6 @@ class Conv3dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Examples
-    --------
-    >>>
-
     Links
     ------
     `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
@@ -1058,8 +1054,8 @@ class Conv3dLayer(Layer):
 class PoolLayer(Layer):
     """
     The :class:`PoolLayer` class is a Pooling layer, you can choose
-    `tf.nn.max_pool` and `tf.nn.mean_pool` or
-    `tf.nn.max_pool3d()`` and `tf.nn.mean_pool3d()`.
+    ``tf.nn.max_pool`` and ``tf.nn.mean_pool`` for 2D or
+    ``tf.nn.max_pool3d()`` and ``tf.nn.mean_pool3d()`` for 3D.
 
     Parameters
     ----------
@@ -1548,9 +1544,9 @@ class MultiplexerLayer(Layer):
     >>> network = tl.layers.DenseLayer(network, n_units=10,
     ...                                act = tf.identity, name='output_layer')
 
-    See also
-    ---------
-    tf.pack() and tf.gather() at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
+    References
+    ------------
+    See ``tf.pack()`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
     """
     def __init__(self,
                layer = [],
