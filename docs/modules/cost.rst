@@ -8,9 +8,6 @@ For example, you can implement L1, L2 and sum regularization by
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 
-Assume you have a 3 layers network,
-
-
 
 Custom cost function
 -----------------------
