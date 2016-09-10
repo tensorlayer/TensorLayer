@@ -263,11 +263,13 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    DropoutLayer
    DropconnectDenseLayer
    Conv2dLayer
+   Conv3dLayer
    PoolLayer
    RNNLayer
    FlattenLayer
    ConcatLayer
    ReshapeLayer
+   MultiplexerLayer
    EmbeddingAttentionSeq2seqWrapper
    flatten_reshape
    clear_layers_name
@@ -330,16 +332,41 @@ Dropconnect + Dense layer
 Convolutional layer
 ----------------------
 
+1D Convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+We don't provide 1D CNN layer, actually TensorFlow only provides `tf.nn.conv2d` and `tf.nn.conv3d`,
+so to implement 1D CNN, you can use Reshape layer as follow.
+
+.. code-block:: python
+
+  x = tf.placeholder(tf.float32, shape=[None, 500], name='x')
+  network = tl.layers.ReshapeLayer(x, shape=[-1, 500, 1, 1], name='reshape')
+  network = tl.layers.Conv2dLayer(network,
+                      act = tf.nn.relu,
+                      shape = [10, 1, 1, 16], # 16 features
+                      strides=[1, 2, 1, 1],   # stride of 2
+                      padding='SAME',
+                      name = 'cnn')
+
+
+
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Conv2dLayer
 
+3D Convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: Conv3dLayer
+
+
 Pooling layer
 ----------------
 
-Max or Mean Pooling layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Max or Mean Pooling layer for any dimensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: PoolLayer
 
@@ -369,6 +396,12 @@ Reshape layer
 
 .. autoclass:: ReshapeLayer
 
+
+Flow control layer
+----------------------
+
+.. autoclass:: MultiplexerLayer
+
 Wrapper
 ---------
 
@@ -378,30 +411,7 @@ Embedding + Attention + Seq2seq
 .. autoclass:: EmbeddingAttentionSeq2seqWrapper
   :members:
 
-Developing or Untested
-------------------------
 
-We highly welcome contributions! Every bit helps and will be credited.
-
-3D Convolutional layer
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: Conv3dLayer
-
-Maxout layer
-^^^^^^^^^^^^^^^^
-
-.. autoclass:: MaxoutLayer
-
-Gaussian Noise layer
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: GaussianNoiseLayer
-
-Bidirectional Recurrent layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: BidirectionalRNNLayer
 
 Helper functions
 ------------------------

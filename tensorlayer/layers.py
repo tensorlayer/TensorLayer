@@ -900,7 +900,7 @@ class DropconnectDenseLayer(Layer):
 # Convolutional layer
 class Conv2dLayer(Layer):
     """
-    The :class:`Conv2dLayer` class is a 2D CNN layer.
+    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d`.
 
     Parameters
     ----------
@@ -908,11 +908,9 @@ class Conv2dLayer(Layer):
         The `Layer` class feeding into this layer.
     act : activation function
         The function that is applied to the layer activations.
-    n_units : int
-        The number of units of the layer
     shape : list of shape
-        shape of the filters
-    strides : a list of ints. 1-D of length 4.
+        shape of the filters, [filter_height, filter_width, in_channels, out_channels].
+    strides : a list of ints.
         The stride of the sliding window for each dimension of input.\n
         It Must be in the same order as the dimension specified with format.
     padding : a string from: "SAME", "VALID".
@@ -927,6 +925,7 @@ class Conv2dLayer(Layer):
         The arguments for the biases tf.get_variable().
     name : a string or None
         An optional name to attach to this layer.
+
 
     Examples
     --------
@@ -986,9 +985,81 @@ class Conv2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+
+class Conv3dLayer(Layer):
+    """
+    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d`.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function
+        The function that is applied to the layer activations.
+    shape : list of shape
+        shape of the filters, [filter_depth, filter_height, filter_width, in_channels, out_channels].
+    strides : a list of ints. 1-D of length 4.
+        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias vector.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    >>>
+
+    Links
+    ------
+    `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
+
+    """
+    def __init__(
+        self,
+        layer = None,
+        act = tf.nn.relu,
+        shape = [],
+        strides=[],
+        padding='SAME',
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        b_init_args = {},
+        name ='cnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
+
+        with tf.variable_scope(name) as vs:
+            # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
+            # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+
+        self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( [W, b] )
+
+
+# Pooling layer
 class PoolLayer(Layer):
     """
-    The :class:`PoolLayer` class is a 2D Pooling layer.
+    The :class:`PoolLayer` class is a Pooling layer, you can choose
+    `tf.nn.max_pool` and `tf.nn.mean_pool` or
+    `tf.nn.max_pool3d()`` and `tf.nn.mean_pool3d()`.
 
     Parameters
     ----------
@@ -1432,7 +1503,8 @@ class ReshapeLayer(Layer):
 ## Flow control layer
 class MultiplexerLayer(Layer):
     """
-    The :class:`MultiplexerLayer` selects one of several input and forwards the selected input into the output.
+    The :class:`MultiplexerLayer` selects one of several input and forwards the selected input into the output,
+    see `tutorial_mnist_multiplexer.py`.
 
     Parameters
     ----------
@@ -1448,7 +1520,33 @@ class MultiplexerLayer(Layer):
 
     Examples
     --------
-    >>>
+    >>> x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+    >>> y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+    >>> # define the network
+    >>> net_in = tl.layers.InputLayer(x, name='input_layer')
+    >>> net_in = tl.layers.DropoutLayer(net_in, keep=0.8, name='drop1')
+    >>> # net 0
+    >>> net_0 = tl.layers.DenseLayer(net_in, n_units=800,
+    ...                                act = tf.nn.relu, name='net0/relu1')
+    >>> net_0 = tl.layers.DropoutLayer(net_0, keep=0.5, name='net0/drop2')
+    >>> net_0 = tl.layers.DenseLayer(net_0, n_units=800,
+    ...                                act = tf.nn.relu, name='net0/relu2')
+    >>> # net 1
+    >>> net_1 = tl.layers.DenseLayer(net_in, n_units=800,
+    ...                                act = tf.nn.relu, name='net1/relu1')
+    >>> net_1 = tl.layers.DropoutLayer(net_1, keep=0.8, name='net1/drop2')
+    >>> net_1 = tl.layers.DenseLayer(net_1, n_units=800,
+    ...                                act = tf.nn.relu, name='net1/relu2')
+    >>> net_1 = tl.layers.DropoutLayer(net_1, keep=0.8, name='net1/drop3')
+    >>> net_1 = tl.layers.DenseLayer(net_1, n_units=800,
+    ...                                act = tf.nn.relu, name='net1/relu3')
+    >>> # multiplexer
+    >>> net_mux = tl.layers.MultiplexerLayer(layer = [net_0, net_1], name='mux_layer')
+    >>> network = tl.layers.ReshapeLayer(net_mux, shape=[-1, 800], name='reshape_layer') #
+    >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+    >>> # output layer
+    >>> network = tl.layers.DenseLayer(network, n_units=10,
+    ...                                act = tf.identity, name='output_layer')
 
     See also
     ---------
@@ -2009,80 +2107,6 @@ class DynamicRNNLayer(Layer):
         self.n_units = n_hidden
 
 
-# cnn
-class Conv3dLayer(Layer):
-    """
-    Untested
-
-    The :class:`Conv3dLayer` class is a 3D CNN layer.
-
-    Parameters
-    ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    act : activation function
-        The function that is applied to the layer activations.
-    n_units : int
-        The number of units of the layer
-    shape : list of shape
-        shape of the filters
-    strides : a list of ints. 1-D of length 4.
-        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
-    padding : a string from: "SAME", "VALID".
-        The type of padding algorithm to use.
-    W_init : weights initializer
-        The initializer for initializing the weight matrix.
-    b_init : biases initializer
-        The initializer for initializing the bias vector.
-    W_init_args : dictionary
-        The arguments for the weights initializer.
-    b_init_args : dictionary
-        The arguments for the biases initializer.
-    name : a string or None
-        An optional name to attach to this layer.
-
-    Examples
-    --------
-    >>>
-
-    Links
-    ------
-    `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
-
-    """
-    def __init__(
-        self,
-        layer = None,
-        act = tf.nn.relu,
-        shape = [],
-        strides=[],
-        padding='SAME',
-        # W_init = tf.truncated_normal,
-        # b_init = tf.zeros,
-        W_init = tf.truncated_normal_initializer(stddev=0.1),
-        b_init = tf.constant_initializer(value=0.0),
-        W_init_args = {},
-        b_init_args = {},
-        name ='cnn_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
-
-        with tf.variable_scope(name) as vs:
-            # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
-            # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-
-        self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
-
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
 
 
 
