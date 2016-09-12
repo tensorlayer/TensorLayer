@@ -328,7 +328,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = inputs
         self.n_units = embedding_size
-        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -460,7 +460,7 @@ class EmbeddingInputlayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = inputs
         self.n_units = embedding_size
-        print("  tensorlayer:Instantiate EmbeddingInputlayer %s (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  tensorlayer:Instantiate EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name) as vs:
             embeddings = tf.get_variable(name='embeddings',
@@ -537,11 +537,11 @@ class DenseLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2, please reshape of flatten it")
+            raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
+        print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
@@ -1387,7 +1387,7 @@ class FlattenLayer(Layer):
         self.inputs = layer.outputs
         self.outputs = flatten_reshape(self.inputs)
         self.n_units = int(self.outputs._shape[-1])
-        print("  tensorlayer:Instantiate FlattenLayer %s, %d" % (self.name, self.n_units))
+        print("  tensorlayer:Instantiate FlattenLayer %s: %d" % (self.name, self.n_units))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -1490,7 +1490,7 @@ class ReshapeLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        print("  tensorlayer:Instantiate ReshapeLayer %s" % (self.name))
+        print("  tensorlayer:Instantiate ReshapeLayer %s: %s" % (self.name, self.outputs._shape))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -1559,7 +1559,7 @@ class MultiplexerLayer(Layer):
             self.inputs.append(l.outputs)
         all_inputs = tf.pack(self.inputs) # pack means concat a list of tensor in a new dim
 
-        print("  tensorlayer:Instantiate MultiplexerLayer %s, n_inputs: %d" % (self.name, self.n_inputs))
+        print("  tensorlayer:Instantiate MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
 
         self.sel = tf.placeholder(tf.int32)
         self.outputs = tf.gather(all_inputs, self.sel) # [sel, :, : ...]
