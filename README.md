@@ -37,7 +37,7 @@ Please check [Installation Instructions](http://tensorlayer.readthedocs.io/en/la
 
 # Your First Program
 
-The first program builds a multi-layer perception network to solve the MNIST problem. In this program, we use the [scikit](http://scikit-learn.org/stable/)-style functions such as ``fit()`` and ``test()``.
+The first program builds a multi-layer perception network to solve the MNIST problem. In this program, we use the [scikit](http://scikit-learn.org/stable/)-style functions such as ``fit()`` and ``test()``. The program is self-documented.
 
 ```python
 import tensorflow as tf
@@ -47,8 +47,7 @@ import time
 sess = tf.InteractiveSession()
 
 # Prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                                tl.files.load_mnist_dataset(shape=(-1,784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
 
 # Define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
