@@ -10,7 +10,6 @@ import time
 
 """Example of CNN
 
-tensorflow (0.9.0)
 """
 
 

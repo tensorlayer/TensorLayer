@@ -16,7 +16,6 @@
 """Example of Synced sequence input and output.
 Generate text using LSTM.
 
-tensorflow (0.9.0)
 """
 
 import tensorflow as tf

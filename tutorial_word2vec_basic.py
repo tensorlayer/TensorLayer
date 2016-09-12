@@ -37,7 +37,6 @@ Link
 ------
 https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words
 
-tensorflow (0.9.0)
 """
 
 

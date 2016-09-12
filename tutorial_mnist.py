@@ -27,7 +27,6 @@ build different inferences for training, evaluating and testing,
 and all inferences share the same model parameters.
 (see tutorial_ptb_lstm.py)
 
-tensorflow (0.9.0)
 """
 
 def main_test_layers(model='relu'):

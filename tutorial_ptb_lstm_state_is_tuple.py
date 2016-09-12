@@ -102,7 +102,6 @@ PTB dataset from Tomas Mikolov's webpage:
 $ wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
 $ tar xvf simple-examples.tgz
 
-
 A) use the zero_state function on the cell object
 
 B) for an rnn, all time steps share weights. We use one matrix to keep all

@@ -46,7 +46,7 @@ https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/seq2s
 Data
 ----
 http://www.statmt.org/wmt10/
-
+ 
 """
 from __future__ import print_function
 import tensorflow as tf
