@@ -16,32 +16,24 @@
 
 # TensorLayer: Deep learning and Reinforcement learning library for Researchers and Engineers.
 
-TensorLayer is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for [Google TensorFlow](https://www.tensorflow.org). It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
+TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
-The documentation describes the usages of TensorLayer APIs. It is also a self-contained document that includes a tutorial to walk through different types of neural networks, deep reinforcement learning and Natural Language Processing (NLP) etc. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
+TensorLayer grow out from a need to combine the power of TensorFlow with the right modules for building neural networks. According to our years of experiences of working on real-world machine learning problems, we identify three features that are critical for a library that can be easily leveraged by researchers and practitioners:
 
-TensorLayer grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
+- **Easy-to-use**: We make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple APIs provided by TensorLayer, and then dive into their implementation details only if necessary. 
+- **Flexibility**: Developing machine learning pipelines for your specific requirements typically requires careful algorithm tunings from time to time. Without the loss of simplicity, TensorLayer allows users to customize their modules by exposing the low-level APIs of TensorFlow (e.g., training parameters, iteration control and tensor components). A customized algorithm can be therefore quickly extended from the rich sample codes that have been available in tutorials.
+- **Performance**: TensorLayer provides zero-cost abstraction of TensorFlow. It does not enforce any extra overhead. It can efficiently run on either heterogenous platforms or multiple computation nodes.
 
- - **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
- - **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
- - **Performance**: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
- - **Low learning curve**: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
+A frequent question regarding TensorLayer is that why do we develop a new library instead of leveraging existing ones like [Keras](https://github.com/fchollet/keras) and [Tflearn](https://github.com/tflearn/tflearn). TensorLayer differentiates from those with its pursuits for flexibility and performance. 
 
-🆕🆕🆕 [Chinese documentation](http://tensorlayercn.readthedocs.io/) is released.
-
-Now, go through the [Overview](#Overview) to see how powerful it is !!!
-
--
-
-####🇨🇳为了方便华人开发者，我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/)，与此同时我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
-
-####🇹🇭เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
-
-####🇬🇧If you are in London, we can discuss face to face.
+A machine learning user may find it comfortable to bootstrap with Keras and Tflearn. However, she can quickly realize that it becomes necessary to carefully customize her modules as machine learning problems can largely vary from others. These libraries provide a high-level abstraction to hide as many as details of low-level engine from users. Though good for mastering, it becomes hard for them to be tuned from the bottom, which is an essential requirement for many researchers and practitioners. In the end, an experimental algorithm may need to be deployed and tested in a real-world setting. TensorLayer allows seamless deployment into distributed and heterogeneous environments with its first-class support for TensorFlow. 
 
 -
 
 # Table of Contents
+
+This document describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read TensorFlow tutorial as the same time [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/).
+
 0. [Library Structure](#Library-Structure)
 0. [Overview](#Overview)
 0. [Easy to Modify](#Easytomodify)
@@ -52,6 +44,7 @@ Now, go through the [Overview](#Overview) to see how powerful it is !!!
 0. [Download Epub](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/)
 0. [Download HTML](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/)
 
+🆕 [Chinese documentation](http://tensorlayercn.readthedocs.io/) is released.
 
 --
 # Library Structure
@@ -365,6 +358,12 @@ pip install . -e
 TensorLayer begins as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourage researches from all over the world to publish their new methods so as to promote the development of machine learning.
 
 Your method can be merged into TensorLayer, if you can prove it is better than the existing methods. Test script with detailed descriptions is required.
+
+####🇨🇳为了方便华人开发者，我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/)，与此同时我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
+
+####🇹🇭เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
+
+####🇬🇧If you are in London, we can discuss face to face.
 
 
 # Online Documentation
