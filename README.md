@@ -33,9 +33,11 @@ The simplest way to install TensorLayer is as follow.
 pip install git+https://github.com/zsdonghao/tensorlayer.git
 ```
 
-However, TensorLayer has some prerequisites that need to be installed first, including TensorFlow, numpy and matplotlib. For GPU support CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. Please check [detailed installation instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
+TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib. For GPU support, CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. 
 
-# Simple Tutorial
+Please check [Installation Instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for more details.
+
+# Your First Program
 
 We provide a lot of simple functions (like `fit()` , `test()`), however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like `sess.run()`, see `tutorial_mnist.py` for more details. More examples can be found  [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
@@ -89,7 +91,7 @@ sess.run(tf.initialize_all_variables())
 network.print_params()
 network.print_layers()
 
-# train the network, we recommend to use tl.iterate.minibatches()  检查这里
+# train the network, we recommend to use tl.iterate.minibatches()
 tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
             acc=acc, batch_size=500, n_epoch=500, print_freq=5,
             X_val=X_val, y_val=y_val, eval_train=False)
@@ -106,7 +108,7 @@ sess.close()
 
 The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our documents.
 
-# Contribution Guide
+# Contribution Guideline
 
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us directly to discuss your ideas, or fork our repository and make a pull request.
 
@@ -114,4 +116,4 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 - 🇨🇳为了方便华人开发者，我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/)，与此同时我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
 - 🇹🇭เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
 
-TensorLayer is released under the Apache 2.0 license.
+TensorLayer is releazed under the Apache 2.0 license.
