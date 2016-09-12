@@ -13,9 +13,6 @@
 </div>
 </a>
 
-
-# TensorLayer
-
 TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
 TensorLayer grow out from a need to combine the power of TensorFlow with the right modules for building neural networks. According to our years of experiences of working on real-world machine learning problems, we identify three features that are critical for a library that can be easily leveraged by researchers and practitioners:
@@ -28,7 +25,6 @@ A frequent question regarding TensorLayer is that why do we develop a new librar
 
 A machine learning user may find it comfortable to bootstrap with Keras and Tflearn. However, she can quickly realize that it becomes necessary to carefully customize her modules as machine learning problems can largely vary from others. These libraries provide a high-level abstraction to hide as many as details of low-level engine from users. Though good for mastering, it becomes hard for them to be tuned from the bottom, which is an essential requirement for many researchers and practitioners. In the end, an experimental algorithm may need to be deployed and tested in a real-world setting. TensorLayer allows seamless deployment into distributed and heterogeneous environments with its first-class support for TensorFlow. 
 
---
 # Installation
 
 The simplest way to install TensorLayer is as follow. 
@@ -38,8 +34,6 @@ pip install git+https://github.com/zsdonghao/tensorlayer.git
 ```
 
 However, TensorLayer has some prerequisites that need to be installed first, including TensorFlow, numpy and matplotlib. For GPU support CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. Please check [detailed installation instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html).
-
---
 
 # Simple Tutorial
 
@@ -108,13 +102,9 @@ tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
 
---
-
 # Documentation
 
 The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our documents.
-
---
 
 # Contribution Guide
 
