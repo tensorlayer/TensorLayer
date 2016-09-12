@@ -101,7 +101,9 @@ tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
 
-We provide many helper functions (like `fit()` , `test()`) like Keras, however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like `sess.run()`, see `tutorial_mnist.py` for more details. More examples can be found  [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
+We provide many helper functions (like `fit()` , `test()`) that is similar to Keras; however, if you want to understand the underlying training details, it is suggested to train the model using TensorFlow’s methods like `sess.run()` directly (see `tutorial_mnist.py` for more details). 
+
+Many more examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 # Documentation
 
@@ -114,5 +116,7 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 - 🇬🇧If you are in London, we can discuss in person
 - 🇨🇳为了方便华人开发者，我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/)，与此同时我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
 - 🇹🇭เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
+
+# License
 
 TensorLayer is releazed under the Apache 2.0 license.
