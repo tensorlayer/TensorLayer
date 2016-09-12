@@ -15,15 +15,13 @@
 
 TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
-TensorLayer grow out from a need to combine the power of TensorFlow with the right modules for building neural networks. According to our years of experiences of working on real-world machine learning problems, we identify three features that are critical for a library that can be easily leveraged by researchers and practitioners:
+TensorLayer grow out from a need to combine the power of TensorFlow with the right modules for building deep neural networks. According to our years of experiences of working on real-world machine learning problems, we identify three features that are critical for a library that can be easily leveraged by researchers and practitioners:
 
-- **Easy-to-use**: We make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple APIs provided by TensorLayer, and then dive into their implementation details only if necessary. 
-- **Flexibility**: Developing machine learning pipelines for your specific requirements typically requires careful algorithm tunings from time to time. Without the loss of simplicity, TensorLayer allows users to customize their modules by exposing the low-level APIs of TensorFlow (e.g., training parameters, iteration control and tensor components). A customized algorithm can be therefore quickly extended from the rich sample codes that have been available in tutorials.
-- **Performance**: TensorLayer provides zero-cost abstraction of TensorFlow. It does not enforce any extra overhead. It can efficiently run on either heterogenous platforms or multiple computation nodes.
+- **Simplicity**: we make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple APIs provided by TensorLayer, and then dive into their implementation details only if necessary. 
+- **Flexibility**: developing machine learning algorithms for your specific requirements typically requires careful algorithm tunings from time to time. Without the loss of simplicity, TensorLayer allows users to customize their modules by exposing the low-level APIs of TensorFlow (e.g., training parameters, iteration control and tensor components). A customized algorithm can be therefore quickly extended from the rich sample codes that have been available in tutorials.
+- **Performance**: TensorLayer provides zero-cost abstraction of TensorFlow. It does not enforce any extra overhead. It can efficiently run on either heterogenous platforms or multiple GPU nodes.
 
-A frequent question regarding TensorLayer is that why do we develop a new library instead of leveraging existing ones like [Keras](https://github.com/fchollet/keras) and [Tflearn](https://github.com/tflearn/tflearn). TensorLayer differentiates from those with its pursuits for flexibility and performance. 
-
-A machine learning user may find it comfortable to bootstrap with Keras and Tflearn. However, she can quickly realize that it becomes necessary to carefully customize her modules as machine learning problems can largely vary from others. These libraries provide a high-level abstraction to hide as many as details of low-level engine from users. Though good for mastering, it becomes hard for them to be tuned from the bottom, which is an essential requirement for many researchers and practitioners. In the end, an experimental algorithm may need to be deployed and tested in a real-world setting. TensorLayer allows seamless deployment into distributed and heterogeneous environments with its first-class support for TensorFlow. 
+A frequent question regarding TensorLayer is that why do we develop a new library instead of leveraging existing ones like [Keras](https://github.com/fchollet/keras) and [Tflearn](https://github.com/tflearn/tflearn). TensorLayer differentiates from those with its pursuits for flexibility and performance. A machine learning user may find it comfortable to bootstrap with Keras and Tflearn. However, she can quickly realize that it becomes necessary to carefully customize her modules. These libraries provide high-level abstractions to hide as many as details of low-level engine from users. Though good for using, it becomes hard for them to be tuned from the bottom, which is an essential requirement for many researchers and practitioners. In the end, an experimental algorithm may need to be deployed and tested in a real-world setting. TensorLayer allows seamless deployment into distributed and heterogeneous environments with its first-class support for TensorFlow. 
 
 # Installation
 
@@ -39,8 +37,6 @@ Please check [Installation Instructions](http://tensorlayer.readthedocs.io/en/la
 
 # Your First Program
 
-We provide a lot of simple functions (like `fit()` , `test()`), however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like `sess.run()`, see `tutorial_mnist.py` for more details. More examples can be found  [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
-
 ```python
 import tensorflow as tf
 import tensorlayer as tl
@@ -52,11 +48,12 @@ sess = tf.InteractiveSession()
 X_train, y_train, X_val, y_val, X_test, y_test = \
                                 tl.files.load_mnist_dataset(shape=(-1,784))
 sess = tf.InteractiveSession()
+
 # define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
-# define the network
+# define the network structure
 network = tl.layers.InputLayer(x, name='input_layer')
 network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
 network = tl.layers.DenseLayer(network, n_units=800,
@@ -103,6 +100,8 @@ tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=c
 tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
+
+We provide many helper functions (like `fit()` , `test()`) like Keras, however, if you want to understand the details and be a machine learning expert, we suggest you to train the network by using TensorFlow’s methods like `sess.run()`, see `tutorial_mnist.py` for more details. More examples can be found  [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 # Documentation
 
