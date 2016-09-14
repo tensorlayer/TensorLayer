@@ -152,11 +152,11 @@ If everything is set up correctly, you will get an output like the following:
 
   tensorlayer:Instantiate InputLayer input_layer (?, 784)
   tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-  tensorlayer:Instantiate DenseLayer relu1: 800, <function relu at 0x11281cb70>
+  tensorlayer:Instantiate DenseLayer relu1: 800, relu
   tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer relu2: 800, <function relu at 0x11281cb70>
+  tensorlayer:Instantiate DenseLayer relu2: 800, relu
   tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer output_layer: 10, <function identity at 0x115e099d8>
+  tensorlayer:Instantiate DenseLayer output_layer: 10, identity
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
   param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
@@ -592,8 +592,8 @@ If everything is set up correctly, you will get an output like the following:
 
   [2016-07-12 09:31:59,760] Making new env: Pong-v0
     tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-    tensorlayer:Instantiate DenseLayer relu1: 200, <function relu at 0x1119471e0>
-    tensorlayer:Instantiate DenseLayer output_layer: 3, <function identity at 0x114bd39d8>
+    tensorlayer:Instantiate DenseLayer relu1: 200, relu
+    tensorlayer:Instantiate DenseLayer output_layer: 3, identity
     param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
     param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
     param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)

@@ -27,13 +27,15 @@ set_keep['_layers_name_list'] =[]
 set_keep['name_reuse'] = False
 
 ## Variable Operation
-def flatten_reshape(variable):
+def flatten_reshape(variable, name=''):
     """Reshapes high-dimension input to a vector.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
     variable : a tensorflow variable
+    name : a string or None
+        An optional name to attach to this layer.
 
     Examples
     --------
@@ -53,7 +55,7 @@ def flatten_reshape(variable):
     dim = 1
     for d in variable.get_shape()[1:].as_list():
         dim *= d
-    return tf.reshape(variable, shape=[-1, dim])
+    return tf.reshape(variable, shape=[-1, dim], name=name)
 
 def clear_layers_name():
     """Clear all layer names in set_keep['_layers_name_list'],
@@ -541,11 +543,12 @@ class DenseLayer(Layer):
 
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act))
+        print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
-        self.outputs = act(tf.matmul(self.inputs, W) + b)
+            self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name) # 1.2
+        # self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         # Hint : list(), dict() is pass by value (shallow), without them, it is
         # pass by reference.
@@ -794,7 +797,7 @@ class DropoutLayer(Layer):
         # The name of placeholder for keep_prob is the same with the name
         # of the Layer.
         set_keep[name] = tf.placeholder(tf.float32)
-        self.outputs = tf.nn.dropout(self.inputs, set_keep[name])
+        self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -878,12 +881,12 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs._shape[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act))
+        print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
-        self.outputs = act(tf.matmul(self.inputs, W) + b)
+            self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name)    # 1.2
 
         set_keep[name] = tf.placeholder(tf.float32)
         W_dropcon = tf.nn.dropout(W,  set_keep[name])
@@ -971,13 +974,14 @@ class Conv2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
-                            (self.name, str(shape), str(strides), padding, act))
+                            (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+            self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b ) #1.2
 
-        self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
+        # self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -1033,15 +1037,16 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act))
+        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+            self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
-        self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
+        # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -1092,9 +1097,9 @@ class PoolLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate PoolLayer   %s: %s, %s, %s, %s" %
-                            (self.name, str(ksize), str(strides), padding, pool))
+                            (self.name, str(ksize), str(strides), padding, pool.__name__))
 
-        self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding)
+        self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -1266,7 +1271,7 @@ class RNNLayer(Layer):
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
-            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn))
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
 
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
@@ -1385,7 +1390,7 @@ class FlattenLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        self.outputs = flatten_reshape(self.inputs)
+        self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs._shape[-1])
         print("  tensorlayer:Instantiate FlattenLayer %s: %d" % (self.name, self.n_units))
         self.all_layers = list(layer.all_layers)
@@ -1439,7 +1444,7 @@ class ConcatLayer(Layer):
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        self.outputs = tf.concat(1, self.inputs)
+        self.outputs = tf.concat(1, self.inputs, name=name) # 1.2
         self.n_units = int(self.outputs._shape[-1])
         print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
 
@@ -1557,12 +1562,12 @@ class MultiplexerLayer(Layer):
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        all_inputs = tf.pack(self.inputs) # pack means concat a list of tensor in a new dim
+        all_inputs = tf.pack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
 
         print("  tensorlayer:Instantiate MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
 
         self.sel = tf.placeholder(tf.int32)
-        self.outputs = tf.gather(all_inputs, self.sel) # [sel, :, : ...]
+        self.outputs = tf.gather(all_inputs, self.sel, name=name) # [sel, :, : ...] # 1.2
 
         # print(self.outputs, vars(self.outputs))
         #         # tf.reshape(self.outputs, shape=)
