@@ -97,9 +97,7 @@ tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
 
-We provide many helper functions (like `fit()` , `test()`) that is similar to Keras; however, if you want to understand the underlying training details, it is suggested to use TensorFlow’s methods directly to gain fine-grain control over the training process (e.g., `sess.run()`). See the example `tutorial_mnist.py` for more details. 
-
-Many more examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
+We provide many helper functions (like `fit()` , `test()`) that is similar to Keras to facilitate your development; however, if you want to obtain a fine-grain control over the model or its training process, you can use TensorFlow’s methods like `sess.run()` in your program directly (`tutorial_mnist.py` provides more details about this). Many more DL and RL examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 # Documentation
 
