@@ -9,16 +9,13 @@ Welcome to TensorLayer
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
 
-The `documentation <http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html>`_ describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems.
-
-We have included the corresponding modularized implementations of `Google TensorFlow <https://www.tensorflow.org>`_ Deep Learning tutorial, so you can read the TensorFlow tutorial `[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ along with our document.
-
 .. _TensorLayer-philosopy:
 
 Design Philosophy
 ----------
  
- `TensorLayer`_ grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of research and pratical experiences of tackling real-world machine learning problems, we come up with three design goals for TensorLayer:
+
+`TensorLayer`_ grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of research and pratical experiences of tackling real-world machine learning problems, we come up with three design goals for TensorLayer:
 
 * **Simplicity**: we make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple, high-level APIs provided by TensorLayer, and then deep dive into their implementation details if need. 
 * **Flexibility**: developing an effective DL algorithm for a specific domain typically requires careful tunings from many aspects. Without the loss of simplicity, TensorLayer allows users to customize their modules by manipulating the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components).
