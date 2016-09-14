@@ -15,30 +15,27 @@
 
 TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
-TensorLayer grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of experiences of tackling real-world problems, we bear three design goals in mind throughout the development of TensorLayer, so that it can be leveraged by researchers and practitioners:
+TensorLayer grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of research and pratical experiences of tackling real-world machine learning problems, we come up with three design goals for TensorLayer:
 
 - **Simplicity**: we make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple, high-level APIs provided by TensorLayer, and then deep dive into their implementation details if need. 
-- **Flexibility**: developing an effective DL algorithm for a specific domain typically requires careful tunings from many aspects. Without the loss of simplicity, TensorLayer allows users to customize their modules by exposing the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components) in a structured way. A customized algorithm can be therefore quickly extended from the rich sample codes available in examples.
-- **Performance**: TensorLayer aims to provide zero-cost abstraction for TensorFlow. With its first-class support for TensorFlow, it can easily run on either heterogeneous platforms or multiple GPU nodes without extra performance overhead.
+- **Flexibility**: developing an effective DL algorithm for a specific domain typically requires careful tunings from many aspects. Without the loss of simplicity, TensorLayer allows users to customize their modules by manipulating the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components).
+- **Performance**: TensorLayer aims to provide zero-cost abstraction for TensorFlow. With its first-class support for TensorFlow, it can easily run on either heterogeneous platforms or multiple computation nodes without compromise in performance.
 
-A frequent question regarding TensorLayer is that why do we develop a new library instead of leveraging existing ones like [Keras](https://github.com/fchollet/keras) and [Tflearn](https://github.com/tflearn/tflearn). TensorLayer differentiates from them with its pursuits for flexibility and performance. A machine learning user may find it comfortable to bootstrap with Keras and Tflearn. These libraries provide high-level abstractions and hide many details of low-level engine from users. Though good for using, it becomes hard for us to tune and modify from the bottom when tackling domain-specific problems (i.e., one model does not fit all). However, flexibility does not always mean the loss of performance. TensorLayer allows seamless distributed and heterogeneous deployment with its first-class support for TensorFlow.
-
+A frequent question regarding TensorLayer is that why do we develop a new library instead of leveraging existing ones like [Keras](https://github.com/fchollet/keras) and [Tflearn](https://github.com/tflearn/tflearn). TensorLayer differentiates with those with its pursuits for flexibility and performance. A DL user may find it comfortable to bootstrap with Keras and Tflearn. These libraries provide high-level abstractions and hide engine implementation details from users. Though good for using, it becomes hard to tune and modify from the bottom, which is necessary when addressing domain-specific problems (i.e., one model does not fit all). Nevertheless, flexibility does not always come with the loss of performance. TensorLayer allows seamless distributed and heterogeneous deployment with its first-class support for thr TensorFlow runtime.
 
 # Installation
 
-The simplest way to install TensorLayer is as follow. 
+TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib. For GPU support, CUDA and cuDNN are required. Please check [here](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions.
+
+If you already had the pre-requisites ready, the simplest way to install TensorLayer in your python program is: 
 
 ```python
 pip install git+https://github.com/zsdonghao/tensorlayer.git
 ```
 
-TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib. For GPU support, CUDA and cuDNN are required. Besides, TensorLayer can be installed as editable mode. 
-
-Please check [Installation Instructions](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for more details.
-
 # Your First Program
 
-The first program builds a multi-layer perception network to solve the MNIST problem. In this program, we use the [scikit](http://scikit-learn.org/stable/)-style functions such as ``fit()`` and ``test()``. The program is self-documented.
+The first program trains a multi-layer perception network to solve the MNIST problem. We use the well-known  [scikit](http://scikit-learn.org/stable/)-style functions such as ``fit()`` and ``test()``. The program is self-explained.
 
 ```python
 import tensorflow as tf
@@ -100,19 +97,21 @@ tl.files.save_npz(network.all_params , name='model.npz')
 sess.close()
 ```
 
-We provide many helper functions (like `fit()` , `test()`) that is similar to Keras; however, if you want to understand the underlying training details, it is suggested to train the model using TensorFlow’s methods like `sess.run()` directly (see `tutorial_mnist.py` for more details). 
+We provide many helper functions (like `fit()` , `test()`) that is similar to Keras; however, if you want to understand the underlying training details, it is suggested to use TensorFlow’s methods directly to gain fine-grain control over the training process (e.g., `sess.run()`). See the example `tutorial_mnist.py` for more details. 
 
 Many more examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 # Documentation
 
-The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our documents.
+The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. 
+
+We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our document.
 
 [Chinese documentation](http://tensorlayercn.readthedocs.io/zh/latest/) is also available.
 
 # Contribution Guideline
 
-TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us directly to discuss your ideas, or fork our repository and make a pull request.
+TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
 
 - 🇬🇧 If you are in London, we can discuss in person
 - 🇨🇳 我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/). 与此同时, 我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
