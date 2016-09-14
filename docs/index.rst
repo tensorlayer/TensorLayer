@@ -7,30 +7,27 @@ Welcome to TensorLayer
   :align: center
   :target: https://github.com/zsdonghao/tensorlayer
 
-`TensorLayer`_ is a deep learning and reinforcement learning library for researchers and practitioners. It is an extension library for `Google TensorFlow <https://www.tensorflow.org>`_. It providers high-level APIs and pre-built training blocks that can largely simplify the development of complex learning models. TensorLayer is easy to be extended and customized for your needs. In addition, we provide a rich set of examples and tutorials to help you to build up your own deep learning and reinforcement learning algorithms.
+`TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
 
-The `documentation <http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html>`_ describes the usages of TensorLayer APIs. It is also a self-contained document that includes a tutorial to walk through different types of neural networks, deep reinforcement learning and Natural Language Processing (NLP) etc. We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you could read TensorFlow tutorial as the same time  as the same time
-`[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
+The `documentation <http://tensorlayer.readthedocs.io/en/latest/user/tutorial.html>`_ describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems.
 
+We have included the corresponding modularized implementations of `Google TensorFlow <https://www.tensorflow.org>`_ Deep Learning tutorial, so you can read the TensorFlow tutorial `[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ along with our document.
 
 .. _TensorLayer-philosopy:
 
-Design goals
+Design Philosophy
 ----------
+ 
+ `TensorLayer`_ grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of research and pratical experiences of tackling real-world machine learning problems, we come up with three design goals for TensorLayer:
 
-`TensorLayer`_ grow out from a need to combine the power of TensorFlow with the availability of the right building blocks for training neural networks. Its development is guided by a number of design goals:
-
- * **Transparency**: Developing advanced learning algorithms requires low-level tunning of the underlying training engine. TensorLayer exposes the implementation details of the TensorFlow in a structured way, and allows users to do low-level engine manupulations, such as the configurations of training process, iteration, initialization as well as the access to Tensor components and TPUs.
- * **Extensibility**: Be easy to use, extend and modify, to facilitate use in research and practition activities. A network is abstracted to regularization, cost and outputs of each layer. Other wraping libraries for TensorFlow are easy to be merged into TensorLayer, suitable for researchers.
- * **Performance**: The running speed under GPU support is the same with TensorFlow. TensorLayer can also run in a distributed  mode.
- * **Low learning curve**: To facilitate bootstrapping, we provide mass format-consistent examples covering Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development.
+* **Simplicity**: we make TensorLayer easy to work with by providing mass tutorials that can be deployed and run through in minutes. A TensorFlow user may find it easier to bootstrap with the simple, high-level APIs provided by TensorLayer, and then deep dive into their implementation details if need. 
+* **Flexibility**: developing an effective DL algorithm for a specific domain typically requires careful tunings from many aspects. Without the loss of simplicity, TensorLayer allows users to customize their modules by manipulating the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components).
+* **Performance**: TensorLayer aims to provide zero-cost abstraction for TensorFlow. With its first-class support for TensorFlow, it can easily run on either heterogeneous platforms or multiple computation nodes without compromise in performance.
 
 .. note::
    If you got problem to read the docs online, you could download the repository
    on `GitHub`_, then go to ``/docs/_build/html/index.html`` to read the docs
    offline. The ``_build`` folder can be generated in ``docs`` using ``make html``.
-
-
 
 User Guide
 ------------
