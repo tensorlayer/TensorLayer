@@ -38,12 +38,15 @@ Take Python3 on Ubuntu for example, to install Python includes ``pip``, run the 
   sudo pip3 install virtualenv
 
 To build a virtual environment and install matplotlib and numpy into it, run the following commands:
+(Alternatively, go to Step 3, automatically install the prerequisites by TensorLayer)
 
 .. code-block:: bash
 
   virtualenv env
   env/bin/pip install matplotlib
   env/bin/pip install numpy
+
+
 
 Check the installed packages, run the following command:
 
@@ -76,10 +79,12 @@ supports GPU acceleration for Linux and Mac OX at present.
 Step 3 : TensorLayer
 =========================
 
-The simplest way to install TensorLayer is as follow.
+The simplest way to install TensorLayer is as follow, it will also install the numpy and matplotlib automatically.
 
 .. code-block:: bash
 
+  pip install tensorlayer
+  or
   pip install git+https://github.com/zsdonghao/tensorlayer.git
 
 However, if you want to modify or extend TensorLayer, you can download the repository from

@@ -30,6 +30,8 @@ TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib
 If you already had the pre-requisites ready, the simplest way to install TensorLayer in your python program is: 
 
 ```python
+pip install tensorlayer
+or
 pip install git+https://github.com/zsdonghao/tensorlayer.git
 ```
 
