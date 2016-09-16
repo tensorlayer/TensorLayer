@@ -114,7 +114,7 @@ We have included the corresponding modularized implementations of Google TensorF
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
 
 - 🇬🇧 If you are in London, we can discuss in person
-- 🇨🇳 我们正在建立 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/). 与此同时, 我们建立了多种交流渠道，您可把个人介绍和微信号发送到 haodong_cs@163.com 申请加入
+- 🇨🇳 我们有官方的 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest/). 与此同时, 我们建立了多种交流渠道，如[QQ 群](img/img_qq.png) ，加入微信群需要您可把个人介绍和微信号发送到 haodong_cs@163.com 申请
 - 🇹🇭 เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ haodong_cs@163.com
 
 # License
