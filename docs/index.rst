@@ -9,9 +9,14 @@ Welcome to TensorLayer
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
 
+.. note::
+   If you got problem to read the docs online, you could download the repository
+   on `GitHub`_, then go to ``/docs/_build/html/index.html`` to read the docs
+   offline. The ``_build`` folder can be generated in ``docs`` using ``make html``.
+
 .. _TensorLayer-philosopy:
 
-Design Philosophy
+Why TensorLayer
 ----------
  
 
@@ -21,10 +26,6 @@ Design Philosophy
 * **Flexibility**: developing an effective DL algorithm for a specific domain typically requires careful tunings from many aspects. Without the loss of simplicity, TensorLayer allows users to customize their modules by manipulating the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components).
 * **Performance**: TensorLayer aims to provide zero-cost abstraction for TensorFlow. With its first-class support for TensorFlow, it can easily run on either heterogeneous platforms or multiple computation nodes without compromise in performance.
 
-.. note::
-   If you got problem to read the docs online, you could download the repository
-   on `GitHub`_, then go to ``/docs/_build/html/index.html`` to read the docs
-   offline. The ``_build`` folder can be generated in ``docs`` using ``make html``.
 
 User Guide
 ------------
