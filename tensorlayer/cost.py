@@ -49,7 +49,7 @@ def mean_squared_error(output, target):
 
     """
     with tf.name_scope("mean_squared_error_loss"):
-        mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
+        mse = tf.reduce_sum(tf.squared_difference(output, target), reduction_indices = 1)
         return tf.reduce_mean(mse)
 
 def cross_entropy_seq(output, target, batch_size, num_steps):
