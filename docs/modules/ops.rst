@@ -31,4 +31,4 @@ Console display
 
 .. autofunction:: disable_print
 .. autofunction:: enable_print
-.. autofunction:: temporary_disable_print
+.. autoclass:: temporary_disable_print

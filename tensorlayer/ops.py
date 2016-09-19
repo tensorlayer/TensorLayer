@@ -103,7 +103,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 
 
 def disable_print():
-    """ Disable console output
+    """Disable console output.
 
     Example
     ---------
@@ -118,7 +118,7 @@ def disable_print():
     sys.stderr = os.devnull
 
 def enable_print():
-    """ Enable console output
+    """Enable console output.
 
     Example
     --------
@@ -129,7 +129,7 @@ def enable_print():
 
 
 class temporary_disable_print:
-    """ Temporarily disable console output
+    """Temporarily disable console output.
 
     Example
     ---------
