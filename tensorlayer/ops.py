@@ -6,6 +6,7 @@
 
 import tensorflow as tf
 import os
+import sys
 from sys import platform as _platform
 from .layers import set_keep
 
@@ -97,6 +98,55 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     sess = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
     return sess
 
+
+
+
+
+def disable_print():
+    """ Disable console output
+
+    Example
+    ---------
+    >>> print("You can see me")
+    >>> tl.ops.disable_print()
+    >>> print(" You can't see me")
+    >>> tl.ops.enable_print()
+    >>> print("You can see me")
+    """
+    # sys.stdout = os.devnull   # this one kill the process
+    sys.stdout = None
+    sys.stderr = os.devnull
+
+def enable_print():
+    """ Enable console output
+
+    Example
+    --------
+    >>> see tl.ops.disable_print()
+    """
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+
+
+class temporary_disable_print:
+    """ Temporarily disable console output
+
+    Example
+    ---------
+    >>> print("You can see me")
+    >>> with tl.ops.temporary_disable_print() as t:
+    >>>     print("You can't see me")
+    >>> print("You can see me")
+    """
+    def __init__(self):
+        pass
+    def __enter__(self):
+        sys.stdout = None
+        sys.stderr = os.devnull
+    def __exit__(self, type, value, traceback):
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        return isinstance(value, TypeError)
 
 
 
