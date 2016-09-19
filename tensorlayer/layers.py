@@ -658,7 +658,7 @@ class ReconLayer(DenseLayer):
             # mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # <haodong>: Error
             # mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # <haodong>: Error
         # Cross-entropy
-        ce = cost.cross_entropy(y, x_recon)
+            # ce = cost.cross_entropy(y, x_recon)                                               # <haodong>: list , list , Error (only be used for softmax output)
             # ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # <haodong>: list , list , Error (only be used for softmax output)
             # ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # <haodong>: list , index , Error (only be used for softmax output)
         L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[0]) \
