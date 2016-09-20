@@ -1407,6 +1407,8 @@ class ConcatLayer(Layer):
     ----------
     layer : a list of :class:`Layer` instances
         The `Layer` class feeding into this layer.
+    concat_dim : int
+        Dimension along which to concatenate.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1438,13 +1440,14 @@ class ConcatLayer(Layer):
     def __init__(
         self,
         layer = [],
+        concat_dim = 1,
         name ='concat_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        self.outputs = tf.concat(1, self.inputs, name=name) # 1.2
+        self.outputs = tf.concat(concat_dim, self.inputs, name=name) # 1.2
         self.n_units = int(self.outputs._shape[-1])
         print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
 
