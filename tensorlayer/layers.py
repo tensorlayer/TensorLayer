@@ -116,12 +116,27 @@ def initialize_rnn_state(state):
         new_state = state.eval()
         return new_state
 
-def print_all_variables():
+
+def print_all_variables(train_only=False):
     """Print all trainable and non-trainable variables
-    without initialize_all_variables()"""
-    for idx, v in enumerate(tf.all_variables()):
+    without initialize_all_variables()
+
+    Parameters
+    ----------
+    train_only : boolen
+        If True, only print the trainable variables, otherwise, print all variables.
+    """
+    tvar = tf.trainable_variables() if train_only else tf.all_variables()
+    for idx, v in enumerate(tvar):
         # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+
+# def print_all_variables():
+#     """Print all trainable and non-trainable variables
+#     without initialize_all_variables()"""
+#     for idx, v in enumerate(tf.all_variables()):
+#         # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
+#         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 # Basic layer
 class Layer(object):
