@@ -118,7 +118,7 @@ def disable_print():
     sys.stderr = os.devnull
 
 def enable_print():
-    """Enable console output.
+    """Enable console output. 
 
     Example
     --------
