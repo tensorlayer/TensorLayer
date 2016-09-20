@@ -1033,7 +1033,7 @@ class Conv3dLayer(Layer):
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
-        name ='cnn_layer',
+        name ='cnn3d_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
@@ -1042,8 +1042,8 @@ class Conv3dLayer(Layer):
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+            W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, **b_init_args )
             self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
         # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
