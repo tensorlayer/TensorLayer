@@ -167,14 +167,22 @@ class Layer(object):
             self.name = name
             set_keep['_layers_name_list'].append(name)
 
-    def print_params(self):
-        ''' Print all info of parameters in the network after initialize_all_variables()'''
-        try:
-            for i, p in enumerate(self.all_params):
-                print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
-            print("  num of params: %d" % self.count_params())
-        except:
-            raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
+
+    def print_params(self, details=True):
+        ''' Print all info of parameters in the network'''
+        # try:
+        for i, p in enumerate(self.all_params):
+            if details:
+                try:
+                    # print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
+                    print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
+                except:
+                    raise Exception("Hint: print params details after sess.run(tf.initialize_all_variables()) or use network.print_params(False).")
+            else:
+                print("  param {:3}: {:15}    {}".format(i, str(p.get_shape()), p.name))
+        print("  num of params: %d" % self.count_params())
+        # except:
+        #     raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
 
 
     def print_layers(self):
@@ -188,13 +196,45 @@ class Layer(object):
         n_params = 0
         for i, p in enumerate(self.all_params):
             n = 1
-            for s in p.eval().shape:
-            # for s in p.get_shape():
-                # s = int(s)
+            # for s in p.eval().shape:
+            for s in p.get_shape():
+                try:
+                    s = int(s)
+                except:
+                    s = 1
                 if s:
                     n = n * s
             n_params = n_params + n
         return n_params
+
+    # def print_params(self):
+    #     ''' Print all info of parameters in the network after initialize_all_variables()'''
+    #     try:
+    #         for i, p in enumerate(self.all_params):
+    #             print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
+    #         print("  num of params: %d" % self.count_params())
+    #     except:
+    #         raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
+    #
+    #
+    # def print_layers(self):
+    #     ''' Print all info of layers in the network '''
+    #     for i, p in enumerate(self.all_layers):
+    #         # print(vars(p))
+    #         print("  layer %d: %s" % (i, str(p)))
+    #
+    # def count_params(self):
+    #     ''' Return the number of parameters in the network '''
+    #     n_params = 0
+    #     for i, p in enumerate(self.all_params):
+    #         n = 1
+    #         for s in p.eval().shape:
+    #         # for s in p.get_shape():
+    #             # s = int(s)
+    #             if s:
+    #                 n = n * s
+    #         n_params = n_params + n
+    #     return n_params
 
 # Input layer
 class InputLayer(Layer):
