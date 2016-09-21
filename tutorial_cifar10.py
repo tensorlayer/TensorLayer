@@ -45,7 +45,7 @@ def main_test_cnn_naive():
     network = tl.layers.InputLayer(x, name='input_layer')
     network = tl.layers.Conv2dLayer(network,
                         act = tf.nn.relu,
-                        shape = [5, 5, 3, 64],  # 64 features for each 8x8x3 patch
+                        shape = [5, 5, 3, 64],  # 64 features for each 5x5x3 patch
                         strides=[1, 1, 1, 1],
                         padding='SAME',
                         name ='cnn_layer1')     # output: (?, 32, 32, 64)
@@ -54,7 +54,7 @@ def main_test_cnn_naive():
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
-                        name ='pool_layer1',)   # output: (?, 16, 16, 64)
+                        name ='pool_layer1')   # output: (?, 16, 16, 64)
     # local response normalization, you can also try batch normalization.
     # References: ImageNet Classification with Deep Convolutional Neural Networks
     #   it increases the accuracy but consume more time.
@@ -75,7 +75,7 @@ def main_test_cnn_naive():
                         strides=[1, 2, 2, 1],
                         padding='SAME',
                         pool = tf.nn.max_pool,
-                        name ='pool_layer2',)   # output: (?, 8, 8, 64)
+                        name ='pool_layer2')   # output: (?, 8, 8, 64)
 
     network = tl.layers.FlattenLayer(network, name='flatten_layer')
                                                             # output: (?, 4096)
