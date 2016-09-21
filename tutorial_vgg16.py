@@ -220,7 +220,8 @@ sess.run(tf.initialize_all_variables())
 network.print_params()
 network.print_layers()
 
-npz = np.load('vgg16_weights.npz')  # you need to download the model from http://www.cs.toronto.edu/~frossard/post/vgg16/
+# you need to download the model from http://www.cs.toronto.edu/~frossard/post/vgg16/
+npz = np.load('vgg16_weights.npz')
 
 params = []
 for val in sorted( npz.items() ):
