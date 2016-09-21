@@ -3,6 +3,6 @@ tensorlaye/__pacache__
 .DS_Store
 dist
 tensorlayer.egg-info
-
+data/.DS_Store
 
 
