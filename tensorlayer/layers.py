@@ -128,7 +128,6 @@ def print_all_variables(train_only=False):
     """
     tvar = tf.trainable_variables() if train_only else tf.all_variables()
     for idx, v in enumerate(tvar):
-        # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 # def print_all_variables():
