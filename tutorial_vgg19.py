@@ -2,70 +2,95 @@
 # -*- coding: utf8 -*-
 
 
+
+
 import tensorflow as tf
 import tensorlayer as tl
+from data.imagenet_classes import *
 import os
-import sys
 import numpy as np
 import time
-from scipy.misc import imread, imresize
-from data.imagenet_classes import *
+import inspect
+import skimage
+import skimage.io
+import skimage.transform
+
 
 """
-VGG-16 for ImageNet
+VGG-19 for ImageNet
 
-Introduction
-----------------
-VGG is a convolutional neural network model proposed by K. Simonyan and A. Zisserman
-from the University of Oxford in the paper “Very Deep Convolutional Networks for
-Large-Scale Image Recognition”  . The model achieves 92.7% top-5 test accuracy in ImageNet,
-which is a dataset of over 14 million images belonging to 1000 classes.
-
-Download Pre-trained Model
 ----------------------------
-Model weights in this example - vgg16_weights.npz : http://www.cs.toronto.edu/~frossard/post/vgg16/
+Pre-trained model in this example - VGG19 NPZ and
+trainable examples of VGG16/19 in TensorFlow can be found here:
+https://github.com/machrisaa/tensorflow-vgg
 
-Caffe VGG 16 model : https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
-
-Tool to convert the Caffe models to TensorFlow's : https://github.com/ethereon/caffe-tensorflow
-
-Note
-------
-When feeding other images to the model be sure to properly resize or crop them
-beforehand. Distorted images might end up being misclassified. One way of safely
-feeding images of multiple sizes is by doing center cropping, as shown in the
-following snippet:
-
->>> image_h, image_w, _ = np.shape(img)
->>> shorter_side = min(image_h, image_w)
->>> scale = 224. / shorter_side
->>> image_h, image_w = np.ceil([scale * image_h, scale * image_w]).astype('int32')
->>> img = imresize(img, (image_h, image_w))
->>> crop_x = (image_w - 224) / 2
->>> crop_y = (image_h - 224) / 2
->>> img = img[crop_y:crop_y+224,crop_x:crop_x+224,:]
 """
 
 
-def conv_layers(net_in):
-    with tf.name_scope('preprocess') as scope:
-        """
-        Notice that we include a preprocessing layer that takes the RGB image
-        with pixels values in the range of 0-255 and subtracts the mean image
-        values (calculated over the entire ImageNet training set).
-        """
-        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-        net_in.outputs = net_in.outputs - mean
+VGG_MEAN = [103.939, 116.779, 123.68]
+
+def load_image(path):
+    # load image
+    img = skimage.io.imread(path)
+    img = img / 255.0
+    assert (0 <= img).all() and (img <= 1.0).all()
+    # print "Original Image Shape: ", img.shape
+    # we crop image from center
+    short_edge = min(img.shape[:2])
+    yy = int((img.shape[0] - short_edge) / 2)
+    xx = int((img.shape[1] - short_edge) / 2)
+    crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
+    # resize to 224, 224
+    resized_img = skimage.transform.resize(crop_img, (224, 224))
+    return resized_img
+
+def print_prob(prob):
+    synset = class_names
+    # print prob
+    pred = np.argsort(prob)[::-1]
+    # Get top1 label
+    top1 = synset[pred[0]]
+    print("Top1: ", top1, prob[pred[0]])
+    # Get top5 label
+    top5 = [(synset[pred[i]], prob[pred[i]]) for i in range(5)]
+    print("Top5: ", top5)
+    return top1
+
+def Vgg19(rgb):
+    """
+    Build the VGG 19 Model
+
+    Parameters
+    -----------
+    rgb : rgb image placeholder [batch, height, width, 3] values scaled [0, 1]
+    """
+    start_time = time.time()
+    print("build model started")
+    rgb_scaled = rgb * 255.0
+    # Convert RGB to BGR
+    red, green, blue = tf.split(3, 3, rgb_scaled)
+    assert red.get_shape().as_list()[1:] == [224, 224, 1]
+    assert green.get_shape().as_list()[1:] == [224, 224, 1]
+    assert blue.get_shape().as_list()[1:] == [224, 224, 1]
+    bgr = tf.concat(3, [
+        blue - VGG_MEAN[0],
+        green - VGG_MEAN[1],
+        red - VGG_MEAN[2],
+    ])
+    assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
+
+    """ input layer """
+    net_in = tl.layers.InputLayer(bgr, name='input_layer')
     """ conv1 """
     network = tl.layers.Conv2dLayer(net_in,
                     act = tf.nn.relu,
-                    shape = [3, 3, 3, 64],  # 64 features for each 3x3 patch
+                    shape = [3, 3, 3, 64],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv1_1')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 64, 64],  # 64 features for each 3x3 patch
+                    shape = [3, 3, 64, 64],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv1_2')
@@ -78,13 +103,13 @@ def conv_layers(net_in):
     """ conv2 """
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 64, 128],  # 128 features for each 3x3 patch
+                    shape = [3, 3, 64, 128],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv2_1')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 128, 128],  # 128 features for each 3x3 patch
+                    shape = [3, 3, 128, 128],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv2_2')
@@ -97,22 +122,28 @@ def conv_layers(net_in):
     """ conv3 """
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 128, 256],  # 256 features for each 3x3 patch
+                    shape = [3, 3, 128, 256],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv3_1')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 256, 256],  # 256 features for each 3x3 patch
+                    shape = [3, 3, 256, 256],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv3_2')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 256, 256],  # 256 features for each 3x3 patch
+                    shape = [3, 3, 256, 256],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv3_3')
+    network = tl.layers.Conv2dLayer(network,
+                    act = tf.nn.relu,
+                    shape = [3, 3, 256, 256],
+                    strides = [1, 1, 1, 1],
+                    padding='SAME',
+                    name ='conv3_4')
     network = tl.layers.PoolLayer(network,
                     ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1],
@@ -122,22 +153,28 @@ def conv_layers(net_in):
     """ conv4 """
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 256, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 256, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv4_1')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 512, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 512, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv4_2')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 512, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 512, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv4_3')
+    network = tl.layers.Conv2dLayer(network,
+                    act = tf.nn.relu,
+                    shape = [3, 3, 512, 512],
+                    strides = [1, 1, 1, 1],
+                    padding='SAME',
+                    name ='conv4_4')
     network = tl.layers.PoolLayer(network,
                     ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1],
@@ -147,92 +184,72 @@ def conv_layers(net_in):
     """ conv5 """
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 512, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 512, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv5_1')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 512, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 512, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv5_2')
     network = tl.layers.Conv2dLayer(network,
                     act = tf.nn.relu,
-                    shape = [3, 3, 512, 512],  # 512 features for each 3x3 patch
+                    shape = [3, 3, 512, 512],
                     strides = [1, 1, 1, 1],
                     padding='SAME',
                     name ='conv5_3')
+    network = tl.layers.Conv2dLayer(network,
+                    act = tf.nn.relu,
+                    shape = [3, 3, 512, 512],
+                    strides = [1, 1, 1, 1],
+                    padding='SAME',
+                    name ='conv5_4')
     network = tl.layers.PoolLayer(network,
                     ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1],
                     padding='SAME',
                     pool = tf.nn.max_pool,
                     name ='pool5')
-    return network
-
-
-def fc_layers(net):
-    network = tl.layers.FlattenLayer(net, name='flatten')
+    """ fc 6~8 """
+    network = tl.layers.FlattenLayer(network, name='flatten')
     network = tl.layers.DenseLayer(network, n_units=4096,
-                        act = tf.nn.relu,
-                        name = 'fc1_relu')
+                        act = tf.nn.relu, name = 'fc6')
     network = tl.layers.DenseLayer(network, n_units=4096,
-                        act = tf.nn.relu,
-                        name = 'fc2_relu')
+                        act = tf.nn.relu, name = 'fc7')
     network = tl.layers.DenseLayer(network, n_units=1000,
-                        act = tf.identity,
-                        name = 'fc3_relu')
-    return network
+                        act = tf.identity, name = 'fc8')
 
+    print("build model finished: %fs" % (time.time() - start_time))
+    return network
 
 sess = tf.InteractiveSession()
-
-x = tf.placeholder(tf.float32, [None, 224, 224, 3])
-y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
-
-net_in = tl.layers.InputLayer(x, name='input_layer')
-net_cnn = conv_layers(net_in)
-network = fc_layers(net_cnn)
-
+x = tf.placeholder("float", [None, 224, 224, 3])
+network = Vgg19(x)
 y = network.outputs
-probs = tf.nn.softmax(y)
-y_op = tf.argmax(tf.nn.softmax(y), 1)
-cost = tl.cost.cross_entropy(y, y_)
-
-correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
-acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
+probs = tf.nn.softmax(y, name="prob")
 sess.run(tf.initialize_all_variables())
-network.print_params()
-network.print_layers()
 
-# you need to download the model from http://www.cs.toronto.edu/~frossard/post/vgg16/
-npz = np.load('vgg16_weights.npz')
+# You need to download the pre-trained model - VGG19 NPZ
+# in https://github.com/machrisaa/tensorflow-vgg
+vgg19_npy_path = "vgg19.npy"
+npz = np.load(vgg19_npy_path, encoding='latin1').item()
 
 params = []
 for val in sorted( npz.items() ):
-    print("  Loading %s" % str(val[1].shape))
-    params.append(val[1])
+    W = np.asarray(val[1][0])
+    b = np.asarray(val[1][1])
+    print("  Loading %s: %s, %s" % (val[0], W.shape, b.shape))
+    params.extend([W, b])
 
+print("Restoring model from npz file")
 tl.files.assign_params(sess, params, network)
 
-img1 = imread('data/laska.png', mode='RGB')
-img1 = imresize(img1, (224, 224))
-
+img1 = load_image("data/tiger.jpeg")
+img1 = img1.reshape((1, 224, 224, 3))
 start_time = time.time()
-prob = sess.run(probs, feed_dict={x: [img1]})[0]
-print("  End time : %.5ss" % (time.time() - start_time))
-preds = (np.argsort(prob)[::-1])[0:5]
-for p in preds:
-    print(class_names[p], prob[p])
+prob = sess.run(probs, feed_dict= {x : img1})
+print("End time : %.5ss" % (time.time() - start_time))
 
-
-
-
-
-
-
-
-
-#
+print_prob(prob[0])
