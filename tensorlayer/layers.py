@@ -236,6 +236,12 @@ class Layer(object):
     #         n_params = n_params + n
     #     return n_params
 
+    def __str__(self):
+        print("\nIt is a Layer class")
+        self.print_params(False)
+        self.print_layers()
+        return "  Last layer is: %s" % self.__class__.__name__
+
 # Input layer
 class InputLayer(Layer):
     """

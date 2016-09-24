@@ -31,6 +31,7 @@ network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 network = tl.layers.DenseLayer(network, n_units=10,
                                 act = tf.identity,
                                 name='output_layer')
+
 # define cost function and metric.
 y = network.outputs
 cost = tl.cost.cross_entropy(y, y_)
