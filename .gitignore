@@ -1,5 +1,6 @@
 docs/_build
 tensorlaye/__pacache__
+tensorlaye/.DS_Store
 .DS_Store
 dist
 tensorlayer.egg-info
