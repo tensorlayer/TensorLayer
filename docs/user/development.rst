@@ -9,8 +9,14 @@ Development
     `Simiao Yu <https://github.com/zsdonghao>`_)
     and numerous additional contributors on `GitHub`_.
 
-TensorLayer was initially developed as a part of project in Imperial College London.
-Now it is maintained by numerous contributors on `GitHub`_.
+TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London.
+The goal of the project is to develop a compositional language while complex learning systems
+can be build through composition of neural network modules.
+The whole development is now participated by numerous contributors on `GitHub`_.
+
+..
+  TensorLayer was initially developed as a part of project in Imperial College London.
+  Now it also maintained by numerous contributors on `GitHub`_.
 
 ..
     As an open-source project by Researchers for Researchers and Engineers,
