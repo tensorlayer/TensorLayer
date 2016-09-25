@@ -216,11 +216,11 @@ def main_word2vec_basic():
     sess.run(tf.initialize_all_variables())
     if resume:
         print("Load existing model" + "!"*10)
-        # instead of using TensorFlow saver, we use TensorLayer to load a model
-        # saver = tf.train.Saver()
-        # saver.restore(sess, model_file_name+'.ckpt')
-        load_params = tl.files.load_npz(name=model_file_name+'.npz')
-        tl.files.assign_params(sess, load_params, emb_net)
+        # Load from ckpt or npz file
+        saver = tf.train.Saver()
+        saver.restore(sess, model_file_name+'.ckpt')
+        # load_params = tl.files.load_npz(name=model_file_name+'.npz')
+        # tl.files.assign_params(sess, load_params, emb_net)
 
     emb_net.print_params()
     emb_net.print_layers()
@@ -265,10 +265,10 @@ def main_word2vec_basic():
 
         if (step % (print_freq * 20) == 0) and (step != 0):
             print("Save model, data and dictionaries" + "!"*10);
-            # instead of using TensorFlow saver, we use TensorLayer to save a model
-            # saver = tf.train.Saver()
-            # save_path = saver.save(sess, model_file_name+'.ckpt')
-            tl.files.save_npz(emb_net.all_params, name=model_file_name+'.npz')
+            # Save to ckpt or npz file
+            saver = tf.train.Saver()
+            save_path = saver.save(sess, model_file_name+'.ckpt')
+            # tl.files.save_npz(emb_net.all_params, name=model_file_name+'.npz')
             tl.files.save_any_to_npy(save_dict={'data': data, 'count': count,
                 'dictionary': dictionary, 'reverse_dictionary':
                 reverse_dictionary}, name=model_file_name+'.npy')

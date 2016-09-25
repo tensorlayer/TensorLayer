@@ -617,7 +617,7 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
 
 
 ## Load and save network
-def save_npz(save_list={}, name='model.npz'):
+def save_npz(save_list=[], name='model.npz'):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
@@ -639,6 +639,10 @@ def save_npz(save_list={}, name='model.npz'):
     ... Loading param4, (800, 10)
     ... Loading param5, (10,)
     >>> put parameters into a TensorLayer network, please see assign_params()
+
+    Note
+    -----
+    If you got session issues, you can change the value.eval() to value.eval(session=sess)
 
     References
     ----------

@@ -103,7 +103,7 @@ def main_test_layers(model='relu'):
 
     params = network.all_params
     # train
-    n_epoch = 200
+    n_epoch = 1
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 10
