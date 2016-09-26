@@ -50,7 +50,6 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
 
   import tensorflow as tf
   import tensorlayer as tl
-  import time
 
   sess = tf.InteractiveSession()
 
