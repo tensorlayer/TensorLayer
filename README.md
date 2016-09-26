@@ -52,7 +52,6 @@ The first program trains a multi-layer perception network to solve the MNIST pro
 ```python
 import tensorflow as tf
 import tensorlayer as tl
-import time
 
 sess = tf.InteractiveSession()
 
