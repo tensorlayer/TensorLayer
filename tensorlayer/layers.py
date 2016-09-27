@@ -1114,6 +1114,71 @@ class Conv3dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+class DeConv3dLayer(Layer):
+    """
+    The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see `tf.nn.conv3d_transpose`.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function
+        The function that is applied to the layer activations.
+    shape : list of shape
+        shape of the filters, [depth, height, width, output_channels, in_channels], filter's in_channels dimension must match that of value.
+    output_shape : list of output shape
+        representing the output shape of the deconvolution op.
+    strides : a list of ints.
+        The stride of the sliding window for each dimension of the input tensor.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer
+        The initializer for initializing the bias vector.
+    W_init_args : dictionary
+        The arguments for the weights initializer.
+    b_init_args : dictionary
+        The arguments for the biases initializer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Links
+    ------
+    `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
+
+    """
+    def __init__(
+        self,
+        layer = None,
+        act = tf.nn.relu,
+        shape = [2, 2, 2, 512, 1024],
+        output_shape = [None, 50, 50,50,512],
+        strides = [1,2,2,2,1],
+        padding = 'SAME',
+        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        b_init_args = {},
+        name ='decnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
+                            (self.name, str(shape), str(output_shape), str(strides), padding, act))
+
+        with tf.variable_scope(name) as vs:
+            W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, **W_init_args )
+            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, **b_init_args )
+
+        self.outputs = act( tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( [W, b] )
+
 
 # Pooling layer
 class PoolLayer(Layer):

@@ -264,6 +264,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    DropconnectDenseLayer
    Conv2dLayer
    Conv3dLayer
+   DeConv3dLayer
    PoolLayer
    RNNLayer
    FlattenLayer
@@ -360,7 +361,7 @@ so to implement 1D CNN, you can use Reshape layer as follow.
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Conv3dLayer
-
+.. autoclass:: DeConv3dLayer
 
 Pooling layer
 ----------------
