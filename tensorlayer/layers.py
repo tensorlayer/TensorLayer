@@ -1629,6 +1629,58 @@ class ReshapeLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+## TF-Slim layer
+class SlimNetsLayer(Layer):
+    """
+    The :class:`SlimNetsLayer` class can be used to merge all TF-Slim nets into
+    TensorLayer. Model can be found in `slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ , more about slim
+    see `slim-git <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim>`_ .
+
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    slim_layer : a slim network function
+        The network you want to stack onto, end with ``return net, end_points``.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Note
+    -----
+    The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this
+    network is not in order ! Fortunately, the ``all_params`` are in order.
+
+    """
+    def __init__(
+        self,
+        layer = None,
+        slim_layer = None,
+        slim_args = {},
+        name ='slim_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
+
+        with tf.variable_scope(name) as vs:
+            net, end_points = slim_layer(self.inputs, **slim_args)
+            slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+
+        self.outputs = net
+
+        slim_layers = []
+        for v in end_points.values():
+            tf.contrib.layers.summaries.summarize_activation(v)
+            slim_layers.append(v)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        self.all_layers.extend( slim_layers )
+        self.all_params.extend( slim_variables )
+
+
 ## Flow control layer
 class MultiplexerLayer(Layer):
     """

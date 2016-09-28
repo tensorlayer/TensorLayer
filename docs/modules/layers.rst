@@ -270,6 +270,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    FlattenLayer
    ConcatLayer
    ReshapeLayer
+   SlimNetsLayer
    MultiplexerLayer
    EmbeddingAttentionSeq2seqWrapper
    flatten_reshape
@@ -357,10 +358,20 @@ so to implement 1D CNN, you can use Reshape layer as follow.
 
 .. autoclass:: Conv2dLayer
 
+2D Deconvolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: DeConv2dLayer
+
+
 3D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: Conv3dLayer
+
+3D Deconvolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: DeConv3dLayer
 
 Pooling layer
@@ -397,6 +408,13 @@ Reshape layer
 
 .. autoclass:: ReshapeLayer
 
+Merge TF-Slim
+^^^^^^^^^^^^^^^
+
+Yes ! TF-Slim models can be merged into TensorLayer, all Google's Pre-trained model can be used easily ,
+see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
+
+.. autoclass:: SlimNetsLayer
 
 Flow control layer
 ----------------------

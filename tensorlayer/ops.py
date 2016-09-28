@@ -156,9 +156,14 @@ def get_site_packages_directory():
     """Print and return the site-packages directory?
     """
     import site
-    loc = site.getsitepackages()
-    print(loc)
-    return loc
+    try:
+        loc = site.getsitepackages()
+        print("  tl.ops : site-packages in ", loc)
+        return loc
+    except:
+        p = '  tl.ops : You are using virtual environment'
+        print(p)
+        return p
 
 
 
