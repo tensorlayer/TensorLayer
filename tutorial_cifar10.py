@@ -8,8 +8,12 @@ from tensorlayer.layers import set_keep
 import numpy as np
 import time
 
-"""Example of CNN
+"""Example of CNN, CIFAR-10
 
+main_test_cnn_naive       : No distorted image / Low accuracy
+main_test_cnn_advanced    : Uses distorted image / High accurcy but Slow
+tutorial_cifar10_tfrecord : Preparing distorted image with Queue and Thread
+                            / High accurcy and Fast
 """
 
 
@@ -187,8 +191,9 @@ def main_test_cnn_advanced():
     .. Randomly distort the image brightness.
     .. Randomly distort the image contrast.
 
-    To do
-    ------
+    Speed Up
+    ---------
+    see `tutorial_cifar10_tfrecord.py`
     Reading images from disk and distorting them can use a non-trivial amount
     of processing time. To prevent these operations from slowing down training,
     we run them inside 16 separate threads which continuously fill a TensorFlow queue.

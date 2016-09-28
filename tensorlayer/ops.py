@@ -118,7 +118,7 @@ def disable_print():
     sys.stderr = os.devnull
 
 def enable_print():
-    """Enable console output. 
+    """Enable console output.
 
     Example
     --------
@@ -152,7 +152,13 @@ class temporary_disable_print:
 
 
 
-
+def get_site_packages_directory():
+    """Print and return the site-packages directory?
+    """
+    import site
+    loc = site.getsitepackages()
+    print(loc)
+    return loc
 
 
 

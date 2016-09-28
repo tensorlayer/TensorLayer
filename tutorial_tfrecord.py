@@ -10,15 +10,22 @@ import io
 
 
 """
-You will learn
+You will learn:
 1. How to save data into TFRecord format.
 2. How to read data from TFRecord format by using Queue and Thread.
 
-Reference
----------
-English : https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#readers
+Reference:
+-----------
+English : https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-protobufs-queues/
+          https://www.tensorflow.org/versions/master/how_tos/reading_data/index.html
+          https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#readers
 Chinese : http://blog.csdn.net/u012759136/article/details/52232266
           https://github.com/ycszen/tf_lab/blob/master/reading_data/TensorFlow高效加载数据的方法.md
+
+More:
+1. tutorial_tfrecord2.py
+2. tutorial_cifar10_tfrecord.py
+
 """
 
 ## Save data ==================================================================
@@ -59,17 +66,17 @@ for serialized_example in tf.python_io.tf_record_iterator("train.tfrecords"):
     label = example.features.feature['label'].int64_list.value
     ## converts a image from bytes
     image = Image.frombytes('RGB', (224, 224), img_raw[0])
-    tl.visualize.frame(image, second=1, saveable=False, name='frame', fig_idx=1283)
+    tl.visualize.frame(image, second=0.5, saveable=False, name='frame', fig_idx=1283)
     print(label)
 
 
 ## Read Data Method 2: Queue and Thread =======================================
 # use sess.run to get a batch of data
 def read_and_decode(filename):
-    #根据文件名生成一个队列
+    # generate a queue with a given file name
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)   #返回文件名和文件
+    _, serialized_example = reader.read(filename_queue)   # return the file and the name of file
     features = tf.parse_single_example(serialized_example,
                                        features={
                                            'label': tf.FixedLenFeature([], tf.int64),
@@ -90,20 +97,25 @@ img_batch, label_batch = tf.train.shuffle_batch([img, label],
                                                 batch_size=4,
                                                 capacity=2000,
                                                 min_after_dequeue=1000,
-                                                num_threads=4)
+                                                num_threads=16
+                                                )
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
 init = tf.initialize_all_variables()
 with tf.Session() as sess:
     sess.run(init)
-    threads = tf.train.start_queue_runners(sess=sess)
-    for i in range(30):  # number of mini-batch (step)
+    coord = tf.train.Coordinator()
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+
+    for i in range(3):  # number of mini-batch (step)
         print("Step %d" % i)
         val, l = sess.run([img_batch, label_batch])
         print(val.shape, l)
         tl.visualize.images2d(val, second=1, saveable=False, name='batch', dtype=None, fig_idx=2020121)
-    sess.close()
 
+    coord.request_stop()
+    coord.join(threads)
+    sess.close()
 
 
 
