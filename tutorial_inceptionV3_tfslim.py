@@ -85,7 +85,7 @@ def print_prob(prob):
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
 net_in = tl.layers.InputLayer(x, name='input_layer')        # DH
 with slim.arg_scope(inception_v3_arg_scope()):
-    # logits, end_points = inception_v3(X, num_classes=1001,
+    # logits, end_points = inception_v3(X, num_classes=1001,    # without TensorLayer
     #                                   is_training=False)
     network = tl.layers.SlimNetsLayer(layer=net_in, slim_layer=inception_v3,
                                     slim_args= {
@@ -124,8 +124,8 @@ print("End time : %.5ss" % (time.time() - start_time))
 print_prob(prob[0][1:]) # Note : as it have 1001 outputs, the 1st output is nothing
 
 
-
-
+## You can save the model into npz file
+# tl.files.save_npz(network.all_params, name='model_inceptionV3.npz')
 
 
 #

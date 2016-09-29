@@ -263,6 +263,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    DropoutLayer
    DropconnectDenseLayer
    Conv2dLayer
+   DeConv2dLayer
    Conv3dLayer
    DeConv3dLayer
    PoolLayer
