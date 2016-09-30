@@ -152,7 +152,7 @@ class temporary_disable_print:
 
 
 
-def get_site_packages_directory():
+def get_site_packages_directory():  # UNDOCUMENT
     """Print and return the site-packages directory?
     """
     import site

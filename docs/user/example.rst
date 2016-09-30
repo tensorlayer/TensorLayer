@@ -51,7 +51,7 @@ Special Examples
 
   There are some good applications implemented by TensorLayer.
   You may able to find some useful examples for your project.
-  If you want to share your application, please contact hao.dong11@imperial.ac.uk.
+  If you want to share your application, please contact tensorlayer@gmail.com.
 
   1D CNN + LSTM for Biosignal
   ---------------------------------

@@ -158,6 +158,199 @@ def sample_top(a=[], top_k=10):
     return choice
 
 
+## Vector representations of words (Advanced)  UNDOCUMENT
+class SimpleVocabulary(object):
+  """Simple vocabulary wrapper, see create_vocab().
+
+  Parameters
+  ------------
+  vocab : A dictionary of word to word_id.
+  unk_id : Id of the special 'unknown' word.
+  """
+
+  def __init__(self, vocab, unk_id):
+    """Initializes the vocabulary."""
+
+
+    self._vocab = vocab
+    self._unk_id = unk_id
+
+  def word_to_id(self, word):
+    """Returns the integer id of a word string."""
+    if word in self._vocab:
+      return self._vocab[word]
+    else:
+      return self._unk_id
+
+class Vocabulary(object):
+  """Create Vocabulary class from a given vocabulary and its id-word, word-id convert,
+  see create_vocab() and ``tutorial_tfrecord3.py``.
+
+  Parameters
+  -----------
+  vocab_file : File containing the vocabulary, where the words are the first
+        whitespace-separated token on each line (other tokens are ignored) and
+        the word ids are the corresponding line numbers.
+  start_word : Special word denoting sentence start.
+  end_word : Special word denoting sentence end.
+  unk_word : Special word denoting unknown words.
+
+  vocab_file
+  -------------
+  >>> Look as follow, includes `start_word` , `end_word` but no `unk_word` .
+  >>> a 969108
+  >>> <S> 586368
+  >>> </S> 586368
+  >>> . 440479
+  >>> on 213612
+  >>> of 202290
+  >>> the 196219
+  >>> in 182598
+  >>> with 152984
+  >>> and 139109
+  >>> is 97322
+  """
+
+  def __init__(self,
+               vocab_file,
+               start_word="<S>",
+               end_word="</S>",
+               unk_word="<UNK>"):
+    if not tf.gfile.Exists(vocab_file):
+      tf.logging.fatal("Vocab file %s not found.", vocab_file)
+    tf.logging.info("Initializing vocabulary from file: %s", vocab_file)
+
+    with tf.gfile.GFile(vocab_file, mode="r") as f:
+      reverse_vocab = list(f.readlines())
+    reverse_vocab = [line.split()[0] for line in reverse_vocab]
+    assert start_word in reverse_vocab
+    assert end_word in reverse_vocab
+    if unk_word not in reverse_vocab:
+      reverse_vocab.append(unk_word)
+    vocab = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])
+
+    print("  tensorlayer.nlp:Instantiate Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word))
+    print("     vocabulary with %d words (includes unk_word)" % len(vocab))
+    # tf.logging.info("     vocabulary with %d words" % len(vocab))
+
+    self.vocab = vocab  # vocab[word] = id
+    self.reverse_vocab = reverse_vocab  # reverse_vocab[id] = word
+
+    # Save special word ids.
+    self.start_id = vocab[start_word]
+    self.end_id = vocab[end_word]
+    self.unk_id = vocab[unk_word]
+
+  def word_to_id(self, word):
+    """Returns the integer word id of a word string."""
+    if word in self.vocab:
+      return self.vocab[word]
+    else:
+      return self.unk_id
+
+  def id_to_word(self, word_id):
+    """Returns the word string of an integer word id."""
+    if word_id >= len(self.reverse_vocab):
+      return self.reverse_vocab[self.unk_id]
+    else:
+      return self.reverse_vocab[word_id]
+
+def process_sentence(sentence, start_word="<S>", end_word="</S>"):
+    """Processes a caption string into a list of tonenized words, see create_vocab() and ``tutorial_tfrecord3.py``.
+
+    Parameter
+    ---------
+    sentence : a string sentence.
+
+    Returns
+    ---------
+    A list of strings; the processed caption.
+
+    Example
+    -----------
+    >>> c = "how are you?"
+    >>> c = tl.nlp.process_sentence(c)
+    >>> print(c)
+    ... ['<S>', 'how', 'are', 'you', '?', '</S>']
+    """
+    try:
+        import nltk
+    except:
+        raise Exception("Hint : NLTK is required.")
+    process_sentence = [start_word]
+    process_sentence.extend(nltk.tokenize.word_tokenize(sentence.lower()))
+    process_sentence.append(end_word)
+    return process_sentence
+
+def create_vocab(sentences, word_counts_output_file, min_word_count=1):
+    """Creates the vocabulary of word to word_id, see create_vocab() and ``tutorial_tfrecord3.py``.
+
+    The vocabulary is saved to disk in a text file of word counts. The id of each
+    word in the file is its corresponding 0-based line number.
+
+    Parameters
+    ------------
+    sentences : a list of lists of strings.
+    word_counts_output_file : A string
+        The file name.
+    min_word_count : a int
+        Minimum number of occurrences for a word.
+
+    Returns
+    --------
+    tl.nlp.SimpleVocabulary object.
+
+    More
+    -----
+    tl.nlp.build_vocab()
+
+    Example
+    --------
+    >>> captions = ["one two , three", "four five five"]
+    >>> processed_capts = []
+    >>> for c in captions:
+    >>>     c = tl.nlp.process_sentence(c, start_word="<S>", end_word="</S>")
+    >>>     processed_capts.append(c)
+    >>> print(processed_capts)
+    ...[['<S>', 'one', 'two', ',', 'three', '</S>'], ['<S>', 'four', 'five', 'five', '</S>']]
+
+    >>> tl.nlp.create_vocab(processed_capts, word_counts_output_file='vocab.txt', min_word_count=1)
+    ...   tensorlayer.nlp:Creating vocabulary.
+    ...   Total words: 8
+    ...   Words in vocabulary: 8
+    ...   Wrote vocabulary file: vocab.txt
+    >>> vocab = tl.nlp.Vocabulary('vocab.txt', start_word="<S>", end_word="</S>", unk_word="<UNK>")
+    ...   tensorlayer.nlp:Instantiate Vocabulary from vocab.txt : <S> </S> <UNK>
+    ...   vocabulary with 9 words (includes unk_word)
+    """
+    from collections import Counter
+    print("  tensorlayer.nlp:Creating vocabulary.")
+    counter = Counter()
+    for c in sentences:
+        counter.update(c)
+        # print('c',c)
+    print("  Total words:", len(counter))
+
+    # Filter uncommon words and sort by descending count.
+    word_counts = [x for x in counter.items() if x[1] >= min_word_count]
+    word_counts.sort(key=lambda x: x[1], reverse=True)
+    # print(word_counts)
+    print("  Words in vocabulary:", len(word_counts))
+
+    # Write out the word counts file.
+    with tf.gfile.FastGFile(word_counts_output_file, "w") as f:
+        f.write("\n".join(["%s %d" % (w, c) for w, c in word_counts]))
+    print("  Wrote vocabulary file:", word_counts_output_file)
+
+    # Create the vocabulary dictionary.
+    reverse_vocab = [x[0] for x in word_counts]
+    unk_id = len(reverse_vocab)
+    vocab_dict = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])
+    vocab = SimpleVocabulary(vocab_dict, unk_id)
+
+    return vocab
+
+
 ## Vector representations of words
 def simple_read_words(filename="nietzsche.txt"):
     """Read context from file without any preprocessing.
