@@ -11,8 +11,8 @@ import io
 
 """
 You will learn:
-1. How to save data into TFRecord format.
-2. How to read data from TFRecord format by using Queue and Thread.
+1. How to save data into TFRecord format file.
+2. How to read data from TFRecord format file by using Queue and Thread.
 
 Reference:
 -----------
@@ -22,7 +22,8 @@ English : https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-proto
 Chinese : http://blog.csdn.net/u012759136/article/details/52232266
           https://github.com/ycszen/tf_lab/blob/master/reading_data/TensorFlow高效加载数据的方法.md
 
-More:
+More
+------
 1. tutorial_tfrecord2.py
 2. tutorial_cifar10_tfrecord.py
 
@@ -49,7 +50,7 @@ for index, name in enumerate(classes):
         # image     : Feature + BytesList
         # label     : Feature + Int64List or FloatList
         # sentence  : FeatureList + Int64List , see Google's im2txt example
-        example = tf.train.Example(features=tf.train.Features(feature={
+        example = tf.train.Example(features=tf.train.Features(feature={ # SequenceExample for seuqnce example
             "label": tf.train.Feature(int64_list=tf.train.Int64List(value=[index])),
             'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw])),
         }))
@@ -60,7 +61,7 @@ writer.close()
 ## Load Data Method 1: Simple read ============================================
 # read data one by one in order
 for serialized_example in tf.python_io.tf_record_iterator("train.tfrecords"):
-    example = tf.train.Example()
+    example = tf.train.Example()    # SequenceExample for seuqnce example
     example.ParseFromString(serialized_example)
     img_raw = example.features.feature['img_raw'].bytes_list.value
     label = example.features.feature['label'].int64_list.value
@@ -76,8 +77,8 @@ def read_and_decode(filename):
     # generate a queue with a given file name
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)   # return the file and the name of file
-    features = tf.parse_single_example(serialized_example,
+    _, serialized_example = reader.read(filename_queue)     # return the file and the name of file
+    features = tf.parse_single_example(serialized_example,  # see parse_single_sequence_example for sequence example
                                        features={
                                            'label': tf.FixedLenFeature([], tf.int64),
                                            'img_raw' : tf.FixedLenFeature([], tf.string),

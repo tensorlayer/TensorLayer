@@ -137,7 +137,7 @@ def print_all_variables(train_only=False):
 #         # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
 #         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
-# Basic layer
+## Basic layer
 class Layer(object):
     """
     The :class:`Layer` class represents a single layer of a neural network. It
@@ -242,7 +242,7 @@ class Layer(object):
         self.print_layers()
         return "  Last layer is: %s" % self.__class__.__name__
 
-# Input layer
+## Input layer
 class InputLayer(Layer):
     """
     The :class:`InputLayer` class is the starting layer of a neural network.
@@ -280,7 +280,7 @@ class InputLayer(Layer):
         self.all_params = []
         self.all_drop = {}
 
-# Word Embedding Input layer
+## Word Embedding Input layer
 class Word2vecEmbeddingInputlayer(Layer):
     """
     The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
@@ -430,7 +430,6 @@ class Word2vecEmbeddingInputlayer(Layer):
         self.all_params = [embeddings, nce_weights, nce_biases]
         self.all_drop = {}
 
-
 class EmbeddingInputlayer(Layer):
     """
     The :class:`EmbeddingInputlayer` class is a fully connected layer,
@@ -538,8 +537,7 @@ class EmbeddingInputlayer(Layer):
         self.all_drop = {}
 
 
-
-# Dense layer
+## Dense layer
 class DenseLayer(Layer):
     """
     The :class:`DenseLayer` class is a fully connected layer.
@@ -822,8 +820,7 @@ class ReconLayer(DenseLayer):
                         raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
 
 
-
-# Noise layer
+## Noise layer
 class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some
@@ -960,7 +957,7 @@ class DropconnectDenseLayer(Layer):
         self.all_params.extend( [W, b] )
 
 
-# Convolutional layer
+## Convolutional layer
 class Conv2dLayer(Layer):
     """
     The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d`.
@@ -1049,7 +1046,6 @@ class Conv2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
-
 class DeConv2dLayer(Layer):
     """
     The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d_transpose`.
@@ -1114,8 +1110,6 @@ class DeConv2dLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-
-
 
 class Conv3dLayer(Layer):
     """
@@ -1247,7 +1241,7 @@ class DeConv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 
-# Pooling layer
+## Pooling layer
 class PoolLayer(Layer):
     """
     The :class:`PoolLayer` class is a Pooling layer, you can choose
@@ -1299,7 +1293,7 @@ class PoolLayer(Layer):
         self.all_layers.extend( [self.outputs] )
 
 
-# Recurrent layer
+## Recurrent layer
 class RNNLayer(Layer):
     """
     The :class:`RNNLayer` class is a RNN layer, you can implement vanilla RNN,
@@ -1464,7 +1458,6 @@ class RNNLayer(Layer):
 
         print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
-
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
         # self.inputs.get_shape().with_rank(2)
@@ -1487,7 +1480,6 @@ class RNNLayer(Layer):
             batch_size = array_ops.shape(self.inputs)[0]
             print("     non specified batch_size, use a tensor instead.")
         self.batch_size = batch_size
-
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
         # This builds an unrolled LSTM for tutorial purposes only.
@@ -1538,10 +1530,268 @@ class RNNLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
 
+# Dynamic RNN
+class DynamicRNNLayer(Layer):
+    """
+    The :class:`BiDynamicRNNLayer` class is a Dynamic RNN layer.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    cell_fn : a TensorFlow's core RNN cell as follow.
+        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+        class tf.nn.rnn_cell.BasicRNNCell\n
+        class tf.nn.rnn_cell.BasicLSTMCell\n
+        class tf.nn.rnn_cell.GRUCell\n
+        class tf.nn.rnn_cell.LSTMCell
+    cell_init_args : a dictionary
+        The arguments for the cell initializer.
+    n_hidden : a int
+        The number of hidden units in the layer.
+    n_steps : a int
+        The sequence length.
+    return_last : boolen
+        If True, return the last output, "Sequence input and single output"\n
+        If False, return all outputs, "Synced sequence input and output"\n
+        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
+    return_seq_2d : boolen
+        When return_last = False\n
+            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    outputs : a tensor
+        The output of this RNN.
+        return_last = False, outputs = all cell_output, which is the hidden state.
+            cell_output.get_shape() = (?, n_hidden)
+
+    final_state : a tensor or StateTuple
+        When state_is_tuple = False,
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        When state_is_tuple = True, it stores two elements: (c, h), in that order.
+        You can get the final state after each iteration during training, then
+        feed it to the initial state of next iteration.
+
+    initial_state : a tensor or StateTuple
+        It is the initial state of this RNN layer, you can use it to initialize
+        your state at the begining of each epoch or iteration according to your
+        training procedure.
+
+    Examples
+    --------
+    >>>
+
+    Notes
+    -----
+    If the input to this layer has more than two axes, we need to flatten the
+    input by using :class:`FlattenLayer`.
+
+    References
+    ----------
+    `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_\n
+    `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_init_args = {'state_is_tuple' : True},
+        n_hidden = 64,
+        initializer = tf.random_uniform_initializer(-0.1, 0.1),
+        # n_steps = 5,
+        return_last = False,
+        # is_reshape = True,
+        return_seq_2d = False,
+        name = 'birnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+
+        print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
+        print("     Untested !!!")
+
+        self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
+        # self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
+        # state = self.initial_state
+
+        with tf.variable_scope(name, initializer=initializer) as vs:
+            outputs, last_states = tf.nn.dynamic_rnn(
+                cell=cell,
+                dtype=tf.float64,
+                sequence_length=X_lengths,
+                inputs=X)
+
+            result = tf.contrib.learn.run_n(
+                {"outputs": outputs, "last_states": last_states},
+                n=1,
+                feed_dict=None)
+            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+
+        print("     n_params : %d" % (len(rnn_variables)))
+
+        if return_last:
+            # 2D Tensor [batch_size, n_hidden]
+            self.outputs = result[0]["outputs"]
+        else:
+            if return_seq_2d:
+                # PTB tutorial:
+                # 2D Tensor [n_example, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_hidden])
+            else:
+                # <akara>:
+                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_steps, n_hidden])
+
+        self.final_state = state
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( rnn_variables )
+
+# Bidirectional Dynamic RNN
+class BiDynamicRNNLayer(Layer):
+    """
+    The :class:`BiDynamicRNNLayer` class is a RNN layer, you can implement vanilla RNN,
+    LSTM and GRU with it.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    cell_fn : a TensorFlow's core RNN cell as follow.
+        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+        class tf.nn.rnn_cell.BasicRNNCell\n
+        class tf.nn.rnn_cell.BasicLSTMCell\n
+        class tf.nn.rnn_cell.GRUCell\n
+        class tf.nn.rnn_cell.LSTMCell
+    cell_init_args : a dictionary
+        The arguments for the cell initializer.
+    n_hidden : a int
+        The number of hidden units in the layer.
+    n_steps : a int
+        The sequence length.
+    return_last : boolen
+        If True, return the last output, "Sequence input and single output"\n
+        If False, return all outputs, "Synced sequence input and output"\n
+        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
+    return_seq_2d : boolen
+        When return_last = False\n
+            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Field (Class Variables)
+    -----------------------
+    outputs : a tensor
+        The output of this RNN.
+        return_last = False, outputs = all cell_output, which is the hidden state.
+            cell_output.get_shape() = (?, n_hidden)
+
+    final_state : a tensor or StateTuple
+        When state_is_tuple = False,
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        When state_is_tuple = True, it stores two elements: (c, h), in that order.
+        You can get the final state after each iteration during training, then
+        feed it to the initial state of next iteration.
+
+    initial_state : a tensor or StateTuple
+        It is the initial state of this RNN layer, you can use it to initialize
+        your state at the begining of each epoch or iteration according to your
+        training procedure.
+
+    Examples
+    --------
+    >>>
+
+    Notes
+    -----
+    If the input to this layer has more than two axes, we need to flatten the
+    input by using :class:`FlattenLayer`.
+
+    References
+    ----------
+    `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_\n
+    `bidirectional_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/bidirectional_rnn.ipynb>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_init_args = {'state_is_tuple' : True},
+        n_hidden = 64,
+        initializer = tf.random_uniform_initializer(-0.1, 0.1),
+        # n_steps = 5,
+        return_last = False,
+        # is_reshape = True,
+        return_seq_2d = False,
+        name = 'birnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+
+        print("  tensorlayer:Instantiate BiDynamicRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
+        print("     Untested !!!")
+
+        self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
+        # self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
+        # state = self.initial_state
+
+        with tf.variable_scope(name, initializer=initializer) as vs:
+            outputs, states  = tf.nn.bidirectional_dynamic_rnn(
+                    cell_fw=cell,
+                    cell_bw=cell,
+                    dtype=tf.float64,
+                    sequence_length=X_lengths,
+                    inputs=X)
+
+            output_fw, output_bw = outputs
+            states_fw, states_bw = states
+
+            result = tf.contrib.learn.run_n(
+                {"output_fw": output_fw, "output_bw": output_bw, "states_fw": states_fw, "states_bw": states_bw},
+                n=1,
+                feed_dict=None)
+            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+
+        print("     n_params : %d" % (len(rnn_variables)))
+
+        if return_last:
+            # 2D Tensor [batch_size, n_hidden]
+            self.outputs = output_fw
+        else:
+            if return_seq_2d:
+                # PTB tutorial:
+                # 2D Tensor [n_example, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_hidden])
+            else:
+                # <akara>:
+                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_steps, n_hidden])
+
+        self.final_state = state
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( rnn_variables )
 
 
 
-# Shape layer
+
+
+## Shape layer
 class FlattenLayer(Layer):
     """
     The :class:`FlattenLayer` class is layer which reshape high-dimension
@@ -2167,10 +2417,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 
 
 ## Developing or Untested
-# dense
 class MaxoutLayer(Layer):
     """
-    Coming soon
+    Waiting for contribution
 
     Single DenseLayer with Max-out behaviour, work well with Dropout.
 
@@ -2188,6 +2437,7 @@ class MaxoutLayer(Layer):
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate MaxoutLayer %s: %d" % (self.name, self.n_units))
+        print("    Waiting for contribution")
         with tf.variable_scope(name) as vs:
             pass
             # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
@@ -2207,7 +2457,7 @@ class MaxoutLayer(Layer):
 # noise
 class GaussianNoiseLayer(Layer):
     """
-    Coming soon
+    Waiting for contribution
     """
     def __init__(
         self,
@@ -2218,141 +2468,12 @@ class GaussianNoiseLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
-        with tf.variable_scope(name) as vs:
-            pass
-
-# rnn
-class BidirectionalRNNLayer(Layer):
-    """
-    Coming soon
-
-    The :class:`BidirectionalRNNLayer` class is a RNN layer.
-
-    Parameters
-    ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    n_hidden : a int
-        The number of hidden units in the layer.
-    n_steps : a int
-        The sequence length.
-    return_last : boolen
-        If True, return the last output, "Sequence input and single output"
-        If False, return all outputs, "Synced sequence input and output"
-        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    cell_init_args : a dictionary
-        The arguments for the cell initializer.
-    is_reshape : boolen
-        Reshape the inputs to 3 dimension tensor.
-        If input is［batch_size, n_steps, n_features], we do not need to reshape it.
-        If input is [batch_size * n_steps, n_features], we need to reshape it.
-    name : a string or None
-        An optional name to attach to this layer.
-
-    Field (Class Variables)
-    -----------------------
-    outputs : a tensor
-        The output of this RNN.
-    state : a tensor
-        When state_is_tuple=False
-        It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]
-
-    Examples
-    --------
-    >>>
-
-    Notes
-    -----
-
-
-    References
-    ----------
-    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
-
-    """
-    def __init__(
-        self,
-        layer = None,
-        n_hidden = 100,
-        n_steps = 5,
-        return_last = False,
-        is_reshape = True,
-        cell_init_args = {'forget_bias': 1.0},#, 'input_size' : None, 'state_is_tuple' : False, 'activation' : 'tanh' },
-        name = 'birnn_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        self.n_units = n_hidden
-
-        print("  tensorlayer:Instantiate BidirectionalRNNLayer %s: n_hidden:%d, n_steps:%d, dim:%d %s" % (self.name, n_hidden,
-            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape()))
-
-
+        print("    Waiting for contribution")
         with tf.variable_scope(name) as vs:
             pass
 
 
-class DynamicRNNLayer(Layer):
-    """
-    Coming soon
 
-    The :class:`DynamicRNNLayer` class is a RNN layer.
-
-    Parameters
-    ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    n_hidden : a int
-        The number of hidden units in the layer.
-    n_steps : a int
-        The sequence length.
-    return_last : boolen
-        If True, return the last output, "Sequence input and single output"
-        If False, return all outputs, "Synced sequence input and output"
-        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    cell_init_args : a dictionary
-        The arguments for the cell initializer.
-    is_reshape : boolen
-        Reshape the inputs to 3 dimension tensor.
-        If input is［batch_size, n_steps, n_features], we do not need to reshape it.
-        If input is [batch_size * n_steps, n_features], we need to reshape it.
-    name : a string or None
-        An optional name to attach to this layer.
-
-    Field (Class Variables)
-    -----------------------
-    outputs : a tensor
-        The output of this RNN.
-    state : a tensor
-        When state_is_tuple=False
-        It is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden]
-
-    Examples
-    --------
-    >>>
-
-    Notes
-    -----
-
-
-    References
-    ----------
-    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
-
-    """
-    def __init__(
-        self,
-        layer = None,
-        n_hidden = 100,
-        n_steps = 5,
-        return_last = False,
-        is_reshape = True,
-        cell_init_args = {'forget_bias': 1.0},#, 'input_size' : None, 'state_is_tuple' : False, 'activation' : 'tanh' },
-        name = 'basic_lstm_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        self.n_units = n_hidden
 
 
 

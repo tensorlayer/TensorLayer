@@ -195,6 +195,14 @@ class Vocabulary(object):
   end_word : Special word denoting sentence end.
   unk_word : Special word denoting unknown words.
 
+  Properties
+  ------------
+  vocab : a dictionary from word to id.
+  reverse_vocab : a list from id to word.
+  start_id : int of start id
+  end_id : int of end id
+  unk_id : int of unk id
+
   vocab_file
   -------------
   >>> Look as follow, includes `start_word` , `end_word` but no `unk_word` .
@@ -230,7 +238,7 @@ class Vocabulary(object):
     vocab = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])
 
     print("  tensorlayer.nlp:Instantiate Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word))
-    print("     vocabulary with %d words (includes unk_word)" % len(vocab))
+    print("     vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab))
     # tf.logging.info("     vocabulary with %d words" % len(vocab))
 
     self.vocab = vocab  # vocab[word] = id
@@ -240,6 +248,9 @@ class Vocabulary(object):
     self.start_id = vocab[start_word]
     self.end_id = vocab[end_word]
     self.unk_id = vocab[unk_word]
+    print("       start_id: %d" % self.start_id)
+    print("       end_id: %d" % self.end_id)
+    print("       unk_id: %d" % self.unk_id)
 
   def word_to_id(self, word):
     """Returns the integer word id of a word string."""
@@ -256,7 +267,8 @@ class Vocabulary(object):
       return self.reverse_vocab[word_id]
 
 def process_sentence(sentence, start_word="<S>", end_word="</S>"):
-    """Processes a caption string into a list of tonenized words, see create_vocab() and ``tutorial_tfrecord3.py``.
+    """Converts a sentence string into a list of string words, add start_word and end_word,
+    see ``create_vocab()`` and ``tutorial_tfrecord3.py``.
 
     Parameter
     ---------

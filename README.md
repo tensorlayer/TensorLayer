@@ -115,11 +115,12 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London.
 The goal of the project is to develop a compositional language while complex learning systems
 can be build through composition of neural network modules.
-The whole development is now participated by numerous contributors on GitHub.
+The whole development is now participated by numerous contributors [here](https://github.com/zsdonghao/tensorlayer/releases).
 
 <!--
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
  -->
+
 
 - 📮 tensorlayer@gmail.com
 - 🇬🇧 If you are in London, we can discuss in person

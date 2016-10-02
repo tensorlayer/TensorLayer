@@ -13,8 +13,8 @@ import io
 
 """
 You will learn:
-1. How to convert CIFAR-10 dataset into TFRecord format.
-2. How to read CIFAR-10 from TFRecord format
+1. How to convert CIFAR-10 dataset into TFRecord format file.
+2. How to read CIFAR-10 from TFRecord format file.
 
 More:
 1. tutorial_tfrecord.py
