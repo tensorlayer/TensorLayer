@@ -1478,7 +1478,7 @@ class RNNLayer(Layer):
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, use a tensor instead.")
+            print("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
@@ -1531,9 +1531,28 @@ class RNNLayer(Layer):
         self.all_params.extend( rnn_variables )
 
 # Dynamic RNN
+
+def advanced_indexing_op(input, index):
+    """ Advanced Indexing for Sequences. see TFlearn."""
+    batch_size = tf.shape(input)[0]
+    max_length = int(input.get_shape()[1])
+    dim_size = int(input.get_shape()[2])
+    index = tf.range(0, batch_size) * max_length + (index - 1)
+    flat = tf.reshape(input, [-1, dim_size])
+    relevant = tf.gather(flat, index)
+    return relevant
+
+def retrieve_seq_length_op(data):
+    """ An op to compute the length of a sequence. 0 are masked. see TFlearn."""
+    with tf.name_scope('GetLength'):
+        used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
+        length = tf.reduce_sum(used, reduction_indices=1)
+        length = tf.cast(length, tf.int32)
+    return length
+
 class DynamicRNNLayer(Layer):
     """
-    The :class:`BiDynamicRNNLayer` class is a Dynamic RNN layer.
+    The :class:`DynamicRNNLayer` class is a Dynamic RNN layer, see ```tf.nn.dynamic_rnn``.
 
     Parameters
     ----------
@@ -1593,7 +1612,10 @@ class DynamicRNNLayer(Layer):
     References
     ----------
     `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_\n
-    `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_
+    `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_\n
+    `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`_ \n
+    `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_ \n
+    `tutorial_dynamic_rnn.py`
     """
     def __init__(
         self,
@@ -1606,7 +1628,7 @@ class DynamicRNNLayer(Layer):
         return_last = False,
         # is_reshape = True,
         return_seq_2d = False,
-        name = 'birnn_layer',
+        name = 'dyrnn_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
@@ -1615,39 +1637,56 @@ class DynamicRNNLayer(Layer):
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         print("     Untested !!!")
 
+        fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
+        if fixed_batch_size.value:
+            batch_size = fixed_batch_size.value
+            print("     RNN batch_size (concurrent processes): %d" % batch_size)
+        else:
+            from tensorflow.python.ops import array_ops
+            batch_size = array_ops.shape(self.inputs)[0]
+            print("     non specified batch_size, use a tensor instead.")
+        self.batch_size = batch_size
+
         self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
-        # self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
-        # state = self.initial_state
+        self.initial_state = cell.zero_state(batch_size, dtype="float")
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             outputs, last_states = tf.nn.dynamic_rnn(
                 cell=cell,
-                dtype=tf.float64,
-                sequence_length=X_lengths,
-                inputs=X)
+                # inputs=X
+                inputs = self.inputs,
+                # dtype=tf.float64,
+                # sequence_length=X_lengths,
+                # sequence_length=X_lengths,  # <haodong> how to know the sequence_length ???
+                initial_state = self.initial_state,
+                )
 
             result = tf.contrib.learn.run_n(
-                {"outputs": outputs, "last_states": last_states},
-                n=1,
-                feed_dict=None)
+                {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
         print("     n_params : %d" % (len(rnn_variables)))
 
         if return_last:
-            # 2D Tensor [batch_size, n_hidden]
-            self.outputs = result[0]["outputs"]
+            # [batch_size, n_hidden]
+            sequence_length = retrieve_seq_length_op(
+                        incoming if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
+            outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
+            self.outputs = advanced_indexing_op(outputs, sequence_length)
         else:
+            # [batch_size, n_step(max), n_hidden]
+            self.outputs = result[0]["outputs"]
             if return_seq_2d:
                 # PTB tutorial:
                 # 2D Tensor [n_example, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_hidden])
-            else:
-                # <akara>:
-                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, output_fw), [-1, n_steps, n_hidden])
+                self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_hidden])
+            # else:
+            #     # <akara>:
+            #     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+            #     self.outputs = tf.reshape(tf.concat(1, result[0]["outputs"]), [-1, n_steps, n_hidden])
 
-        self.final_state = state
+        self.final_state = result[0]["last_states"]
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
