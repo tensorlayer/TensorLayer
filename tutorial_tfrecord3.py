@@ -16,6 +16,7 @@ import json
 You will learn:
 1. How to save time-series data (e.g. sentence) into TFRecord format file.
 2. How to read time-series data from TFRecord format file.
+3. How to create inputs, targets and mask.
 
 Reference
 ----------
@@ -54,7 +55,7 @@ def _bytes_feature_list(values):
   return tf.train.FeatureList(feature=[_bytes_feature(v) for v in values])
 
 
-## Save data into TFRecord =====================================================
+## 1. Save data into TFRecord =====================================================
 cwd = os.getcwd()
 IMG_DIR = cwd + '/data/cat/'
 SEQ_FIR = cwd + '/data/cat_caption.json'
@@ -79,7 +80,7 @@ writer = tf.python_io.TFRecordWriter("train.cat_caption")
 for idx in range(len(caption_data['images'])):
     # get data
     img_name = caption_data['images'][idx]['file_name']
-    img_capt = caption_data['images'][idx]['caption']
+    img_capt = '<S> ' + caption_data['images'][idx]['caption'] + ' </S>'
     img_capt_ids = [vocab.word_to_id(word) for word in img_capt.split(' ')]
     print("%s : %s : %s" % (img_name, img_capt, img_capt_ids))
     img = Image.open(IMG_DIR+img_name)
@@ -99,7 +100,7 @@ for idx in range(len(caption_data['images'])):
     writer.write(sequence_example.SerializeToString())  # Serialize To String
 writer.close()
 
-## Simple read one image =======================================================
+## 2. Simple read one image =======================================================
 filename_queue = tf.train.string_input_producer(["train.cat_caption"])
 reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)     # return the file and the name of file
@@ -121,7 +122,7 @@ c = tf.contrib.learn.run_n(sequence_features, n=1, feed_dict=None)
 print(c[0])
 
 
-## Prefetch serialized SequenceExample protos ==================================
+## 3. Prefetch serialized SequenceExample protos ==================================
 def distort_image(image, thread_id):
   """Perform random distortions on an image.
   Args:
@@ -273,6 +274,7 @@ def prefetch_input_data(reader,
                     len(data_files), file_pattern)
 
   if is_training:
+    print("   is_training == True : RandomShuffleQueue")
     filename_queue = tf.train.string_input_producer(
         data_files, shuffle=True, capacity=16, name=shard_queue_name)
     min_queue_examples = values_per_shard * input_queue_capacity_factor
@@ -283,6 +285,7 @@ def prefetch_input_data(reader,
         dtypes=[tf.string],
         name="random_" + value_queue_name)
   else:
+    print("   is_training == False : FIFOQueue")
     filename_queue = tf.train.string_input_producer(
         data_files, shuffle=False, capacity=1, name=shard_queue_name)
     capacity = values_per_shard + 3 * batch_size
@@ -329,7 +332,7 @@ context, sequence = tf.parse_single_sequence_example(
         )
 
 img = tf.decode_raw(context["image/img_raw"], tf.uint8)
-img = tf.reshape(img, [height, width, 3]) 
+img = tf.reshape(img, [height, width, 3])
 img = tf.image.convert_image_dtype(img, dtype=tf.float32)
 img = tf.image.resize_images(img,
                            new_height=resize_height,
@@ -372,14 +375,107 @@ sess.close()
 
 
 
+## 4. Prefetch serialized SequenceExample protos. Create MASK and TARGET =======
+def batch_with_dynamic_pad(images_and_captions,
+                           batch_size,
+                           queue_capacity,
+                           add_summaries=True):
+  """Batches input images and captions.
+
+  This function splits the caption into an input sequence and a target sequence,
+  where the target sequence is the input sequence right-shifted by 1. Input and
+  target sequences are batched and padded up to the maximum length of sequences
+  in the batch. A mask is created to distinguish real words from padding words.
+
+  Example:
+    Actual captions in the batch ('-' denotes padded character):
+      [
+        [ 1 2 5 4 5 ],
+        [ 1 2 3 4 - ],
+        [ 1 2 3 - - ],
+      ]
+
+    input_seqs:
+      [
+        [ 1 2 3 4 ],
+        [ 1 2 3 - ],
+        [ 1 2 - - ],
+      ]
+
+    target_seqs:
+      [
+        [ 2 3 4 5 ],
+        [ 2 3 4 - ],
+        [ 2 3 - - ],
+      ]
+
+    mask:
+      [
+        [ 1 1 1 1 ],
+        [ 1 1 1 0 ],
+        [ 1 1 0 0 ],
+      ]
+
+  Args:
+    images_and_captions: A list of pairs [image, caption], where image is a
+      Tensor of shape [height, width, channels] and caption is a 1-D Tensor of
+      any length. Each pair will be processed and added to the queue in a
+      separate thread.
+    batch_size: Batch size.
+    queue_capacity: Queue capacity.
+    add_summaries: If true, add caption length summaries.
+
+  Returns:
+    images: A Tensor of shape [batch_size, height, width, channels].
+    input_seqs: An int32 Tensor of shape [batch_size, padded_length].
+    target_seqs: An int32 Tensor of shape [batch_size, padded_length].
+    mask: An int32 0/1 Tensor of shape [batch_size, padded_length].
+  """
+  enqueue_list = []
+  for image, caption in images_and_captions:
+    caption_length = tf.shape(caption)[0]
+    input_length = tf.expand_dims(tf.sub(caption_length, 1), 0)
+
+    input_seq = tf.slice(caption, [0], input_length)
+    target_seq = tf.slice(caption, [1], input_length)
+    indicator = tf.ones(input_length, dtype=tf.int32)
+    enqueue_list.append([image, input_seq, target_seq, indicator])
+
+  images, input_seqs, target_seqs, mask = tf.train.batch_join(
+      enqueue_list,
+      batch_size=batch_size,
+      capacity=queue_capacity,
+      dynamic_pad=True,
+      name="batch_and_pad")
+
+  if add_summaries:
+    lengths = tf.add(tf.reduce_sum(mask, 1), 1)
+    tf.scalar_summary("caption_length/batch_min", tf.reduce_min(lengths))
+    tf.scalar_summary("caption_length/batch_max", tf.reduce_max(lengths))
+    tf.scalar_summary("caption_length/batch_mean", tf.reduce_mean(lengths))
+
+  return images, input_seqs, target_seqs, mask
 
 
-
-
-
-
-
-
+images, input_seqs, target_seqs, input_mask = (
+      batch_with_dynamic_pad(images_and_captions=[[img, img_cap]],
+                                       batch_size=4,
+                                       queue_capacity=50000)
+                                       )
+sess = tf.Session()
+sess.run(tf.initialize_all_variables())
+coord = tf.train.Coordinator()
+threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+for _ in range(3):
+    print("Step %s" % _)
+    imgs, inputs, targets, masks = sess.run([images, input_seqs, target_seqs, input_mask])
+    print(inputs)
+    print(targets)
+    print(masks)
+    tl.visualize.images2d((imgs+1)/2, second=1, saveable=False, name='batch', dtype=None, fig_idx=202025)
+coord.request_stop()
+coord.join(threads)
+sess.close()
 
 
 
