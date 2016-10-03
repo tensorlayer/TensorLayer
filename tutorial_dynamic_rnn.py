@@ -48,7 +48,7 @@ batch_size = X.shape[0]
 with tf.variable_scope('name') as vs:
     cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
     initial_state = cell.zero_state(batch_size, dtype=tf.float64)#"float")
-    output, states = tf.nn.dynamic_rnn(
+    outputs, last_states = tf.nn.dynamic_rnn(
                         cell=cell,
                         inputs=X,
                         sequence_length=X_lengths,
@@ -82,30 +82,38 @@ def retrieve_seq_length_op(data):
         length = tf.cast(length, tf.int32)
     return length
 
+sequence_length = retrieve_seq_length_op(
+            incoming if isinstance(X, tf.Tensor) else tf.pack(X))
+
 batch_size = X.shape[0]
-with tf.variable_scope('name2') as vs:
+with tf.variable_scope('name2') as vs: #, initializer=tf.constant_initializer(value=0.1)) as vs:
     cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
     initial_state = cell.zero_state(batch_size, dtype=tf.float64)#"float")
-    output, states = tf.nn.dynamic_rnn(
+    outputs, last_states = tf.nn.dynamic_rnn(
                         cell=cell,
                         inputs=X,
                         # sequence_length=X_lengths,
+                        sequence_length= sequence_length,
                         initial_state=initial_state,
                         dtype=tf.float64,
                         )
     result = tf.contrib.learn.run_n(
         {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
-
-# last output
-sequence_length = retrieve_seq_length_op(
-            incoming if isinstance(X, tf.Tensor) else tf.pack(X))
-outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
+print('all outputs', result[0]["outputs"])
+# print(' outputs 2nd', result[0]["outputs"][1,5])
+# exit()
+# print(sequence_length)
+# exit()
+# automatically get the last output
+outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
 last_outputs = advanced_indexing_op(outputs, sequence_length)
+last_states = result[0]["last_states"]
+sess = tf.Session()
+sess.run(tf.initialize_all_variables())
+# print('last outputs',sess.run(last_outputs)) # (2, 64)  # TO DO
+# print('last lstm states',last_states, last_states.c.shape, last_states.h.shape)
 
-# sess = tf.Session()
-# sess.run(tf.initialize_all_variables())
-# print(outputs)      # (10, 2, 64)
-print(last_outputs) # (2, 64)
+
 
 
 # 4. How to use DynamicRNNLayer

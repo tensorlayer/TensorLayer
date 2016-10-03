@@ -1315,6 +1315,8 @@ class RNNLayer(Layer):
         The number of hidden units in the layer.
     n_steps : a int
         The sequence length.
+    initial_state : None or RNN State
+        If None, initial_state is zero_state.
     return_last : boolen
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
@@ -1448,6 +1450,7 @@ class RNNLayer(Layer):
         n_hidden = 100,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
         n_steps = 5,
+        initial_state = None,
         return_last = False,
         # is_reshape = True,
         return_seq_2d = False,
@@ -1493,7 +1496,8 @@ class RNNLayer(Layer):
         # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
         outputs = []
         self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
-        self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)
+        if initial_state is None:
+            self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)  # 1.2.3
         state = self.initial_state
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -1513,11 +1517,11 @@ class RNNLayer(Layer):
             self.outputs = outputs[-1]
         else:
             if return_seq_2d:
-                # PTB tutorial:
+                # PTB tutorial: stack dense layer after that, or compute the cost from the output
                 # 2D Tensor [n_example, n_hidden]
                 self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
             else:
-                # <akara>:
+                # <akara>: stack more RNN layer after that
                 # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
                 self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
@@ -1570,6 +1574,8 @@ class DynamicRNNLayer(Layer):
         The number of hidden units in the layer.
     n_steps : a int
         The sequence length.
+    initial_state : None or RNN State
+        If None, initial_state is zero_state.
     return_last : boolen
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
@@ -1625,8 +1631,8 @@ class DynamicRNNLayer(Layer):
         n_hidden = 64,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
         # n_steps = 5,
+        initial_state = None,
         return_last = False,
-        # is_reshape = True,
         return_seq_2d = False,
         name = 'dyrnn_layer',
     ):
@@ -1649,7 +1655,11 @@ class DynamicRNNLayer(Layer):
         self.batch_size = batch_size
 
         self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
-        self.initial_state = cell.zero_state(batch_size, dtype="float")
+        if initial_state is None:
+            self.initial_state = cell.zero_state(batch_size, dtype="float")
+
+        sequence_length = retrieve_seq_length_op(
+                    incoming if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             outputs, last_states = tf.nn.dynamic_rnn(
@@ -1657,11 +1667,9 @@ class DynamicRNNLayer(Layer):
                 # inputs=X
                 inputs = self.inputs,
                 # dtype=tf.float64,
-                # sequence_length=X_lengths,
-                # sequence_length=X_lengths,  # <haodong> how to know the sequence_length ???
+                sequence_length=sequence_length,
                 initial_state = self.initial_state,
                 )
-
             result = tf.contrib.learn.run_n(
                 {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
@@ -1670,8 +1678,6 @@ class DynamicRNNLayer(Layer):
 
         if return_last:
             # [batch_size, n_hidden]
-            sequence_length = retrieve_seq_length_op(
-                        incoming if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
             outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
             self.outputs = advanced_indexing_op(outputs, sequence_length)
         else:
@@ -1684,7 +1690,8 @@ class DynamicRNNLayer(Layer):
             # else:
             #     # <akara>:
             #     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-            #     self.outputs = tf.reshape(tf.concat(1, result[0]["outputs"]), [-1, n_steps, n_hidden])
+            #     self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_steps, n_hidden])
+
 
         self.final_state = result[0]["last_states"]
 
