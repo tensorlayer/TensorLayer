@@ -552,8 +552,8 @@ class DenseLayer(Layer):
         The function that is applied to the layer activations.
     W_init : weights initializer
         The initializer for initializing the weight matrix.
-    b_init : biases initializer
-        The initializer for initializing the bias vector.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weights tf.get_variable.
     b_init_args : dictionary
@@ -604,8 +604,11 @@ class DenseLayer(Layer):
         print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
-            self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name) # 1.2
+            if b_init:
+                b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+                self.outputs = act(tf.matmul(self.inputs, W) + b)
+            else:
+                self.outputs = act(tf.matmul(self.inputs, W))
         # self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         # Hint : list(), dict() is pass by value (shallow), without them, it is

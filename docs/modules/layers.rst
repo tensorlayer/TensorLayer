@@ -132,7 +132,7 @@ At the end, as a layer with parameter, we also need to append the parameters int
       W_init : weights initializer
           The initializer for initializing the weight matrix.
       b_init : biases initializer
-          The initializer for initializing the bias vector.
+          The initializer for initializing the bias vector. If None, skip biases.
       W_init_args : dictionary
           The arguments for the weights tf.get_variable.
       b_init_args : dictionary
@@ -160,8 +160,11 @@ At the end, as a layer with parameter, we also need to append the parameters int
           print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
           with tf.variable_scope(name) as vs:
               W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
-              b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
-              self.outputs = act(tf.matmul(self.inputs, W) + b)
+              if b_init:
+                  b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+                  self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name)
+              else:
+                  self.outputs = act(tf.matmul(self.inputs, W))
 
           # Hint : list(), dict() is pass by value (shallow).
           self.all_layers = list(layer.all_layers)
