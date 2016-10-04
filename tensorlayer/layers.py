@@ -617,7 +617,10 @@ class DenseLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
         # shallow cope allows the weights in network can be changed at the same
         # time, when ReconLayer updates the weights of encoder.
         #
@@ -1575,8 +1578,8 @@ class DynamicRNNLayer(Layer):
         The arguments for the cell initializer.
     n_hidden : a int
         The number of hidden units in the layer.
-    n_steps : a int
-        The sequence length.
+    # n_steps : a int
+    #     The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
     return_last : boolen
@@ -1635,6 +1638,8 @@ class DynamicRNNLayer(Layer):
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
         # n_steps = 5,
         initial_state = None,
+        dropout = None,         # ()
+        n_layer = 1,
         return_last = False,
         return_seq_2d = False,
         name = 'dyrnn_layer',
@@ -1646,8 +1651,8 @@ class DynamicRNNLayer(Layer):
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         print("     Untested !!!")
 
+        # Get the batch_size
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
-
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             print("     RNN batch_size (concurrent processes): %d" % batch_size)
@@ -1657,13 +1662,38 @@ class DynamicRNNLayer(Layer):
             print("     non specified batch_size, use a tensor instead.")
         self.batch_size = batch_size
 
-        self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
-        if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype="float")
+        # Creats the cell function
+        self.cell = cell_fn(num_units=n_hidden, **cell_init_args)
 
+        # Apply dropout
+        if dropout:
+            if type(dropout) in [tuple, list]:
+                in_keep_prob = dropout[0]
+                out_keep_prob = dropout[1]
+            elif isinstance(dropout, float):
+                in_keep_prob, out_keep_prob = dropout, dropout
+            else:
+                raise Exception("Invalid dropout type (must be a 2-D tuple of "
+                                "float)")
+            self.cell = tf.nn.rnn_cell.DropoutWrapper(
+                      self.cell,
+                      input_keep_prob=in_keep_prob,
+                      output_keep_prob=out_keep_prob)
+        # Apply multiple layers
+        if n_layer > 1:
+            self.cell = tf.nn.rnn_cell.MultiRNNCell([self.cell] * n_layer, state_is_tuple=True)
+
+        # Initialize initial_state
+        if initial_state is None:
+            self.initial_state = self.cell.zero_state(batch_size, dtype="float")
+        else:
+            self.initial_state = initial_state
+
+        # Computes sequence_length
         sequence_length = retrieve_seq_length_op(
                     incoming if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
+        # Main - Computes outputs and last_states
         with tf.variable_scope(name, initializer=initializer) as vs:
             outputs, last_states = tf.nn.dynamic_rnn(
                 cell=cell,
@@ -1679,6 +1709,7 @@ class DynamicRNNLayer(Layer):
 
         print("     n_params : %d" % (len(rnn_variables)))
 
+        # Manage the outputs
         if return_last:
             # [batch_size, n_hidden]
             outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
@@ -1691,11 +1722,12 @@ class DynamicRNNLayer(Layer):
                 # 2D Tensor [n_example, n_hidden]
                 self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_hidden])
             # else:
-            #     # <akara>:
-            #     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-            #     self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_steps, n_hidden])
+                # <akara>:
+                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                # self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_steps, n_hidden])
 
 
+        # Final state
         self.final_state = result[0]["last_states"]
 
         self.all_layers = list(layer.all_layers)

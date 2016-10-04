@@ -171,8 +171,10 @@ At the end, as a layer with parameter, we also need to append the parameters int
           self.all_params = list(layer.all_params)
           self.all_drop = dict(layer.all_drop)
           self.all_layers.extend( [self.outputs] )
-          self.all_params.extend( [W, b] )
-
+          if b_init:
+             self.all_params.extend( [W, b] )
+          else:
+             self.all_params.extend( [W] )
 
 A simple layer
 ^^^^^^^^^^^^^^^
