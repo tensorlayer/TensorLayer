@@ -384,8 +384,7 @@ so to implement 1D CNN, you can use Reshape layer as follow.
 Pooling layer
 ----------------
 
-Max or Mean Pooling layer for any dimensions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Pooling layer for any dimensions and any pooling functions
 
 .. autoclass:: PoolLayer
 
