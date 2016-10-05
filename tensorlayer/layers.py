@@ -1588,7 +1588,7 @@ class DynamicRNNLayer(Layer):
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolen
         When return_last = False\n
-            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
             if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
@@ -1637,6 +1637,7 @@ class DynamicRNNLayer(Layer):
         n_hidden = 64,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
         # n_steps = 5,
+        sequence_length = None,
         initial_state = None,
         dropout = None,         # ()
         n_layer = 1,
@@ -1647,19 +1648,25 @@ class DynamicRNNLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
-            n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
+        print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+             self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         print("     Untested !!!")
+
+        # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
+        try:
+            self.inputs.get_shape().with_rank(3)
+        except:
+            raise Exception("Input dimension should be rank 3 [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     RNN batch_size (concurrent processes): %d" % batch_size)
+            print("     batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, use a tensor instead.")
+            print("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Creats the cell function
@@ -1681,42 +1688,47 @@ class DynamicRNNLayer(Layer):
                       output_keep_prob=out_keep_prob)
         # Apply multiple layers
         if n_layer > 1:
+            print("     n_layer: %d" % n_layer)
             self.cell = tf.nn.rnn_cell.MultiRNNCell([self.cell] * n_layer, state_is_tuple=True)
 
         # Initialize initial_state
         if initial_state is None:
-            self.initial_state = self.cell.zero_state(batch_size, dtype="float")
+            self.initial_state = self.cell.zero_state(batch_size, dtype=tf.float32)#dtype="float")
         else:
             self.initial_state = initial_state
 
         # Computes sequence_length
-        sequence_length = retrieve_seq_length_op(
-                    incoming if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
+        if sequence_length is None:
+            sequence_length = retrieve_seq_length_op(
+                        self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
+        # print('sequence_length',sequence_length)
 
         # Main - Computes outputs and last_states
         with tf.variable_scope(name, initializer=initializer) as vs:
             outputs, last_states = tf.nn.dynamic_rnn(
-                cell=cell,
+                cell=self.cell,
                 # inputs=X
                 inputs = self.inputs,
                 # dtype=tf.float64,
                 sequence_length=sequence_length,
                 initial_state = self.initial_state,
                 )
-            result = tf.contrib.learn.run_n(
-                {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
+            # result = tf.contrib.learn.run_n(
+            #     {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
         print("     n_params : %d" % (len(rnn_variables)))
-
+        # exit()
         # Manage the outputs
         if return_last:
             # [batch_size, n_hidden]
-            outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
+            # outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
+            outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
             self.outputs = advanced_indexing_op(outputs, sequence_length)
         else:
             # [batch_size, n_step(max), n_hidden]
-            self.outputs = result[0]["outputs"]
+            # self.outputs = result[0]["outputs"]
+            self.outputs = outputs
             if return_seq_2d:
                 # PTB tutorial:
                 # 2D Tensor [n_example, n_hidden]
@@ -1728,7 +1740,11 @@ class DynamicRNNLayer(Layer):
 
 
         # Final state
-        self.final_state = result[0]["last_states"]
+        # self.final_state = result[0]["last_states"]
+        self.final_state = last_states
+        # print(self.final_state)
+        # exit()
+
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -2068,7 +2084,7 @@ class SlimNetsLayer(Layer):
 
         slim_layers = []
         for v in end_points.values():
-            tf.contrib.layers.summaries.summarize_activation(v)
+            # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
         self.all_layers = list(layer.all_layers)

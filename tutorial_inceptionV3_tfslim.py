@@ -83,9 +83,10 @@ def print_prob(prob):
 
 # InceptionV3
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
-net_in = tl.layers.InputLayer(x, name='input_layer')        # DH
+net_in = tl.layers.InputLayer(x, name='input_layer')
 with slim.arg_scope(inception_v3_arg_scope()):
-    # logits, end_points = inception_v3(X, num_classes=1001,    # without TensorLayer
+    ## Alternatively, you should implement inception_v3 without TensorLayer as follow.
+    # logits, end_points = inception_v3(X, num_classes=1001,
     #                                   is_training=False)
     network = tl.layers.SlimNetsLayer(layer=net_in, slim_layer=inception_v3,
                                     slim_args= {
