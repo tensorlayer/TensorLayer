@@ -273,6 +273,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    DeConv3dLayer
    PoolLayer
    RNNLayer
+   DynamicRNNLayer
    FlattenLayer
    ConcatLayer
    ReshapeLayer
@@ -395,6 +396,7 @@ Recurrent layer for any cell (LSTM, GRU etc)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RNNLayer
+.. autoclass:: DynamicRNNLayer
 
 Shape layer
 ------------

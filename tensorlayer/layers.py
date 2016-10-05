@@ -1578,10 +1578,12 @@ class DynamicRNNLayer(Layer):
         The arguments for the cell initializer.
     n_hidden : a int
         The number of hidden units in the layer.
-    # n_steps : a int
-    #     The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
+    dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
+        The input and output keep probability.
+    n_layer : a int, default is 1.
+        The number of RNN layers.
     return_last : boolen
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
@@ -1636,10 +1638,9 @@ class DynamicRNNLayer(Layer):
         cell_init_args = {'state_is_tuple' : True},
         n_hidden = 64,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
-        # n_steps = 5,
         sequence_length = None,
         initial_state = None,
-        dropout = None,         # ()
+        dropout = None,
         n_layer = 1,
         return_last = False,
         return_seq_2d = False,
@@ -1650,7 +1651,6 @@ class DynamicRNNLayer(Layer):
 
         print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
              self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
-        print("     Untested !!!")
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -1744,7 +1744,6 @@ class DynamicRNNLayer(Layer):
         self.final_state = last_states
         # print(self.final_state)
         # exit()
-
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
