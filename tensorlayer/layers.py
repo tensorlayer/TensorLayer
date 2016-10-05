@@ -1443,8 +1443,7 @@ class RNNLayer(Layer):
 
     Notes
     -----
-    If the input to this layer has more than two axes, we need to flatten the
-    input by using :class:`FlattenLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
 
     References
     ----------
@@ -1477,6 +1476,13 @@ class RNNLayer(Layer):
         # dimension by .with_rank() as follow.
         # self.inputs.get_shape().with_rank(2)
         # self.inputs.get_shape().with_rank(3)
+
+        # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
+        try:
+            self.inputs.get_shape().with_rank(3)
+        except:
+            raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
+
 
         # is_reshape : boolen (deprecate)
         #     Reshape the inputs to 3 dimension tensor.\n
@@ -1634,8 +1640,8 @@ class DynamicRNNLayer(Layer):
 
     Notes
     -----
-    If the input to this layer has more than two axes, we need to flatten the
-    input by using :class:`FlattenLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+
 
     References
     ----------
@@ -1824,8 +1830,8 @@ class BiDynamicRNNLayer(Layer):
 
     Notes
     -----
-    If the input to this layer has more than two axes, we need to flatten the
-    input by using :class:`FlattenLayer`.
+    Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
+
 
     References
     ----------
