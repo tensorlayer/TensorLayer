@@ -392,10 +392,15 @@ Max or Mean Pooling layer for any dimensions
 Recurrent layer
 ------------------
 
-Recurrent layer for any cell (LSTM, GRU etc)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
+
+Fixed Length RNN layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RNNLayer
+
+Dynamic RNN layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DynamicRNNLayer
 
 Shape layer
