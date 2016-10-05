@@ -1310,27 +1310,33 @@ class RNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
-        class tf.nn.rnn_cell.BasicRNNCell\n
-        class tf.nn.rnn_cell.BasicLSTMCell\n
-        class tf.nn.rnn_cell.GRUCell\n
-        class tf.nn.rnn_cell.LSTMCell
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        - class tf.nn.rnn_cell.BasicRNNCell
+        - class tf.nn.rnn_cell.BasicLSTMCell
+        - class tf.nn.rnn_cell.GRUCell
+        - class tf.nn.rnn_cell.LSTMCell
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
         The number of hidden units in the layer.
+    initializer : initializer
+        The initializer for initializing the parameters.
     n_steps : a int
         The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
     return_last : boolen
-        If True, return the last output, "Sequence input and single output"\n
-        If False, return all outputs, "Synced sequence input and output"\n
+        If True, return the last output, "Sequence input and single output"
+
+        If False, return all outputs, "Synced sequence input and output"
+
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolen
-        When return_last = False\n
-            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-            if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        When return_last = False
+
+        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+
+        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1569,15 +1575,19 @@ class DynamicRNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
-        class tf.nn.rnn_cell.BasicRNNCell\n
-        class tf.nn.rnn_cell.BasicLSTMCell\n
-        class tf.nn.rnn_cell.GRUCell\n
-        class tf.nn.rnn_cell.LSTMCell
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        - class tf.nn.rnn_cell.BasicRNNCell
+        - class tf.nn.rnn_cell.BasicLSTMCell
+        - class tf.nn.rnn_cell.GRUCell
+        - class tf.nn.rnn_cell.LSTMCell
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
         The number of hidden units in the layer.
+    initializer : initializer
+        The initializer for initializing the parameters.
+    sequence_length : a tensor, array or None
+        The sequence length of each row of input data. If None, automatically calculate the sequence length for the data.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
@@ -1585,13 +1595,17 @@ class DynamicRNNLayer(Layer):
     n_layer : a int, default is 1.
         The number of RNN layers.
     return_last : boolen
-        If True, return the last output, "Sequence input and single output"\n
-        If False, return all outputs, "Synced sequence input and output"\n
+        If True, return the last output, "Sequence input and single output"
+
+        If False, return all outputs, "Synced sequence input and output"
+
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolen
-        When return_last = False\n
-            if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
-            if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        When return_last = False
+
+        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
+
+        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1656,7 +1670,7 @@ class DynamicRNNLayer(Layer):
         try:
             self.inputs.get_shape().with_rank(3)
         except:
-            raise Exception("Input dimension should be rank 3 [batch_size, n_steps(max), n_features]")
+            raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
