@@ -224,9 +224,9 @@ def main_test_cnn_advanced():
     y_ = tf.placeholder(tf.int32, shape=[batch_size,])
 
     ## distorted images for training.
-    distorted_images_op = tl.preprocess.distorted_images(images=x, height=24, width=24)
+    distorted_images_op = tl.prepro.distorted_images(images=x, height=24, width=24)
     ## crop the central of images and whiten it for evaluation.
-    central_images_op = tl.preprocess.crop_central_whiten_images(images=x, height=24, width=24)
+    central_images_op = tl.prepro.crop_central_whiten_images(images=x, height=24, width=24)
 
     ## You can display the distorted images and evaluation images as follow:
     # sess.run(tf.initialize_all_variables())

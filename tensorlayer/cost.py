@@ -16,9 +16,9 @@ def cross_entropy(output, target):
     Parameters
     ----------
     output : Tensorflow variable
-        A distribution with shape: [None, n_feature].
+        A distribution with shape: [batch_size, n_feature].
     target : Tensorflow variable
-        A distribution with shape: [None, n_feature].
+        A distribution with shape: [batch_size, n_feature].
 
     Examples
     --------
@@ -43,28 +43,28 @@ def mean_squared_error(output, target):
     Parameters
     ----------
     output : tensorflow variable
-        A distribution with shape: [None, n_feature].
+        A distribution with shape: [batch_size, n_feature].
     target : tensorflow variable
-        A distribution with shape: [None, n_feature].
+        A distribution with shape: [batch_size, n_feature].
 
     """
     with tf.name_scope("mean_squared_error_loss"):
         mse = tf.reduce_sum(tf.squared_difference(output, target), reduction_indices = 1)
         return tf.reduce_mean(mse)
 
-def cross_entropy_seq(output, target, batch_size, num_steps):
+def cross_entropy_seq(logits, target_seqs, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
-    softmax internally.
+    softmax internally. Normally be used for Fixed Length RNN outputs.
 
     Parameters
     ----------
-    output : Tensorflow variable
-        2D tensor [batch_size*num_steps, n_units of output layer]
-    target : Tensorflow variable
-        target : 2D tensor [batch_size, num_steps], need to be reshaped.
-    batch_size : int
-        RNN batch_size, number of concurrent processes.
-    num_steps : int
+    logits : Tensorflow variable
+        2D tensor, ``network.outputs``, [batch_size*n_steps (n_examples), number of output units]
+    target_seqs : Tensorflow variable
+        target : 2D tensor [batch_size, n_steps], if the number of step is dynamic, please use ``cross_entropy_seq_with_mask`` instead.
+    batch_size : a int, default is 1
+        RNN batch_size, number of concurrent processes, divide the loss by batch_size.
+    num_steps : a int
         sequence length
 
     Examples
@@ -75,12 +75,46 @@ def cross_entropy_seq(output, target, batch_size, num_steps):
     >>> cost = tf.cost.cross_entropy_seq(network.outputs, targets, batch_size, num_steps)
     """
     loss = tf.nn.seq2seq.sequence_loss_by_example(
-        [output],
-        [tf.reshape(target, [-1])],
+        [logits],
+        [tf.reshape(target_seqs, [-1])],
         [tf.ones([batch_size * num_steps])])
     cost = tf.reduce_sum(loss) / batch_size
     return cost
 
+
+def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=False):
+    """Returns the expression of cross-entropy of two sequences, implement
+    softmax internally. Normally be used for Dynamic RNN outputs.
+
+    Parameters
+    -----------
+    logits : network identity outputs
+        2D tensor, ``network.outputs``, [batch_size, number of output units].
+    target_seqs : int of tensor, like word ID.
+        [batch_size, ?]
+    input_mask : the mask to compute loss
+        The same size with target_seqs, normally 0 and 1.
+    return_details : boolean
+        If False (default), only returns the loss
+
+        If True, returns the loss, losses, weights and targets (reshape to one vetcor)
+
+    Example
+    --------
+    >>> see Image Captioning Example.
+
+    """
+    print("     tl : Undocumented")
+    targets = tf.reshape(target_seqs, [-1])   # to one vector
+    weights = tf.to_float(tf.reshape(input_mask, [-1]))   # to one vector like targets
+    losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, targets)
+    loss = tf.div(tf.reduce_sum(tf.mul(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
+                    tf.reduce_sum(weights),
+                    name="seq_loss_with_mask")
+    if return_details:
+        return loss, losses, weights, targets
+    else:
+        return loss
 
 ## Regularization Functions
 def li_regularizer(scale):

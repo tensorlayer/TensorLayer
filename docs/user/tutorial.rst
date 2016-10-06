@@ -2003,7 +2003,7 @@ visualization (:mod:`tensorlayer.visualize`),
 
 iteration functions (:mod:`tensorlayer.iterate`),
 
-preprocessing functions (:mod:`tensorlayer.preprocess`),
+preprocessing functions (:mod:`tensorlayer.prepro`),
 
 
 .. _TensorLayer: https://github.com/zsdonghao/tensorlayer/

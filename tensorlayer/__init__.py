@@ -19,7 +19,7 @@ from . import layers
 from . import ops
 from . import utils
 from . import visualize
-from . import preprocess
+from . import prepro        # was preprocesse
 from . import nlp
 from . import rein
 
