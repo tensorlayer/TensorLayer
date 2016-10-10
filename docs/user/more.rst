@@ -9,7 +9,7 @@ Your Contribution
 =================
 
 There are many functions need to be contributed such as
-Maxout, ResNet, Bi-directional RNN, Neural Turing Machine etc.
+Maxout, Neural Turing Machine and Attention etc.
 Please push on `GitHub`_, every bit helps and will be credited.
 
 

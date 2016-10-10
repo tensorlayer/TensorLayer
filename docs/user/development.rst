@@ -7,12 +7,12 @@ Development
     `Akara Supratak <https://akaraspt.github.io>`_,
     `Hao Dong <https://zsdonghao.github.io>`_,
     `Simiao Yu <https://github.com/zsdonghao>`_)
-    and numerous additional contributors on `GitHub`_.
+    and numerous additional contributors on `Release`_.
 
 TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London.
 The goal of the project is to develop a compositional language while complex learning systems
 can be build through composition of neural network modules.
-The whole development is now participated by numerous contributors on `GitHub`_.
+The whole development is now participated by numerous contributors on `Release`_.
 
 ..
   TensorLayer was initially developed as a part of project in Imperial College London.
@@ -159,6 +159,6 @@ help us reviewing it. If it is fixing an open issue, say, issue #123, add
 GitHub will close it when your request is merged.
 
 
-
+.. _Release: https://github.com/zsdonghao/tensorlayer/releases
 .. _GitHub: https://github.com/zsdonghao/tensorlayer
 .. _our mailing list: hao.dong11@imperial.ac.uk

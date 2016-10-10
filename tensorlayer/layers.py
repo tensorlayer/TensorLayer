@@ -165,7 +165,8 @@ class Layer(object):
             \nHint : Use different name for different 'Layer'" % name)
         else:
             self.name = name
-            set_keep['_layers_name_list'].append(name)
+            if name not in ['', None, False]:
+                set_keep['_layers_name_list'].append(name)
 
 
     def print_params(self, details=True):
@@ -1755,7 +1756,7 @@ class DynamicRNNLayer(Layer):
                 self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_hidden])
             # else:
                 # <akara>:
-                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                # 3D Tensor [batch_size, n_steps, n_hidden]
                 # self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_steps, n_hidden])
 
 

@@ -24,4 +24,4 @@ from . import nlp
 from . import rein
 
 
-__version__ = "1.1.dev1"
+__version__ = "1.2.3"
