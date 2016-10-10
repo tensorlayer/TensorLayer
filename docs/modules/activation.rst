@@ -29,6 +29,7 @@ For more complex activation, TensorFlow API will be required.
 
    identity
    ramp
+   leaky_relu
 
 
 Activation functions
@@ -36,3 +37,4 @@ Activation functions
 
 .. autofunction:: identity
 .. autofunction:: ramp
+.. autofunction:: leaky_relu
