@@ -27,7 +27,7 @@ All TensorLayer layers have a number of methods in common:
 
 
 The initialization of a network is done by input layer, then we can stacked layers
-as follow, then a network is a ``Layer`` class.
+as follow, a network is a ``Layer`` class.
 The most important properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
 The ``all_params`` is a list which store all pointers of all network parameters in order,
 the following script define a 3 layer network, then:

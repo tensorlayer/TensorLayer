@@ -162,7 +162,7 @@ class Layer(object):
         # if name in globals():
         if (name in set_keep['_layers_name_list']) and name_reuse == False:
             raise Exception("Layer '%s' already exists, please choice other 'name'.\
-            \nHint : Use different name for different 'Layer'" % name)
+            \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
         else:
             self.name = name
             if name not in ['', None, False]:
