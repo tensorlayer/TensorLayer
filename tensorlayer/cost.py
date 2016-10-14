@@ -9,7 +9,7 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
-def cross_entropy(output, target):
+def cross_entropy(output, target, name="cross_entropy_loss"):
     """Returns the TensorFlow expression of cross-entropy of two distributions, implement
     softmax internally.
 
@@ -29,13 +29,36 @@ def cross_entropy(output, target):
     About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
     The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
-    with tf.name_scope("cross_entropy_loss"):
+    with tf.name_scope(name):
         # net_output_tf = output
         # target_tf = target
         # cross_entropy = tf.add(tf.mul(tf.log(net_output_tf, name=None),target_tf),
         #                      tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
         # return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(output, target))
+
+# Undocumented
+def binary_cross_entropy(preds, targets, name=None):
+    """Computes binary cross entropy given `preds`.
+
+    For brevity, let `x = `, `z = targets`.  The logistic loss is
+
+        loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
+
+    Parameters
+    ----------
+    preds : A `Tensor` of type `float32` or `float64`.
+    targets : A `Tensor` of the same type and shape as `preds`.
+    """
+    print("Undocumented")
+    from tensorflow.python.framework import ops
+    eps = 1e-12
+    with ops.op_scope([preds, targets], name, "bce_loss") as name:
+        preds = ops.convert_to_tensor(preds, name="preds")
+        targets = ops.convert_to_tensor(targets, name="targets")
+        return tf.reduce_mean(-(targets * tf.log(preds + eps) +
+                              (1. - targets) * tf.log(1. - preds + eps)))
+
 
 def mean_squared_error(output, target):
     """Return the TensorFlow expression of mean-squre-error of two distributions.
