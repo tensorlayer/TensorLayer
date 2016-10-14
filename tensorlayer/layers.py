@@ -1029,7 +1029,7 @@ class Conv2dLayer(Layer):
         shape = [5, 5, 1, 100],
         strides=[1, 1, 1, 1],
         padding='SAME',
-        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
@@ -1064,7 +1064,7 @@ class DeConv2dLayer(Layer):
     act : activation function
         The function that is applied to the layer activations.
     shape : list of shape
-        shape of the filters, [depth, height, width, output_channels, in_channels], filter's in_channels dimension must match that of value.
+        shape of the filters, [height, width, output_channels, in_channels], filter's in_channels dimension must match that of value.
     output_shape : list of output shape
         representing the output shape of the deconvolution op.
     strides : a list of ints.
@@ -1084,18 +1084,18 @@ class DeConv2dLayer(Layer):
 
     Links
     ------
-    `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
+    `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
 
     """
     def __init__(
         self,
         layer = None,
         act = tf.nn.relu,
-        shape = [2, 2, 2, 1024],
-        output_shape = [None, 50, 50 ,512],
-        strides = [1,2,2,1],
+        shape = [5, 5, 256, 256],
+        output_shape = [None, 8, 8 ,256],
+        strides = [1, 2, 2, 1],
         padding = 'SAME',
-        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
@@ -1157,7 +1157,7 @@ class Conv3dLayer(Layer):
         shape = [],
         strides=[],
         padding='SAME',
-        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
@@ -1221,10 +1221,10 @@ class DeConv3dLayer(Layer):
         layer = None,
         act = tf.nn.relu,
         shape = [2, 2, 2, 512, 1024],
-        output_shape = [None, 50, 50,50,512],
+        output_shape = [None, 50, 50, 50,512],
         strides = [1,2,2,2,1],
         padding = 'SAME',
-        W_init = tf.truncated_normal_initializer(stddev=0.1),
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
@@ -1293,7 +1293,7 @@ class BatchNormLayer(Layer):
         axis = list(range(len(inputs_shape) - 1))
         params_shape = inputs_shape[-1:]
 
-        with tf.variable_scope(name) as scope:
+        with tf.variable_scope(name) as vs:
             beta = tf.get_variable(name='beta', shape=params_shape,
                                  initializer=tf.constant_initializer(0.0))
             gamma = tf.get_variable(name='gamma', shape=params_shape,
