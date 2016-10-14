@@ -59,26 +59,16 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
     name : a string or None
         An optional name to attach to this activation function.
 
-    Returns
-    --------
-    A `Tensor` with the same type as `x`.
-
     References
     ------------
     `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
 
     """
-
-    # If incoming Tensor has a scope, this op is defined inside it
-    # i_scope = ""
-    # if hasattr(x, 'scope'):
-    #     if x.scope: i_scope = x.scope
     with tf.name_scope(name) as scope:
-        x = tf.nn.relu(x)
-        m_x = tf.nn.relu(-x)
-        x -= alpha * m_x
-    # x.scope = scope
-
+        # x = tf.nn.relu(x)
+        # m_x = tf.nn.relu(-x)
+        # x -= alpha * m_x
+        x = tf.maximum(x, alpha * x)
     return x
 
 
