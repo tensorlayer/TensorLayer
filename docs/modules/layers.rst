@@ -4,7 +4,7 @@ API - Layers
 To make TensorLayer simple, we minimize the number of layer classes as much as
 we can. So we encourage you to use TensorFlow's function.
 For example, we do not provide layer for local response normalization, we suggest
-you to apply ``tf.nn.lrn`` on ``Layer.outputs``.
+you to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_
 
 
@@ -272,6 +272,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    Conv3dLayer
    DeConv3dLayer
    PoolLayer
+   BatchNormLayer
    RNNLayer
    DynamicRNNLayer
    FlattenLayer
@@ -387,6 +388,14 @@ Pooling layer
 Pooling layer for any dimensions and any pooling functions
 
 .. autoclass:: PoolLayer
+
+Normalization layer
+--------------------
+
+We do not provide layer for local response normalization as it does not have any weights and arguments, we suggest
+you to apply ``tf.nn.lrn`` on ``network.outputs``.
+
+.. autoclass:: BatchNormLayer
 
 Recurrent layer
 ------------------

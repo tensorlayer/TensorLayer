@@ -1308,6 +1308,13 @@ class BatchNormLayer(Layer):
               with tf.control_dependencies([ema_apply_op]):
                   return tf.identity(batch_mean), tf.identity(batch_var)
 
+            if is_train:
+                is_train = tf.cast(tf.zeros(1), tf.bool)
+            else:
+                is_train = tf.cast(tf.ones(1), tf.bool)
+
+            is_train = tf.reshape(is_train, [])
+
             mean, var = tf.cond(
               is_train,
               mean_var_with_update,
