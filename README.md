@@ -36,8 +36,8 @@ If you already had the pre-requisites ready, the simplest way to install TensorL
 
 
 ```bash
-pip install tensorlayer==1.2.2b    (for stable version)
-pip install git+https://github.com/zsdonghao/tensorlayer.git (for master version)
+[for stable version] pip install tensorlayer==1.2.2b    
+[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git
 ```
 
 # Documentation
