@@ -39,7 +39,7 @@ def flatten_reshape(variable, name=''):
 
     Examples
     --------
-    >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 32 features for each 5x5 patch
+    >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
     >>> b_conv2 = bias_variable([32])
     >>> W_fc1 = weight_variable([7 * 7 * 32, 256])
 
@@ -984,8 +984,8 @@ class Conv2dLayer(Layer):
         The type of padding algorithm to use.
     W_init : weights initializer
         The initializer for initializing the weight matrix.
-    b_init : biases initializer
-        The initializer for initializing the bias vector.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weights tf.get_variable().
     b_init_args : dictionary
@@ -1042,16 +1042,20 @@ class Conv2dLayer(Layer):
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-            self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b ) #1.2
-
-        # self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b )
+            if b_init:
+                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b ) #1.2
+            else:
+                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding))
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
 
 class DeConv2dLayer(Layer):
     """
@@ -1074,7 +1078,7 @@ class DeConv2dLayer(Layer):
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias vector.
+        The initializer for initializing the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weights initializer.
     b_init_args : dictionary
@@ -1108,15 +1112,20 @@ class DeConv2dLayer(Layer):
         print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, **b_init_args )
-
-        self.outputs = act( tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
+            if b_init:
+                b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, **b_init_args )
+                self.outputs = act( tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
+            else:
+                self.outputs = act( tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding))
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
 
 class Conv3dLayer(Layer):
     """
@@ -1284,7 +1293,6 @@ class BatchNormLayer(Layer):
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
                             (self.name, decay, epsilon, is_train))
-        print("      Undocument")
         if is_train == None:
             raise Exception("is_train must be True or False")
 
@@ -1309,11 +1317,14 @@ class BatchNormLayer(Layer):
                   return tf.identity(batch_mean), tf.identity(batch_var)
 
             if is_train:
-                is_train = tf.cast(tf.zeros(1), tf.bool)
-            else:
                 is_train = tf.cast(tf.ones(1), tf.bool)
+            else:
+                is_train = tf.cast(tf.zeros(1), tf.bool)
 
             is_train = tf.reshape(is_train, [])
+
+            # print(is_train)
+            # exit()
 
             mean, var = tf.cond(
               is_train,
