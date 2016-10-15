@@ -39,7 +39,7 @@ def flatten_reshape(variable, name=''):
 
     Examples
     --------
-    >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
+    >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 32 features for each 5x5 patch
     >>> b_conv2 = bias_variable([32])
     >>> W_fc1 = weight_variable([7 * 7 * 32, 256])
 
