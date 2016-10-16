@@ -370,7 +370,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     References
     ----------
-    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
     def __init__(
         self,
@@ -459,7 +459,7 @@ class EmbeddingInputlayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Field (Class Variables)
+    Field / Class Variables
     -----------------------
     outputs : a tensor
         The outputs of embedding layer.
@@ -579,7 +579,7 @@ class DenseLayer(Layer):
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
     >>> y = tf.nn.relu(tf.matmul(inputs, W) + b)
 
-    Note
+    Notes
     -----
     If the input to this layer has more than two axes, it need to flatten the
     input by using :class:`FlattenLayer` in this case.
@@ -683,9 +683,7 @@ class ReconLayer(DenseLayer):
     The input layer should be `DenseLayer` or a layer has only one axes.
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
-
     - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
-
     - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
     """
     def __init__(
@@ -887,7 +885,7 @@ class DropoutLayer(Layer):
 
 class DropconnectDenseLayer(Layer):
     """
-    The :class:`DropconnectDenseLayer` class is `DenseLayer` with DropConnect
+    The :class:`DropconnectDenseLayer` class is ``DenseLayer`` with DropConnect
     behaviour which randomly remove connection between this layer to previous
     layer by a given keeping probability.
 
@@ -924,7 +922,7 @@ class DropconnectDenseLayer(Layer):
 
     References
     ----------
-    `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`_
+    - `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`_
     """
     def __init__(
         self,
@@ -966,7 +964,7 @@ class DropconnectDenseLayer(Layer):
 ## Convolutional layer
 class Conv2dLayer(Layer):
     """
-    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d`.
+    The :class:`Conv2dLayer` class is a 2D CNN layer, see ``tf.nn.conv2d``.
 
     Parameters
     ----------
@@ -1014,7 +1012,7 @@ class Conv2dLayer(Layer):
     ...                   pool = tf.nn.max_pool,
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
 
-    >>> Without TensorLayer, you can initialize the parameters as follow.
+    >>> Without TensorLayer, you can implement 2d convolution as follow.
     >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
     >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
@@ -1023,7 +1021,7 @@ class Conv2dLayer(Layer):
 
     References
     ----------
-    `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_
+    - `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_
     """
     def __init__(
         self,
@@ -1062,7 +1060,7 @@ class Conv2dLayer(Layer):
 
 class DeConv2dLayer(Layer):
     """
-    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d_transpose`.
+    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see ``tf.nn.conv2d_transpose``.
 
     Parameters
     ----------
@@ -1091,7 +1089,7 @@ class DeConv2dLayer(Layer):
 
     References
     ----------
-    `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
+    - `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
     """
     def __init__(
         self,
@@ -1131,7 +1129,7 @@ class DeConv2dLayer(Layer):
 
 class Conv3dLayer(Layer):
     """
-    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d`.
+    The :class:`Conv3dLayer` class is a 3D CNN layer, see ``tf.nn.conv3d``.
 
     Parameters
     ----------
@@ -1158,7 +1156,7 @@ class Conv3dLayer(Layer):
 
     References
     ----------
-    `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
+    - `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
     """
     def __init__(
         self,
@@ -1194,7 +1192,7 @@ class Conv3dLayer(Layer):
 
 class DeConv3dLayer(Layer):
     """
-    The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see `tf.nn.conv3d_transpose`.
+    The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see ``tf.nn.conv3d_transpose``.
 
     Parameters
     ----------
@@ -1223,7 +1221,7 @@ class DeConv3dLayer(Layer):
 
     References
     ----------
-    `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
+    - `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
     """
     def __init__(
         self,
@@ -1259,7 +1257,7 @@ class DeConv3dLayer(Layer):
 ## Normalization layer
 class BatchNormLayer(Layer):
     """
-    The :class:`BatchNormLayer` class is a normalization layer, see `tf.nn.batch_normalization`.
+    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization``.
 
     Batch normalization on fully-connected or convolutional maps.
 
@@ -1278,6 +1276,7 @@ class BatchNormLayer(Layer):
 
     References
     ----------
+    - `tf.nn.batch_normalization <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.batch_normalization.md>`_
     - `Source <http://stackoverflow.com/questions/33949786/how-could-i-use-batch-normalization-in-tensorflow>`_
     - `TensorFlow <https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100>`_
     """
@@ -1373,11 +1372,11 @@ class PoolLayer(Layer):
 
     Examples
     --------
-    see Conv2dLayer
+    - see Conv2dLayer
 
     References
     ----------
-    `TensorFlow Pooling <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
+    - `TensorFlow Pooling <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
     """
     def __init__(
         self,
@@ -1413,10 +1412,10 @@ class RNNLayer(Layer):
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
-        - class tf.nn.rnn_cell.BasicRNNCell
-        - class tf.nn.rnn_cell.BasicLSTMCell
-        - class tf.nn.rnn_cell.GRUCell
-        - class tf.nn.rnn_cell.LSTMCell
+        - class ``tf.nn.rnn_cell.BasicRNNCell``
+        - class ``tf.nn.rnn_cell.BasicLSTMCell``
+        - class ``tf.nn.rnn_cell.GRUCell``
+        - class ``tf.nn.rnn_cell.LSTMCell``
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -1428,22 +1427,18 @@ class RNNLayer(Layer):
     initial_state : None or RNN State
         If None, initial_state is zero_state.
     return_last : boolen
-        If True, return the last output, "Sequence input and single output"
-
-        If False, return all outputs, "Synced sequence input and output"
-
-        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
+        - If True, return the last output, "Sequence input and single output"
+        - If False, return all outputs, "Synced sequence input and output"
+        - In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolen
-        When return_last = False
-
-        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-
-        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        - When return_last = False
+        - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+        - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
-    Field (Class Variables)
-    -----------------------
+    Field / Class Variables
+    ------------------------
     outputs : a tensor
         The output of this RNN.
         return_last = False, outputs = all cell_output, which is the hidden state.
@@ -1549,11 +1544,10 @@ class RNNLayer(Layer):
 
     References
     ----------
-    `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
-    `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_\n
-    `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
-
-    see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
+    - `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+    - `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_
+    - `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
+    - see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
     """
     def __init__(
         self,
@@ -1676,7 +1670,7 @@ def retrieve_seq_length_op(data):
 
 class DynamicRNNLayer(Layer):
     """
-    The :class:`DynamicRNNLayer` class is a Dynamic RNN layer, see ```tf.nn.dynamic_rnn``.
+    The :class:`DynamicRNNLayer` class is a Dynamic RNN layer, see ``tf.nn.dynamic_rnn``.
 
     Parameters
     ----------
@@ -1684,10 +1678,10 @@ class DynamicRNNLayer(Layer):
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
-        - class tf.nn.rnn_cell.BasicRNNCell
-        - class tf.nn.rnn_cell.BasicLSTMCell
-        - class tf.nn.rnn_cell.GRUCell
-        - class tf.nn.rnn_cell.LSTMCell
+        - class ``tf.nn.rnn_cell.BasicRNNCell``
+        - class ``tf.nn.rnn_cell.BasicLSTMCell``
+        - class ``tf.nn.rnn_cell.GRUCell``
+        - class ``tf.nn.rnn_cell.LSTMCell``
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -1703,21 +1697,17 @@ class DynamicRNNLayer(Layer):
     n_layer : a int, default is 1.
         The number of RNN layers.
     return_last : boolen
-        If True, return the last output, "Sequence input and single output"
-
-        If False, return all outputs, "Synced sequence input and output"
-
-        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
+        - If True, return the last output, "Sequence input and single output"
+        - If False, return all outputs, "Synced sequence input and output"
+        - In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolen
-        When return_last = False
-
-        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
-
-        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        - When return_last = False
+        - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
+        - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
-    Field (Class Variables)
+    Field / Class Variables
     -----------------------
     outputs : a tensor
         The output of this RNN.
@@ -1736,10 +1726,6 @@ class DynamicRNNLayer(Layer):
         your state at the begining of each epoch or iteration according to your
         training procedure.
 
-    Examples
-    --------
-    >>>
-
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
@@ -1747,11 +1733,11 @@ class DynamicRNNLayer(Layer):
 
     References
     ----------
-    `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_\n
-    `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_\n
-    `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`_ \n
-    `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_ \n
-    `tutorial_dynamic_rnn.py`
+    - `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_
+    - `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_
+    - `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`_
+    - `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_
+    - ``tutorial_dynamic_rnn.py``
     """
     def __init__(
         self,
@@ -1885,11 +1871,11 @@ class BiDynamicRNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
-        class tf.nn.rnn_cell.BasicRNNCell\n
-        class tf.nn.rnn_cell.BasicLSTMCell\n
-        class tf.nn.rnn_cell.GRUCell\n
-        class tf.nn.rnn_cell.LSTMCell
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+        - class ``tf.nn.rnn_cell.BasicRNNCell``
+        - class ``tf.nn.rnn_cell.BasicLSTMCell``
+        - class ``tf.nn.rnn_cell.GRUCell``
+        - class ``tf.nn.rnn_cell.LSTMCell``
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -1907,7 +1893,7 @@ class BiDynamicRNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Field (Class Variables)
+    Field /Class Variables
     -----------------------
     outputs : a tensor
         The output of this RNN.
@@ -1926,10 +1912,6 @@ class BiDynamicRNNLayer(Layer):
         your state at the begining of each epoch or iteration according to your
         training procedure.
 
-    Examples
-    --------
-    >>>
-
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
@@ -1937,8 +1919,8 @@ class BiDynamicRNNLayer(Layer):
 
     References
     ----------
-    `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_\n
-    `bidirectional_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/bidirectional_rnn.ipynb>`_
+    - `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_
+    - `bidirectional_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/bidirectional_rnn.ipynb>`_
     """
     def __init__(
         self,
@@ -2180,11 +2162,10 @@ class SlimNetsLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Note
+    Notes
     -----
     The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this
     network is not in order ! Fortunately, the ``all_params`` are in order.
-
     """
     def __init__(
         self,
@@ -2229,7 +2210,7 @@ class MultiplexerLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Field (Class Variables)
+    Field / Class Variables
     -----------------------
     sel : a placeholder
         Input an int [0, inf], which input is the output
@@ -2266,7 +2247,7 @@ class MultiplexerLayer(Layer):
 
     References
     ------------
-    See ``tf.pack()`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
+    - See ``tf.pack()`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
     """
     def __init__(self,
                layer = [],
@@ -2335,17 +2316,15 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     This example implements a multi-layer recurrent neural network as encoder,
     and an attention-based decoder. This is the same as the model described in
     this paper:
-        “Grammar as a Foreign Language”
-        http://arxiv.org/abs/1412.7449 - please look there for details,
+    - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
+    please look there for details,
     or into the seq2seq library for complete model implementation.
     This example also allows to use GRU cells in addition to LSTM cells, and
     sampled softmax to handle large output vocabulary size. A single-layer
     version of this model, but with bi-directional encoder, was presented in
-        “Neural Machine Translation by Jointly Learning to Align and Translate”
-        http://arxiv.org/abs/1409.0473
+    - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
     The sampled softmax is described in Section 3 of the following paper.
-        “On Using Very Large Target Vocabulary for Neural Machine Translation”
-        http://arxiv.org/abs/1412.2007
+    - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
 
     Parameters
     ----------
