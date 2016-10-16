@@ -11,9 +11,8 @@ we can. So we encourage you to use TensorFlow's function. TensorFlow provides
 Creating custom activation
 ---------------------------
 
-To implement a custom activation function in TensorLayer is very easy.
-
-The following is an example implementation of an activation that multiplies its input by 2.
+Customizes activation function in TensorLayer is very easy.
+The following example implements an activation that multiplies its input by 2.
 For more complex activation, TensorFlow API will be required.
 
 .. code-block:: python
