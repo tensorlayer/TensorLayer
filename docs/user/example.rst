@@ -25,7 +25,7 @@ Computer Vision
 Natural Language Processing
 ==============================
 
- - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see ``tutorial_ptb_lstm.py`` on `GitHub`_.
+ - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see ``tutorial_ptb_lstm_state_is_tuple.py`` on `GitHub`_.
  - Word Embedding - Word2vec. Train a word embedding matrix, see ``tutorial_word2vec_basic.py`` on `GitHub`_.
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see ``tutorial_generate_text.py`` on `GitHub`_.
  - Text Generation. Generates new text scripts, using LSTM network, see ``tutorial_generate_text.py`` on `GitHub`_.
@@ -42,7 +42,7 @@ Special Examples
 
  - Merge TF-Slim into TensorLayer. ``tutorial_inceptionV3_tfslim.py`` on `GitHub`_.
  - MultiplexerLayer. ``tutorial_mnist_multiplexer.py`` on `GitHub`_.
- - TFRecord. Effective way to load and pre-process data, see ``tutorial_tfrecord.py``, ``tutorial_tfrecord2.py`` and ``tutorial_cifar10_tfrecord.py`` on `GitHub`_.
+ - TFRecord. Effective way to load and pre-process data, see ``tutorial_tfrecord*.py`` and ``tutorial_cifar10_tfrecord.py`` on `GitHub`_.
 
 
 ..

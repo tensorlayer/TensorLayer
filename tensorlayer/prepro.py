@@ -55,11 +55,11 @@ def distorted_images(images=None, height=24, width=24):
 
     Notes
     ------
-    The first image in 'distorted_images' should be removed.
+    - The first image in 'distorted_images' should be removed.
 
     References
     -----------
-    `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
+    - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
     """
     print(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
     try:
