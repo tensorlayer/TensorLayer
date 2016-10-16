@@ -1109,7 +1109,7 @@ class DeConv2dLayer(Layer):
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act))
-        print("  DeConv2dLayer: Untested")
+        # print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, **W_init_args )
             if b_init:
