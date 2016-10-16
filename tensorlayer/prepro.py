@@ -61,6 +61,7 @@ def distorted_images(images=None, height=24, width=24):
     -----------
     `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
     """
+    print(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
     try:
         batch_size = int(images._shape[0])
     except:
@@ -131,6 +132,7 @@ def crop_central_whiten_images(images=None, height=24, width=24):
     ----------------
     - ``tensorflow.models.image.cifar10.cifar10_input``
     """
+    print(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
     try:
         batch_size = int(images._shape[0])
     except:
