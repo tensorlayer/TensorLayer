@@ -684,10 +684,9 @@ class ReconLayer(DenseLayer):
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
 
-    For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
+    - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
 
-    For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
-
+    - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
     """
     def __init__(
         self,
@@ -1021,6 +1020,10 @@ class Conv2dLayer(Layer):
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
     ...                       strides=[1, 1, 1, 1],
     ...                       padding='SAME') + b )
+
+    References
+    ----------
+    `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_
     """
     def __init__(
         self,
@@ -1086,10 +1089,9 @@ class DeConv2dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Links
-    ------
+    References
+    ----------
     `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
-
     """
     def __init__(
         self,
@@ -1154,10 +1156,9 @@ class Conv3dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Links
-    ------
+    References
+    ----------
     `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
-
     """
     def __init__(
         self,
@@ -1220,10 +1221,9 @@ class DeConv3dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Links
-    ------
+    References
+    ----------
     `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
-
     """
     def __init__(
         self,
@@ -1276,7 +1276,7 @@ class BatchNormLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Reference
+    References
     ----------
     - `Source <http://stackoverflow.com/questions/33949786/how-could-i-use-batch-normalization-in-tensorflow>`_
     - `TensorFlow <https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100>`_
@@ -1376,7 +1376,7 @@ class PoolLayer(Layer):
     see Conv2dLayer
 
     References
-    ------------
+    ----------
     `TensorFlow Pooling <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
     """
     def __init__(
@@ -1553,7 +1553,7 @@ class RNNLayer(Layer):
     `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_\n
     `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
 
-    see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm.py`` and ``tutorial_generate_text.py``
+    see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
     """
     def __init__(
         self,
