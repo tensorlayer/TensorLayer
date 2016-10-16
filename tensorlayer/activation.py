@@ -23,7 +23,6 @@ def identity(x, name=None):
 # Shortcut
 linear = identity
 
-
 def ramp(x=None, v_min=0, v_max=1, name=None):
     """The ramp activation function.
 
@@ -70,8 +69,11 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
         x = tf.maximum(x, alpha * x)
     return x
 
+#Shortcut
+lrelu = leaky_relu
 
 
+## Alternatively we can use tl.layers.PReluLayer()
 def prelu(x, channel_shared=False, W_init=tf.constant_initializer(value=0.0), W_init_args={}, restore=True, name="PReLU"):
     """ Parametric Rectified Linear Unit.
 
