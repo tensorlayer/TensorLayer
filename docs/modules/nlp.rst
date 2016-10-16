@@ -12,6 +12,11 @@ Natural Language Processing and Word Representation.
    sample
    sample_top
 
+   SimpleVocabulary
+   Vocabulary
+   process_sentence
+   create_vocab
+
    simple_read_words
    read_words
    read_analogies_file
@@ -45,6 +50,13 @@ Sampling functions
 Vector representations of words
 -------------------------------
 
+Vocabulary class
+^^^^^^^^^^^^^^^^^
+
+.. autoclass:: SimpleVocabulary
+.. autoclass:: Vocabulary
+.. autofunction:: process_sentence
+.. autofunction:: create_vocab
 
 Read words from file
 ^^^^^^^^^^^^^^^^^^^^^

@@ -129,7 +129,7 @@ def crop_central_whiten_images(images=None, height=24, width=24):
 
     Code References
     ----------------
-    tensorflow.models.image.cifar10.cifar10_input
+    - ``tensorflow.models.image.cifar10.cifar10_input``
     """
     try:
         batch_size = int(images._shape[0])

@@ -112,7 +112,7 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
 def seq_minibatches2(inputs, targets, batch_size, num_steps):
     """
     Generate a generator that iterates on two list of words. Yields (Returns) the source contexts and
-    the target context by the given batch_size and num_steps (sequence_length).\n
+    the target context by the given batch_size and num_steps (sequence_length),
     see ``PTB tutorial``.
 
     Hint, if the input data are images, you can modify the code from
@@ -173,9 +173,9 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     ... [[ 26.  27.  28.]
     ... [ 36.  37.  38.]]
 
-    Code Reference
-    --------------
-    tensorflow/models/rnn/ptb/reader.py
+    Code References
+    ---------------
+    - ``tensorflow/models/rnn/ptb/reader.py``
     """
     assert len(inputs) == len(targets)
     data_len = len(inputs)
@@ -254,9 +254,9 @@ def ptb_iterator(raw_data, batch_size, num_steps):
     ... [[ 7  8  9]
     ...  [17 18 19]]
 
-    Code Reference
-    --------------
-    tensorflow/models/rnn/ptb/reader.py
+    Code References
+    ----------------
+    - ``tensorflow/models/rnn/ptb/reader.py``
     """
     raw_data = np.array(raw_data, dtype=np.int32)
 

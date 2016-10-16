@@ -24,10 +24,10 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
     --------
     >>> ce = tf.cost.cross_entropy(y_logits, y_target_logits)
 
-    Notes
-    -----
-    About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
-    The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
+    References
+    -----------
+    - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
+    - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
     with tf.name_scope(name):
         # net_output_tf = output
@@ -69,7 +69,6 @@ def mean_squared_error(output, target):
         A distribution with shape: [batch_size, n_feature].
     target : tensorflow variable
         A distribution with shape: [batch_size, n_feature].
-
     """
     with tf.name_scope("mean_squared_error_loss"):
         mse = tf.reduce_sum(tf.squared_difference(output, target), reduction_indices = 1)
@@ -122,10 +121,9 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
 
         If True, returns the loss, losses, weights and targets (reshape to one vetcor)
 
-    Example
+    Examples
     --------
-    >>> see Image Captioning Example.
-
+    - see Image Captioning Example.
     """
     print("     cross_entropy_seq_with_mask : Undocumented")
     targets = tf.reshape(target_seqs, [-1])   # to one vector

@@ -61,8 +61,7 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
 
     References
     ------------
-    `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
-
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
     """
     with tf.name_scope(name) as scope:
         # x = tf.nn.relu(x)
@@ -74,10 +73,7 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
 
 
 def prelu(x, channel_shared=False, W_init=tf.constant_initializer(value=0.0), W_init_args={}, restore=True, name="PReLU"):
-    """ PReLU.
-
-    Parametric Rectified Linear Unit.
-
+    """ Parametric Rectified Linear Unit.
 
     Parameters
     ----------
@@ -95,12 +91,7 @@ def prelu(x, channel_shared=False, W_init=tf.constant_initializer(value=0.0), W_
 
     References
     -----------
-    Delving Deep into Rectifiers: Surpassing Human-Level Performance
-    on ImageNet Classification. He et al., 2014.
-
-    Links
-    -------
-    `Paper <http://arxiv.org/pdf/1502.01852v1.pdf>`_
+    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/pdf/1502.01852v1.pdf>`_
     """
     print(' prelu: untested !!!')
     if channel_shared:

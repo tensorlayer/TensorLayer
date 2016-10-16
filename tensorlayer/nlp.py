@@ -63,7 +63,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
     References
     -----------
-    `TensorFlow word2vec tutorial <https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words>`_
+    - `TensorFlow word2vec tutorial <https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-representations-of-words>`_
     """
     # global data_index   # you can put data_index outside the function, then
     #       modify the global data_index in the function without return it.
@@ -107,7 +107,7 @@ def sample(a=[], temperature=1.0):
             temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]\n
         If None, it will be ``np.argmax(a)``
 
-    Note
+    Notes
     ------
     No matter what is the temperature and input list, the sum of all probabilities will be one.
     Even if input list = [1, 100, 200], the sum of all probabilities will still be one.
@@ -203,7 +203,7 @@ class Vocabulary(object):
   end_id : int of end id
   unk_id : int of unk id
 
-  vocab_file
+  Vocab_files
   -------------
   >>> Look as follow, includes `start_word` , `end_word` but no `unk_word` .
   >>> a 969108
@@ -278,7 +278,7 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     ---------
     A list of strings; the processed caption.
 
-    Example
+    Examples
     -----------
     >>> c = "how are you?"
     >>> c = tl.nlp.process_sentence(c)
@@ -312,11 +312,11 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     --------
     tl.nlp.SimpleVocabulary object.
 
-    More
+    Mores
     -----
     tl.nlp.build_vocab()
 
-    Example
+    Examples
     --------
     >>> captions = ["one two , three", "four five five"]
     >>> processed_capts = []
@@ -399,8 +399,7 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
 
     Code References
     ---------------
-    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
-
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     with tf.gfile.GFile(filename, "r") as f:
         return f.read().replace(*replace).split()
@@ -415,8 +414,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     word2id : a dictionary
         Mapping words to unique IDs.
 
-
-    Return
+    Returns
     --------
     analogy_questions : a [n, 4] numpy array containing the analogy question's
              word ids.
@@ -487,7 +485,7 @@ def build_vocab(data):
 
     Code References
     ---------------
-    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
 
     Examples
     --------
@@ -519,7 +517,6 @@ def build_reverse_dictionary(word_to_id):
     --------
     reverse_dictionary : a dictionary
         mapping ids to words
-
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
@@ -563,7 +560,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
 
     Code References
     -----------------
-    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
     import collections
     count = [[unk_key, -1]]
@@ -622,7 +619,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key = 'UNK'):
 
     Code References
     ---------------
-    `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     # if isinstance(data[0], six.string_types):
     #     print(type(data[0]))
@@ -732,7 +729,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
 
   References
   ----------
-  Code from /tensorflow/models/rnn/translation/data_utils.py
+  - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   words = []
   for space_separated_fragment in sentence.strip().split():
@@ -763,7 +760,7 @@ def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
 
   References
   ----------
-  Code from /tensorflow/models/rnn/translation/data_utils.py
+  - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   if not gfile.Exists(vocabulary_path):
     print("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
@@ -891,7 +888,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
 
   References
   ----------
-  Code from /tensorflow/models/rnn/translation/data_utils.py
+  - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   if not gfile.Exists(target_path):
     print("Tokenizing data in %s" % data_path)

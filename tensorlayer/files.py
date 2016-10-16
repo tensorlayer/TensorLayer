@@ -133,7 +133,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     --------
     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=True)
 
-    Note
+    Notes
     ------
     CIFAR-10 images can only be display without color change under uint8.
     >>> X_train = np.asarray(X_train, dtype=np.uint8)
@@ -152,11 +152,9 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
 
     References
     ----------
-    `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
-
-    `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
-
-    `Code references <https://teratail.com/questions/28932>`_
+    - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
+    - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
+    - `Code references <https://teratail.com/questions/28932>`_
     """
     import sys
     import pickle
@@ -314,11 +312,11 @@ def load_ptb_dataset():
 
     Code References
     ---------------
-    tensorflow.models.rnn.ptb import reader
+    - ``tensorflow.models.rnn.ptb import reader``
 
     Download Links
     ---------------
-    `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
+    - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
     # We first define a download function, supporting both Python 2 and 3.
     filename = 'simple-examples.tgz'
@@ -377,7 +375,7 @@ def load_matt_mahoney_text8_dataset():
         a list of string (word).\n
         e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
 
-    Example
+    Examples
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> print('Data size', len(words))
@@ -424,7 +422,7 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 
     References
     -----------
-    `Modify from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
+    - `Modify from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
     """
     from six.moves import cPickle
     import gzip
@@ -542,10 +540,10 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
 
     References
     ----------
-    Code modified from /tensorflow/models/rnn/translation/data_utils.py
+    - Code modified from /tensorflow/models/rnn/translation/data_utils.py
 
-    Note
-    ----
+    Notes
+    -----
     Usually, it will take a long time to download this dataset.
     """
     # URLs for WMT data.
@@ -640,13 +638,13 @@ def save_npz(save_list=[], name='model.npz'):
     ... Loading param5, (10,)
     >>> put parameters into a TensorLayer network, please see assign_params()
 
-    Note
+    Notes
     -----
     If you got session issues, you can change the value.eval() to value.eval(session=sess)
 
     References
     ----------
-    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
     ## save params into a dictionary
     # rename_dict = {}
@@ -678,11 +676,11 @@ def load_npz(path='', name='model.npz'):
 
     Examples
     --------
-    See save_npz and assign_params
+    - See save_npz and assign_params
 
     References
     ----------
-    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
     """
     ## if save_npz save params into a dictionary
     # d = np.load( path+name )
@@ -727,7 +725,7 @@ def assign_params(sess, params, network):
 
     References
     ----------
-    `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
+    - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
     """
     for idx, param in enumerate(params):
         assign_op = network.all_params[idx].assign(param)
@@ -753,7 +751,7 @@ def load_npy_to_any(path='', name='any.npy'):
 
     Examples
     ---------
-    see save_any_to_npy()
+    - see save_any_to_npy()
     """
     try:
         npy = np.load(path+name).item()

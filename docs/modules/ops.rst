@@ -13,6 +13,7 @@ Operation system, more functions can be found in `TensorFlow API <https://www.te
    disable_print
    enable_print
    temporary_disable_print
+   get_site_packages_directory
 
 TensorFlow functions
 ---------------------------
@@ -32,3 +33,9 @@ Console display
 .. autofunction:: disable_print
 .. autofunction:: enable_print
 .. autoclass:: temporary_disable_print
+
+
+Packages information
+--------------------
+
+get_site_packages_directory
