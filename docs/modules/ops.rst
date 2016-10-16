@@ -38,4 +38,4 @@ Console display
 Packages information
 --------------------
 
-get_site_packages_directory
+.. autofunction:: get_site_packages_directory

@@ -81,7 +81,7 @@ def set_name_reuse(enable=True):
 
     Examples
     ------------
-    see ``tutorial_ptb_lstm.py`` for example.
+    - see ``tutorial_ptb_lstm.py`` for example.
     """
     set_keep['name_reuse'] = enable
 
@@ -1089,7 +1089,7 @@ class DeConv2dLayer(Layer):
 
     References
     ----------
-    - `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
+    - `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
     """
     def __init__(
         self,
@@ -1277,8 +1277,8 @@ class BatchNormLayer(Layer):
     References
     ----------
     - `tf.nn.batch_normalization <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.batch_normalization.md>`_
-    - `Source <http://stackoverflow.com/questions/33949786/how-could-i-use-batch-normalization-in-tensorflow>`_
-    - `TensorFlow <https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100>`_
+    - `stackoverflow <http://stackoverflow.com/questions/33949786/how-could-i-use-batch-normalization-in-tensorflow>`_
+    - `tensorflow.contrib <https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100>`_
     """
     def __init__(
         self,
