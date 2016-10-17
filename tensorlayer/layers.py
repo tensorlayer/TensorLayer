@@ -1087,6 +1087,31 @@ class DeConv2dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
+    Examples
+    ---------
+    >>> A part of the generator in DCGAN example
+    >>> inputs = tf.placeholder(tf.float32, [64, 100], name='z_noise')
+    >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
+    >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
+    ...                            W_init = tf.random_normal_initializer(stddev=0.02),
+    ...                            act = tf.identity, name='g/h0/lin')
+    >>> print(net_h0.outputs)
+    ... (64, 8192)
+    >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape = [-1, 4, 4, 512], name='g/h0/reshape')
+    >>> net_h0 = tl.layers.BatchNormLayer(net_h0, is_train=is_train, name='g/h0/batch_norm')
+    >>> net_h0.outputs = tf.nn.relu(net_h0.outputs, name='g/h0/relu')
+    >>> print(net_h0.outputs)
+    ... (64, 4, 4, 512)
+    >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
+    ...                            shape = [5, 5, 256, 512],
+    ...                            output_shape = [64, 8, 8, 256],
+    ...                            strides=[1, 2, 2, 1],
+    ...                            act=tf.identity, name='g/h1/decon2d')
+    >>> net_h1 = tl.layers.BatchNormLayer(net_h1, is_train=is_train, name='g/h1/batch_norm')
+    >>> net_h1.outputs = tf.nn.relu(net_h1.outputs, name='g/h1/relu')
+    >>> print(net_h1.outputs)
+    ... (64, 8, 8, 256)
+
     References
     ----------
     - `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
@@ -2196,7 +2221,7 @@ class SlimNetsLayer(Layer):
         self.all_layers.extend( slim_layers )
         self.all_params.extend( slim_variables )
 
-## Special activation 
+## Special activation
 class PReluLayer(Layer):
     """
     The :class:`PReluLayer` class is Parametric Rectified Linear layer.
@@ -2210,7 +2235,7 @@ class PReluLayer(Layer):
         The initializer for initializing the alphas.
     restore : `bool`. Restore or not alphas
     name : A name for this activation op (optional).
-    
+
     References
     -----------
     - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/pdf/1502.01852v1.pdf>`_
@@ -2219,9 +2244,9 @@ class PReluLayer(Layer):
         self,
         layer = None,
         channel_shared = False,
-        W_init = tf.constant_initializer(value=0.0), 
-        W_init_args = {}, 
-        restore = True, 
+        W_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        restore = True,
         name="prelu_layer"
     ):
         Layer.__init__(self, name=name)
@@ -2244,8 +2269,8 @@ class PReluLayer(Layer):
 
         self.all_layers.extend( self.outputs )
         self.all_params.extend( [alphas] )
-        
-        
+
+
 ## Flow control layer
 class MultiplexerLayer(Layer):
     """
@@ -2259,7 +2284,7 @@ class MultiplexerLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    
+
     Variables
     -----------------------
     sel : a placeholder
