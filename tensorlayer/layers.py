@@ -1755,6 +1755,25 @@ class DynamicRNNLayer(Layer):
     -----
     Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
 
+    Examples
+    --------
+    >>> input_feed = tf.placeholder(dtype=tf.int64,
+    ...                              shape=[None],  # word id
+    ...                              name="input_feed")
+    >>> input_seqs = tf.expand_dims(input_feed, 1)
+    >>> network = tl.layers.EmbeddingInputlayer(
+    ...             inputs = input_seqs,
+    ...             vocabulary_size = vocab_size,
+    ...             embedding_size = embedding_size,
+    ...             name = 'seq_embedding')
+    >>> network = tl.layers.DynamicRNNLayer(network,
+    ...             cell_fn = tf.nn.rnn_cell.BasicLSTMCell,
+    ...             n_hidden = embedding_size,
+    ...             dropout = 0.7,
+    ...             return_seq_2d = True,     # stack denselayer or compute cost after it
+    ...             name = 'dynamic_rnn',)
+    ... network = tl.layers.DenseLayer(network, n_units=vocab_size,
+    ...             act=tf.identity, name="output")
 
     References
     ----------
