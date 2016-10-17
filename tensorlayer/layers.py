@@ -328,7 +328,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Examples
     --------
-    >>> Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
+    - Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
     >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
     >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
     >>> embeddings = tf.Variable(
@@ -344,7 +344,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...               num_sampled=num_sampled, num_classes=vocabulary_size,
     ...               num_true=1))
 
-    >>> With TensorLayer : see tutorial_word2vec_basic.py
+    - With TensorLayer : see tutorial_word2vec_basic.py
     >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
     >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
     >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
@@ -1483,7 +1483,7 @@ class RNNLayer(Layer):
 
     Examples
     --------
-    >>> For words
+    - For words
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
     >>> network = tl.layers.EmbeddingInputlayer(
     ...                 inputs = input_data,
@@ -1522,7 +1522,7 @@ class RNNLayer(Layer):
     ...             b_init=tf.random_uniform_initializer(-init_scale, init_scale),
     ...             act = tl.activation.identity, name='output_layer')
 
-    >>> For CNN+LSTM
+    - For CNN+LSTM
     >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     >>> network = tl.layers.Conv2dLayer(network,
@@ -1728,7 +1728,7 @@ class DynamicRNNLayer(Layer):
     return_seq_2d : boolen
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
-        - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+        - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -2143,8 +2143,8 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
-    >>> The core of this layer is ``tf.reshape``.
-    >>> Use TensorFlow only :
+    - The core of this layer is ``tf.reshape``.
+    - Use TensorFlow only :
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()
