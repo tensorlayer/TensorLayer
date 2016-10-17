@@ -1133,7 +1133,7 @@ class DeConv2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
-                            (self.name, str(shape), str(output_shape), str(strides), padding, act))
+                            (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
         # print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, **W_init_args )
@@ -1265,7 +1265,7 @@ class DeConv3dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
-                            (self.name, str(shape), str(output_shape), str(strides), padding, act))
+                            (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, **W_init_args )
