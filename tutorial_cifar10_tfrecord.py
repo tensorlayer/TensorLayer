@@ -122,8 +122,8 @@ def read_and_decode(filename, is_train=None):
     label = tf.cast(features['label'], tf.int32)
     return img, label
 
-# data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
-# data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
+data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
+data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
 ## Example to visualize data
 # img, label = read_and_decode("train.cifar10", None)
