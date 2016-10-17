@@ -1089,7 +1089,7 @@ class DeConv2dLayer(Layer):
 
     Examples
     ---------
-    >>> A part of the generator in DCGAN example
+    - A part of the generator in DCGAN example
     >>> inputs = tf.placeholder(tf.float32, [64, 100], name='z_noise')
     >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
     >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
