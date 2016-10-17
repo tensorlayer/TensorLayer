@@ -1095,12 +1095,12 @@ class DeConv2dLayer(Layer):
     >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
     ...                            W_init = tf.random_normal_initializer(stddev=0.02),
     ...                            act = tf.identity, name='g/h0/lin')
-    >>> print(net_h0.outputs)
+    >>> print(net_h0.outputs._shape)
     ... (64, 8192)
     >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape = [-1, 4, 4, 512], name='g/h0/reshape')
     >>> net_h0 = tl.layers.BatchNormLayer(net_h0, is_train=is_train, name='g/h0/batch_norm')
     >>> net_h0.outputs = tf.nn.relu(net_h0.outputs, name='g/h0/relu')
-    >>> print(net_h0.outputs)
+    >>> print(net_h0.outputs._shape)
     ... (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
     ...                            shape = [5, 5, 256, 512],
@@ -1109,7 +1109,7 @@ class DeConv2dLayer(Layer):
     ...                            act=tf.identity, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, is_train=is_train, name='g/h1/batch_norm')
     >>> net_h1.outputs = tf.nn.relu(net_h1.outputs, name='g/h1/relu')
-    >>> print(net_h1.outputs)
+    >>> print(net_h1.outputs._shape)
     ... (64, 8, 8, 256)
 
     References
@@ -2205,6 +2205,10 @@ class SlimNetsLayer(Layer):
         The network you want to stack onto, end with ``return net, end_points``.
     name : a string or None
         An optional name to attach to this layer.
+
+    Examples
+    --------
+    - see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer>`_
 
     Notes
     -----
