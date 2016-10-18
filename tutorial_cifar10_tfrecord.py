@@ -214,7 +214,7 @@ with tf.device('/cpu:0'):
                                 padding='SAME',
                                 pool = tf.nn.max_pool,
                                 name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
-            network = tl.layers.FlattenLayer(network, name='flatten_layer')                        # output: (batch_size, 2304)
+            network = tl.layers.FlattenLayer(network, name='flatten_layer')      # output: (batch_size, 2304)
             network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
                                 W_init=tf.truncated_normal_initializer(stddev=0.04),
                                 b_init=tf.constant_initializer(value=0.1),
@@ -266,9 +266,6 @@ with tf.device('/cpu:0'):
                                 padding='SAME',
                                 pool = tf.nn.max_pool,
                                 name ='pool_layer1',)   # output: (batch_size, 12, 12, 64)
-            # network = tl.layers.BatchNormLayer(network, is_train=is_train, name='batch_norm1')
-            # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
-            #                                                 beta=0.75, name='norm1')
 
             network = tl.layers.Conv2dLayer(network,
                                 act = tf.identity,
@@ -279,8 +276,7 @@ with tf.device('/cpu:0'):
                                 # b_init=tf.constant_initializer(value=0.1),
                                 b_init=None,
                                 name ='cnn_layer2')     # output: (batch_size, 12, 12, 64)
-            # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
-            #                                                 beta=0.75, name='norm2')
+
             network = tl.layers.BatchNormLayer(network, is_train=is_train, name='batch_norm2')
             network.outputs = tf.nn.relu(network.outputs, name='relu2')
             network = tl.layers.PoolLayer(network,
@@ -289,7 +285,7 @@ with tf.device('/cpu:0'):
                                 padding='SAME',
                                 pool = tf.nn.max_pool,
                                 name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
-            network = tl.layers.FlattenLayer(network, name='flatten_layer')                        # output: (batch_size, 2304)
+            network = tl.layers.FlattenLayer(network, name='flatten_layer')    # output: (batch_size, 2304)
             network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
                                 W_init=tf.truncated_normal_initializer(stddev=0.04),
                                 b_init=tf.constant_initializer(value=0.1),
