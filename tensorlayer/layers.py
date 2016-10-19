@@ -1299,7 +1299,7 @@ class BatchNormLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Reference
+    References
     ----------
     - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
