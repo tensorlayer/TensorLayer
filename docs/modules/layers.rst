@@ -274,11 +274,13 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
    PoolLayer
    BatchNormLayer
    RNNLayer
+   BiRNNLayer
    DynamicRNNLayer
    FlattenLayer
    ConcatLayer
    ReshapeLayer
    SlimNetsLayer
+   PReluLayer
    MultiplexerLayer
    EmbeddingAttentionSeq2seqWrapper
    flatten_reshape
@@ -406,6 +408,7 @@ Fixed Length RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RNNLayer
+.. autoclass:: BiRNNLayer
 
 Dynamic RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -436,6 +439,11 @@ Yes ! TF-Slim models can be merged into TensorLayer, all Google's Pre-trained mo
 see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
 
 .. autoclass:: SlimNetsLayer
+
+Parametric activation layer
+---------------------------
+
+.. autoclass:: PReluLayer
 
 Flow control layer
 ----------------------
