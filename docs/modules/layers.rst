@@ -252,8 +252,8 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
 
 
 
-
-
+Layer list
+------------
 
 .. automodule:: tensorlayer.layers
 
