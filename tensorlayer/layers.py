@@ -1308,7 +1308,7 @@ class BatchNormLayer(Layer):
         self,
         layer = None,
         decay = 0.999,
-        epsilon = 0.001,
+        epsilon = 0.00001,
         is_train = None,
         name ='batchnorm_layer',
     ):
