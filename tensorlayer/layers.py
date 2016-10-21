@@ -1113,6 +1113,17 @@ class DeConv2dLayer(Layer):
     >>> print(net_h1.outputs._shape)
     ... (64, 8, 8, 256)
 
+    - U-Net
+    >>> ....
+    >>> conv10 = tl.layers.Conv2dLayer(conv9, act=tf.nn.relu,
+    ...        shape=[3,3,1024,1024], strides=[1,1,1,1], padding='SAME',
+    ...        W_init=w_init, b_init=b_init, name='conv10')
+    >>> print(conv10.outputs)
+    ... (batch_size, 32, 32, 1024)
+    >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
+    ...         shape=[3,3,512,1024], strides=[1,2,2,1], output_shape=[batch_size,64,64,512],
+    ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
+
     References
     ----------
     - `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
