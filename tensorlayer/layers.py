@@ -1090,7 +1090,8 @@ class DeConv2dLayer(Layer):
     Examples
     ---------
     - A part of the generator in DCGAN example
-    >>> inputs = tf.placeholder(tf.float32, [64, 100], name='z_noise')
+    >>> batch_size = 64
+    >>> inputs = tf.placeholder(tf.float32, [batch_size, 100], name='z_noise')
     >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
     >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
     ...                            W_init = tf.random_normal_initializer(stddev=0.02),
@@ -1104,7 +1105,7 @@ class DeConv2dLayer(Layer):
     ... (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
     ...                            shape = [5, 5, 256, 512],
-    ...                            output_shape = [64, 8, 8, 256],
+    ...                            output_shape = [batch_size, 8, 8, 256],
     ...                            strides=[1, 2, 2, 1],
     ...                            act=tf.identity, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, is_train=is_train, name='g/h1/batch_norm')
