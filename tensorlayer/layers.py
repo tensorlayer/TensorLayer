@@ -1264,7 +1264,7 @@ class DeConv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
+        print("  tensorlayer:Instantiate DeConv3dLayer %s: %s, %s, %s, %s, %s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
