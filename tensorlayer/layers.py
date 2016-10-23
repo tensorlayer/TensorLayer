@@ -846,11 +846,13 @@ class DropoutLayer(Layer):
     >>> network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
     >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
     >>> ...
+
     - For training
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
     >>> feed_dict.update( network.all_drop )     # enable noise layers
     >>> sess.run(train_op, feed_dict=feed_dict)
     >>> ...
+    
     - For testing
     >>> dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable noise layers
     >>> feed_dict = {x: X_val_a, y_: y_val_a}
