@@ -108,6 +108,7 @@ to the cost function.
 .. autosummary::
 
    cross_entropy
+   binary_cross_entropy
    mean_squared_error
    cross_entropy_seq
    li_regularizer
@@ -120,6 +121,7 @@ Cost functions
 ----------------
 
 .. autofunction:: cross_entropy
+.. autofunction:: binary_cross_entropy
 .. autofunction:: mean_squared_error
 .. autofunction:: cross_entropy_seq
 

@@ -37,9 +37,9 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
         # return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(output, target))
 
-# Undocumented
-def binary_cross_entropy(preds, targets, name=None):
-    """Computes binary cross entropy given `preds`.
+
+def binary_cross_entropy(output, target, name=None):
+    """Computes binary cross entropy given `output`.
 
     For brevity, let `x = `, `z = targets`.  The logistic loss is
 
@@ -47,17 +47,17 @@ def binary_cross_entropy(preds, targets, name=None):
 
     Parameters
     ----------
-    preds : A `Tensor` of type `float32` or `float64`.
-    targets : A `Tensor` of the same type and shape as `preds`.
+    output : A `Tensor` of type `float32` or `float64`.
+    target : A `Tensor` of the same type and shape as `output`.
     """
-    print("Undocumented")
+    # print("Undocumented")
     from tensorflow.python.framework import ops
     eps = 1e-12
-    with ops.op_scope([preds, targets], name, "bce_loss") as name:
-        preds = ops.convert_to_tensor(preds, name="preds")
-        targets = ops.convert_to_tensor(targets, name="targets")
-        return tf.reduce_mean(-(targets * tf.log(preds + eps) +
-                              (1. - targets) * tf.log(1. - preds + eps)))
+    with ops.op_scope([output, target], name, "bce_loss") as name:
+        output = ops.convert_to_tensor(output, name="preds")
+        target = ops.convert_to_tensor(targets, name="target")
+        return tf.reduce_mean(-(target * tf.log(output + eps) +
+                              (1. - target) * tf.log(1. - output + eps)))
 
 
 def mean_squared_error(output, target):
@@ -117,9 +117,8 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     input_mask : the mask to compute loss
         The same size with target_seqs, normally 0 and 1.
     return_details : boolean
-        If False (default), only returns the loss
-
-        If True, returns the loss, losses, weights and targets (reshape to one vetcor)
+        - If False (default), only returns the loss.
+        - If True, returns the loss, losses, weights and targets (reshape to one vetcor).
 
     Examples
     --------

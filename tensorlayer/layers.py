@@ -852,7 +852,7 @@ class DropoutLayer(Layer):
     >>> feed_dict.update( network.all_drop )     # enable noise layers
     >>> sess.run(train_op, feed_dict=feed_dict)
     >>> ...
-    
+
     - For testing
     >>> dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable noise layers
     >>> feed_dict = {x: X_val_a, y_: y_val_a}
@@ -1298,7 +1298,7 @@ class DeConv3dLayer(Layer):
             W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, **W_init_args )
             b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, **b_init_args )
 
-        self.outputs = act( tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
+            self.outputs = act( tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
