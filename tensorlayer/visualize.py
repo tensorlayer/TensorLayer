@@ -69,7 +69,7 @@ def W(W=None, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=239
         plt.draw()
         plt.pause(second)
 
-def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
+def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=12836):
     """Display a frame(image). Make sure OpenAI Gym render() is disable before using it.
 
     Parameters
@@ -82,6 +82,8 @@ def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
+    cmap : None or string
+        'gray' for greyscale, None for default, etc.
     fig_idx : int
         matplotlib figure index.
 
@@ -95,7 +97,7 @@ def frame(I=None, second=5, saveable=True, name='frame', fig_idx=12836):
         plt.ion()
     fig = plt.figure(fig_idx)      # show all feature images
 
-    plt.imshow(I)
+    plt.imshow(I, cmap)
     # plt.gca().xaxis.set_major_locator(plt.NullLocator())    # distable tick
     # plt.gca().yaxis.set_major_locator(plt.NullLocator())
 
