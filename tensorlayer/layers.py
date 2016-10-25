@@ -2620,7 +2620,7 @@ class PReluLayer(Layer):
         channel_shared = False,
         a_init = tf.constant_initializer(value=0.0),
         a_init_args = {},
-        restore = True,
+        # restore = True,
         name="prelu_layer"
     ):
         Layer.__init__(self, name=name)
