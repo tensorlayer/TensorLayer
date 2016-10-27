@@ -1898,7 +1898,9 @@ class BiRNNLayer(Layer):
 
     Notes
     -----
-    Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`ReshapeLayer`.
+    - Input dimension should be rank 3 : [batch_size, n_steps, n_features], if no, please see :class:`ReshapeLayer`.
+    - For predicting, the sequence length has to be the same with the sequence length of training, while, for normal
+    RNN, we can use sequence length of 1 for predicting.
 
     References
     ----------
