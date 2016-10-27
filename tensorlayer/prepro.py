@@ -151,7 +151,7 @@ def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_
     -----------
     x : list of numpy array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``rotation``.
+    others : see `rotation`.
 
     Examples
     --------
