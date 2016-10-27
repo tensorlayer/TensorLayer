@@ -2,8 +2,9 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'numpy',
-    # 'tensorflow',
+    # 'tensorflow', # user install it
     'scipy',
+    'scikit-image',
     'matplotlib',
 ]
 
@@ -18,7 +19,7 @@ setup(
     packages = find_packages(),
     install_requires=install_requires,
     # scripts=['tutorial_mnist.py'],
-    description = "Deep learning and Reinforcement learning library for Researchers and Engineers",
+    description = "Deep learning and Reinforcement learning library for TensorFlow",
     keywords = "deep learning, reinforcement learning, tensorflow",
     platform=['any'],
 )

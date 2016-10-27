@@ -26,8 +26,18 @@ Some of the code in this package are borrowed from Keras.
    shear_multi
    zoom
    zoom_multi
+
+   brightness
+   brightness_multi
+
+   imresize
+
+   samplewise_norm
+   featurewise_norm
+
    channel_shift
    channel_shift_multi
+
    transform_matrix_offset_center
    apply_transform
    array_to_img
@@ -78,6 +88,21 @@ Zoom
 ^^^^^^^^^
 .. autofunction:: zoom
 .. autofunction:: zoom_multi
+
+Brightness
+^^^^^^^^^^^^
+.. autofunction:: brightness
+.. autofunction:: brightness_multi
+
+Resize
+^^^^^^^^^^^^
+.. autofunction:: imresize
+
+Normalization
+^^^^^^^^^^^^^^^
+.. autofunction:: samplewise_norm
+.. autofunction:: featurewise_norm
+
 
 Channel shift
 ^^^^^^^^^^^^^^
