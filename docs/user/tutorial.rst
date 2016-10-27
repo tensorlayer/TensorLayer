@@ -285,7 +285,7 @@ a Denosing Autoencoder (DAE), after that we will then stack all Denoising Autoen
 supervised fine-tune them. Finally, we'll show how to create a
 Convolutional Neural Network (CNN). In addition, a simple example for MNIST
 dataset in ``tutorial_mnist_simple.py``, a CNN example for CIFAR-10 dataset in
-``tutorial_cifar10.py``.
+``tutorial_cifar10_tfrecord.py``.
 
 
 Multi-Layer Perceptron (MLP)
@@ -423,7 +423,7 @@ Convolutional Neural Network (CNN)
 
 Finally, the ``main_test_cnn_layer()`` script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
-layer. More CNN examples can be found in the tutorial scripts, like ``tutorial_cifar10.py``.
+layer. More CNN examples can be found in the tutorial scripts, like ``tutorial_cifar10_tfrecord.py``.
 
 At the begin, we add a :class:`Conv2dLayer
 <tensorlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
@@ -563,7 +563,7 @@ classification accuracy:
 What Next?
 ^^^^^^^^^^^
 
-We also have a more advanced image classification example in ``tutorial_cifar10.py``.
+We also have a more advanced image classification example in ``tutorial_cifar10_tfrecord.py``.
 Please read the code and notes, figure out how to generate more training data and what
 is local response normalization. After that, try to implement
 `Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you will need
