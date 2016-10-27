@@ -15,7 +15,7 @@ Mac OX and Linux, or ask for help on `tensorlayer@gmail.com <tensorlayer@gmail.c
 
 
 
-Step 1 : numpy and matplotlib
+Step 1 : Install dependencies
 =================================
 
 TensorLayer is build on the top of Python-version TensorFlow, so please install
@@ -37,7 +37,7 @@ Take Python3 on Ubuntu for example, to install Python includes ``pip``, run the 
   sudo apt-get install python3-pip
   sudo pip3 install virtualenv
 
-To build a virtual environment and install matplotlib and numpy into it, run the following commands:
+To build a virtual environment and install dependencies into it, run the following commands:
 (Alternatively, go to Step 3, automatically install the prerequisites by TensorLayer)
 
 .. code-block:: bash
@@ -45,8 +45,8 @@ To build a virtual environment and install matplotlib and numpy into it, run the
   virtualenv env
   env/bin/pip install matplotlib
   env/bin/pip install numpy
-
-
+  env/bin/pip install scipy
+  env/bin/pip install scikit-image
 
 Check the installed packages, run the following command:
 
