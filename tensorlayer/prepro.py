@@ -24,6 +24,11 @@ def threading_data(data=None, fn=None, **kwargs):
     """Return a batch of result by given data.
     Usually be used for data augmentation.
 
+    Examples
+    --------
+    >>> X = [n_example, row, col, channel]
+    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=False)
+
     References
     ----------
     - `python Queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
