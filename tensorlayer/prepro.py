@@ -543,7 +543,7 @@ def brightness(x, gamma=1, gain=1, is_random=False):
     - `skimage.exposure.adjust_gamma <http://scikit-image.org/docs/dev/api/skimage.exposure.html>`_
     - `chinese blog <http://www.cnblogs.com/denny402/p/5124402.html>`_
     """
-    andom:
+    if is_random:
         gamma = np.random.uniform(1-gamma, 1+gamma)
     x = exposure.adjust_gamma(x, gamma, gain)
     return x
