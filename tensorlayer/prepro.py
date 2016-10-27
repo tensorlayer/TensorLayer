@@ -57,6 +57,9 @@ def threading_data(data=None, fn=None, **kwargs):
     - Customized function for image segmentation
     >>> def distort_img(data):
     ...     x, y = data
+    ...     # value
+    ...     x = brightness(x, gamma=0.5, is_random=False)
+    ...     # shape
     ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
     ...     x, y = flip_axis_multi([x, y], axis=1, is_random=True)
     ...     x, y = rotation_multi([x, y], rg=180, is_random=True)
@@ -67,10 +70,9 @@ def threading_data(data=None, fn=None, **kwargs):
     >>> data = threading_data([_ for _ in zip(X, Y)], distort_img)
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
 
-
     References
     ----------
-    - `python Queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
+    - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
     """
     ## plot function info
     # for name, value in kwargs.items():
@@ -114,10 +116,12 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
         Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     Examples
     ---------
@@ -315,11 +319,13 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     """
     h, w = x.shape[row_index], x.shape[col_index]
     if is_random:
@@ -379,11 +385,13 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     """
     if is_random:
         shear = np.random.uniform(-intensity, intensity)
@@ -442,11 +450,13 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. '
@@ -628,6 +638,7 @@ def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_nor
     Notes
     ------
     When samplewise_center and samplewise_std_normalization are True.
+
     - For greyscale image, every pixels are subtracted and divided by the mean and std of whole image.
     - For RGB image, every pixels are subtracted and divided by the mean and std of this pixel i.e. the mean and std of a pixel is 0 and 1.
     """
@@ -697,7 +708,10 @@ def zca_whitening(x, principal_components):
     principal_components : matrix from ``get_zca_whitening_principal_components_img``.
     """
     # flatx = np.reshape(x, (x.size))
-    flatx = np.reshape(x, (x.shape))
+    print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    # flatx = np.reshape(x, (x.shape))
+    # flatx = np.reshape(x, (x.shape[0], ))
+    print(flatx.shape)  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -810,10 +824,12 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
         Index of channel, default 2.
     fill_mode : string
         Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-        - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     Examples
     --------
