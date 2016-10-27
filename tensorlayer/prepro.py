@@ -26,8 +26,21 @@ def threading_data(data=None, fn=None, **kwargs):
 
     Examples
     --------
-    >>> X = [n_example, row, col, channel]
-    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=False)
+    - Single array
+    >>> X --> [batch_size, row, col, 1] greyscale
+    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=True)
+    ... results --> [batch_size, row, col, channel]
+    >>> tl.visualize.images2d(images=np.asarray(results[100:200:10]), second=0.01, saveable=True, name='after', dtype=None)
+    >>> tl.visualize.images2d(images=np.asarray(X[100:200:10]), second=0.01, saveable=True, name='before', dtype=None)
+
+    - List of array (e.g. functions with ``multi``)
+    >>> X, Y --> [batch_size, row, col, 1]  greyscale
+    >>> data = threading_data([_ for _ in zip(X, Y)], zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    ... data --> [batch_size, 2, row, col, 1]
+    >>> X_, Y_ = data.transpose((1,0,2,3,4))
+    ... X_, Y_ --> [batch_size, row, col, 1]
+    >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
+    >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
 
     References
     ----------
@@ -43,7 +56,7 @@ def threading_data(data=None, fn=None, **kwargs):
         q.put(result)
     ## start threading
     q = Queue.Queue()
-    for i in range(data.shape[0]):
+    for i in range(len(data)):
         d = threading.Thread(
                         name='threading_and_return',
                         target=function,
@@ -52,43 +65,10 @@ def threading_data(data=None, fn=None, **kwargs):
         d.start()
     ## get results
     results = []
-    for i in range(data.shape[0]):
+    for i in range(len(data)):
         result = q.get()
         results.append(result)
-        # print(np.max(result))
     return np.asarray(results)
-
-# def threading_data_multi(data=None, data2=None, fn=None, **kwargs):
-#     """Return a batch of result by given data.
-#     Usually be used for data augmentation for image segmentation.
-#
-#     References
-#     ----------
-#     - `python Queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
-#     """
-#     ## plot function info
-#     # for name, value in kwargs.items():
-#     #     print('{0} = {1}'.format(name, value))
-#     # exit()
-#     ## define function for threading
-#     def function(q, data, kwargs):
-#         result = fn(data, **kwargs)
-#         q.put(result)
-#     ## start threading
-#     q = Queue.Queue()
-#     for i in range(data.shape[0]):
-#         d = threading.Thread(
-#                         name='test',
-#                         target=function,
-#                         args=(q, [data, data2], kwargs)
-#                         )
-#         d.start()
-#     ## get results
-#     results = []
-#     for i in range(data.shape[0]):
-#         result = q.get()
-#         results.append(result)
-#     return np.asarray(results)
 
 
 ## Image
@@ -112,6 +92,12 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+
+    Examples
+    ---------
+    >>> x --> [row, col, 1] greyscale
+    >>> x = rotation(x, rg=40, is_random=False)
+    >>> tl.visualize.frame(x[:,:,0], second=0.01, saveable=True, name='temp',cmap='gray')
     """
     if is_random:
         theta = np.pi / 180 * np.random.uniform(-rg, rg)
@@ -136,6 +122,13 @@ def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_
     x : list of numpy array
         List of images with dimension of [n_images, row, col, channel] (default).
     others : see ``rotation``.
+
+    Examples
+    --------
+    >>> x, y --> [row, col, 1]  greyscale
+    >>> x, y = rotation_multi([x, y], rg=90, is_random=False)
+    >>> tl.visualize.frame(x[:,:,0], second=0.01, saveable=True, name='x',cmap='gray')
+    >>> tl.visualize.frame(y[:,:,0], second=0.01, saveable=True, name='y',cmap='gray')
     """
     if is_random:
         theta = np.pi / 180 * np.random.uniform(-rg, rg)
@@ -485,6 +478,10 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False,
     for data in x:
         results.append( apply_transform(data, transform_matrix, channel_index, fill_mode, cval))
     return np.asarray(results)
+
+# brightness
+
+# contrast
 
 # developing
 # def barrel_transform(x, intensity):
