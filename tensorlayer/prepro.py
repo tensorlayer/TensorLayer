@@ -30,8 +30,8 @@ def threading_data(data=None, fn=None, **kwargs):
     >>> X --> [batch_size, row, col, 1] greyscale
     >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=True)
     ... results --> [batch_size, row, col, channel]
-    >>> tl.visualize.images2d(images=np.asarray(results[100:200:10]), second=0.01, saveable=True, name='after', dtype=None)
-    >>> tl.visualize.images2d(images=np.asarray(X[100:200:10]), second=0.01, saveable=True, name='before', dtype=None)
+    >>> tl.visualize.images2d(images=np.asarray(results), second=0.01, saveable=True, name='after', dtype=None)
+    >>> tl.visualize.images2d(images=np.asarray(X), second=0.01, saveable=True, name='before', dtype=None)
 
     - List of array (e.g. functions with ``multi``)
     >>> X, Y --> [batch_size, row, col, 1]  greyscale
@@ -41,6 +41,20 @@ def threading_data(data=None, fn=None, **kwargs):
     ... X_, Y_ --> [batch_size, row, col, 1]
     >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
     >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
+
+    - Customized function for image segmentation
+    >>> def distort_img(data):
+    ...     x, y = data
+    ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
+    ...     x, y = flip_axis_multi([x, y], axis=1, is_random=True)
+    ...     x, y = rotation_multi([x, y], rg=180, is_random=True)
+    ...     x, y = shear_multi([x, y], 0.2, is_random=True)
+    ...     x, y = zoom_multi([x, y], zoom_range=[0.8, 1.2], is_random=True)
+    ...     return x, y
+    >>> X, Y --> [batch_size, row, col, channel]
+    >>> data = threading_data([_ for _ in zip(X, Y)], distort_img)
+    >>> X_, Y_ = data.transpose((1,0,2,3,4))
+
 
     References
     ----------
@@ -87,7 +101,7 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
@@ -289,7 +303,7 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
@@ -346,13 +360,14 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
     x : numpy array
         An image with dimension of [row, col, channel] (default).
     intensity : float
-        Percentage of shear, usually -0.5 ~ 0.5.
+        Percentage of shear, usually -0.5 ~ 0.5 (is_random==True), 0 ~ 0.5 (is_random==False),
+        you can have a quick try by shear(X, 1).
     is_random : boolean, default False
         If True, randomly shear.
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
@@ -371,7 +386,7 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
     x = apply_transform(x, transform_matrix, channel_index, fill_mode, cval)
     return x
 
-def shear_multi(x, intensity, is_random=False, row_index=0, col_index=1, channel_index=2,
+def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2,
                  fill_mode='nearest', cval=0.):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -415,7 +430,7 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
     row_index, col_index, channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : string
-        Default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
@@ -482,6 +497,8 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False,
 # brightness
 
 # contrast
+
+# resize
 
 # developing
 # def barrel_transform(x, intensity):
@@ -590,7 +607,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     channel_index : int
         Index of channel, default 2.
     fill_mode : string
-        Default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
+        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
         - `Scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     cval : scalar, optional
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
