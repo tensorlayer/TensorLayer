@@ -39,6 +39,8 @@ artificially increase the data set size:
 .. Randomly distort the image brightness.
 .. Randomly distort the image contrast.
 
+More about data augmentation see `tutorial_image_preprocess.py`.
+
 Speed Up
 --------
 Reading images from disk and distorting them can use a non-trivial amount

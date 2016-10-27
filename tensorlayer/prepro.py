@@ -57,14 +57,11 @@ def threading_data(data=None, fn=None, **kwargs):
     - Customized function for image segmentation
     >>> def distort_img(data):
     ...     x, y = data
-    ...     # value
-    ...     x = brightness(x, gamma=0.5, is_random=False)
-    ...     # shape
     ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
     ...     x, y = flip_axis_multi([x, y], axis=1, is_random=True)
-    ...     x, y = rotation_multi([x, y], rg=180, is_random=True)
-    ...     x, y = shear_multi([x, y], 0.2, is_random=True)
-    ...     x, y = zoom_multi([x, y], zoom_range=[0.8, 1.2], is_random=True)
+    ...     x, y = rotation_multi([x, y], rg=10, is_random=True)
+    ...     x, y = shear_multi([x, y], 0.1, is_random=True)
+    ...     x, y = zoom_multi([x, y], zoom_range=[0.9, 1.1], is_random=True)
     ...     return x, y
     >>> X, Y --> [batch_size, row, col, channel]
     >>> data = threading_data([_ for _ in zip(X, Y)], distort_img)
@@ -631,7 +628,7 @@ def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_nor
 
     Examples
     --------
-    >>> x = samplewise_norm(x samplewise_center=True, samplewise_std_normalization=True)
+    >>> x = samplewise_norm(x, samplewise_center=True, samplewise_std_normalization=True)
     >>> print(x.shape, np.mean(x), np.std(x))
     ... (160, 176, 1), 0.0, 1.0
 
