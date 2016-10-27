@@ -1,25 +1,117 @@
 API - Preprocessing
 =========================
 
-Data preprocessing, more Tensor functions about image, signal processing can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_
+
+We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
+However, we recommend you to use TensorFlow operation function like ``tf.image.central_crop``,
+more TensorFlow data augmentation method can be found
+`here <https://www.tensorflow.org/versions/master/api_docs/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
+Some of the code in this package are borrowed from Keras.
 
 .. automodule:: tensorlayer.prepro
 
 .. autosummary::
 
+   threading_data
+
+   rotation
+   rotation_multi
+   crop
+   crop_multi
+   flip_axis
+   flip_axis_multi
+   shift
+   shift_multi
+   shear
+   shear_multi
+   zoom
+   zoom_multi
+   channel_shift
+   channel_shift_multi
+   transform_matrix_offset_center
+   apply_transform
+   array_to_img
+
+   pad_sequences
+
    distorted_images
    crop_central_whiten_images
 
+Threading
+------------
+
+.. autofunction:: threading_data
+
 
 Images
---------------------
+-----------
 
-For training data
-^^^^^^^^^^^^^^^^^^^^
+- All functions have argument ``is_random``.
+- All functions end with `multi` , usually be used for image segmentation i.e. the input and output image should be matched.
+
+Rotation
+^^^^^^^^^
+.. autofunction:: rotation
+.. autofunction:: rotation_multi
+
+Crop
+^^^^^^^^^
+.. autofunction:: crop
+.. autofunction:: crop_multi
+
+Flip
+^^^^^^^^^
+.. autofunction:: flip_axis
+.. autofunction:: flip_axis_multi
+
+Shift
+^^^^^^^^^
+.. autofunction:: shift
+.. autofunction:: shift_multi
+
+Shear
+^^^^^^^^^
+.. autofunction:: shear
+.. autofunction:: shear_multi
+
+Zoom
+^^^^^^^^^
+.. autofunction:: zoom
+.. autofunction:: zoom_multi
+
+Channel shift
+^^^^^^^^^^^^^^
+.. autofunction:: channel_shift
+.. autofunction:: channel_shift_multi
+
+Manual transform
+^^^^^^^^^^^^^^^^^
+.. autofunction:: transform_matrix_offset_center
+.. autofunction:: apply_transform
+
+
+Numpy and PIL
+^^^^^^^^^^^^^^
+.. autofunction:: array_to_img
+
+
+
+
+Sequence
+---------
+
+More related functions can be found in ``tensorlayer.nlp``.
+
+.. autofunction:: pad_sequences
+
+
+
+
+
+Tensor Opt
+------------
+
+These functions will be deprecated, see ``tutorial_cifar10_tfrecord.py`` for new information.
 
 .. autofunction:: distorted_images
-
-For testing data
-^^^^^^^^^^^^^^^^^^^
-
 .. autofunction:: crop_central_whiten_images
