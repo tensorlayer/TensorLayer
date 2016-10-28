@@ -18,7 +18,7 @@ FQA
 Visualization
 --------------
 
-Cannot save image
+Cannot Save Image
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 If you run the script via SSH control, sometime you may find the following error.
@@ -34,6 +34,18 @@ If happen, add the following code into the top of ``visualize.py``.
   import matplotlib
   matplotlib.use('Agg')
   import matplotlib.pyplot as plt
+
+
+Install Master Version
+-----------------------
+
+To use all new features of TensorLayer, you need to install the master version from Github.
+Before that, you need to make sure you already installed git.
+
+.. code-block:: bash
+
+  [stable version] pip install tensorlayer
+  [master version] pip install git+https://github.com/zsdonghao/tensorlayer.git
 
 Editable Mode
 ---------------
@@ -57,12 +69,6 @@ If you have a model want to load into your TensorLayer network, you can first as
 then use ``tl.files.assign_params()`` to load the parameters into your TensorLayer model.
 
 
-
-Python3
-^^^^^^^^
-
-- Download the repo from Github.
--
 
 Recruitment
 ===========
