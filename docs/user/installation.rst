@@ -93,7 +93,7 @@ However, if you want to modify or extend TensorLayer, you can download the repos
 .. code-block:: bash
 
   cd to the root of the git tree
-  pip install . -e
+  pip install -e .
 
 This command will run the ``setup.py`` to install TensorLayer. The ``-e`` reflects
 editable, then you can edit the source code in ``tensorlayer`` folder, and ``import`` the edited

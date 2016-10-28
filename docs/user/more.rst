@@ -11,8 +11,58 @@ More
 
   Coming soon
 
+FQA
+===========
 
 
+Visualization
+--------------
+
+Cannot save image
+^^^^^^^^^^^^^^^^^^^^^^^
+
+If you run the script via SSH control, sometime you may
+
+.. code-block:: bash
+
+  _tkinter.TclError: no display name and no $DISPLAY environment variable
+
+Add the following code into the top of ``visualize.py``.
+
+.. code-block:: python
+
+  import matplotlib
+  matplotlib.use('Agg')
+  import matplotlib.pyplot as plt
+
+Editable Mode
+---------------
+
+- 1. Download the TensorLayer folder from Github.
+- 2. Before editing the TensorLayer ``.py`` file.
+
+ - If your script and TensorLayer folder are in the same folder, when you edit the ``.py`` inside TensorLayer folder, your script can access the new
+ - If your script and TensorLayer folder are not in the same folder, you need to run the following command in the folder contains ``setup.py`` before you edit ``.py`` inside TensorLayer folder.
+
+  .. code-block:: bash
+
+    pip install -e .
+
+
+Load Model
+--------------
+
+Note that, the ``tl.files.load_npz()`` can only able to load the npz model saved by ``tl.files.save_npz()``.
+If you have a model want to load into your TensorLayer network, you can first assign your parameters into a list in order,
+then use ``tl.files.assign_params()`` to load the parameters into your TensorLayer model.
+
+
+
+Python3
+^^^^^^^^
+
+- Download the repo from Github.
+-
 
 Recruitment
 ===========
