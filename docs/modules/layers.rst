@@ -435,7 +435,7 @@ Reshape layer
 .. autoclass:: ReshapeLayer
 
 Lambda layer
-^^^^^^^^^^^^^^^
+---------------
 
 .. autoclass:: LambdaLayer
 
