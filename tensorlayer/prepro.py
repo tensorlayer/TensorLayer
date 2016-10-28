@@ -19,7 +19,8 @@ from six.moves import range
 import scipy
 from scipy import linalg
 import scipy.ndimage as ndi
-
+from skimage import transform
+# import skimage
 from skimage import exposure
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
@@ -518,8 +519,6 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False,
 # image = tf.image.random_hue(image, max_delta=0.032)
 # image = tf.image.random_contrast(image, lower=0.5, upper=1.5)
 
-
-
 # brightness
 def brightness(x, gamma=1, gain=1, is_random=False):
     """Change the brightness of a single image, randomly or non-randomly.
@@ -530,12 +529,10 @@ def brightness(x, gamma=1, gain=1, is_random=False):
         An image with dimension of [row, col, channel] (default).
     gamma : float, small than 1 means brighter.
         Non negative real number. Default value is 1.
-
-        - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
+            - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
     gain : float
         The constant multiplier. Default value is 1.
     is_random : boolean, default False
-
         - If True, randomly change brightness.
 
     References
@@ -842,6 +839,63 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index+1)
     return x
+
+
+def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
+    """Projective transform by given coordinates, usually 4 coordinates. see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_.
+
+    Parameters
+    -----------
+    x : numpy array
+        An image with dimension of [row, col, channel] (default).
+    src : list or numpy
+        The original coordinates, usually 4 coordinates of (x, y).
+    dst : list or numpy
+        The coordinates after transformation, the number of coordinates is the same with src.
+    map_args : dict, optional
+        Keyword arguments passed to inverse_map.
+    output_shape : tuple (rows, cols), optional
+        Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
+    order : int, optional
+        The order of interpolation. The order has to be in the range 0-5:
+            - 0 Nearest-neighbor
+            - 1 Bi-linear (default)
+            - 2 Bi-quadratic
+            - 3 Bi-cubic
+            - 4 Bi-quartic
+            - 5 Bi-quintic
+    mode : {‘constant’, ‘edge’, ‘symmetric’, ‘reflect’, ‘wrap’}, optional
+        Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
+    cval : float, optional
+        Used in conjunction with mode ‘constant’, the value outside the image boundaries.
+    clip : bool, optional
+        Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
+    preserve_range : bool, optional
+        Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
+
+    Examples
+    --------
+    >>> Assume X is an image from CIFAR 10, i.e. shape == (32, 32, 3)
+    >>> src = [[0,0],[0,32],[32,0],[32,32]]
+    >>> dst = [[10,10],[0,32],[32,0],[32,32]]
+    >>> x = projective_transform_by_points(X, src, dst)
+
+    References
+    -----------
+    - `scikit-image : geometric transformations <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_
+    - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`_
+    """
+    if type(src) is list:   # convert to numpy
+        src = np.array(src)
+    if type(dst) is list:
+        dst = np.array(dst)
+    if np.max(x)>1:         # convert to [0, 1]
+        x = x/255
+
+    m = transform.ProjectiveTransform()
+    m.estimate(dst, src)
+    warped = transform.warp(x, m,  map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip, preserve_range=preserve_range)
+    return warped
 
 # Numpy and PIL
 def array_to_img(x, dim_ordering=(0,1,2), scale=True):

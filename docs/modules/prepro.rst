@@ -40,6 +40,8 @@ Some of the code in this package are borrowed from Keras.
 
    transform_matrix_offset_center
    apply_transform
+   projective_transform_by_points
+
    array_to_img
 
    pad_sequences
@@ -114,6 +116,7 @@ Manual transform
 ^^^^^^^^^^^^^^^^^
 .. autofunction:: transform_matrix_offset_center
 .. autofunction:: apply_transform
+.. autofunction:: projective_transform_by_points
 
 
 Numpy and PIL
