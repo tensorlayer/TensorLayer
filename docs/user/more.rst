@@ -21,13 +21,13 @@ Visualization
 Cannot save image
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you run the script via SSH control, sometime you may
+If you run the script via SSH control, sometime you may find the following error.
 
 .. code-block:: bash
 
   _tkinter.TclError: no display name and no $DISPLAY environment variable
 
-Add the following code into the top of ``visualize.py``.
+If happen, add the following code into the top of ``visualize.py``.
 
 .. code-block:: python
 
