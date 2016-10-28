@@ -29,11 +29,26 @@ For more complex activation, TensorFlow API will be required.
    identity
    ramp
    leaky_relu
+   pixel_wise_softmax
 
 
 Activation functions
 ---------------------
 
+Identity
+^^^^^^^^^^
 .. autofunction:: identity
+
+Ramp
+^^^^^
 .. autofunction:: ramp
+
+Leaky Relu
+^^^^^^^^^^^
 .. autofunction:: leaky_relu
+
+
+Pixel-wise Softmax
+^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: pixel_wise_softmax

@@ -74,6 +74,42 @@ def mean_squared_error(output, target):
         mse = tf.reduce_sum(tf.squared_difference(output, target), reduction_indices = 1)
         return tf.reduce_mean(mse)
 
+
+
+def dice_coe(output, target, epsilon=1e-10):
+    """Sørensen–Dice coefficient for comparing the similarity of two distributions,
+    usually be used for binary image segmentation i.e. labels are binary.
+    The coefficient = [0, 1], 1 if totally match.
+
+    Parameters
+    -----------
+    output : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+    target : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+
+    Examples
+    ---------
+    >>> outputs = pixel_wise_softmax(network.outputs)
+    >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
+    
+    References
+    -----------
+    - `wiki-dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+    """
+    # inse = tf.reduce_sum( tf.mul(output, target) )
+    # l = tf.reduce_sum( tf.mul(output, output) )
+    # r = tf.reduce_sum( tf.mul(target, target) )
+    inse = tf.reduce_sum( output * target )
+    l = tf.reduce_sum( output * output )
+    r = tf.reduce_sum( target * target )
+    dice = 2 * (inse) / (l + r)
+    if epsilon == 0:
+        return dice
+    else:
+        return tf.clip_by_value(dice, 0, 1.0-epsilon)
+
+
 def cross_entropy_seq(logits, target_seqs, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
     softmax internally. Normally be used for Fixed Length RNN outputs.
