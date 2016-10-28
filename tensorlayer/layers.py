@@ -2542,6 +2542,49 @@ class ReshapeLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+
+
+class LambdaLayer(Layer):
+    """
+    The :class:`LambdaLayer` class is a layer which is able to use the provided function.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    fn : a function
+        The function that applies to the outputs of previous layer.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = LambdaLayer(network, lambda x: 2*x, name='lambda_layer')
+    >>> y = network.outputs
+    >>> sess = tf.InteractiveSession()
+    >>> out = sess.run(y, feed_dict={x : [[1],[2]]})
+    ... [[2],[4]]
+    """
+    def __init__(
+        self,
+        layer = None,
+        fn = None,
+        name = 'lambda_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+
+        print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
+        with tf.variable_scope(name) as vs:
+            self.outputs = fn(self.inputs)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
 ## Logic layer
 class ElementwiseLayer(Layer):
     """

@@ -279,6 +279,7 @@ Layer list
    FlattenLayer
    ConcatLayer
    ReshapeLayer
+   LambdaLayer
    ElementwiseLayer
    SlimNetsLayer
    PReluLayer
@@ -432,6 +433,11 @@ Reshape layer
 ^^^^^^^^^^^^^^^
 
 .. autoclass:: ReshapeLayer
+
+Lambda layer
+^^^^^^^^^^^^^^^
+
+.. autoclass:: LambdaLayer
 
 Logic layer
 -------------
