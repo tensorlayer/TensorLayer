@@ -434,7 +434,7 @@ Reshape layer
 .. autoclass:: ReshapeLayer
 
 Logic layer
-^^^^^^^^^^^^^
+-------------
 .. autoclass:: ElementwiseLayer
 
 Merge TF-Slim
