@@ -98,6 +98,9 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
         plt.ion()
     fig = plt.figure(fig_idx)      # show all feature images
 
+    if len(I.shape) and I.shape[-1]==1:     # (10,10,1) --> (10,10)
+        I = I[:,:,0]
+
     plt.imshow(I, cmap)
     plt.title(name)
     # plt.gca().xaxis.set_major_locator(plt.NullLocator())    # distable tick
