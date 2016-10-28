@@ -11,9 +11,15 @@ import numbers
 import random
 import os
 import re
+import sys
 
 import threading
-import Queue
+# import Queue  # <-- donot work for py3
+is_py2 = sys.version[0] == '2'
+if is_py2:
+    import Queue as queue
+else:
+    import queue as queue
 
 from six.moves import range
 import scipy
@@ -81,7 +87,7 @@ def threading_data(data=None, fn=None, **kwargs):
         result = fn(data, **kwargs)
         q.put(result)
     ## start threading
-    q = Queue.Queue()
+    q = queue.Queue()
     for i in range(len(data)):
         d = threading.Thread(
                         name='threading_and_return',
