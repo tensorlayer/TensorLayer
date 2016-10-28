@@ -279,6 +279,7 @@ Layer list
    FlattenLayer
    ConcatLayer
    ReshapeLayer
+   ElementwiseLayer
    SlimNetsLayer
    PReluLayer
    MultiplexerLayer
@@ -431,6 +432,10 @@ Reshape layer
 ^^^^^^^^^^^^^^^
 
 .. autoclass:: ReshapeLayer
+
+Logic layer
+^^^^^^^^^^^^^
+.. autoclass:: ElementwiseLayer
 
 Merge TF-Slim
 ---------------
