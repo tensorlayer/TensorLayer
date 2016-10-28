@@ -41,7 +41,7 @@ Editable Mode
 - 1. Download the TensorLayer folder from Github.
 - 2. Before editing the TensorLayer ``.py`` file.
 
- - If your script and TensorLayer folder are in the same folder, when you edit the ``.py`` inside TensorLayer folder, your script can access the new
+ - If your script and TensorLayer folder are in the same folder, when you edit the ``.py`` inside TensorLayer folder, your script can access the new features.
  - If your script and TensorLayer folder are not in the same folder, you need to run the following command in the folder contains ``setup.py`` before you edit ``.py`` inside TensorLayer folder.
 
   .. code-block:: bash
