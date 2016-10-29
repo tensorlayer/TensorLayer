@@ -439,14 +439,14 @@ Lambda layer
 
 .. autoclass:: LambdaLayer
 
-Logic layer
+Merge layer
 -------------
 .. autoclass:: ElementwiseLayer
 
-Merge TF-Slim
----------------
+Connect TF-Slim
+------------------
 
-Yes ! TF-Slim models can be merged into TensorLayer, all Google's Pre-trained model can be used easily ,
+Yes ! TF-Slim models can be connected into TensorLayer, all Google's Pre-trained model can be used easily ,
 see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
 
 .. autoclass:: SlimNetsLayer
