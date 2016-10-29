@@ -103,7 +103,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 
 
 def disable_print():
-    """Disable console output.
+    """Disable console output, ``suppress_stdout`` is recommended.
 
     Examples
     ---------
@@ -118,7 +118,7 @@ def disable_print():
     sys.stderr = os.devnull
 
 def enable_print():
-    """Enable console output.
+    """Enable console output, ``suppress_stdout`` is recommended.
 
     Examples
     --------
@@ -128,27 +128,50 @@ def enable_print():
     sys.stderr = sys.__stderr__
 
 
-class temporary_disable_print:
+# class temporary_disable_print:
+#     """Temporarily disable console output.
+#
+#     Examples
+#     ---------
+#     >>> print("You can see me")
+#     >>> with tl.ops.temporary_disable_print() as t:
+#     >>>     print("You can't see me")
+#     >>> print("You can see me")
+#     """
+#     def __init__(self):
+#         pass
+#     def __enter__(self):
+#         sys.stdout = None
+#         sys.stderr = os.devnull
+#     def __exit__(self, type, value, traceback):
+#         sys.stdout = sys.__stdout__
+#         sys.stderr = sys.__stderr__
+#         return isinstance(value, TypeError)
+
+
+from contextlib import contextmanager
+@contextmanager
+def suppress_stdout():
     """Temporarily disable console output.
 
     Examples
     ---------
     >>> print("You can see me")
-    >>> with tl.ops.temporary_disable_print() as t:
+    >>> with tl.ops.suppress_stdout():
     >>>     print("You can't see me")
     >>> print("You can see me")
+
+    References
+    -----------
+    - `stackoverflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`_
     """
-    def __init__(self):
-        pass
-    def __enter__(self):
-        sys.stdout = None
-        sys.stderr = os.devnull
-    def __exit__(self, type, value, traceback):
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-        return isinstance(value, TypeError)
-
-
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 
 
@@ -172,8 +195,7 @@ def get_site_packages_directory():
 
 def empty_trash():
     """Empty trash folder.
-    
-    Undocumented
+
     """
     text = "[tl] Empty the trash"
     if _platform == "linux" or _platform == "linux2":

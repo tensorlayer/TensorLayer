@@ -12,8 +12,9 @@ Operation system, more functions can be found in `TensorFlow API <https://www.te
    set_gpu_fraction
    disable_print
    enable_print
-   temporary_disable_print
+   suppress_stdout
    get_site_packages_directory
+   empty_trash
 
 TensorFlow functions
 ---------------------------
@@ -32,10 +33,16 @@ Console display
 
 .. autofunction:: disable_print
 .. autofunction:: enable_print
-.. autoclass:: temporary_disable_print
+.. autofunction:: suppress_stdout
+
 
 
 Packages information
 --------------------
 
 .. autofunction:: get_site_packages_directory
+
+
+Trash
+-------
+.. autofunction:: empty_trash
