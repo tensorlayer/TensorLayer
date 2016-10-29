@@ -76,12 +76,10 @@ Recruitment
 TensorLayer Contributors
 --------------------------
 
-TensorLayer contributors are from Imperial College, Tsinghua University, Carnegie Mellon University, Microsoft and etc.
-
+TensorLayer contributors are from Imperial College, Tsinghua University, Carnegie Mellon University, Google, Microsoft, Bloomberg and etc.
 There are many functions need to be contributed such as
 Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
 Please push on `GitHub`_, every bit helps and will be credited.
-
 If you are interested in working with us, please
 `contact us <hao.dong11@imperial.ac.uk>`_.
 
