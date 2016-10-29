@@ -45,7 +45,7 @@ for index, img in enumerate(X_train):
     ## Visualize a image
     # tl.visualize.frame(np.asarray(img, dtype=np.uint8), second=1, saveable=False, name='frame', fig_idx=1236)
     label = int(y_train[index])
-    print(label)
+    # print(label)
     ## Convert the bytes back to image as follow:
         # image = Image.frombytes('RGB', (32, 32), img_raw)
     # image = np.fromstring(img_raw, np.float32)

@@ -2671,15 +2671,22 @@ class SlimNetsLayer(Layer):
         layer = None,
         slim_layer = None,
         slim_args = {},
-        name ='slim_layer',
+        name ='InceptionV3',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  tensorlayer:Instantiate SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
-        with tf.variable_scope(name) as vs:
-            net, end_points = slim_layer(self.inputs, **slim_args)
-            slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+        # with tf.variable_scope(name) as vs:
+        #     net, end_points = slim_layer(self.inputs, **slim_args)
+        #     slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+
+        net, end_points = slim_layer(self.inputs, **slim_args)
+
+        slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=name)
+        if slim_variables == []:
+            print("No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details" % name)
+
 
         self.outputs = net
 

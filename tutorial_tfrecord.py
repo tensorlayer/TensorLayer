@@ -4,9 +4,10 @@
 
 import tensorflow as tf
 import tensorlayer as tl
-import os
+import numpy as np
 from PIL import Image
 import io
+import os
 
 
 """
@@ -67,7 +68,7 @@ for serialized_example in tf.python_io.tf_record_iterator("train.tfrecords"):
     label = example.features.feature['label'].int64_list.value
     ## converts a image from bytes
     image = Image.frombytes('RGB', (224, 224), img_raw[0])
-    tl.visualize.frame(image, second=0.5, saveable=False, name='frame', fig_idx=1283)
+    tl.visualize.frame(np.asarray(image), second=0.5, saveable=False, name='frame', fig_idx=1283)
     print(label)
 
 

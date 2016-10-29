@@ -100,7 +100,7 @@ with slim.arg_scope(inception_v3_arg_scope()):
                                             #  'reuse' : None,
                                             #  'scope' : 'InceptionV3'
                                             },
-                                        name=''
+                                        name='InceptionV3'  # <-- the name should be the same with the ckpt model
                                         )
 saver = tf.train.Saver()
 

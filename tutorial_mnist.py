@@ -103,10 +103,10 @@ def main_test_layers(model='relu'):
 
     params = network.all_params
     # train
-    n_epoch = 1
+    n_epoch = 100
     batch_size = 128
     learning_rate = 0.0001
-    print_freq = 10
+    print_freq = 5
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
                                 epsilon=1e-08, use_locking=False).minimize(cost)
 
