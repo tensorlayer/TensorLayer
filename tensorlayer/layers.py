@@ -2554,6 +2554,8 @@ class LambdaLayer(Layer):
         The `Layer` class feeding into this layer.
     fn : a function
         The function that applies to the outputs of previous layer.
+    fn_args : a dictionary
+        The arguments for the function (option).
     name : a string or None
         An optional name to attach to this layer.
 
@@ -2571,6 +2573,7 @@ class LambdaLayer(Layer):
         self,
         layer = None,
         fn = None,
+        kwargs = {},
         name = 'lambda_layer',
     ):
         Layer.__init__(self, name=name)
@@ -2578,7 +2581,7 @@ class LambdaLayer(Layer):
 
         print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
-            self.outputs = fn(self.inputs)
+            self.outputs = fn(self.inputs, **kwargs)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -2649,6 +2652,8 @@ class SlimNetsLayer(Layer):
         The `Layer` class feeding into this layer.
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
+    slim_args : dictionary
+        The arguments for the slim model.
     name : a string or None
         An optional name to attach to this layer.
 
