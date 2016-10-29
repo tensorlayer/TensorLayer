@@ -533,7 +533,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     vocabulary_size : an int
         The maximum vocabulary size, limiting the vocabulary size.
         Then the script replaces rare words with 'UNK' token.
-    printable : boolen
+    printable : boolean
         Whether to print the read vocabulary size of the given words.
     unk_key : a string
         Unknown words = unk_key

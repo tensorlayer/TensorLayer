@@ -38,7 +38,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
         the input of validation data
     y_val : numpy array or None
         the target of validation data
-    eval_train : boolen
+    eval_train : boolean
         if X_val and y_val are not None, it refects whether to evaluate the training data
 
     Examples

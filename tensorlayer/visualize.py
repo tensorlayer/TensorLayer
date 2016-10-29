@@ -18,7 +18,7 @@ def W(W=None, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=239
         The weight matrix
     second : int
         The display second(s) for the image(s), if saveable is False.
-    saveable : boolen
+    saveable : boolean
         Save or plot the figure.
     shape : a list with 2 int
         The shape of feature image, MNIST is [28, 80].
@@ -79,7 +79,7 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
         The image
     second : int
         The display second(s) for the image(s), if saveable is False.
-    saveable : boolen
+    saveable : boolean
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
@@ -121,7 +121,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
         The image. e.g: 64 5x5 RGB images can be (5, 5, 3, 64).
     second : int
         The display second(s) for the image(s), if saveable is False.
-    saveable : boolen
+    saveable : boolean
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
@@ -183,7 +183,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None,
         The images.
     second : int
         The display second(s) for the image(s), if saveable is False.
-    saveable : boolen
+    saveable : boolean
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.
@@ -253,7 +253,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500,
         The number of examples to plot, choice the most common words.
     second : int
         The display second(s) for the image(s), if saveable is False.
-    saveable : boolen
+    saveable : boolean
         Save or plot the figure.
     name : a string
         A name to save the image, if saveable is True.

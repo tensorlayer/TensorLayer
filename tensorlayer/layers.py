@@ -123,7 +123,7 @@ def print_all_variables(train_only=False):
 
     Parameters
     ----------
-    train_only : boolen
+    train_only : boolean
         If True, only print the trainable variables, otherwise, print all variables.
     """
     tvar = tf.trainable_variables() if train_only else tf.all_variables()
@@ -1321,7 +1321,7 @@ class BatchNormLayer(Layer):
         A decay factor for ExponentialMovingAverage.
     epsilon : float
         A small float number to avoid dividing by 0.
-    is_train : boolen
+    is_train : boolean
         Whether train or inference.
     name : a string or None
         An optional name to attach to this layer.
@@ -1450,7 +1450,7 @@ class BatchNormLayer(Layer):
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
 #         A small float number to avoid dividing by 0.
-#     is_train : boolen
+#     is_train : boolean
 #         Whether train or inference.
 #     name : a string or None
 #         An optional name to attach to this layer.
@@ -1607,11 +1607,11 @@ class RNNLayer(Layer):
         The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
-    return_last : boolen
+    return_last : boolean
         - If True, return the last output, "Sequence input and single output"
         - If False, return all outputs, "Synced sequence input and output"
         - In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    return_seq_2d : boolen
+    return_seq_2d : boolean
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
         - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
@@ -1764,7 +1764,7 @@ class RNNLayer(Layer):
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
 
-        # is_reshape : boolen (deprecate)
+        # is_reshape : boolean (deprecate)
         #     Reshape the inputs to 3 dimension tensor.\n
         #     If input is［batch_size, n_steps, n_features], we do not need to reshape it.\n
         #     If input is [batch_size * n_steps, n_features], we need to reshape it.
@@ -1863,11 +1863,11 @@ class BiRNNLayer(Layer):
         The input and output keep probability.
     n_layer : a int, default is 1.
         The number of RNN layers.
-    return_last : boolen
+    return_last : boolean
         - If True, return the last output, "Sequence input and single output"
         - If False, return all outputs, "Synced sequence input and output"
         - In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    return_seq_2d : boolen
+    return_seq_2d : boolean
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
         - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
@@ -2070,11 +2070,11 @@ class DynamicRNNLayer(Layer):
         The input and output keep probability.
     n_layer : a int, default is 1.
         The number of RNN layers.
-    return_last : boolen
+    return_last : boolean
         - If True, return the last output, "Sequence input and single output"
         - If False, return all outputs, "Synced sequence input and output"
         - In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    return_seq_2d : boolen
+    return_seq_2d : boolean
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
         - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), n_hidden], for stacking multiple RNN after it.
@@ -2278,11 +2278,11 @@ class BiDynamicRNNLayer(Layer):
         The number of hidden units in the layer.
     n_steps : a int
         The sequence length.
-    return_last : boolen
+    return_last : boolean
         If True, return the last output, "Sequence input and single output"\n
         If False, return all outputs, "Synced sequence input and output"\n
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
-    return_seq_2d : boolen
+    return_seq_2d : boolean
         When return_last = False\n
             if True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
             if False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
