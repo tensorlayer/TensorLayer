@@ -20,14 +20,18 @@ How to effectively learn TensorLayer
 Beginner
 ^^^^^^^^^^^^^^
 
-For people new to deep learning, we provided a number of tutorials in our website.
+For people who new to deep learning, we provided a number of tutorials in this website, these tutorials will guide you
 
 Engineer
 ^^^^^^^^^^^^^
 
+For people from industry, the contirbutors provide mass format-consistent examples covering computer vision, natural language processing and reinforcement learning.
+
+Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development
+
 Researcher
 ^^^^^^^^^^^^^
-
+For people
 
 Visualization
 --------------
