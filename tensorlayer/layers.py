@@ -603,7 +603,6 @@ class DenseLayer(Layer):
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
-        # self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         # Hint : list(), dict() is pass by value (shallow), without them, it is
         # pass by reference.
@@ -615,8 +614,9 @@ class DenseLayer(Layer):
             self.all_params.extend( [W, b] )
         else:
             self.all_params.extend( [W] )
-        # shallow cope allows the weights in network can be changed at the same
-        # time, when ReconLayer updates the weights of encoder.
+        ## when ReconLayer updates the weights of encoder, shallow cope allows 
+        # the weights in network can be changed at the same time, as they point
+        # to the same weights.
         #
         # e.g. the encoder points to same physical memory address
         # network = InputLayer(x, name='input_layer')
