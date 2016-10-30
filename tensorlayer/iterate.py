@@ -54,7 +54,7 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
 
     Examples
     --------
-    >>> Synced sequence input and output.
+    - Synced sequence input and output.
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
     >>> y = np.asarray([0, 1, 2, 3, 4, 5])
     >>> for batch in tl.iterate.seq_minibatches(inputs=X, targets=y, batch_size=2, seq_length=2, stride=1):
@@ -71,7 +71,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ...         dtype='<U1'), array([2, 3, 3, 4]))
     ...
     ...
-    >>> Many to One
+    
+    - Many to One
     >>> return_last = True
     >>> num_steps = 2
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
