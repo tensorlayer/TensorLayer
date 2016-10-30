@@ -18,7 +18,7 @@ Learning tutorial, so you could read TensorFlow Deep Learning tutorial as the sa
 .. note::
     For experts: Read the source code of ``InputLayer`` and ``DenseLayer``, you
     will understand how `TensorLayer`_ work. After that, we recommend you to read
-    the codes for tutorial directly.
+    the codes on Github directly.
 
 
 Before we start
