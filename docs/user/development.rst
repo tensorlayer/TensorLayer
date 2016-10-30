@@ -43,7 +43,7 @@ you are welcome to contribute.
 Report bugs
 ~~~~~~~~~~~
 
-Report bugs at the `GitHub`_,
+Report bugs at the `GitHub`_, we normally will fix it in 5 hours.
 If you are reporting a bug, please include:
 
 * your TensorLayer, TensorFlow and Python version.
