@@ -15,6 +15,7 @@ can be build through composition of neural network modules.
 The whole development is now participated by numerous contributors on `Release`_.
 As an open-source project by we highly welcome contributions!
 Every bit helps and will be credited.
+
 ..
   TensorLayer was initially developed as a part of project in Imperial College London.
   Now it also maintained by numerous contributors on `GitHub`_.
@@ -28,8 +29,8 @@ Every bit helps and will be credited.
 What to contribute
 ------------------
 
-Your method
-~~~~~~~~~~~~~
+Your method and example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you have a new method or example in term of Deep learning and Reinforcement learning,
 you are welcome to contribute.
