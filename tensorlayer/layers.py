@@ -614,7 +614,7 @@ class DenseLayer(Layer):
             self.all_params.extend( [W, b] )
         else:
             self.all_params.extend( [W] )
-        ## when ReconLayer updates the weights of encoder, shallow cope allows 
+        ## when ReconLayer updates the weights of encoder, shallow cope allows
         # the weights in network can be changed at the same time, as they point
         # to the same weights.
         #
@@ -2566,7 +2566,7 @@ class LambdaLayer(Layer):
         self,
         layer = None,
         fn = None,
-        kwargs = {},
+        fn_args = {},
         name = 'lambda_layer',
     ):
         Layer.__init__(self, name=name)
@@ -2574,7 +2574,7 @@ class LambdaLayer(Layer):
 
         print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
-            self.outputs = fn(self.inputs, **kwargs)
+            self.outputs = fn(self.inputs, **fn_args)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
