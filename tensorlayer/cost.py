@@ -178,8 +178,6 @@ def li_regularizer(scale):
   Returns a function that can be used to apply group li regularization to weights.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-
-
   Parameters
   ----------
   scale : float
