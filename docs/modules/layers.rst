@@ -103,8 +103,8 @@ For evaluating and testing, disable all dropout layers as follow.
 
 For more details, please read the MNIST examples.
 
-Creating custom layers
-------------------------
+Your layer
+-----------------
 
 Understand Dense layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^
