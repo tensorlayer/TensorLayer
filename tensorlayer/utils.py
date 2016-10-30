@@ -7,8 +7,7 @@ import time
 
 
 def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5, X_val=None, y_val=None, eval_train=True):
-    """
-    Traing a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
+    """Traing a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     Parameters
     ----------
