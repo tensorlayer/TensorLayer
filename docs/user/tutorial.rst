@@ -149,20 +149,20 @@ If everything is set up correctly, you will get an output like the following:
   y_test.shape (10000,)
   X float32   y int64
 
-  tensorlayer:Instantiate InputLayer input_layer (?, 784)
+  tensorlayer:Instantiate InputLayer   input_layer (?, 784)
   tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-  tensorlayer:Instantiate DenseLayer relu1: 800, relu
+  tensorlayer:Instantiate DenseLayer   relu1: 800, relu
   tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer relu2: 800, relu
+  tensorlayer:Instantiate DenseLayer   relu2: 800, relu
   tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer output_layer: 10, identity
+  tensorlayer:Instantiate DenseLayer   output_layer: 10, identity
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
-  param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  param 2: (800, 800) (mean: 0.000008, median: 0.000041 std: 0.035371)
-  param 3: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-  param 4: (800, 10) (mean: 0.000469, median: 0.000432 std: 0.049895)
-  param 5: (10,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+  param 1: (800,)     (mean:  0.000000, median:  0.000000 std: 0.000000)
+  param 2: (800, 800) (mean:  0.000008, median:  0.000041 std: 0.035371)
+  param 3: (800,)     (mean:  0.000000, median:  0.000000 std: 0.000000)
+  param 4: (800, 10)  (mean:  0.000469, median:  0.000432 std: 0.049895)
+  param 5: (10,)      (mean:  0.000000, median:  0.000000 std: 0.000000)
   num of params: 1276810
 
   layer 0: Tensor("dropout/mul_1:0", shape=(?, 784), dtype=float32)
