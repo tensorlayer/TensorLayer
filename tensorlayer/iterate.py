@@ -114,14 +114,13 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     see ``PTB tutorial``. In TensorFlow's tutorial, this generates the batch_size pointers into the raw
     PTB data, and allows minibatch iteration along these pointers.
 
-    - Hint, if the input data are images, you can modify the code from
+    - Hint, if the input data are images, you can modify the code as follow.
 
     .. code-block:: python
-    
-        data = np.zeros([batch_size, batch_len)
         
+        from
+        data = np.zeros([batch_size, batch_len)
         to
-
         data = np.zeros([batch_size, batch_len, inputs.shape[1], inputs.shape[2], inputs.shape[3]])
 
     Parameters
