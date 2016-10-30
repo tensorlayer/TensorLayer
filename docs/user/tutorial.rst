@@ -1071,7 +1071,7 @@ for stacking DenseLayer after it, then compute the softmax outputs of each examp
 To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 <https://www.tensorflow.org/versions/r0.9/tutorials/recurrent/index.html#recurrent-neural-networks>`_.
 
-(Note that, TensorLayer support DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layer in one single layer)
+(Note that, TensorLayer supports DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layer in one single layer)
 
 
 .. code-block:: python
