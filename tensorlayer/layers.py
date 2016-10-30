@@ -814,7 +814,7 @@ class ReconLayer(DenseLayer):
                         visualize.W(self.train_params[0].eval(), second=10, saveable=True, shape=[28,28], name=save_name+str(epoch+1), fig_idx=2012)
                         files.save_npz([self.all_params[0]] , name=save_name+str(epoch+1)+'.npz')
                     except:
-                        raise Exception("You should change visualize.W(), if you want to save the feature images for different dataset")
+                        raise Exception("You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
 
 
 ## Noise layer
