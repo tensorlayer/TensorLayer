@@ -10,7 +10,7 @@ For parametric activation, please read the layer APIs.
 
 
 Your activation
----------------------------
+-------------------
 
 Customizes activation function in TensorLayer is very easy.
 The following example implements an activation that multiplies its input by 2.
