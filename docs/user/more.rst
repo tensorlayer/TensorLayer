@@ -20,12 +20,12 @@ How to effectively learn TensorLayer
 Beginner
 ^^^^^^^^^^^^^^
 
-For people who new to deep learning, we provided a number of tutorials in this website, these tutorials will guide you
+For people who new to Deep Learning, we provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning
 
 Engineer
 ^^^^^^^^^^^^^
 
-For people from industry, the contirbutors provide mass format-consistent examples covering computer vision, natural language processing and reinforcement learning.
+For people from industry, the contirbutors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning.
 
 Dropout, DropConnect, Denoising Autoencoder, LSTM, CNN etc, speed up your development
 
