@@ -9,7 +9,7 @@ we can. So we encourage you to use TensorFlow's function. TensorFlow provides
 For parametric activation, please read the layer APIs.
 
 
-Creating custom activation
+Your activation
 ---------------------------
 
 Customizes activation function in TensorLayer is very easy.
