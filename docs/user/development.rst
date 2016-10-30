@@ -13,7 +13,8 @@ TensorLayer is a major ongoing research project in Data Science Institute, Imper
 The goal of the project is to develop a compositional language while complex learning systems
 can be build through composition of neural network modules.
 The whole development is now participated by numerous contributors on `Release`_.
-
+As an open-source project by we highly welcome contributions!
+Every bit helps and will be credited.
 ..
   TensorLayer was initially developed as a part of project in Imperial College London.
   Now it also maintained by numerous contributors on `GitHub`_.
@@ -21,8 +22,7 @@ The whole development is now participated by numerous contributors on `Release`_
 ..
     As an open-source project by Researchers for Researchers and Engineers,
 
-As an open-source project by we highly welcome contributions!
-Every bit helps and will be credited.
+
 
 
 What to contribute
@@ -31,9 +31,10 @@ What to contribute
 Your method
 ~~~~~~~~~~~~~
 
-If you publish a new method in term of Deep learning and Reinforcement learning,
-you are welcome to contribute your method to TensorLayer.
+If you have a new method or example in term of Deep learning and Reinforcement learning,
+you are welcome to contribute.
 
+* Provide your layer or example, so everyone can use it.
 * Explain how it would work, and link to a scientific paper if applicable.
 * Keep the scope as narrow as possible, to make it easier to implement.
 
@@ -44,7 +45,7 @@ Report bugs
 Report bugs at the `GitHub`_,
 If you are reporting a bug, please include:
 
-* your TensorLayer and TensorFlow version.
+* your TensorLayer, TensorFlow and Python version.
 * steps to reproduce the bug, ideally reduced to a few Python commands.
 * the results you obtain, and the results you expected instead.
 
