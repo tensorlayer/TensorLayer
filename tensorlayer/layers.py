@@ -159,7 +159,6 @@ class Layer(object):
         name ='layer'
     ):
         self.inputs = inputs
-        # if name in globals():
         if (name in set_keep['_layers_name_list']) and name_reuse == False:
             raise Exception("Layer '%s' already exists, please choice other 'name'.\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
@@ -171,25 +170,19 @@ class Layer(object):
 
     def print_params(self, details=True):
         ''' Print all info of parameters in the network'''
-        # try:
         for i, p in enumerate(self.all_params):
             if details:
                 try:
-                    # print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
                     print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
                 except:
                     raise Exception("Hint: print params details after sess.run(tf.initialize_all_variables()) or use network.print_params(False).")
             else:
                 print("  param {:3}: {:15}    {}".format(i, str(p.get_shape()), p.name))
         print("  num of params: %d" % self.count_params())
-        # except:
-        #     raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
-
 
     def print_layers(self):
         ''' Print all info of layers in the network '''
         for i, p in enumerate(self.all_layers):
-            # print(vars(p))
             print("  layer %d: %s" % (i, str(p)))
 
     def count_params(self):
