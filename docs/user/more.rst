@@ -14,6 +14,20 @@ More
 FQA
 ===========
 
+How to effectively learn TensorLayer
+------------------------------------------
+
+Beginner
+^^^^^^^^^^^^^^
+
+For people new to deep learning, we provided a number of tutorials in our website.
+
+Engineer
+^^^^^^^^^^^^^
+
+Researcher
+^^^^^^^^^^^^^
+
 
 Visualization
 --------------
