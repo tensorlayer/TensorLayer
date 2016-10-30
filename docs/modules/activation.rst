@@ -6,6 +6,7 @@ we can. So we encourage you to use TensorFlow's function. TensorFlow provides
 ``tf.nn.relu``, ``tf.nn.relu6``, ``tf.nn.elu``, ``tf.nn.softplus``,
 ``tf.nn.softsign`` and so on. More TensorFlow official activation functions can be found
 `here <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#activation-functions>`_.
+For parametric activation, please read the layer APIs.
 
 
 Creating custom activation
