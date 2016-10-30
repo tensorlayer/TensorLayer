@@ -101,7 +101,7 @@ For evaluating and testing, disable all dropout layers as follow.
   print("   val acc: %f" % np.mean(y_val ==
                           sess.run(y_op, feed_dict=feed_dict)))
 
-For more details, please read the MNIST examples.
+For more details, please read the MNIST examples on Github.
 
 Your layer
 -----------------
