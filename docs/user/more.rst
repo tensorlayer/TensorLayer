@@ -17,7 +17,7 @@ FQA
 How to effectively learn TensorLayer
 ------------------------------------------
 
-No matter what stage you are in, we recommend you to spend 10 minutes to read the source code of TensorLayer, you will find it is very simple for everyone. Reading the source codes helps you to better understand TensorFlow and allows you to implement your own methods easily.
+No matter what stage you are in, we recommend you to spend 10 minutes to read the source code of TensorLayer, you will find it is very simple for everyone. Reading the source codes helps you to better understand TensorFlow and allows you to implement your own methods easily. For discussion, we recommend `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_ , `QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_ and `Wechat group <tensorlayer@gmail>`_.
 
 Beginner
 ^^^^^^^^^^^^^^
@@ -31,8 +31,7 @@ For people from industry, the contirbutors provided mass format-consistent examp
 Therefore, you may able to find that example can be used in your project.
 
 
-You can also discuss with other users via `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_ ,
-`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_ and `Wechat group <tensorlayer@gmail>`_.
+
 
 Researcher
 ^^^^^^^^^^^^^
