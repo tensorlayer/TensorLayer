@@ -566,7 +566,7 @@ What Next?
 We also have a more advanced image classification example in ``tutorial_cifar10_tfrecord.py``.
 Please read the code and notes, figure out how to generate more training data and what
 is local response normalization. After that, try to implement
-`Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you will need
+`Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you may want
 to use the Layer.outputs).
 
 
