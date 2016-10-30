@@ -13,7 +13,7 @@ Understand layer
 
 All TensorLayer layers have a number of properties in common:
 
- - ``layer.outputs`` : Tensor, the outputs of current layer.
+ - ``layer.outputs`` : a Tensor, the outputs of current layer.
  - ``layer.all_params`` : a list of Tensor, all network variables in order.
  - ``layer.all_layers`` : a list of Tensor, all network outputs in order.
  - ``layer.all_drop`` : a dictionary of {placeholder : float}, all keeping probabilities of noise layer.
