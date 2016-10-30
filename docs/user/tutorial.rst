@@ -1824,6 +1824,8 @@ Implementation
 Bucketing and Padding
 ^^^^^^^^^^^^^^^^^^^^^
 
+(Note that, TensorLayer supports Dynamic RNN layer after v1.2, so bucketing is not longer necessary in many cases)
+
 Bucketing is a method to efficiently handle sentences of different length.
 When translating English to French, we will have English sentences of
 different lengths ``L1`` on input, and French sentences of different
