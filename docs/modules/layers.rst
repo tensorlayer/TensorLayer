@@ -205,8 +205,8 @@ The following is an example implementation of a layer that multiplies its input 
 Modifying Pre-train Behaviour
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Greedy layer-wise pretrain is an important task for deep neural network
-initialization, while there are many kinds of pre-train methods according
+Greedy layer-wise pretraining is an important task for deep neural network
+initialization, while there are many kinds of pre-training methods according
 to different network architectures and applications.
 
 For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
