@@ -17,10 +17,12 @@ FQA
 How to effectively learn TensorLayer
 ------------------------------------------
 
+
+
 Beginner
 ^^^^^^^^^^^^^^
 
-For people who new to Deep Learning, we provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning
+For people who new to Deep Learning, we provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the 
 
 Engineer
 ^^^^^^^^^^^^^
