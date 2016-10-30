@@ -8,7 +8,8 @@ import numpy as np
 
 """
 You will learn:
-1. How to use Dynamic RNN
+1. How to use Dynamic RNN with TensorFlow only.
+2. For TensorLayer, please see DynamicRNNLayer.
 
 Reference
 ----------
