@@ -17,12 +17,12 @@ FQA
 How to effectively learn TensorLayer
 ------------------------------------------
 
-No matter what stage you are in, we recommend you to spend 10 minutes to read the source code of TensorLayer, you will find it is very simple for everyone, this helps you to better understand TensorFlow and allows you to implement your own methods easily.
+No matter what stage you are in, we recommend you to spend 10 minutes to read the source code of TensorLayer, you will find it is very simple for everyone. Reading the source codes helps you to better understand TensorFlow and allows you to implement your own methods easily.
 
 Beginner
 ^^^^^^^^^^^^^^
 
-For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the 
+For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/zsdonghao/tensorlayer>`_ , then implement an example from scratch.
 
 Engineer
 ^^^^^^^^^^^^^
@@ -30,7 +30,9 @@ Engineer
 For people from industry, the contirbutors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning. Besides, there are also many TensorFlow users already implemented product-level examples including image captioning, semantic/instance segmentation, machine translation, chatbot and etc, which can be found online.
 Therefore, you may able to find that example can be used in your project.
 
-`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_ or `Wechat group <tensorlayer@gmail>`_.
+
+You can also discuss with other users via `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_ ,
+`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_ and `Wechat group <tensorlayer@gmail>`_.
 
 Researcher
 ^^^^^^^^^^^^^
