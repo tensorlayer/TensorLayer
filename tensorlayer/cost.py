@@ -38,7 +38,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(output, target))
 
 
-def binary_cross_entropy(output, target, name=None):
+def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     """Computes binary cross entropy given `output`.
 
     For brevity, let `x = `, `z = targets`.  The logistic loss is
@@ -49,15 +49,18 @@ def binary_cross_entropy(output, target, name=None):
     ----------
     output : A `Tensor` of type `float32` or `float64`.
     target : A `Tensor` of the same type and shape as `output`.
+    
+    References
+    -----------
+    - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`_
     """
-    # print("Undocumented")
-    from tensorflow.python.framework import ops
-    eps = 1e-12
-    with ops.op_scope([output, target], name, "bce_loss") as name:
-        output = ops.convert_to_tensor(output, name="preds")
-        target = ops.convert_to_tensor(targets, name="target")
-        return tf.reduce_mean(-(target * tf.log(output + eps) +
-                              (1. - target) * tf.log(1. - output + eps)))
+#     from tensorflow.python.framework import ops
+#     with ops.op_scope([output, target], name, "bce_loss") as name:
+#         output = ops.convert_to_tensor(output, name="preds")
+#         target = ops.convert_to_tensor(targets, name="target")
+    with tf.name_scope(name):
+        return tf.reduce_mean(-(target * tf.log(output + epsilon) +
+                              (1. - target) * tf.log(1. - output + epsilon)))
 
 
 def mean_squared_error(output, target):
