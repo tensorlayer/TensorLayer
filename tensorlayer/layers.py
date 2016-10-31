@@ -2575,11 +2575,13 @@ class LambdaLayer(Layer):
         print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
+            variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
 
 ## Logic layer
 class ElementwiseLayer(Layer):
