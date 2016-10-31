@@ -5,5 +5,5 @@ tensorlaye/.DS_Store
 dist
 tensorlayer.egg-info
 data/.DS_Store
-
-
+*.pyc
+*.gz
