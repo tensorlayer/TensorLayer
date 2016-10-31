@@ -2229,11 +2229,11 @@ class DynamicRNNLayer(Layer):
             if return_seq_2d:
                 # PTB tutorial:
                 # 2D Tensor [n_example, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_hidden])
+                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
             else:
                 # <akara>:
                 # 3D Tensor [batch_size, n_steps, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, self.outputs), [-1, n_steps, n_hidden])
+                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
 
         # Final state
