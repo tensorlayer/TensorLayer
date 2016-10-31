@@ -238,7 +238,7 @@ class Vocabulary(object):
     vocab = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])
 
     print("  tensorlayer.nlp:Instantiate Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word))
-    print("     vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab))
+    print("    vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab))
     # tf.logging.info("     vocabulary with %d words" % len(vocab))
 
     self.vocab = vocab  # vocab[word] = id
@@ -248,9 +248,9 @@ class Vocabulary(object):
     self.start_id = vocab[start_word]
     self.end_id = vocab[end_word]
     self.unk_id = vocab[unk_word]
-    print("       start_id: %d" % self.start_id)
-    print("       end_id: %d" % self.end_id)
-    print("       unk_id: %d" % self.unk_id)
+    print("      start_id: %d" % self.start_id)
+    print("      end_id: %d" % self.end_id)
+    print("      unk_id: %d" % self.unk_id)
 
   def word_to_id(self, word):
     """Returns the integer word id of a word string."""
@@ -272,7 +272,9 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
 
     Parameter
     ---------
-    sentence : a string sentence.
+    sentence : a sentence in string.
+    start_word : a string or None, if None, non start word will be appended.
+    end_word : a string or None, if None, non end word will be appended.
 
     Returns
     ---------
@@ -289,9 +291,13 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
         import nltk
     except:
         raise Exception("Hint : NLTK is required.")
-    process_sentence = [start_word]
+    if start_word is not None:
+        process_sentence = [start_word]
+    else:
+        process_sentence = []
     process_sentence.extend(nltk.tokenize.word_tokenize(sentence.lower()))
-    process_sentence.append(end_word)
+    if end_word is not None:
+        process_sentence.append(end_word)
     return process_sentence
 
 def create_vocab(sentences, word_counts_output_file, min_word_count=1):
@@ -341,18 +347,18 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     for c in sentences:
         counter.update(c)
         # print('c',c)
-    print("  Total words:", len(counter))
+    print("    Total words: %d" % len(counter))
 
     # Filter uncommon words and sort by descending count.
     word_counts = [x for x in counter.items() if x[1] >= min_word_count]
     word_counts.sort(key=lambda x: x[1], reverse=True)
     # print(word_counts)
-    print("  Words in vocabulary:", len(word_counts))
+    print("    Words in vocabulary: %d" % len(word_counts))
 
     # Write out the word counts file.
     with tf.gfile.FastGFile(word_counts_output_file, "w") as f:
         f.write("\n".join(["%s %d" % (w, c) for w, c in word_counts]))
-    print("  Wrote vocabulary file:", word_counts_output_file)
+    print("    Wrote vocabulary file: %s" % word_counts_output_file)
 
     # Create the vocabulary dictionary.
     reverse_vocab = [x[0] for x in word_counts]
