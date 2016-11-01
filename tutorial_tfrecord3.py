@@ -334,16 +334,18 @@ context, sequence = tf.parse_single_sequence_example(
 img = tf.decode_raw(context["image/img_raw"], tf.uint8)
 img = tf.reshape(img, [height, width, 3])
 img = tf.image.convert_image_dtype(img, dtype=tf.float32)
-# for TensorFlow 0.10
-# img = tf.image.resize_images(img,
-#                            new_height=resize_height,
-#                            new_width=resize_width,
-#                            method=tf.image.ResizeMethod.BILINEAR)
-# for TensorFlow 0.11
-img = tf.image.resize_images(img,
+
+try:
+    # for TensorFlow 0.11
+    img = tf.image.resize_images(img,
                            size=(resize_height, resize_width),
                            method=tf.image.ResizeMethod.BILINEAR)
-
+except:
+    # for TensorFlow 0.10
+    img = tf.image.resize_images(img,
+                               new_height=resize_height,
+                               new_width=resize_width,
+                               method=tf.image.ResizeMethod.BILINEAR)
 # Crop to final dimensions.
 if is_training:
     img = tf.random_crop(img, [height, width, 3])
