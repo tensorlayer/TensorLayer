@@ -998,6 +998,10 @@ class Conv2dLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
+    Notes
+    ------
+    - shape = [h, w, the number of output channel of previous layer, the number of output channels]
+    - the number of output channel of a layer is its last dimension.
 
     Examples
     --------
@@ -1094,6 +1098,12 @@ class DeConv2dLayer(Layer):
         The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
+
+    Notes
+    -----
+    - shape = [h, w, the number of output channels of this layer, the number of output channel of previous layer]
+    - output_shape = [batch_size, any, any, the number of output channels of this layer]
+    - the number of output channel of a layer is its last dimension.
 
     Examples
     ---------
