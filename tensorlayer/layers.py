@@ -2202,6 +2202,9 @@ class DynamicRNNLayer(Layer):
         your state at the begining of each epoch or iteration according to your
         training procedure.
 
+    sequence_length : a tensor or array, shape = [batch_size]
+        The sequence lengths computed by Advanced Opt or the given sequence lengths.
+
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
