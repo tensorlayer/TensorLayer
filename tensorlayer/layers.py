@@ -2028,9 +2028,13 @@ class BiRNNLayer(Layer):
 
 # Dynamic RNN
 def advanced_indexing_op(input, index):
-    """ Advanced Indexing for Sequences. see TFlearn."""
+    """ Advanced Indexing for Sequences.
+    Modified from TFlearn (the original code is used for fixed length rnn).
+    https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py
+    """
     batch_size = tf.shape(input)[0]
-    max_length = int(input.get_shape()[1])
+    # max_length = int(input.get_shape()[1])    # for fixed length rnn, length is given
+    max_length = tf.shape(input)[1]             # for dynamic_rnn, length is unknown
     dim_size = int(input.get_shape()[2])
     index = tf.range(0, batch_size) * max_length + (index - 1)
     flat = tf.reshape(input, [-1, dim_size])
@@ -2038,12 +2042,15 @@ def advanced_indexing_op(input, index):
     return relevant
 
 def retrieve_seq_length_op(data):
-    """ An op to compute the length of a sequence. 0 are masked. see TFlearn."""
+    """ An op to compute the length of a sequence. 0 are masked. Borrow from TFlearn.
+    https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py
+    """
     with tf.name_scope('GetLength'):
         used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
         length = tf.reduce_sum(used, reduction_indices=1)
         length = tf.cast(length, tf.int32)
     return length
+
 
 class DynamicRNNLayer(Layer):
     """
@@ -2230,7 +2237,7 @@ class DynamicRNNLayer(Layer):
             if return_last:
                 # [batch_size, n_hidden]
                 # outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
-                outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
+                # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), n_hidden]
