@@ -275,6 +275,9 @@ Layer list
    BatchNormLayer
    RNNLayer
    BiRNNLayer
+   advanced_indexing_op
+   retrieve_seq_length_op
+   retrieve_seq_length_op2
    DynamicRNNLayer
    FlattenLayer
    ConcatLayer
@@ -412,9 +415,18 @@ Fixed Length RNN layer
 .. autoclass:: RNNLayer
 .. autoclass:: BiRNNLayer
 
+
+Advanced Ops for Dynamic RNN
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: advanced_indexing_op
+.. autoclass:: retrieve_seq_length_op
+.. autoclass:: retrieve_seq_length_op2
+
+
 Dynamic RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DynamicRNNLayer
+
 
 Shape layer
 ------------

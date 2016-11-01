@@ -2031,10 +2031,16 @@ class BiRNNLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
 
-
-# Dynamic RNN
+# Advanced Ops for Dynamic RNN
 def advanced_indexing_op(input, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
+
+    Parameters
+    -----------
+    input : tensor for data
+        [batch_size, n_step(max), n_features]
+    index : tensor for indexing
+        [batch_size]
 
     Examples
     ---------
@@ -2072,7 +2078,12 @@ def advanced_indexing_op(input, index):
     return relevant
 
 def retrieve_seq_length_op(data):
-    """ An op to compute the length of a sequence. 0 are masked.
+    """An op to compute the length of a sequence from [batch_size, n_step(max), n_features], if zero padding.
+
+    Parameters
+    -----------
+    data : tensor
+        [batch_size, n_step(max), n_features] with zero padding on right hand side.
 
     Examples
     ---------
@@ -2106,7 +2117,29 @@ def retrieve_seq_length_op(data):
         length = tf.cast(length, tf.int32)
     return length
 
+def retrieve_seq_length_op2(data):
+    """An op to compute the length of a sequence, from [batch_size, n_step(max)], if zero padding.
 
+    Parameters
+    -----------
+    data : tensor
+        [batch_size, n_step(max)] with zero padding on right hand side.
+
+    Examples
+    --------
+    >>> data = [[1,2,0,0,0],
+    ...         [1,2,3,0,0],
+    ...         [1,2,6,1,0]]
+    >>> o = retrieve_seq_length_op2(data)
+    >>> sess = tf.InteractiveSession()
+    >>> sess.run(tf.initialize_all_variables())
+    >>> print(o.eval())
+    ... [2 3 4]
+    """
+    return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
+
+
+# Dynamic RNN
 class DynamicRNNLayer(Layer):
     """
     The :class:`DynamicRNNLayer` class is a Dynamic RNN layer, see ``tf.nn.dynamic_rnn``.
@@ -2128,7 +2161,11 @@ class DynamicRNNLayer(Layer):
     initializer : initializer
         The initializer for initializing the parameters.
     sequence_length : a tensor, array or None
-        The sequence length of each row of input data. If None, automatically calculate the sequence length for the data.
+        The sequence length of each row of input data, see ``Advanced Ops for Dynamic RNN``.
+            - If None, the inputs are zero padding on right hand side and non word embedding, automatically calculate the sequence length for the data.
+            - If using word embedding, you should use ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
+            - You can also input an numpy array.
+            - More details about TensorFlow dynamic_rnn in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
@@ -2171,10 +2208,7 @@ class DynamicRNNLayer(Layer):
 
     Examples
     --------
-    >>> input_feed = tf.placeholder(dtype=tf.int64,
-    ...                              shape=[None],  # word id
-    ...                              name="input_feed")
-    >>> input_seqs = tf.expand_dims(input_feed, 1)
+    >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input_seqs")
     >>> network = tl.layers.EmbeddingInputlayer(
     ...             inputs = input_seqs,
     ...             vocabulary_size = vocab_size,
@@ -2184,6 +2218,7 @@ class DynamicRNNLayer(Layer):
     ...             cell_fn = tf.nn.rnn_cell.BasicLSTMCell,
     ...             n_hidden = embedding_size,
     ...             dropout = 0.7,
+    ...             sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
     ...             return_seq_2d = True,     # stack denselayer or compute cost after it
     ...             name = 'dynamic_rnn',)
     ... network = tl.layers.DenseLayer(network, n_units=vocab_size,
@@ -2270,7 +2305,6 @@ class DynamicRNNLayer(Layer):
         if sequence_length is None:
             sequence_length = retrieve_seq_length_op(
                         self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
-        # print('sequence_length',sequence_length)
 
         # Main - Computes outputs and last_states
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -2282,16 +2316,12 @@ class DynamicRNNLayer(Layer):
                 sequence_length=sequence_length,
                 initial_state = self.initial_state,
                 )
-            # result = tf.contrib.learn.run_n(
-            #     {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
             print("     n_params : %d" % (len(rnn_variables)))
-            # exit()
             # Manage the outputs
             if return_last:
                 # [batch_size, n_hidden]
-                # outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
                 # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
@@ -2307,12 +2337,10 @@ class DynamicRNNLayer(Layer):
                     # 3D Tensor [batch_size, n_steps, n_hidden]
                     self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
-
         # Final state
-        # self.final_state = result[0]["last_states"]
         self.final_state = last_states
-        # print(self.final_state)
-        # exit()
+
+        self.sequence_length = sequence_length
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
