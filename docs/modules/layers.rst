@@ -418,9 +418,9 @@ Fixed Length RNN layer
 
 Advanced Ops for Dynamic RNN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: advanced_indexing_op
-.. autoclass:: retrieve_seq_length_op
-.. autoclass:: retrieve_seq_length_op2
+.. autofunction:: advanced_indexing_op
+.. autofunction:: retrieve_seq_length_op
+.. autofunction:: retrieve_seq_length_op2
 
 
 Dynamic RNN layer
