@@ -1326,6 +1326,10 @@ class BatchNormLayer(Layer):
         A small float number to avoid dividing by 0.
     is_train : boolean
         Whether train or inference.
+    beta_init : beta initializer
+        The initializer for initializing beta
+    gamma_init : gamma initializer
+        The initializer for initializing gamma
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1340,6 +1344,8 @@ class BatchNormLayer(Layer):
         decay = 0.999,
         epsilon = 0.00001,
         is_train = None,
+        beta_init = tf.zeros_initializer,
+        gamma_init = tf.ones_initializer,
         name ='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1383,10 +1389,10 @@ class BatchNormLayer(Layer):
 
             beta = _get_variable('beta',
                                  params_shape,
-                                 initializer=tf.zeros_initializer)
+                                 initializer=beta_init)
             gamma = _get_variable('gamma',
                                   params_shape,
-                                  initializer=tf.ones_initializer)
+                                  initializer=gamma_init)
 
             # trainable=False means : it prevent TF from updating this variable
             # from the gradient, we have to update this from the mean computed
