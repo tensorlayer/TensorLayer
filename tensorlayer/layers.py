@@ -2034,9 +2034,33 @@ class BiRNNLayer(Layer):
 
 # Dynamic RNN
 def advanced_indexing_op(input, index):
-    """ Advanced Indexing for Sequences.
-    Modified from TFlearn (the original code is used for fixed length rnn).
-    https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py
+    """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
+
+    Examples
+    ---------
+    >>> batch_size, max_length, n_features = 3, 5, 2
+    >>> z = np.random.uniform(low=-1, high=1, size=[batch_size, max_length, n_features]).astype(np.float32)
+    >>> b_z = tf.constant(z)
+    >>> sl = tf.placeholder(dtype=tf.int32, shape=[batch_size])
+    >>> o = advanced_indexing_op(b_z, sl)
+    >>>
+    >>> sess = tf.InteractiveSession()
+    >>> sess.run(tf.initialize_all_variables())
+    >>>
+    >>> order = np.asarray([1,1,2])
+    >>> print("real",z[0][order[0]-1], z[1][order[1]-1], z[2][order[2]-1])
+    >>> y = sess.run([o], feed_dict={sl:order})
+    >>> print("given",order)
+    >>> print("out", y)
+    ... real [-0.93021595  0.53820813] [-0.92548317 -0.77135968] [ 0.89952248  0.19149846]
+    ... given [1 1 2]
+    ... out [array([[-0.93021595,  0.53820813],
+    ...             [-0.92548317, -0.77135968],
+    ...             [ 0.89952248,  0.19149846]], dtype=float32)]
+
+    References
+    -----------
+    - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
     """
     batch_size = tf.shape(input)[0]
     # max_length = int(input.get_shape()[1])    # for fixed length rnn, length is given
@@ -2048,8 +2072,33 @@ def advanced_indexing_op(input, index):
     return relevant
 
 def retrieve_seq_length_op(data):
-    """ An op to compute the length of a sequence. 0 are masked. Borrow from TFlearn.
-    https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py
+    """ An op to compute the length of a sequence. 0 are masked.
+
+    Examples
+    ---------
+    >>> data = [[[1],[2],[0],[0],[0]],
+    ...         [[1],[2],[3],[0],[0]],
+    ...         [[1],[2],[6],[1],[0]]]
+    >>> data = np.asarray(data)
+    >>> print(data.shape)
+    ... (3, 5, 1)
+    >>> data = tf.constant(data)
+    >>> sl = retrieve_seq_length_op(data)
+    >>> sess = tf.InteractiveSession()
+    >>> sess.run(tf.initialize_all_variables())
+    >>> y = sl.eval()
+    ... [2 3 4]
+
+    - Multiple features
+    >>> data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
+    ...         [[2,3],[2,4],[3,2],[0,0],[0,0]],
+    ...         [[3,3],[2,2],[5,3],[1,2],[0,0]]]
+    >>> sl
+    ... [4 3 4]
+
+    References
+    ------------
+    - Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
     """
     with tf.name_scope('GetLength'):
         used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
