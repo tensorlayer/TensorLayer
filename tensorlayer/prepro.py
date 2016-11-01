@@ -946,7 +946,7 @@ def array_to_img(x, dim_ordering=(0,1,2), scale=True):
 
 ## Sequence
 def pad_sequences(sequences, maxlen=None, dtype='int32',
-                  padding='pre', truncating='pre', value=0.):
+                  padding='post', truncating='pre', value=0.):
     """Pads each sequence to the same length:
     the length of the longest sequence.
     If maxlen is provided, any sequence longer
@@ -973,10 +973,10 @@ def pad_sequences(sequences, maxlen=None, dtype='int32',
     ----------
     >>> sequences = [[1,1,1,1,1],[2,2,2],[3,3]]
     >>> sequences = pad_sequences(sequences, maxlen=None, dtype='int32',
-    ...                  padding='pre', truncating='pre', value=0.)
+    ...                  padding='post', truncating='pre', value=0.)
     ... [[1 1 1 1 1]
-    ...  [0 0 2 2 2]
-    ...  [0 0 0 3 3]]
+    ...  [2 2 2 0 0]
+    ...  [3 3 0 0 0]]
     """
     lengths = [len(s) for s in sequences]
 
