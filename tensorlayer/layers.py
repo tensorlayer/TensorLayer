@@ -522,7 +522,7 @@ class EmbeddingInputlayer(Layer):
                                     shape=(vocabulary_size, embedding_size),
                                     initializer=E_init,
                                     **E_init_args)
-        embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+            embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
 
@@ -2224,26 +2224,26 @@ class DynamicRNNLayer(Layer):
             #     {"outputs": outputs, "last_states": last_states}, n=1, feed_dict=None)
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
-        print("     n_params : %d" % (len(rnn_variables)))
-        # exit()
-        # Manage the outputs
-        if return_last:
-            # [batch_size, n_hidden]
-            # outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
-            outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
-            self.outputs = advanced_indexing_op(outputs, sequence_length)
-        else:
-            # [batch_size, n_step(max), n_hidden]
-            # self.outputs = result[0]["outputs"]
-            # self.outputs = outputs    # it is 3d, but it is a list
-            if return_seq_2d:
-                # PTB tutorial:
-                # 2D Tensor [n_example, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+            print("     n_params : %d" % (len(rnn_variables)))
+            # exit()
+            # Manage the outputs
+            if return_last:
+                # [batch_size, n_hidden]
+                # outputs = tf.transpose(tf.pack(result[0]["outputs"]), [1, 0, 2])
+                outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
+                self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
-                # <akara>:
-                # 3D Tensor [batch_size, n_steps, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
+                # [batch_size, n_step(max), n_hidden]
+                # self.outputs = result[0]["outputs"]
+                # self.outputs = outputs    # it is 3d, but it is a list
+                if return_seq_2d:
+                    # PTB tutorial:
+                    # 2D Tensor [n_example, n_hidden]
+                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+                else:
+                    # <akara>:
+                    # 3D Tensor [batch_size, n_steps, n_hidden]
+                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
 
         # Final state
