@@ -61,7 +61,7 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
     Examples
     ---------
     >>> network = tl.layers.DenseLayer(network, n_units=100, name = 'dense_lrelu',
-    ...                 act= lambda x : tl.lrelu(x, 0.2))
+    ...                 act= lambda x : tl.act.lrelu(x, 0.2))
 
     References
     ------------
