@@ -8,6 +8,7 @@ we can. So we encourage you to use TensorFlow's function. TensorFlow provides
 `here <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#activation-functions>`_.
 For parametric activation, please read the layer APIs.
 
+The shortcut of ``tensorlayer.activation`` is ``tensorlayer.act``.
 
 Your activation
 -------------------

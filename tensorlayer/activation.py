@@ -6,7 +6,7 @@
 import tensorflow as tf
 
 def identity(x, name=None):
-    """The identity activation function
+    """The identity activation function, Shortcut is ``linear``.
 
     Parameters
     ----------
@@ -45,7 +45,7 @@ def ramp(x=None, v_min=0, v_max=1, name=None):
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
 def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
-    """The LeakyReLU.
+    """The LeakyReLU, Shortcut is ``lrelu``.
 
     Modified version of ReLU, introducing a nonzero gradient for negative
     input.
@@ -57,6 +57,11 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
     alpha : `float`. slope.
     name : a string or None
         An optional name to attach to this activation function.
+
+    Examples
+    ---------
+    >>> network = tl.layers.DenseLayer(network, n_units=100, name = 'dense_lrelu',
+    ...                 act= lambda x : tl.lrelu(x, 0.2))
 
     References
     ------------
