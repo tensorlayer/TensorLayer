@@ -418,6 +418,9 @@ Fixed Length RNN layer
 
 Advanced Ops for Dynamic RNN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+These operations usually be used inside Dynamic RNN layer, they can
+compute the sequence lengths for different situation and get the last RNN outputs by indexing.
+
 .. autofunction:: advanced_indexing_op
 .. autofunction:: retrieve_seq_length_op
 .. autofunction:: retrieve_seq_length_op2

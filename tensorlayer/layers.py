@@ -2034,12 +2034,13 @@ class BiRNNLayer(Layer):
 # Advanced Ops for Dynamic RNN
 def advanced_indexing_op(input, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
+    When return the last output :class:`DynamicRNNLayer` uses it to get the last outputs with the sequence lengths.
 
     Parameters
     -----------
     input : tensor for data
         [batch_size, n_step(max), n_features]
-    index : tensor for indexing
+    index : tensor for indexing, i.e. sequence_length in Dynamic RNN.
         [batch_size]
 
     Examples
@@ -2078,7 +2079,8 @@ def advanced_indexing_op(input, index):
     return relevant
 
 def retrieve_seq_length_op(data):
-    """An op to compute the length of a sequence from [batch_size, n_step(max), n_features], if zero padding.
+    """An op to compute the length of a sequence from input shape of [batch_size, n_step(max), n_features],
+    it can be used when the features of padding (on right hand side) are all zeros.
 
     Parameters
     -----------
@@ -2118,7 +2120,8 @@ def retrieve_seq_length_op(data):
     return length
 
 def retrieve_seq_length_op2(data):
-    """An op to compute the length of a sequence, from [batch_size, n_step(max)], if zero padding.
+    """An op to compute the length of a sequence, from input shape of [batch_size, n_step(max)],
+    it can be used when the features of padding (on right hand side) are all zeros.
 
     Parameters
     -----------
@@ -2162,8 +2165,8 @@ class DynamicRNNLayer(Layer):
         The initializer for initializing the parameters.
     sequence_length : a tensor, array or None
         The sequence length of each row of input data, see ``Advanced Ops for Dynamic RNN``.
-            - If None, the inputs are zero padding on right hand side and non word embedding, automatically calculate the sequence length for the data.
-            - If using word embedding, you should use ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
+            - If None, it uses ``retrieve_seq_length_op`` to compute the sequence_length, i.e. when the features of padding (on right hand side) are all zeros.
+            - If using word embedding, you may need to compute the sequence_length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
             - You can also input an numpy array.
             - More details about TensorFlow dynamic_rnn in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_.
     initial_state : None or RNN State
