@@ -47,9 +47,13 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
     Parameters
     ----------
-    output : A `Tensor` of type `float32` or `float64`.
-    target : A `Tensor` of the same type and shape as `output`.
-    
+    output : tensor of type `float32` or `float64`.
+    target : tensor of the same type and shape as `output`.
+    epsilon : float
+        A small value to avoid output is zero.
+    name : string
+        An optional name to attach to this layer.
+
     References
     -----------
     - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`_
@@ -90,12 +94,14 @@ def dice_coe(output, target, epsilon=1e-10):
         A distribution with shape: [batch_size, ....], (any dimensions).
     target : tensor
         A distribution with shape: [batch_size, ....], (any dimensions).
+    epsilon : float
+        An optional name to attach to this layer.
 
     Examples
     ---------
     >>> outputs = pixel_wise_softmax(network.outputs)
     >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
-    
+
     References
     -----------
     - `wiki-dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
