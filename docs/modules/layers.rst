@@ -24,8 +24,6 @@ All TensorLayer layers have a number of methods in common:
  - ``layer.print_layers()`` : print the network layers information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
-
-
 The initialization of a network is done by input layer, then we can stacked layers
 as follow, a network is a ``Layer`` class.
 The most important properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
@@ -34,7 +32,8 @@ the following script define a 3 layer network, then:
 
 ``all_params`` = [W1, b1, W2, b2, W_out, b_out]
 
-The ``all_layers`` is a list which store all pointers of the outputs of all layers,
+To get specified variables, you can use ``network.all_params[2:3]`` or ``get_variables_with_name()``.
+As the ``all_layers`` is a list which store all pointers of the outputs of all layers,
 in the following network:
 
 ``all_layers`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
@@ -42,6 +41,7 @@ in the following network:
 where ``?`` reflects any batch size. You can print the layer information and parameters information by
 using ``network.print_layers()`` and ``network.print_params()``.
 To count the number of parameters in a network, run ``network.count_params()``.
+
 
 
 
@@ -259,6 +259,9 @@ Layer list
 
 .. autosummary::
 
+   get_variables_with_name
+   set_name_reuse
+   print_all_variables
    Layer
    InputLayer
    Word2vecEmbeddingInputlayer
@@ -290,10 +293,18 @@ Layer list
    EmbeddingAttentionSeq2seqWrapper
    flatten_reshape
    clear_layers_name
-   set_name_reuse
-   print_all_variables
    initialize_rnn_state
 
+
+Name Scope and Sharing Parameters
+---------------------------------
+
+These functions help you to reuse parameters for different inference (graph), and get a
+list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`_.
+
+.. autofunction:: get_variables_with_name
+.. autofunction:: set_name_reuse
+.. autofunction:: print_all_variables
 
 Basic layer
 -----------
@@ -492,6 +503,4 @@ Helper functions
 
 .. autofunction:: flatten_reshape
 .. autofunction:: clear_layers_name
-.. autofunction:: set_name_reuse
-.. autofunction:: print_all_variables
 .. autofunction:: initialize_rnn_state

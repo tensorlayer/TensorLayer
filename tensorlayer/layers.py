@@ -81,6 +81,27 @@ def set_name_reuse(enable=True):
 
     Examples
     ------------
+    >>> def embed_seq(input_seqs, is_train, reuse):
+    >>>    with tf.variable_scope("model", reuse=reuse):
+    >>>         tl.layers.set_name_reuse(reuse)
+    >>>         network = tl.layers.EmbeddingInputlayer(
+    ...                     inputs = input_seqs,
+    ...                     vocabulary_size = vocab_size,
+    ...                     embedding_size = embedding_size,
+    ...                     name = 'e_embedding')
+    >>>        network = tl.layers.DynamicRNNLayer(network,
+    ...                     cell_fn = tf.nn.rnn_cell.BasicLSTMCell,
+    ...                     n_hidden = embedding_size,
+    ...                     dropout = (0.7 if is_train else None),
+    ...                     initializer = w_init,
+    ...                     sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
+    ...                     return_last = True,
+    ...                     name = 'e_dynamicrnn',)
+    >>>    return network
+    >>>
+    >>> net_train = embed_seq(t_caption, is_train=True, reuse=False)
+    >>> net_test = embed_seq(t_caption, is_train=False, reuse=True)
+
     - see ``tutorial_ptb_lstm.py`` for example.
     """
     set_keep['name_reuse'] = enable
@@ -136,6 +157,23 @@ def print_all_variables(train_only=False):
 #     for idx, v in enumerate(tf.all_variables()):
 #         # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
 #         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+
+def get_variables_with_name(name, train_only=True, printable=False):
+    """Get variable list by a given name scope.
+
+    Examples
+    ---------
+    >>> dense_vars = get_variable_with_name('dense', True, True)
+    """
+    print("  Get variables with %s" % name)
+    # t_vars = tf.trainable_variables()
+    t_vars = tf.trainable_variables() if train_only else tf.all_variables()
+    d_vars = [var for var in t_vars if name in var.name]
+    if printable:
+        for idx, v in enumerate(d_vars):
+            print("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+    return d_vars
+
 
 ## Basic layer
 class Layer(object):

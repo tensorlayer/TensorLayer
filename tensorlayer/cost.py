@@ -118,6 +118,36 @@ def dice_coe(output, target, epsilon=1e-10):
     else:
         return tf.clip_by_value(dice, 0, 1.0-epsilon)
 
+def iou_coe(output, target, threshold=0.5, epsilon=1e-10):
+    """Intersection over Union (Hard Dice), usually be used for evaluating binary image segmentation.
+    The coefficient = [0, 1], 1 means totally match.
+
+    Parameters
+    -----------
+    output : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+    target : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+    threshold : float
+        The threshold value to be true.
+    epsilon : float
+        A small value to avoid zero denominator when both output and target output nothing.
+
+    Examples
+    ---------
+    >>> outputs = pixel_wise_softmax(network.outputs)
+    >>> iou = iou_ef(outputs, y_, epsilon=1e-5)
+
+    Notes
+    ------
+    - IOU cannot be used as training loss, people usually use dice coefficient for training, and IOU for evaluating.
+    """
+    pre = tf.cast(output > threshold, dtype=tf.float32)
+    truth = tf.cast(target > threshold, dtype=tf.float32)
+    intersection = tf.reduce_sum(pre * truth)
+    union = tf.reduce_sum(tf.cast((pre + truth) > threshold, dtype=tf.float32))
+    return tf.reduce_sum(intersection) / (tf.reduce_sum(union) + epsilon)
+
 
 def cross_entropy_seq(logits, target_seqs, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
