@@ -34,6 +34,33 @@ For people from academic, TensorLayer was originally developed by PhD students w
 For researches related to image such as image captioning, visual QA and etc, you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`_ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
 
+Exclude some layers from training
+-----------------------------------
+
+You may need to get the list of variables you want to update, TensorLayer provides two ways to get the variables list.
+
+The first way is to use the all_params of a network, by default, it will store the variables in order.
+You can print the variables information via
+``tl.layers.print_all_variables(train_only=True)`` or ``network.print_params(details=False)``.
+To choose which variables to update, you can do as below.
+
+.. code-block:: python
+
+  train_params = network.all_params[3:]
+
+The second way is to get the variables by a given name. For example, if you want to get all variables which the layer name contain ``dense``, you can do as below.
+
+.. code-block:: python
+
+  train_params = tl.layers.get_variables_with_name('dense', train_only=True, printable=True)
+
+After you get the variable list, you can define your optimizer like that so as to update only a part of the variables.
+
+.. code-block:: python
+
+  train_op = tf.train.AdamOptimizer(0.001).minimize(cost, var_list= train_params)
+
+
 Visualization
 --------------
 
@@ -86,6 +113,8 @@ Load Model
 Note that, the ``tl.files.load_npz()`` can only able to load the npz model saved by ``tl.files.save_npz()``.
 If you have a model want to load into your TensorLayer network, you can first assign your parameters into a list in order,
 then use ``tl.files.assign_params()`` to load the parameters into your TensorLayer model.
+
+
 
 
 
