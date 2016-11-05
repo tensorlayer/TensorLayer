@@ -32,6 +32,15 @@ then you can apply L2 regularization on the weights matrix of first two layer as
   cost = tl.cost.cross_entropy(y, y_)
   cost = cost + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[0]) + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[2])
 
+Besides, TensorLayer provides a easy way to get all variables by a given name, so you can also
+apply L2 regularization on some weights as follow.
+
+.. code-block:: python
+
+  l2 = 0
+  for w in tl.layers.get_variables_with_name('W_conv2d', train_only=True, printable=False):
+      l2 += tf.contrib.layers.l2_regularizer(1e-4)(w)
+  cost = tl.cost.cross_entropy(y, y_) + l2
 
 
 
