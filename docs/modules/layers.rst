@@ -294,6 +294,7 @@ Layer list
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
+   list_remove_repeat
 
 
 Name Scope and Sharing Parameters
@@ -504,3 +505,4 @@ Helper functions
 .. autofunction:: flatten_reshape
 .. autofunction:: clear_layers_name
 .. autofunction:: initialize_rnn_state
+.. autofunction:: list_remove_repeat

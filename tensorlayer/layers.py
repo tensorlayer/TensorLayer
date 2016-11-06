@@ -174,6 +174,23 @@ def get_variables_with_name(name, train_only=True, printable=False):
             print("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
     return d_vars
 
+def list_remove_repeat(l=None):
+    """Remove the repeated items in a list, and return the processed list.
+    You may need it to create merged layer like Concat, Elementwise and etc.
+
+    Parameters
+    ----------
+    l : a list
+
+    Examples
+    ---------
+    >>> l = [2, 3, 4, 2, 3]
+    >>> l = list_remove_repeat(l)
+    ... [2, 3, 4]
+    """
+    l2 = []
+    [l2.append(i) for i in l if not i in l2]
+    return l2
 
 ## Basic layer
 class Layer(object):
@@ -2635,6 +2652,9 @@ class ConcatLayer(Layer):
             self.all_params.extend(list(layer[i].all_params))
             self.all_drop.update(dict(layer[i].all_drop))
 
+        self.all_layers = list_remove_repeat(self.all_layers)
+        self.all_params = list_remove_repeat(self.all_params)
+        self.all_drop = list_remove_repeat(self.all_drop)
 
 class ReshapeLayer(Layer):
     """
@@ -2777,6 +2797,10 @@ class ElementwiseLayer(Layer):
             self.all_layers.extend(list(layer[i].all_layers))
             self.all_params.extend(list(layer[i].all_params))
             self.all_drop.update(dict(layer[i].all_drop))
+
+        self.all_layers = list_remove_repeat(self.all_layers)
+        self.all_params = list_remove_repeat(self.all_params)
+        self.all_drop = list_remove_repeat(self.all_drop)
 
 ## TF-Slim layer
 class SlimNetsLayer(Layer):
@@ -2972,6 +2996,9 @@ class MultiplexerLayer(Layer):
             self.all_params.extend(list(layer[i].all_params))
             self.all_drop.update(dict(layer[i].all_drop))
 
+        self.all_layers = list_remove_repeat(self.all_layers)
+        self.all_params = list_remove_repeat(self.all_params)
+        self.all_drop = list_remove_repeat(self.all_drop)
 ## We can Duplicate the network instead of DemultiplexerLayer
 # class DemultiplexerLayer(Layer):
 #     """
