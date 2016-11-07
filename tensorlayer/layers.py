@@ -20,7 +20,7 @@ import warnings
 #     "DenseLayer",
 # ]
 
-## Dynamically creat variables for keep prob
+
 # set_keep = locals()
 set_keep = globals()
 set_keep['_layers_name_list'] =[]
@@ -111,29 +111,10 @@ def initialize_rnn_state(state):
     The input is LSTMStateTuple or State of RNNCells.
     """
     if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
-        # when state_is_tuple=True for LSTM
-        # print(state)
-        # print(state.c)
-        # print(state.h)
-        # print(state.c.eval())
-        # print(state.h.eval())
-        # exit()
         c = state.c.eval()
         h = state.h.eval()
         return (c, h)
-        # # print(state)
-        # # print(state[0])
-        # new_state = state
-        # new_state[0].assign(state[0].eval())
-        # new_state[1].assign(state[1].eval())
-        # # state[0] = state[0].eval()
-        # # state[1] = state[1].eval()
-        # # state.c = state.c.eval()
-        # # state.h = state.h.eval()
-        # return new_state
     else:
-        # when state_is_tuple=False for LSTM
-        # or other RNNs
         new_state = state.eval()
         return new_state
 
@@ -151,12 +132,6 @@ def print_all_variables(train_only=False):
     for idx, v in enumerate(tvar):
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
-# def print_all_variables():
-#     """Print all trainable and non-trainable variables
-#     without initialize_all_variables()"""
-#     for idx, v in enumerate(tf.all_variables()):
-#         # print("  var %d: %s   %s" % (idx, v.get_shape(), v.name))
-#         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 def get_variables_with_name(name, train_only=True, printable=False):
     """Get variable list by a given name scope.
@@ -166,7 +141,6 @@ def get_variables_with_name(name, train_only=True, printable=False):
     >>> dense_vars = get_variable_with_name('dense', True, True)
     """
     print("  Get variables with %s" % name)
-    # t_vars = tf.trainable_variables()
     t_vars = tf.trainable_variables() if train_only else tf.all_variables()
     d_vars = [var for var in t_vars if name in var.name]
     if printable:
@@ -256,35 +230,6 @@ class Layer(object):
             n_params = n_params + n
         return n_params
 
-    # def print_params(self):
-    #     ''' Print all info of parameters in the network after initialize_all_variables()'''
-    #     try:
-    #         for i, p in enumerate(self.all_params):
-    #             print("  param %d: %s (mean: %f, median: %f, std: %f)   %s" % (i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
-    #         print("  num of params: %d" % self.count_params())
-    #     except:
-    #         raise Exception("Hint: print params after sess.run(tf.initialize_all_variables()) or use tl.layers.print_all_variables()")
-    #
-    #
-    # def print_layers(self):
-    #     ''' Print all info of layers in the network '''
-    #     for i, p in enumerate(self.all_layers):
-    #         # print(vars(p))
-    #         print("  layer %d: %s" % (i, str(p)))
-    #
-    # def count_params(self):
-    #     ''' Return the number of parameters in the network '''
-    #     n_params = 0
-    #     for i, p in enumerate(self.all_params):
-    #         n = 1
-    #         for s in p.eval().shape:
-    #         # for s in p.get_shape():
-    #             # s = int(s)
-    #             if s:
-    #                 n = n * s
-    #         n_params = n_params + n
-    #     return n_params
-
     def __str__(self):
         print("\nIt is a Layer class")
         self.print_params(False)
@@ -316,15 +261,8 @@ class InputLayer(Layer):
         name ='input_layer'
     ):
         Layer.__init__(self, inputs=inputs, name=name)
-        # super(InputLayer, self).__init__()     # initialize all super classes
-        # if n_features:
-        #     self.n_units = n_features
-        # else:
-        #     self.n_units = int(inputs._shape[1])
         print("  tensorlayer:Instantiate InputLayer  %s: %s" % (self.name, inputs._shape))
-
         self.outputs = inputs
-
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
@@ -669,26 +607,6 @@ class DenseLayer(Layer):
             self.all_params.extend( [W, b] )
         else:
             self.all_params.extend( [W] )
-        ## when ReconLayer updates the weights of encoder, shallow cope allows
-        # the weights in network can be changed at the same time, as they point
-        # to the same weights.
-        #
-        # e.g. the encoder points to same physical memory address
-        # network = InputLayer(x, name='input_layer')
-        # network = DenseLayer(network, n_units=200, act = tf.nn.sigmoid, name='sigmoid')
-        # recon_layer = ReconLayer(network, n_units=784, act = tf.nn.sigmoid, name='recon_layer')
-        # print(network.all_params)
-        #   [<tensorflow.python.ops.variables.Variable object at 0x10d616f98>,
-        #   <tensorflow.python.ops.variables.Variable object at 0x10d8f6080>]
-        # print(len(network.all_params))
-        #   2
-        # print(recon_layer.all_params)
-        #   [<tensorflow.python.ops.variables.Variable object at 0x10d616f98>,
-        #   <tensorflow.python.ops.variables.Variable object at 0x10d8f6080>,
-        #   <tensorflow.python.ops.variables.Variable object at 0x10d8f6550>,
-        #   <tensorflow.python.ops.variables.Variable object at 0x10d8f6198>]
-        # print(len(recon_layer.all_params))
-        #   4
 
 class ReconLayer(DenseLayer):
     """
