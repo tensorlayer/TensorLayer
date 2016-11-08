@@ -1581,7 +1581,7 @@ def MaxPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpoo
             name = name)
     return net
 
-def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpool'):
+def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='meanpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
