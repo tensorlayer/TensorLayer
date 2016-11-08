@@ -424,18 +424,22 @@ methods may better for you.
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: Conv2d
 
 2D Deconvolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: DeConv2d
 
 2D Max pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: MaxPool2d
 
 2D Mean pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autofunction:: MeanPool2d
 
 
