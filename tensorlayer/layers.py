@@ -1530,7 +1530,7 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
                        name = name)
     return net
 
-def DeConv2d(net, filter_size=(3, 3), n_out_channel = 32,
+def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
         batch_size = 32, out_size = (30, 30), strides = (2, 2), padding = 'SAME', act = None,
         W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
         W_init_args = {}, b_init_args = {}, name ='decnn2d'):
@@ -1539,8 +1539,8 @@ def DeConv2d(net, filter_size=(3, 3), n_out_channel = 32,
     Parameters
     ----------
     net : TensorLayer layer.
-    filter_size : tuple of (height, width) for filter size.
     n_out_channel : int, number of output channel.
+    filter_size : tuple of (height, width) for filter size.
     out_size :  tuple of (height, width) of output.
     batch_size : int, batch_size.
     strides : tuple of (height, width) for strides.
