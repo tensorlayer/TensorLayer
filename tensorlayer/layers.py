@@ -2664,8 +2664,9 @@ class DynamicRNNLayer(Layer):
                     self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
                 else:
                     # <akara>:
-                    # 3D Tensor [batch_size, n_steps, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
+                    # 3D Tensor [batch_size, n_steps(max), n_hidden]
+                    max_length = tf.shape(self.outputs)[1]
+                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
 
         # Final state
         self.final_state = last_states
