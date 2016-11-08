@@ -262,19 +262,31 @@ Layer list
    get_variables_with_name
    set_name_reuse
    print_all_variables
+
    Layer
+
    InputLayer
    Word2vecEmbeddingInputlayer
    EmbeddingInputlayer
+
    DenseLayer
    ReconLayer
    DropoutLayer
    DropconnectDenseLayer
+
+   Conv1dLayer
    Conv2dLayer
    DeConv2dLayer
    Conv3dLayer
    DeConv3dLayer
    PoolLayer
+   UpSampling2dLayer
+   AtrousConv2dLayer
+   LocalResponseNormLayer
+
+   Conv2d
+   DeConv2d
+
    BatchNormLayer
    RNNLayer
    BiRNNLayer
@@ -282,15 +294,21 @@ Layer list
    retrieve_seq_length_op
    retrieve_seq_length_op2
    DynamicRNNLayer
+
    FlattenLayer
    ConcatLayer
    ReshapeLayer
    LambdaLayer
    ElementwiseLayer
+
    SlimNetsLayer
+
    PReluLayer
+
    MultiplexerLayer
+
    EmbeddingAttentionSeq2seqWrapper
+
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
@@ -358,27 +376,13 @@ Dropconnect + Dense layer
 
 .. autoclass:: DropconnectDenseLayer
 
-Convolutional layer
-----------------------
+Convolutional layer (Pro)
+--------------------------
 
 1D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We don't provide 1D CNN layer, actually TensorFlow only provides `tf.nn.conv2d` and `tf.nn.conv3d`,
-so to implement 1D CNN, you can use Reshape layer as follow.
-
-.. code-block:: python
-
-  x = tf.placeholder(tf.float32, shape=[None, 500], name='x')
-  network = tl.layers.ReshapeLayer(x, shape=[-1, 500, 1, 1], name='reshape')
-  network = tl.layers.Conv2dLayer(network,
-                      act = tf.nn.relu,
-                      shape = [10, 1, 1, 16], # 16 features
-                      strides=[1, 2, 1, 1],   # stride of 2
-                      padding='SAME',
-                      name = 'cnn')
-
-
+.. autoclass:: Conv1dLayer
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -390,7 +394,6 @@ so to implement 1D CNN, you can use Reshape layer as follow.
 
 .. autoclass:: DeConv2dLayer
 
-
 3D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -401,6 +404,41 @@ so to implement 1D CNN, you can use Reshape layer as follow.
 
 .. autoclass:: DeConv3dLayer
 
+2D UpSampling layer
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: UpSampling2dLayer
+
+2D Atrous convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: AtrousConv2dLayer
+
+
+Convolutional layer (Simplified)
+-----------------------------------
+
+For users don't familiar with TensorFlow, the following simplified functions may easier for you.
+We will provide more simplified functions later, but if you are good at TensorFlow, the professional
+methods may better for you.
+
+2D Convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: Conv2d
+
+2D Deconvolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: DeConv2d
+
+2D Max pooling layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MaxPool2d
+
+2D Mean pooling layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MeanPool2d
+
+
 Pooling layer
 ----------------
 
@@ -408,13 +446,16 @@ Pooling layer for any dimensions and any pooling functions
 
 .. autoclass:: PoolLayer
 
+
 Normalization layer
 --------------------
 
-We do not provide layer for local response normalization as it does not have any weights and arguments, we suggest
+For local response normalization as it does not have any weights and arguments, we suggest
 you to apply ``tf.nn.lrn`` on ``network.outputs``.
 
 .. autoclass:: BatchNormLayer
+.. autoclass:: LocalResponseNormLayer
+
 
 Recurrent layer
 ------------------

@@ -940,7 +940,81 @@ class DropconnectDenseLayer(Layer):
         self.all_params.extend( [W, b] )
 
 
-## Convolutional layer
+## Convolutional layer (Pro)
+
+class Conv1dLayer(Layer):
+    """
+    The :class:`Conv1dLayer` class is a 1D CNN layer, see ``tf.nn.conv1d``.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer, [batch, in_width, in_channels].
+    act : activation function, None for identity.
+    shape : list of shape
+        shape of the filters, [filter_height, filter_width, in_channels, out_channels].
+    strides : a list of ints.
+        The stride of the sliding window for each dimension of input.\n
+        It Must be in the same order as the dimension specified with format.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    use_cudnn_on_gpu : An optional bool. Defaults to True.
+    data_format : An optional string from "NHWC", "NCHW". Defaults to "NHWC", the data is stored in the order of [batch, in_width, in_channels]. The "NCHW" format stores data as [batch, in_channels, in_width].
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weights tf.get_variable().
+    b_init_args : dictionary
+        The arguments for the biases tf.get_variable().
+    name : a string or None
+        An optional name to attach to this layer.
+
+    References
+    ----------
+    - `tf.nn.conv1d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv1d>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        act = tf.nn.relu,
+        shape = [5, 5, 1],
+        strides=[1, 1, 1],
+        padding='SAME',
+        use_cudnn_on_gpu=None,
+        data_format=None,
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        b_init_args = {},
+        name ='cnn_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
+                            (self.name, str(shape), str(strides), padding, act.__name__))
+        if act is None:
+            act = tf.identity
+        with tf.variable_scope(name) as vs:
+            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, **W_init_args )
+            if b_init:
+                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+                self.outputs = act( tf.nn.conv1d(self.inputs, W, strides=strides, padding=padding,
+                            use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b ) #1.2
+            else:
+                self.outputs = act( tf.nn.conv1d(self.inputs, W, strides=strides, padding=padding,
+                            use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
+
 class Conv2dLayer(Layer):
     """
     The :class:`Conv2dLayer` class is a 2D CNN layer, see ``tf.nn.conv2d``.
@@ -1280,7 +1354,286 @@ class DeConv3dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
+class UpSampling2dLayer(Layer):
+    """
+
+    Parameters
+    -----------
+    layer : a layer class with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
+    size : a tupe of int.
+        (height, width) scale factor or new size of height and width.
+    is_scale : boolean, if True (default), size is scale factor, otherwise, size is number of pixels of height and width.
+    method : 0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
+        - ResizeMethod.BILINEAR: Bilinear interpolation.
+        - ResizeMethod.NEAREST_NEIGHBOR: Nearest neighbor interpolation.
+        - ResizeMethod.BICUBIC: Bicubic interpolation.
+        - ResizeMethod.AREA: Area interpolation.
+    align_corners : bool. If true, exactly align all 4 corners of the input and output. Defaults to false.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    References
+    -----------
+    - `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image.html#resize_images>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        size = [],
+        is_scale = True,
+        method = 0,
+        align_corners = False,
+        name ='upsample2d_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        if len(self.inputs._shape) == 3:
+            if is_scale:
+                size_h = size[0] * int(self.inputs._shape[0])
+                size_w = size[1] * int(self.inputs._shape[1])
+                size = [size_h, size_w]
+        elif len(self.inputs._shape) == 4:
+            if is_scale:
+                size_h = size[0] * int(self.inputs._shape[1])
+                size_w = size[1] * int(self.inputs._shape[2])
+                size = [size_h, size_w]
+        else:
+            raise Exception("Donot support shape %s" % self.inputs.get_shape())
+        print("  tensorlayer:Instantiate UpSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+                                (name, is_scale, size, method, align_corners))
+        with tf.variable_scope(name) as vs:
+            try:
+                self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
+            except: # for TF 0.10
+                self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
+class AtrousConv2dLayer(Layer):
+    """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see ``tf.nn.atrous_conv2d``.
+
+    Parameters
+    -----------
+    layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
+    # filters : A 4-D Tensor with the same type as value and shape [filter_height, filter_width, in_channels, out_channels]. filters' in_channels dimension must match that of value. Atrous convolution is equivalent to standard convolution with upsampled filters with effective height filter_height + (filter_height - 1) * (rate - 1) and effective width filter_width + (filter_width - 1) * (rate - 1), produced by inserting rate - 1 zeros along consecutive elements across the filters' spatial dimensions.
+    n_filter : number of filter.
+    filter_size : tuple (height, width) for filter size.
+    rate : A positive int32. The stride with which we sample input values across the height and width dimensions. Equivalently, the rate by which we upsample the filter values by inserting zeros across the height and width dimensions. In the literature, the same parameter is sometimes called input stride or dilation.
+    act : activation function, None for linear.
+    padding : A string, either 'VALID' or 'SAME'. The padding algorithm.
+    W_init : weights initializer. The initializer for initializing the weight matrix.
+    b_init : biases initializer or None. The initializer for initializing the bias vector. If None, skip biases.
+    W_init_args : dictionary. The arguments for the weights tf.get_variable().
+    b_init_args : dictionary. The arguments for the biases tf.get_variable().
+    name : a string or None, an optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        n_filter = 32,
+        filter_size = (3,3),
+        rate = 2,
+        act = None,
+        padding = 'SAME',
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        b_init_args = {},
+        name = 'atrou2d'
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate AtrousConv2dLayer %s: n_filter: %d, filter_size: %s, rate: %d, padding: %s, act: %s" %
+                            (self.name, n_filter, filter_size, rate, padding, act.__name__))
+        if act is None:
+            act = tf.identity
+        with tf.variable_scope(name) as vs:
+            shape = [filter_size[0], filter_size[1], int(self.inputs._shape[-1]), n_filter]
+            filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, **W_init_args )
+            if b_init:
+                b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, **b_init_args )
+                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding) + b)
+            else:
+                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
+
+class SeparableConv2dLayer(Layer):#TODO
+    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see ``tf.nn.separable_conv2d``.
+
+    Parameters
+    -----------
+    layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
+    depthwise_filter : 4-D Tensor with shape [filter_height, filter_width, in_channels, channel_multiplier]. Contains in_channels convolutional filters of depth 1.
+    pointwise_filter : 4-D Tensor with shape [1, 1, channel_multiplier * in_channels, out_channels]. Pointwise filter to mix channels after depthwise_filter has convolved spatially.
+    strides : 1-D of size 4. The strides for the depthwise convolution for each dimension of input.
+    padding : A string, either 'VALID' or 'SAME'. The padding algorithm. See the comment here
+    name : a string or None, an optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        depthwise_filter = None,
+        pointwise_filter = None,
+        rate = 2,
+        padding = 'SAME',
+        name = 'atrou2d'
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        # print("  tensorlayer:Instantiate SeparableConv2dLayer %s: %s, %s, %s, %s" %
+        #                     (self.name, str(shape), str(strides), padding, act.__name__))
+        # with tf.variable_scope(name) as vs:
+        #     self.outputs = tf.nn.separable_conv2d(value, filters, rate, padding)
+        #
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        # self.all_layers.extend( [self.outputs] )
+
+## Convolutional layer (Simplified)
+def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
+        padding='SAME', W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {}, b_init_args = {}, name ='conv2d',):
+    """Wrapper for :class:`Conv2dLayer`, if you don't understand how to use :class:`Conv2dLayer`, this function may be easier.
+
+    Parameters
+    ----------
+    net : TensorLayer layer.
+    n_filter : number of filter.
+    filter_size : tuple (height, width) for filter size.
+    strides : tuple (height, width) for strides.
+    act : None or activation function.
+    others : see :class:`Conv2dLayer`.
+    """
+    if act is None:
+        act = tf.identity
+    net = Conv2dLayer(net,
+                       act = act,
+                       shape = [filter_size[0], filter_size[1], int(net.outputs._shape[-1]), n_filter],  # 32 features for each 5x5 patch
+                       strides = [1, strides[0], strides[1], 1],
+                       padding = padding,
+                       W_init = W_init,
+                       W_init_args = W_init_args,
+                       b_init = b_init,
+                       b_init_args = b_init_args,
+                       name = name)
+    return net
+
+def DeConv2d(net, filter_size=(3, 3), n_out_channel = 32,
+        batch_size = 32, out_size = (30, 30), strides = (2, 2), padding = 'SAME', act = None,
+        W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {}, b_init_args = {}, name ='decnn2d'):
+    """Wrapper for :class:`DeConv2dLayer`, if you don't understand how to use :class:`DeConv2dLayer`, this function may be easier.
+
+    Parameters
+    ----------
+    net : TensorLayer layer.
+    filter_size : tuple of (height, width) for filter size.
+    n_out_channel : int, number of output channel.
+    out_size :  tuple of (height, width) of output.
+    batch_size : int, batch_size.
+    strides : tuple of (height, width) for strides.
+    act : None or activation function.
+    others : see :class:`Conv2dLayer`.
+    """
+    if act is None:
+        act = tf.identity
+    net = DeConv2dLayer(layer = net,
+                    act = tf.nn.relu,
+                    shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs._shape[-1])],
+                    output_shape = [batch_size, out_size[0], out_size[1], n_out_channel],
+                    strides = [1, strides[0], strides[1], 1],
+                    padding = padding,
+                    W_init = W_init,
+                    b_init = b_init,
+                    W_init_args = W_init_args,
+                    b_init_args = b_init_args,
+                    name = name)
+    return net
+
+def MaxPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpool'):
+    """Wrapper for :class:`PoolLayer`.
+
+    Parameters
+    -----------
+    net : TensorLayer layer.
+    filter_size : tuple of (height, width) for filter size.
+    strides : tuple of (height, width). Default is the same with filter_size.
+    others : see :class:`Conv2dLayer`.
+    """
+    if strides is None:
+        strides = filter_size
+    net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            pool = tf.nn.max_pool,
+            name = name)
+    return net
+
+def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpool'):
+    """Wrapper for :class:`PoolLayer`.
+
+    Parameters
+    -----------
+    net : TensorLayer layer.
+    filter_size : tuple of (height, width) for filter size.
+    strides : tuple of (height, width). Default is the same with filter_size.
+    others : see :class:`Conv2dLayer`.
+    """
+    if strides is None:
+        strides = filter_size
+    net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            pool = tf.nn.avg_pool,
+            name = name)
+    return net
+
 # ## Normalization layer
+class LocalResponseNormLayer(Layer):
+    """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization``.
+    The 4-D input tensor is treated as a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently. Within a given vector, each component is divided by the weighted, squared sum of inputs within depth_radius.
+
+    Parameters
+    -----------
+    layer : a layer class. Must be one of the following types: float32, half. 4-D.
+    depth_radius : An optional int. Defaults to 5. 0-D. Half-width of the 1-D normalization window.
+    bias : An optional float. Defaults to 1. An offset (usually positive to avoid dividing by 0).
+    alpha : An optional float. Defaults to 1. A scale factor, usually positive.
+    beta : An optional float. Defaults to 0.5. An exponent.
+    name : A string or None, an optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        depth_radius = None,
+        bias = None,
+        alpha = None,
+        beta = None,
+        name ='lrn_layer',
+    ):
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" %
+                            (self.name, depth_radius, bias, alpha, beta))
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.nn.local_response_normalization(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
