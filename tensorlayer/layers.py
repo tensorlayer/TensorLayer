@@ -3075,7 +3075,7 @@ class ElementwiseLayer(Layer):
 class SlimNetsLayer(Layer):
     """
     The :class:`SlimNetsLayer` class can be used to merge all TF-Slim nets into
-    TensorLayer. Model can be found in `slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ , more about slim
+    TensorLayer. Model can be found in `slim-model <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ , more about slim
     see `slim-git <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim>`_ .
 
     Parameters
