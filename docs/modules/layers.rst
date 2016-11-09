@@ -286,6 +286,8 @@ Layer list
 
    Conv2d
    DeConv2d
+   MaxPool2d
+   MeanPool2d
 
    BatchNormLayer
    RNNLayer

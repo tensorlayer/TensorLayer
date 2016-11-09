@@ -30,7 +30,6 @@ Some of the code in this package are borrowed from Keras.
 
    zoom
    zoom_multi
-
    brightness
    brightness_multi
 
@@ -52,6 +51,7 @@ Some of the code in this package are borrowed from Keras.
 
    distorted_images
    crop_central_whiten_images
+
 
 Threading
 ------------
