@@ -26,7 +26,7 @@ Before we start
 
 The tutorial assumes that you are somewhat familiar with neural networks and
 TensorFlow (the library which `TensorLayer`_ is built on top of). You can try to learn
-both at once from the `Deeplearning Tutorial`_.
+the basic of neural network from the `Deeplearning Tutorial`_.
 
 For a more slow-paced introduction to artificial neural networks, we recommend
 `Convolutional Neural Networks for Visual Recognition`_ by Andrej Karpathy et
@@ -2012,7 +2012,7 @@ preprocessing functions (:mod:`tensorlayer.prepro`),
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/
-.. _TensorFlow tutorial: https://www.tensorflow.org/versions/r0.9/tutorials/index.html
+.. _TensorFlow tutorial: https://www.tensorflow.org/versions/master/tutorials/index.html
 .. _Understand Deep Reinforcement Learning: http://karpathy.github.io/2016/05/31/rl/
 .. _Understand Recurrent Neural Network: http://karpathy.github.io/2015/05/21/rnn-effectiveness/
 .. _Understand LSTM Network: http://colah.github.io/posts/2015-08-Understanding-LSTMs/
