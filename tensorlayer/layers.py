@@ -1515,6 +1515,18 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
     strides : tuple (height, width) for strides.
     act : None or activation function.
     others : see :class:`Conv2dLayer`.
+
+    Examples
+    --------
+    >>> w_init = tf.truncated_normal_initializer(stddev=0.01)
+    >>> b_init = tf.constant_initializer(value=0.0)
+    >>> inputs = InputLayer(x, name='inputs')
+    >>> conv1 = Conv2d(inputs, 64, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv1_1')
+    >>> conv1 = Conv2d(conv1, 64, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv1_2')
+    >>> pool1 = MaxPool2d(conv1, (2, 2), padding='SAME', name='pool1')
+    >>> conv2 = Conv2d(pool1, 128, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv2_1')
+    >>> conv2 = Conv2d(conv2, 128, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv2_2')
+    >>> pool2 = MaxPool2d(conv2, (2, 2), padding='SAME', name='pool2')
     """
     if act is None:
         act = tf.identity
