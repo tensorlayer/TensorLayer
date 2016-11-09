@@ -1291,8 +1291,7 @@ class Conv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 class DeConv3dLayer(Layer):
-    """
-    The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see ``tf.nn.conv3d_transpose``.
+    """The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see ``tf.nn.conv3d_transpose``.
 
     Parameters
     ----------
@@ -1355,7 +1354,7 @@ class DeConv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 class UpSampling2dLayer(Layer):
-    """
+    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see ``tf.image.resize_images``.
 
     Parameters
     -----------
@@ -1364,10 +1363,10 @@ class UpSampling2dLayer(Layer):
         (height, width) scale factor or new size of height and width.
     is_scale : boolean, if True (default), size is scale factor, otherwise, size is number of pixels of height and width.
     method : 0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
-        - ResizeMethod.BILINEAR: Bilinear interpolation.
-        - ResizeMethod.NEAREST_NEIGHBOR: Nearest neighbor interpolation.
-        - ResizeMethod.BICUBIC: Bicubic interpolation.
-        - ResizeMethod.AREA: Area interpolation.
+        - ResizeMethod.BILINEAR, Bilinear interpolation.
+        - ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
+        - ResizeMethod.BICUBIC, Bicubic interpolation.
+        - ResizeMethod.AREA, Area interpolation.
     align_corners : bool. If true, exactly align all 4 corners of the input and output. Defaults to false.
     name : a string or None
         An optional name to attach to this layer.
@@ -1617,7 +1616,8 @@ def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='meanp
 # ## Normalization layer
 class LocalResponseNormLayer(Layer):
     """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization``.
-    The 4-D input tensor is treated as a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently. Within a given vector, each component is divided by the weighted, squared sum of inputs within depth_radius.
+    The 4-D input tensor is treated as a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
+    Within a given vector, each component is divided by the weighted, squared sum of inputs within depth_radius.
 
     Parameters
     -----------
