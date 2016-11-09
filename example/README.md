@@ -8,7 +8,7 @@ Example
 
 Note
 ====
-* For Simplied Convolutional layer APIs see [Convolutional layer (Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
+* TensorFlow provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro)and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
 * If you get into trouble, you can start a discussion on [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
 [QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](tensorlayer@gmail.com).
