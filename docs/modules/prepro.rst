@@ -68,61 +68,73 @@ Images
 
 Rotation
 ^^^^^^^^^
+
 .. autofunction:: rotation
 .. autofunction:: rotation_multi
 
 Crop
 ^^^^^^^^^
+
 .. autofunction:: crop
 .. autofunction:: crop_multi
 
 Flip
 ^^^^^^^^^
+
 .. autofunction:: flip_axis
 .. autofunction:: flip_axis_multi
 
 Shift
 ^^^^^^^^^
+
 .. autofunction:: shift
 .. autofunction:: shift_multi
 
 Shear
 ^^^^^^^^^
+
 .. autofunction:: shear
 .. autofunction:: shear_multi
 
 Swirl
 ^^^^^^^^^
+
 .. autofunction:: swirl
 .. autofunction:: swirl_multi
 
 Zoom
 ^^^^^^^^^
+
 .. autofunction:: zoom
 .. autofunction:: zoom_multi
 
 Brightness
 ^^^^^^^^^^^^
+
 .. autofunction:: brightness
 .. autofunction:: brightness_multi
 
 Resize
 ^^^^^^^^^^^^
+
 .. autofunction:: imresize
 
 Normalization
 ^^^^^^^^^^^^^^^
+
 .. autofunction:: samplewise_norm
 .. autofunction:: featurewise_norm
 
 
 Channel shift
 ^^^^^^^^^^^^^^
+
 .. autofunction:: channel_shift
 .. autofunction:: channel_shift_multi
 
 Manual transform
 ^^^^^^^^^^^^^^^^^
+
 .. autofunction:: transform_matrix_offset_center
 .. autofunction:: apply_transform
 .. autofunction:: projective_transform_by_points
@@ -130,6 +142,7 @@ Manual transform
 
 Numpy and PIL
 ^^^^^^^^^^^^^^
+
 .. autofunction:: array_to_img
 
 
