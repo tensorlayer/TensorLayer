@@ -25,9 +25,10 @@ from six.moves import range
 import scipy
 from scipy import linalg
 import scipy.ndimage as ndi
+
 from skimage import transform
-# import skimage
 from skimage import exposure
+import skimage
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -509,8 +510,8 @@ def swirl_multi(x, center=None, strength=1, radius=100, rotation=0, output_shape
     assert radius != 0, Exception("Invalid radius value")
     rotation = np.pi / 180 * rotation
     if is_random:
-        center_h = int(np.random.uniform(0, x.shape[0]))
-        center_w = int(np.random.uniform(0, x.shape[1]))
+        center_h = int(np.random.uniform(0, x[0].shape[0]))
+        center_w = int(np.random.uniform(0, x[0].shape[1]))
         center = (center_h, center_w)
         strength = np.random.uniform(0, strength)
         radius = np.random.uniform(1e-10, radius)
