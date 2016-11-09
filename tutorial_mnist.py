@@ -411,11 +411,15 @@ def main_test_stacked_denoise_AE(model='relu'):
 
 def main_test_cnn_layer():
     """Reimplementation of the TensorFlow official MNIST CNN tutorials:
-        # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
-        # https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
-        More TensorFlow official CNN tutorials can be found here:
-        # tutorial_cifar10.py
-        # https://www.tensorflow.org/versions/master/tutorials/deep_cnn/index.html
+    - https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
+    - https://github.com/tensorflow/tensorflow/blob/master/tensorflow/models/image/mnist/convolutional.py
+
+    More TensorFlow official CNN tutorials can be found here:
+    - tutorial_cifar10.py
+    - https://www.tensorflow.org/versions/master/tutorials/deep_cnn/index.html
+
+    - For simplified CNN layer see "Convolutional layer (Simplified)"
+      in read the docs website.
     """
     X_train, y_train, X_val, y_val, X_test, y_test = \
                     tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
@@ -556,17 +560,11 @@ def main_test_cnn_layer():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    sess = tl.ops.set_gpu_fraction(sess, gpu_fraction = 0.3)
-    try:
-        """Dropout and Dropconnect"""
-        main_test_layers(model='relu')                # model = relu, dropconnect
-        """Single Denoising Autoencoder"""
-        # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
-        """Stacked Denoising Autoencoder"""
-        # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
-        """CNN"""
-        # main_test_cnn_layer()
-        tl.ops.exit_tf(sess)      # close sess, tensorboard and nvidia-process
-    except KeyboardInterrupt:
-        print('\nKeyboardInterrupt')
-        tl.ops.exit_tf(sess)
+    """Dropout and Dropconnect"""
+    main_test_layers(model='relu')                # model = relu, dropconnect
+    """Single Denoising Autoencoder"""
+    # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
+    """Stacked Denoising Autoencoder"""
+    # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
+    """CNN"""
+    # main_test_cnn_layer()

@@ -23,15 +23,15 @@ which is a dataset of over 14 million images belonging to 1000 classes.
 
 Download Pre-trained Model
 ----------------------------
-Model weights in this example - vgg16_weights.npz : http://www.cs.toronto.edu/~frossard/post/vgg16/
-
-Caffe VGG 16 model : https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
-
-Tool to convert the Caffe models to TensorFlow's : https://github.com/ethereon/caffe-tensorflow
+- Model weights in this example - vgg16_weights.npz : http://www.cs.toronto.edu/~frossard/post/vgg16/
+- Caffe VGG 16 model : https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
+- Tool to convert the Caffe models to TensorFlow's : https://github.com/ethereon/caffe-tensorflow
 
 Note
 ------
-When feeding other images to the model be sure to properly resize or crop them
+- For simplified CNN layer see "Convolutional layer (Simplified)"
+in read the docs website.
+- When feeding other images to the model be sure to properly resize or crop them
 beforehand. Distorted images might end up being misclassified. One way of safely
 feeding images of multiple sizes is by doing center cropping, as shown in the
 following snippet:

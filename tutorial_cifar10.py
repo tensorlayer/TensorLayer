@@ -20,6 +20,9 @@ tutorial_cifar10_tfrecord : Preparing distorted image with Queue and Thread
 def main_test_cnn_naive():
     """Without any distorting, whitening and cropping for training data.
     This method work well for MNIST, but not CIFAR-10.
+
+    For simplified CNN layer see "Convolutional layer (Simplified)"
+    in read the docs website.
     """
     model_file_name = "model_cifar10_naive.ckpt"
     resume = False # load model, resume from previous checkpoint?
@@ -169,6 +172,9 @@ def main_test_cnn_advanced():
 
     This model has 1,068,298 paramters, after few hours of training with GPU,
     accurcy of 86% was found.
+
+    For simplified CNN layer see "Convolutional layer (Simplified)"
+    in read the docs website.
 
     Links
     -------

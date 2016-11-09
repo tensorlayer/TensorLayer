@@ -13,10 +13,13 @@ import io
 
 """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
 
-This model has 1,068,298 paramters, after few hours of training with GPU,
+- This model has 1,068,298 paramters, after few hours of training with GPU,
 accurcy of 86% was found.
 
-Hint : Set different num_threads according to your machine.
+- For simplified CNN layer see "Convolutional layer (Simplified)"
+in read the docs website.
+
+- Data augmentation without TFRecord see `tutorial_image_preprocess.py`.
 
 Links
 -------
@@ -38,8 +41,6 @@ artificially increase the data set size:
 .. Randomly flip the image from left to right.
 .. Randomly distort the image brightness.
 .. Randomly distort the image contrast.
-
-More about data augmentation see `tutorial_image_preprocess.py`.
 
 Speed Up
 --------
