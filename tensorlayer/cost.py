@@ -99,8 +99,8 @@ def dice_coe(output, target, epsilon=1e-10):
 
     Examples
     ---------
-    >>> outputs = pixel_wise_softmax(network.outputs)
-    >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
+    >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
+    >>> dice_loss = 1 - tl.cost.dice_coe(outputs, y_, epsilon=1e-5)
 
     References
     -----------
@@ -135,8 +135,8 @@ def iou_coe(output, target, threshold=0.5, epsilon=1e-10):
 
     Examples
     ---------
-    >>> outputs = pixel_wise_softmax(network.outputs)
-    >>> iou = iou_ef(outputs, y_, epsilon=1e-5)
+    >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
+    >>> iou = tl.cost.iou_coe(outputs[:,:,:,0], y_[:,:,:,0])
 
     Notes
     ------
