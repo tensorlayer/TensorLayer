@@ -67,9 +67,7 @@ def threading_data(data=None, fn=None, **kwargs):
     ...     x, y = data
     ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
     ...     x, y = flip_axis_multi([x, y], axis=1, is_random=True)
-    ...     x, y = rotation_multi([x, y], rg=10, is_random=True)
-    ...     x, y = shear_multi([x, y], 0.1, is_random=True)
-    ...     x, y = zoom_multi([x, y], zoom_range=[0.9, 1.1], is_random=True)
+    ...     x, y = crop_multi([x, y], 100, 100, is_random=True)
     ...     return x, y
     >>> X, Y --> [batch_size, row, col, channel]
     >>> data = threading_data([_ for _ in zip(X, Y)], distort_img)
