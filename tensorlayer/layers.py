@@ -1531,7 +1531,7 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
     return net
 
 def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
-        batch_size = 32, out_size = (30, 30), strides = (2, 2), padding = 'SAME', act = None,
+        out_size = (30, 30), strides = (2, 2), padding = 'SAME', batch_size = None, act = None,
         W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
         W_init_args = {}, b_init_args = {}, name ='decnn2d'):
     """Wrapper for :class:`DeConv2dLayer`, if you don't understand how to use :class:`DeConv2dLayer`, this function may be easier.
@@ -1542,15 +1542,17 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
     n_out_channel : int, number of output channel.
     filter_size : tuple of (height, width) for filter size.
     out_size :  tuple of (height, width) of output.
-    batch_size : int, batch_size.
+    batch_size : int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     strides : tuple of (height, width) for strides.
     act : None or activation function.
     others : see :class:`Conv2dLayer`.
     """
     if act is None:
         act = tf.identity
+    if batch_size is None:
+        batch_size = tf.shape(net.outputs)[0]
     net = DeConv2dLayer(layer = net,
-                    act = tf.nn.relu,
+                    act = act,
                     shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs._shape[-1])],
                     output_shape = [batch_size, out_size[0], out_size[1], n_out_channel],
                     strides = [1, strides[0], strides[1], 1],
