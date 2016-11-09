@@ -22,8 +22,12 @@ Some of the code in this package are borrowed from Keras.
    flip_axis_multi
    shift
    shift_multi
+
    shear
    shear_multi
+   swirl
+   swirl_multi
+
    zoom
    zoom_multi
 
@@ -86,6 +90,11 @@ Shear
 ^^^^^^^^^
 .. autofunction:: shear
 .. autofunction:: shear_multi
+
+Swirl
+^^^^^^^^^
+.. autofunction:: swirl
+.. autofunction:: swirl_multi
 
 Zoom
 ^^^^^^^^^
