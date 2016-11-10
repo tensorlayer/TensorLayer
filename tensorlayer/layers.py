@@ -572,7 +572,7 @@ class DenseLayer(Layer):
         self,
         layer = None,
         n_units = 100,
-        act = tf.nn.relu,
+        act = tf.identity,
         W_init = tf.truncated_normal_initializer(stddev=0.1),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
@@ -908,7 +908,7 @@ class DropconnectDenseLayer(Layer):
         layer = None,
         keep = 0.5,
         n_units = 100,
-        act = tf.nn.relu,
+        act = tf.identity,
         W_init = tf.truncated_normal_initializer(stddev=0.1),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
@@ -978,7 +978,7 @@ class Conv1dLayer(Layer):
     def __init__(
         self,
         layer = None,
-        act = tf.nn.relu,
+        act = tf.identity,
         shape = [5, 5, 1],
         strides=[1, 1, 1],
         padding='SAME',
@@ -1083,7 +1083,7 @@ class Conv2dLayer(Layer):
     def __init__(
         self,
         layer = None,
-        act = tf.nn.relu,
+        act = tf.identity,
         shape = [5, 5, 1, 100],
         strides=[1, 1, 1, 1],
         padding='SAME',
@@ -1194,7 +1194,7 @@ class DeConv2dLayer(Layer):
     def __init__(
         self,
         layer = None,
-        act = tf.nn.relu,
+        act = tf.identity,
         shape = [3, 3, 128, 256],
         output_shape = [1, 256, 256, 128],
         strides = [1, 2, 2, 1],
@@ -1261,7 +1261,7 @@ class Conv3dLayer(Layer):
     def __init__(
         self,
         layer = None,
-        act = tf.nn.relu,
+        act = tf.identity,
         shape = [2, 2, 2, 64, 128],
         strides=[1, 2, 2, 2, 1],
         padding='SAME',
@@ -1325,7 +1325,7 @@ class DeConv3dLayer(Layer):
     def __init__(
         self,
         layer = None,
-        act = tf.nn.relu,
+        act = tf.identity,
         shape = [2, 2, 2, 128, 256],
         output_shape = [1, 12, 32, 32, 128],
         strides = [1, 2, 2, 2, 1],
