@@ -528,6 +528,7 @@ def swirl_multi(x, center=None, strength=1, radius=100, rotation=0, output_shape
     return np.asarray(results)
 
 # elastic_transform
+
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
@@ -557,8 +558,10 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
     else:
         random_state = np.random.RandomState(int(time.time()))
     #
+    is_3d = False
     if len(x.shape) == 3 and x.shape[-1] == 1:
         x = x[:,:,0]
+        is_3d = True
     elif len(x.shape) == 3 and x.shape[-1] != 1:
         raise Exception("Only support greyscale image")
     assert len(x.shape)==2
@@ -570,8 +573,10 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
 
     x_, y_ = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
     indices = np.reshape(x_ + dx, (-1, 1)), np.reshape(y_ + dy, (-1, 1))
-
-    return map_coordinates(x, indices, order=1).reshape(shape)
+    if is_3d:
+        return map_coordinates(x, indices, order=1).reshape((shape[0], shape[1], 1))
+    else:
+        return map_coordinates(x, indices, order=1).reshape(shape)
 
 def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=False):
     """Elastic deformation of images as described in ｀[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>｀_.
@@ -593,8 +598,10 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
     results = []
     for data in x:
+        is_3d = False
         if len(data.shape) == 3 and data.shape[-1] == 1:
             data = data[:,:,0]
+            is_3d = True
         elif len(data.shape) == 3 and data.shape[-1] != 1:
             raise Exception("Only support greyscale image")
         assert len(data.shape)==2
@@ -605,9 +612,11 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
         x_, y_ = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
         indices = np.reshape(x_ + dx, (-1, 1)), np.reshape(y_ + dy, (-1, 1))
         # print(data.shape)
-        results.append( map_coordinates(data, indices, order=1).reshape(shape) )
+        if is_3d:
+            results.append( map_coordinates(data, indices, order=1).reshape((shape[0], shape[1], 1)))
+        else:
+            results.append( map_coordinates(data, indices, order=1).reshape(shape) )
     return np.asarray(results)
-
 
 # zoom
 def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2,
