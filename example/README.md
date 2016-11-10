@@ -47,6 +47,12 @@ Reinforcement Learning
  - Deep Reinforcement Learning - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py``.
 
 
+Applications
+==============
+
+- Image Captioning - Reimplementation of Google's [im2txt](https://github.com/tensorflow/models/tree/master/im2txt) by [zsdonghao](https://github.com/zsdonghao/Image-Captioning).
+
+
 Special Examples
 =================
 
