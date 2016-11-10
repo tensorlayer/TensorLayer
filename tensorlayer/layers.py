@@ -1662,6 +1662,7 @@ class BatchNormLayer(Layer):
         A decay factor for ExponentialMovingAverage.
     epsilon : float
         A small float number to avoid dividing by 0.
+    act : activation function.
     is_train : boolean
         Whether train or inference.
     beta_init : beta initializer
@@ -1681,6 +1682,7 @@ class BatchNormLayer(Layer):
         layer = None,
         decay = 0.999,
         epsilon = 0.00001,
+        act = tf.identity,
         is_train = None,
         beta_init = tf.zeros_initializer,
         gamma_init = tf.ones_initializer,
@@ -1688,8 +1690,8 @@ class BatchNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
-                            (self.name, decay, epsilon, is_train))
+        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+                            (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
 
@@ -1767,7 +1769,7 @@ class BatchNormLayer(Layer):
                 is_train, mean_var_with_update,
                 lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
 
-            self.outputs = tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon)
+            self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
             #x.set_shape(inputs.get_shape()) ??
             variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
