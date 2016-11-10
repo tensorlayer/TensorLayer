@@ -992,7 +992,7 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
+        print("  tensorlayer:Instantiate Conv1dLayer %s: %s, %s, %s, %s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
         if act is None:
             act = tf.identity

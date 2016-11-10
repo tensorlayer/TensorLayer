@@ -122,6 +122,7 @@ to the cost function.
    dice_coe
    iou_coe
    cross_entropy_seq
+   cross_entropy_seq_with_mask
    li_regularizer
    lo_regularizer
    maxnorm_regularizer
@@ -131,16 +132,31 @@ to the cost function.
 Cost functions
 ----------------
 
+Classification
+^^^^^^^^^^^^^^^^^
 .. autofunction:: cross_entropy
 .. autofunction:: binary_cross_entropy
+
+Regression
+^^^^^^^^^^^^^^
 .. autofunction:: mean_squared_error
+
+Image segmentation
+^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: dice_coe
 .. autofunction:: iou_coe
+
+Sequence
+^^^^^^^^^^^
 .. autofunction:: cross_entropy_seq
+.. autofunction:: cross_entropy_seq_with_mask
 
 
 Regularization functions
 --------------------------
+
+For ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
+``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 .. autofunction:: li_regularizer
 .. autofunction:: lo_regularizer
