@@ -27,6 +27,8 @@ Some of the code in this package are borrowed from Keras.
    shear_multi
    swirl
    swirl_multi
+   elastic_transform
+   elastic_transform_multi
 
    zoom
    zoom_multi
@@ -101,6 +103,12 @@ Swirl
 
 .. autofunction:: swirl
 .. autofunction:: swirl_multi
+
+Elastic transform
+^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: elastic_transform
+.. autofunction:: elastic_transform_multi
 
 Zoom
 ^^^^^^^^^
