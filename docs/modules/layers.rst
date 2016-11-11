@@ -461,6 +461,11 @@ Fixed Length RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: RNNLayer
+
+
+Fixed Length Bidirectional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: BiRNNLayer
 
 
