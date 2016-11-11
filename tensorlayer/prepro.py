@@ -532,7 +532,7 @@ def swirl_multi(x, center=None, strength=1, radius=100, rotation=0, output_shape
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic deformation of images as described in ｀[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>｀_.
+    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>｀_ .
 
     Parameters
     -----------
@@ -717,7 +717,8 @@ def brightness(x, gamma=1, gain=1, is_random=False):
         An image with dimension of [row, col, channel] (default).
     gamma : float, small than 1 means brighter.
         Non negative real number. Default value is 1.
-            - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
+
+        - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
     gain : float
         The constant multiplier. Default value is 1.
     is_random : boolean, default False
@@ -775,9 +776,9 @@ def imresize(x, size=[100, 100], interp='bilinear', mode=None):
         - float, Fraction of current size.
         - tuple, Size of the output image.
     interp : str, optional
-    Interpolation to use for re-sizing (‘nearest’, ‘lanczos’, ‘bilinear’, ‘bicubic’ or ‘cubic’).
+        Interpolation to use for re-sizing (‘nearest’, ‘lanczos’, ‘bilinear’, ‘bicubic’ or ‘cubic’).
     mode : str, optional
-    The PIL image mode (‘P’, ‘L’, etc.) to convert arr before resizing.
+        The PIL image mode (‘P’, ‘L’, etc.) to convert arr before resizing.
 
     Returns
     --------
@@ -1046,12 +1047,13 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
         Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
     order : int, optional
         The order of interpolation. The order has to be in the range 0-5:
-            - 0 Nearest-neighbor
-            - 1 Bi-linear (default)
-            - 2 Bi-quadratic
-            - 3 Bi-cubic
-            - 4 Bi-quartic
-            - 5 Bi-quintic
+
+        - 0 Nearest-neighbor
+        - 1 Bi-linear (default)
+        - 2 Bi-quadratic
+        - 3 Bi-cubic
+        - 4 Bi-quartic
+        - 5 Bi-quintic
     mode : {‘constant’, ‘edge’, ‘symmetric’, ‘reflect’, ‘wrap’}, optional
         Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
     cval : float, optional
@@ -1298,7 +1300,7 @@ def crop_central_whiten_images(images=None, height=24, width=24):
         The tensor or placeholder of images
     height : int
         The height for central crop.
-    width: int
+    width : int
         The width for central crop.
 
     Returns

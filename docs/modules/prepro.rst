@@ -170,7 +170,8 @@ More related functions can be found in ``tensorlayer.nlp``.
 Tensor Opt
 ------------
 
-These functions will be deprecated, see ``tutorial_cifar10_tfrecord.py`` for new information.
+.. note::
+  These functions will be deprecated, see ``tutorial_cifar10_tfrecord.py`` for new information.
 
 .. autofunction:: distorted_images
 .. autofunction:: crop_central_whiten_images
