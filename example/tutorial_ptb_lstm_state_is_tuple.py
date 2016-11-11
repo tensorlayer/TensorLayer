@@ -190,6 +190,9 @@ def main(_):
     def inference(x, is_training, num_steps, reuse=None):
         """If reuse is True, the inferences use the existing parameters,
         then different inferences share the same parameters.
+
+        Note :
+        - For DynamicRNNLayer, you can set dropout and number of RNN layer internally.
         """
         print("\nnum_steps : %d, is_training : %s, reuse : %s" %
                                                 (num_steps, is_training, reuse))
