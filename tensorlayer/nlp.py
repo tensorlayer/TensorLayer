@@ -316,11 +316,11 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
 
     Returns
     --------
-    tl.nlp.SimpleVocabulary object.
+    - tl.nlp.SimpleVocabulary object.
 
     Mores
     -----
-    tl.nlp.build_vocab()
+    - ``tl.nlp.build_vocab()``
 
     Examples
     --------
@@ -387,8 +387,7 @@ def simple_read_words(filename="nietzsche.txt"):
         return words
 
 def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
-    """File to list format context.
-    Note that, this script can not handle punctuations.
+    """File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
@@ -400,8 +399,8 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
 
     Returns
     --------
-    The context in a list, split by ' ' by default, and use '<eos>' to represent '\n'.
-    e.g. [... 'how', 'useful', 'it', "'s" ... ]
+    The context in a list, split by space by default, and use ``'<eos>'`` to represent ``'\n'``,
+    e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
 
     Code References
     ---------------
@@ -556,7 +555,6 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
         word_to_id, mapping words to unique IDs.
     reverse_dictionary : a dictionary
         id_to_word, mapping id to unique word.
-
 
     Examples
     --------
