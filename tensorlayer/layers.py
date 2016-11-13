@@ -1896,17 +1896,17 @@ class PoolLayer(Layer):
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
     pool : a pooling function
-        tf.nn.max_pool , tf.nn.avg_pool ...
+        - see `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
+        - class ``tf.nn.max_pool``
+        - class ``tf.nn.avg_pool``
+        - class ``tf.nn.max_pool3d``
+        - class ``tf.nn.avg_pool3d``
     name : a string or None
         An optional name to attach to this layer.
 
     Examples
     --------
-    - see Conv2dLayer
-
-    References
-    ----------
-    - `TensorFlow Pooling <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
+    - see :class:`Conv2dLayer`.
     """
     def __init__(
         self,
