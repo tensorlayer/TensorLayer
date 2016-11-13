@@ -117,7 +117,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 # Contribution Guideline
 
-TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London.
+TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. TensorLayer contributors are from Imperial College, Tsinghua University, Carnegie Mellon University, Google, Microsoft, Bloomberg and etc.
 The goal of the project is to develop a compositional language while complex learning systems
 can be build through composition of neural network modules.
 The whole development is now participated by numerous contributors [here](https://github.com/zsdonghao/tensorlayer/releases).

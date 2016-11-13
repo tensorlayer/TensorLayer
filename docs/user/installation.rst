@@ -39,7 +39,7 @@ Take Python3 on Ubuntu for example, to install Python includes ``pip``, run the 
   sudo pip3 install virtualenv
 
 To build a virtual environment and install dependencies into it, run the following commands:
-(Alternatively, go to Step 3, automatically install the prerequisites by TensorLayer)
+(You can also skip to Step 3, automatically install the prerequisites by TensorLayer)
 
 .. code-block:: bash
 
@@ -49,7 +49,7 @@ To build a virtual environment and install dependencies into it, run the followi
   env/bin/pip install scipy
   env/bin/pip install scikit-image
 
-Check the installed packages, run the following command:
+To check the installed packages, run the following command:
 
 .. code-block:: bash
 
