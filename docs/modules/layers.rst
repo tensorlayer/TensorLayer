@@ -326,12 +326,10 @@ Print variables
 
 Basic layer
 -----------
-
 .. autoclass:: Layer
 
 Input layer
 ------------
-
 .. autoclass:: InputLayer
   :members:
 
@@ -406,7 +404,7 @@ Convolutional layer (Simplified)
 
 For users don't familiar with TensorFlow, the following simplified functions may easier for you.
 We will provide more simplified functions later, but if you are good at TensorFlow, the professional
-methods may better for you.
+APIs may better for you.
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
