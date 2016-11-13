@@ -2878,71 +2878,6 @@ class FlattenLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
-class ConcatLayer(Layer):
-    """
-    The :class:`ConcatLayer` class is layer which concat (merge) two or more
-    :class:`DenseLayer` to a single class:`DenseLayer`.
-
-    Parameters
-    ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
-    concat_dim : int
-        Dimension along which to concatenate.
-    name : a string or None
-        An optional name to attach to this layer.
-
-    Examples
-    --------
-    >>> sess = tf.InteractiveSession()
-    >>> x = tf.placeholder(tf.float32, shape=[None, 784])
-    >>> inputs = tl.layers.InputLayer(x, name='input_layer')
-    >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
-    >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
-    >>> network = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
-    ...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
-    ...     tensorlayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
-    ...
-    >>> sess.run(tf.initialize_all_variables())
-    >>> network.print_params()
-    ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
-    ...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-    ...     param 2: (784, 300) (mean: 0.000000, median: -0.000048 std: 0.042947)
-    ...     param 3: (300,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-    ...     num of params: 863500
-    >>> network.print_layers()
-    ...     layer 0: Tensor("Relu:0", shape=(?, 800), dtype=float32)
-    ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
-    ...
-    """
-    def __init__(
-        self,
-        layer = [],
-        concat_dim = 1,
-        name ='concat_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = []
-        for l in layer:
-            self.inputs.append(l.outputs)
-        self.outputs = tf.concat(concat_dim, self.inputs, name=name) # 1.2
-        self.n_units = int(self.outputs._shape[-1])
-        print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
-
-        self.all_layers = list(layer[0].all_layers)
-        self.all_params = list(layer[0].all_params)
-        self.all_drop = dict(layer[0].all_drop)
-
-        for i in range(1, len(layer)):
-            self.all_layers.extend(list(layer[i].all_layers))
-            self.all_params.extend(list(layer[i].all_params))
-            self.all_drop.update(dict(layer[i].all_drop))
-
-        self.all_layers = list_remove_repeat(self.all_layers)
-        self.all_params = list_remove_repeat(self.all_params)
-        self.all_drop = list_remove_repeat(self.all_drop)
 
 class ReshapeLayer(Layer):
     """
@@ -3035,7 +2970,75 @@ class LambdaLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
 
-## Logic layer
+## Merge layer
+
+class ConcatLayer(Layer):
+    """
+    The :class:`ConcatLayer` class is layer which concat (merge) two or more
+    :class:`DenseLayer` to a single class:`DenseLayer`.
+
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    concat_dim : int
+        Dimension along which to concatenate.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    --------
+    >>> sess = tf.InteractiveSession()
+    >>> x = tf.placeholder(tf.float32, shape=[None, 784])
+    >>> inputs = tl.layers.InputLayer(x, name='input_layer')
+    >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
+    >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
+    >>> network = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
+    ...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
+    ...     tensorlayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
+    ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
+    ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
+    ...
+    >>> sess.run(tf.initialize_all_variables())
+    >>> network.print_params()
+    ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
+    ...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     param 2: (784, 300) (mean: 0.000000, median: -0.000048 std: 0.042947)
+    ...     param 3: (300,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     num of params: 863500
+    >>> network.print_layers()
+    ...     layer 0: Tensor("Relu:0", shape=(?, 800), dtype=float32)
+    ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
+    ...
+    """
+    def __init__(
+        self,
+        layer = [],
+        concat_dim = 1,
+        name ='concat_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = []
+        for l in layer:
+            self.inputs.append(l.outputs)
+        self.outputs = tf.concat(concat_dim, self.inputs, name=name) # 1.2
+        self.n_units = int(self.outputs._shape[-1])
+        print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
+
+        self.all_layers = list(layer[0].all_layers)
+        self.all_params = list(layer[0].all_params)
+        self.all_drop = dict(layer[0].all_drop)
+
+        for i in range(1, len(layer)):
+            self.all_layers.extend(list(layer[i].all_layers))
+            self.all_params.extend(list(layer[i].all_params))
+            self.all_drop.update(dict(layer[i].all_drop))
+
+        self.all_layers = list_remove_repeat(self.all_layers)
+        self.all_params = list_remove_repeat(self.all_params)
+        self.all_drop = list_remove_repeat(self.all_drop)
+
+
 class ElementwiseLayer(Layer):
     """
     The :class:`ElementwiseLayer` class combines multiple :class:`Layer` which have the same output shapes by a given elemwise-wise operation.

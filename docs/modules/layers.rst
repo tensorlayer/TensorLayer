@@ -292,9 +292,9 @@ Layer list
    retrieve_seq_length_op2
    DynamicRNNLayer
    FlattenLayer
-   ConcatLayer
    ReshapeLayer
    LambdaLayer
+   ConcatLayer
    ElementwiseLayer
    SlimNetsLayer
    PReluLayer
@@ -489,17 +489,11 @@ Shape layer
 
 Flatten layer
 ^^^^^^^^^^^^^^^
-
 .. autoclass:: FlattenLayer
 
-Concat layer
-^^^^^^^^^^^^^^
-
-.. autoclass:: ConcatLayer
 
 Reshape layer
 ^^^^^^^^^^^^^^^
-
 .. autoclass:: ReshapeLayer
 
 Lambda layer
@@ -509,6 +503,14 @@ Lambda layer
 
 Merge layer
 -------------
+
+Concat layer
+^^^^^^^^^^^^^^
+.. autoclass:: ConcatLayer
+
+
+Element-wise layer
+^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: ElementwiseLayer
 
 Connect TF-Slim
