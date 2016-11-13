@@ -129,35 +129,33 @@ to the cost function.
    maxnorm_o_regularizer
    maxnorm_i_regularizer
 
-Cost functions
-----------------
 
 Cross entropy
-^^^^^^^^^^^^^^^^^
+------------------
 .. autofunction:: cross_entropy
 
 Binary cross entropy
-^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 .. autofunction:: binary_cross_entropy
 
 Mean squared error
-^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 .. autofunction:: mean_squared_error
 
 Dice coefficient
-^^^^^^^^^^^^^^^^^^^
+-------------------------
 .. autofunction:: dice_coe
 
 IOU coefficient
-^^^^^^^^^^^^^^^^^^^
+-------------------------
 .. autofunction:: iou_coe
 
 Cross entropy for sequence
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 .. autofunction:: cross_entropy_seq
 
 Cross entropy with mask for sequence
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------
 .. autofunction:: cross_entropy_seq_with_mask
 
 
@@ -168,7 +166,7 @@ For ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` a
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 Maxnorm
-^^^^^^^^^^^
+^^^^^^^^^^
 .. autofunction:: maxnorm_regularizer
 
 Special

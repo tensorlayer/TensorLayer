@@ -543,7 +543,18 @@ Embedding + Attention + Seq2seq
 Helper functions
 ------------------------
 
+Flatten tensor
+^^^^^^^^^^^^^^^^^
 .. autofunction:: flatten_reshape
+
+Permanent clear existing layer names
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: clear_layers_name
+
+Initialize RNN state
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: initialize_rnn_state
+
+Remove repeated items in a list
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: list_remove_repeat

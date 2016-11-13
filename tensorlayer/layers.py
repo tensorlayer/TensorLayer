@@ -79,6 +79,10 @@ def set_name_reuse(enable=True):
     model parameters, you need to enable layer name reuse, then allow the
     parameters have same name scope.
 
+    Parameters
+    ------------
+    enable : boolean, enable name reuse.
+
     Examples
     ------------
     >>> def embed_seq(input_seqs, is_train, reuse):
@@ -109,6 +113,10 @@ def set_name_reuse(enable=True):
 def initialize_rnn_state(state):
     """Return the initialized RNN state.
     The input is LSTMStateTuple or State of RNNCells.
+
+    Parameters
+    -----------
+    state : a RNN state.
     """
     if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
         c = state.c.eval()
