@@ -28,11 +28,9 @@ Prediction
 ^^^^^^^^^^^^
 .. autofunction:: predict
 
-
 Evaluation functions
 ---------------------
 .. autofunction:: evaluation
-
 
 Class balancing functions
 ----------------------------
