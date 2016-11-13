@@ -9,7 +9,7 @@ For example, you can implement L1, L2 and sum regularization by
 
 
 
-Custom cost function
+Your cost function
 -----------------------
 
 TensorLayer provides a simple way to create you own cost function. Take a MLP below for example.

@@ -120,4 +120,6 @@ Visualizing npz file
 Helper functions
 ------------------
 
+Load file list from folder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_file_list
