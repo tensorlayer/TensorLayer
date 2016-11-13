@@ -312,8 +312,16 @@ Name Scope and Sharing Parameters
 These functions help you to reuse parameters for different inference (graph), and get a
 list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`_.
 
+Get variables with name
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: get_variables_with_name
+
+Enable layer name reuse
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: set_name_reuse
+
+Print variables
+^^^^^^^^^^^^^^^^^^
 .. autofunction:: print_all_variables
 
 Basic layer
