@@ -332,12 +332,10 @@ Word Embedding Input layer
 
 Word2vec layer for training
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: Word2vecEmbeddingInputlayer
 
 Embedding Input layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: EmbeddingInputlayer
 
 Dense layer
@@ -345,12 +343,10 @@ Dense layer
 
 Dense layer
 ^^^^^^^^^^^^^
-
 .. autoclass:: DenseLayer
 
 Reconstruction layer for Autoencoder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: ReconLayer
    :members:
 
@@ -359,12 +355,10 @@ Noise layer
 
 Dropout layer
 ^^^^^^^^^^^^^^^^
-
 .. autoclass:: DropoutLayer
 
 Dropconnect + Dense layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: DropconnectDenseLayer
 
 Convolutional layer (Pro)
@@ -372,37 +366,30 @@ Convolutional layer (Pro)
 
 1D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: Conv1dLayer
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: Conv2dLayer
 
 2D Deconvolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: DeConv2dLayer
 
 3D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: Conv3dLayer
 
 3D Deconvolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: DeConv3dLayer
 
 2D UpSampling layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: UpSampling2dLayer
 
 2D Atrous convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: AtrousConv2dLayer
 
 
@@ -415,22 +402,18 @@ methods may better for you.
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autofunction:: Conv2d
 
 2D Deconvolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autofunction:: DeConv2d
 
 2D Max pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autofunction:: MaxPool2d
 
 2D Mean pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autofunction:: MeanPool2d
 
 
@@ -445,10 +428,15 @@ Pooling layer for any dimensions and any pooling functions
 Normalization layer
 --------------------
 
-For local response normalization as it does not have any weights and arguments, we suggest
-you to apply ``tf.nn.lrn`` on ``network.outputs``.
+For local response normalization as it does not have any weights and arguments,
+you can also apply ``tf.nn.lrn`` on ``network.outputs``.
 
+Batch Normalization
+^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BatchNormLayer
+
+Local Response Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LocalResponseNormLayer
 
 
@@ -456,12 +444,12 @@ Fixed Length Recurrent layer
 -------------------------------
 All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
 
-Fixed Length RNN layer
+RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: RNNLayer
 
 
-Fixed Length Bidirectional layer
+Bidirectional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BiRNNLayer
 
