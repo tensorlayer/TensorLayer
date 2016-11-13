@@ -17,15 +17,23 @@ to visualize the model, activations etc. Here we provide more functions for data
 Visualize model parameters
 ------------------------------
 
+Visualize weight matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: W
 
+Visualize CNN 2d filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: CNN2d
 
-Visualize data
+Visualize images
 -----------------
 
+Image by matplotlib
+^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: frame
 
+Images by matplotlib
+^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: images2d
 
 Visualize embeddings
