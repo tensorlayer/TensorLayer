@@ -238,7 +238,7 @@ def dict_to_one(dp_dict={}):
 
 def flatten_list(list_of_list=[[],[]]):
     """
-    Input a list of list, return a list that all items are in a list
+    Input a list of list, return a list that all items are in a list.
 
     Parameters
     ----------
