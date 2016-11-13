@@ -944,7 +944,7 @@ class DropconnectDenseLayer(Layer):
 
 class Conv1dLayer(Layer):
     """
-    The :class:`Conv1dLayer` class is a 1D CNN layer, see ``tf.nn.conv1d``.
+    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.conv1d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv1d>`_.
 
     Parameters
     ----------
@@ -970,10 +970,6 @@ class Conv1dLayer(Layer):
         The arguments for the biases tf.get_variable().
     name : a string or None
         An optional name to attach to this layer.
-
-    References
-    ----------
-    - `tf.nn.conv1d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv1d>`_
     """
     def __init__(
         self,
@@ -1017,7 +1013,7 @@ class Conv1dLayer(Layer):
 
 class Conv2dLayer(Layer):
     """
-    The :class:`Conv2dLayer` class is a 2D CNN layer, see ``tf.nn.conv2d``.
+    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_.
 
     Parameters
     ----------
@@ -1075,10 +1071,6 @@ class Conv2dLayer(Layer):
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
     ...                       strides=[1, 1, 1, 1],
     ...                       padding='SAME') + b )
-
-    References
-    ----------
-    - `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_
     """
     def __init__(
         self,
@@ -1117,7 +1109,7 @@ class Conv2dLayer(Layer):
 
 class DeConv2dLayer(Layer):
     """
-    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see ``tf.nn.conv2d_transpose``.
+    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_.
 
     Parameters
     ----------
@@ -1186,10 +1178,6 @@ class DeConv2dLayer(Layer):
     >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
     ...         shape=[3,3,512,1024], strides=[1,2,2,1], output_shape=[batch_size,64,64,512],
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
-
-    References
-    ----------
-    - `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_
     """
     def __init__(
         self,
@@ -1229,7 +1217,7 @@ class DeConv2dLayer(Layer):
 
 class Conv3dLayer(Layer):
     """
-    The :class:`Conv3dLayer` class is a 3D CNN layer, see ``tf.nn.conv3d``.
+    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_.
 
     Parameters
     ----------
@@ -1253,10 +1241,6 @@ class Conv3dLayer(Layer):
         The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
-
-    References
-    ----------
-    - `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_
     """
     def __init__(
         self,
@@ -1291,7 +1275,7 @@ class Conv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 class DeConv3dLayer(Layer):
-    """The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see ``tf.nn.conv3d_transpose``.
+    """The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_.
 
     Parameters
     ----------
@@ -1317,10 +1301,6 @@ class DeConv3dLayer(Layer):
         The arguments for the biases initializer.
     name : a string or None
         An optional name to attach to this layer.
-
-    References
-    ----------
-    - `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_
     """
     def __init__(
         self,
@@ -1354,7 +1334,7 @@ class DeConv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see ``tf.image.resize_images``.
+    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_.
 
     Parameters
     -----------
@@ -1370,10 +1350,6 @@ class UpSampling2dLayer(Layer):
     align_corners : bool. If true, exactly align all 4 corners of the input and output. Defaults to false.
     name : a string or None
         An optional name to attach to this layer.
-
-    References
-    -----------
-    - `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image.html#resize_images>`_
     """
     def __init__(
         self,
@@ -1412,7 +1388,7 @@ class UpSampling2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
 
 class AtrousConv2dLayer(Layer):
-    """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see ``tf.nn.atrous_conv2d``.
+    """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
 
     Parameters
     -----------
@@ -1468,7 +1444,7 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend( [W] )
 
 class SeparableConv2dLayer(Layer):#TODO
-    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see ``tf.nn.separable_conv2d``.
+    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
 
     Parameters
     -----------
