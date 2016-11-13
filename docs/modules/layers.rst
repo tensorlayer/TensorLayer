@@ -452,35 +452,40 @@ you to apply ``tf.nn.lrn`` on ``network.outputs``.
 .. autoclass:: LocalResponseNormLayer
 
 
-Recurrent layer
-------------------
-
+Fixed Length Recurrent layer
+-------------------------------
 All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
 
 Fixed Length RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: RNNLayer
 
 
 Fixed Length Bidirectional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: BiRNNLayer
 
 
 Advanced Ops for Dynamic RNN
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 These operations usually be used inside Dynamic RNN layer, they can
 compute the sequence lengths for different situation and get the last RNN outputs by indexing.
 
+Output indexing
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: advanced_indexing_op
+
+Compute Sequence length 1
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: retrieve_seq_length_op
+
+Compute Sequence length 2
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: retrieve_seq_length_op2
 
 
 Dynamic RNN layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 .. autoclass:: DynamicRNNLayer
 
 
@@ -490,7 +495,6 @@ Shape layer
 Flatten layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: FlattenLayer
-
 
 Reshape layer
 ^^^^^^^^^^^^^^^
