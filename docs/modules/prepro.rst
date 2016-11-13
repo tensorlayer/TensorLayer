@@ -141,6 +141,8 @@ Sequence
 
 More related functions can be found in ``tensorlayer.nlp``.
 
+Padding
+^^^^^^^^^
 .. autofunction:: pad_sequences
 
 
