@@ -19,29 +19,37 @@ Operation system, more functions can be found in `TensorFlow API <https://www.te
 TensorFlow functions
 ---------------------------
 
+Kill nvidia process
+^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: exit_tf
+
+Delete placeholder
+^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: clear_all
 
 GPU functions
 ---------------------------
-
 .. autofunction:: set_gpu_fraction
 
 
 Console display
 ------------------
 
+Disable print
+^^^^^^^^^^^^^^^
 .. autofunction:: disable_print
+
+Enable print
+^^^^^^^^^^^^^^^
 .. autofunction:: enable_print
+
+Temporary disable print
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: suppress_stdout
 
-
-
-Packages information
---------------------
-
+Site packages information
+----------------------------
 .. autofunction:: get_site_packages_directory
-
 
 Trash
 -------
