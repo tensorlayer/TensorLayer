@@ -8,8 +8,8 @@ users to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 
-Understand layer
------------------
+Understand Basic layer
+-------------------------
 
 All TensorLayer layers have a number of properties in common:
 
@@ -41,9 +41,6 @@ in the following network:
 where ``?`` reflects any batch size. You can print the layer information and parameters information by
 using ``network.print_layers()`` and ``network.print_params()``.
 To count the number of parameters in a network, run ``network.count_params()``.
-
-
-
 
 .. code-block:: python
 
@@ -103,11 +100,9 @@ For evaluating and testing, disable all dropout layers as follow.
 
 For more details, please read the MNIST examples on Github.
 
-Your layer
------------------
 
 Understand Dense layer
-^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 Before creating your own TensorLayer layer, let's have a look at Dense layer.
 It creates a weights matrix and biases vector if not exists, then implement
@@ -175,6 +170,9 @@ At the end, as a layer with parameter, we also need to append the parameters int
              self.all_params.extend( [W, b] )
           else:
              self.all_params.extend( [W] )
+
+Your layer
+-----------------
 
 A simple layer
 ^^^^^^^^^^^^^^^
