@@ -87,13 +87,20 @@ def threading_data(data=None, fn=None, **kwargs):
         q.put(result)
     ## start threading
     q = queue.Queue()
+    threads = []
     for i in range(len(data)):
-        d = threading.Thread(
+        t = threading.Thread(
                         name='threading_and_return',
                         target=function,
                         args=(q, data[i], kwargs)
                         )
-        d.start()
+        t.start()
+        threads.append(d)
+
+    # wait for all threads to complete
+    for t in threads:
+        t.join()
+
     ## get results
     results = []
     for i in range(len(data)):
