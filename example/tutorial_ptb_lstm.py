@@ -192,7 +192,7 @@ def main(_):
         then different inferences share the same parameters.
 
         Note :
-        - For DynamicRNNLayer, you can set dropout and number of RNN layer internally.
+        - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
         print("\nnum_steps : %d, is_training : %s, reuse : %s" %
                                                 (num_steps, is_training, reuse))
