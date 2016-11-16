@@ -83,17 +83,16 @@ def threading_data(data=None, fn=None, **kwargs):
     #     print('{0} = {1}'.format(name, value))
     # exit()
     # define function for threading
-    def function(q, i, data, kwargs):
-        result = fn(data, **kwargs)
-        q.put([i, result])
+    def function(results, i, data, kwargs):
+        results[i] = fn(data, **kwargs)
     ## start threading
-    q = queue.Queue()
+    results = [None] * len(data)
     threads = []
     for i in range(len(data)):
         t = threading.Thread(
                         name='threading_and_return',
                         target=function,
-                        args=(q, i, data[i], kwargs)
+                        args=(results, i, data[i], kwargs)
                         )
         t.start()
         threads.append(t)
@@ -102,14 +101,6 @@ def threading_data(data=None, fn=None, **kwargs):
     for t in threads:
         t.join()
 
-    ## get results
-    results = []
-    for i in range(len(data)):
-        result = q.get()
-        results.append(result)
-    results = sorted(results)
-    for i in range(len(results)):
-        results[i] = results[i][1]
     return np.asarray(results)
 
 
