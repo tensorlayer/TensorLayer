@@ -83,7 +83,7 @@ def threading_data(data=None, fn=None, **kwargs):
     #     print('{0} = {1}'.format(name, value))
     # exit()
     # define function for threading
-    def processing_fn(results, i, data, kwargs):
+    def apply_fn(results, i, data, kwargs):
         results[i] = fn(data, **kwargs) 
 
     ## start multi-threaded reading.
@@ -92,7 +92,7 @@ def threading_data(data=None, fn=None, **kwargs):
     for i in range(len(data)):
         t = threading.Thread(
                         name='threading_and_return',
-                        target=processing_fn,
+                        target=apply_fn,
                         args=(results, i, data[i], kwargs)
                         )
         t.start()
