@@ -76,15 +76,16 @@ def threading_data(data=None, fn=None, **kwargs):
     References
     ----------
     - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
+    - `run with limited queue <http://effbot.org/librarybook/queue.htm>`_    
     """
     ## plot function info
     # for name, value in kwargs.items():
     #     print('{0} = {1}'.format(name, value))
     # exit()
-    ## define function for threading
-    def function(q, data, kwargs):
+    # define function for threading
+    def function(q, i, data, kwargs):
         result = fn(data, **kwargs)
-        q.put(result)
+        q.put([i, result])
     ## start threading
     q = queue.Queue()
     threads = []
@@ -92,12 +93,12 @@ def threading_data(data=None, fn=None, **kwargs):
         t = threading.Thread(
                         name='threading_and_return',
                         target=function,
-                        args=(q, data[i], kwargs)
+                        args=(q, i, data[i], kwargs)
                         )
         t.start()
-        threads.append(d)
+        threads.append(t)
 
-    # wait for all threads to complete
+    ## <Milo> wait for all threads to complete
     for t in threads:
         t.join()
 
@@ -106,6 +107,9 @@ def threading_data(data=None, fn=None, **kwargs):
     for i in range(len(data)):
         result = q.get()
         results.append(result)
+    results = sorted(results)
+    for i in range(len(results)):
+        results[i] = results[i][1]
     return np.asarray(results)
 
 
