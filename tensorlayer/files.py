@@ -790,7 +790,7 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
 
 
 ## Helper functions
-def load_file_list(path=None, regx='\.npz'):
+def load_file_list(path=None, regx='\.npz', printable=True):
     """Return a file list in a folder by given a path and regular expression.
 
     Parameters
@@ -799,6 +799,7 @@ def load_file_list(path=None, regx='\.npz'):
         A folder path.
     regx : a string
         The regx of file name.
+    printable : boolean, whether to print the files infomation.
 
     Examples
     ----------
@@ -812,6 +813,7 @@ def load_file_list(path=None, regx='\.npz'):
         if re.search(regx, f):
             return_list.append(f)
     # return_list.sort()
-    print('Match file list = %s' % return_list)
-    print('Number of files = %d' % len(return_list))
+    if printable:
+        print('Match file list = %s' % return_list)
+        print('Number of files = %d' % len(return_list))
     return return_list
