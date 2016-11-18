@@ -960,7 +960,7 @@ class Conv1dLayer(Layer):
         The `Layer` class feeding into this layer, [batch, in_width, in_channels].
     act : activation function, None for identity.
     shape : list of shape
-        shape of the filters, [filter_height, filter_width, in_channels, out_channels].
+        shape of the filters, [filter_length, in_channels, out_channels].
     strides : a list of ints.
         The stride of the sliding window for each dimension of input.\n
         It Must be in the same order as the dimension specified with format.
@@ -1004,7 +1004,7 @@ class Conv1dLayer(Layer):
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, **W_init_args )
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-                self.outputs = act( tf.nn.conv1d(self.inputs, W, strides=strides, padding=padding,
+                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=strides, padding=padding,
                             use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b ) #1.2
             else:
                 self.outputs = act( tf.nn.conv1d(self.inputs, W, strides=strides, padding=padding,
