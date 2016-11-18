@@ -84,7 +84,7 @@ def threading_data(data=None, fn=None, **kwargs):
     # exit()
     # define function for threading
     def apply_fn(results, i, data, kwargs):
-        results[i] = fn(data, **kwargs) 
+        results[i] = fn(data, **kwargs)
 
     ## start multi-threaded reading.
     results = [None] * len(data) ## preallocate result list
@@ -236,12 +236,19 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
         w_offset = int(np.random.uniform(0, w-wrg) -1)
         # print(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
         return x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset]
-    else:
+    else:   # central crop
+        h_offset = int(np.floor((h - hrg)/2.))
+        w_offset = int(np.floor((w - wrg)/2.))
+        h_end = h_offset + hrg
+        w_end = w_offset + wrg
+        return x[h_offset: h_end, w_offset: w_end]
+        # old implementation
+        # h_offset = (h - hrg)/2
+        # w_offset = (w - wrg)/2
+        # # print(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
+        # return x[h_offset: h-h_offset ,w_offset: w-w_offset]
         # central crop
-        h_offset = (h - hrg)/2
-        w_offset = (w - wrg)/2
-        # print(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
-        return x[h_offset: h-h_offset ,w_offset: w-w_offset]
+
 
 def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2):
     """Randomly or centrally crop multiple images.
