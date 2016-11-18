@@ -148,14 +148,22 @@ def sample_top(a=[], top_k=10):
     top_k : int
         Number of candidates to be considered.
     """
-    a = np.array(a)
-    idx = np.argsort(a)[::-1]
-    idx = idx[:top_k]
-    # a = a[idx]
+    idx = np.argpartition(a, -top_k)[-top_k:]
     probs = a[idx]
+    # print("new", probs)
     probs = probs / np.sum(probs)
     choice = np.random.choice(idx, p=probs)
     return choice
+    ## old implementation
+    # a = np.array(a)
+    # idx = np.argsort(a)[::-1]
+    # idx = idx[:top_k]
+    # # a = a[idx]
+    # probs = a[idx]
+    # print("prev", probs)
+    # # probs = probs / np.sum(probs)
+    # # choice = np.random.choice(idx, p=probs)
+    # # return choice
 
 
 ## Vector representations of words (Advanced)  UNDOCUMENT
