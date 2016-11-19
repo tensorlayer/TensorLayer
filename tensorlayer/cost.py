@@ -22,7 +22,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
 
     Examples
     --------
-    >>> ce = tf.cost.cross_entropy(y_logits, y_target_logits)
+    >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits)
 
     References
     -----------
@@ -41,7 +41,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     """Computes binary cross entropy given `output`.
 
-    For brevity, let `x = `, `z = targets`.  The logistic loss is
+    For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
 
         loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
 
@@ -78,8 +78,9 @@ def mean_squared_error(output, target):
         A distribution with shape: [batch_size, n_feature].
     """
     with tf.name_scope("mean_squared_error_loss"):
-        mse = tf.reduce_sum(tf.squared_difference(output, target), reduction_indices = 1)
-        return tf.reduce_mean(mse)
+        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 
+                                           reduction_indices = 1))
+        return mse
 
 
 
@@ -223,7 +224,7 @@ def li_regularizer(scale):
 
   Returns
   --------
-  A function with signature `li(weights, name=None)` that apply L1 regularization.
+  A function with signature `li(weights, name=None)` that apply Li regularization.
 
   Raises
   ------
