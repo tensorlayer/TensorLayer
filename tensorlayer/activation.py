@@ -97,11 +97,13 @@ def pixel_wise_softmax(output, name='pixel_wise_softmax'):
     - `tf.reverse <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#reverse>`_
     """
     with tf.name_scope(name) as scope:
-        exp_map = tf.exp(output)
-        if output.get_shape().ndims == 4:   # 2d image
-            evidence = tf.add(exp_map, tf.reverse(exp_map, [False, False, False, True]))
-        elif output.get_shape().ndims == 5: # 3d image
-            evidence = tf.add(exp_map, tf.reverse(exp_map, [False, False, False, False, True]))
-        else:
-            raise Exception("output parameters should be 2d or 3d image, not %s" % str(output._shape))
-        return tf.div(exp_map, evidence)
+        return tf.nn.softmax(output)
+        ## old implementation
+        # exp_map = tf.exp(output)
+        # if output.get_shape().ndims == 4:   # 2d image
+        #     evidence = tf.add(exp_map, tf.reverse(exp_map, [False, False, False, True]))
+        # elif output.get_shape().ndims == 5: # 3d image
+        #     evidence = tf.add(exp_map, tf.reverse(exp_map, [False, False, False, False, True]))
+        # else:
+        #     raise Exception("output parameters should be 2d or 3d image, not %s" % str(output._shape))
+        # return tf.div(exp_map, evidence)
