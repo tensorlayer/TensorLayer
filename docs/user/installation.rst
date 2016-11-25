@@ -151,3 +151,13 @@ To install it, copy the ``*.h`` files to ``/usr/local/cuda/include`` and the
 .. _TensorFlow: https://www.tensorflow.org/versions/master/get_started/os_setup.html
 .. _GitHub: https://github.com/zsdonghao/tensorlayer
 .. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
+
+
+Issue
+=======
+
+If you get the following output when import tensorlayer, please read `FQA <http://tensorlayer.readthedocs.io/en/latest/user/more.html>`_.
+
+.. code-block:: bash
+
+  _tkinter.TclError: no display name and no $DISPLAY environment variable
