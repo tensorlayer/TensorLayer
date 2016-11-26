@@ -15,7 +15,7 @@ main_test_cnn_advanced    : Uses distorted image / High accurcy but Slow
 tutorial_cifar10_tfrecord : Preparing distorted image with Queue and Thread
                             / High accurcy and Fast
 """
-
+exit("This example is deprecated, please see tutorial_cifar10_tfrecord.py (TFRecord) or tl.prepro (Python Threading)")
 
 def main_test_cnn_naive():
     """Without any distorting, whitening and cropping for training data.
