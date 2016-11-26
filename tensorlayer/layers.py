@@ -1117,7 +1117,7 @@ class Conv2dLayer(Layer):
 
 class DeConv2dLayer(Layer):
     """
-    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_.
+    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_.
 
     Parameters
     ----------
