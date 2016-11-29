@@ -655,6 +655,8 @@ def save_npz(save_list=[], name='model.npz', sess=None):
             except:
                 print(" Fail to save model, Hint: pass the session into this function, save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
+    save_list_var = None
+    del save_list_var
     print('Model is saved to: %s' % name)
 
     ## save params into a dictionary
