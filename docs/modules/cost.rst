@@ -120,9 +120,11 @@ to the cost function.
    binary_cross_entropy
    mean_squared_error
    dice_coe
+   dice_hard_coe
    iou_coe
    cross_entropy_seq
    cross_entropy_seq_with_mask
+   cosine_similarity
    li_regularizer
    lo_regularizer
    maxnorm_regularizer
@@ -146,6 +148,10 @@ Dice coefficient
 -------------------------
 .. autofunction:: dice_coe
 
+Hard Dice coefficient
+-------------------------
+.. autofunction:: dice_hard_coe
+
 IOU coefficient
 -------------------------
 .. autofunction:: iou_coe
@@ -158,6 +164,9 @@ Cross entropy with mask for sequence
 ----------------------------------------
 .. autofunction:: cross_entropy_seq_with_mask
 
+Cosine similarity
+-------------------
+.. autofunction:: cosine_similarity
 
 Regularization functions
 --------------------------

@@ -78,7 +78,7 @@ def mean_squared_error(output, target):
         A distribution with shape: [batch_size, n_feature].
     """
     with tf.name_scope("mean_squared_error_loss"):
-        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 
+        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target),
                                            reduction_indices = 1))
         return mse
 
@@ -119,8 +119,43 @@ def dice_coe(output, target, epsilon=1e-10):
     else:
         return tf.clip_by_value(dice, 0, 1.0-epsilon)
 
+
+def dice_hard_coe(output, target, epsilon=1e-10):
+    """Non-differentiable Sørensen–Dice coefficient for comparing the similarity of two distributions,
+    usually be used for binary image segmentation i.e. labels are binary.
+    The coefficient = [0, 1], 1 if totally match.
+
+    Parameters
+    -----------
+    output : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+    target : tensor
+        A distribution with shape: [batch_size, ....], (any dimensions).
+    epsilon : float
+        An optional name to attach to this layer.
+
+    Examples
+    ---------
+    >>> outputs = pixel_wise_softmax(network.outputs)
+    >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
+
+    References
+    -----------
+    - `wiki-dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+    """
+    output = tf.cast(output > 0.5, dtype=tf.float32)
+    target = tf.cast(target > 0.5, dtype=tf.float32)
+    inse = tf.reduce_sum( output * target )
+    l = tf.reduce_sum( output * output )
+    r = tf.reduce_sum( target * target )
+    dice = 2 * (inse) / (l + r)
+    if epsilon == 0:
+        return dice
+    else:
+        return tf.clip_by_value(dice, 0, 1.0-epsilon)
+
 def iou_coe(output, target, threshold=0.5, epsilon=1e-10):
-    """Intersection over Union (Hard Dice), usually be used for evaluating binary image segmentation.
+    """Non-differentiable Intersection over Union, usually be used for evaluating binary image segmentation.
     The coefficient = [0, 1], 1 means totally match.
 
     Parameters
@@ -210,6 +245,22 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
         return loss, losses, weights, targets
     else:
         return loss
+
+
+def cosine_similarity(v1, v2):
+    """Cosine similarity [-1, 1], `wiki <https://en.wikipedia.org/wiki/Cosine_similarity>`_.
+
+    Parameters
+    -----------
+    v1, v2 : tensor of [batch_size, n_feature], with the same number of features.
+
+    Returns
+    ________
+    a tensor of [batch_size, ]
+    """
+    return tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
+
+
 
 ## Regularization Functions
 def li_regularizer(scale):
