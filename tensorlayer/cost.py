@@ -255,7 +255,7 @@ def cosine_similarity(v1, v2):
     v1, v2 : tensor of [batch_size, n_feature], with the same number of features.
 
     Returns
-    ________
+    -----------
     a tensor of [batch_size, ]
     """
     return tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
