@@ -151,7 +151,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
             feed_dict.update(dp_dict)
             if cost is not None:
                 err, ac = sess.run([cost, acc], feed_dict=feed_dict)
-                val_loss += err
+                test_loss += err
             else:
                 ac = sess.run(acc, feed_dict=feed_dict)
             test_acc += ac; n_batch += 1
