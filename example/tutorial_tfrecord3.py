@@ -62,11 +62,11 @@ SEQ_FIR = cwd + '/data/cat_caption.json'
 VOC_FIR = cwd + '/vocab.txt'
 # read image captions from JSON
 with tf.gfile.FastGFile(SEQ_FIR, "r") as f:
-    caption_data = json.load(f)
+    caption_data = json.loads(str(f.read(), encoding = "utf-8"))
 
 processed_capts, img_capts = [], []
 for idx in range(len(caption_data['images'])):
-    img_capt = caption_data['images'][idx]['caption']
+    img_capt = caption_data['annotations'][idx]['caption']
     img_capts.append(img_capt)
     processed_capts.append(tl.nlp.process_sentence(img_capt, start_word="<S>", end_word="</S>"))
 print("Original Captions: %s" % img_capts)
@@ -80,7 +80,7 @@ writer = tf.python_io.TFRecordWriter("train.cat_caption")
 for idx in range(len(caption_data['images'])):
     # get data
     img_name = caption_data['images'][idx]['file_name']
-    img_capt = '<S> ' + caption_data['images'][idx]['caption'] + ' </S>'
+    img_capt = '<S> ' + caption_data['annotations'][idx]['caption'] + ' </S>'
     img_capt_ids = [vocab.word_to_id(word) for word in img_capt.split(' ')]
     print("%s : %s : %s" % (img_name, img_capt, img_capt_ids))
     img = Image.open(IMG_DIR+img_name)
