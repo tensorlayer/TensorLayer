@@ -69,8 +69,8 @@ Step 2 : TensorFlow
 
 The installation instructions of TensorFlow are written to be very detailed on `TensorFlow`_  website.
 However, there are something need to be considered.
-For example, `TensorFlow`_ only officially
-supports GPU acceleration for Linux and Mac OX at present.
+For example, `TensorFlow`_ officially
+supports GPU acceleration for Linux, Mac OX and Windows at present.
 
 .. warning::
   For ARM processor architecture, you need to install TensorFlow from source.
