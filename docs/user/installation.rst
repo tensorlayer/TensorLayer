@@ -11,7 +11,7 @@ support CUDA and cuDNN are required.
 If you run into any trouble, please check the `TensorFlow installation
 instructions <https://www.tensorflow.org/versions/master/get_started/os_setup.html>`_
 which cover installing the TensorFlow for a range of operating systems including
-Mac OX and Linux, or ask for help on `tensorlayer@gmail.com <tensorlayer@gmail.com>`_
+Mac OX, Linux and Windows, or ask for help on `tensorlayer@gmail.com <tensorlayer@gmail.com>`_
 or `FQA <http://tensorlayer.readthedocs.io/en/latest/user/more.html>`_.
 
 
