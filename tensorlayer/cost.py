@@ -18,7 +18,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
     output : Tensorflow variable
         A distribution with shape: [batch_size, n_feature].
     target : Tensorflow variable
-        A distribution with shape: [batch_size, n_feature].
+        A batch of index with shape: [batch_size, ].
 
     Examples
     --------
