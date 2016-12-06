@@ -347,13 +347,6 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...         vocabulary_size = vocabulary_size,
     ...         embedding_size = embedding_size,
     ...         num_sampled = num_sampled,
-    ...         nce_loss_args = {},
-    ...         E_init = tf.random_uniform,
-    ...         E_init_args = {'minval':-1.0, 'maxval':1.0},
-    ...         nce_W_init = tf.truncated_normal,
-    ...         nce_W_init_args = {'stddev': float(1.0/np.sqrt(embedding_size))},
-    ...         nce_b_init = tf.zeros,
-    ...         nce_b_init_args = {},
     ...        name ='word2vec_layer',
     ...    )
     >>> cost = emb_net.nce_cost
