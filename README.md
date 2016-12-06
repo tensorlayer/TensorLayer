@@ -34,7 +34,7 @@ In contrast, TensorLayer advocates a flexible programming paradigm where third-p
 
 TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib. For GPU support, CUDA and cuDNN are required. Please check [here](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions.
 
-If you already had the pre-requisites ready, the simplest way to install TensorLayer in your python program is: 
+If you already had the pre-requisites ready (numpy, scipy, scikit-image, matplotlib and nltk(optional)), the simplest way to install TensorLayer in your python program is: 
 
 
 ```bash
