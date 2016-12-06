@@ -116,7 +116,7 @@ network.print_params(False)
 from scipy.misc import imread, imresize
 y = network.outputs
 probs = tf.nn.softmax(y)
-img1 = load_image("data/puzzle.jpeg")
+img1 = load_image("data/puzzle.jpeg") # test data in github
 img1 = img1.reshape((1, 299, 299, 3))
 
 start_time = time.time()

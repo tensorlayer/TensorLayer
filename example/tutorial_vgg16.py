@@ -217,7 +217,7 @@ for val in sorted( npz.items() ):
 
 tl.files.assign_params(sess, params, network)
 
-img1 = imread('data/laska.png', mode='RGB')
+img1 = imread('data/laska.png', mode='RGB') # test data in github
 img1 = imresize(img1, (224, 224))
 
 start_time = time.time()

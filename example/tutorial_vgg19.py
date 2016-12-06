@@ -247,7 +247,7 @@ for val in sorted( npz.items() ):
 print("Restoring model from npz file")
 tl.files.assign_params(sess, params, network)
 
-img1 = load_image("data/tiger.jpeg")
+img1 = load_image("data/tiger.jpeg") # test data in github
 img1 = img1.reshape((1, 224, 224, 3))
 start_time = time.time()
 prob = sess.run(probs, feed_dict= {x : img1})
