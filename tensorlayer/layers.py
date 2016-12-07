@@ -801,6 +801,8 @@ class DropoutLayer(Layer):
         The `Layer` class feeding into this layer.
     keep : float
         The keeping probability, the lower more values will be set to zero.
+    is_fix : boolean
+        Default False, if True, the keeping probability is fixed and cannot be changed via feed_dict.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -829,27 +831,32 @@ class DropoutLayer(Layer):
     -------
     - A frequent question regarding :class:`DropoutLayer` is that why it donot have `is_train` like :class:`BatchNormLayer`.
     In many simple cases, user may find it is better to use one inference instead of two inferences for training and testing seperately, :class:`DropoutLayer`
-    allows you to control the dropout rate via `feed_dict`.
+    allows you to control the dropout rate via `feed_dict`. However, you can fix the keeping probability by setting `is_fix` to True.
     """
     def __init__(
         self,
         layer = None,
         keep = 0.5,
+        is_fix = False,
         name = 'dropout_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f" % (self.name, keep))
+        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
 
         # The name of placeholder for keep_prob is the same with the name
         # of the Layer.
         set_keep[name] = tf.placeholder(tf.float32)
-        self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
+        if is_fix:
+            self.outputs = tf.nn.dropout(self.inputs, keep, name=name)
+        else:
+            self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        self.all_drop.update( {set_keep[name]: keep} )
+        if is_fix is False:
+            self.all_drop.update( {set_keep[name]: keep} )
         self.all_layers.extend( [self.outputs] )
 
         # print(set_keep[name])
