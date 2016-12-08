@@ -573,7 +573,7 @@ def swirl_multi(x, center=None, strength=1, radius=100, rotation=0, output_shape
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>｀_ .
+    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_ .
 
     Parameters
     -----------
@@ -620,7 +620,7 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
         return map_coordinates(x, indices, order=1).reshape(shape)
 
 def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic deformation of images as described in ｀[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>｀_.
+    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_.
 
     Parameters
     -----------
