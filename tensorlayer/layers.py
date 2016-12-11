@@ -1731,10 +1731,16 @@ class BatchNormLayer(Layer):
                                         params_shape,
                                         initializer=tf.zeros_initializer,
                                         trainable=False)
-            moving_variance = _get_variable('moving_variance',
-                                            params_shape,
-                                            initializer=tf.ones_initializer(),
-                                            trainable=False)
+            try: # TF12
+                moving_variance = _get_variable('moving_variance',
+                                                params_shape,
+                                                initializer=tf.ones_initializer(),
+                                                trainable=False)
+            except: # TF11
+                moving_variance = _get_variable('moving_variance',
+                                                params_shape,
+                                                initializer=tf.ones_initializer,
+                                                trainable=False)
 
             # These ops will only be preformed when training.
             mean, variance = tf.nn.moments(self.inputs, axis)
