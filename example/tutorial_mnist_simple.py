@@ -39,9 +39,8 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 y_op = tf.argmax(tf.nn.softmax(y), 1)
 
 # define the optimizer
-train_params = network.all_params
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
-                            epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+                            epsilon=1e-08, use_locking=False).minimize(cost)
 
 # initialize all variables
 sess.run(tf.initialize_all_variables())
