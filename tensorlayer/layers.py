@@ -1733,7 +1733,7 @@ class BatchNormLayer(Layer):
                                         trainable=False)
             moving_variance = _get_variable('moving_variance',
                                             params_shape,
-                                            initializer=tf.ones_initializer,
+                                            initializer=tf.ones_initializer(),
                                             trainable=False)
 
             # These ops will only be preformed when training.
