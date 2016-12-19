@@ -423,9 +423,8 @@ class EmbeddingInputlayer(Layer):
     for Word Embedding. Words are input as integer index.
     The output is the embedded word vector.
 
-    This class can not be used to train a word embedding matrix, so you should
-    assign a trained matrix into it. To train a word embedding matrix, you can used
-    class:`Word2vecEmbeddingInputlayer`.
+    If you have a pre-train matrix, you can assign the matrix into it.
+    To train a word embedding matrix, you can used class:`Word2vecEmbeddingInputlayer`.
 
     Note that, do not update this embedding matrix.
 
