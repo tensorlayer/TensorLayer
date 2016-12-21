@@ -1719,9 +1719,14 @@ class BatchNormLayer(Layer):
             beta = _get_variable('beta',
                                  params_shape,
                                  initializer=beta_init)
-            gamma = _get_variable('gamma',
-                                  params_shape,
-                                  initializer=gamma_init)
+            try: # TF12
+                gamma = _get_variable('gamma',
+                                      params_shape,
+                                      initializer=gamma_init())
+            except: # TF11
+                gamma = _get_variable('gamma',
+                                      params_shape,
+                                      initializer=gamma_init)
 
             # trainable=False means : it prevent TF from updating this variable
             # from the gradient, we have to update this from the mean computed
