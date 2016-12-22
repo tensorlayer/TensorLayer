@@ -3036,7 +3036,7 @@ class ConcatLayer(Layer):
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
-        self.all_drop = list_remove_repeat(self.all_drop)
+        #self.all_drop = list_remove_repeat(self.all_drop) # it is a dict
 
 
 class ElementwiseLayer(Layer):
