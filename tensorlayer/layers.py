@@ -1696,7 +1696,7 @@ class BatchNormLayer(Layer):
                 regularizer = tf.contrib.layers.l2_regularizer(weight_decay)
             else:
                 regularizer = None
-            # collections = [tf.GraphKeys.VARIABLES, RESNET_VARIABLES]
+            # collections = [tf.GraphKeys.GLOBAL_VARIABLES, RESNET_VARIABLES]
             return tf.get_variable(name,
                                    shape=shape,
                                    initializer=initializer,
@@ -1771,7 +1771,7 @@ class BatchNormLayer(Layer):
 
             self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
             #x.set_shape(inputs.get_shape()) ??
-            variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
@@ -2155,7 +2155,7 @@ class RNNLayer(Layer):
 
             # Retrieve just the RNN variables.
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
-            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            rnn_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         print("     n_params : %d" % (len(rnn_variables)))
 
@@ -2361,7 +2361,7 @@ class BiRNNLayer(Layer):
             self.bw_final_state = bw_state
 
             # Retrieve just the RNN variables.
-            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            rnn_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         print("     n_params : %d" % (len(rnn_variables)))
 
@@ -2662,7 +2662,7 @@ class DynamicRNNLayer(Layer):
                 sequence_length=sequence_length,
                 initial_state = self.initial_state,
                 )
-            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            rnn_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
             print("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
@@ -2799,7 +2799,7 @@ class BiDynamicRNNLayer(Layer):
                 {"output_fw": output_fw, "output_bw": output_bw, "states_fw": states_fw, "states_bw": states_bw},
                 n=1,
                 feed_dict=None)
-            rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            rnn_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         print("     n_params : %d" % (len(rnn_variables)))
 
@@ -2962,7 +2962,7 @@ class LambdaLayer(Layer):
         print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
-            variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+            variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -3133,11 +3133,11 @@ class SlimNetsLayer(Layer):
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
-        #     slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+        #     slim_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
         net, end_points = slim_layer(self.inputs, **slim_args)
 
-        slim_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=name)
+        slim_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=name)
         if slim_variables == []:
             print("No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details" % name)
 
@@ -3480,7 +3480,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
                 zip(clipped_gradients, params), global_step=self.global_step))
 
         # if save into npz
-        self.all_params = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
+        self.all_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=vs.name)
 
     # if save into ckpt
     self.saver = tf.train.Saver(tf.all_variables())
