@@ -845,10 +845,10 @@ def exists_or_mkdir(path):
     --------
     >>> tl.files.exists_or_mkdir("checkpoints/train")
     """
-	if not os.path.exists(path):
-		print("[!] Create %s ..." % path)
-		os.mkdir(path)
-		return False
-	else:
-		print("[!] %s exists ..." % path)
-		return True
+    if not os.path.exists(path):
+        print("[!] Create %s ..." % path)
+        os.mkdir(path)
+        return False
+    else:
+        print("[!] %s exists ..." % path)
+        return True
