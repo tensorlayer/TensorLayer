@@ -850,5 +850,5 @@ def exists_or_mkdir(path):
         os.mkdir(path)
         return False
     else:
-        print("[!] %s exists ..." % path)
+        print("[*] %s exists ..." % path)
         return True
