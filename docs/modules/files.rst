@@ -51,6 +51,8 @@ sake of cross-platform.
    npz_to_W_pdf
 
    load_file_list
+   load_folder_list
+   exists_or_mkdir
 
 Load dataset functions
 ------------------------
@@ -123,3 +125,11 @@ Folder functions
 Load file list from folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_file_list
+
+Load folder list from folder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_folder_list
+
+Check and Create folder
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: exists_or_mkdir
