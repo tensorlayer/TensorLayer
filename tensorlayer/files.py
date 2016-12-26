@@ -820,3 +820,35 @@ def load_file_list(path=None, regx='\.npz', printable=True):
         print('Match file list = %s' % return_list)
         print('Number of files = %d' % len(return_list))
     return return_list
+
+def load_folder_list(path=""):
+    """Return a folder list in a folder by given a folder path.
+
+    Parameters
+    ----------
+    path : a string or None
+        A folder path.
+    """
+    return [os.path.join(path,o) for o in os.listdir(path) if os.path.isdir(os.path.join(path,o))]
+
+
+def exists_or_mkdir(path):
+    """Check a directory, if not exist, create the folder and return False,
+    if directory exists, return True.
+
+    Parameters
+    ----------
+    path : a string
+        A folder path.
+
+    Examples
+    --------
+    >>> tl.files.exists_or_mkdir("checkpoints/train")
+    """
+	if not os.path.exists(path):
+		print("[!] Create %s ..." % path)
+		os.mkdir(path)
+		return False
+	else:
+		print("[!] %s exists ..." % path)
+		return True
