@@ -415,9 +415,9 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     with tf.gfile.GFile(filename, "r") as f:
-        try:
+        try:    # python 3.4 or older
             context_list = f.read().replace(*replace).split()
-        except:
+        except: # python 3.5
             replace = [x.encode('utf-8') for x in replace]
             context_list = f.read().replace(*replace).split()
         return context_list
