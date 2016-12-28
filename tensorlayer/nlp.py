@@ -415,7 +415,12 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     with tf.gfile.GFile(filename, "r") as f:
-        return f.read().replace(*replace).split()
+        try:
+            context_list = f.read().replace(*replace).split()
+        except:
+            replace = [x.encode('utf-8') for x in replace]
+            context_list = f.read().replace(*replace).split()
+        return context_list
 
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     """Reads through an analogy question file, return its id format.
