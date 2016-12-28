@@ -394,7 +394,7 @@ def simple_read_words(filename="nietzsche.txt"):
         words = f.read()
         return words
 
-def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
+def read_words(filename="nietzsche.txt", replace = [b'\n', b'<eos>']):
     """File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
