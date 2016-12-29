@@ -971,7 +971,7 @@ class Conv1dLayer(Layer):
     act : activation function, None for identity.
     shape : list of shape
         shape of the filters, [filter_length, in_channels, out_channels].
-    strides : a int.
+    strides : an int.
         The number of entries by which the filter is moved right at each step.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
