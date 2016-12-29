@@ -971,9 +971,8 @@ class Conv1dLayer(Layer):
     act : activation function, None for identity.
     shape : list of shape
         shape of the filters, [filter_length, in_channels, out_channels].
-    strides : a list of ints.
-        The stride of the sliding window for each dimension of input.\n
-        It Must be in the same order as the dimension specified with format.
+    strides : a int.
+        The number of entries by which the filter is moved right at each step.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
     use_cudnn_on_gpu : An optional bool. Defaults to True.
@@ -994,7 +993,7 @@ class Conv1dLayer(Layer):
         layer = None,
         act = tf.identity,
         shape = [5, 5, 1],
-        strides=[1, 1, 1],
+        strides= 1,
         padding='SAME',
         use_cudnn_on_gpu=None,
         data_format=None,
