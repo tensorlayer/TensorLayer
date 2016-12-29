@@ -3677,7 +3677,7 @@ class GaussianNoiseLayer(Layer):
     def __init__(
         self,
         layer = None,
-        # keep = 0.5,
+        sigma = 0.1,
         name = 'gaussian_noise_layer',
     ):
         Layer.__init__(self, name=name)
@@ -3685,7 +3685,11 @@ class GaussianNoiseLayer(Layer):
         print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
         print("    Waiting for contribution")
         with tf.variable_scope(name) as vs:
-            pass
+            noisy = np.random.normal(0.0 , sigma , tf.to_int64(input_layer).get_shape())
+            self.inputs = self.inputs + noisy
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
 
 
 
