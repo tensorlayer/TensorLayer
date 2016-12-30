@@ -274,7 +274,7 @@ class InputLayer(Layer):
         name ='input_layer'
     ):
         Layer.__init__(self, inputs=inputs, name=name)
-        print("  tensorlayer:Instantiate InputLayer  %s: %s" % (self.name, inputs._shape))
+        print("  tensorlayer:Instantiate InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
         self.all_layers = []
         self.all_params = []
@@ -589,7 +589,7 @@ class DenseLayer(Layer):
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        n_in = int(self.inputs._shape[-1])
+        n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
         print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
@@ -937,7 +937,7 @@ class DropconnectDenseLayer(Layer):
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
-        n_in = int(self.inputs._shape[-1])
+        n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
         print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act.__name__))
 
@@ -1379,15 +1379,15 @@ class UpSampling2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        if len(self.inputs._shape) == 3:
+        if len(self.inputs.get_shape()) == 3:
             if is_scale:
-                size_h = size[0] * int(self.inputs._shape[0])
-                size_w = size[1] * int(self.inputs._shape[1])
+                size_h = size[0] * int(self.inputs.get_shape()[0])
+                size_w = size[1] * int(self.inputs.get_shape()[1])
                 size = [size_h, size_w]
-        elif len(self.inputs._shape) == 4:
+        elif len(self.inputs.get_shape()) == 4:
             if is_scale:
-                size_h = size[0] * int(self.inputs._shape[1])
-                size_w = size[1] * int(self.inputs._shape[2])
+                size_h = size[0] * int(self.inputs.get_shape()[1])
+                size_w = size[1] * int(self.inputs.get_shape()[2])
                 size = [size_h, size_w]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
@@ -1443,7 +1443,7 @@ class AtrousConv2dLayer(Layer):
         if act is None:
             act = tf.identity
         with tf.variable_scope(name) as vs:
-            shape = [filter_size[0], filter_size[1], int(self.inputs._shape[-1]), n_filter]
+            shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, **W_init_args )
             if b_init:
                 b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, **b_init_args )
@@ -1524,7 +1524,7 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
         act = tf.identity
     net = Conv2dLayer(net,
                        act = act,
-                       shape = [filter_size[0], filter_size[1], int(net.outputs._shape[-1]), n_filter],  # 32 features for each 5x5 patch
+                       shape = [filter_size[0], filter_size[1], int(net.outputs.get_shape()[-1]), n_filter],  # 32 features for each 5x5 patch
                        strides = [1, strides[0], strides[1], 1],
                        padding = padding,
                        W_init = W_init,
@@ -1557,7 +1557,7 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
         batch_size = tf.shape(net.outputs)[0]
     net = DeConv2dLayer(layer = net,
                     act = act,
-                    shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs._shape[-1])],
+                    shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs.get_shape()[-1])],
                     output_shape = [batch_size, int(out_size[0]), int(out_size[1]), n_out_channel],
                     strides = [1, strides[0], strides[1], 1],
                     padding = padding,
@@ -2949,7 +2949,7 @@ class FlattenLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.outputs = flatten_reshape(self.inputs, name=name)
-        self.n_units = int(self.outputs._shape[-1])
+        self.n_units = int(self.outputs.get_shape()[-1])
         print("  tensorlayer:Instantiate FlattenLayer %s: %d" % (self.name, self.n_units))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -2994,7 +2994,7 @@ class ReshapeLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        print("  tensorlayer:Instantiate ReshapeLayer %s: %s" % (self.name, self.outputs._shape))
+        print("  tensorlayer:Instantiate ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -3100,7 +3100,7 @@ class ConcatLayer(Layer):
         for l in layer:
             self.inputs.append(l.outputs)
         self.outputs = tf.concat(concat_dim, self.inputs, name=name) # 1.2
-        self.n_units = int(self.outputs._shape[-1])
+        self.n_units = int(self.outputs.get_shape()[-1])
         print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
 
         self.all_layers = list(layer[0].all_layers)
@@ -3150,12 +3150,12 @@ class ElementwiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
 
-        print("  tensorlayer:Instantiate ElementwiseLayer %s:  %s, %s" % (self.name, layer[0].outputs._shape, combine_fn.__name__))
+        print("  tensorlayer:Instantiate ElementwiseLayer %s:  %s, %s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layer[0].outputs
         # print(self.outputs._shape, type(self.outputs._shape))
         for l in layer[1:]:
-            assert str(self.outputs._shape) == str(l.outputs._shape), "Hint: the input shapes should be the same. %s != %s" %  (self.outputs._shape , str(l.outputs._shape))
+            assert str(self.outputs.get_shape()) == str(l.outputs.get_shape()), "Hint: the input shapes should be the same. %s != %s" %  (self.outputs.get_shape() , str(l.outputs.get_shape()))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
         self.all_layers = list(layer[0].all_layers)
@@ -3269,7 +3269,7 @@ class PReluLayer(Layer):
         if channel_shared:
             w_shape = (1,)
         else:
-            w_shape = int(self.inputs._shape[-1])
+            w_shape = int(self.inputs.get_shape()[-1])
 
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name) as vs:
