@@ -289,6 +289,7 @@ Layer list
    retrieve_seq_length_op
    retrieve_seq_length_op2
    DynamicRNNLayer
+   BiDynamicRNNLayer
    FlattenLayer
    ReshapeLayer
    LambdaLayer
@@ -452,7 +453,6 @@ RNN layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: RNNLayer
 
-
 Bidirectional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BiRNNLayer
@@ -478,7 +478,14 @@ Compute Sequence length 2
 
 Dynamic RNN layer
 ----------------------
+
+RNN layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DynamicRNNLayer
+
+Bidirectional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BiDynamicRNNLayer
 
 
 Shape layer
