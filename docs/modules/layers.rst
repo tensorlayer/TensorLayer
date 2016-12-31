@@ -260,14 +260,19 @@ Layer list
    get_variables_with_name
    set_name_reuse
    print_all_variables
+
    Layer
+
    InputLayer
    Word2vecEmbeddingInputlayer
    EmbeddingInputlayer
+
    DenseLayer
    ReconLayer
    DropoutLayer
+   GaussianNoiseLayer
    DropconnectDenseLayer
+
    Conv1dLayer
    Conv2dLayer
    DeConv2dLayer
@@ -277,12 +282,15 @@ Layer list
    UpSampling2dLayer
    AtrousConv2dLayer
    LocalResponseNormLayer
+
    Conv2d
    DeConv2d
    MaxPool2d
    MeanPool2d
+
    BatchNormLayer
    LocalResponseNormLayer
+
    RNNLayer
    BiRNNLayer
    advanced_indexing_op
@@ -290,15 +298,22 @@ Layer list
    retrieve_seq_length_op2
    DynamicRNNLayer
    BiDynamicRNNLayer
+
    FlattenLayer
    ReshapeLayer
    LambdaLayer
+
    ConcatLayer
    ElementwiseLayer
+
    SlimNetsLayer
+
    PReluLayer
+
    MultiplexerLayer
+
    EmbeddingAttentionSeq2seqWrapper
+   
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
@@ -361,6 +376,10 @@ Noise layer
 Dropout layer
 ^^^^^^^^^^^^^^^^
 .. autoclass:: DropoutLayer
+
+Gaussian noise layer
+^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GaussianNoiseLayer
 
 Dropconnect + Dense layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

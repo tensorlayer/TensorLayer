@@ -880,6 +880,37 @@ class DropoutLayer(Layer):
         # value will be checked for compatibility with the placeholder.
         # If the key is a SparseTensor, the value should be a SparseTensorValue.
 
+class GaussianNoiseLayer(Layer):
+    """
+    The :class:`GaussianNoiseLayer` class is noise layer that adding noise with
+    normal distribution to the activation.
+
+    Parameters
+    ------------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    sigma : float
+        Scale value of gaussian noise.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        sigma = 0.1,
+        name = 'gaussian_noise_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
+        with tf.variable_scope(name) as vs:
+            noise = np.random.normal(0.0 , sigma , tf.to_int64(input_layer).get_shape())
+            self.inputs = self.inputs + noise
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+
 class DropconnectDenseLayer(Layer):
     """
     The :class:`DropconnectDenseLayer` class is ``DenseLayer`` with DropConnect
@@ -3742,27 +3773,7 @@ class MaxoutLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
 
-# noise
-class GaussianNoiseLayer(Layer):
-    """
-    Waiting for contribution
-    """
-    def __init__(
-        self,
-        layer = None,
-        sigma = 0.1,
-        name = 'gaussian_noise_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
-        print("    Waiting for contribution")
-        with tf.variable_scope(name) as vs:
-            noisy = np.random.normal(0.0 , sigma , tf.to_int64(input_layer).get_shape())
-            self.inputs = self.inputs + noisy
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+
 
 
 
