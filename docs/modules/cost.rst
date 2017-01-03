@@ -171,7 +171,7 @@ Cosine similarity
 Regularization functions
 --------------------------
 
-For ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
+For ``tf.nn.l2_loss``, ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 Maxnorm
