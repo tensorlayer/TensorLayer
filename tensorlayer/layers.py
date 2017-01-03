@@ -1202,8 +1202,7 @@ class DeConv2dLayer(Layer):
     >>> print(net_h0.outputs._shape)
     ... (64, 8192)
     >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape = [-1, 4, 4, 512], name='g/h0/reshape')
-    >>> net_h0 = tl.layers.BatchNormLayer(net_h0, is_train=is_train, name='g/h0/batch_norm')
-    >>> net_h0.outputs = tf.nn.relu(net_h0.outputs, name='g/h0/relu')
+    >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, is_train=is_train, name='g/h0/batch_norm')
     >>> print(net_h0.outputs._shape)
     ... (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
@@ -1211,8 +1210,7 @@ class DeConv2dLayer(Layer):
     ...                            output_shape = [batch_size, 8, 8, 256],
     ...                            strides=[1, 2, 2, 1],
     ...                            act=tf.identity, name='g/h1/decon2d')
-    >>> net_h1 = tl.layers.BatchNormLayer(net_h1, is_train=is_train, name='g/h1/batch_norm')
-    >>> net_h1.outputs = tf.nn.relu(net_h1.outputs, name='g/h1/relu')
+    >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
     >>> print(net_h1.outputs._shape)
     ... (64, 8, 8, 256)
 
