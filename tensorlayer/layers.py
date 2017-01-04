@@ -2904,7 +2904,7 @@ class BiDynamicRNNLayer(Layer):
 
             print("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
-            outputs = tf.concat(-1, outputs)
+            outputs = tf.concat(2, outputs)
             if return_last:
                 # [batch_size, 2 * n_hidden]
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
