@@ -230,7 +230,8 @@ x = tf.placeholder("float", [None, 224, 224, 3])
 network = Vgg19(x)
 y = network.outputs
 probs = tf.nn.softmax(y, name="prob")
-sess.run(tf.initialize_all_variables())
+# sess.run(tf.initialize_all_variables())
+tl.layers.initialize_global_variables(sess)
 
 # You need to download the pre-trained model - VGG19 NPZ
 # in https://github.com/machrisaa/tensorflow-vgg

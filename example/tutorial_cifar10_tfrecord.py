@@ -182,54 +182,43 @@ with tf.device('/cpu:0'):
                                                     num_threads=32)
 
     def inference(x_crop, y_, reuse):
+        """
+        For simplified CNN API, check tensorlayer.org
+        """
+        W_init = tf.truncated_normal_initializer(stddev=5e-2)
+        b_init = tf.constant_initializer(value=0.0)
+        W_init2 = tf.truncated_normal_initializer(stddev=0.04)
+        b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.InputLayer(x_crop, name='input_layer')
-            network = tl.layers.Conv2dLayer(network,
-                                act = tf.nn.relu,
-                                shape = [5, 5, 3, 64],  # 64 features for each 5x5x3 patch
-                                strides=[1, 1, 1, 1],
-                                padding='SAME',
-                                W_init=tf.truncated_normal_initializer(stddev=5e-2),
-                                b_init=tf.constant_initializer(value=0.0),
-                                name ='cnn_layer1')     # output: (batch_size, 24, 24, 64)
-            network = tl.layers.PoolLayer(network,
-                                ksize=[1, 3, 3, 1],
-                                strides=[1, 2, 2, 1],
-                                padding='SAME',
-                                pool = tf.nn.max_pool,
-                                name ='pool_layer1',)   # output: (batch_size, 12, 12, 64)
+            network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
+                        shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
+                        W_init=W_init, b_init=b_init, name ='cnn_layer1')       # output: (batch_size, 24, 24, 64)
+            network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                        strides=[1, 2, 2, 1], padding='SAME',
+                        pool = tf.nn.max_pool, name ='pool_layer1',)            # output: (batch_size, 12, 12, 64)
+            # you can also use tl.layers.LocalResponseNormLayer
             network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
                                                             beta=0.75, name='norm1')
-            network = tl.layers.Conv2dLayer(network,
-                                act = tf.nn.relu,
-                                shape = [5, 5, 64, 64], # 64 features for each 5x5 patch
-                                strides=[1, 1, 1, 1],
-                                padding='SAME',
-                                W_init=tf.truncated_normal_initializer(stddev=5e-2),
-                                b_init=tf.constant_initializer(value=0.1),
-                                name ='cnn_layer2')     # output: (batch_size, 12, 12, 64)
+
+            network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
+                        shape=[5, 5, 64, 64], strides=[1, 1, 1, 1], padding='SAME',# 64 features for each 5x5 patch
+                        W_init=W_init, b_init=b_init, name ='cnn_layer2')       # output: (batch_size, 12, 12, 64)
             network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
                                                             beta=0.75, name='norm2')
-            network = tl.layers.PoolLayer(network,
-                                ksize=[1, 3, 3, 1],
-                                strides=[1, 2, 2, 1],
-                                padding='SAME',
-                                pool = tf.nn.max_pool,
-                                name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
-            network = tl.layers.FlattenLayer(network, name='flatten_layer')      # output: (batch_size, 2304)
-            network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
-                                W_init=tf.truncated_normal_initializer(stddev=0.04),
-                                b_init=tf.constant_initializer(value=0.1),
-                                name='relu1')       # output: (batch_size, 384)
-            network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
-                                W_init=tf.truncated_normal_initializer(stddev=0.04),
-                                b_init=tf.constant_initializer(value=0.1),
-                                name='relu2')       # output: (batch_size, 192)
-            network = tl.layers.DenseLayer(network, n_units=10, act = tf.identity,
-                                W_init=tf.truncated_normal_initializer(stddev=1/192.0),
-                                b_init = tf.constant_initializer(value=0.0),
-                                name='output_layer')    # output: (batch_size, 10)
+            network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                        strides=[1, 2, 2, 1], padding='SAME',
+                        pool = tf.nn.max_pool, name ='pool_layer2')             # output: (batch_size, 6, 6, 64)
+            network = tl.layers.FlattenLayer(network, name='flatten_layer')     # output: (batch_size, 2304)
+            network = tl.layers.DenseLayer(network, n_units=384, act=tf.nn.relu,
+                        W_init=W_init2, b_init=b_init2, name='relu1')           # output: (batch_size, 384)
+            network = tl.layers.DenseLayer(network, n_units=192, act=tf.nn.relu,
+                        W_init=W_init2, b_init=b_init2, name='relu2')           # output: (batch_size, 192)
+            network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity,
+                        W_init=tf.truncated_normal_initializer(stddev=1/192.0),
+                        b_init = tf.constant_initializer(value=0.0),
+                        name='output_layer')    # output: (batch_size, 10)
             y = network.outputs
 
             ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
@@ -248,59 +237,44 @@ with tf.device('/cpu:0'):
         """
         For batch normalization, the normalization should be placed after cnn
         with linear activation.
+
+        For simplified CNN API, check tensorlayer.org
         """
+        W_init = tf.truncated_normal_initializer(stddev=5e-2)
+        W_init2 = tf.truncated_normal_initializer(stddev=0.04)
+        b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.InputLayer(x_crop, name='input_layer')
-            network = tl.layers.Conv2dLayer(network,
-                                act = tf.identity,
-                                shape = [5, 5, 3, 64],  # 64 features for each 5x5x3 patch
-                                strides=[1, 1, 1, 1],
-                                padding='SAME',
-                                W_init=tf.truncated_normal_initializer(stddev=5e-2),
-                                # b_init=tf.constant_initializer(value=0.0),
-                                b_init=None,
-                                name ='cnn_layer1')     # output: (batch_size, 24, 24, 64)
-            network = tl.layers.BatchNormLayer(network, is_train=is_train, name='batch_norm1')
-            network.outputs = tf.nn.relu(network.outputs, name='relu1')
-            network = tl.layers.PoolLayer(network,
-                                ksize=[1, 3, 3, 1],
-                                strides=[1, 2, 2, 1],
-                                padding='SAME',
-                                pool = tf.nn.max_pool,
-                                name ='pool_layer1',)   # output: (batch_size, 12, 12, 64)
+            network = tl.layers.Conv2dLayer(network, act=tf.identity,
+                        shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
+                        W_init=W_init, b_init=None, name='cnn_layer1')                            # output: (batch_size, 24, 24, 64)
+            network = tl.layers.BatchNormLayer(network, is_train=is_train,
+                        act=tf.nn.relu, name='batch_norm1')
 
-            network = tl.layers.Conv2dLayer(network,
-                                act = tf.identity,
-                                shape = [5, 5, 64, 64], # 64 features for each 5x5 patch
-                                strides=[1, 1, 1, 1],
-                                padding='SAME',
-                                W_init=tf.truncated_normal_initializer(stddev=5e-2),
-                                # b_init=tf.constant_initializer(value=0.1),
-                                b_init=None,
-                                name ='cnn_layer2')     # output: (batch_size, 12, 12, 64)
+            network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                        strides=[1, 2, 2, 1], padding='SAME',
+                        pool=tf.nn.max_pool, name='pool_layer1',)               # output: (batch_size, 12, 12, 64)
 
-            network = tl.layers.BatchNormLayer(network, is_train=is_train, name='batch_norm2')
-            network.outputs = tf.nn.relu(network.outputs, name='relu2')
-            network = tl.layers.PoolLayer(network,
-                                ksize=[1, 3, 3, 1],
-                                strides=[1, 2, 2, 1],
-                                padding='SAME',
-                                pool = tf.nn.max_pool,
-                                name ='pool_layer2')   # output: (batch_size, 6, 6, 64)
-            network = tl.layers.FlattenLayer(network, name='flatten_layer')    # output: (batch_size, 2304)
-            network = tl.layers.DenseLayer(network, n_units=384, act = tf.nn.relu,
-                                W_init=tf.truncated_normal_initializer(stddev=0.04),
-                                b_init=tf.constant_initializer(value=0.1),
-                                name='relu1')       # output: (batch_size, 384)
+            network = tl.layers.Conv2dLayer(network, act=tf.identity,
+                        shape=[5, 5, 64, 64], strides=[1, 1, 1, 1], padding='SAME',# 64 features for each 5x5 patch
+                        W_init=W_init, b_init=None, name ='cnn_layer2')         # output: (batch_size, 12, 12, 64)
+
+            network = tl.layers.BatchNormLayer(network, is_train=is_train,
+                        act=tf.nn.relu, name='batch_norm2')
+
+            network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                        strides=[1, 2, 2, 1], padding='SAME',
+                        pool = tf.nn.max_pool, name ='pool_layer2')             # output: (batch_size, 6, 6, 64)
+            network = tl.layers.FlattenLayer(network, name='flatten_layer')     # output: (batch_size, 2304)
+            network = tl.layers.DenseLayer(network, n_units=384, act=tf.nn.relu,
+                        W_init=W_init2, b_init=b_init2, name='relu1')           # output: (batch_size, 384)
             network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
-                                W_init=tf.truncated_normal_initializer(stddev=0.04),
-                                b_init=tf.constant_initializer(value=0.1),
-                                name='relu2')       # output: (batch_size, 192)
+                        W_init=W_init2, b_init=b_init2, name='relu2')           # output: (batch_size, 192)
             network = tl.layers.DenseLayer(network, n_units=10, act = tf.identity,
-                                W_init=tf.truncated_normal_initializer(stddev=1/192.0),
-                                b_init = tf.constant_initializer(value=0.0),
-                                name='output_layer')    # output: (batch_size, 10)
+                        W_init=tf.truncated_normal_initializer(stddev=1/192.0),
+                        b_init = tf.constant_initializer(value=0.0),
+                        name='output_layer')                                    # output: (batch_size, 10)
             y = network.outputs
 
             ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
@@ -321,7 +295,7 @@ with tf.device('/cpu:0'):
     # y_ = tf.placeholder(tf.int32, shape=[batch_size,])
     # cost, acc, network = inference(x_crop, y_, None)
 
-    with tf.device('/gpu:0'):
+    with tf.device('/gpu:0'): # <-- remove it if you don't have GPU
         # network in gpu
         cost, acc, network = inference(x_train_batch, y_train_batch, None)
         cost_test, acc_test, _ = inference(x_test_batch, y_test_batch, True)
@@ -336,7 +310,7 @@ with tf.device('/cpu:0'):
     n_step_epoch = int(len(y_train)/batch_size)
     n_step = n_epoch * n_step_epoch
 
-    with tf.device('/gpu:0'):
+    with tf.device('/gpu:0'):   # <-- remove it if you don't have GPU
         # train in gpu
         train_params = network.all_params
         train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
@@ -357,7 +331,6 @@ with tf.device('/cpu:0'):
 
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-    # for step in range(n_step):
     step = 0
     for epoch in range(n_epoch):
         start_time = time.time()

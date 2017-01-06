@@ -263,7 +263,7 @@ def cosine_similarity(v1, v2):
 
 
 ## Regularization Functions
-def li_regularizer(scale):
+def li_regularizer(scale, scope=None):
   """li regularization removes the neurons of previous layer, `i` represents `inputs`.\n
   Returns a function that can be used to apply group li regularization to weights.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
@@ -272,6 +272,7 @@ def li_regularizer(scale):
   ----------
   scale : float
     A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+  scope: An optional scope name for TF12+.
 
   Returns
   --------
@@ -301,17 +302,30 @@ def li_regularizer(scale):
 
   def li(weights, name=None):
     """Applies li regularization to weights."""
-    with ops.op_scope([weights], name, 'li_regularizer') as scope:
-      my_scale = ops.convert_to_tensor(scale,
-                                       dtype=weights.dtype.base_dtype,
-                                       name='scale')
-    return standard_ops.mul(
-          my_scale,
-          standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
-          name=scope)
+    # with ops.op_scope([weights], name, 'li_regularizer') as scope: # tf.op_scope(values, name, default_name) is deprecated, use tf.name_scope(name, default_name, values)
+    try: # TF12
+        with ops.name_scope(scope, 'li_regularizer', [weights]) as name:
+            my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+            return standard_ops.mul(
+              my_scale,
+              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
+              name=scope)
+    except: # TF11
+        with ops.op_scope([weights], name, 'li_regularizer') as scope:
+            my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+            return standard_ops.mul(
+              my_scale,
+              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
+              name=scope)
   return li
 
-def lo_regularizer(scale):
+
+
+def lo_regularizer(scale, scope=None):
   """lo regularization removes the neurons of current layer, `o` represents `outputs`\n
   Returns a function that can be used to apply group lo regularization to weights.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
@@ -320,6 +334,7 @@ def lo_regularizer(scale):
   ----------
   scale : float
     A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+  scope: An optional scope name for TF12+.
 
   Returns
   -------
@@ -349,17 +364,27 @@ def lo_regularizer(scale):
 
   def lo(weights, name=None):
     """Applies group column regularization to weights."""
-    with ops.op_scope([weights], name, 'lo_regularizer') as scope:
-      my_scale = ops.convert_to_tensor(scale,
-                                       dtype=weights.dtype.base_dtype,
-                                       name='scale')
-      return standard_ops.mul(
-          my_scale,
-          standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
-          name=scope)
+    try: # TF12
+        with ops.name_scope(scope, 'lo_regularizer', [weights]) as name:
+            my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+            return standard_ops.mul(
+              my_scale,
+              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
+              name=scope)
+    except: # TF11
+        with ops.op_scope([weights], name, 'lo_regularizer') as scope:
+            my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+            return standard_ops.mul(
+              my_scale,
+              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
+              name=scope)
   return lo
 
-def maxnorm_regularizer(scale=1.0):
+def maxnorm_regularizer(scale=1.0, scope=None):
   """Max-norm regularization returns a function that can be used
   to apply max-norm regularization to weights.
   About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.\n
@@ -369,6 +394,7 @@ def maxnorm_regularizer(scale=1.0):
   ----------
   scale : float
     A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+  scope: An optional scope name.
 
   Returns
   ---------
@@ -397,14 +423,21 @@ def maxnorm_regularizer(scale=1.0):
 
   def mn(weights, name=None):
     """Applies max-norm regularization to weights."""
-    with ops.op_scope([weights], name, 'maxnorm_regularizer') as scope:
-      my_scale = ops.convert_to_tensor(scale,
-                                       dtype=weights.dtype.base_dtype,
-                                       name='scale')
-      return standard_ops.mul(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
+    try: # TF12
+        with ops.name_scope(scope, 'maxnorm_regularizer', [weights]) as name:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
+    except: # TF11
+        with ops.op_scope([weights], name, 'maxnorm_regularizer') as scope:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                           name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
   return mn
 
-def maxnorm_o_regularizer(scale):
+def maxnorm_o_regularizer(scale, scope):
   """Max-norm output regularization removes the neurons of current layer.\n
   Returns a function that can be used to apply max-norm regularization to each column of weight matrix.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
@@ -413,6 +446,7 @@ def maxnorm_o_regularizer(scale):
   ----------
   scale : float
     A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+  scope: An optional scope name.
 
   Returns
   ---------
@@ -441,14 +475,21 @@ def maxnorm_o_regularizer(scale):
 
   def mn_o(weights, name=None):
     """Applies max-norm regularization to weights."""
-    with ops.op_scope([weights], name, 'maxnorm_o_regularizer') as scope:
-      my_scale = ops.convert_to_tensor(scale,
-                                       dtype=weights.dtype.base_dtype,
-                                               name='scale')
-      return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
+    try:    # TF12
+        with ops.name_scope(scope, 'maxnorm_o_regularizer', [weights]) as name:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                                   name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
+    except: # TF11
+        with ops.op_scope([weights], name, 'maxnorm_o_regularizer') as scope:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                                   name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
   return mn_o
 
-def maxnorm_i_regularizer(scale):
+def maxnorm_i_regularizer(scale, scope=None):
   """Max-norm input regularization removes the neurons of previous layer.\n
   Returns a function that can be used to apply max-norm regularization to each row of weight matrix.\n
   The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
@@ -457,6 +498,7 @@ def maxnorm_i_regularizer(scale):
   ----------
   scale : float
     A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+  scope: An optional scope name.
 
   Returns
   ---------
@@ -485,11 +527,18 @@ def maxnorm_i_regularizer(scale):
 
   def mn_i(weights, name=None):
     """Applies max-norm regularization to weights."""
-    with ops.op_scope([weights], name, 'maxnorm_o_regularizer') as scope:
-      my_scale = ops.convert_to_tensor(scale,
-                                       dtype=weights.dtype.base_dtype,
-                                               name='scale')
-      return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
+    try: # TF12
+        with ops.name_scope(scope, 'maxnorm_i_regularizer', [weights]) as name:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                                   name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
+    except: # TF11
+        with ops.op_scope([weights], name, 'maxnorm_i_regularizer') as scope:
+          my_scale = ops.convert_to_tensor(scale,
+                                           dtype=weights.dtype.base_dtype,
+                                                   name='scale')
+          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
   return mn_i
 
 

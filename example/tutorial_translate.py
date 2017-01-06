@@ -46,7 +46,7 @@ https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/seq2s
 Data
 ----
 http://www.statmt.org/wmt10/
- 
+
 """
 from __future__ import print_function
 import tensorflow as tf
@@ -297,7 +297,8 @@ def main_train():
                           learning_rate_decay_factor,
                           forward_only=False)    # is_train = True
 
-    sess.run(tf.initialize_all_variables())
+    # sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
     # model.print_params()
     tl.layers.print_all_variables()
 

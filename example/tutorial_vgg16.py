@@ -203,7 +203,8 @@ cost = tl.cost.cross_entropy(y, y_)
 correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-sess.run(tf.initialize_all_variables())
+# sess.run(tf.initialize_all_variables())
+tl.layers.initialize_global_variables(sess)
 network.print_params()
 network.print_layers()
 

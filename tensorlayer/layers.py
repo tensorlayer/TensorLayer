@@ -134,7 +134,7 @@ def initialize_rnn_state(state):
 
 def print_all_variables(train_only=False):
     """Print all trainable and non-trainable variables
-    without initialize_all_variables()
+    without tl.layers.initialize_global_variables(sess)
 
     Parameters
     ----------
@@ -179,6 +179,22 @@ def list_remove_repeat(l=None):
     [l2.append(i) for i in l if not i in l2]
     return l2
 
+
+def initialize_global_variables(sess=None):
+    """Excute ``sess.run(tf.global_variables_initializer())`` for TF12+ or
+    sess.run(tf.initialize_all_variables()) for TF11.
+
+    Parameters
+    ----------
+    sess : a Session
+    """
+    assert sess is not None
+    try:    # TF12
+        sess.run(tf.global_variables_initializer())
+    except: # TF11
+        sess.run(tf.initialize_all_variables())
+
+
 ## Basic layer
 class Layer(object):
     """
@@ -216,8 +232,9 @@ class Layer(object):
             if details:
                 try:
                     print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
-                except:
-                    raise Exception("Hint: print params details after sess.run(tf.initialize_all_variables()) or use network.print_params(False).")
+                except Exception as e:
+                    print(str(e))
+                    raise Exception("Hint: print params details after tl.layers.initialize_global_variables(sess) or use network.print_params(False).")
             else:
                 print("  param {:3}: {:15}    {}".format(i, str(p.get_shape()), p.name))
         print("  num of params: %d" % self.count_params())
@@ -477,7 +494,7 @@ class EmbeddingInputlayer(Layer):
     ...                vocabulary_size = vocabulary_size,
     ...                embedding_size = embedding_size,
     ...                name ='embedding_layer')
-    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.layers.initialize_global_variables(sess)
     >>> tl.files.assign_params(sess, [load_params[0]], emb_net)
     >>> word = b'hello'
     >>> word_id = dictionary[word]
@@ -698,6 +715,7 @@ class ReconLayer(DenseLayer):
         # DropNeuro
         P_o = cost.lo_regularizer(0.03)(self.train_params[0])   # + cost.lo_regularizer(0.5)(self.train_params[2])    # <haodong>: if add lo on decoder, no neuron will be broken
         P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
+
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
         L1_a = 0.001 * tf.reduce_mean(activation_out)   # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
@@ -2425,7 +2443,7 @@ def advanced_indexing_op(input, index):
     >>> o = advanced_indexing_op(b_z, sl)
     >>>
     >>> sess = tf.InteractiveSession()
-    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.layers.initialize_global_variables(sess)
     >>>
     >>> order = np.asarray([1,1,2])
     >>> print("real",z[0][order[0]-1], z[1][order[1]-1], z[2][order[2]-1])
@@ -2471,7 +2489,7 @@ def retrieve_seq_length_op(data):
     >>> data = tf.constant(data)
     >>> sl = retrieve_seq_length_op(data)
     >>> sess = tf.InteractiveSession()
-    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.layers.initialize_global_variables(sess)
     >>> y = sl.eval()
     ... [2 3 4]
 
@@ -2508,7 +2526,7 @@ def retrieve_seq_length_op2(data):
     ...         [1,2,6,1,0]]
     >>> o = retrieve_seq_length_op2(data)
     >>> sess = tf.InteractiveSession()
-    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.layers.initialize_global_variables(sess)
     >>> print(o.eval())
     ... [2 3 4]
     """
@@ -3106,7 +3124,7 @@ class ConcatLayer(Layer):
     ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
     ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
     ...
-    >>> sess.run(tf.initialize_all_variables())
+    >>> tl.layers.initialize_global_variables(sess)
     >>> network.print_params()
     ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
     ...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)

@@ -103,9 +103,10 @@ img_batch, label_batch = tf.train.shuffle_batch([img, label],
                                                 )
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
-init = tf.initialize_all_variables()
+# init = tf.initialize_all_variables()
 with tf.Session() as sess:
-    sess.run(init)
+    # sess.run(init)
+    tl.layers.initialize_global_variables(sess)
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 

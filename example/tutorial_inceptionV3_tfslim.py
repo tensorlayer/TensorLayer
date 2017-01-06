@@ -64,7 +64,7 @@ def print_prob(prob):
     return top1
 
 
-## Alexnet_v2 / All Slim nets can be merged into TensorLayer
+## Alexnet_v2 / All TF-Slim nets can be merged into TensorLayer
 # x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
 # net_in = tl.layers.InputLayer(x, name='input_layer')
 # network = tl.layers.SlimNetsLayer(layer=net_in, slim_layer=alexnet_v2,
@@ -74,14 +74,16 @@ def print_prob(prob):
 #                                        'dropout_keep_prob' : 0.5,
 #                                        'spatial_squeeze' : True,
 #                                        'scope' : 'alexnet_v2'
-#                                         }
+#                                         },
+#                                     name='alexnet_v2'  # <-- the name should be the same with the ckpt model
 #                                     )
 # sess = tf.InteractiveSession()
-# sess.run(tf.initialize_all_variables())
+# # sess.run(tf.initialize_all_variables())
+# tl.layers.initialize_global_variables(sess)
 # network.print_params()
-# exit()
 
-# InceptionV3
+
+## InceptionV3 / All TF-Slim nets can be merged into TensorLayer
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
 net_in = tl.layers.InputLayer(x, name='input_layer')
 with slim.arg_scope(inception_v3_arg_scope()):
@@ -92,7 +94,7 @@ with slim.arg_scope(inception_v3_arg_scope()):
                                     slim_args= {
                                              'num_classes' : 1001,
                                              'is_training' : False,
-                                            #  'dropout_keep_prob' : 0.8,   # for training
+                                            #  'dropout_keep_prob' : 0.8,       # for training
                                             #  'min_depth' : 16,
                                             #  'depth_multiplier' : 1.0,
                                             #  'prediction_fn' : slim.softmax,
@@ -102,16 +104,17 @@ with slim.arg_scope(inception_v3_arg_scope()):
                                             },
                                         name='InceptionV3'  # <-- the name should be the same with the ckpt model
                                         )
-saver = tf.train.Saver()
 
 sess = tf.InteractiveSession()
-sess.run(tf.initialize_all_variables())
 
-# with tf.Session() as sess:
-saver.restore(sess, "inception_v3.ckpt")    # download from https://github.com/tensorflow/models/tree/master/slim#Install
-print("Model Restored")
 network.print_params(False)
 
+saver = tf.train.Saver()
+try:    # TF12
+    saver.restore(sess, "./inception_v3.ckpt")    # download from https://github.com/tensorflow/models/tree/master/slim#Install
+except: # TF11
+    saver.restore(sess, "inception_v3.ckpt")
+print("Model Restored")
 
 from scipy.misc import imread, imresize
 y = network.outputs

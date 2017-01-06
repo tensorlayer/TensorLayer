@@ -213,7 +213,8 @@ def main_word2vec_basic():
     """ Step 5: Begin training.
     """
     print()
-    sess.run(tf.initialize_all_variables())
+    # sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
     if resume:
         print("Load existing model" + "!"*10)
         # Load from ckpt or npz file

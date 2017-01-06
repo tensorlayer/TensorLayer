@@ -88,8 +88,8 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
   train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
                               epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
-  # initialize all variables
-  sess.run(tf.initialize_all_variables())
+  # initialize all variables in the session
+  tl.layers.initialize_global_variables(sess)
 
   # print network information
   network.print_params()
@@ -432,6 +432,7 @@ max-pooling of factor 2 in both dimensions. And then apply a ``Conv2dLayer`` wit
 the 4D output to 1D vector by using ``FlattenLayer``, and apply a dropout with 50%
 to last hidden layer. The ``?`` represents arbitrary batch_size.
 
+Note, ``tutorial_mnist.py`` introduces the simplified CNN API for beginner.
 
 .. code-block:: python
 
@@ -949,7 +950,7 @@ directories as follow.
                   embedding_size = embedding_size,
                   name ='embedding_layer')
 
-  sess.run(tf.initialize_all_variables())
+  tl.layers.initialize_global_variables(sess)
 
   tl.files.assign_params(sess, [load_params[0]], emb_net)
 

@@ -20,7 +20,7 @@ All TensorLayer layers have a number of properties in common:
 
 All TensorLayer layers have a number of methods in common:
 
- - ``layer.print_params()`` : print the network variables information in order (after ``sess.run(tf.initialize_all_variables())``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
+ - ``layer.print_params()`` : print the network variables information in order (after ``tl.layers.initialize_global_variables(sess)``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
  - ``layer.print_layers()`` : print the network layers information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
@@ -71,7 +71,7 @@ To count the number of parameters in a network, run ``network.count_params()``.
   train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
                               epsilon=1e-08, use_locking=False).minimize(cost, var_list = train_params)
 
-  sess.run(tf.initialize_all_variables())
+  tl.layers.initialize_global_variables(sess)
 
   network.print_params()
   network.print_layers()
@@ -260,6 +260,7 @@ Layer list
    get_variables_with_name
    set_name_reuse
    print_all_variables
+   initialize_global_variables
 
    Layer
 
@@ -313,7 +314,7 @@ Layer list
    MultiplexerLayer
 
    EmbeddingAttentionSeq2seqWrapper
-   
+
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
@@ -338,9 +339,14 @@ Print variables
 ^^^^^^^^^^^^^^^^^^
 .. autofunction:: print_all_variables
 
+Initialize variables
+^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: initialize_global_variables
+
 Basic layer
 -----------
 .. autoclass:: Layer
+
 
 Input layer
 ------------
