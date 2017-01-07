@@ -868,10 +868,10 @@ class DropoutLayer(Layer):
 
         # The name of placeholder for keep_prob is the same with the name
         # of the Layer.
-        set_keep[name] = tf.placeholder(tf.float32)
         if is_fix:
             self.outputs = tf.nn.dropout(self.inputs, keep, name=name)
         else:
+            set_keep[name] = tf.placeholder(tf.float32)
             self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
 
         self.all_layers = list(layer.all_layers)
@@ -1688,6 +1688,7 @@ class LocalResponseNormLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
@@ -1725,7 +1726,8 @@ class BatchNormLayer(Layer):
         act = tf.identity,
         is_train = None,
         beta_init = tf.zeros_initializer,
-        gamma_init = tf.ones_initializer,
+        # gamma_init = tf.ones_initializer,
+        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
         name ='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1735,26 +1737,26 @@ class BatchNormLayer(Layer):
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
 
-        def _get_variable(name,
-                          shape,
-                          initializer,
-                          weight_decay=0.0,
-                          dtype='float',
-                          trainable=True):
-            "A little wrapper around tf.get_variable to do weight decay and add to"
-            "resnet collection"
-            if weight_decay > 0:
-                regularizer = tf.contrib.layers.l2_regularizer(weight_decay)
-            else:
-                regularizer = None
-            # collections = [TF_GRAPHKEYS_VARIABLES, RESNET_VARIABLES]
-            return tf.get_variable(name,
-                                   shape=shape,
-                                   initializer=initializer,
-                                   dtype=dtype,
-                                   regularizer=regularizer,
-                                #    collections=collections,
-                                   trainable=trainable)
+        # def _get_variable(name,
+        #                   shape,
+        #                   initializer,
+        #                   weight_decay=0.0,
+        #                   dtype='float',
+        #                   trainable=True):
+        #     "A little wrapper around tf.get_variable to do weight decay and add to"
+        #     "resnet collection"
+        #     if weight_decay > 0:
+        #         regularizer = tf.contrib.layers.l2_regularizer(weight_decay)
+        #     else:
+        #         regularizer = None
+        #     # collections = [TF_GRAPHKEYS_VARIABLES, RESNET_VARIABLES]
+        #     return tf.get_variable(name,
+        #                            shape=shape,
+        #                            initializer=initializer,
+        #                            dtype=dtype,
+        #                            regularizer=regularizer,
+        #                         #    collections=collections,
+        #                            trainable=trainable)
 
         from tensorflow.python.training import moving_averages
         from tensorflow.python.ops import control_flow_ops
@@ -1767,42 +1769,69 @@ class BatchNormLayer(Layer):
 
             axis = list(range(len(x_shape) - 1))
 
-            beta = _get_variable('beta',
-                                 params_shape,
-                                 initializer=beta_init)
-            try: # TF12
-                gamma = _get_variable('gamma',
-                                      params_shape,
-                                      initializer=gamma_init())
-            except: # TF11
-                gamma = _get_variable('gamma',
-                                      params_shape,
-                                      initializer=gamma_init)
+            # beta = _get_variable('beta',
+            #                      params_shape,
+            #                      initializer=beta_init)
+            beta = tf.get_variable('beta', shape=params_shape,
+                               initializer=beta_init,
+                               trainable=is_train)#, restore=restore)
+            # try: # TF12
+            #     gamma = _get_variable('gamma',
+            #                           params_shape,
+            #                           initializer=gamma_init())
+            # except: # TF11
+            # gamma = _get_variable('gamma',
+            #                       params_shape,
+            #                       initializer=gamma_init)
+            # print("x"*100)
+
+            gamma = tf.get_variable('gamma', shape=params_shape,
+                                initializer=gamma_init, trainable=is_train,
+                                )#restore=restore)
 
             # trainable=False means : it prevent TF from updating this variable
             # from the gradient, we have to update this from the mean computed
             # from each batch during training
-            moving_mean = _get_variable('moving_mean',
-                                        params_shape,
-                                        initializer=tf.zeros_initializer,
-                                        trainable=False)
-            try: # TF12
-                moving_variance = _get_variable('moving_variance',
-                                                params_shape,
-                                                initializer=tf.ones_initializer(),
-                                                trainable=False)
-            except: # TF11
-                moving_variance = _get_variable('moving_variance',
-                                                params_shape,
-                                                initializer=tf.ones_initializer,
-                                                trainable=False)
+            # moving_mean = _get_variable('moving_mean',
+            #                             params_shape,
+            #                             initializer=tf.zeros_initializer,
+            #                             trainable=False)
+            # try: # TF12
+            #     moving_variance = _get_variable('moving_variance',
+            #                                     params_shape,
+            #                                     initializer=tf.ones_initializer(),
+            #                                     trainable=False)
+            # except: # TF11
+            #     moving_variance = _get_variable('moving_variance',
+            #                                     params_shape,
+            #                                     initializer=tf.ones_initializer,
+            #                                     trainable=False)
+
+            moving_mean = tf.get_variable('moving_mean',
+                                      params_shape,
+                                      initializer=tf.zeros_initializer,
+                                      trainable=False,)#   restore=restore)
+            moving_variance = tf.get_variable('moving_variance',
+                                          params_shape,
+                                          initializer=tf.constant_initializer(1.),
+                                          trainable=False,)#   restore=restore)
 
             # These ops will only be preformed when training.
             mean, variance = tf.nn.moments(self.inputs, axis)
-            update_moving_mean = moving_averages.assign_moving_average(moving_mean,
-                                                                       mean, decay)
-            update_moving_variance = moving_averages.assign_moving_average(
-                moving_variance, variance, decay)
+            try:    # TF12
+                update_moving_mean = moving_averages.assign_moving_average(
+                                moving_mean, mean, decay, zero_debias=True)     # if zero_debias=True, has bias
+                update_moving_variance = moving_averages.assign_moving_average(
+                                moving_variance, variance, decay, zero_debias=True) # if zero_debias=True, has bias
+                # print("TF12 moving")
+            except Exception as e:  # TF11
+                update_moving_mean = moving_averages.assign_moving_average(
+                                moving_mean, mean, decay)
+                update_moving_variance = moving_averages.assign_moving_average(
+                                moving_variance, variance, decay)
+                # print("TF11 moving")
+
+
             # tf.add_to_collection(UPDATE_OPS_COLLECTION, update_moving_mean)
             # tf.add_to_collection(UPDATE_OPS_COLLECTION, update_moving_variance)
 
@@ -1822,7 +1851,9 @@ class BatchNormLayer(Layer):
 
             self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
             #x.set_shape(inputs.get_shape()) ??
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
+                # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
+                # variables = [beta, gamma, moving_mean, moving_variance]
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
@@ -1835,6 +1866,8 @@ class BatchNormLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
         # self.all_params.extend( [beta, gamma] )
+
+
 
 # class BatchNormLayer(Layer):
 #     """
