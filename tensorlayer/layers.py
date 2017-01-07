@@ -1844,7 +1844,8 @@ class BatchNormLayer(Layer):
             else:
                 is_train = tf.cast(tf.zeros([]), tf.bool)
 
-            mean, var = control_flow_ops.cond(
+            # mean, var = control_flow_ops.cond(
+            mean, var = tf.cond(
                 # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
                 is_train, mean_var_with_update,
                 lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
