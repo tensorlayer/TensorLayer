@@ -1724,7 +1724,7 @@ class BatchNormLayer(Layer):
         decay = 0.999,
         epsilon = 0.00001,
         act = tf.identity,
-        is_train = None,
+        is_train = False,
         beta_init = tf.zeros_initializer,
         # gamma_init = tf.ones_initializer,
         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
@@ -1838,20 +1838,25 @@ class BatchNormLayer(Layer):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            if not is_train:    # test : mean=0, std=1
-            # if is_train:      # train : mean=0, std=1
-                is_train = tf.cast(tf.ones([]), tf.bool)
+            # if not is_train:    # test : mean=0, std=1
+            # # if is_train:      # train : mean=0, std=1
+            #     is_train = tf.cast(tf.ones([]), tf.bool)
+            # else:
+            #     is_train = tf.cast(tf.zeros([]), tf.bool)
+            #
+            # # mean, var = control_flow_ops.cond(
+            # mean, var = tf.cond(
+            #     # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
+            #     is_train, mean_var_with_update,
+            #     lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
+            #
+            # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
+            if not is_train:
+                mean, var = mean_var_with_update()
+                self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
-                is_train = tf.cast(tf.zeros([]), tf.bool)
-
-            # mean, var = control_flow_ops.cond(
-            mean, var = tf.cond(
-                # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
-                is_train, mean_var_with_update,
-                lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
-
-            self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
-            #x.set_shape(inputs.get_shape()) ??
+                self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
+                
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
                 # variables = [beta, gamma, moving_mean, moving_variance]
