@@ -880,22 +880,22 @@ def maybe_download_and_extract(filename, working_directory, url_source, is_zip =
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
-            percent = int(count*blockSize*100/totalSize)
-            sys.stdout.write("\r" + filename + "...%d%%" % percent)
-            sys.stdout.flush()
+            if(totalSize != 0):
+                percent = float(count * blockSize) / float(totalSize) * 100.0
+                sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
+                sys.stdout.flush()
         if sys.version_info[0] == 2:
             from urllib import urlretrieve
         else:
             from urllib.request import urlretrieve
-        print("Downloading %s" % filename)
         filepath = os.path.join(working_directory, filename)
-        return urlretrieve(url_source+filename, filepath, reporthook=_dlProgress)
+        urlretrieve(url_source+filename, filepath, reporthook=_dlProgress)
 
     exists_or_mkdir(working_directory)
     filepath = os.path.join(working_directory, filename)
 
     if not os.path.exists(filepath):
-        filepath, _ = _download(filename, working_directory, url_source)
+        _download(filename, working_directory, url_source)
         print()
         statinfo = os.stat(filepath)
         print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
