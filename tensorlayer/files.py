@@ -16,6 +16,7 @@ from six.moves import urllib
 from tensorflow.python.platform import gfile
 import tarfile
 import gzip
+import zipfile
 
 ## Load dataset functions
 def load_mnist_dataset(shape=(-1,784)):
@@ -852,3 +853,69 @@ def exists_or_mkdir(path):
     else:
         print("[*] %s exists ..." % path)
         return True
+
+
+def maybe_download_and_extract(filename, working_directory, url_source, extract=False):
+    """Checks if file exists in working_directory otherwise tries to dowload the file,
+    and optionally also tries to extract the file if format is ".zip" or ".tar"
+
+    Parameters
+    ----------
+    filename : string
+        The name of the (to be) dowloaded file.
+    working_directory : string
+        A folder path to search for the file in and dowload the file to
+    url : string
+        The URL to download the file from
+    extract : bool, defaults to False
+        If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file
+
+    Returns
+    ----------
+    filepath to dowloaded (uncompressed) file
+
+    Examples
+    --------
+    >>> down_file = tl.files.maybe_download_and_extract(filename = 'train-images-idx3-ubyte.gz',
+                                                        working_directory = 'data/',
+                                                        url_source = 'http://yann.lecun.com/exdb/mnist/')
+    >>> tl.files.maybe_download_and_extract(filename = 'ADEChallengeData2016.zip',
+                                            working_directory = 'data/',
+                                            url_source = 'http://sceneparsing.csail.mit.edu/data/',
+                                            extract=True)
+    """
+    # We first define a download function, supporting both Python 2 and 3.
+    def _download(filename, working_directory, url_source):
+        def _dlProgress(count, blockSize, totalSize):
+            if(totalSize != 0):
+                percent = float(count * blockSize) / float(totalSize) * 100.0
+                sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
+                sys.stdout.flush()
+        if sys.version_info[0] == 2:
+            from urllib import urlretrieve
+        else:
+            from urllib.request import urlretrieve
+        filepath = os.path.join(working_directory, filename)
+        urlretrieve(url_source+filename, filepath, reporthook=_dlProgress)
+
+    exists_or_mkdir(working_directory)
+    filepath = os.path.join(working_directory, filename)
+
+    if not os.path.exists(filepath):
+        _download(filename, working_directory, url_source)
+        print()
+        statinfo = os.stat(filepath)
+        print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
+        if(extract):
+            if tarfile.is_tarfile(filepath):
+                print('Trying to extract tar file')
+                tarfile.open(filepath, 'r:gz').extractall(working_directory)
+                print('... Success!')
+            elif zipfile.is_zipfile(filepath):
+                print('Trying to extract zip file')
+                with zipfile.ZipFile(filepath) as zf:
+                    zf.extractall(working_directory)
+                print('... Success!')
+            else:
+                print("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
+    return filepath
