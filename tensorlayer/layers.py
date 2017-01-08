@@ -1762,13 +1762,9 @@ class BatchNormLayer(Layer):
         from tensorflow.python.ops import control_flow_ops
 
         with tf.variable_scope(name) as vs:
-            # if use_bias:
-            #     bias = _get_variable('bias', params_shape,
-            #                          initializer=tf.zeros_initializer)
-            #     return self.inputs + bias
-
             axis = list(range(len(x_shape) - 1))
 
+            ## 1. beta, gamma
             # beta = _get_variable('beta',
             #                      params_shape,
             #                      initializer=beta_init)
@@ -1789,6 +1785,7 @@ class BatchNormLayer(Layer):
                                 initializer=gamma_init, trainable=is_train,
                                 )#restore=restore)
 
+            ## 2. moving variables during training (not update by gradient!)
             # trainable=False means : it prevent TF from updating this variable
             # from the gradient, we have to update this from the mean computed
             # from each batch during training
@@ -1816,6 +1813,7 @@ class BatchNormLayer(Layer):
                                           initializer=tf.constant_initializer(1.),
                                           trainable=False,)#   restore=restore)
 
+            ## 3.
             # These ops will only be preformed when training.
             mean, variance = tf.nn.moments(self.inputs, axis)
             try:    # TF12
@@ -1831,13 +1829,17 @@ class BatchNormLayer(Layer):
                                 moving_variance, variance, decay)
                 # print("TF11 moving")
 
-            # tf.add_to_collection(UPDATE_OPS_COLLECTION, update_moving_mean)
-            # tf.add_to_collection(UPDATE_OPS_COLLECTION, update_moving_variance)
-
             def mean_var_with_update():
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
+            # ema = tf.train.ExponentialMovingAverage(decay=decay)    # Akara
+            # def mean_var_with_update():
+            #     ema_apply_op = ema.apply([moving_mean, moving_variance])
+            #     with tf.control_dependencies([ema_apply_op]):
+            #         return tf.identity(mean), tf.identity(variance)
+
+            ## 4. behaviour for training and testing
             # if not is_train:    # test : mean=0, std=1
             # # if is_train:      # train : mean=0, std=1
             #     is_train = tf.cast(tf.ones([]), tf.bool)
@@ -1855,8 +1857,173 @@ class BatchNormLayer(Layer):
                 mean, var = mean_var_with_update()
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
+                # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
-                
+
+            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
+            variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
+                # variables = [beta, gamma, moving_mean, moving_variance]
+
+            # print(len(variables))
+            # for idx, v in enumerate(variables):
+            #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
+            # exit()
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
+        # self.all_params.extend( [beta, gamma] )
+
+
+class BatchNormLayer5(Layer):   #
+    """
+    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
+
+    Batch normalization on fully-connected or convolutional maps.
+
+    Parameters
+    -----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    decay : float
+        A decay factor for ExponentialMovingAverage.
+    epsilon : float
+        A small float number to avoid dividing by 0.
+    act : activation function.
+    is_train : boolean
+        Whether train or inference.
+    beta_init : beta initializer
+        The initializer for initializing beta
+    gamma_init : gamma initializer
+        The initializer for initializing gamma
+    name : a string or None
+        An optional name to attach to this layer.
+
+    References
+    ----------
+    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
+    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        decay = 0.999,
+        epsilon = 0.00001,
+        act = tf.identity,
+        is_train = False,
+        beta_init = tf.zeros_initializer,
+        # gamma_init = tf.ones_initializer,
+        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
+        name ='batchnorm_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+                            (self.name, decay, epsilon, act.__name__, is_train))
+        x_shape = self.inputs.get_shape()
+        params_shape = x_shape[-1:]
+
+        from tensorflow.python.training import moving_averages
+        from tensorflow.python.ops import control_flow_ops
+
+        with tf.variable_scope(name) as vs:
+            axis = list(range(len(x_shape) - 1))
+
+            ## 1. beta, gamma
+            beta = tf.get_variable('beta', shape=params_shape,
+                               initializer=beta_init,
+                               trainable=is_train)#, restore=restore)
+
+            gamma = tf.get_variable('gamma', shape=params_shape,
+                                initializer=gamma_init, trainable=is_train,
+                                )#restore=restore)
+
+            ## 2. moving variables during training (not update by gradient!)
+            moving_mean = tf.get_variable('moving_mean',
+                                      params_shape,
+                                      initializer=tf.zeros_initializer,
+                                      trainable=False,)#   restore=restore)
+            moving_variance = tf.get_variable('moving_variance',
+                                          params_shape,
+                                          initializer=tf.constant_initializer(1.),
+                                          trainable=False,)#   restore=restore)
+
+            ## 3.
+            # These ops will only be preformed when training.
+            def mean_var_with_update():
+                batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
+                try:    # TF12
+                    update_moving_mean = moving_averages.assign_moving_average(
+                                    moving_mean, batch_mean, decay, zero_debias=False)     # if zero_debias=True, has bias
+                    update_moving_variance = moving_averages.assign_moving_average(
+                                    moving_variance, batch_var, decay, zero_debias=False) # if zero_debias=True, has bias
+                    # print("TF12 moving")
+                except Exception as e:  # TF11
+                    update_moving_mean = moving_averages.assign_moving_average(
+                                    moving_mean, batch_mean, decay)
+                    update_moving_variance = moving_averages.assign_moving_average(
+                                    moving_variance, batch_var, decay)
+                    # print("TF11 moving")
+
+            # def mean_var_with_update():
+                with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+                    # return tf.identity(update_moving_mean), tf.identity(update_moving_variance)
+                    return tf.identity(batch_mean), tf.identity(batch_var)
+
+            # ema = tf.train.ExponentialMovingAverage(decay=decay)    # Akara
+            # def mean_var_with_update():
+            #     ema_apply_op = ema.apply([batch_mean, batch_var])
+            #     with tf.control_dependencies([ema_apply_op]):
+            #         return tf.identity(batch_mean), tf.identity(batch_var)
+
+            ## 4. behaviour for training and testing
+            # if not is_train:    # test : mean=0, std=1
+            # # if is_train:      # train : mean=0, std=1
+            #     is_train = tf.cast(tf.ones([]), tf.bool)
+            # else:
+            #     is_train = tf.cast(tf.zeros([]), tf.bool)
+            #
+            # # mean, var = control_flow_ops.cond(
+            # mean, var = tf.cond(
+            #     # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
+            #     is_train, mean_var_with_update,
+            #     lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
+            #
+            # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
+            # if not is_train:
+            #     mean, var = mean_var_with_update()
+            #     self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
+            # else:
+            #     # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
+            #     self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
+
+            # if not is_train:
+            #     is_train = tf.cast(tf.ones([]), tf.bool)
+            # else:
+            #     is_train = tf.cast(tf.zeros([]), tf.bool)
+            #
+            # mean, var = tf.cond(
+            #   is_train,
+            #   mean_var_with_update,
+            #   lambda: (moving_mean, moving_variance))
+
+            if not is_train:
+                mean, var = mean_var_with_update()#(update_moving_mean, update_moving_variance)
+            else:
+                mean, var = (moving_mean, moving_variance)
+
+            normed = tf.nn.batch_normalization(
+              x=self.inputs,
+              mean=mean,
+              variance=var,
+              offset=beta,
+              scale=gamma,
+              variance_epsilon=epsilon,
+              name="tf_bn"
+            )
+            self.outputs = act( normed )
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
                 # variables = [beta, gamma, moving_mean, moving_variance]
