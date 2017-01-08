@@ -852,3 +852,59 @@ def exists_or_mkdir(path):
     else:
         print("[*] %s exists ..." % path)
         return True
+
+
+def maybe_download_and_extract(filename, working_directory, url_source, is_zip = False, is_tar=False):
+    """Checks if file exists in working_directory otherwise tries to dowload the file,
+    and also optionally extract the file.
+
+    Parameters
+    ----------
+    filename : string
+        The name of the (to be) dowloaded file.
+    working_directory : string
+        A folder path to search for the file in and dowload the file to
+    url : string
+        The URL to download the file from
+    is_zip : bool, defaults to False
+        If true the file is extracted, unzip
+    is_tar : bool, defaults to False
+        If true the file is extracted, untar
+
+    Examples
+    --------
+    >>> tl.files.maybe_download_and_extract(filename = 'train-images-idx3-ubyte.gz',
+                                            working_directory = 'data/',
+                                            url_source = 'http://yann.lecun.com/exdb/mnist/')
+    """
+    # We first define a download function, supporting both Python 2 and 3.
+    def _download(filename, working_directory, url_source):
+        def _dlProgress(count, blockSize, totalSize):
+            percent = int(count*blockSize*100/totalSize)
+            sys.stdout.write("\r" + filename + "...%d%%" % percent)
+            sys.stdout.flush()
+        if sys.version_info[0] == 2:
+            from urllib import urlretrieve
+        else:
+            from urllib.request import urlretrieve
+        print("Downloading %s" % filename)
+        filepath = os.path.join(working_directory, filename)
+        return urlretrieve(url_source+filename, filepath, reporthook=_dlProgress)
+
+    exists_or_mkdir(working_directory)
+    filepath = os.path.join(working_directory, filename)
+
+    if not os.path.exists(filepath):
+        filepath, _ = _download(filename, working_directory, url_source)
+        print()
+        statinfo = os.stat(filepath)
+        print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
+        if is_tar:
+            print('Trying to extract .tar file')
+            tarfile.open(filepath, 'r:gz').extractall(working_directory)
+            print('... Success!')
+        elif is_zip:
+            print('Trying to extract .zip file')
+            with zipfile.ZipFile(filepath) as zf:
+                zf.extractall(working_directory)
+            print('... Success!')
