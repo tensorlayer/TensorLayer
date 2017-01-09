@@ -1915,7 +1915,7 @@ class BatchNormLayer(Layer):
             #     lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
             #
             # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
-            if not is_train:
+            if is_train:
                 mean, var = mean_var_with_update()
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
