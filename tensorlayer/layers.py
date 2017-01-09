@@ -1920,7 +1920,8 @@ class BatchNormLayer(Layer):
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
                 # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
-                self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
+                # self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
+                self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
 
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
@@ -2012,10 +2013,10 @@ class BatchNormLayer5(Layer):   #
                                           initializer=tf.constant_initializer(1.),
                                           trainable=False,)#   restore=restore)
 
+            batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
             ## 3.
             # These ops will only be preformed when training.
             def mean_var_with_update():
-                batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
                 try:    # TF12
                     update_moving_mean = moving_averages.assign_moving_average(
                                     moving_mean, batch_mean, decay, zero_debias=False)     # if zero_debias=True, has bias
@@ -2071,10 +2072,13 @@ class BatchNormLayer5(Layer):   #
             #   mean_var_with_update,
             #   lambda: (moving_mean, moving_variance))
 
-            if not is_train:
-                mean, var = mean_var_with_update()#(update_moving_mean, update_moving_variance)
+            # if not is_train:
+            if is_train:
+                mean, var = mean_var_with_update()
+                    # mean, var = (update_moving_mean, update_moving_variance)
             else:
-                mean, var = (moving_mean, moving_variance)
+                # mean, var = (moving_mean, moving_variance)
+                mean, var = (batch_mean, batch_var) # hao
 
             normed = tf.nn.batch_normalization(
               x=self.inputs,
