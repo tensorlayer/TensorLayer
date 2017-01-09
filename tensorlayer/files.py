@@ -16,6 +16,7 @@ from six.moves import urllib
 from tensorflow.python.platform import gfile
 import tarfile
 import gzip
+import zipfile
 
 ## Load dataset functions
 def load_mnist_dataset(shape=(-1,784)):
@@ -854,9 +855,9 @@ def exists_or_mkdir(path):
         return True
 
 
-def maybe_download_and_extract(filename, working_directory, url_source, is_zip = False, is_tar=False):
+def maybe_download_and_extract(filename, working_directory, url_source, extract=False):
     """Checks if file exists in working_directory otherwise tries to dowload the file,
-    and also optionally extract the file.
+    and optionally also tries to extract the file if format is ".zip" or ".tar"
 
     Parameters
     ----------
@@ -866,16 +867,22 @@ def maybe_download_and_extract(filename, working_directory, url_source, is_zip =
         A folder path to search for the file in and dowload the file to
     url : string
         The URL to download the file from
-    is_zip : bool, defaults to False
-        If true the file is extracted, unzip
-    is_tar : bool, defaults to False
-        If true the file is extracted, untar
+    extract : bool, defaults to False
+        If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file
+
+    Returns
+    ----------
+    filepath to dowloaded (uncompressed) file
 
     Examples
     --------
-    >>> tl.files.maybe_download_and_extract(filename = 'train-images-idx3-ubyte.gz',
+    >>> down_file = tl.files.maybe_download_and_extract(filename = 'train-images-idx3-ubyte.gz',
+                                                        working_directory = 'data/',
+                                                        url_source = 'http://yann.lecun.com/exdb/mnist/')
+    >>> tl.files.maybe_download_and_extract(filename = 'ADEChallengeData2016.zip',
                                             working_directory = 'data/',
-                                            url_source = 'http://yann.lecun.com/exdb/mnist/')
+                                            url_source = 'http://sceneparsing.csail.mit.edu/data/',
+                                            extract=True)
     """
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
@@ -899,12 +906,15 @@ def maybe_download_and_extract(filename, working_directory, url_source, is_zip =
         print()
         statinfo = os.stat(filepath)
         print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
-        if is_tar:
-            print('Trying to extract .tar file')
-            tarfile.open(filepath, 'r:gz').extractall(working_directory)
-            print('... Success!')
-        elif is_zip:
-            print('Trying to extract .zip file')
-            with zipfile.ZipFile(filepath) as zf:
-                zf.extractall(working_directory)
-            print('... Success!')
+        if(extract):
+            if tarfile.is_tarfile(filepath):
+                print('Trying to extract tar file')
+                tarfile.open(filepath, 'r:gz').extractall(working_directory)
+                print('... Success!')
+            elif zipfile.is_zipfile(filepath):
+                print('Trying to extract zip file')
+                with zipfile.ZipFile(filepath) as zf:
+                    zf.extractall(working_directory)
+                print('... Success!')
+            else:
+                print("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
