@@ -1540,6 +1540,68 @@ class SeparableConv2dLayer(Layer):#TODO
         # self.all_drop = dict(layer.all_drop)
         # self.all_layers.extend( [self.outputs] )
 
+## Initializers for Convuolutional Layers
+def deconv2d_bilinear_upsampling_initializer(shape):
+    """Returns initializer that can be passed to DeConv2dLayer to initalize the
+    weights to correspond to channel wise bilinear upsampling.
+    Used in some segmantic segmentation approches such as [FCN](https://arxiv.org/abs/1605.06211)
+
+    Parameters
+    ----------
+        shape : list of shape
+            shape of the filters, [height, width, output_channels, in_channels], must match that passed to DeConv2dLayer
+
+    Returns
+    ----------
+        tf.constant_initializer
+            with weights set to correspond to per channel bilinear upsampling when passed as W_int in DeConv2dLayer
+
+    Examples
+    --------
+    >>> rescale_factor = 2 #upsampling by a factor of 2, ie e.g 100->200
+    >>> filter_size = (2 * rescale_factor - rescale_factor % 2) #Corresponding bilinear filter size
+    >>> num_in_channels = 3
+    >>> num_out_channels = 3
+    >>> deconv_filter_shape = [filter_size, filter_size, num_out_channels, num_in_channels]
+    >>> x = tf.placeholder(tf.float32, [1, imsize, imsize, num_channels])
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> bilinear_init = deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
+    >>> network = tl.layers.DeConv2dLayer(network,
+                            shape = filter_shape,
+                            output_shape = [1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels],
+                            strides=[1, rescale_factor, rescale_factor, 1],
+                            W_init=bilinear_init,
+                            padding='SAME',
+                            act=tf.identity, name='g/h1/decon2d')
+    """
+    if shape[0] != shape[1]:
+        raise Exception('deconv2d_bilinear_upsampling_initializer only supports symmetrical filter sizes')
+    if shape[3] < shape [2]:
+        raise Exception('deconv2d_bilinear_upsampling_initializer behaviour is not defined for num_in_channels < num_out_channels ')
+
+    filter_size = shape[0]
+    num_out_channels = shape[2]
+    num_in_channels = shape[3]
+
+    #Create bilinear filter kernel as numpy array
+    bilinear_kernel = np.zeros([filter_size, filter_size], dtype=np.float32)
+    scale_factor = (filter_size + 1) // 2
+    if filter_size % 2 == 1:
+        center = scale_factor - 1
+    else:
+        center = scale_factor - 0.5
+    for x in range(filter_size):
+        for y in range(filter_size):
+            bilinear_kernel[x,y] = (1 - abs(x - center) / scale_factor) * \
+                                   (1 - abs(y - center) / scale_factor)
+    weights = np.zeros((filter_size, filter_size, num_out_channels, num_in_channels))
+    for i in range(num_out_channels):
+        weights[:, :, i, i] = bilinear_kernel
+
+    #assign numpy array to constant_initalizer and pass to get_variable
+    bilinear_weights_init = tf.constant_initializer(value=weights, dtype=tf.float32)
+    return bilinear_weights_init
+
 ## Convolutional layer (Simplified)
 def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
         padding='SAME', W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
