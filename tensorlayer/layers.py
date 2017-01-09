@@ -1924,8 +1924,9 @@ class BatchNormLayer(Layer):
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
 
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
-            variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
+            # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
                 # variables = [beta, gamma, moving_mean, moving_variance]
+            variables = [beta, gamma]
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
@@ -2091,8 +2092,9 @@ class BatchNormLayer5(Layer):   #
             )
             self.outputs = act( normed )
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
-            variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
+            # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
                 # variables = [beta, gamma, moving_mean, moving_variance]
+            variables = [beta, gamma]
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
