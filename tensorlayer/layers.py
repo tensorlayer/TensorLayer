@@ -1940,8 +1940,7 @@ class BatchNormLayer(Layer):
         self.all_params.extend( variables )
         # self.all_params.extend( [beta, gamma] )
 
-
-class BatchNormLayer5(Layer):   #
+class BatchNormLayer5(Layer):   # Akara
     """
     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
@@ -2107,6 +2106,8 @@ class BatchNormLayer5(Layer):   #
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
         # self.all_params.extend( [beta, gamma] )
+
+
 
 # class BatchNormLayer4(Layer): # work TFlearn https://github.com/tflearn/tflearn/blob/master/tflearn/layers/normalization.py
 #     """
