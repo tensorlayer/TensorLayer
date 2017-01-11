@@ -3897,7 +3897,7 @@ class Seq2Seq(Layer):
         self.all_params = list_remove_repeat(self.all_params)
 
 
-class PeekySeq2seq(Layer):
+class PeekySeq2Seq(Layer):
     """
     Waiting for contribution.
     The :class:`PeekySeq2Seq` class, see `Model <https://camo.githubusercontent.com/7f690d451036938a51e62feb77149c8bb4be6675/687474703a2f2f6936342e74696e797069632e636f6d2f333032617168692e706e67>`_

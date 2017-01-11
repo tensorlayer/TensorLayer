@@ -300,8 +300,8 @@ Layer list
    DynamicRNNLayer
    BiDynamicRNNLayer
 
-   Seq2seq
-   PeekySeq2seq
+   Seq2Seq
+   PeekySeq2Seq
    AttentionSeq2Seq
 
    FlattenLayer
@@ -521,13 +521,13 @@ Bidirectional layer
 Sequence to Sequence
 ----------------------
 
-Simple Seq2seq
+Simple Seq2Seq
 ^^^^^^^^^^^^^^^^^
-.. autoclass:: Seq2seq
+.. autoclass:: Seq2Seq
 
-PeekySeq2seq
+PeekySeq2Seq
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: PeekySeq2seq
+.. autoclass:: PeekySeq2Seq
 
 AttentionSeq2Seq
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
