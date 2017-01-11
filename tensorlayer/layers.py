@@ -3846,7 +3846,7 @@ class Seq2Seq(Layer):
         n_layer = 1,
         # return_last = False,
         return_seq_2d = False,
-        name = 'simple_seq2seq',
+        name = 'seq2seq',
     ):
         Layer.__init__(self, name=name)
         # self.inputs = layer.outputs
@@ -3918,7 +3918,7 @@ class PeekySeq2Seq(Layer):
         n_layer = 1,
         # return_last = False,
         return_seq_2d = False,
-        name = 'simple_seq2seq',
+        name = 'peeky_seq2seq',
     ):
         Layer.__init__(self, name=name)
         # self.inputs = layer.outputs
@@ -3947,7 +3947,7 @@ class AttentionSeq2Seq(Layer):
         n_layer = 1,
         # return_last = False,
         return_seq_2d = False,
-        name = 'simple_seq2seq',
+        name = 'attention_seq2seq',
     ):
         Layer.__init__(self, name=name)
         # self.inputs = layer.outputs
