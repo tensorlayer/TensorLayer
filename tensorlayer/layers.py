@@ -3790,22 +3790,22 @@ class Seq2Seq(Layer):
     ----------
     >>> batch_size = 32
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input_seqs")
+    >>> decode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="decode_seqs")
     >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_seqs")
-    >>> target_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_mask")
-    >>> # target_mask can be get from tl.prepro.sequences_get_mask($target_seqs)
+    >>> target_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_mask") # tl.prepro.sequences_get_mask()
     >>> with tf.variable_scope("model") as vs:
-    >>> net_in = EmbeddingInputlayer(
-    ...     inputs = input_seqs,
-    ...     vocabulary_size = 10000,
-    ...     embedding_size = 200,
-    ...     name = 'seq_embedding')
-    >>> vs.reuse_variables()
-    >>> tl.layers.set_name_reuse(True)
-    >>> net_out = EmbeddingInputlayer(
-    ...     inputs = target_seqs,
-    ...     vocabulary_size = 10000,
-    ...     embedding_size = 200,
-    ...     name = 'seq_embedding')
+    >>>     net_in = EmbeddingInputlayer(
+    ...         inputs = input_seqs,
+    ...         vocabulary_size = 10000,
+    ...         embedding_size = 200,
+    ...         name = 'seq_embedding')
+    >>>     vs.reuse_variables()
+    >>>     tl.layers.set_name_reuse(True)
+    >>>     net_out = EmbeddingInputlayer(
+    ...         inputs = decode_seqs,
+    ...         vocabulary_size = 10000,
+    ...         embedding_size = 200,
+    ...         name = 'seq_embedding')
     >>> net = Seq2Seq(net_in, net_out,
     ...     cell_fn = tf.nn.rnn_cell.LSTMCell,
     ...     n_hidden = 200,
@@ -3814,10 +3814,10 @@ class Seq2Seq(Layer):
     ...     out_sequence_length = retrieve_seq_length_op2(target_seqs),
     ...     initial_state = None,
     ...     dropout = None,
-    ...     n_layer = 1,
+    ...     n_layer = 1,# return_last = False,
     ...     return_seq_2d = True,
     ...     name = 'seq2seq')
-    >>>  net_out = DenseLayer(net, n_units=10000, act=tf.identity, name='output')
+    >>> net_out = DenseLayer(net, n_units=10000, act=tf.identity, name='output')
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False)
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
@@ -3825,9 +3825,9 @@ class Seq2Seq(Layer):
     Notes
     --------
     - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
-    - input_seqs : ['how', 'are', 'you']
-    - target_seqs : ['<START_ID>', 'I', 'am', 'fine']
-    - out_seqs : ['I', 'am', 'fine', '<END_ID']
+    - input_seqs : ['how', 'are', 'you', '<PAD_ID'>]
+    - decode_seqs : ['<START_ID>', 'I', 'am', 'fine', '<PAD_ID'>]
+    - target_seqs : ['I', 'am', 'fine', '<END_ID']
     - target_mask : [1, 1, 1, 1, 0]
     - related functions : tl.prepro <pad_sequences, precess_sequences, sequences_add_start_id, sequences_get_mask>
     """
