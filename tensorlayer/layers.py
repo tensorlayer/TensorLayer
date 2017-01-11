@@ -3822,7 +3822,7 @@ class Seq2Seq(Layer):
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
 
-    Tips
+    Notes
     --------
     - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
     - input_seqs : ['how', 'are', 'you']
