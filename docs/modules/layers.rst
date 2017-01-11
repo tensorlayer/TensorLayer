@@ -522,7 +522,7 @@ Seq2seq
 ----------------------
 
 Simple Seq2seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 .. autoclass:: Seq2seq
 
 PeekySeq2seq

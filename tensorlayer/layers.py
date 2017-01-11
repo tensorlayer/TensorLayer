@@ -3855,7 +3855,6 @@ class Seq2Seq(Layer):
         with tf.variable_scope(name) as vs:#, reuse=reuse):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
-
             network_encode = DynamicRNNLayer(net_in,
                      cell_fn = cell_fn,
                      cell_init_args = cell_init_args,
