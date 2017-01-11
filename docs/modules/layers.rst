@@ -518,7 +518,7 @@ Bidirectional layer
 
 
 
-Seq2seq
+Sequence to Sequence
 ----------------------
 
 Simple Seq2seq
