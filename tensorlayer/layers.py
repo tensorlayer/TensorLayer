@@ -3823,7 +3823,7 @@ class Seq2Seq(Layer):
     >>> net_out.print_params(False)
 
     Tips
-    -----
+    --------
     - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
     - input_seqs : ['how', 'are', 'you']
     - target_seqs : ['<START_ID>', 'I', 'am', 'fine']
@@ -3850,7 +3850,7 @@ class Seq2Seq(Layer):
     ):
         Layer.__init__(self, name=name)
         # self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate SimpleSeq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  tensorlayer:Instantiate Seq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
         with tf.variable_scope(name) as vs:#, reuse=reuse):
