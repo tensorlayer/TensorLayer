@@ -3729,6 +3729,7 @@ class BiDynamicRNNLayer(Layer):
         self.all_params.extend( rnn_variables )
 
 
+# Seq2seq
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a simple Seq2seq layer, see `Model <https://camo.githubusercontent.com/242210d7d0151cae91107ee63bff364a860db5dd/687474703a2f2f6936342e74696e797069632e636f6d2f333031333674652e706e67>`_
@@ -3895,6 +3896,7 @@ class Seq2Seq(Layer):
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
 
+
 class PeekySeq2seq(Layer):
     """
     Waiting for contribution.
@@ -3923,6 +3925,7 @@ class PeekySeq2seq(Layer):
         print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
+
 class AttentionSeq2Seq(Layer):
     """
     Waiting for contribution.
@@ -3950,6 +3953,7 @@ class AttentionSeq2Seq(Layer):
         # self.inputs = layer.outputs
         print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
+
 
 ## Shape layer
 class FlattenLayer(Layer):
