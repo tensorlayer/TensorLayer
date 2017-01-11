@@ -43,6 +43,8 @@ Some of the code in this package are borrowed from Keras.
    channel_shift
    channel_shift_multi
 
+   drop
+
    transform_matrix_offset_center
    apply_transform
    projective_transform_by_points
@@ -124,6 +126,10 @@ Channel shift
 ^^^^^^^^^^^^^^
 .. autofunction:: channel_shift
 .. autofunction:: channel_shift_multi
+
+Noise
+^^^^^^^^^^^^^^
+.. autofunction:: drop
 
 Manual transform
 ^^^^^^^^^^^^^^^^^
