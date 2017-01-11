@@ -52,6 +52,9 @@ Some of the code in this package are borrowed from Keras.
    array_to_img
 
    pad_sequences
+   precess_sequences
+   sequences_add_start_id
+   sequences_get_mask
 
    distorted_images
    crop_central_whiten_images
@@ -150,6 +153,18 @@ More related functions can be found in ``tensorlayer.nlp``.
 Padding
 ^^^^^^^^^
 .. autofunction:: pad_sequences
+
+Process
+^^^^^^^^^
+.. autofunction:: process_sequences
+
+Add Start ID
+^^^^^^^^^^^^^^^
+.. autofunction:: sequences_add_start_id
+
+Get Mask
+^^^^^^^^^
+.. autofunction:: sequences_get_mask
 
 
 Tensor Opt

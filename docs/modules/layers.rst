@@ -300,6 +300,10 @@ Layer list
    DynamicRNNLayer
    BiDynamicRNNLayer
 
+   Seq2seq
+   PeekySeq2seq
+   AttentionSeq2Seq
+
    FlattenLayer
    ReshapeLayer
    LambdaLayer
@@ -511,6 +515,25 @@ RNN layer
 Bidirectional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BiDynamicRNNLayer
+
+
+
+Seq2seq
+----------------------
+
+Simple Seq2seq
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: Seq2seq
+
+PeekySeq2seq
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: PeekySeq2seq
+
+AttentionSeq2Seq
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AttentionSeq2Seq
+
+
 
 
 Shape layer
