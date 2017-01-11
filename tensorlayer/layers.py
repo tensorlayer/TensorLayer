@@ -1761,8 +1761,8 @@ class BatchNormLayer(Layer):
     -----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    decay : float
-        A decay factor for ExponentialMovingAverage.
+    decay : float, default is 0.9.
+        A decay factor for ExponentialMovingAverage, use larger value for large dataset.
     epsilon : float
         A small float number to avoid dividing by 0.
     act : activation function.
@@ -1783,7 +1783,7 @@ class BatchNormLayer(Layer):
     def __init__(
         self,
         layer = None,
-        decay = 0.999,
+        decay = 0.9,
         epsilon = 0.00001,
         act = tf.identity,
         is_train = False,
@@ -1920,13 +1920,13 @@ class BatchNormLayer(Layer):
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
                 # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
-                # self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
-                self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
+                self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )    # Simiao
+                # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
 
             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
             # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
-                # variables = [beta, gamma, moving_mean, moving_variance]
-            variables = [beta, gamma]
+            variables = [beta, gamma, moving_mean, moving_variance]
+            # variables = [beta, gamma]
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
@@ -1940,7 +1940,175 @@ class BatchNormLayer(Layer):
         self.all_params.extend( variables )
         # self.all_params.extend( [beta, gamma] )
 
-class BatchNormLayer5(Layer):   # Akara
+
+
+class BatchNormLayer_TF(Layer):   # Work well TF contrib https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100
+    """
+    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
+
+    Batch normalization on fully-connected or convolutional maps.
+
+    Parameters
+    -----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    decay : float
+        A decay factor for ExponentialMovingAverage.
+    center: If True, subtract `beta`. If False, `beta` is ignored.
+    scale: If True, multiply by `gamma`. If False, `gamma` is
+        not used. When the next layer is linear (also e.g. `nn.relu`), this can be
+        disabled since the scaling can be done by the next layer.
+    epsilon : float
+        A small float number to avoid dividing by 0.
+    act : activation function.
+    is_train : boolean
+        Whether train or inference.
+    beta_init : beta initializer
+        The initializer for initializing beta
+    gamma_init : gamma initializer
+        The initializer for initializing gamma
+    name : a string or None
+        An optional name to attach to this layer.
+
+    References
+    ----------
+    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
+    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        decay = 0.95,#.999,
+        center = True,
+        scale = True,
+        epsilon = 0.00001,
+        act = tf.identity,
+        is_train = False,
+        beta_init = tf.zeros_initializer,
+        # gamma_init = tf.ones_initializer,
+        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
+        name ='batchnorm_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+                            (self.name, decay, epsilon, act.__name__, is_train))
+        from tensorflow.contrib.layers.python.layers import utils
+        from tensorflow.contrib.framework.python.ops import variables
+        from tensorflow.python.ops import init_ops
+        from tensorflow.python.ops import nn
+        from tensorflow.python.training import moving_averages
+        from tensorflow.python.framework import ops
+        from tensorflow.python.ops import variable_scope
+        variables_collections = None
+        outputs_collections=None
+        updates_collections=None#ops.GraphKeys.UPDATE_OPS
+        # with variable_scope.variable_op_scope([inputs],
+        #                                     scope, 'BatchNorm', reuse=reuse) as sc:
+        # with variable_scope.variable_op_scope([self.inputs], None, name) as vs:
+        with tf.variable_scope(name) as vs:
+            inputs_shape = self.inputs.get_shape()
+            dtype = self.inputs.dtype.base_dtype
+            axis = list(range(len(inputs_shape) - 1)) # [0, 1, 2]
+            params_shape = inputs_shape[-1:]
+            # Allocate parameters for the beta and gamma of the normalization.
+            beta, gamma = None, None
+            if center:
+              beta_collections = utils.get_variable_collections(variables_collections,
+                                                                'beta')
+              beta = variables.model_variable('beta',
+                                              shape=params_shape,
+                                              dtype=dtype,
+                                            #   initializer=init_ops.zeros_initializer,
+                                              initializer=beta_init,
+                                              collections=beta_collections,)
+                                            #   trainable=trainable)
+            if scale:
+              gamma_collections = utils.get_variable_collections(variables_collections,
+                                                                 'gamma')
+              gamma = variables.model_variable('gamma',
+                                               shape=params_shape,
+                                               dtype=dtype,
+                                            #    initializer=init_ops.ones_initializer,
+                                               initializer=gamma_init,
+                                               collections=gamma_collections,)
+                                            #    trainable=trainable)
+            # Create moving_mean and moving_variance variables and add them to the
+            # appropiate collections.
+            moving_mean_collections = utils.get_variable_collections(
+                variables_collections,
+                'moving_mean')
+            moving_mean = variables.model_variable(
+                'moving_mean',
+                shape=params_shape,
+                dtype=dtype,
+                # initializer=init_ops.zeros_initializer,
+                initializer=tf.zeros_initializer,
+                trainable=False,
+                collections=moving_mean_collections)
+            moving_variance_collections = utils.get_variable_collections(
+                variables_collections,
+                'moving_variance')
+            moving_variance = variables.model_variable(
+                'moving_variance',
+                shape=params_shape,
+                dtype=dtype,
+                # initializer=init_ops.ones_initializer,
+                initializer=tf.constant_initializer(1.),
+                trainable=False,
+                collections=moving_variance_collections)
+            if is_train:
+              # Calculate the moments based on the individual batch.
+              mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+              # Update the moving_mean and moving_variance moments.
+            #   update_moving_mean = moving_averages.assign_moving_average(
+            #       moving_mean, mean, decay)
+            #   update_moving_variance = moving_averages.assign_moving_average(
+            #       moving_variance, variance, decay)
+            #   if updates_collections is None:
+            #     # Make sure the updates are computed here.
+            #       with ops.control_dependencies([update_moving_mean,
+            #                                        update_moving_variance]):
+            #          outputs = nn.batch_normalization(
+            #               self.inputs, mean, variance, beta, gamma, epsilon)
+
+              update_moving_mean = tf.assign(moving_mean,
+                                   moving_mean * decay + mean * (1 - decay))
+              update_moving_variance = tf.assign(moving_variance,
+                                  moving_variance * decay + variance * (1 - decay))
+              with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+                  outputs = nn.batch_normalization(
+                              self.inputs, mean, variance, beta, gamma, epsilon)
+            #   else:
+            #     # Collect the updates to be computed later.
+            #     ops.add_to_collections(updates_collections, update_moving_mean)
+            #     ops.add_to_collections(updates_collections, update_moving_variance)
+            #     outputs = nn.batch_normalization(
+            #         self.inputs, mean, variance, beta, gamma, epsilon)
+            else:
+            #   mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+              outputs = nn.batch_normalization(
+                  self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
+                # self.inputs, mean, variance, beta, gamma, epsilon)
+            outputs.set_shape(self.inputs.get_shape())
+            # if activation_fn:
+            self.outputs = act(outputs)
+
+            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            # return utils.collect_named_outputs(outputs_collections, sc.name, outputs)
+            variables = [beta, gamma, moving_mean, moving_variance]
+
+        mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+        self.check_mean = mean
+        self.check_variance = variance
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
+
+class BatchNormLayer5(Layer):   # Akara Work well
     """
     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
@@ -1972,7 +2140,7 @@ class BatchNormLayer5(Layer):   # Akara
     def __init__(
         self,
         layer = None,
-        decay = 0.999,
+        decay = 0.9,
         epsilon = 0.00001,
         act = tf.identity,
         is_train = False,
@@ -2077,8 +2245,8 @@ class BatchNormLayer5(Layer):   # Akara
                 mean, var = mean_var_with_update()
                     # mean, var = (update_moving_mean, update_moving_variance)
             else:
-                # mean, var = (moving_mean, moving_variance)
-                mean, var = (batch_mean, batch_var) # hao
+                mean, var = (moving_mean, moving_variance)
+                # mean, var = (batch_mean, batch_var) # hao
 
             normed = tf.nn.batch_normalization(
               x=self.inputs,
