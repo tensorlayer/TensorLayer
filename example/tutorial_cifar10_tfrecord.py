@@ -113,12 +113,19 @@ def read_and_decode(filename, is_train=None):
         # 4. Randomly change contrast.
         img = tf.image.random_contrast(img, lower=0.2, upper=1.8)
         # 5. Subtract off the mean and divide by the variance of the pixels.
-        img = tf.image.per_image_whitening(img)
+        try: # TF12
+            img = tf.image.per_image_standardization(img)
+        except: #earlier TF versions
+            img = tf.image.per_image_whitening(img)
+
     elif is_train == False:
         # 1. Crop the central [height, width] of the image.
         img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
         # 2. Subtract off the mean and divide by the variance of the pixels.
-        img = tf.image.per_image_whitening(img)
+        try: # TF12
+            img = tf.image.per_image_standardization(img)
+        except: #earlier TF versions
+            img = tf.image.per_image_whitening(img)
     elif is_train == None:
         img = img
 
@@ -246,7 +253,7 @@ with tf.device('/cpu:0'):
         with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.InputLayer(x_crop, name='input_layer')
-            
+
             network = tl.layers.Conv2dLayer(network, act=tf.identity,
                         shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
                         W_init=W_init, b_init=None, name='cnn_layer1')                            # output: (batch_size, 24, 24, 64)
