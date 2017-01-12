@@ -418,6 +418,7 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
         try:    # python 3.4 or older
             context_list = f.read().replace(*replace).split()
         except: # python 3.5
+            f.seek(0)
             replace = [x.encode('utf-8') for x in replace]
             context_list = f.read().replace(*replace).split()
         return context_list
