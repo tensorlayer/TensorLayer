@@ -251,7 +251,8 @@ def main(_):
     network_test, lstm1_test, lstm2_test = inference(input_data_test,
                             is_training=False, num_steps=1, reuse=True)
 
-    sess.run(tf.initialize_all_variables())
+    # sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
 
     def loss_fn(outputs, targets, batch_size, num_steps):
         # Returns the cost function of Cross-entropy of two sequences, implement
@@ -285,7 +286,8 @@ def main(_):
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    sess.run(tf.initialize_all_variables())
+    # sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
 
     network.print_params()
     network.print_layers()

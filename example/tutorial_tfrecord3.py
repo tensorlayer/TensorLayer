@@ -366,7 +366,8 @@ img_batch, img_cap_batch, img_cap_ids_batch = tf.train.batch([img, img_cap, img_
                                                     dynamic_pad=True,   # string list pad with '', int list pad with 0
                                                     num_threads=4)
 sess = tf.Session()
-sess.run(tf.initialize_all_variables())
+# sess.run(tf.initialize_all_variables())
+tl.layers.initialize_global_variables(sess)
 coord = tf.train.Coordinator()
 threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 for _ in range(3):

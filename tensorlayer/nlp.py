@@ -415,7 +415,12 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     with tf.gfile.GFile(filename, "r") as f:
-        return f.read().replace(*replace).split()
+        try:    # python 3.4 or older
+            context_list = f.read().replace(*replace).split()
+        except: # python 3.5
+            replace = [x.encode('utf-8') for x in replace]
+            context_list = f.read().replace(*replace).split()
+        return context_list
 
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     """Reads through an analogy question file, return its id format.
@@ -744,6 +749,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
   - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
   """
   words = []
+  sentence = tf.compat.as_bytes(sentence)
   for space_separated_fragment in sentence.strip().split():
     words.extend(re.split(_WORD_SPLIT, space_separated_fragment))
   return [w for w in words if w]
@@ -840,7 +846,7 @@ def initialize_vocabulary(vocabulary_path):
     rev_vocab = []
     with gfile.GFile(vocabulary_path, mode="rb") as f:
       rev_vocab.extend(f.readlines())
-    rev_vocab = [line.strip() for line in rev_vocab]
+    rev_vocab = [tf.compat.as_bytes(line.strip()) for line in rev_vocab]
     vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
     return vocab, rev_vocab
   else:

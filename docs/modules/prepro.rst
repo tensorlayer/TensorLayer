@@ -43,6 +43,8 @@ Some of the code in this package are borrowed from Keras.
    channel_shift
    channel_shift_multi
 
+   drop
+
    transform_matrix_offset_center
    apply_transform
    projective_transform_by_points
@@ -50,6 +52,9 @@ Some of the code in this package are borrowed from Keras.
    array_to_img
 
    pad_sequences
+   precess_sequences
+   sequences_add_start_id
+   sequences_get_mask
 
    distorted_images
    crop_central_whiten_images
@@ -125,6 +130,10 @@ Channel shift
 .. autofunction:: channel_shift
 .. autofunction:: channel_shift_multi
 
+Noise
+^^^^^^^^^^^^^^
+.. autofunction:: drop
+
 Manual transform
 ^^^^^^^^^^^^^^^^^
 .. autofunction:: transform_matrix_offset_center
@@ -144,6 +153,18 @@ More related functions can be found in ``tensorlayer.nlp``.
 Padding
 ^^^^^^^^^
 .. autofunction:: pad_sequences
+
+Process
+^^^^^^^^^
+.. autofunction:: process_sequences
+
+Add Start ID
+^^^^^^^^^^^^^^^
+.. autofunction:: sequences_add_start_id
+
+Get Mask
+^^^^^^^^^
+.. autofunction:: sequences_get_mask
 
 
 Tensor Opt

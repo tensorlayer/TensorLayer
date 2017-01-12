@@ -1014,6 +1014,44 @@ def channel_shift_multi(x, intensity, channel_index=2):
         results.append( data )
     return np.asarray(results)
 
+# noise
+def drop(x, keep=0.5): #TODO
+    """Randomly set some pixels to zero by a given keeping probability.
+
+    Parameters
+    -----------
+    x : numpy array
+        An image with dimension of [row, col, channel] or [row, col].
+    keep : float (0, 1)
+        The keeping probability, the lower more values will be set to zero.
+    """
+    if len(x.shape) == 3:
+        if x.shape[-1]==3: # color
+            img_size = x.shape
+            mask = np.random.binomial(n=1, p=keep, size=x.shape[:-1])
+            for i in range(3):
+                x[:,:,i] = np.multiply(x[:,:,i] , mask)
+        elif x.shape[-1]==1: # greyscale image
+            img_size = x.shape
+            x = np.multiply(x , np.random.binomial(n=1, p=keep, size=img_size))
+        else:
+            raise Exception("Unsupported shape {}".format(x.shape))
+    elif len(x.shape) == 2 or 1: # greyscale matrix (image) or vector
+        img_size = x.shape
+        x = np.multiply(x , np.random.binomial(n=1, p=keep, size=img_size))
+    else:
+        raise Exception("Unsupported shape {}".format(x.shape))
+    return x
+
+# x = np.asarray([[1,2,3,4,5,6,7,8,9,10],[1,2,3,4,5,6,7,8,9,10]])
+# x = np.asarray([x,x,x,x,x,x])
+# x.shape = 10, 4, 3
+# # print(x)
+# # exit()
+# print(x.shape)
+# # exit()
+# print(drop(x, keep=1.))
+# exit()
 
 # manual transform
 def transform_matrix_offset_center(matrix, x, y):
@@ -1242,6 +1280,92 @@ def pad_sequences(sequences, maxlen=None, dtype='int32',
         else:
             raise ValueError('Padding type "%s" not understood' % padding)
     return x
+
+def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_end_id=False):
+    """Set all tokens(ids) after END token to the padding value, and then shorten (option) it to the maximum sequence length in this batch.
+
+    Parameters
+    -----------
+    sequences : numpy array or list of list with token IDs.
+        e.g. [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
+    end_id : int, the special token for END.
+    pad_val : int, replace the end_id and the ids after end_id to this value.
+    is_shorten : boolean, default True.
+        Shorten the sequences.
+    remain_end_id : boolean, default False.
+        Keep an end_id in the end.
+
+    Examples
+    ---------
+    >>> sentences_ids = [[4, 3, 5, 3, 2, 2, 2, 2],  <-- end_id is 2
+    ...                  [5, 3, 9, 4, 9, 2, 2, 3]]  <-- end_id is 2
+    >>> sentences_ids = precess_sequences(sentences_ids, end_id=vocab.end_id, pad_val=0, is_shorten=True)
+    ... [[4, 3, 5, 3, 0], [5, 3, 9, 4, 9]]
+    """
+    max_length = 0
+    for i_s, seq in enumerate(sequences):
+        is_end = False
+        for i_w, n in enumerate(seq):
+            if n == end_id and is_end == False: # 1st time to see end_id
+                is_end = True
+                if max_length < i_w:
+                    max_length = i_w
+                if remain_end_id is False:
+                    seq[i_w] = pad_val      # set end_id to pad_val
+            elif is_end == True:
+                seq[i_w] = pad_val
+
+    if remain_end_id is True:
+        max_length += 1
+    if is_shorten:
+        for i, seq in enumerate(sequences):
+            sequences[i] = seq[:max_length]
+    return sequences
+
+def sequences_add_start_id(sequences, start_id=0, remove_last=False):
+    """Add special start token(id) in the beginning of each sequence.
+
+    Examples
+    ---------
+    >>> sentences_ids = [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
+    >>> sentences_ids = sequences_add_start_id(sentences_ids, start_id=2)
+    ... [[2, 4, 3, 5, 3, 2, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2, 3]]
+    >>> sentences_ids = sequences_add_start_id(sentences_ids, start_id=2, remove_last=True)
+    ... [[2, 4, 3, 5, 3, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2]]
+
+    - For Seq2seq
+    >>> input = [a, b, c]
+    >>> target = [x, y, z]
+    >>> decode_seq = [start_id, a, b] <-- sequences_add_start_id(input, start_id, True)
+    """
+    sequences_out = [[] for _ in range(len(sequences))]#[[]] * len(sequences)
+    for i in range(len(sequences)):
+        if remove_last:
+            sequences_out[i] = [start_id] + sequences[i][:-1]
+        else:
+            sequences_out[i] = [start_id] + sequences[i]
+    return sequences_out
+
+def sequences_get_mask(sequences, pad_val=0):
+    """Return mask for sequences.
+
+    Examples
+    ---------
+    >>> sentences_ids = [[4, 0, 5, 3, 0, 0],
+    ...                  [5, 3, 9, 4, 9, 0]]
+    >>> mask = sequences_get_mask(sentences_ids, pad_val=0)
+    ... [[1 1 1 1 0 0]
+    ...  [1 1 1 1 1 0]]
+    """
+    mask = np.ones_like(sequences)
+    for i, seq in enumerate(sequences):
+        for i_w in reversed(range(len(seq))):
+            if seq[i_w] == pad_val:
+                mask[i, i_w] = 0
+            else:
+                break   # <-- exit the for loop, prepcess next sequence
+    return mask
+
 
 ## Text
 # see tensorlayer.nlp

@@ -110,7 +110,7 @@ def main_test_layers(model='relu'):
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
                                 epsilon=1e-08, use_locking=False).minimize(cost)
 
-    sess.run(tf.initialize_all_variables()) # initialize all variables
+    tl.layers.initialize_global_variables(sess)
 
     network.print_params()
     network.print_layers()
@@ -222,7 +222,7 @@ def main_test_denoise_AE(model='relu'):
                                     act=tf.nn.sigmoid, name='recon_layer1')
 
     ## ready to train
-    sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
 
     ## print all params
     print("All Network Params")
@@ -318,7 +318,7 @@ def main_test_stacked_denoise_AE(model='relu'):
         epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
     # Initialize all variables including weights, biases and the variables in train_op
-    sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
 
     # Pre-train
     print("\nAll Network Params before pre-train")
@@ -450,30 +450,41 @@ def main_test_cnn_layer():
     y_ = tf.placeholder(tf.int64, shape=[batch_size,])
 
     network = tl.layers.InputLayer(x, name='input_layer')
-    network = tl.layers.Conv2dLayer(network,
-                        act = tf.nn.relu,
-                        shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                        strides=[1, 1, 1, 1],
-                        padding='SAME',
-                        name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.PoolLayer(network,
-                        ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1],
-                        padding='SAME',
-                        pool = tf.nn.max_pool,
-                        name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    network = tl.layers.Conv2dLayer(network,
-                        act = tf.nn.relu,
-                        shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-                        strides=[1, 1, 1, 1],
-                        padding='SAME',
-                        name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.layers.PoolLayer(network,
-                        ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1],
-                        padding='SAME',
-                        pool = tf.nn.max_pool,
-                        name ='pool_layer2',)   # output: (?, 7, 7, 64)
+    ## professional conv API for tensorflow user
+    # network = tl.layers.Conv2dLayer(network,
+    #                     act = tf.nn.relu,
+    #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
+    #                     strides=[1, 1, 1, 1],
+    #                     padding='SAME',
+    #                     name ='cnn_layer1')     # output: (?, 28, 28, 32)
+    # network = tl.layers.PoolLayer(network,
+    #                     ksize=[1, 2, 2, 1],
+    #                     strides=[1, 2, 2, 1],
+    #                     padding='SAME',
+    #                     pool = tf.nn.max_pool,
+    #                     name ='pool_layer1',)   # output: (?, 14, 14, 32)
+    # network = tl.layers.Conv2dLayer(network,
+    #                     act = tf.nn.relu,
+    #                     shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
+    #                     strides=[1, 1, 1, 1],
+    #                     padding='SAME',
+    #                     name ='cnn_layer2')     # output: (?, 14, 14, 64)
+    # network = tl.layers.PoolLayer(network,
+    #                     ksize=[1, 2, 2, 1],
+    #                     strides=[1, 2, 2, 1],
+    #                     padding='SAME',
+    #                     pool = tf.nn.max_pool,
+    #                     name ='pool_layer2',)   # output: (?, 7, 7, 64)
+    ## simplified conv API for beginner (the same with the above layers)
+    network = tl.layers.Conv2d(network, n_filter=32, filter_size=(5, 5), strides=(1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn_layer1')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool_layer1')
+    network = tl.layers.Conv2d(network, n_filter=64, filter_size=(5, 5), strides=(1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn_layer2')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool_layer2')
+    ## end of conv
     network = tl.layers.FlattenLayer(network, name='flatten_layer')   # output: (?, 3136)
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1') # output: (?, 3136)
     network = tl.layers.DenseLayer(network, n_units=256,
@@ -500,7 +511,7 @@ def main_test_cnn_layer():
     train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
         epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
-    sess.run(tf.initialize_all_variables())
+    tl.layers.initialize_global_variables(sess)
     network.print_params()
     network.print_layers()
 

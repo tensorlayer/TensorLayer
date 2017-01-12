@@ -172,6 +172,8 @@ def predict(sess, network, X, x, y_op):
         the network will be trained
     X : numpy array
         the input
+    x : placeholder
+        for inputs
     y_op : placeholder
         the argmax expression of softmax outputs
 
