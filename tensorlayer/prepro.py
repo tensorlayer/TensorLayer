@@ -1015,7 +1015,7 @@ def channel_shift_multi(x, intensity, channel_index=2):
     return np.asarray(results)
 
 # noise
-def drop(x, keep=0.5): #TODO
+def drop(x, keep=0.5): 
     """Randomly set some pixels to zero by a given keeping probability.
 
     Parameters
