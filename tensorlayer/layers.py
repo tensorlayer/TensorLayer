@@ -3733,7 +3733,7 @@ class BiDynamicRNNLayer(Layer):
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a simple :class:`DynamicRNNLayer` based Seq2seq layer,
-    both encoder and decoder are :class:`DynamicRNNLayer`, network details 
+    both encoder and decoder are :class:`DynamicRNNLayer`, network details
     see `Model <https://camo.githubusercontent.com/242210d7d0151cae91107ee63bff364a860db5dd/687474703a2f2f6936342e74696e797069632e636f6d2f333031333674652e706e67>`_
     and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`_ .
 
@@ -3763,10 +3763,6 @@ class Seq2Seq(Layer):
         The input and output keep probability.
     n_layer : a int, default is 1.
         The number of RNN layers.
-    return_last : boolean
-        If True, return the last output, "Sequence input and single output"\n
-        If False, return all outputs, "Synced sequence input and output"\n
-        In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolean
         - When return_last = False
         - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer or computing cost after it.
