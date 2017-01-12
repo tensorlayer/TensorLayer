@@ -18,7 +18,7 @@ import tarfile
 import gzip
 
 ## Load dataset functions
-def load_mnist_dataset(shape=(-1,784)):
+def load_mnist_dataset(shape=(-1,784), path=None):
     """Automatically download MNIST dataset
     and return the training, validation and test set with 50000, 10000 and 10000
     digit images respectively.
@@ -27,6 +27,8 @@ def load_mnist_dataset(shape=(-1,784)):
     ----------
     shape : tuple
         The shape of digit images
+    path : None, str
+        Data file path. If None, use ~/.tensorlayer/datasets/mnist as default.
 
     Examples
     --------
@@ -39,19 +41,19 @@ def load_mnist_dataset(shape=(-1,784)):
     else:
         from urllib.request import urlretrieve
 
-    def download(filename, source='http://yann.lecun.com/exdb/mnist/'):
+    def download(path, filename, source='http://yann.lecun.com/exdb/mnist/'):
         print("Downloading %s" % filename)
-        urlretrieve(source + filename, filename)
+        urlretrieve(source + filename, os.path.join(path, filename))
 
     # We then define functions for loading MNIST images and labels.
     # For convenience, they also download the requested files if needed.
     import gzip
 
-    def load_mnist_images(filename):
-        if not os.path.exists(filename):
-            download(filename)
+    def load_mnist_images(path, filename):
+        if not os.path.exists(os.path.join(path, filename)):
+            download(path, filename)
         # Read the inputs in Yann LeCun's binary format.
-        with gzip.open(filename, 'rb') as f:
+        with gzip.open(os.path.join(path, filename), 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=16)
         # The inputs are vectors now, we reshape them to monochrome 2D images,
         # following the shape convention: (examples, channels, rows, columns)
@@ -64,24 +66,28 @@ def load_mnist_dataset(shape=(-1,784)):
         # provided at http://deeplearning.net/data/mnist/mnist.pkl.gz.)
         return data / np.float32(256)
 
-    def load_mnist_labels(filename):
-        if not os.path.exists(filename):
-            download(filename)
+    def load_mnist_labels(path, filename):
+        if not os.path.exists(os.path.join(path, filename)):
+            download(path, filename)
         # Read the labels in Yann LeCun's binary format.
-        with gzip.open(filename, 'rb') as f:
+        with gzip.open(os.path.join(path, filename), 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=8)
         # The labels are vectors of integers now, that's exactly what we want.
         return data
 
     # We can now download and read the training and test set images and labels.
     ## you may want to change the path
-    data_dir = ''   #os.getcwd() + '/lasagne_tutorial/'
     # print('data_dir > %s' % data_dir)
 
-    X_train = load_mnist_images(data_dir+'train-images-idx3-ubyte.gz')
-    y_train = load_mnist_labels(data_dir+'train-labels-idx1-ubyte.gz')
-    X_test = load_mnist_images(data_dir+'t10k-images-idx3-ubyte.gz')
-    y_test = load_mnist_labels(data_dir+'t10k-labels-idx1-ubyte.gz')
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "mnist"))
+    print("Load or Download MNIST > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    X_train = load_mnist_images(path, 'train-images-idx3-ubyte.gz')
+    y_train = load_mnist_labels(path, 'train-labels-idx1-ubyte.gz')
+    X_test = load_mnist_images(path, ' t10k-images-idx3-ubyte.gz')
+    y_test = load_mnist_labels(path, 't10k-labels-idx1-ubyte.gz')
 
     # We reserve the last 10000 training examples for validation.
     X_train, X_val = X_train[:-10000], X_train[-10000:]
@@ -110,7 +116,7 @@ def load_mnist_dataset(shape=(-1,784)):
     y_test = np.asarray(y_test, dtype=np.int32)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3, path=None):
     """The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with
     6000 images per class. There are 50000 training images and 10000 test images.
 
@@ -128,6 +134,8 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
         Whether to plot some image examples.
     second : int
         If ``plotable`` is True, ``second`` is the display time.
+    path : None, str
+        Data file path. If None, use ~/.tensorlayer/datasets/cifar10 as default.
 
     Examples
     --------
@@ -160,6 +168,12 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     import pickle
     import numpy as np
 
+
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "cifar10"))
+    print("Load or Download cifar10 > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
     # We first define a download function, supporting both Python 2 and 3.
     filename = 'cifar-10-python.tar.gz'
     if sys.version_info[0] == 2:
@@ -167,28 +181,29 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     else:
         from urllib.request import urlretrieve
 
-    def download(filename, source='https://www.cs.toronto.edu/~kriz/'):
+    def download(path, filename, source='https://www.cs.toronto.edu/~kriz/'):
         print("Downloading %s" % filename)
-        urlretrieve(source + filename, filename)
+        urlretrieve(source + filename, os.path.join(path, filename))
 
     # After downloading the cifar-10-python.tar.gz, we need to unzip it.
     import tarfile
-    def un_tar(file_name):
+    def un_tar(path, file_name):
         print("Extracting %s" % file_name)
-        tar = tarfile.open(file_name)
+        tar = tarfile.open(os.path.join(path, file_name))
         names = tar.getnames()
         # if os.path.isdir(file_name + "_files"):
         #     pass
         # else:
         #     os.mkdir(file_name + "_files")
         for name in names:
-            tar.extract(name) #, file_name.split('.')[0])
+            tar.extract(name, path=path) #, file_name.split('.')[0])
         tar.close()
         print("Extracted to %s" % names[0])
 
-    if not os.path.exists('cifar-10-batches-py'):
-        download(filename)
-        un_tar(filename)
+    if not os.path.exists(os.path.join(path, "cifar-10-batches-py")):
+        if not os.path.exists(os.path.join(path, filename)):
+            download(path, filename)
+        un_tar(path, filename)
 
     def unpickle(file):
         fp = open(file, 'rb')
@@ -202,17 +217,15 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
     X_train = None
     y_train = []
 
-    path = '' # you can set a dir to the data here.
-
     for i in range(1,6):
-        data_dic = unpickle(path+"cifar-10-batches-py/data_batch_{}".format(i))
+        data_dic = unpickle(os.path.join(path, "cifar-10-batches-py", "data_batch_{}".format(i)))
         if i == 1:
             X_train = data_dic['data']
         else:
             X_train = np.vstack((X_train, data_dic['data']))
         y_train += data_dic['labels']
 
-    test_data_dic = unpickle(path+"cifar-10-batches-py/test_batch")
+    test_data_dic = unpickle(os.path.join(path, "cifar-10-batches-py/test_batch"))
     X_test = test_data_dic['data']
     y_test = np.array(test_data_dic['labels'])
 
@@ -270,7 +283,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False, second=3):
 
     return X_train, y_train, X_test, y_test
 
-def load_ptb_dataset():
+def load_ptb_dataset(path=None):
     """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
     including "Empirical Evaluation and Combination of Advanced Language
     Modeling Techniques", "Recurrent Neural Network Regularization".
@@ -299,6 +312,11 @@ def load_ptb_dataset():
     after each epoch. They clip the norm of the gradients (normalized by
     minibatch size) at 10.
 
+    Parameters
+    ----------
+    path : None, str
+        Data file path. If None, use ~/.tensorlayer/datasets/ptb as default.
+
     Returns
     --------
     train_data, valid_data, test_data, vocabulary size
@@ -316,32 +334,38 @@ def load_ptb_dataset():
     - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
     # We first define a download function, supporting both Python 2 and 3.
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "ptb"))
+    print("Load or Download ptb > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
     filename = 'simple-examples.tgz'
     if sys.version_info[0] == 2:
         from urllib import urlretrieve
     else:
         from urllib.request import urlretrieve
 
-    def download(filename, source='http://www.fit.vutbr.cz/~imikolov/rnnlm/'):
+    def download(path, filename, source='http://www.fit.vutbr.cz/~imikolov/rnnlm/'):
         print("Downloading %s" % filename)
-        urlretrieve(source + filename, filename)
+        urlretrieve(source + filename, os.path.join(path, filename))
 
     # After downloading, we need to unzip it.
     import tarfile
-    def un_tar(file_name):
+    def un_tar(path, file_name):
         print("Extracting %s" % file_name)
-        tar = tarfile.open(file_name)
+        tar = tarfile.open(os.path.join(path, file_name))
         names = tar.getnames()
         for name in names:
-            tar.extract(name)
+            tar.extract(name, path=path)
         tar.close()
         print("Extracted to /simple-examples")
 
-    if not os.path.exists('simple-examples'):
-        download(filename)
-        un_tar(filename)
+    if not os.path.exists(os.path.join(path, 'simple-examples')):
+        if not os.path.exists(os.path.join(path, filename)):
+            download(path, filename)
+        un_tar(path, filename)
 
-    data_path = os.getcwd() + '/simple-examples/data'
+    data_path = os.path.join(path, 'simple-examples', 'data')
     train_path = os.path.join(data_path, "ptb.train.txt")
     valid_path = os.path.join(data_path, "ptb.valid.txt")
     test_path = os.path.join(data_path, "ptb.test.txt")
@@ -360,11 +384,16 @@ def load_ptb_dataset():
     # exit()
     return train_data, valid_data, test_data, vocabulary
 
-def load_matt_mahoney_text8_dataset():
+def load_matt_mahoney_text8_dataset(path=None):
     """Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
     Extract the first file enclosed in a zip file as a list of words.
     This dataset can be used for Word Embedding.
+
+    Parameters
+    ----------
+    path : None, str
+        Data file path. If None, use ~/.tensorlayer/datasets/ptb as default.
 
     Returns
     --------
@@ -382,31 +411,41 @@ def load_matt_mahoney_text8_dataset():
 
     url = 'http://mattmahoney.net/dc/'
 
-    def download_matt_mahoney_text8(filename, expected_bytes):
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "matt_mahoney_test8"))
+    print("Load or Download matt_mahoney_text8 > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    def download_matt_mahoney_text8(path, filename, expected_bytes):
       """Download a text file from Matt Mahoney's website
       if not present, and make sure it's the right size."""
-      if not os.path.exists(filename):
+      if not os.path.exists(os.path.join(path, filename)):
         print('Downloading ...')
-        filename, _ = urllib.request.urlretrieve(url + filename, filename)
-      statinfo = os.stat(filename)
+        filename, _ = urllib.request.urlretrieve(url + filename, os.path.join(path, filename))
+      statinfo = os.stat(os.path.join(path, filename))
       if statinfo.st_size == expected_bytes:
-        print('Found and verified', filename)
+        print('Found and verified', os.path.join(path, filename))
       else:
         print(statinfo.st_size)
         raise Exception(
             'Failed to verify ' + filename + '. Can you get to it with a browser?')
       return filename
 
-    filename = download_matt_mahoney_text8('text8.zip', 31344016)
+    filename = download_matt_mahoney_text8(path, 'text8.zip', 31344016)
 
-    with zipfile.ZipFile(filename) as f:
+    with zipfile.ZipFile(os.path.join(path, filename)) as f:
         word_list = f.read(f.namelist()[0]).split()
     return word_list
 
-def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
+def load_imdb_dataset(path=None, nb_words=None, skip_top=0,
               maxlen=None, test_split=0.2, seed=113,
               start_char=1, oov_char=2, index_from=3):
     """Load IMDB dataset
+
+    Parameters
+    ----------
+    path : None, str
+        Data file path. If None, use ~/.tensorlayer/datasets/ptb as default.
 
     Examples
     --------
@@ -428,20 +467,25 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
     import numpy as np
     from six.moves import urllib
 
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "imdb"))
+    print("Load or Download imdb > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
     url = 'https://s3.amazonaws.com/text-datasets/'
-    def download_imbd(filename):
-      if not os.path.exists(filename):
-        print('Downloading ...')
-        filename, _ = urllib.request.urlretrieve(url + filename, filename)
-      return filename
+    def download_imbd(path, filename):
+        if not os.path.exists(os.path.join(path, filename)):
+            print('Downloading ...')
+            filename, _ = urllib.request.urlretrieve(url + filename, os.path.join(path, filename))
+        return filename
 
-    filename = download_imbd(path)
+    filename = download_imbd(path, "imdb.pkl")
     # path = get_file(path, origin="https://s3.amazonaws.com/text-datasets/imdb.pkl")
 
     if filename.endswith(".gz"):
-        f = gzip.open(filename, 'rb')
+        f = gzip.open(os.path.join(path, filename), 'rb')
     else:
-        f = open(filename, 'rb')
+        f = open(os.path.join(path, filename), 'rb')
 
     X, labels = cPickle.load(f)
     f.close()
@@ -494,7 +538,7 @@ def load_imbd_dataset(path="imdb.pkl", nb_words=None, skip_top=0,
 
     return X_train, y_train, X_test, y_test
 
-def load_nietzsche_dataset():
+def load_nietzsche_dataset(path=None):
     """Load Nietzsche dataset.
     Returns a string.
 
@@ -505,26 +549,32 @@ def load_nietzsche_dataset():
     >>> words = basic_clean_str(words)
     >>> words = words.split()
     """
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "nietzsche"))
+    print("Load or Download nietzsche dataset > {}".format(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     if sys.version_info[0] == 2:
         from urllib import urlretrieve
     else:
         from urllib.request import urlretrieve
 
-    def download(filename, source='https://s3.amazonaws.com/text-datasets/'):
+    def download(path, filename, source='https://s3.amazonaws.com/text-datasets/'):
         print("Downloading %s" % filename)
-        urlretrieve(source + filename, filename)
+        urlretrieve(source + filename, os.path.join(path, filename))
 
-    if not os.path.exists("nietzsche.txt"):
-        download("nietzsche.txt")
+    if not os.path.exists(os.path.join(path, "nietzsche.txt")):
+        download(path, "nietzsche.txt")
 
     # return nlp.read_words("nietzsche.txt", replace = ['', ''])
     # with tf.gfile.GFile("nietzsche.txt", "r") as f:
     #     return f.read()
-    with open("nietzsche.txt", "r") as f:
+    with open(os.path.join(path, "nietzsche.txt"), "r") as f:
         words = f.read()
         return words
 
-def load_wmt_en_fr_dataset(data_dir="wmt"):
+def load_wmt_en_fr_dataset(path=None):
     """It will download English-to-French translation data from the WMT'15
     Website (10^9-French-English corpus), and the 2013 news test from
     the same site as development set.
@@ -532,8 +582,8 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
 
     Parameters
     ----------
-    data_dir : a string
-        The directory to store the dataset.
+    path : a string
+        The path to store the dataset.
 
     References
     ----------
@@ -547,12 +597,12 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
     _WMT_ENFR_TRAIN_URL = "http://www.statmt.org/wmt10/training-giga-fren.tar"
     _WMT_ENFR_DEV_URL = "http://www.statmt.org/wmt15/dev-v2.tgz"
 
-    def maybe_download(directory, filename, url):
+    def maybe_download(path, filename, url):
         """Download filename from url unless it's already in directory."""
-        if not os.path.exists(directory):
-            print("Creating directory %s" % directory)
-            os.mkdir(directory)
-        filepath = os.path.join(directory, filename)
+        if not os.path.exists(path):
+            print("Creating directory %s" % path)
+            os.makedirs(path)
+        filepath = os.path.join(path, filename)
         if not os.path.exists(filepath):
             print("Downloading %s to %s" % (url, filepath))
             filepath, _ = urllib.request.urlretrieve(url, filepath)
@@ -568,44 +618,41 @@ def load_wmt_en_fr_dataset(data_dir="wmt"):
                 for line in gz_file:
                     new_file.write(line)
 
-    def get_wmt_enfr_train_set(directory):
+    def get_wmt_enfr_train_set(path):
       """Download the WMT en-fr training corpus to directory unless it's there."""
-      train_path = os.path.join(directory, "giga-fren.release2")
+      train_path = os.path.join(path, "giga-fren.release2")
       if not (gfile.Exists(train_path +".fr") and gfile.Exists(train_path +".en")):
-           corpus_file = maybe_download(directory, "training-giga-fren.tar",
-                                     _WMT_ENFR_TRAIN_URL)
+           corpus_file = maybe_download(path, "training-giga-fren.tar",
+                                        _WMT_ENFR_TRAIN_URL)
            print("Extracting tar file %s" % corpus_file)
            with tarfile.open(corpus_file, "r") as corpus_tar:
-                    corpus_tar.extractall(directory)
+                    corpus_tar.extractall(path)
            gunzip_file(train_path + ".fr.gz", train_path + ".fr")
            gunzip_file(train_path + ".en.gz", train_path + ".en")
       return train_path
 
-    def get_wmt_enfr_dev_set(directory):
+    def get_wmt_enfr_dev_set(path):
       """Download the WMT en-fr training corpus to directory unless it's there."""
       dev_name = "newstest2013"
-      dev_path = os.path.join(directory, dev_name)
+      dev_path = os.path.join(path, dev_name)
       if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
-            dev_file = maybe_download(directory, "dev-v2.tgz", _WMT_ENFR_DEV_URL)
+            dev_file = maybe_download(path, "dev-v2.tgz", _WMT_ENFR_DEV_URL)
             print("Extracting tgz file %s" % dev_file)
             with tarfile.open(dev_file, "r:gz") as dev_tar:
               fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
               en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
               fr_dev_file.name = dev_name + ".fr"  # Extract without "dev/" prefix.
               en_dev_file.name = dev_name + ".en"
-              dev_tar.extract(fr_dev_file, directory)
-              dev_tar.extract(en_dev_file, directory)
+              dev_tar.extract(fr_dev_file, path)
+              dev_tar.extract(en_dev_file, path)
       return dev_path
     ## ==================
-    if data_dir == "":
-        print("Load or Download WMT English-to-French translation > %s"
-            % os.getcwd())
-    else:
-        print("Load or Download WMT English-to-French translation > %s"
-            % data_dir)
+    if path is None:
+        path = os.path.expanduser(os.path.join("~", ".tensorlayer", "datasets", "wmt"))
+    print("Load or Download WMT English-to-French translation > {}".format(path))
     ## ======== Download if not exist
-    train_path = get_wmt_enfr_train_set(data_dir)
-    dev_path = get_wmt_enfr_dev_set(data_dir)
+    train_path = get_wmt_enfr_train_set(path)
+    dev_path = get_wmt_enfr_dev_set(path)
 
     return train_path, dev_path
 
