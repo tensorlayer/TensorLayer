@@ -3753,8 +3753,8 @@ class Seq2Seq(Layer):
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    encode_sequence_length : tensor for encoder sequence length, see :class:`DynamicRNNLayer`
-    decode_sequence_length : tensor for decoder sequence length, see :class:`DynamicRNNLayer`
+    encode_sequence_length : tensor for encoder sequence length, see :class:`DynamicRNNLayer` .
+    decode_sequence_length : tensor for decoder sequence length, see :class:`DynamicRNNLayer` .
     initial_state : None or forward RNN State
         If None, initial_state is of encoder zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
@@ -3778,11 +3778,7 @@ class Seq2Seq(Layer):
         The output of RNN decoder.
 
     final_state : a tensor or StateTuple
-        When state_is_tuple = False,
-        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
-        When state_is_tuple = True, it stores two elements: (c, h), in that order.
-        You can get the final state after each iteration during training, then
-        feed it to the initial state of next iteration.
+        Final state of decoder, see :class:`DynamicRNNLayer` .
 
     Examples
     ----------
