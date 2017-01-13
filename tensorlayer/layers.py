@@ -2767,7 +2767,7 @@ class RNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
         - class ``tf.nn.rnn_cell.GRUCell``
@@ -2903,7 +2903,7 @@ class RNNLayer(Layer):
 
     References
     ----------
-    - `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+    - `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
     - `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_
     - `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
     - see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
@@ -3017,7 +3017,7 @@ class BiRNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
         - class ``tf.nn.rnn_cell.GRUCell``
@@ -3318,7 +3318,7 @@ class DynamicRNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
         - class ``tf.nn.rnn_cell.GRUCell``
@@ -3536,7 +3536,7 @@ class BiDynamicRNNLayer(Layer):
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     cell_fn : a TensorFlow's core RNN cell as follow.
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
         - class ``tf.nn.rnn_cell.GRUCell``
@@ -3744,7 +3744,7 @@ class Seq2Seq(Layer):
     net_decode_in : a :class:`Layer` instance
         Decode sequences, [batch_size, None, n_features].
     cell_fn : a TensorFlow's core RNN cell as follow.
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/versions/master/api_docs/python/rnn_cell.html>`_\n
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
         - class ``tf.nn.rnn_cell.GRUCell``
