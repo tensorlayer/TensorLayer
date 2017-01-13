@@ -311,6 +311,9 @@ Layer list
    ConcatLayer
    ElementwiseLayer
 
+   ExpandDimsLayer
+   TileLayer
+
    SlimNetsLayer
 
    PReluLayer
@@ -563,6 +566,22 @@ Concat layer
 Element-wise layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: ElementwiseLayer
+
+
+Extend layer
+-------------
+
+Expand dims layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ExpandDimsLayer
+
+
+Tile layer
+^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: TileLayer
+
+
+
 
 Connect TF-Slim
 ------------------
