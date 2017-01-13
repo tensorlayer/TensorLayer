@@ -4216,8 +4216,8 @@ class ElementwiseLayer(Layer):
         # self.all_drop = list_remove_repeat(self.all_drop)
 
 
-# Slicing and Joining
-class ExpandDimsLayer(object):
+# Extend
+class ExpandDimsLayer(Layer):
     """
     The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
     see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/array_ops/shapes_and_shaping#expand_dims>`_ .
@@ -4228,8 +4228,6 @@ class ExpandDimsLayer(object):
         The `Layer` class feeding into this layer.
     axis : int, 0-D (scalar).
         Specifies the dimension index at which to expand the shape of input.
-    dim : int, 0-D (scalar).
-        Equivalent to axis, to be deprecated.
     name : a string or None
         An optional name to attach to this layer.
     """
@@ -4237,7 +4235,6 @@ class ExpandDimsLayer(object):
         self,
         layer = None,
         axis = None,
-        dim = None,
         name = 'expand_dims',
     ):
         Layer.__init__(self, name=name)
@@ -4245,7 +4242,10 @@ class ExpandDimsLayer(object):
 
         print("  tensorlayer:Instantiate ExpandDimsLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
-            self.outputs = tf.expand_dims(self.inputs, axis=axis, dim=dim)
+            try:    # TF12
+                self.outputs = tf.expand_dims(self.inputs, axis=axis)
+            except: # TF11
+                self.outputs = tf.expand_dims(self.inputs, dim=axis)
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -4253,7 +4253,7 @@ class ExpandDimsLayer(object):
         # self.all_params.extend( variables )
 
 
-class TileLayer(object):
+class TileLayer(Layer):
     """
     The :class:`TileLayer` class constructs a tensor by tiling a given tensor,
     see `tf.tile() <https://www.tensorflow.org/api_docs/python/array_ops/slicing_and_joining#tile>`_ .
@@ -4284,6 +4284,7 @@ class TileLayer(object):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
+
 
 
 
