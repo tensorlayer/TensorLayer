@@ -21,9 +21,9 @@ from the University of Oxford in the paper “Very Deep Convolutional Networks f
 Large-Scale Image Recognition”  . The model achieves 92.7% top-5 test accuracy in ImageNet,
 which is a dataset of over 14 million images belonging to 1000 classes.
 
-Download Pre-trained Model
-----------------------------
-- Model weights in this example - vgg16_weights.npz : http://www.cs.toronto.edu/~frossard/post/vgg16/
+Automatically downloads pre-trained model weights if not already exsist as 'data/vgg16_weights.npz',
+from http://www.cs.toronto.edu/~frossard/post/vgg16/vgg16_weights.npz
+See also:
 - Caffe VGG 16 model : https://gist.github.com/ksimonyan/211839e770f7b538e2d8#file-readme-md
 - Tool to convert the Caffe models to TensorFlow's : https://github.com/ethereon/caffe-tensorflow
 
@@ -208,8 +208,8 @@ tl.layers.initialize_global_variables(sess)
 network.print_params()
 network.print_layers()
 
-# you need to download the model from http://www.cs.toronto.edu/~frossard/post/vgg16/
-npz = np.load('vgg16_weights.npz')
+tl.files.maybe_download_and_extract('vgg16_weights.npz', 'data/', 'https://www.cs.toronto.edu/~frossard/vgg16/')
+npz = np.load(os.path.join('data/', 'vgg16_weights.npz'))
 
 params = []
 for val in sorted( npz.items() ):
