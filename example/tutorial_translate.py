@@ -144,8 +144,8 @@ def main_train():
     so we use TensorFlow's gfile functions to speed up the pre-processing.
     """
     print()
-    print("Prepare raw data")
-    train_path, dev_path = tl.files.load_wmt_en_fr_dataset(data_dir=data_dir)
+    print("Prepare the raw data")
+    train_path, dev_path = tl.files.load_wmt_en_fr_dataset(path=data_dir)
     print("Training data : %s" % train_path)   # wmt/giga-fren.release2
     print("Testing data : %s" % dev_path)     # wmt/newstest2013
 
