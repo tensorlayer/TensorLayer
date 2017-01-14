@@ -53,6 +53,7 @@ sake of cross-platform.
    load_file_list
    load_folder_list
    exists_or_mkdir
+   maybe_download_and_extract
 
 Load dataset functions
 ------------------------
@@ -133,3 +134,7 @@ Load folder list from folder
 Check and Create folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: exists_or_mkdir
+
+Download or extract
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: maybe_download_and_extract
