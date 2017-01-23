@@ -1629,6 +1629,7 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
     >>> conv2 = Conv2d(conv2, 128, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv2_2')
     >>> pool2 = MaxPool2d(conv2, (2, 2), padding='SAME', name='pool2')
     """
+    assert len(strides) == 2, print("len(strides)==2, Conv2d and Conv2dLayer are different.")
     if act is None:
         act = tf.identity
     net = Conv2dLayer(net,
@@ -1658,8 +1659,9 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
     batch_size : int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     strides : tuple of (height, width) for strides.
     act : None or activation function.
-    others : see :class:`Conv2dLayer`.
+    others : see :class:`DeConv2dLayer`.
     """
+    assert len(strides) == 2, print("len(strides)==2, DeConv2d and DeConv2dLayer are different.")
     if act is None:
         act = tf.identity
     if batch_size is None:
@@ -1677,7 +1679,7 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
                     name = name)
     return net
 
-def MaxPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpool'):
+def MaxPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -1685,10 +1687,11 @@ def MaxPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpoo
     net : TensorLayer layer.
     filter_size : tuple of (height, width) for filter size.
     strides : tuple of (height, width). Default is the same with filter_size.
-    others : see :class:`Conv2dLayer`.
+    others : see :class:`PoolLayer`.
     """
     if strides is None:
         strides = filter_size
+    assert len(strides) == 2, print("len(strides)==2, MaxPool2d and PoolLayer are different.")
     net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
             strides=[1, strides[0], strides[1], 1],
             padding=padding,
@@ -1696,7 +1699,7 @@ def MaxPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='maxpoo
             name = name)
     return net
 
-def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='meanpool'):
+def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='meanpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -1704,10 +1707,11 @@ def MeanPool2d(net, filter_size=(2,2), strides=None, padding='SAME', name='meanp
     net : TensorLayer layer.
     filter_size : tuple of (height, width) for filter size.
     strides : tuple of (height, width). Default is the same with filter_size.
-    others : see :class:`Conv2dLayer`.
+    others : see :class:`PoolLayer`.
     """
     if strides is None:
         strides = filter_size
+    assert len(strides) == 2, print("len(strides)==2, MeanPool2d and PoolLayer are different.")
     net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1],
             strides=[1, strides[0], strides[1], 1],
             padding=padding,
