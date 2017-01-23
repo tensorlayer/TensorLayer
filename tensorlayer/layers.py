@@ -1503,9 +1503,9 @@ class AtrousConv2dLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         if b_init:
-            self.all_params.extend( [W, b] )
+            self.all_params.extend( [filters, b] )
         else:
-            self.all_params.extend( [W] )
+            self.all_params.extend( [filters] )
 
 class SeparableConv2dLayer(Layer):#TODO
     """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
