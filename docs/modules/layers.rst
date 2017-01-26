@@ -281,6 +281,7 @@ Layer list
    DeConv3dLayer
    PoolLayer
    UpSampling2dLayer
+   DownSampling2dLayer
    AtrousConv2dLayer
    LocalResponseNormLayer
 
@@ -424,6 +425,10 @@ Convolutional layer (Pro)
 2D UpSampling layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: UpSampling2dLayer
+
+2D DownSampling layer
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DownSampling2dLayer
 
 2D Atrous convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

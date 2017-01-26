@@ -1398,12 +1398,12 @@ class DeConv3dLayer(Layer):
         self.all_params.extend( [W, b] )
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_.
+    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
     -----------
     layer : a layer class with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
-    size : a tupe of int.
+    size : a tupe of int or float.
         (height, width) scale factor or new size of height and width.
     is_scale : boolean, if True (default), size is scale factor, otherwise, size is number of pixels of height and width.
     method : 0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
@@ -1450,6 +1450,62 @@ class UpSampling2dLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
+
+
+class DownSampling2dLayer(Layer):
+    """The :class:`DownSampling2dLayer` class is downSampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+
+    Parameters
+    -----------
+    layer : a layer class with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
+    size : a tupe of int or float.
+        (height, width) scale factor or new size of height and width.
+    is_scale : boolean, if True (default), size is scale factor, otherwise, size is number of pixels of height and width.
+    method : 0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
+        - ResizeMethod.BILINEAR, Bilinear interpolation.
+        - ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
+        - ResizeMethod.BICUBIC, Bicubic interpolation.
+        - ResizeMethod.AREA, Area interpolation.
+    align_corners : bool. If true, exactly align all 4 corners of the input and output. Defaults to false.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        size = [],
+        is_scale = True,
+        method = 0,
+        align_corners = False,
+        name ='downsample2d_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        if len(self.inputs.get_shape()) == 3:
+            if is_scale:
+                size_h = size[0] * int(self.inputs.get_shape()[0])
+                size_w = size[1] * int(self.inputs.get_shape()[1])
+                size = [size_h, size_w]
+        elif len(self.inputs.get_shape()) == 4:
+            if is_scale:
+                size_h = size[0] * int(self.inputs.get_shape()[1])
+                size_w = size[1] * int(self.inputs.get_shape()[2])
+                size = [size_h, size_w]
+        else:
+            raise Exception("Donot support shape %s" % self.inputs.get_shape())
+        print("  tensorlayer:Instantiate DownSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+                                (name, is_scale, size, method, align_corners))
+        with tf.variable_scope(name) as vs:
+            try:
+                self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
+            except: # for TF 0.10
+                self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
 
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
