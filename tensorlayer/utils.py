@@ -10,7 +10,7 @@ import math
 
 def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100,
         n_epoch=100, print_freq=5, X_val=None, y_val=None, eval_train=True,
-        tensorboard=False, tensorboard_epoch_freq=5, tensorboard_weight_histograms=False, tensorboard_graph_vis=False):
+        tensorboard=False, tensorboard_epoch_freq=5, tensorboard_weight_histograms=True, tensorboard_graph_vis=True):
     """Traing a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     Parameters
@@ -46,14 +46,14 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
     tensorboard : boolean
         if True summary data will be stored to the log/ direcory for visualization with tensorboard.
         See also detailed tensorboard_X settings for specific configurations of features. (default False)
-        Also runs tl.layers.initialize_global_variables(sess) to internally in fit() to setup the summary nodes, see Note:
+        Also runs tl.layers.initialize_global_variables(sess) internally in fit() to setup the summary nodes, see Note:
     tensorboard_epoch_freq : int
         how many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5)
     tensorboard_weight_histograms : boolean
         if True updates tensorboard data in the logs/ directory for visulaization
-        of the weight histograms every tensorboard_epoch_freq epoch (default False)
+        of the weight histograms every tensorboard_epoch_freq epoch (default True)
     tensorboard_graph_vis : boolean
-        if True stores the graph in the tensorboard summaries saved to log/ (default False)
+        if True stores the graph in the tensorboard summaries saved to log/ (default True)
     Examples
     --------
     >>> see tutorial_mnist_simple.py
@@ -88,10 +88,11 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                 val_writer = tf.summary.FileWriter('logs/validation')
 
         #Set up summary nodes
-        for param in network.all_params:
-            if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-                print('Param name ', param.name)
-                tf.summary.histogram(param.name, param)
+        if(tensorboard_weight_histograms):
+            for param in network.all_params:
+                if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
+                    print('Param name ', param.name)
+                    tf.summary.histogram(param.name, param)
 
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
             tf.summary.scalar('cost', cost)
