@@ -64,5 +64,8 @@ def cross_entropy_reward_loss(logits, actions, rewards):
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
-    loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
+    try: ## TF1.0
+        loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
+    except: ## TF0.12
+        loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
     return loss

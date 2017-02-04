@@ -78,8 +78,7 @@ def mean_squared_error(output, target):
         A distribution with shape: [batch_size, n_feature].
     """
     with tf.name_scope("mean_squared_error_loss"):
-        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target),
-                                           reduction_indices = 1))
+        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
         return mse
 
 
@@ -238,9 +237,14 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     targets = tf.reshape(target_seqs, [-1])   # to one vector
     weights = tf.to_float(tf.reshape(input_mask, [-1]))   # to one vector like targets
     losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, targets)
-    loss = tf.div(tf.reduce_sum(tf.mul(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
-                    tf.reduce_sum(weights),
-                    name="seq_loss_with_mask")
+    try: ## TF1.0
+        loss = tf.divide(tf.reduce_sum(tf.multiply(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
+                        tf.reduce_sum(weights),
+                        name="seq_loss_with_mask")
+    except: ## TF0.12
+        loss = tf.div(tf.reduce_sum(tf.mul(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
+                        tf.reduce_sum(weights),
+                        name="seq_loss_with_mask")
     if return_details:
         return loss, losses, weights, targets
     else:
@@ -258,8 +262,11 @@ def cosine_similarity(v1, v2):
     -----------
     a tensor of [batch_size, ]
     """
-    return tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
-
+    try: ## TF1.0
+        cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
+    except: ## TF0.12
+        cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
+    return cost
 
 
 ## Regularization Functions

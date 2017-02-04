@@ -700,9 +700,9 @@ class ReconLayer(DenseLayer):
         print("     learning_rate: %f" % learning_rate)
 
         # Mean-squre-error i.e. quadratic-cost
-        mse = tf.reduce_sum(tf.squared_difference(y, x_recon), reduction_indices = 1)
+        mse = tf.reduce_sum(tf.squared_difference(y, x_recon),  1)
         mse = tf.reduce_mean(mse)            # in theano: mse = ((y - x) ** 2 ).sum(axis=1).mean()
-            # mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)), reduction_indices = 1))
+            # mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)),  1))
             # mse = tf.reduce_mean(tf.squared_difference(y, x_recon)) # <haodong>: Error
             # mse = tf.sqrt(tf.reduce_mean(tf.square(y - x_recon)))   # <haodong>: Error
         # Cross-entropy
@@ -719,13 +719,16 @@ class ReconLayer(DenseLayer):
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
         L1_a = 0.001 * tf.reduce_mean(activation_out)   # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
-            # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=0) )         # <haodong>: some neuron are broken, white and black
-            # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, reduction_indices=1) )   # <haodong>: some neuron are broken, white and black
+            # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, 0) )         # <haodong>: some neuron are broken, white and black
+            # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, 1) )   # <haodong>: some neuron are broken, white and black
         # KL Divergence
         beta = 4
         rho = 0.15
-        p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)   # theano: p_hat = T.mean( self.a[i], axis=0 )
-        KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
+        p_hat = tf.reduce_mean(activation_out, 0)   # theano: p_hat = T.mean( self.a[i], axis=0 )
+        try: ## TF1.0
+            KLD = beta * tf.reduce_sum( rho * tf.log(tf.divide(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.subtract(float(1), p_hat))) )
+        except: ## TF0.12
+            KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat)) + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
         # Total cost
@@ -3223,7 +3226,10 @@ class BiRNNLayer(Layer):
                 self.bw_initial_state = bw_initial_state
             # exit()
             # Feedforward to MultiRNNCell
-            list_rnn_inputs = tf.unpack(self.inputs, axis=1)
+            try: ## TF1.0
+                list_rnn_inputs = tf.unstack(self.inputs, axis=1)
+            except: ## TF0.12
+                list_rnn_inputs = tf.unpack(self.inputs, axis=1)
             outputs, fw_state, bw_state = tf.nn.bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
@@ -3340,8 +3346,12 @@ def retrieve_seq_length_op(data):
     - Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
     """
     with tf.name_scope('GetLength'):
-        used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
-        length = tf.reduce_sum(used, reduction_indices=1)
+        ## TF 1.0 change reduction_indices to axis
+        used = tf.sign(tf.reduce_max(tf.abs(data), 2))
+        length = tf.reduce_sum(used, 1)
+        ## TF < 1.0
+        # used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
+        # length = tf.reduce_sum(used, reduction_indices=1)
         length = tf.cast(length, tf.int32)
     return length
 
@@ -3535,8 +3545,12 @@ class DynamicRNNLayer(Layer):
 
         # Computes sequence_length
         if sequence_length is None:
-            sequence_length = retrieve_seq_length_op(
-                        self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
+            try: ## TF1.0
+                sequence_length = retrieve_seq_length_op(
+                            self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
+            except: ## TF0.12
+                sequence_length = retrieve_seq_length_op(
+                            self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
         # Main - Computes outputs and last_states
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -3554,7 +3568,7 @@ class DynamicRNNLayer(Layer):
             # Manage the outputs
             if return_last:
                 # [batch_size, n_hidden]
-                # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
+                # outputs = tf.transpose(tf.pack(outputs), [1, 0, 2]) # TF1.0 tf.pack --> tf.stack
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), n_hidden]
@@ -3742,8 +3756,12 @@ class BiDynamicRNNLayer(Layer):
                 self.bw_initial_state = bw_initial_state
             # Computes sequence_length
             if sequence_length is None:
-                sequence_length = retrieve_seq_length_op(
-                    self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
+                try: ## TF1.0
+                    sequence_length = retrieve_seq_length_op(
+                        self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
+                except: ## TF0.12
+                    sequence_length = retrieve_seq_length_op(
+                        self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
                 cell_fw=self.fw_cell,
@@ -4230,7 +4248,7 @@ class ElementwiseLayer(Layer):
     layer : a list of :class:`Layer` instances
         The `Layer` class feeding into this layer.
     combine_fn : a TensorFlow elemwise-merge function
-        e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.mul`` and so on.
+        e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`_ .
     name : a string or None
         An optional name to attach to this layer.
@@ -4302,7 +4320,7 @@ class ExpandDimsLayer(Layer):
 
         print("  tensorlayer:Instantiate ExpandDimsLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
-            try:    # TF12
+            try:    # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
             except: # TF11
                 self.outputs = tf.expand_dims(self.inputs, dim=axis)
@@ -4451,7 +4469,10 @@ class PReluLayer(Layer):
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name) as vs:
             alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, **a_init_args )
-            self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
+            try:  ## TF 1.0
+                self.outputs = tf.nn.relu(self.inputs) + tf.mulitply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
+            except: ## TF 0.12
+                self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -4512,7 +4533,7 @@ class MultiplexerLayer(Layer):
 
     References
     ------------
-    - See ``tf.pack()`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
+    - See ``tf.pack() for TF0.12 or tf.stack() for TF1.0`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
     """
     def __init__(self,
                layer = [],
@@ -4523,7 +4544,10 @@ class MultiplexerLayer(Layer):
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        all_inputs = tf.pack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
+        try: ## TF1.0
+            all_inputs = tf.stack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
+        except:
+            all_inputs = tf.pack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
 
         print("  tensorlayer:Instantiate MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
 
