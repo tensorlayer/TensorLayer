@@ -828,6 +828,8 @@ class DropoutLayer(Layer):
         The keeping probability, the lower more values will be set to zero.
     is_fix : boolean
         Default False, if True, the keeping probability is fixed and cannot be changed via feed_dict.
+    is_train : boolean
+        If False, skip this layer, default is True.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -863,26 +865,34 @@ class DropoutLayer(Layer):
         layer = None,
         keep = 0.5,
         is_fix = False,
+        is_train = True,
         name = 'dropout_layer',
     ):
         Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
-
-        # The name of placeholder for keep_prob is the same with the name
-        # of the Layer.
-        if is_fix:
-            self.outputs = tf.nn.dropout(self.inputs, keep, name=name)
+        if is_train is False:
+            print("  tensorlayer:skip DropoutLayer")
+            self.outputs = layer.outputs
+            self.all_layers = list(layer.all_layers)
+            self.all_params = list(layer.all_params)
+            self.all_drop = dict(layer.all_drop)
         else:
-            set_keep[name] = tf.placeholder(tf.float32)
-            self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
+            self.inputs = layer.outputs
+            print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        if is_fix is False:
-            self.all_drop.update( {set_keep[name]: keep} )
-        self.all_layers.extend( [self.outputs] )
+            # The name of placeholder for keep_prob is the same with the name
+            # of the Layer.
+            if is_fix:
+                self.outputs = tf.nn.dropout(self.inputs, keep, name=name)
+            else:
+                set_keep[name] = tf.placeholder(tf.float32)
+                self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
+
+            self.all_layers = list(layer.all_layers)
+            self.all_params = list(layer.all_params)
+            self.all_drop = dict(layer.all_drop)
+            if is_fix is False:
+                self.all_drop.update( {set_keep[name]: keep} )
+            self.all_layers.extend( [self.outputs] )
 
         # print(set_keep[name])
         #   Tensor("Placeholder_2:0", dtype=float32)
@@ -910,26 +920,38 @@ class GaussianNoiseLayer(Layer):
     ------------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    sigma : float
-        Scale value of gaussian noise.
+    mean : float
+    stddev : float
+    is_train : boolean
+        If False, skip this layer, default is True.
     name : a string or None
         An optional name to attach to this layer.
     """
     def __init__(
         self,
         layer = None,
-        sigma = 0.1,
+        mean = 0.0,
+        stddev = 1.0,
+        is_train = True,
         name = 'gaussian_noise_layer',
     ):
         Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate GaussianNoiseLayer %s: keep: %f" % (self.name, keep))
-        with tf.variable_scope(name) as vs:
-            noise = np.random.normal(0.0 , sigma , tf.to_int64(input_layer).get_shape())
-            self.inputs = self.inputs + noise
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        if is_train is False:
+            print("  tensorlayer:skip GaussianNoiseLayer")
+            self.outputs = layer.outputs
+            self.all_layers = list(layer.all_layers)
+            self.all_params = list(layer.all_params)
+            self.all_drop = dict(layer.all_drop)
+        else:
+            self.inputs = layer.outputs
+            print("  tensorlayer:Instantiate GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
+            with tf.variable_scope(name) as vs:
+                # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
+                noise = tf.random_normal(shape = self.inputs.get_shape(), mean=mean, stddev=stddev)
+                self.outputs = self.inputs + noise
+            self.all_layers = list(layer.all_layers)
+            self.all_params = list(layer.all_params)
+            self.all_drop = dict(layer.all_drop)
 
 
 class DropconnectDenseLayer(Layer):
