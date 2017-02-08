@@ -2851,7 +2851,7 @@ class RNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
@@ -2996,7 +2996,7 @@ class RNNLayer(Layer):
     def __init__(
         self,
         layer = None,
-        cell_fn = tf.nn.rnn_cell.BasicRNNCell,
+        cell_fn = None,#tf.nn.rnn_cell.BasicRNNCell,
         cell_init_args = {},
         n_hidden = 100,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -3008,6 +3008,9 @@ class RNNLayer(Layer):
         name = 'rnn_layer',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
+
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
@@ -3101,7 +3104,7 @@ class BiRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
@@ -3169,7 +3172,7 @@ class BiRNNLayer(Layer):
     def __init__(
         self,
         layer = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None, #tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'use_peepholes':True, 'state_is_tuple':True},
         n_hidden = 100,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -3183,6 +3186,8 @@ class BiRNNLayer(Layer):
         name = 'birnn_layer',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate BiRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d " % (self.name, n_hidden,
@@ -3409,7 +3414,7 @@ class DynamicRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
@@ -3499,7 +3504,7 @@ class DynamicRNNLayer(Layer):
     def __init__(
         self,
         layer = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None,#tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'state_is_tuple' : True},
         n_hidden = 256,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -3512,6 +3517,8 @@ class DynamicRNNLayer(Layer):
         name = 'dyrnn_layer',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" % (self.name, n_hidden,
@@ -3631,7 +3638,7 @@ class BiDynamicRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
@@ -3703,7 +3710,7 @@ class BiDynamicRNNLayer(Layer):
     def __init__(
         self,
         layer = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None,#tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'state_is_tuple':True},
         n_hidden = 256,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -3717,6 +3724,8 @@ class BiDynamicRNNLayer(Layer):
         name = 'bi_dyrnn_layer',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
         print("  tensorlayer:Instantiate BiDynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" %
@@ -3843,7 +3852,7 @@ class Seq2Seq(Layer):
         Encode sequences, [batch_size, None, n_features].
     net_decode_in : a :class:`Layer` instance
         Decode sequences, [batch_size, None, n_features].
-    cell_fn : a TensorFlow's core RNN cell as follow.
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different)
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
         - class ``tf.nn.rnn_cell.BasicRNNCell``
         - class ``tf.nn.rnn_cell.BasicLSTMCell``
@@ -3929,7 +3938,7 @@ class Seq2Seq(Layer):
         self,
         net_encode_in = None,
         net_decode_in = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None,#tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'state_is_tuple':True},
         n_hidden = 256,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -3943,6 +3952,8 @@ class Seq2Seq(Layer):
         name = 'seq2seq',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
         print("  tensorlayer:Instantiate Seq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
@@ -4003,7 +4014,7 @@ class PeekySeq2Seq(Layer):
         self,
         net_encode_in = None,
         net_decode_in = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None,#tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'state_is_tuple':True},
         n_hidden = 256,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -4017,6 +4028,8 @@ class PeekySeq2Seq(Layer):
         name = 'peeky_seq2seq',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
         print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
@@ -4032,7 +4045,7 @@ class AttentionSeq2Seq(Layer):
         self,
         net_encode_in = None,
         net_decode_in = None,
-        cell_fn = tf.nn.rnn_cell.LSTMCell,
+        cell_fn = None,#tf.nn.rnn_cell.LSTMCell,
         cell_init_args = {'state_is_tuple':True},
         n_hidden = 256,
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
@@ -4046,6 +4059,8 @@ class AttentionSeq2Seq(Layer):
         name = 'attention_seq2seq',
     ):
         Layer.__init__(self, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
         print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
