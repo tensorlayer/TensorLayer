@@ -1872,7 +1872,7 @@ class BatchNormLayer(Layer):
         epsilon = 0.00001,
         act = tf.identity,
         is_train = False,
-        beta_init = tf.zeros_initializer,
+        beta_init = tf.ones_initializer(),
         # gamma_init = tf.ones_initializer,
         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
         name ='batchnorm_layer',
@@ -1953,7 +1953,7 @@ class BatchNormLayer(Layer):
 
             moving_mean = tf.get_variable('moving_mean',
                                       params_shape,
-                                      initializer=tf.zeros_initializer,
+                                      initializer=tf.zeros_initializer(),
                                       trainable=False,)#   restore=restore)
             moving_variance = tf.get_variable('moving_variance',
                                           params_shape,
