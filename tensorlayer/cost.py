@@ -35,7 +35,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
         # cross_entropy = tf.add(tf.mul(tf.log(net_output_tf, name=None),target_tf),
         #                      tf.mul(tf.log(1 - net_output_tf), (1 - target_tf)))
         # return -1 * tf.reduce_mean(tf.reduce_sum(cross_entropy, 1), name='cross_entropy_mean')
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(output, target))
+        return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(output, target))
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
