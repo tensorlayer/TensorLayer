@@ -30,7 +30,7 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
     if tf.__version__ <= "0.12":
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, labels=target, name=name))
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target, name=name))
     else: # TF 1.0
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=outputs, name=name))
 
