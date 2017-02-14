@@ -634,7 +634,31 @@ def assign_params(sess, params, network):
         ops.append(network.all_params[idx].assign(param))
     sess.run(ops)
 
+def load_and_assign_npz(sess=None, name=None, network=None):
+    """Load model from npz and assign to a network.
 
+    Parameters
+    -------------
+    sess : TensorFlow Session
+    name : string
+        Model path.
+    network : a :class:`Layer` class
+        The network to be assigned
+
+    Examples
+    ---------
+    >>> tl.files.load_and_assign_npz(sess=sess, name='net.npz', network=net)
+    """
+    assert network is not None
+    assert sess is not None
+    if not os.path.exists(name):
+        print("[!] Load {} failed!".format(name))
+        return False
+    else:
+        params = tl.files.load_npz(name=name)
+        tl.files.assign_params(sess, params, network)
+        print("[*] Load {} SUCCESS!".format(name))
+        return network
 
 # Load and save variables
 def save_any_to_npy(save_dict={}, name='any.npy'):

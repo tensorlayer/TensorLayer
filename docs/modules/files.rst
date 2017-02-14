@@ -44,6 +44,7 @@ sake of cross-platform.
    save_npz
    load_npz
    assign_params
+   load_and_assign_npz
 
    save_any_to_npy
    load_npy_to_any
@@ -102,6 +103,10 @@ Load network from .npz
 Assign parameters to network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: assign_params
+
+Load and assign parameters to network
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_and_assign_npz
 
 Load and save variables
 ------------------------
