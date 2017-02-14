@@ -4258,7 +4258,10 @@ class ConcatLayer(Layer):
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        self.outputs = tf.concat(concat_dim, self.inputs, name=name) # 1.2
+        try: # TF1.0
+            self.outputs = tf.concat(self.inputs, concat_dim, name=name)
+        except: # TF0.12
+            self.outputs = tf.concat(concat_dim, self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
         print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
 
