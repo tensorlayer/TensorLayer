@@ -218,7 +218,7 @@ class Layer(object):
     ):
         self.inputs = inputs
         if (name in set_keep['_layers_name_list']) and name_reuse == False:
-            raise Exception("Layer '%s' already exists, please choice other 'name'.\
+            raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
         else:
             self.name = name
