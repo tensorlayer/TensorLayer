@@ -10,7 +10,7 @@ install_requires = [
 
 setup(
     name = "tensorlayer",
-    version = "1.3.4",
+    version = "1.3.5",
     include_package_data=True,
     author='TensorLayer Contributors',
     author_email='hao.dong11@imperial.ac.uk',
