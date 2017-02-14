@@ -9,7 +9,7 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
-def cross_entropy(output, target, name="cross_entropy_loss"):
+def cross_entropy(output, target, name=None):
     """Returns the TensorFlow expression of cross-entropy of two distributions, implement
     softmax internally.
 
@@ -19,16 +19,20 @@ def cross_entropy(output, target, name="cross_entropy_loss"):
         A distribution with shape: [batch_size, n_feature].
     target : Tensorflow variable
         A batch of index with shape: [batch_size, ].
+    name : string
+        Name of this loss.
 
     Examples
     --------
-    >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits)
+    >>> ce = tl.cost.cross_entropy(y_logits, y_target_logits, 'my_loss')
 
     References
     -----------
     - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
+    assert name is not None, print("Please give a unique name to tl.cost.cross_entropy")
+
     if tf.__version__ <= "0.12":
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target, name=name))
     else: # TF 1.0
