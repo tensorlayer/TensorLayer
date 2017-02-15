@@ -3080,11 +3080,19 @@ class RNNLayer(Layer):
             if return_seq_2d:
                 # PTB tutorial: stack dense layer after that, or compute the cost from the output
                 # 2D Tensor [n_example, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+                try: # TF1.0
+                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                except: # TF0.12
+                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+
+
             else:
                 # <akara>: stack more RNN layer after that
                 # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-                self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
+                try: # TF1.0
+                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
+                except: # TF0.12
+                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.final_state = state
 
@@ -3257,7 +3265,7 @@ class BiRNNLayer(Layer):
                 list_rnn_inputs = tf.unstack(self.inputs, axis=1)
             except: ## TF0.12
                 list_rnn_inputs = tf.unpack(self.inputs, axis=1)
-            outputs, fw_state, bw_state = tf.nn.bidirectional_rnn(
+            outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
                 inputs=list_rnn_inputs,
@@ -3271,11 +3279,18 @@ class BiRNNLayer(Layer):
                 self.outputs = outputs
                 if return_seq_2d:
                     # 2D Tensor [n_example, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden*2])
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden*2])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden*2])
                 else:
                     # <akara>: stack more RNN layer after that
                     # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden*2])
+
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs,1), [-1, n_steps, n_hidden*2])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden*2])
             self.fw_final_state = fw_state
             self.bw_final_state = bw_state
 
@@ -3606,13 +3621,21 @@ class DynamicRNNLayer(Layer):
                 if return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, n_hidden]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
                 else:
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), n_hidden]
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, n_hidden])
+
+
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, n_hidden])
                     # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
 
         # Final state
@@ -3806,7 +3829,10 @@ class BiDynamicRNNLayer(Layer):
 
             print("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
-            outputs = tf.concat(2, outputs)
+            try: # TF1.0
+                outputs = tf.concat(outputs, 2)
+            except: # TF0.12
+                outputs = tf.concat(2, outputs)
             if return_last:
                 # [batch_size, 2 * n_hidden]
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
@@ -3815,13 +3841,19 @@ class BiDynamicRNNLayer(Layer):
                 if return_seq_2d:
                     # PTB tutorial:
                     # 2D Tensor [n_example, 2 * n_hidden]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, 2 * n_hidden])
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, 2 * n_hidden])
                 else:
                     # <akara>:
                     # 3D Tensor [batch_size, n_steps(max), 2 * n_hidden]
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, 2 * n_hidden])
+                    try: # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
+                    except: # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, 2 * n_hidden])
                     # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, 2 * n_hidden])
 
         # Final state
