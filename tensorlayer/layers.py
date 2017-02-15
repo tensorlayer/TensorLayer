@@ -3265,7 +3265,12 @@ class BiRNNLayer(Layer):
                 list_rnn_inputs = tf.unstack(self.inputs, axis=1)
             except: ## TF0.12
                 list_rnn_inputs = tf.unpack(self.inputs, axis=1)
-            outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
+
+            if tf.__version__ <= "0.12":  # TF 0.10, 0.11, 0.12
+                bidirectional_rnn_fn = tf.nn.bidirectional_rnn
+            else: # TF 1.0
+                bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
+            outputs, fw_state, bw_state = bidirectional_rnn_fn(               # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
                 inputs=list_rnn_inputs,
