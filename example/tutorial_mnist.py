@@ -164,7 +164,7 @@ def main_test_layers(model='relu'):
     # Add ops to save and restore all the variables, including variables for training.
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
-    save_path = saver.save(sess, "model.ckpt")
+    save_path = saver.save(sess, "./model.ckpt")
     print("Model saved in file: %s" % save_path)
 
 
@@ -243,7 +243,7 @@ def main_test_denoise_AE(model='relu'):
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
     # you may want to save the model
-    save_path = saver.save(sess, "model.ckpt")
+    save_path = saver.save(sess, "./model.ckpt")
     print("Model saved in file: %s" % save_path)
     sess.close()
 
@@ -405,7 +405,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
     # you may want to save the model
-    save_path = saver.save(sess, "model.ckpt")
+    save_path = saver.save(sess, "./model.ckpt")
     print("Model saved in file: %s" % save_path)
     sess.close()
 
