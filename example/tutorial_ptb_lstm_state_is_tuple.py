@@ -204,41 +204,41 @@ def main(_):
                         vocabulary_size = vocab_size,
                         embedding_size = hidden_size,
                         E_init = tf.random_uniform_initializer(-init_scale, init_scale),
-                        name ='embedding_layer')
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
+                        name ='embedding')
+            # if is_training:
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_fn=tf.contrib.rnn.BasicLSTMCell, #tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                         n_steps=num_steps,
                         return_last=False,
-                        name='basic_lstm_layer1')
+                        name='basic_lstm1')
             lstm1 = network
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
+            # if is_training:
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                         n_steps=num_steps,
                         return_last=False,
                         return_seq_2d=True,
-                        name='basic_lstm_layer2')
+                        name='basic_lstm2')
             lstm2 = network
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
             # network = tl.layers.ReshapeLayer(network,
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
+            # if is_training:
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
             network = tl.layers.DenseLayer(network,
                         n_units=vocab_size,
                         W_init=tf.random_uniform_initializer(-init_scale, init_scale),
                         b_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                        act = tf.identity, name='output_layer')
+                        act = tf.identity, name='output')
         return network, lstm1, lstm2
 
     # Inference for Training
@@ -263,7 +263,7 @@ def main(_):
         # n_examples = batch_size * num_steps
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.nn.seq2seq.sequence_loss_by_example(
+        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
             [outputs],
             [tf.reshape(targets, [-1])],
             [tf.ones([batch_size * num_steps])])
@@ -369,7 +369,6 @@ def main(_):
         valid_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch,
                                                             valid_perplexity))
-
 
     print("Evaluation")
     # Testing

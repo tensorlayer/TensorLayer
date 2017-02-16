@@ -69,26 +69,15 @@ def Vgg19(rgb):
     print("build model started")
     rgb_scaled = rgb * 255.0
     # Convert RGB to BGR
-    if tf.__version__ <= '0.11':
-        red, green, blue = tf.split(3, 3, rgb_scaled)
-    else: # TF 1.0
-        print(rgb_scaled)
-        red, green, blue = tf.split(rgb_scaled, 3, 3)
+    red, green, blue = tf.split(3, 3, rgb_scaled)
     assert red.get_shape().as_list()[1:] == [224, 224, 1]
     assert green.get_shape().as_list()[1:] == [224, 224, 1]
     assert blue.get_shape().as_list()[1:] == [224, 224, 1]
-    if tf.__version__ <= '0.11':
-        bgr = tf.concat(3, [
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ])
-    else:
-        bgr = tf.concat([
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ], axis=3)
+    bgr = tf.concat(3, [
+        blue - VGG_MEAN[0],
+        green - VGG_MEAN[1],
+        red - VGG_MEAN[2],
+    ])
     assert bgr.get_shape().as_list()[1:] == [224, 224, 3]
 
     """ input layer """
@@ -245,10 +234,8 @@ probs = tf.nn.softmax(y, name="prob")
 tl.layers.initialize_global_variables(sess)
 
 # You need to download the pre-trained model - VGG19 NPZ
+# in https://github.com/machrisaa/tensorflow-vgg
 vgg19_npy_path = "vgg19.npy"
-if not os.path.isfile(vgg19_npy_path):
-    print("Please download vgg19.npz from : https://github.com/machrisaa/tensorflow-vgg")
-    exit()
 npz = np.load(vgg19_npy_path, encoding='latin1').item()
 
 params = []

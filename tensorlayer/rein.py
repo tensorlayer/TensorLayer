@@ -37,7 +37,7 @@ def discount_episode_rewards(rewards=[], gamma=0.99):
     return discounted_r
 
 
-def cross_entropy_reward_loss(logits, actions, rewards):
+def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     """ Calculate the loss for Policy Gradient Network.
 
     Parameters
@@ -63,7 +63,13 @@ def cross_entropy_reward_loss(logits, actions, rewards):
     >>> loss = cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
-    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
+
+    if tf.__version__ <= "0.12":
+        cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions))
+    else: # TF 1.0
+        cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name))
+
+    # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
     try: ## TF1.0
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
     except: ## TF0.12

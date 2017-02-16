@@ -3,7 +3,7 @@ API - Cost
 
 To make TensorLayer simple, we minimize the number of cost functions as much as
 we can. So we encourage you to use TensorFlow's function.
-For example, you can implement L1, L2 and sum regularization by ``tf.nn.l2_loss``, 
+For example, you can implement L1, L2 and sum regularization by ``tf.nn.l2_loss``,
 ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
@@ -117,6 +117,7 @@ to the cost function.
 .. autosummary::
 
    cross_entropy
+   sigmoid_cross_entropy
    binary_cross_entropy
    mean_squared_error
    dice_coe
@@ -132,9 +133,13 @@ to the cost function.
    maxnorm_i_regularizer
 
 
-Cross entropy
-------------------
+Softmax cross entropy
+----------------------
 .. autofunction:: cross_entropy
+
+Sigmoid cross entropy
+----------------------
+.. autofunction:: sigmoid_cross_entropy
 
 Binary cross entropy
 -------------------------

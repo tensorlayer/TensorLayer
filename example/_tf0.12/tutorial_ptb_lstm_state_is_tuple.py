@@ -65,6 +65,7 @@ $ RNN for PTB : https://www.tensorflow.org/versions/master/tutorials/recurrent/i
 $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
 $ translation : tensorflow/models/rnn/translate
 
+tensorflow (0.9.0)
 """
 
 """Example / benchmark for building a PTB LSTM model.
@@ -100,7 +101,6 @@ PTB dataset from Tomas Mikolov's webpage:
 
 $ wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
 $ tar xvf simple-examples.tgz
-
 
 A) use the zero_state function on the cell object
 
@@ -208,8 +208,8 @@ def main(_):
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
-                        cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                         n_steps=num_steps,
@@ -219,8 +219,8 @@ def main(_):
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
-                        cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
                         n_steps=num_steps,
@@ -263,7 +263,7 @@ def main(_):
         # n_examples = batch_size * num_steps
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
+        loss = tf.nn.seq2seq.sequence_loss_by_example(
             [outputs],
             [tf.reshape(targets, [-1])],
             [tf.ones([batch_size * num_steps])])
@@ -311,17 +311,25 @@ def main(_):
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data,
                                                     batch_size, num_steps)):
             feed_dict = {input_data: x, targets: y,
-                        lstm1.initial_state: state1,
-                        lstm2.initial_state: state2,
+                        lstm1.initial_state.c: state1[0],
+                        lstm1.initial_state.h: state1[1],
+                        lstm2.initial_state.c: state2[0],
+                        lstm2.initial_state.h: state2[1],
                         }
             # For training, enable dropout
             feed_dict.update( network.all_drop )
-            _cost, state1, state2, _ = sess.run([cost,
-                                            lstm1.final_state,
-                                            lstm2.final_state,
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
+                                    sess.run([cost,
+                                            lstm1.final_state.c,
+                                            lstm1.final_state.h,
+                                            lstm2.final_state.c,
+                                            lstm2.final_state.h,
                                             train_op],
                                             feed_dict=feed_dict
                                             )
+            state1 = (state1_c, state1_h)
+            state2 = (state2_c, state2_h)
+
             costs += _cost; iters += num_steps
 
             if step % (epoch_size // 10) == 10:
@@ -341,15 +349,22 @@ def main(_):
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data,
                                                     batch_size, num_steps)):
             feed_dict = {input_data: x, targets: y,
-                        lstm1_val.initial_state: state1,
-                        lstm2_val.initial_state: state2,
+                        lstm1_val.initial_state.c: state1[0],
+                        lstm1_val.initial_state.h: state1[1],
+                        lstm2_val.initial_state.c: state2[0],
+                        lstm2_val.initial_state.h: state2[1],
                         }
-            _cost, state1, state2, _ = sess.run([cost_val,
-                                            lstm1_val.final_state,
-                                            lstm2_val.final_state,
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
+                                    sess.run([cost_val,
+                                            lstm1_val.final_state.c,
+                                            lstm1_val.final_state.h,
+                                            lstm2_val.final_state.c,
+                                            lstm2_val.final_state.h,
                                             tf.no_op()],
                                             feed_dict=feed_dict
                                             )
+            state1 = (state1_c, state1_h)
+            state2 = (state2_c, state2_h)
             costs += _cost; iters += num_steps
         valid_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch,
@@ -367,14 +382,22 @@ def main(_):
     for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data,
                                             batch_size=1, num_steps=1)):
         feed_dict = {input_data_test: x, targets_test: y,
-                    lstm1_test.initial_state: state1,
-                    lstm2_test.initial_state: state2,
+                    lstm1_test.initial_state.c: state1[0],
+                    lstm1_test.initial_state.h: state1[1],
+                    lstm2_test.initial_state.c: state2[0],
+                    lstm2_test.initial_state.h: state2[1],
                     }
-        _cost, state1, state2 = sess.run([cost_test,
-                                        lstm1_test.final_state,
-                                        lstm2_test.final_state],
+        _cost, state1_c, state1_h, state2_c, state2_h = \
+                                sess.run([cost_test,
+                                        lstm1_test.final_state.c,
+                                        lstm1_test.final_state.h,
+                                        lstm2_test.final_state.c,
+                                        lstm2_test.final_state.h,
+                                        ],
                                         feed_dict=feed_dict
                                         )
+        state1 = (state1_c, state1_h)
+        state2 = (state2_c, state2_h)
         costs += _cost; iters += 1
     test_perplexity = np.exp(costs / iters)
     print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))

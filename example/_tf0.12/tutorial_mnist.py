@@ -92,8 +92,9 @@ def main_test_layers(model='relu'):
 
     y = network.outputs
     y_op = tf.argmax(tf.nn.softmax(y), 1)
-    # cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-    cost = tl.cost.cross_entropy(y, y_, name='cost')
+    cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+    # Alternatively, you can use TensorLayer's function to compute cost:
+    # cost = tl.cost.cross_entropy(y, y_)
 
     # You can add more penalty to the cost function as follow.
     # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
@@ -302,7 +303,8 @@ def main_test_stacked_denoise_AE(model='relu'):
     # Define fine-tune process
     y = network.outputs
     y_op = tf.argmax(tf.nn.softmax(y), 1)
-    cost = tl.cost.cross_entropy(y, y_, name='cost')
+    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+    cost = ce
 
     n_epoch = 200
     batch_size = 128
@@ -323,12 +325,12 @@ def main_test_stacked_denoise_AE(model='relu'):
     network.print_params()
     print("\nPre-train Layer 1")
     recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
-                            denoise_name='denoising1', n_epoch=100,
+                            denoise_name='denoising1', n_epoch=200,
                             batch_size=128, print_freq=10, save=True,
                             save_name='w1pre_')
     print("\nPre-train Layer 2")
     recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
-                            denoise_name='denoising1', n_epoch=100,
+                            denoise_name='denoising1', n_epoch=200,
                             batch_size=128, print_freq=10, save=False)
     print("\nAll Network Params after pre-train")
     network.print_params()
@@ -448,7 +450,7 @@ def main_test_cnn_layer():
     y_ = tf.placeholder(tf.int64, shape=[batch_size,])
 
     network = tl.layers.InputLayer(x, name='input_layer')
-    ## Professional conv API for tensorflow user
+    ## professional conv API for tensorflow user
     # network = tl.layers.Conv2dLayer(network,
     #                     act = tf.nn.relu,
     #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
@@ -473,28 +475,29 @@ def main_test_cnn_layer():
     #                     padding='SAME',
     #                     pool = tf.nn.max_pool,
     #                     name ='pool_layer2',)   # output: (?, 7, 7, 64)
-    ## Simplified conv API for beginner (the same with the above layers)
+    ## simplified conv API for beginner (the same with the above layers)
     network = tl.layers.Conv2d(network, n_filter=32, filter_size=(5, 5), strides=(1, 1),
-            act=tf.nn.relu, padding='SAME', name='cnn1')
+            act=tf.nn.relu, padding='SAME', name='cnn_layer1')
     network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
             padding='SAME', name='pool_layer1')
     network = tl.layers.Conv2d(network, n_filter=64, filter_size=(5, 5), strides=(1, 1),
-            act=tf.nn.relu, padding='SAME', name='cnn2')
+            act=tf.nn.relu, padding='SAME', name='cnn_layer2')
     network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
             padding='SAME', name='pool_layer2')
     ## end of conv
-    network = tl.layers.FlattenLayer(network, name='flatten')
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')
+    network = tl.layers.FlattenLayer(network, name='flatten_layer')   # output: (?, 3136)
+    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1') # output: (?, 3136)
     network = tl.layers.DenseLayer(network, n_units=256,
-                                    act = tf.nn.relu, name='relu1')
-    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+                                    act = tf.nn.relu, name='relu1')   # output: (?, 256)
+    network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2') # output: (?, 256)
     network = tl.layers.DenseLayer(network, n_units=10,
                                     act = tf.identity,
-                                    name='output')
+                                    name='output_layer')    # output: (?, 10)
 
     y = network.outputs
 
-    cost = tl.cost.cross_entropy(y, y_, 'cost')
+    ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+    cost = ce
 
     correct_prediction = tf.equal(tf.argmax(y, 1), y_)
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))

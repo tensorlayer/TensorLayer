@@ -12,7 +12,7 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3_b
 import skimage
 import skimage.io
 import skimage.transform
-import time, os
+import time
 from data.imagenet_classes import *
 import numpy as np
 """
@@ -110,11 +110,8 @@ sess = tf.InteractiveSession()
 network.print_params(False)
 
 saver = tf.train.Saver()
-if not os.path.isfile("inception_v3.ckpt"):
-    print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/slim#Install")
-    exit()
 try:    # TF12
-    saver.restore(sess, "./inception_v3.ckpt")
+    saver.restore(sess, "./inception_v3.ckpt")    # download from https://github.com/tensorflow/models/tree/master/slim#Install
 except: # TF11
     saver.restore(sess, "inception_v3.ckpt")
 print("Model Restored")
@@ -122,7 +119,7 @@ print("Model Restored")
 from scipy.misc import imread, imresize
 y = network.outputs
 probs = tf.nn.softmax(y)
-img1 = load_image("data/puzzle.jpeg") # test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data
+img1 = load_image("data/puzzle.jpeg") # test data in github
 img1 = img1.reshape((1, 299, 299, 3))
 
 start_time = time.time()

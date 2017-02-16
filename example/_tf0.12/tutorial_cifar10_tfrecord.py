@@ -13,13 +13,13 @@ import io
 
 """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
 
-- 1. This model has 1,068,298 paramters, after few hours of training with GPU,
+- This model has 1,068,298 paramters, after few hours of training with GPU,
 accurcy of 86% was found.
 
-- 2. For simplified CNN layers see "Convolutional layer (Simplified)"
+- For simplified CNN layer see "Convolutional layer (Simplified)"
 in read the docs website.
 
-- 3. Data augmentation without TFRecord see `tutorial_image_preprocess.py` !!
+- Data augmentation without TFRecord see `tutorial_image_preprocess.py`.
 
 Links
 -------
@@ -228,7 +228,7 @@ with tf.device('/cpu:0'):
                         name='output_layer')    # output: (batch_size, 10)
             y = network.outputs
 
-            ce = tl.cost.cross_entropy(y, y_, name='cost')
+            ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
             # L2 for the MLP, without this, the accuracy will be reduced by 15%.
             L2 = tf.contrib.layers.l2_regularizer(0.004)(network.all_params[4]) + \
                     tf.contrib.layers.l2_regularizer(0.004)(network.all_params[6])
@@ -283,7 +283,7 @@ with tf.device('/cpu:0'):
                         name='output_layer')                                    # output: (batch_size, 10)
             y = network.outputs
 
-            ce = tl.cost.cross_entropy(y, y_, name='cost')
+            ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
             # L2 for the MLP, without this, the accuracy will be reduced by 15%.
             L2 = tf.contrib.layers.l2_regularizer(0.004)(network.all_params[4]) + \
                     tf.contrib.layers.l2_regularizer(0.004)(network.all_params[6])

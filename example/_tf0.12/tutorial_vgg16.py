@@ -198,7 +198,7 @@ network = fc_layers(net_cnn)
 y = network.outputs
 probs = tf.nn.softmax(y)
 y_op = tf.argmax(tf.nn.softmax(y), 1)
-cost = tl.cost.cross_entropy(y, y_, name='cost')
+cost = tl.cost.cross_entropy(y, y_)
 
 correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -208,9 +208,7 @@ tl.layers.initialize_global_variables(sess)
 network.print_params()
 network.print_layers()
 
-if not os.path.isfile("vgg16_weights.npz"):
-    print("Please download vgg16_weights.npz from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
-    exit()
+# you need to download the model from http://www.cs.toronto.edu/~frossard/post/vgg16/
 npz = np.load('vgg16_weights.npz')
 
 params = []

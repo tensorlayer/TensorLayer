@@ -123,7 +123,11 @@ def initialize_rnn_state(state):
     -----------
     state : a RNN state.
     """
-    if isinstance(state, tf.nn.rnn_cell.LSTMStateTuple):
+    if tf.__version__ <="0.12":
+        LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
+    else:
+        LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
+    if isinstance(state, LSTMStateTuple):
         c = state.c.eval()
         h = state.h.eval()
         return (c, h)
@@ -141,8 +145,15 @@ def print_all_variables(train_only=False):
     train_only : boolean
         If True, only print the trainable variables, otherwise, print all variables.
     """
-    tvar = tf.trainable_variables() if train_only else tf.all_variables()
-    for idx, v in enumerate(tvar):
+    # tvar = tf.trainable_variables() if train_only else tf.all_variables()
+    if train_only:
+        t_vars = tf.trainable_variables()
+    else:
+        if tf.__version__ <="0.12":
+            t_vars = tf.all_variables()
+        else:
+            t_vars = tf.global_variables()
+    for idx, v in enumerate(t_vars):
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
@@ -154,7 +165,15 @@ def get_variables_with_name(name, train_only=True, printable=False):
     >>> dense_vars = get_variable_with_name('dense', True, True)
     """
     print("  Get variables with %s" % name)
-    t_vars = tf.trainable_variables() if train_only else tf.all_variables()
+    # tvar = tf.trainable_variables() if train_only else tf.all_variables()
+    if train_only:
+        t_vars = tf.trainable_variables()
+    else:
+        if tf.__version__ <="0.12":
+            t_vars = tf.all_variables()
+        else:
+            t_vars = tf.global_variables()
+
     d_vars = [var for var in t_vars if name in var.name]
     if printable:
         for idx, v in enumerate(d_vars):
@@ -1912,21 +1931,11 @@ class BatchNormLayer(Layer):
             axis = list(range(len(x_shape) - 1))
 
             ## 1. beta, gamma
-            # beta = _get_variable('beta',
-            #                      params_shape,
-            #                      initializer=beta_init)
+            if tf.__version__ >= '0.11' and beta_init == tf.zeros_initializer:
+                beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape,
                                initializer=beta_init,
                                trainable=is_train)#, restore=restore)
-            # try: # TF12
-            #     gamma = _get_variable('gamma',
-            #                           params_shape,
-            #                           initializer=gamma_init())
-            # except: # TF11
-            # gamma = _get_variable('gamma',
-            #                       params_shape,
-            #                       initializer=gamma_init)
-            # print("x"*100)
 
             gamma = tf.get_variable('gamma', shape=params_shape,
                                 initializer=gamma_init, trainable=is_train,
@@ -1951,9 +1960,13 @@ class BatchNormLayer(Layer):
             #                                     initializer=tf.ones_initializer,
             #                                     trainable=False)
 
+            if tf.__version__ >= '0.11':
+                moving_mean_init = tf.zeros_initializer()
+            else:
+                moving_mean_init = tf.zeros_initializer
             moving_mean = tf.get_variable('moving_mean',
                                       params_shape,
-                                      initializer=tf.zeros_initializer,
+                                      initializer=moving_mean_init,
                                       trainable=False,)#   restore=restore)
             moving_variance = tf.get_variable('moving_variance',
                                           params_shape,
@@ -2851,12 +2864,8 @@ class RNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
-        - class ``tf.nn.rnn_cell.BasicRNNCell``
-        - class ``tf.nn.rnn_cell.BasicLSTMCell``
-        - class ``tf.nn.rnn_cell.GRUCell``
-        - class ``tf.nn.rnn_cell.LSTMCell``
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -3112,12 +3121,8 @@ class BiRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
-        - class ``tf.nn.rnn_cell.BasicRNNCell``
-        - class ``tf.nn.rnn_cell.BasicLSTMCell``
-        - class ``tf.nn.rnn_cell.GRUCell``
-        - class ``tf.nn.rnn_cell.LSTMCell``
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -3230,25 +3235,33 @@ class BiRNNLayer(Layer):
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                     "float)")
-                self.fw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                if tf.__version__ <="0.12":
+                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+                else:
+                    DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+                self.fw_cell = DropoutWrapper_fn(
                           self.fw_cell,
                           input_keep_prob=in_keep_prob,
                           output_keep_prob=out_keep_prob)
-                self.bw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                self.bw_cell = DropoutWrapper_fn(
                           self.bw_cell,
                           input_keep_prob=in_keep_prob,
                           output_keep_prob=out_keep_prob)
             # Apply multiple layers
             if n_layer > 1:
                 print("     n_layer: %d" % n_layer)
+                if tf.__version__ <="0.12":
+                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+                else:
+                    MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
                 try:
-                    self.fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.fw_cell] * n_layer,
+                    self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer,
                                                           state_is_tuple=True)
-                    self.bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.bw_cell] * n_layer,
+                    self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer,
                                                           state_is_tuple=True)
                 except:
-                    self.fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.fw_cell] * n_layer)
-                    self.bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.bw_cell] * n_layer)
+                    self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer)
+                    self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer)
 
             # Initial state of RNN
             if fw_initial_state is None:
@@ -3434,12 +3447,8 @@ class DynamicRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
-        - class ``tf.nn.rnn_cell.BasicRNNCell``
-        - class ``tf.nn.rnn_cell.BasicLSTMCell``
-        - class ``tf.nn.rnn_cell.GRUCell``
-        - class ``tf.nn.rnn_cell.LSTMCell``
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -3504,7 +3513,7 @@ class DynamicRNNLayer(Layer):
     ...             embedding_size = embedding_size,
     ...             name = 'seq_embedding')
     >>> network = tl.layers.DynamicRNNLayer(network,
-    ...             cell_fn = tf.nn.rnn_cell.BasicLSTMCell,
+    ...             cell_fn = tf.contrib.rnn.BasicLSTMCell, # for TF0.2 tf.nn.rnn_cell.BasicLSTMCell,
     ...             n_hidden = embedding_size,
     ...             dropout = 0.7,
     ...             sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
@@ -3574,17 +3583,25 @@ class DynamicRNNLayer(Layer):
             else:
                 raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                 "float)")
-            self.cell = tf.nn.rnn_cell.DropoutWrapper(
+            if tf.__version__ <="0.12":
+                DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+            else:
+                DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+            self.cell = DropoutWrapper_fn(
                       self.cell,
                       input_keep_prob=in_keep_prob,
                       output_keep_prob=out_keep_prob)
         # Apply multiple layers
         if n_layer > 1:
             print("     n_layer: %d" % n_layer)
+            if tf.__version__ <="0.12":
+                MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+            else:
+                MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
             try:
-                self.cell = tf.nn.rnn_cell.MultiRNNCell([self.cell] * n_layer, state_is_tuple=True)
+                self.cell = MultiRNNCell_fn([self.cell] * n_layer, state_is_tuple=True)
             except:
-                self.cell = tf.nn.rnn_cell.MultiRNNCell([self.cell] * n_layer)
+                self.cell = MultiRNNCell_fn([self.cell] * n_layer)
 
         # Initialize initial_state
         if initial_state is None:
@@ -3666,12 +3683,8 @@ class BiDynamicRNNLayer(Layer):
     ----------
     layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
-    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different).
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
-        - class ``tf.nn.rnn_cell.BasicRNNCell``
-        - class ``tf.nn.rnn_cell.BasicLSTMCell``
-        - class ``tf.nn.rnn_cell.GRUCell``
-        - class ``tf.nn.rnn_cell.LSTMCell``
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int
@@ -3791,19 +3804,27 @@ class BiDynamicRNNLayer(Layer):
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                     "float)")
-                self.fw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                if tf.__version__ <="0.12":
+                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+                else:
+                    DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+                self.fw_cell = DropoutWrapper_fn(
                     self.fw_cell,
                     input_keep_prob=in_keep_prob,
                     output_keep_prob=out_keep_prob)
-                self.bw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                self.bw_cell = DropoutWrapper_fn(
                     self.bw_cell,
                     input_keep_prob=in_keep_prob,
                     output_keep_prob=out_keep_prob)
             # Apply multiple layers
             if n_layer > 1:
                 print("     n_layer: %d" % n_layer)
-                self.fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.fw_cell] * n_layer)
-                self.bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.bw_cell] * n_layer)
+                if tf.__version__ <="0.12":
+                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+                else:
+                    MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
+                self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer)
+                self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer)
             # Initial state of RNN
             if fw_initial_state is None:
                 self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=tf.float32)
@@ -3889,12 +3910,8 @@ class Seq2Seq(Layer):
         Encode sequences, [batch_size, None, n_features].
     net_decode_in : a :class:`Layer` instance
         Decode sequences, [batch_size, None, n_features].
-    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ is different)
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_\n
-        - class ``tf.nn.rnn_cell.BasicRNNCell``
-        - class ``tf.nn.rnn_cell.BasicLSTMCell``
-        - class ``tf.nn.rnn_cell.GRUCell``
-        - class ``tf.nn.rnn_cell.LSTMCell``
+    cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
     n_hidden : a int

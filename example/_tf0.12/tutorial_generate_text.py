@@ -269,7 +269,7 @@ def main_lstm_generate_text():
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell, #tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -280,7 +280,7 @@ def main_lstm_generate_text():
             if is_training:
                 network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
             network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
+                        cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
                         initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -312,7 +312,7 @@ def main_lstm_generate_text():
     y_soft = tf.nn.softmax(y_linear)
     # y_id = tf.argmax(tf.nn.softmax(y), 1)
 
-    # sess.run(tf.initialize_all_variables())
+    sess.run(tf.initialize_all_variables())
 
     def loss_fn(outputs, targets, batch_size, num_steps):
         # Returns the cost function of Cross-entropy of two sequences, implement
@@ -322,7 +322,7 @@ def main_lstm_generate_text():
         # n_examples = batch_size * num_steps
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
+        loss = tf.nn.seq2seq.sequence_loss_by_example(
             [outputs],
             [tf.reshape(targets, [-1])],
             [tf.ones([batch_size * num_steps])])
@@ -347,7 +347,7 @@ def main_lstm_generate_text():
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    tl.layers.initialize_global_variables(sess)
+    sess.run(tf.initialize_all_variables())
 
     network.print_params()
     network.print_layers()

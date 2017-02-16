@@ -9,9 +9,10 @@ from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
 ## Cost Functions
+
 def cross_entropy(output, target, name=None):
-    """Returns the TensorFlow expression of cross-entropy of two distributions, implement
-    softmax internally.
+    """It is a softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy of two distributions, implement
+    softmax internally. See ``tf.nn.sparse_softmax_cross_entropy_with_logits``.
 
     Parameters
     ----------
@@ -34,10 +35,17 @@ def cross_entropy(output, target, name=None):
     assert name is not None, "Please give a unique name to tl.cost.cross_entropy"
 
     if tf.__version__ <= "0.12":
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target, name=name))
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
     else: # TF 1.0
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
 
+def sigmoid_cross_entropy(output, target, name=None):
+    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
+    """
+    if tf.__version__ <= "0.12":
+        return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, targets=target))
+    else:
+        return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
@@ -313,22 +321,15 @@ def li_regularizer(scale, scope=None):
 
   def li(weights, name=None):
     """Applies li regularization to weights."""
-    # with ops.op_scope([weights], name, 'li_regularizer') as scope: # tf.op_scope(values, name, default_name) is deprecated, use tf.name_scope(name, default_name, values)
-    try: # TF12
-        with ops.name_scope(scope, 'li_regularizer', [weights]) as name:
-            my_scale = ops.convert_to_tensor(scale,
+    with tf.name_scope('li_regularizer') as scope:
+        my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                            name='scale')
-            return standard_ops.mul(
-              my_scale,
-              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
-              name=scope)
-    except: # TF11
-        with ops.op_scope([weights], name, 'li_regularizer') as scope:
-            my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                           name='scale')
-            return standard_ops.mul(
+        if tf.__version__ <= '0.12':
+            standard_ops_fn = standard_ops.mul
+        else:
+            standard_ops_fn = standard_ops.multiply
+            return standard_ops_fn(
               my_scale,
               standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
               name=scope)
@@ -373,26 +374,20 @@ def lo_regularizer(scale, scope=None):
       logging.info('Scale of 0 disables regularizer.')
       return lambda _, name=None: None
 
-  def lo(weights, name=None):
+  def lo(weights, name='lo_regularizer'):
     """Applies group column regularization to weights."""
-    try: # TF12
-        with ops.name_scope(scope, 'lo_regularizer', [weights]) as name:
-            my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                           name='scale')
-            return standard_ops.mul(
-              my_scale,
-              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
-              name=scope)
-    except: # TF11
-        with ops.op_scope([weights], name, 'lo_regularizer') as scope:
-            my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                           name='scale')
-            return standard_ops.mul(
-              my_scale,
-              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
-              name=scope)
+    with tf.name_scope(name) as scope:
+        my_scale = ops.convert_to_tensor(scale,
+                                       dtype=weights.dtype.base_dtype,
+                                       name='scale')
+        if tf.__version__ <= '0.12':
+            standard_ops_fn = standard_ops.mul
+        else:
+            standard_ops_fn = standard_ops.multiply
+        return standard_ops_fn(
+          my_scale,
+          standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
+          name=scope)
   return lo
 
 def maxnorm_regularizer(scale=1.0, scope=None):
@@ -432,20 +427,17 @@ def maxnorm_regularizer(scale=1.0, scope=None):
       logging.info('Scale of 0 disables regularizer.')
       return lambda _, name=None: None
 
-  def mn(weights, name=None):
+  def mn(weights, name='max_regularizer'):
     """Applies max-norm regularization to weights."""
-    try: # TF12
-        with ops.name_scope(scope, 'maxnorm_regularizer', [weights]) as name:
+    with tf.name_scope(name) as scope:
           my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                            name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
-    except: # TF11
-        with ops.op_scope([weights], name, 'maxnorm_regularizer') as scope:
-          my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                           name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
+          if tf.__version__ <= '0.12':
+              standard_ops_fn = standard_ops.mul
+          else:
+              standard_ops_fn = standard_ops.multiply
+          return standard_ops_fn(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
   return mn
 
 def maxnorm_o_regularizer(scale, scope):
@@ -484,20 +476,17 @@ def maxnorm_o_regularizer(scale, scope):
       logging.info('Scale of 0 disables regularizer.')
       return lambda _, name=None: None
 
-  def mn_o(weights, name=None):
-    """Applies max-norm regularization to weights."""
-    try:    # TF12
-        with ops.name_scope(scope, 'maxnorm_o_regularizer', [weights]) as name:
+  def mn_o(weights, name='maxnorm_o_regularizer'):
+     """Applies max-norm regularization to weights."""
+     with tf.name_scope(name) as scope:
           my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                                    name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
-    except: # TF11
-        with ops.op_scope([weights], name, 'maxnorm_o_regularizer') as scope:
-          my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                                   name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
+          if tf.__version__ <= '0.12':
+             standard_ops_fn = standard_ops.mul
+          else:
+             standard_ops_fn = standard_ops.multiply
+          return standard_ops_fn(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
   return mn_o
 
 def maxnorm_i_regularizer(scale, scope=None):
@@ -536,20 +525,17 @@ def maxnorm_i_regularizer(scale, scope=None):
       logging.info('Scale of 0 disables regularizer.')
       return lambda _, name=None: None
 
-  def mn_i(weights, name=None):
-    """Applies max-norm regularization to weights."""
-    try: # TF12
-        with ops.name_scope(scope, 'maxnorm_i_regularizer', [weights]) as name:
+  def mn_i(weights, name='maxnorm_i_regularizer'):
+     """Applies max-norm regularization to weights."""
+     with tf.name_scope(name) as scope:
           my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                                    name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
-    except: # TF11
-        with ops.op_scope([weights], name, 'maxnorm_i_regularizer') as scope:
-          my_scale = ops.convert_to_tensor(scale,
-                                           dtype=weights.dtype.base_dtype,
-                                                   name='scale')
-          return standard_ops.mul(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
+          if tf.__version__ <= '0.12':
+             standard_ops_fn = standard_ops.mul
+          else:
+             standard_ops_fn = standard_ops.multiply
+          return standard_ops_fn(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
   return mn_i
 
 
