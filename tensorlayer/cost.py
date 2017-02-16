@@ -34,18 +34,18 @@ def cross_entropy(output, target, name=None):
     """
     assert name is not None, "Please give a unique name to tl.cost.cross_entropy"
 
-    if tf.__version__ <= "0.11":
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
-    else: # TF 1.0
+    try: # TF 1.0
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    except:
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
 
 def sigmoid_cross_entropy(output, target, name=None):
     """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
     """
-    if tf.__version__ <= "0.12":
-        return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, targets=target))
-    else:
+    try: # TF 1.0
         return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    except:
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
