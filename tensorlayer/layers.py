@@ -311,7 +311,7 @@ class InputLayer(Layer):
         name ='input_layer'
     ):
         Layer.__init__(self, inputs=inputs, name=name)
-        print("  tensorlayer:Instantiate InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        print("  [TL] InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
         self.all_layers = []
         self.all_params = []
@@ -419,7 +419,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
-        print("  tensorlayer:Instantiate Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  [TL] Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -548,7 +548,7 @@ class EmbeddingInputlayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
-        print("  tensorlayer:Instantiate EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        print("  [TL] EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name) as vs:
             embeddings = tf.get_variable(name='embeddings',
@@ -628,7 +628,7 @@ class DenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
+        print("  [TL] DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             if b_init:
@@ -701,7 +701,7 @@ class ReconLayer(DenseLayer):
         act = tf.nn.softplus,
     ):
         DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
-        print("     tensorlayer: %s is a ReconLayer" % self.name)
+        print("     [TL] %s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -788,7 +788,7 @@ class ReconLayer(DenseLayer):
         # get your own pre-train method.
         #
         # ====================================================
-        print("     tensorlayer:  %s start pretrain" % self.name)
+        print("     [TL]  %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:
             print("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
@@ -890,14 +890,14 @@ class DropoutLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         if is_train is False:
-            print("  tensorlayer:skip DropoutLayer")
+            print("  [TL] skip DropoutLayer")
             self.outputs = layer.outputs
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  tensorlayer:Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
+            print("  [TL] Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
@@ -957,14 +957,14 @@ class GaussianNoiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         if is_train is False:
-            print("  tensorlayer:skip GaussianNoiseLayer")
+            print("  [TL] skip GaussianNoiseLayer")
             self.outputs = layer.outputs
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  tensorlayer:Instantiate GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
+            print("  [TL] GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
             with tf.variable_scope(name) as vs:
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape = self.inputs.get_shape(), mean=mean, stddev=stddev)
@@ -1033,7 +1033,7 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  tensorlayer:Instantiate DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act.__name__))
+        print("  [TL] DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
@@ -1099,7 +1099,7 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv1dLayer %s: %s, %s, %s, %s" %
+        print("  [TL] Conv1dLayer %s: %s, %s, %s, %s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
         if act is None:
             act = tf.identity
@@ -1198,7 +1198,7 @@ class Conv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv2dLayer %s: %s, %s, %s, %s" %
+        print("  [TL] Conv2dLayer %s: %s, %s, %s, %s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -1304,7 +1304,7 @@ class DeConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DeConv2dLayer %s: %s, %s, %s, %s, %s" %
+        print(" [TL] DeConv2dLayer %s: %s, %s, %s, %s, %s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
         # print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
@@ -1366,7 +1366,7 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act.__name__))
+        print("  [TL] Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -1427,7 +1427,7 @@ class DeConv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate DeConv3dLayer %s: %s, %s, %s, %s, %s" %
+        print("  [TL] DeConv3dLayer %s: %s, %s, %s, %s, %s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -1483,7 +1483,7 @@ class UpSampling2dLayer(Layer):
                 size = [size_h, size_w]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  tensorlayer:Instantiate UpSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+        print("  [TL] UpSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
                                 (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
@@ -1538,7 +1538,7 @@ class DownSampling2dLayer(Layer):
                 size = [size_h, size_w]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  tensorlayer:Instantiate DownSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+        print("  [TL] DownSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
                                 (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
@@ -1586,7 +1586,7 @@ class AtrousConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate AtrousConv2dLayer %s: n_filter: %d, filter_size: %s, rate: %d, padding: %s, act: %s" %
+        print("  [TL] AtrousConv2dLayer %s: n_filter: %d, filter_size: %s, rate: %d, padding: %s, act: %s" %
                             (self.name, n_filter, filter_size, rate, padding, act.__name__))
         if act is None:
             act = tf.identity
@@ -1631,7 +1631,7 @@ class SeparableConv2dLayer(Layer):#TODO
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        # print("  tensorlayer:Instantiate SeparableConv2dLayer %s: %s, %s, %s, %s" %
+        # print("  [TL] SeparableConv2dLayer %s: %s, %s, %s, %s" %
         #                     (self.name, str(shape), str(strides), padding, act.__name__))
         # with tf.variable_scope(name) as vs:
         #     self.outputs = tf.nn.separable_conv2d(value, filters, rate, padding)
@@ -1845,7 +1845,7 @@ class LocalResponseNormLayer(Layer):
         name ='lrn_layer',
     ):
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" %
+        print("  [TL] LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" %
                             (self.name, depth_radius, bias, alpha, beta))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.nn.local_response_normalization(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
@@ -1898,7 +1898,7 @@ class BatchNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
                             (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -2025,7 +2025,7 @@ class BatchNormLayer_TF(Layer):   # Work well TF contrib https://github.com/tens
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
                             (self.name, decay, epsilon, act.__name__, is_train))
         from tensorflow.contrib.layers.python.layers import utils
         from tensorflow.contrib.framework.python.ops import variables
@@ -2185,7 +2185,7 @@ class BatchNormLayer5(Layer):   # Akara Work well
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
                             (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -2312,7 +2312,7 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         input_shape = self.inputs.get_shape()
 #         # params_shape = input_shape[-1:]
@@ -2460,7 +2460,7 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         x_shape = self.inputs.get_shape()
 #         params_shape = x_shape[-1:]
@@ -2558,7 +2558,7 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #         """
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         x_shape = self.inputs.get_shape()
 #         params_shape = x_shape[-1:]
@@ -2638,7 +2638,7 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  tensorlayer:Instantiate BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
 #                             (self.name, decay, epsilon, is_train))
 #         if is_train == None:
 #             raise Exception("is_train must be True or False")
@@ -2737,7 +2737,7 @@ class PoolLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PoolLayer   %s: %s, %s, %s, %s" %
+        print("  [TL] PoolLayer   %s: %s, %s, %s, %s" %
                             (self.name, str(ksize), str(strides), padding, pool.__name__))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
@@ -2916,7 +2916,7 @@ class RNNLayer(Layer):
 
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+        print("  [TL] RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
@@ -3097,7 +3097,7 @@ class BiRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate BiRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d " % (self.name, n_hidden,
+        print("  [TL] BiRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
@@ -3444,7 +3444,7 @@ class DynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" % (self.name, n_hidden,
+        print("  [TL] DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" % (self.name, n_hidden,
              self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
@@ -3664,7 +3664,7 @@ class BiDynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate BiDynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] BiDynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
@@ -3905,7 +3905,7 @@ class Seq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate Seq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] Seq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
         with tf.variable_scope(name) as vs:#, reuse=reuse):
@@ -3981,7 +3981,7 @@ class PeekySeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
 
@@ -4012,7 +4012,7 @@ class AttentionSeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
 
@@ -4059,7 +4059,7 @@ class FlattenLayer(Layer):
         self.inputs = layer.outputs
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
-        print("  tensorlayer:Instantiate FlattenLayer %s: %d" % (self.name, self.n_units))
+        print("  [TL] FlattenLayer %s: %d" % (self.name, self.n_units))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -4103,7 +4103,7 @@ class ReshapeLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        print("  tensorlayer:Instantiate ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
+        print("  [TL] ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
@@ -4146,7 +4146,7 @@ class LambdaLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate LambdaLayer  %s" % self.name)
+        print("  [TL] LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -4181,10 +4181,10 @@ class ConcatLayer(Layer):
     >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
     >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
     >>> network = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
-    ...     tensorlayer:Instantiate InputLayer input_layer (?, 784)
-    ...     tensorlayer:Instantiate DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
-    ...     tensorlayer:Instantiate ConcatLayer concat_layer, 1100
+    ...     [TL] InputLayer input_layer (?, 784)
+    ...     [TL] DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
+    ...     [TL] DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
+    ...     [TL] ConcatLayer concat_layer, 1100
     ...
     >>> tl.layers.initialize_global_variables(sess)
     >>> network.print_params()
@@ -4213,7 +4213,7 @@ class ConcatLayer(Layer):
         except: # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
-        print("  tensorlayer:Instantiate ConcatLayer %s, %d" % (self.name, self.n_units))
+        print("  [TL] ConcatLayer %s, %d" % (self.name, self.n_units))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -4262,7 +4262,7 @@ class ElementwiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
 
-        print("  tensorlayer:Instantiate ElementwiseLayer %s:  %s, %s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
+        print("  [TL] ElementwiseLayer %s:  %s, %s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layer[0].outputs
         # print(self.outputs._shape, type(self.outputs._shape))
@@ -4308,7 +4308,7 @@ class ExpandDimsLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate ExpandDimsLayer  %s" % self.name)
+        print("  [TL] ExpandDimsLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             try:    # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
@@ -4344,7 +4344,7 @@ class TileLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate TileLayer  %s" % self.name)
+        print("  [TL] TileLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = tf.tile(self.inputs, multiples=multiples)
         self.all_layers = list(layer.all_layers)
@@ -4392,7 +4392,7 @@ class SlimNetsLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
+        print("  [TL] SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
@@ -4450,7 +4450,7 @@ class PReluLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
+        print("  [TL] PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
         if channel_shared:
             w_shape = (1,)
         else:
@@ -4539,7 +4539,7 @@ class MultiplexerLayer(Layer):
         except:
             all_inputs = tf.pack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
 
-        print("  tensorlayer:Instantiate MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
+        print("  [TL] MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
 
         self.sel = tf.placeholder(tf.int32)
         self.outputs = tf.gather(all_inputs, self.sel, name=name) # [sel, :, : ...] # 1.2
@@ -4915,7 +4915,7 @@ class MaxoutLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  tensorlayer:Instantiate MaxoutLayer %s: %d" % (self.name, self.n_units))
+        print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
         print("    Waiting for contribution")
         with tf.variable_scope(name) as vs:
             pass
