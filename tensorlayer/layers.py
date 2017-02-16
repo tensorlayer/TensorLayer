@@ -149,10 +149,10 @@ def print_all_variables(train_only=False):
     if train_only:
         t_vars = tf.trainable_variables()
     else:
-        if tf.__version__ <="0.12":
-            t_vars = tf.all_variables()
-        else:
+        try: # TF1.0
             t_vars = tf.global_variables()
+        except: # TF0.12
+            t_vars = tf.all_variables()
     for idx, v in enumerate(t_vars):
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
@@ -169,10 +169,10 @@ def get_variables_with_name(name, train_only=True, printable=False):
     if train_only:
         t_vars = tf.trainable_variables()
     else:
-        if tf.__version__ <="0.12":
-            t_vars = tf.all_variables()
-        else:
+        try: # TF1.0
             t_vars = tf.global_variables()
+        except: # TF0.12
+            t_vars = tf.all_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
     if printable:
