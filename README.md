@@ -18,6 +18,8 @@
 
 TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
+* NEW: Compatible with TF 1.0 🆕
+
 # Why TensorLayer
 
 TensorLayer grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. According to our years of research and practical experiences of tackling real-world machine learning problems, we come up with three design goals for TensorLayer:
@@ -36,10 +38,9 @@ TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib
 
 If you already had the pre-requisites ready (numpy, scipy, scikit-image, matplotlib and nltk(optional)), the simplest way to install TensorLayer in your python program is: 
 
-
 ```bash
+[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Highly Recommended)
 [for stable version] pip install tensorlayer
-[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (recommended)
 ```
 
 # Documentation
