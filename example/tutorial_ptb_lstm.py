@@ -205,8 +205,7 @@ def main(_):
                         embedding_size = hidden_size,
                         E_init = tf.random_uniform_initializer(-init_scale, init_scale),
                         name ='embedding_layer')
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(network,
                         cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
@@ -216,8 +215,7 @@ def main(_):
                         return_last=False,
                         name='basic_lstm_layer1')
             lstm1 = network
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
             network = tl.layers.RNNLayer(network,
                         cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
@@ -232,8 +230,7 @@ def main(_):
             # you can reshape the outputs as follow:
             # network = tl.layers.ReshapeLayer(network,
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            if is_training:
-                network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop3')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
             network = tl.layers.DenseLayer(network,
                         n_units=vocab_size,
                         W_init=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -254,7 +251,8 @@ def main(_):
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
 
-    def loss_fn(outputs, targets, batch_size, num_steps):
+    def loss_fn(outputs, targets):#, batch_size, num_steps):
+        # See tl.cost.cross_entropy_seq()
         # Returns the cost function of Cross-entropy of two sequences, implement
         # softmax internally.
         # outputs : 2D tensor [batch_size*num_steps, n_units of output layer]
@@ -266,16 +264,17 @@ def main(_):
         loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
             [outputs],
             [tf.reshape(targets, [-1])],
-            [tf.ones([batch_size * num_steps])])
+            [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)])
+            # [tf.ones([batch_size * num_steps])])
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets, batch_size, num_steps)
+    cost = loss_fn(network.outputs, targets)#, batch_size, num_steps)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets, batch_size, num_steps)
+    cost_val = loss_fn(network_val.outputs, targets)#, batch_size, num_steps)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(network_test.outputs, targets_test, 1, 1)
+    cost_test = loss_fn(network_test.outputs, targets_test)#, 1, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
