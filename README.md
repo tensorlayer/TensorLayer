@@ -18,7 +18,7 @@
 
 TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems. 
 
-* NEW: Compatible with TF 1.0 🆕
+* NEWS: Compatible with TF 1.0 🆕
 
 # Why TensorLayer
 
