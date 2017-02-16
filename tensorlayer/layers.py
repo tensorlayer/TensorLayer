@@ -123,10 +123,11 @@ def initialize_rnn_state(state):
     -----------
     state : a RNN state.
     """
-    if tf.__version__ <="0.12":
-        LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
-    else:
+    try: # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
+    except:
+        LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
+
     if isinstance(state, LSTMStateTuple):
         c = state.c.eval()
         h = state.h.eval()
@@ -1892,8 +1893,7 @@ class BatchNormLayer(Layer):
         act = tf.identity,
         is_train = False,
         beta_init = tf.zeros_initializer,
-        # gamma_init = tf.ones_initializer,
-        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
+        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002), # tf.ones_initializer,
         name ='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1903,27 +1903,6 @@ class BatchNormLayer(Layer):
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
 
-        # def _get_variable(name,
-        #                   shape,
-        #                   initializer,
-        #                   weight_decay=0.0,
-        #                   dtype='float',
-        #                   trainable=True):
-        #     "A little wrapper around tf.get_variable to do weight decay and add to"
-        #     "resnet collection"
-        #     if weight_decay > 0:
-        #         regularizer = tf.contrib.layers.l2_regularizer(weight_decay)
-        #     else:
-        #         regularizer = None
-        #     # collections = [TF_GRAPHKEYS_VARIABLES, RESNET_VARIABLES]
-        #     return tf.get_variable(name,
-        #                            shape=shape,
-        #                            initializer=initializer,
-        #                            dtype=dtype,
-        #                            regularizer=regularizer,
-        #                         #    collections=collections,
-        #                            trainable=trainable)
-
         from tensorflow.python.training import moving_averages
         from tensorflow.python.ops import control_flow_ops
 
@@ -1931,7 +1910,7 @@ class BatchNormLayer(Layer):
             axis = list(range(len(x_shape) - 1))
 
             ## 1. beta, gamma
-            if tf.__version__ >= '0.12' and beta_init == tf.zeros_initializer:
+            if tf.__version__ > '0.12' and beta_init == tf.zeros_initializer:
                 beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape,
                                initializer=beta_init,
@@ -1941,26 +1920,8 @@ class BatchNormLayer(Layer):
                                 initializer=gamma_init, trainable=is_train,
                                 )#restore=restore)
 
-            ## 2. moving variables during training (not update by gradient!)
-            # trainable=False means : it prevent TF from updating this variable
-            # from the gradient, we have to update this from the mean computed
-            # from each batch during training
-            # moving_mean = _get_variable('moving_mean',
-            #                             params_shape,
-            #                             initializer=tf.zeros_initializer,
-            #                             trainable=False)
-            # try: # TF12
-            #     moving_variance = _get_variable('moving_variance',
-            #                                     params_shape,
-            #                                     initializer=tf.ones_initializer(),
-            #                                     trainable=False)
-            # except: # TF11
-            #     moving_variance = _get_variable('moving_variance',
-            #                                     params_shape,
-            #                                     initializer=tf.ones_initializer,
-            #                                     trainable=False)
-
-            if tf.__version__ >= '0.12':
+            ## 2.
+            if tf.__version__ > '0.12':
                 moving_mean_init = tf.zeros_initializer()
             else:
                 moving_mean_init = tf.zeros_initializer
@@ -1993,38 +1954,13 @@ class BatchNormLayer(Layer):
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
 
-            # ema = tf.train.ExponentialMovingAverage(decay=decay)    # Akara
-            # def mean_var_with_update():
-            #     ema_apply_op = ema.apply([moving_mean, moving_variance])
-            #     with tf.control_dependencies([ema_apply_op]):
-            #         return tf.identity(mean), tf.identity(variance)
-
-            ## 4. behaviour for training and testing
-            # if not is_train:    # test : mean=0, std=1
-            # # if is_train:      # train : mean=0, std=1
-            #     is_train = tf.cast(tf.ones([]), tf.bool)
-            # else:
-            #     is_train = tf.cast(tf.zeros([]), tf.bool)
-            #
-            # # mean, var = control_flow_ops.cond(
-            # mean, var = tf.cond(
-            #     # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
-            #     is_train, mean_var_with_update,
-            #     lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
-            #
-            # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             if is_train:
                 mean, var = mean_var_with_update()
                 self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
             else:
-                # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
-                self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )    # Simiao
-                # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, variance, beta, gamma, epsilon) )
+                self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
 
-            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
-            # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
             variables = [beta, gamma, moving_mean, moving_variance]
-            # variables = [beta, gamma]
 
             # print(len(variables))
             # for idx, v in enumerate(variables):
@@ -2036,7 +1972,7 @@ class BatchNormLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
-        # self.all_params.extend( [beta, gamma] )
+
 
 
 
@@ -2301,50 +2237,11 @@ class BatchNormLayer5(Layer):   # Akara Work well
                     # return tf.identity(update_moving_mean), tf.identity(update_moving_variance)
                     return tf.identity(batch_mean), tf.identity(batch_var)
 
-            # ema = tf.train.ExponentialMovingAverage(decay=decay)    # Akara
-            # def mean_var_with_update():
-            #     ema_apply_op = ema.apply([batch_mean, batch_var])
-            #     with tf.control_dependencies([ema_apply_op]):
-            #         return tf.identity(batch_mean), tf.identity(batch_var)
-
-            ## 4. behaviour for training and testing
-            # if not is_train:    # test : mean=0, std=1
-            # # if is_train:      # train : mean=0, std=1
-            #     is_train = tf.cast(tf.ones([]), tf.bool)
-            # else:
-            #     is_train = tf.cast(tf.zeros([]), tf.bool)
-            #
-            # # mean, var = control_flow_ops.cond(
-            # mean, var = tf.cond(
-            #     # is_train, lambda: (mean, variance),     # when training, (x-mean(x))/var(x)
-            #     is_train, mean_var_with_update,
-            #     lambda: (moving_mean, moving_variance)) # when inferencing, (x-0)/1
-            #
-            # self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
-            # if not is_train:
-            #     mean, var = mean_var_with_update()
-            #     self.outputs = act( tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon) )
-            # else:
-            #     # self.outputs = act( tf.nn.batch_normalization(self.inputs, ema.average(mean), ema.average(variance), beta, gamma, epsilon) ) # Akara
-            #     self.outputs = act( tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon) )
-
-            # if not is_train:
-            #     is_train = tf.cast(tf.ones([]), tf.bool)
-            # else:
-            #     is_train = tf.cast(tf.zeros([]), tf.bool)
-            #
-            # mean, var = tf.cond(
-            #   is_train,
-            #   mean_var_with_update,
-            #   lambda: (moving_mean, moving_variance))
-
             # if not is_train:
             if is_train:
                 mean, var = mean_var_with_update()
-                    # mean, var = (update_moving_mean, update_moving_variance)
             else:
                 mean, var = (moving_mean, moving_variance)
-                # mean, var = (batch_mean, batch_var) # hao
 
             normed = tf.nn.batch_normalization(
               x=self.inputs,
@@ -2356,11 +2253,8 @@ class BatchNormLayer5(Layer):   # Akara Work well
               name="tf_bn"
             )
             self.outputs = act( normed )
-            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)  # 8 params in TF12 if zero_debias=True
-            # variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
-            variables = [beta, gamma, moving_mean, moving_variance]
-            # variables = [beta, gamma]
 
+            variables = [beta, gamma, moving_mean, moving_variance]
             # print(len(variables))
             # for idx, v in enumerate(variables):
             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
@@ -3235,10 +3129,10 @@ class BiRNNLayer(Layer):
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                     "float)")
-                if tf.__version__ <="0.12":
-                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
-                else:
+                try: # TF 1.0
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+                except:
+                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
                 self.fw_cell = DropoutWrapper_fn(
                           self.fw_cell,
                           input_keep_prob=in_keep_prob,
@@ -3249,11 +3143,11 @@ class BiRNNLayer(Layer):
                           output_keep_prob=out_keep_prob)
             # Apply multiple layers
             if n_layer > 1:
-                print("     n_layer: %d" % n_layer)
-                if tf.__version__ <="0.12":
-                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
-                else:
+                try: # TF1.0
                     MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
+                except:
+                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+
                 try:
                     self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer,
                                                           state_is_tuple=True)
@@ -3279,10 +3173,10 @@ class BiRNNLayer(Layer):
             except: ## TF0.12
                 list_rnn_inputs = tf.unpack(self.inputs, axis=1)
 
-            if tf.__version__ <= "0.12":  # TF 0.10, 0.11, 0.12
-                bidirectional_rnn_fn = tf.nn.bidirectional_rnn
-            else: # TF 1.0
+            try: # TF1.0
                 bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
+            except:
+                bidirectional_rnn_fn = tf.nn.bidirectional_rnn
             outputs, fw_state, bw_state = bidirectional_rnn_fn(               # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
@@ -3583,21 +3477,22 @@ class DynamicRNNLayer(Layer):
             else:
                 raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                 "float)")
-            if tf.__version__ <="0.12":
-                DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
-            else:
+            try: # TF1.0
                 DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+            except:
+                DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+
             self.cell = DropoutWrapper_fn(
                       self.cell,
                       input_keep_prob=in_keep_prob,
                       output_keep_prob=out_keep_prob)
         # Apply multiple layers
         if n_layer > 1:
-            print("     n_layer: %d" % n_layer)
-            if tf.__version__ <="0.12":
-                MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
-            else:
+            try:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
+            except:
+                MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+
             try:
                 self.cell = MultiRNNCell_fn([self.cell] * n_layer, state_is_tuple=True)
             except:
@@ -3804,10 +3699,11 @@ class BiDynamicRNNLayer(Layer):
                 else:
                     raise Exception("Invalid dropout type (must be a 2-D tuple of "
                                     "float)")
-                if tf.__version__ <="0.12":
-                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
-                else:
+                try:
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
+                except:
+                    DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
+
                 self.fw_cell = DropoutWrapper_fn(
                     self.fw_cell,
                     input_keep_prob=in_keep_prob,
@@ -3818,11 +3714,11 @@ class BiDynamicRNNLayer(Layer):
                     output_keep_prob=out_keep_prob)
             # Apply multiple layers
             if n_layer > 1:
-                print("     n_layer: %d" % n_layer)
-                if tf.__version__ <="0.12":
-                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
-                else:
+                try:
                     MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
+                except:
+                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+
                 self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer)
                 self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer)
             # Initial state of RNN
