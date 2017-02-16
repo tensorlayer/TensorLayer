@@ -64,12 +64,12 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
 
-    if tf.__version__ <= "0.12":
-        cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions))
-    else: # TF 1.0
-        cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name))
-
-    # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
+    try: # TF 1.0
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
+    except:
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions)
+        # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
+        
     try: ## TF1.0
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
     except: ## TF0.12
