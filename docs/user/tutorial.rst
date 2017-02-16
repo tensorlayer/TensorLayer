@@ -70,7 +70,7 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
   network = tl.layers.DenseLayer(network, n_units=800,
                                   act = tf.nn.relu, name='relu2')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-  # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
+  # the softmax is implemented internally in tl.cost.cross_entropy(y, y_, 'cost') to
   # speed up computation, so we use identity here.
   # see tf.nn.sparse_softmax_cross_entropy_with_logits()
   network = tl.layers.DenseLayer(network, n_units=10,
@@ -78,7 +78,7 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
                                   name='output_layer')
   # define cost function and metric.
   y = network.outputs
-  cost = tl.cost.cross_entropy(y, y_)
+  cost = tl.cost.cross_entropy(y, y_, 'cost')
   correct_prediction = tf.equal(tf.argmax(y, 1), y_)
   acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
   y_op = tf.argmax(tf.nn.softmax(y), 1)
@@ -149,13 +149,13 @@ If everything is set up correctly, you will get an output like the following:
   y_test.shape (10000,)
   X float32   y int64
 
-  tensorlayer:Instantiate InputLayer   input_layer (?, 784)
-  tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-  tensorlayer:Instantiate DenseLayer   relu1: 800, relu
-  tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer   relu2: 800, relu
-  tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer   output_layer: 10, identity
+  [TL] InputLayer   input_layer (?, 784)
+  [TL] DropoutLayer drop1: keep: 0.800000
+  [TL] DenseLayer   relu1: 800, relu
+  [TL] DropoutLayer drop2: keep: 0.500000
+  [TL] DenseLayer   relu2: 800, relu
+  [TL] DropoutLayer drop3: keep: 0.500000
+  [TL] DenseLayer   output_layer: 10, identity
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
   param 1: (800,)     (mean:  0.000000, median:  0.000000 std: 0.000000)
@@ -591,9 +591,9 @@ If everything is set up correctly, you will get an output like the following:
 .. code-block:: text
 
   [2016-07-12 09:31:59,760] Making new env: Pong-v0
-    tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-    tensorlayer:Instantiate DenseLayer relu1: 200, relu
-    tensorlayer:Instantiate DenseLayer output_layer: 3, identity
+    [TL] InputLayer input_layer (?, 6400)
+    [TL] DenseLayer relu1: 200, relu
+    [TL] DenseLayer output_layer: 3, identity
     param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
     param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
     param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
