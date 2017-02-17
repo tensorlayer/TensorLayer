@@ -226,7 +226,7 @@ def cross_entropy_seq(logits, target_seqs):#, batch_size=1, num_steps=None):
     return cost
 
 
-def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=False):
+def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=False, name=None):
     """Returns the expression of cross-entropy of two sequences, implement
     softmax internally. Normally be used for Dynamic RNN outputs.
 
