@@ -149,11 +149,13 @@ def print_all_variables(train_only=False):
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
+        print("  [*] printing trainable variables")
     else:
         try: # TF1.0
             t_vars = tf.global_variables()
         except: # TF0.12
             t_vars = tf.all_variables()
+        print("  [*] printing global variables")
     for idx, v in enumerate(t_vars):
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
@@ -165,7 +167,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
     ---------
     >>> dense_vars = get_variable_with_name('dense', True, True)
     """
-    print("  Get variables with %s" % name)
+    print("  [*] geting variables with %s" % name)
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
@@ -788,7 +790,7 @@ class ReconLayer(DenseLayer):
         # get your own pre-train method.
         #
         # ====================================================
-        print("     [TL]  %s start pretrain" % self.name)
+        print("     [*] %s start pretrain" % self.name)
         print("     batch_size: %d" % batch_size)
         if denoise_name:
             print("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
