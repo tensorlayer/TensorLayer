@@ -3839,6 +3839,7 @@ class Seq2Seq(Layer):
 
     Examples
     ----------
+    >>> from tensorlayer.layers import *
     >>> batch_size = 32
     >>> encode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="encode_seqs")
     >>> decode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="decode_seqs")
@@ -3871,7 +3872,7 @@ class Seq2Seq(Layer):
     ...             return_seq_2d = True,
     ...             name = 'seq2seq')
     >>> net_out = DenseLayer(net, n_units=10000, act=tf.identity, name='output')
-    >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False)
+    >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
 
