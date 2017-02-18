@@ -83,7 +83,7 @@ network = tl.layers.DenseLayer(network, n_units=10, act = tf.identity, name='out
                                 
 # Define cost function and metric.
 y = network.outputs
-cost = tl.cost.cross_entropy(y, y_)
+cost = tl.cost.cross_entropy(y, y_, 'cost')
 correct_prediction = tf.equal(tf.argmax(y, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 y_op = tf.argmax(tf.nn.softmax(y), 1)
