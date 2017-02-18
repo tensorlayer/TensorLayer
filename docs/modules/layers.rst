@@ -280,6 +280,7 @@ Layer list
    Conv3dLayer
    DeConv3dLayer
    PoolLayer
+   Padlayer
    UpSampling2dLayer
    DownSampling2dLayer
    AtrousConv2dLayer
@@ -462,9 +463,17 @@ APIs may better for you.
 Pooling layer
 ----------------
 
-Pooling layer for any dimensions and any pooling functions
+Pooling layer for any dimensions and any pooling functions.
 
 .. autoclass:: PoolLayer
+
+
+Padding layer
+----------------
+
+Padding layer for any modes.
+
+.. autoclass:: PadLayer
 
 
 Normalization layer

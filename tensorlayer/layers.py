@@ -136,7 +136,6 @@ def initialize_rnn_state(state):
         new_state = state.eval()
         return new_state
 
-
 def print_all_variables(train_only=False):
     """Print all trainable and non-trainable variables
     without tl.layers.initialize_global_variables(sess)
@@ -158,7 +157,6 @@ def print_all_variables(train_only=False):
         print("  [*] printing global variables")
     for idx, v in enumerate(t_vars):
         print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
-
 
 def get_variables_with_name(name, train_only=True, printable=False):
     """Get variable list by a given name scope.
@@ -200,7 +198,6 @@ def list_remove_repeat(l=None):
     l2 = []
     [l2.append(i) for i in l if not i in l2]
     return l2
-
 
 def initialize_global_variables(sess=None):
     """Excute ``sess.run(tf.global_variables_initializer())`` for TF12+ or
@@ -565,7 +562,6 @@ class EmbeddingInputlayer(Layer):
         self.all_params = [embeddings]
         self.all_drop = {}
 
-
 ## Dense layer
 class DenseLayer(Layer):
     """
@@ -630,7 +626,7 @@ class DenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  [TL] DenseLayer  %s: %d, %s" % (self.name, self.n_units, act.__name__))
+        print("  [TL] DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
             if b_init:
@@ -835,7 +831,6 @@ class ReconLayer(DenseLayer):
                     except:
                         raise Exception("You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
 
-
 ## Noise layer
 class DropoutLayer(Layer):
     """
@@ -899,7 +894,7 @@ class DropoutLayer(Layer):
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  [TL] Instantiate DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
+            print("  [TL] DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
@@ -966,7 +961,7 @@ class GaussianNoiseLayer(Layer):
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  [TL] GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
+            print("  [TL] GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
             with tf.variable_scope(name) as vs:
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape = self.inputs.get_shape(), mean=mean, stddev=stddev)
@@ -974,7 +969,6 @@ class GaussianNoiseLayer(Layer):
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
-
 
 class DropconnectDenseLayer(Layer):
     """
@@ -1035,7 +1029,7 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  [TL] DropconnectDenseLayer %s: %d, %s" % (self.name, self.n_units, act.__name__))
+        print("  [TL] DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
@@ -1052,7 +1046,6 @@ class DropconnectDenseLayer(Layer):
         self.all_drop.update( {set_keep[name]: keep} )
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-
 
 ## Convolutional layer (Pro)
 
@@ -1101,7 +1094,7 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv1dLayer %s: %s, %s, %s, %s" %
+        print("  [TL] Conv1dLayer %s: shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
         if act is None:
             act = tf.identity
@@ -1200,7 +1193,7 @@ class Conv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv2dLayer %s: %s, %s, %s, %s" %
+        print("  [TL] Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -1306,7 +1299,7 @@ class DeConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print(" [TL] DeConv2dLayer %s: %s, %s, %s, %s, %s" %
+        print(" [TL] DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
         # print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
@@ -1368,7 +1361,7 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv3dLayer %s: %s, %s, %s, %s" % (self.name, str(shape), str(strides), padding, act.__name__))
+        print("  [TL] Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -1429,7 +1422,7 @@ class DeConv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] DeConv3dLayer %s: %s, %s, %s, %s, %s" %
+        print("  [TL] DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -1485,7 +1478,7 @@ class UpSampling2dLayer(Layer):
                 size = [size_h, size_w]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  [TL] UpSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+        print("  [TL] UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" %
                                 (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
@@ -1497,7 +1490,6 @@ class UpSampling2dLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-
 
 class DownSampling2dLayer(Layer):
     """The :class:`DownSampling2dLayer` class is downSampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
@@ -1540,7 +1532,7 @@ class DownSampling2dLayer(Layer):
                 size = [size_h, size_w]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  [TL] DownSampling2dLayer %s: is_scale:%s : %s, method: %d, align_corners: %s" %
+        print("  [TL] DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" %
                                 (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
@@ -1552,7 +1544,6 @@ class DownSampling2dLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-
 
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
@@ -1588,7 +1579,7 @@ class AtrousConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] AtrousConv2dLayer %s: n_filter: %d, filter_size: %s, rate: %d, padding: %s, act: %s" %
+        print("  [TL] AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" %
                             (self.name, n_filter, filter_size, rate, padding, act.__name__))
         if act is None:
             act = tf.identity
@@ -1857,7 +1848,6 @@ class LocalResponseNormLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
-
 class BatchNormLayer(Layer):
     """
     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
@@ -1900,7 +1890,7 @@ class BatchNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+        print("  [TL] BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
                             (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -1975,302 +1965,297 @@ class BatchNormLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
 
-
-
-
-class BatchNormLayer_TF(Layer):   # Work well TF contrib https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100
-    """
-    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
-
-    Batch normalization on fully-connected or convolutional maps.
-
-    Parameters
-    -----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    decay : float
-        A decay factor for ExponentialMovingAverage.
-    center: If True, subtract `beta`. If False, `beta` is ignored.
-    scale: If True, multiply by `gamma`. If False, `gamma` is
-        not used. When the next layer is linear (also e.g. `nn.relu`), this can be
-        disabled since the scaling can be done by the next layer.
-    epsilon : float
-        A small float number to avoid dividing by 0.
-    act : activation function.
-    is_train : boolean
-        Whether train or inference.
-    beta_init : beta initializer
-        The initializer for initializing beta
-    gamma_init : gamma initializer
-        The initializer for initializing gamma
-    name : a string or None
-        An optional name to attach to this layer.
-
-    References
-    ----------
-    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
-    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
-    """
-    def __init__(
-        self,
-        layer = None,
-        decay = 0.95,#.999,
-        center = True,
-        scale = True,
-        epsilon = 0.00001,
-        act = tf.identity,
-        is_train = False,
-        beta_init = tf.zeros_initializer,
-        # gamma_init = tf.ones_initializer,
-        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
-        name ='batchnorm_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
-                            (self.name, decay, epsilon, act.__name__, is_train))
-        from tensorflow.contrib.layers.python.layers import utils
-        from tensorflow.contrib.framework.python.ops import variables
-        from tensorflow.python.ops import init_ops
-        from tensorflow.python.ops import nn
-        from tensorflow.python.training import moving_averages
-        from tensorflow.python.framework import ops
-        from tensorflow.python.ops import variable_scope
-        variables_collections = None
-        outputs_collections=None
-        updates_collections=None#ops.GraphKeys.UPDATE_OPS
-        # with variable_scope.variable_op_scope([inputs],
-        #                                     scope, 'BatchNorm', reuse=reuse) as sc:
-        # with variable_scope.variable_op_scope([self.inputs], None, name) as vs:
-        with tf.variable_scope(name) as vs:
-            inputs_shape = self.inputs.get_shape()
-            dtype = self.inputs.dtype.base_dtype
-            axis = list(range(len(inputs_shape) - 1)) # [0, 1, 2]
-            params_shape = inputs_shape[-1:]
-            # Allocate parameters for the beta and gamma of the normalization.
-            beta, gamma = None, None
-            if center:
-              beta_collections = utils.get_variable_collections(variables_collections,
-                                                                'beta')
-              beta = variables.model_variable('beta',
-                                              shape=params_shape,
-                                              dtype=dtype,
-                                            #   initializer=init_ops.zeros_initializer,
-                                              initializer=beta_init,
-                                              collections=beta_collections,)
-                                            #   trainable=trainable)
-            if scale:
-              gamma_collections = utils.get_variable_collections(variables_collections,
-                                                                 'gamma')
-              gamma = variables.model_variable('gamma',
-                                               shape=params_shape,
-                                               dtype=dtype,
-                                            #    initializer=init_ops.ones_initializer,
-                                               initializer=gamma_init,
-                                               collections=gamma_collections,)
-                                            #    trainable=trainable)
-            # Create moving_mean and moving_variance variables and add them to the
-            # appropiate collections.
-            moving_mean_collections = utils.get_variable_collections(
-                variables_collections,
-                'moving_mean')
-            moving_mean = variables.model_variable(
-                'moving_mean',
-                shape=params_shape,
-                dtype=dtype,
-                # initializer=init_ops.zeros_initializer,
-                initializer=tf.zeros_initializer,
-                trainable=False,
-                collections=moving_mean_collections)
-            moving_variance_collections = utils.get_variable_collections(
-                variables_collections,
-                'moving_variance')
-            moving_variance = variables.model_variable(
-                'moving_variance',
-                shape=params_shape,
-                dtype=dtype,
-                # initializer=init_ops.ones_initializer,
-                initializer=tf.constant_initializer(1.),
-                trainable=False,
-                collections=moving_variance_collections)
-            if is_train:
-              # Calculate the moments based on the individual batch.
-              mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
-              # Update the moving_mean and moving_variance moments.
-            #   update_moving_mean = moving_averages.assign_moving_average(
-            #       moving_mean, mean, decay)
-            #   update_moving_variance = moving_averages.assign_moving_average(
-            #       moving_variance, variance, decay)
-            #   if updates_collections is None:
-            #     # Make sure the updates are computed here.
-            #       with ops.control_dependencies([update_moving_mean,
-            #                                        update_moving_variance]):
-            #          outputs = nn.batch_normalization(
-            #               self.inputs, mean, variance, beta, gamma, epsilon)
-
-              update_moving_mean = tf.assign(moving_mean,
-                                   moving_mean * decay + mean * (1 - decay))
-              update_moving_variance = tf.assign(moving_variance,
-                                  moving_variance * decay + variance * (1 - decay))
-              with tf.control_dependencies([update_moving_mean, update_moving_variance]):
-                  outputs = nn.batch_normalization(
-                              self.inputs, mean, variance, beta, gamma, epsilon)
-            #   else:
-            #     # Collect the updates to be computed later.
-            #     ops.add_to_collections(updates_collections, update_moving_mean)
-            #     ops.add_to_collections(updates_collections, update_moving_variance)
-            #     outputs = nn.batch_normalization(
-            #         self.inputs, mean, variance, beta, gamma, epsilon)
-            else:
-            #   mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
-              outputs = nn.batch_normalization(
-                  self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
-                # self.inputs, mean, variance, beta, gamma, epsilon)
-            outputs.set_shape(self.inputs.get_shape())
-            # if activation_fn:
-            self.outputs = act(outputs)
-
-            # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-            # return utils.collect_named_outputs(outputs_collections, sc.name, outputs)
-            variables = [beta, gamma, moving_mean, moving_variance]
-
-        mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
-        self.check_mean = mean
-        self.check_variance = variance
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( variables )
-
-class BatchNormLayer5(Layer):   # Akara Work well
-    """
-    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
-
-    Batch normalization on fully-connected or convolutional maps.
-
-    Parameters
-    -----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    decay : float
-        A decay factor for ExponentialMovingAverage.
-    epsilon : float
-        A small float number to avoid dividing by 0.
-    act : activation function.
-    is_train : boolean
-        Whether train or inference.
-    beta_init : beta initializer
-        The initializer for initializing beta
-    gamma_init : gamma initializer
-        The initializer for initializing gamma
-    name : a string or None
-        An optional name to attach to this layer.
-
-    References
-    ----------
-    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
-    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
-    """
-    def __init__(
-        self,
-        layer = None,
-        decay = 0.9,
-        epsilon = 0.00001,
-        act = tf.identity,
-        is_train = False,
-        beta_init = tf.zeros_initializer,
-        # gamma_init = tf.ones_initializer,
-        gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
-        name ='batchnorm_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
-                            (self.name, decay, epsilon, act.__name__, is_train))
-        x_shape = self.inputs.get_shape()
-        params_shape = x_shape[-1:]
-
-        from tensorflow.python.training import moving_averages
-        from tensorflow.python.ops import control_flow_ops
-
-        with tf.variable_scope(name) as vs:
-            axis = list(range(len(x_shape) - 1))
-
-            ## 1. beta, gamma
-            beta = tf.get_variable('beta', shape=params_shape,
-                               initializer=beta_init,
-                               trainable=is_train)#, restore=restore)
-
-            gamma = tf.get_variable('gamma', shape=params_shape,
-                                initializer=gamma_init, trainable=is_train,
-                                )#restore=restore)
-
-            ## 2. moving variables during training (not update by gradient!)
-            moving_mean = tf.get_variable('moving_mean',
-                                      params_shape,
-                                      initializer=tf.zeros_initializer,
-                                      trainable=False,)#   restore=restore)
-            moving_variance = tf.get_variable('moving_variance',
-                                          params_shape,
-                                          initializer=tf.constant_initializer(1.),
-                                          trainable=False,)#   restore=restore)
-
-            batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
-            ## 3.
-            # These ops will only be preformed when training.
-            def mean_var_with_update():
-                try:    # TF12
-                    update_moving_mean = moving_averages.assign_moving_average(
-                                    moving_mean, batch_mean, decay, zero_debias=False)     # if zero_debias=True, has bias
-                    update_moving_variance = moving_averages.assign_moving_average(
-                                    moving_variance, batch_var, decay, zero_debias=False) # if zero_debias=True, has bias
-                    # print("TF12 moving")
-                except Exception as e:  # TF11
-                    update_moving_mean = moving_averages.assign_moving_average(
-                                    moving_mean, batch_mean, decay)
-                    update_moving_variance = moving_averages.assign_moving_average(
-                                    moving_variance, batch_var, decay)
-                    # print("TF11 moving")
-
-            # def mean_var_with_update():
-                with tf.control_dependencies([update_moving_mean, update_moving_variance]):
-                    # return tf.identity(update_moving_mean), tf.identity(update_moving_variance)
-                    return tf.identity(batch_mean), tf.identity(batch_var)
-
-            # if not is_train:
-            if is_train:
-                mean, var = mean_var_with_update()
-            else:
-                mean, var = (moving_mean, moving_variance)
-
-            normed = tf.nn.batch_normalization(
-              x=self.inputs,
-              mean=mean,
-              variance=var,
-              offset=beta,
-              scale=gamma,
-              variance_epsilon=epsilon,
-              name="tf_bn"
-            )
-            self.outputs = act( normed )
-
-            variables = [beta, gamma, moving_mean, moving_variance]
-            # print(len(variables))
-            # for idx, v in enumerate(variables):
-            #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
-            # exit()
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( variables )
-        # self.all_params.extend( [beta, gamma] )
-
-
-
+# class BatchNormLayer_TF(Layer):   # Work well TF contrib https://github.com/tensorflow/tensorflow/blob/b826b79718e3e93148c3545e7aa3f90891744cc0/tensorflow/contrib/layers/python/layers/layers.py#L100
+#     """
+#     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
+#
+#     Batch normalization on fully-connected or convolutional maps.
+#
+#     Parameters
+#     -----------
+#     layer : a :class:`Layer` instance
+#         The `Layer` class feeding into this layer.
+#     decay : float
+#         A decay factor for ExponentialMovingAverage.
+#     center: If True, subtract `beta`. If False, `beta` is ignored.
+#     scale: If True, multiply by `gamma`. If False, `gamma` is
+#         not used. When the next layer is linear (also e.g. `nn.relu`), this can be
+#         disabled since the scaling can be done by the next layer.
+#     epsilon : float
+#         A small float number to avoid dividing by 0.
+#     act : activation function.
+#     is_train : boolean
+#         Whether train or inference.
+#     beta_init : beta initializer
+#         The initializer for initializing beta
+#     gamma_init : gamma initializer
+#         The initializer for initializing gamma
+#     name : a string or None
+#         An optional name to attach to this layer.
+#
+#     References
+#     ----------
+#     - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
+#     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         decay = 0.95,#.999,
+#         center = True,
+#         scale = True,
+#         epsilon = 0.00001,
+#         act = tf.identity,
+#         is_train = False,
+#         beta_init = tf.zeros_initializer,
+#         # gamma_init = tf.ones_initializer,
+#         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
+#         name ='batchnorm_layer',
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#                             (self.name, decay, epsilon, act.__name__, is_train))
+#         from tensorflow.contrib.layers.python.layers import utils
+#         from tensorflow.contrib.framework.python.ops import variables
+#         from tensorflow.python.ops import init_ops
+#         from tensorflow.python.ops import nn
+#         from tensorflow.python.training import moving_averages
+#         from tensorflow.python.framework import ops
+#         from tensorflow.python.ops import variable_scope
+#         variables_collections = None
+#         outputs_collections=None
+#         updates_collections=None#ops.GraphKeys.UPDATE_OPS
+#         # with variable_scope.variable_op_scope([inputs],
+#         #                                     scope, 'BatchNorm', reuse=reuse) as sc:
+#         # with variable_scope.variable_op_scope([self.inputs], None, name) as vs:
+#         with tf.variable_scope(name) as vs:
+#             inputs_shape = self.inputs.get_shape()
+#             dtype = self.inputs.dtype.base_dtype
+#             axis = list(range(len(inputs_shape) - 1)) # [0, 1, 2]
+#             params_shape = inputs_shape[-1:]
+#             # Allocate parameters for the beta and gamma of the normalization.
+#             beta, gamma = None, None
+#             if center:
+#               beta_collections = utils.get_variable_collections(variables_collections,
+#                                                                 'beta')
+#               beta = variables.model_variable('beta',
+#                                               shape=params_shape,
+#                                               dtype=dtype,
+#                                             #   initializer=init_ops.zeros_initializer,
+#                                               initializer=beta_init,
+#                                               collections=beta_collections,)
+#                                             #   trainable=trainable)
+#             if scale:
+#               gamma_collections = utils.get_variable_collections(variables_collections,
+#                                                                  'gamma')
+#               gamma = variables.model_variable('gamma',
+#                                                shape=params_shape,
+#                                                dtype=dtype,
+#                                             #    initializer=init_ops.ones_initializer,
+#                                                initializer=gamma_init,
+#                                                collections=gamma_collections,)
+#                                             #    trainable=trainable)
+#             # Create moving_mean and moving_variance variables and add them to the
+#             # appropiate collections.
+#             moving_mean_collections = utils.get_variable_collections(
+#                 variables_collections,
+#                 'moving_mean')
+#             moving_mean = variables.model_variable(
+#                 'moving_mean',
+#                 shape=params_shape,
+#                 dtype=dtype,
+#                 # initializer=init_ops.zeros_initializer,
+#                 initializer=tf.zeros_initializer,
+#                 trainable=False,
+#                 collections=moving_mean_collections)
+#             moving_variance_collections = utils.get_variable_collections(
+#                 variables_collections,
+#                 'moving_variance')
+#             moving_variance = variables.model_variable(
+#                 'moving_variance',
+#                 shape=params_shape,
+#                 dtype=dtype,
+#                 # initializer=init_ops.ones_initializer,
+#                 initializer=tf.constant_initializer(1.),
+#                 trainable=False,
+#                 collections=moving_variance_collections)
+#             if is_train:
+#               # Calculate the moments based on the individual batch.
+#               mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+#               # Update the moving_mean and moving_variance moments.
+#             #   update_moving_mean = moving_averages.assign_moving_average(
+#             #       moving_mean, mean, decay)
+#             #   update_moving_variance = moving_averages.assign_moving_average(
+#             #       moving_variance, variance, decay)
+#             #   if updates_collections is None:
+#             #     # Make sure the updates are computed here.
+#             #       with ops.control_dependencies([update_moving_mean,
+#             #                                        update_moving_variance]):
+#             #          outputs = nn.batch_normalization(
+#             #               self.inputs, mean, variance, beta, gamma, epsilon)
+#
+#               update_moving_mean = tf.assign(moving_mean,
+#                                    moving_mean * decay + mean * (1 - decay))
+#               update_moving_variance = tf.assign(moving_variance,
+#                                   moving_variance * decay + variance * (1 - decay))
+#               with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+#                   outputs = nn.batch_normalization(
+#                               self.inputs, mean, variance, beta, gamma, epsilon)
+#             #   else:
+#             #     # Collect the updates to be computed later.
+#             #     ops.add_to_collections(updates_collections, update_moving_mean)
+#             #     ops.add_to_collections(updates_collections, update_moving_variance)
+#             #     outputs = nn.batch_normalization(
+#             #         self.inputs, mean, variance, beta, gamma, epsilon)
+#             else:
+#             #   mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+#               outputs = nn.batch_normalization(
+#                   self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
+#                 # self.inputs, mean, variance, beta, gamma, epsilon)
+#             outputs.set_shape(self.inputs.get_shape())
+#             # if activation_fn:
+#             self.outputs = act(outputs)
+#
+#             # variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+#             # return utils.collect_named_outputs(outputs_collections, sc.name, outputs)
+#             variables = [beta, gamma, moving_mean, moving_variance]
+#
+#         mean, variance = nn.moments(self.inputs, axis, shift=moving_mean)
+#         self.check_mean = mean
+#         self.check_variance = variance
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( variables )
+#
+# class BatchNormLayer5(Layer):   # Akara Work well
+#     """
+#     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
+#
+#     Batch normalization on fully-connected or convolutional maps.
+#
+#     Parameters
+#     -----------
+#     layer : a :class:`Layer` instance
+#         The `Layer` class feeding into this layer.
+#     decay : float
+#         A decay factor for ExponentialMovingAverage.
+#     epsilon : float
+#         A small float number to avoid dividing by 0.
+#     act : activation function.
+#     is_train : boolean
+#         Whether train or inference.
+#     beta_init : beta initializer
+#         The initializer for initializing beta
+#     gamma_init : gamma initializer
+#         The initializer for initializing gamma
+#     name : a string or None
+#         An optional name to attach to this layer.
+#
+#     References
+#     ----------
+#     - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
+#     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         decay = 0.9,
+#         epsilon = 0.00001,
+#         act = tf.identity,
+#         is_train = False,
+#         beta_init = tf.zeros_initializer,
+#         # gamma_init = tf.ones_initializer,
+#         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002),
+#         name ='batchnorm_layer',
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#                             (self.name, decay, epsilon, act.__name__, is_train))
+#         x_shape = self.inputs.get_shape()
+#         params_shape = x_shape[-1:]
+#
+#         from tensorflow.python.training import moving_averages
+#         from tensorflow.python.ops import control_flow_ops
+#
+#         with tf.variable_scope(name) as vs:
+#             axis = list(range(len(x_shape) - 1))
+#
+#             ## 1. beta, gamma
+#             beta = tf.get_variable('beta', shape=params_shape,
+#                                initializer=beta_init,
+#                                trainable=is_train)#, restore=restore)
+#
+#             gamma = tf.get_variable('gamma', shape=params_shape,
+#                                 initializer=gamma_init, trainable=is_train,
+#                                 )#restore=restore)
+#
+#             ## 2. moving variables during training (not update by gradient!)
+#             moving_mean = tf.get_variable('moving_mean',
+#                                       params_shape,
+#                                       initializer=tf.zeros_initializer,
+#                                       trainable=False,)#   restore=restore)
+#             moving_variance = tf.get_variable('moving_variance',
+#                                           params_shape,
+#                                           initializer=tf.constant_initializer(1.),
+#                                           trainable=False,)#   restore=restore)
+#
+#             batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
+#             ## 3.
+#             # These ops will only be preformed when training.
+#             def mean_var_with_update():
+#                 try:    # TF12
+#                     update_moving_mean = moving_averages.assign_moving_average(
+#                                     moving_mean, batch_mean, decay, zero_debias=False)     # if zero_debias=True, has bias
+#                     update_moving_variance = moving_averages.assign_moving_average(
+#                                     moving_variance, batch_var, decay, zero_debias=False) # if zero_debias=True, has bias
+#                     # print("TF12 moving")
+#                 except Exception as e:  # TF11
+#                     update_moving_mean = moving_averages.assign_moving_average(
+#                                     moving_mean, batch_mean, decay)
+#                     update_moving_variance = moving_averages.assign_moving_average(
+#                                     moving_variance, batch_var, decay)
+#                     # print("TF11 moving")
+#
+#             # def mean_var_with_update():
+#                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+#                     # return tf.identity(update_moving_mean), tf.identity(update_moving_variance)
+#                     return tf.identity(batch_mean), tf.identity(batch_var)
+#
+#             # if not is_train:
+#             if is_train:
+#                 mean, var = mean_var_with_update()
+#             else:
+#                 mean, var = (moving_mean, moving_variance)
+#
+#             normed = tf.nn.batch_normalization(
+#               x=self.inputs,
+#               mean=mean,
+#               variance=var,
+#               offset=beta,
+#               scale=gamma,
+#               variance_epsilon=epsilon,
+#               name="tf_bn"
+#             )
+#             self.outputs = act( normed )
+#
+#             variables = [beta, gamma, moving_mean, moving_variance]
+#             # print(len(variables))
+#             # for idx, v in enumerate(variables):
+#             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
+#             # exit()
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( variables )
+#         # self.all_params.extend( [beta, gamma] )
+#
 # class BatchNormLayer4(Layer): # work TFlearn https://github.com/tflearn/tflearn/blob/master/tflearn/layers/normalization.py
 #     """
 #     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
@@ -2505,7 +2490,6 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( variables )
 
-
 # class BatchNormLayer3(Layer):   # don't work http://r2rt.com/implementing-batch-normalization-in-tensorflow.html
 #     """
 #     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
@@ -2603,7 +2587,6 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( variables )
 
-
 # class BatchNormLayer_old(Layer):  # don't work
 #     """
 #     The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization``.
@@ -2697,7 +2680,6 @@ class BatchNormLayer5(Layer):   # Akara Work well
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( [beta, gamma] )
 
-
 ## Pooling layer
 class PoolLayer(Layer):
     """
@@ -2739,7 +2721,7 @@ class PoolLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] PoolLayer   %s: %s, %s, %s, %s" %
+        print("  [TL] PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" %
                             (self.name, str(ksize), str(strides), padding, pool.__name__))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
@@ -2749,6 +2731,40 @@ class PoolLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+## Padding layer
+class PadLayer(Layer):
+    """
+    The :class:`PadLayer` class is a Padding layer for any modes and dimensions.
+    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`_ for usage.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    padding : a Tensor of type int32.
+    mode : one of "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive)
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        paddings = None,
+        mode = 'CONSTANT',
+        name = 'pad_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+        self.inputs = layer.outputs
+        print("  [TL] PoolLayer   %s: paddings:%s mode:%s" %
+                            (self.name, list(paddings.get_shape()), mode))
+
+        self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
 
 ## Recurrent layer
 class RNNLayer(Layer):
@@ -2918,7 +2934,7 @@ class RNNLayer(Layer):
 
         self.inputs = layer.outputs
 
-        print("  [TL] RNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s " % (self.name, n_hidden,
+        print("  [TL] RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
@@ -2943,11 +2959,11 @@ class RNNLayer(Layer):
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     RNN batch_size (concurrent processes): %d" % batch_size)
+            print("       RNN batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, uses a tensor instead.")
+            print("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
@@ -3007,7 +3023,6 @@ class RNNLayer(Layer):
         # print(type(self.outputs))
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
-
 
 class BiRNNLayer(Layer):
     """
@@ -3099,18 +3114,18 @@ class BiRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  [TL] BiRNNLayer %s: n_hidden:%d, n_steps:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d " % (self.name, n_hidden,
+        print("  [TL] BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden,
             n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
 
         if fixed_batch_size.value:
             self.batch_size = fixed_batch_size.value
-            print("     RNN batch_size (concurrent processes): %d" % self.batch_size)
+            print("       RNN batch_size (concurrent processes): %d" % self.batch_size)
         else:
             from tensorflow.python.ops import array_ops
             self.batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, uses a tensor instead.")
+            print("       non specified batch_size, uses a tensor instead.")
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -3446,7 +3461,7 @@ class DynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  [TL] DynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" % (self.name, n_hidden,
+        print("  [TL] DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden,
              self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
@@ -3459,11 +3474,11 @@ class DynamicRNNLayer(Layer):
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     batch_size (concurrent processes): %d" % batch_size)
+            print("       batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, uses a tensor instead.")
+            print("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Creats the cell function
@@ -3527,7 +3542,7 @@ class DynamicRNNLayer(Layer):
                 )
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-            print("     n_params : %d" % (len(rnn_variables)))
+            # print("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
             if return_last:
                 # [batch_size, n_hidden]
@@ -3568,7 +3583,6 @@ class DynamicRNNLayer(Layer):
 
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
-
 
 # Bidirectional Dynamic RNN
 class BiDynamicRNNLayer(Layer):
@@ -3666,7 +3680,7 @@ class BiDynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
         self.inputs = layer.outputs
 
-        print("  [TL] BiDynamicRNNLayer %s: n_hidden:%d, in_dim:%d %s, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
               (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
@@ -3679,11 +3693,11 @@ class BiDynamicRNNLayer(Layer):
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     batch_size (concurrent processes): %d" % batch_size)
+            print("       batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, uses a tensor instead.")
+            print("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -3792,7 +3806,6 @@ class BiDynamicRNNLayer(Layer):
 
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( rnn_variables )
-
 
 # Seq2seq
 class Seq2Seq(Layer):
@@ -3908,7 +3921,7 @@ class Seq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  [TL] Seq2Seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
         with tf.variable_scope(name) as vs:#, reuse=reuse):
@@ -3924,7 +3937,7 @@ class Seq2Seq(Layer):
                      sequence_length = encode_sequence_length,
                      return_last = False,
                      return_seq_2d = True,
-                     name = 'encode')
+                     name = name+'_encode')
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(net_decode_in,
@@ -3937,7 +3950,7 @@ class Seq2Seq(Layer):
                      sequence_length = decode_sequence_length,
                      return_last = False,
                      return_seq_2d = return_seq_2d,
-                     name = 'decode')
+                     name = name+'_decode')
             self.outputs = network_decode.outputs
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -3955,7 +3968,6 @@ class Seq2Seq(Layer):
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
-
 
 class PeekySeq2Seq(Layer):
     """
@@ -3984,9 +3996,8 @@ class PeekySeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  [TL] PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
-
 
 class AttentionSeq2Seq(Layer):
     """
@@ -4015,9 +4026,8 @@ class AttentionSeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  [TL] PeekySeq2seq %s: n_hidden:%d, cell_fn:%s, dropout:%s, n_layer:%d" %
+        print("  [TL] PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
-
 
 ## Shape layer
 class FlattenLayer(Layer):
@@ -4068,7 +4078,6 @@ class FlattenLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
-
 class ReshapeLayer(Layer):
     """
     The :class:`ReshapeLayer` class is layer which reshape the tensor.
@@ -4111,8 +4120,6 @@ class ReshapeLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-
-
 
 class LambdaLayer(Layer):
     """
@@ -4161,7 +4168,6 @@ class LambdaLayer(Layer):
         self.all_params.extend( variables )
 
 ## Merge layer
-
 class ConcatLayer(Layer):
     """
     The :class:`ConcatLayer` class is layer which concat (merge) two or more
@@ -4216,7 +4222,7 @@ class ConcatLayer(Layer):
         except: # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
-        print("  [TL] ConcatLayer %s, %d" % (self.name, self.n_units))
+        print("  [TL] ConcatLayer %s: %d" % (self.name, self.n_units))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -4230,7 +4236,6 @@ class ConcatLayer(Layer):
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
         #self.all_drop = list_remove_repeat(self.all_drop) # it is a dict
-
 
 class ElementwiseLayer(Layer):
     """
@@ -4265,7 +4270,7 @@ class ElementwiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
 
-        print("  [TL] ElementwiseLayer %s:  %s, %s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
+        print("  [TL] ElementwiseLayer %s: size:%s fn:%s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layer[0].outputs
         # print(self.outputs._shape, type(self.outputs._shape))
@@ -4285,7 +4290,6 @@ class ElementwiseLayer(Layer):
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
         # self.all_drop = list_remove_repeat(self.all_drop)
-
 
 # Extend
 class ExpandDimsLayer(Layer):
@@ -4311,7 +4315,7 @@ class ExpandDimsLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  [TL] ExpandDimsLayer  %s" % self.name)
+        print("  [TL] ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
         with tf.variable_scope(name) as vs:
             try:    # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
@@ -4322,7 +4326,6 @@ class ExpandDimsLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
-
 
 class TileLayer(Layer):
     """
@@ -4347,7 +4350,7 @@ class TileLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  [TL] TileLayer  %s" % self.name)
+        print("  [TL] TileLayer  %s: multiples:%s" % (self.name, multiples))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.tile(self.inputs, multiples=multiples)
         self.all_layers = list(layer.all_layers)
@@ -4355,9 +4358,6 @@ class TileLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
-
-
-
 
 ## TF-Slim layer
 class SlimNetsLayer(Layer):
@@ -4474,7 +4474,6 @@ class PReluLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [alphas] )
 
-
 ## Flow control layer
 class MultiplexerLayer(Layer):
     """
@@ -4542,7 +4541,7 @@ class MultiplexerLayer(Layer):
         except:
             all_inputs = tf.pack(self.inputs, name=name) # pack means concat a list of tensor in a new dim  # 1.2
 
-        print("  [TL] MultiplexerLayer %s: n_inputs: %d" % (self.name, self.n_inputs))
+        print("  [TL] MultiplexerLayer %s: n_inputs:%d" % (self.name, self.n_inputs))
 
         self.sel = tf.placeholder(tf.int32)
         self.outputs = tf.gather(all_inputs, self.sel, name=name) # [sel, :, : ...] # 1.2
@@ -4895,8 +4894,6 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
           batch_weight[batch_idx] = 0.0
       batch_weights.append(batch_weight)
     return batch_encoder_inputs, batch_decoder_inputs, batch_weights
-
-
 
 ## Developing or Untested
 class MaxoutLayer(Layer):
