@@ -32,12 +32,11 @@ def cross_entropy(output, target, name=None):
     - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
-    assert name is not None, "Please give a unique name to tl.cost.cross_entropy"
-
-    try: # TF 1.0
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
-    except:
+    try: # old
         return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
+    except: # TF 1.0
+        assert name is not None, "Please give a unique name to tl.cost.cross_entropy for TF1.0+"
+        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
 
 def sigmoid_cross_entropy(output, target, name=None):
     """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
