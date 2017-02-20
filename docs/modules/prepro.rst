@@ -52,7 +52,7 @@ Some of the code in this package are borrowed from Keras.
    array_to_img
 
    pad_sequences
-   precess_sequences
+   process_sequences
    sequences_add_start_id
    sequences_get_mask
 

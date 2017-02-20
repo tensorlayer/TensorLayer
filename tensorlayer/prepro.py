@@ -1015,7 +1015,7 @@ def channel_shift_multi(x, intensity, channel_index=2):
     return np.asarray(results)
 
 # noise
-def drop(x, keep=0.5): 
+def drop(x, keep=0.5):
     """Randomly set some pixels to zero by a given keeping probability.
 
     Parameters
@@ -1209,8 +1209,7 @@ def array_to_img(x, dim_ordering=(0,1,2), scale=True):
 
 
 ## Sequence
-def pad_sequences(sequences, maxlen=None, dtype='int32',
-                  padding='post', truncating='pre', value=0.):
+def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncating='pre', value=0.):
     """Pads each sequence to the same length:
     the length of the longest sequence.
     If maxlen is provided, any sequence longer
