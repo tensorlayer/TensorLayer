@@ -4678,12 +4678,23 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 
         # ============ Seq Encode Layer =============
         # Create the internal multi-layer cell for our RNN.
-        single_cell = tf.nn.rnn_cell.GRUCell(size)
+        try: # TF1.0
+          single_cell = tf.contrib.rnn.GRUCell(size)
+        except:
+          single_cell = tf.nn.rnn_cell.GRUCell(size)
+
         if use_lstm:
-          single_cell = tf.nn.rnn_cell.BasicLSTMCell(size)
+          try: # TF1.0
+            single_cell = tf.contrib.rnn.BasicLSTMCell(size)
+          except:
+            single_cell = tf.nn.rnn_cell.BasicLSTMCell(size)
+
         cell = single_cell
         if num_layers > 1:
-          cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * num_layers)
+          try: # TF1.0
+            cell = tf.contrib.rnn.MultiRNNCell([single_cell] * num_layers)
+          except:
+            cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * num_layers)
 
         # ============== Seq Decode Layer ============
         # The seq2seq function: we use embedding for the input and attention.
