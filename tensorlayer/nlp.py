@@ -210,6 +210,7 @@ class Vocabulary(object):
   start_id : int of start id
   end_id : int of end id
   unk_id : int of unk id
+  pad_id : int of padding id
 
   Vocab_files
   -------------
@@ -231,7 +232,8 @@ class Vocabulary(object):
                vocab_file,
                start_word="<S>",
                end_word="</S>",
-               unk_word="<UNK>"):
+               unk_word="<UNK>",
+               pad_word="<PAD>"):
     if not tf.gfile.Exists(vocab_file):
       tf.logging.fatal("Vocab file %s not found.", vocab_file)
     tf.logging.info("Initializing vocabulary from file: %s", vocab_file)
@@ -256,9 +258,11 @@ class Vocabulary(object):
     self.start_id = vocab[start_word]
     self.end_id = vocab[end_word]
     self.unk_id = vocab[unk_word]
+    self.pad_id = vocab[pad_word]
     print("      start_id: %d" % self.start_id)
     print("      end_id: %d" % self.end_id)
     print("      unk_id: %d" % self.unk_id)
+    print("      pad_id: %d" % self.pad_id)
 
   def word_to_id(self, word):
     """Returns the integer word id of a word string."""
