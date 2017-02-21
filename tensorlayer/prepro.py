@@ -1423,7 +1423,13 @@ def distorted_images(images=None, height=24, width=24):
     -----------
     - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
     """
-    print(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
+    print("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
+            t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
+    exit()
+    # print(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
     try:
         batch_size = int(images._shape[0])
     except:
@@ -1494,7 +1500,13 @@ def crop_central_whiten_images(images=None, height=24, width=24):
     ----------------
     - ``tensorflow.models.image.cifar10.cifar10_input``
     """
-    print(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
+    print("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
+            t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
+            t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
+    exit()
+    # print(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
     try:
         batch_size = int(images._shape[0])
     except:
