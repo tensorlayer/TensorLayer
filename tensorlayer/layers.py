@@ -181,6 +181,28 @@ def get_variables_with_name(name, train_only=True, printable=False):
             print("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
     return d_vars
 
+def get_layers_with_name(network=None, name="", printable=False):
+    """Get layer list by a given name scope.
+
+    Examples
+    ---------
+    >>> layers = tl.layers.get_layers_with_name(network, "CNN", True)
+    """
+    assert network is not None
+    print("  [*] geting layers with %s" % name)
+
+    layers = []
+    i = 0
+    for layer in network.all_layers:
+        # print(type(layer.name))
+        if name in layer.name:
+            layers.append(layer)
+            if printable:
+                # print(layer.name)
+                print("  got {:3}: {:15}   {}".format(i, layer.name, str(layer.get_shape())))
+                i = i + 1
+    return layers
+
 def list_remove_repeat(l=None):
     """Remove the repeated items in a list, and return the processed list.
     You may need it to create merged layer like Concat, Elementwise and etc.

@@ -258,6 +258,7 @@ Layer list
 .. autosummary::
 
    get_variables_with_name
+   get_layers_with_name
    set_name_reuse
    print_all_variables
    initialize_global_variables
@@ -339,6 +340,10 @@ list of parameters by given name. About TensorFlow parameters sharing click `her
 Get variables with name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: get_variables_with_name
+
+Get layers with name
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: get_layers_with_name
 
 Enable layer name reuse
 ^^^^^^^^^^^^^^^^^^^^^^^^^
