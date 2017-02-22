@@ -163,7 +163,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
 
     Examples
     ---------
-    >>> dense_vars = get_variable_with_name('dense', True, True)
+    >>> dense_vars = tl.layers.get_variable_with_name('dense', True, True)
     """
     print("  [*] geting variables with %s" % name)
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
@@ -182,7 +182,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
     return d_vars
 
 def get_layers_with_name(network=None, name="", printable=False):
-    """Get layer list by a given name scope.
+    """Get layer list in a network by a given name scope.
 
     Examples
     ---------
