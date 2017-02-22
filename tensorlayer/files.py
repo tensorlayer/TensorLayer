@@ -552,7 +552,7 @@ def save_npz(save_list=[], name='model.npz', sess=None):
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    print('Model is saved to: %s' % name)
+    print("[*] %s saved" % name)
 
     ## save params into a dictionary
     # rename_dict = {}
