@@ -32,9 +32,9 @@ except:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
 try:  # TF1.0
-    from tf.contrib import legacy_seq2seq as seq2seq
+    from tensorflow.contrib import legacy_seq2seq as seq2seq
 except:
-    from tf.nn import seq2seq
+    from tensorflow.nn import seq2seq
 
 ## Variable Operation
 def flatten_reshape(variable, name=''):
