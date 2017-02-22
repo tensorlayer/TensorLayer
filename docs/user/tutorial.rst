@@ -1086,7 +1086,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
   if is_training:
       network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
   network = tl.layers.RNNLayer(network,
-              cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+              cell_fn=tf.contrib.rnn.BasicLSTMCell,
               cell_init_args={'forget_bias': 0.0},
               n_hidden=hidden_size,
               initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -1097,7 +1097,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
   if is_training:
       network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
   network = tl.layers.RNNLayer(network,
-              cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+              cell_fn=tf.contrib.rnn.BasicLSTMCell,
               cell_init_args={'forget_bias': 0.0},
               n_hidden=hidden_size,
               initializer=tf.random_uniform_initializer(-init_scale, init_scale),
