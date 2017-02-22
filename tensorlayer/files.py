@@ -645,6 +645,10 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     network : a :class:`Layer` class
         The network to be assigned
 
+    Returns
+    --------
+    Returns False if faild to model is not exist.
+
     Examples
     ---------
     >>> tl.files.load_and_assign_npz(sess=sess, name='net.npz', network=net)
@@ -655,13 +659,13 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         print("[!] Load {} failed!".format(name))
         return False
     else:
-        params = tl.files.load_npz(name=name)
-        tl.files.assign_params(sess, params, network)
+        params = load_npz(name=name)
+        assign_params(sess, params, network)
         print("[*] Load {} SUCCESS!".format(name))
         return network
 
 # Load and save variables
-def save_any_to_npy(save_dict={}, name='any.npy'):
+def save_any_to_npy(save_dict={}, name='file.npy'):
     """Save variables to .npy file.
 
     Examples
@@ -673,19 +677,24 @@ def save_any_to_npy(save_dict={}, name='any.npy'):
     """
     np.save(name, save_dict)
 
-def load_npy_to_any(path='', name='any.npy'):
+def load_npy_to_any(path='', name='file.npy'):
     """Load .npy file.
 
     Examples
     ---------
     - see save_any_to_npy()
     """
+    file_path = os.path.join(path, name)
     try:
-        npy = np.load(path+name).item()
+        npy = np.load(file_path).item()
     except:
-        npy = np.load(path+name)
+        npy = np.load(file_path)
     finally:
-        return npy
+        try:
+            return npy
+        except:
+            print("[!] Fail to load %s" % file_path)
+            exit()
 
 
 # Visualizing npz files
@@ -750,9 +759,8 @@ def load_folder_list(path=""):
     """
     return [os.path.join(path,o) for o in os.listdir(path) if os.path.isdir(os.path.join(path,o))]
 
-
 def exists_or_mkdir(path, verbose=True):
-    """Check a directory, if not exist, create the folder and return False,
+    """Check a folder by given name, if not exist, create the folder and return False,
     if directory exists, return True.
 
     Parameters
@@ -760,7 +768,11 @@ def exists_or_mkdir(path, verbose=True):
     path : a string
         A folder path.
     verbose : boolean
-        If true prints results, deaults to True
+        If True, prints results, deaults is True
+
+    Returns
+    --------
+    True if folder exist, otherwise, returns False and create the folder
 
     Examples
     --------
@@ -768,12 +780,12 @@ def exists_or_mkdir(path, verbose=True):
     """
     if not os.path.exists(path):
         if verbose:
-            print("[!] Create %s ..." % path)
+            print("[*] creates %s ..." % path)
         os.makedirs(path)
         return False
     else:
         if verbose:
-            print("[*] %s exists ..." % path)
+            print("[!] %s exists ..." % path)
         return True
 
 def maybe_download_and_extract(filename, working_directory, url_source, extract=False, expected_bytes=None):
