@@ -18,7 +18,7 @@ batch_size = 128
 x = tf.placeholder(tf.float32, shape=[None, 784])
 y_ = tf.placeholder(tf.int64, shape=[None,])
 
-def keras_block(x, is_train=True):
+def keras_block(x):
     x = Dropout(0.8)(x)
     x = Dense(800, activation='relu')(x)
     x = Dropout(0.5)(x)
