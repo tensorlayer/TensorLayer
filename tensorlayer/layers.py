@@ -4390,7 +4390,7 @@ class SlimNetsLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
+    layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
@@ -4454,7 +4454,7 @@ class KerasLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
+    layer : a :class:`Layer` instance
         The `Layer` class feeding into this layer.
     keras_layer : a keras network function
     keras_args : dictionary
