@@ -4413,9 +4413,11 @@ class SlimNetsLayer(Layer):
         layer = None,
         slim_layer = None,
         slim_args = {},
-        name ='InceptionV3',
+        name ='tfslim_layer',
     ):
         Layer.__init__(self, name=name)
+        assert slim_layer is not None
+        assert slim_args is not None
         self.inputs = layer.outputs
         print("  [TL] SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
@@ -4443,6 +4445,43 @@ class SlimNetsLayer(Layer):
 
         self.all_layers.extend( slim_layers )
         self.all_params.extend( slim_variables )
+
+## Keras layer
+class KerasLayer(Layer):
+    """
+    The :class:`KerasLayer` class can be used to merge all Keras layers into
+    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_
+
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    keras_layer : a keras network function
+    keras_args : dictionary
+        The arguments for the keras model.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        keras_layer = None,
+        keras_args = {},
+        name ='keras_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert keras_layer is not None
+        self.inputs = layer.outputs
+        print("  [TL] KerasLayer %s: %s" % (self.name, keras_layer))
+        with tf.variable_scope(name) as vs:
+            self.outputs = keras_layer(self.inputs, **keras_args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
 
 ## Special activation
 class PReluLayer(Layer):

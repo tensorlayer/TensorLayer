@@ -318,6 +318,7 @@ Layer list
    TileLayer
 
    SlimNetsLayer
+   KerasLayer
 
    PReluLayer
 
@@ -609,6 +610,14 @@ Yes ! TF-Slim models can be connected into TensorLayer, all Google's Pre-trained
 see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
 
 .. autoclass:: SlimNetsLayer
+
+Connect Keras
+------------------
+
+Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
+
+.. autoclass:: KerasLayer
+
 
 Parametric activation layer
 ---------------------------
