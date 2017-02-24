@@ -175,6 +175,7 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 
 ## Special Examples
  - Merge TF-Slim into TensorLayer. ``tutorial_inceptionV3_tfslim.py``.
+ - Merge Keras into TensorLayer. ``tutorial_keras.py``.
  - MultiplexerLayer. ``tutorial_mnist_multiplexer.py``.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see ``tutorial_tfrecord*.py`` and ``tutorial_cifar10_tfrecord.py``.
  - Data augmentation with TensorLayer, see ``tutorial_image_preprocess.py``.

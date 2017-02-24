@@ -49,6 +49,7 @@ Special Examples
 =================
 
  - Merge TF-Slim into TensorLayer. ``tutorial_inceptionV3_tfslim.py`` on `GitHub`_.
+ - Merge Keras into TensorLayer. ``tutorial_keras.py`` on `GitHub`_.
  - MultiplexerLayer. ``tutorial_mnist_multiplexer.py`` on `GitHub`_.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see ``tutorial_tfrecord*.py`` and ``tutorial_cifar10_tfrecord.py`` on `GitHub`_.
  - Data augmentation with TensorLayer, see ``tutorial_image_preprocess.py`` on `GitHub`_.
