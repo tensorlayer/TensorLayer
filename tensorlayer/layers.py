@@ -4524,9 +4524,10 @@ class PReluLayer(Layer):
         with tf.variable_scope(name) as vs:
             alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, **a_init_args )
             try:  ## TF 1.0
-                self.outputs = tf.nn.relu(self.inputs) + tf.mulitply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
+                self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
             except: ## TF 0.12
                 self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
+
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
