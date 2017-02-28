@@ -1924,7 +1924,7 @@ class BatchNormLayer(Layer):
             axis = list(range(len(x_shape) - 1))
 
             ## 1. beta, gamma
-            if tf.__version__ > '0.12' and beta_init == tf.zeros_initializer:
+            if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                 beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape,
                                initializer=beta_init,
@@ -1935,7 +1935,7 @@ class BatchNormLayer(Layer):
                                 )#restore=restore)
 
             ## 2.
-            if tf.__version__ > '0.12':
+            if tf.__version__ > '0.12.1':
                 moving_mean_init = tf.zeros_initializer()
             else:
                 moving_mean_init = tf.zeros_initializer
