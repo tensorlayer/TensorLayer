@@ -14,7 +14,7 @@ from . import ops
 import numpy as np
 from six.moves import xrange
 import random, warnings
-import copy
+# import copy
 
 # __all__ = [
 #     "Layer",
@@ -1833,7 +1833,7 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
 #
 #     Returns
 #     --------
-#     A :class:`Layer` which the output tensor, of rank 3.
+#     - A :class:`Layer` which the output tensor, of rank 3.
 #     """
 #     print("  [TL] MaxPool1d %s: filter_size:%s strides:%s padding:%s" %
 #                         (name, str(filter_size), str(strides), str(padding)))
@@ -1858,7 +1858,7 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
 #
 #     Returns
 #     --------
-#     A :class:`Layer` which the output tensor, of rank 3.
+#     - A :class:`Layer` which the output tensor, of rank 3.
 #     """
 #     print("  [TL] MeanPool1d %s: filter_size:%s strides:%s padding:%s" %
 #                         (name, str(filter_size), str(strides), str(padding)))
@@ -1913,7 +1913,7 @@ def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
 #     """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
 #
 #     Parameters
-#     ----------
+#     ------------
 #     net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
 #     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
 #     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
@@ -1934,7 +1934,7 @@ def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
 #     """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
 #
 #     Parameters
-#     ----------
+#     ------------
 #     net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
 #     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
 #     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
