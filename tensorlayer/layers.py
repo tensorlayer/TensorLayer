@@ -1686,7 +1686,7 @@ class SeparableConv2dLayer(Layer):# Untested
                  strides=strides, padding=padding, data_format=data_format,
                  dilation_rate=dilation_rate, depth_multiplier=depth_multiplier, activation=act,
                  use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
-                 bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
+                 bias_initializer=bias_initializer, depthwise_regularizer=depthwise_regularizer,
                  pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
                  #trainable=True, name=None, reuse=None)
 
