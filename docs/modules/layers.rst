@@ -285,16 +285,12 @@ Layer list
    UpSampling2dLayer
    DownSampling2dLayer
    AtrousConv2dLayer
-   SeparableConv2dLayer
 
    Conv2d
    DeConv2d
-   MaxPool1d
-   MeanPool1d
+
    MaxPool2d
    MeanPool2d
-   MaxPool3d
-   MeanPool3d
 
    BatchNormLayer
    LocalResponseNormLayer
@@ -447,9 +443,7 @@ Convolutional layer (Pro)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AtrousConv2dLayer
 
-2D Separable convolutional layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SeparableConv2dLayer
+
 
 Convolutional layer (Simplified)
 -----------------------------------
@@ -466,13 +460,6 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: DeConv2d
 
-1D Max pooling layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool1d
-
-1D Mean pooling layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool1d
 
 2D Max pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -482,13 +469,6 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool2d
 
-3D Max pooling layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool3d
-
-3D Mean pooling layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool3d
 
 
 Pooling layer

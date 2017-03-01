@@ -1664,12 +1664,12 @@ class SeparableConv2dLayer(Layer):# Untested
                             (self.name, str(shape), str(strides), padding, act.__name__))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
-             strides=strides, padding=padding, data_format=data_format,
-             dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
-             use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
-             bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
-             pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
-             #trainable=True, name=None, reuse=None)
+                 strides=strides, padding=padding, data_format=data_format,
+                 dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
+                 use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
+                 bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
+                 pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
+                 #trainable=True, name=None, reuse=None)
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
