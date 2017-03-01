@@ -1623,61 +1623,61 @@ class AtrousConv2dLayer(Layer):
         else:
             self.all_params.extend( [filters] )
 
-class SeparableConv2dLayer(Layer):# Untested
-    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
-
-    Parameters
-    -----------
-    layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
-    depthwise_filter : 4-D Tensor with shape [filter_height, filter_width, in_channels, channel_multiplier]. Contains in_channels convolutional filters of depth 1.
-    pointwise_filter : 4-D Tensor with shape [1, 1, channel_multiplier * in_channels, out_channels]. Pointwise filter to mix channels after depthwise_filter has convolved spatially.
-    strides : 1-D of size 4. The strides for the depthwise convolution for each dimension of input.
-    padding : A string, either 'VALID' or 'SAME'. The padding algorithm. See the comment here
-    name : a string or None, an optional name to attach to this layer.
-    """
-    def __init__(
-        self,
-        layer = None,
-        filters = None,
-        kernel_size=5,
-        strides=(1, 1),
-        padding='valid',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        act=None,
-        use_bias=True,
-        depthwise_initializer=None,
-        pointwise_initializer=None,
-        bias_initializer=tf.zeros_initializer(),
-        depthwise_regularizer=None,
-        pointwise_regularizer=None,
-        bias_regularizer=None,
-        activity_regularizer=None,
-        name = 'atrou2d'
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        if act is None:
-            act = tf.identity
-        print("  [TL] SeparableConv2dLayer %s: %s, %s, %s, %s" %
-                            (self.name, str(shape), str(strides), padding, act.__name__))
-        with tf.variable_scope(name) as vs:
-            self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
-                 strides=strides, padding=padding, data_format=data_format,
-                 dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
-                 use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
-                 bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
-                 pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
-                 #trainable=True, name=None, reuse=None)
-
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( variables )
+# class SeparableConv2dLayer(Layer):# Untested
+#     """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
+#
+#     Parameters
+#     -----------
+#     layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
+#     depthwise_filter : 4-D Tensor with shape [filter_height, filter_width, in_channels, channel_multiplier]. Contains in_channels convolutional filters of depth 1.
+#     pointwise_filter : 4-D Tensor with shape [1, 1, channel_multiplier * in_channels, out_channels]. Pointwise filter to mix channels after depthwise_filter has convolved spatially.
+#     strides : 1-D of size 4. The strides for the depthwise convolution for each dimension of input.
+#     padding : A string, either 'VALID' or 'SAME'. The padding algorithm. See the comment here
+#     name : a string or None, an optional name to attach to this layer.
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         filters = None,
+#         kernel_size=5,
+#         strides=(1, 1),
+#         padding='valid',
+#         data_format='channels_last',
+#         dilation_rate=(1, 1),
+#         depth_multiplier=1,
+#         act=None,
+#         use_bias=True,
+#         depthwise_initializer=None,
+#         pointwise_initializer=None,
+#         bias_initializer=tf.zeros_initializer(),
+#         depthwise_regularizer=None,
+#         pointwise_regularizer=None,
+#         bias_regularizer=None,
+#         activity_regularizer=None,
+#         name = 'atrou2d'
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#         if act is None:
+#             act = tf.identity
+#         print("  [TL] SeparableConv2dLayer %s: %s, %s, %s, %s" %
+#                             (self.name, str(shape), str(strides), padding, act.__name__))
+#         with tf.variable_scope(name) as vs:
+#             self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
+#                  strides=strides, padding=padding, data_format=data_format,
+#                  dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
+#                  use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
+#                  bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
+#                  pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
+#                  #trainable=True, name=None, reuse=None)
+#
+#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( variables )
 
 ## Initializers for Convuolutional Layers
 def deconv2d_bilinear_upsampling_initializer(shape):
@@ -1817,56 +1817,56 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
                     b_init_args = b_init_args,
                     name = name)
     return net
-
-def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
-    """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
-
-    Parameters
-    ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
-    filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
-    strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
-
-    Returns
-    --------
-    A :class:`Layer` which the output tensor, of rank 3.
-    """
-    print("  [TL] MaxPool1d %s: filter_size:%s strides:%s padding:%s" %
-                        (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.max_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend( [outputs] )
-    return net_new
-
-def MeanPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
-    """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
-
-    Parameters
-    ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
-    filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
-    strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
-
-    Returns
-    --------
-    A :class:`Layer` which the output tensor, of rank 3.
-    """
-    print("  [TL] MeanPool1d %s: filter_size:%s strides:%s padding:%s" %
-                        (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.average_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend( [outputs] )
-    return net_new
+#
+# def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
+#     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
+#
+#     Parameters
+#     ------------
+#     net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
+#     filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
+#     strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
+#     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
+#     data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
+#     name : A string, the name of the layer.
+#
+#     Returns
+#     --------
+#     A :class:`Layer` which the output tensor, of rank 3.
+#     """
+#     print("  [TL] MaxPool1d %s: filter_size:%s strides:%s padding:%s" %
+#                         (name, str(filter_size), str(strides), str(padding)))
+#     outputs = tf.layers.max_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+#
+#     net_new = copy.copy(net)
+#     net_new.outputs = outputs
+#     net_new.all_layers.extend( [outputs] )
+#     return net_new
+#
+# def MeanPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
+#     """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
+#
+#     Parameters
+#     ------------
+#     net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
+#     filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
+#     strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
+#     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
+#     data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
+#     name : A string, the name of the layer.
+#
+#     Returns
+#     --------
+#     A :class:`Layer` which the output tensor, of rank 3.
+#     """
+#     print("  [TL] MeanPool1d %s: filter_size:%s strides:%s padding:%s" %
+#                         (name, str(filter_size), str(strides), str(padding)))
+#     outputs = tf.layers.average_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+#
+#     net_new = copy.copy(net)
+#     net_new.outputs = outputs
+#     net_new.all_layers.extend( [outputs] )
+#     return net_new
 
 def MaxPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
     """Wrapper for :class:`PoolLayer`.
@@ -1907,49 +1907,49 @@ def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
             pool = tf.nn.avg_pool,
             name = name)
     return net
-
-def MaxPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
-    """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
-
-    Parameters
-    ----------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
-    filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
-    strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
-    """
-    print("  [TL] MaxPool3d %s: filter_size:%s strides:%s padding:%s" %
-                        (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend( [outputs] )
-    return net_new
-
-def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
-    """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
-
-    Parameters
-    ----------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
-    filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
-    strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
-    """
-    print("  [TL] MeanPool3d %s: filter_size:%s strides:%s padding:%s name:%s" %
-                        (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
-
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend( [outputs] )
-    return net_new
-
+#
+# def MaxPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
+#     """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
+#
+#     Parameters
+#     ----------
+#     net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
+#     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
+#     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
+#     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
+#     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
+#     name : A string, the name of the layer.
+#     """
+#     print("  [TL] MaxPool3d %s: filter_size:%s strides:%s padding:%s" %
+#                         (name, str(filter_size), str(strides), str(padding)))
+#     outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+#
+#     net_new = copy.copy(net)
+#     net_new.outputs = outputs
+#     net_new.all_layers.extend( [outputs] )
+#     return net_new
+#
+# def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None): #Untested
+#     """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
+#
+#     Parameters
+#     ----------
+#     net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
+#     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
+#     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
+#     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
+#     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
+#     name : A string, the name of the layer.
+#     """
+#     print("  [TL] MeanPool3d %s: filter_size:%s strides:%s padding:%s name:%s" %
+#                         (name, str(filter_size), str(strides), str(padding)))
+#     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+#
+#     net_new = copy.copy(net)
+#     net_new.outputs = outputs
+#     net_new.all_layers.extend( [outputs] )
+#     return net_new
+#
 
 # ## Normalization layer
 class LocalResponseNormLayer(Layer):
