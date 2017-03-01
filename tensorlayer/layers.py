@@ -1624,74 +1624,74 @@ class AtrousConv2dLayer(Layer):
         else:
             self.all_params.extend( [filters] )
 
-# class SeparableConv2dLayer(Layer):# Untested
-#     """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`_.
-#
-#     Parameters
-#     -----------
-#     layer : a layer class
-#     filters : integer, the dimensionality of the output space (i.e. the number output of filters in the convolution).
-#     kernel_size : a tuple or list of N positive integers specifying the spatial dimensions of of the filters. Can be a single integer to specify the same value for all spatial dimensions.
-#     strides : a tuple or list of N positive integers specifying the strides of the convolution. Can be a single integer to specify the same value for all spatial dimensions. Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
-#     padding : one of "valid" or "same" (case-insensitive).
-#     data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shapedata_format = 'NWHC' (batch, width, height, channels) while channels_first corresponds to inputs with shape (batch, channels, width, height).
-#     dilation_rate : an integer or tuple/list of 2 integers, specifying the dilation rate to use for dilated convolution. Can be a single integer to specify the same value for all spatial dimensions. Currently, specifying any dilation_rate value != 1 is incompatible with specifying any stride value != 1.
-#     depth_multiplier : The number of depthwise convolution output channels for each input channel. The total number of depthwise convolution output channels will be equal to num_filters_in * depth_multiplier.
-#     act (activation) : Activation function. Set it to None to maintain a linear activation.
-#     use_bias : Boolean, whether the layer uses a bias.
-#     depthwise_initializer : An initializer for the depthwise convolution kernel.
-#     pointwise_initializer : An initializer for the pointwise convolution kernel.
-#     bias_initializer : An initializer for the bias vector. If None, no bias will be applied.
-#     depthwise_regularizer : Optional regularizer for the depthwise convolution kernel.
-#     pointwise_regularizer : Optional regularizer for the pointwise convolution kernel.
-#     bias_regularizer : Optional regularizer for the bias vector.
-#     activity_regularizer : Regularizer function for the output.
-#     name : a string or None, an optional name to attach to this layer.
-#     """
-#     def __init__(
-#         self,
-#         layer = None,
-#         filters = None,
-#         kernel_size=5,
-#         strides=(1, 1),
-#         padding='valid',
-#         data_format='channels_last',
-#         dilation_rate=(1, 1),
-#         depth_multiplier=1,
-#         act=None,
-#         use_bias=True,
-#         depthwise_initializer=None,
-#         pointwise_initializer=None,
-#         bias_initializer=tf.zeros_initializer(),
-#         depthwise_regularizer=None,
-#         pointwise_regularizer=None,
-#         bias_regularizer=None,
-#         activity_regularizer=None,
-#         name = 'atrou2d'
-#     ):
-#         Layer.__init__(self, name=name)
-#         self.inputs = layer.outputs
-#         assert filters is not None
-#         if act is None:
-#             act = tf.identity
-#         print("  [TL] SeparableConv2dLayer %s: filters:%s kernel_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
-#                             (self.name, str(filters), str(kernel_size), str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
-#         with tf.variable_scope(name) as vs:
-#             self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
-#                  strides=strides, padding=padding, data_format=data_format,
-#                  dilation_rate=dilation_rate, depth_multiplier=depth_multiplier, activation=act,
-#                  use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
-#                  bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
-#                  pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
-#                  #trainable=True, name=None, reuse=None)
-#
-#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-#
-#         self.all_layers = list(layer.all_layers)
-#         self.all_params = list(layer.all_params)
-#         self.all_drop = dict(layer.all_drop)
-#         self.all_layers.extend( [self.outputs] )
-#         self.all_params.extend( variables )
+class SeparableConv2dLayer(Layer):# Untested
+    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`_.
+
+    Parameters
+    -----------
+    layer : a layer class
+    filters : integer, the dimensionality of the output space (i.e. the number output of filters in the convolution).
+    kernel_size : a tuple or list of N positive integers specifying the spatial dimensions of of the filters. Can be a single integer to specify the same value for all spatial dimensions.
+    strides : a tuple or list of N positive integers specifying the strides of the convolution. Can be a single integer to specify the same value for all spatial dimensions. Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
+    padding : one of "valid" or "same" (case-insensitive).
+    data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shapedata_format = 'NWHC' (batch, width, height, channels) while channels_first corresponds to inputs with shape (batch, channels, width, height).
+    dilation_rate : an integer or tuple/list of 2 integers, specifying the dilation rate to use for dilated convolution. Can be a single integer to specify the same value for all spatial dimensions. Currently, specifying any dilation_rate value != 1 is incompatible with specifying any stride value != 1.
+    depth_multiplier : The number of depthwise convolution output channels for each input channel. The total number of depthwise convolution output channels will be equal to num_filters_in * depth_multiplier.
+    act (activation) : Activation function. Set it to None to maintain a linear activation.
+    use_bias : Boolean, whether the layer uses a bias.
+    depthwise_initializer : An initializer for the depthwise convolution kernel.
+    pointwise_initializer : An initializer for the pointwise convolution kernel.
+    bias_initializer : An initializer for the bias vector. If None, no bias will be applied.
+    depthwise_regularizer : Optional regularizer for the depthwise convolution kernel.
+    pointwise_regularizer : Optional regularizer for the pointwise convolution kernel.
+    bias_regularizer : Optional regularizer for the bias vector.
+    activity_regularizer : Regularizer function for the output.
+    name : a string or None, an optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        filters = None,
+        kernel_size=5,
+        strides=(1, 1),
+        padding='valid',
+        data_format='channels_last',
+        dilation_rate=(1, 1),
+        depth_multiplier=1,
+        act=None,
+        use_bias=True,
+        depthwise_initializer=None,
+        pointwise_initializer=None,
+        bias_initializer=tf.zeros_initializer(),
+        depthwise_regularizer=None,
+        pointwise_regularizer=None,
+        bias_regularizer=None,
+        activity_regularizer=None,
+        name = 'atrou2d'
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        assert filters is not None
+        if act is None:
+            act = tf.identity
+        print("  [TL] SeparableConv2dLayer %s: filters:%s kernel_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
+                            (self.name, str(filters), str(kernel_size), str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
+                 strides=strides, padding=padding, data_format=data_format,
+                 dilation_rate=dilation_rate, depth_multiplier=depth_multiplier, activation=act,
+                 use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
+                 bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
+                 pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
+                 #trainable=True, name=None, reuse=None)
+
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
 
 ## Initializers for Convuolutional Layers
 def deconv2d_bilinear_upsampling_initializer(shape):
