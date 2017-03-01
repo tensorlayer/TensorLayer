@@ -2985,6 +2985,7 @@ class TimeDistributedLayer(Layer):
                 with tf.variable_scope(name, reuse=(False if i==0 else True)) as vs:
                     set_name_reuse((False if i==0 else True))
                     net = layer_class(InputLayer(x[i], name=args['name']+str(i)), **args)
+                    # net = layer_class(InputLayer(x[i], name="input_"+args['name']), **args)
                     x[i] = net.outputs
                     variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
