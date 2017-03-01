@@ -295,6 +295,8 @@ Layer list
    BatchNormLayer
    LocalResponseNormLayer
 
+   TimeDistributedLayer
+
    RNNLayer
    BiRNNLayer
    advanced_indexing_op
@@ -495,6 +497,13 @@ Batch Normalization
 Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LocalResponseNormLayer
+
+
+Time distributed layer
+------------------------
+
+.. autoclass:: TimeDistributedLayer
+
 
 
 Fixed Length Recurrent layer

@@ -8,7 +8,6 @@ import tensorflow as tf
 import os
 import sys
 from sys import platform as _platform
-from .layers import set_keep
 
 
 def exit_tf(sess=None):
