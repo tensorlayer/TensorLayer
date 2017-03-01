@@ -13,7 +13,8 @@ from . import iterate
 from . import ops
 import numpy as np
 from six.moves import xrange
-import random, warnings, copy
+import random, warnings
+# import copy
 
 # __all__ = [
 #     "Layer",
