@@ -1624,61 +1624,61 @@ class AtrousConv2dLayer(Layer):
         else:
             self.all_params.extend( [filters] )
 
-class SeparableConv2dLayer(Layer):# Untested
-    """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
-
-    Parameters
-    -----------
-    layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
-    depthwise_filter : 4-D Tensor with shape [filter_height, filter_width, in_channels, channel_multiplier]. Contains in_channels convolutional filters of depth 1.
-    pointwise_filter : 4-D Tensor with shape [1, 1, channel_multiplier * in_channels, out_channels]. Pointwise filter to mix channels after depthwise_filter has convolved spatially.
-    strides : 1-D of size 4. The strides for the depthwise convolution for each dimension of input.
-    padding : A string, either 'VALID' or 'SAME'. The padding algorithm. See the comment here
-    name : a string or None, an optional name to attach to this layer.
-    """
-    def __init__(
-        self,
-        layer = None,
-        filters = None,
-        kernel_size=5,
-        strides=(1, 1),
-        padding='valid',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        act=None,
-        use_bias=True,
-        depthwise_initializer=None,
-        pointwise_initializer=None,
-        bias_initializer=tf.zeros_initializer(),
-        depthwise_regularizer=None,
-        pointwise_regularizer=None,
-        bias_regularizer=None,
-        activity_regularizer=None,
-        name = 'atrou2d'
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        if act is None:
-            act = tf.identity
-        print("  [TL] SeparableConv2dLayer %s: %s, %s, %s, %s" %
-                            (self.name, str(shape), str(strides), padding, act.__name__))
-        with tf.variable_scope(name) as vs:
-            self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
-                 strides=strides, padding=padding, data_format=data_format,
-                 dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
-                 use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
-                 bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
-                 pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
-                 #trainable=True, name=None, reuse=None)
-
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( variables )
+# class SeparableConv2dLayer(Layer):# Untested
+#     """The :class:`SeparableConv2dLayer` class is 2-D convolution with separable filters., see `tf.nn.separable_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#separable_conv2d>`_.
+#
+#     Parameters
+#     -----------
+#     layer: a layer class with 4-D Tensor of shape [batch, height, width, channels].
+#     depthwise_filter : 4-D Tensor with shape [filter_height, filter_width, in_channels, channel_multiplier]. Contains in_channels convolutional filters of depth 1.
+#     pointwise_filter : 4-D Tensor with shape [1, 1, channel_multiplier * in_channels, out_channels]. Pointwise filter to mix channels after depthwise_filter has convolved spatially.
+#     strides : 1-D of size 4. The strides for the depthwise convolution for each dimension of input.
+#     padding : A string, either 'VALID' or 'SAME'. The padding algorithm. See the comment here
+#     name : a string or None, an optional name to attach to this layer.
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         filters = None,
+#         kernel_size=5,
+#         strides=(1, 1),
+#         padding='valid',
+#         data_format='channels_last',
+#         dilation_rate=(1, 1),
+#         depth_multiplier=1,
+#         act=None,
+#         use_bias=True,
+#         depthwise_initializer=None,
+#         pointwise_initializer=None,
+#         bias_initializer=tf.zeros_initializer(),
+#         depthwise_regularizer=None,
+#         pointwise_regularizer=None,
+#         bias_regularizer=None,
+#         activity_regularizer=None,
+#         name = 'atrou2d'
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#         if act is None:
+#             act = tf.identity
+#         print("  [TL] SeparableConv2dLayer %s: %s, %s, %s, %s" %
+#                             (self.name, str(shape), str(strides), padding, act.__name__))
+#         with tf.variable_scope(name) as vs:
+#             self.outputs = tf.layers.separable_conv2d(self.inputs, filters, kernel_size,
+#                  strides=strides, padding=padding, data_format=data_format,
+#                  dilation_rate=gdilation_rate, depth_multiplier=depth_multiplier, activation=act,
+#                  use_bias=use_bias, depthwise_initializer=depthwise_initializer, pointwise_initializer=pointwise_initializer,
+#                  bias_initializer=tf.zeros_initializer(), depthwise_regularizer=None,
+#                  pointwise_regularizer=pointwise_regularizer, bias_regularizer=bias_regularizer, activity_regularizer=activity_regularizer,)
+#                  #trainable=True, name=None, reuse=None)
+#
+#             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( variables )
 
 ## Initializers for Convuolutional Layers
 def deconv2d_bilinear_upsampling_initializer(shape):
