@@ -3164,6 +3164,11 @@ class RNNLayer(Layer):
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+        if 'GRU' in cell_fn.__name__:
+            try:
+                cell_init_args.pop('state_is_tuple')
+            except:
+                pass
 
         self.inputs = layer.outputs
 
@@ -3345,6 +3350,12 @@ class BiRNNLayer(Layer):
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+        if 'GRU' in cell_fn.__name__:
+            try:
+                cell_init_args.pop('state_is_tuple')
+            except:
+                pass
+
         self.inputs = layer.outputs
 
         print("  [TL] BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden,
@@ -3692,6 +3703,11 @@ class DynamicRNNLayer(Layer):
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+        if 'GRU' in cell_fn.__name__:
+            try:
+                cell_init_args.pop('state_is_tuple')
+            except:
+                pass
         self.inputs = layer.outputs
 
         print("  [TL] DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden,
@@ -3911,6 +3927,11 @@ class BiDynamicRNNLayer(Layer):
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+        if 'GRU' in cell_fn.__name__:
+            try:
+                cell_init_args.pop('state_is_tuple')
+            except:
+                pass
         self.inputs = layer.outputs
 
         print("  [TL] BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
@@ -4153,6 +4174,11 @@ class Seq2Seq(Layer):
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+        if 'GRU' in cell_fn.__name__:
+            try:
+                cell_init_args.pop('state_is_tuple')
+            except:
+                pass
         # self.inputs = layer.outputs
         print("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
               (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
