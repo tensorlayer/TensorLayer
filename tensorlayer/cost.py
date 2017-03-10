@@ -247,15 +247,15 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     """
     targets = tf.reshape(target_seqs, [-1])   # to one vector
     weights = tf.to_float(tf.reshape(input_mask, [-1]))   # to one vector like targets
-    # losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, targets)
-    losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
+    losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name) * weights
+    #losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
 
     try: ## TF1.0
-        loss = tf.divide(tf.reduce_sum(tf.multiply(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
+        loss = tf.divide(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
                         tf.reduce_sum(weights),
                         name="seq_loss_with_mask")
     except: ## TF0.12
-        loss = tf.div(tf.reduce_sum(tf.mul(losses, weights)),   # loss from mask. reduce_sum before element-wise mul with mask !!
+        loss = tf.div(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
                         tf.reduce_sum(weights),
                         name="seq_loss_with_mask")
     if return_details:
