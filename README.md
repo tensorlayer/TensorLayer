@@ -24,7 +24,7 @@ TensorLayer is a machine learning library for [Google TensorFlow](https://www.te
 
 # Why TensorLayer
 
-TensorLayer grow out from our need to combine the power of  with the right building modules of deep neural networks in solving machine learning problems. Its development has been guided by the following principles:
+TensorLayer grow out from our need to combine the power of TensorFlow with the right building modules of deep neural networks in solving machine learning problems. Its development has been guided by the following principles:
 
 - **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with rich examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation only if need. 
 - **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and enables an eco-system that allows easy plug-in of novel modules.
