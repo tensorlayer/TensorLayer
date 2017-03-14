@@ -28,7 +28,7 @@ TensorLayer grow out from a need to combine the power of TensorFlow with the rig
 
 - **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples and can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation if need. 
 - **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows user to focus on solving actual problems.
-- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a fine-grain control towards a entire training process.
+- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a fine-grain control towards an entire training process.
 - **Performance**: TensorLayer provides zero-cost abstraction for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
 # Installation
