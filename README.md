@@ -16,9 +16,9 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Help Wanted Issues](https://badge.waffle.io/zsdonghao/tensorlayer.svg?label=up-for-grabs&title=Help Wanted Issues)](https://waffle.io/zsdonghao/tensorlayer)
 
-TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org). It provides popular DL and RL modules that can be easily customized and composed for tackling real-world machine learning problems. 
+TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from [Google TensorFlow](https://www.tensorflow.org).
 
-# News
+# New Features
 * You can now use TL with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 * Compatible with TensorFlow 1.0 release. 
 
