@@ -26,10 +26,10 @@ TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library exte
 
 TensorLayer grow out from a need to combine the power of TensorFlow with the right building modules for deep neural networks. There are four principles that guide through our development process:
 
-- **Simplicity**: We make TensorLayer easy to work with by providing mass examples that can be deployed and run through in minutes. A TensorFlow user may find it easy to bootstrap with the abstracted, high-level APIs provided by TensorLayer, and then deep dive into their implementation details if need. 
-- **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to  [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows user to focus on solving actual problems.
-- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow (e.g., training parameters, iteration control and tensor components) and therefore achieve the fine-grain control of  a training process.
-- **Performance**: TensorLayer provides zero-cost abstraction for TensorFlow. It can easily run on either heterogeneous platforms or multiple computation nodes without compromise in performance.
+- **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples and can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation if need. 
+- **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows user to focus on solving actual problems.
+- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore havge the fine-grain control of the entire training process.
+- **Performance**: TensorLayer provides zero-cost abstraction for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
 # Installation
 
