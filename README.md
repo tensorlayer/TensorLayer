@@ -16,7 +16,7 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Help Wanted Issues](https://badge.waffle.io/zsdonghao/tensorlayer.svg?label=up-for-grabs&title=Help Wanted Issues)](https://waffle.io/zsdonghao/tensorlayer)
 
-TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library designed for researchers and engineers.
+TensorLayer is a machine learning library for [Google TensorFlow](https://www.tensorflow.org). It provides powerful Deep Learning (DL) and Reinforcement Learning (RL) modules that can be easily leveraged by researchers and engineers in solving real-world problems.
 
 # New Features
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
@@ -24,14 +24,14 @@ TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library desi
 
 # Why TensorLayer
 
-TensorLayer grow out from our need to combine the power of [Google TensorFlow](https://www.tensorflow.org) with the right building modules of deep neural networks in solving machine learning problems. At its root, it has four design goals: 
+TensorLayer grow out from our need to combine the power of  with the right building modules of deep neural networks in solving machine learning problems. Its development has been guided by the following principles:
 
 - **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with rich examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation only if need. 
 - **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and enables an eco-system that allows easy plug-in of novel modules.
 - **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to further manipulate the native APIs of TensorFlow and therefore have a fine-grain control towards a training process.
 - **Performance**: TensorLayer provides zero-cost abstraction for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
-TensorLayer is an active research project and has received many exciting contributions from an opend community. We are excited to hear about your thoughts and let us work together to promote its future. :)
+TensorLayer is in an active development stage and has received many contributions from an opend community. We are excited to hear about your thoughts and let us work together to promote its future. :)
 
 # Installation
 
