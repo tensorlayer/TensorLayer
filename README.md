@@ -26,10 +26,12 @@ TensorLayer is a Deep Learning (DL) and Reinforcement Learning (RL) library desi
 
 TensorLayer grow out from our need to combine the power of [Google TensorFlow](https://www.tensorflow.org) with the right building modules of deep neural networks in solving machine learning problems. At its root, it has four design goals: 
 
-- **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples and can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation if need. 
+- **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with rich examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation only if need. 
 - **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows user to focus on solving actual problems.
-- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a fine-grain control towards an entire training process.
+- **Fine-grain Control**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to further manipulate the native APIs of TensorFlow and therefore have a fine-grain control towards a training process.
 - **Performance**: TensorLayer provides zero-cost abstraction for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
+
+TensorLayer is an active research project and has received many exciting contributions from an opend community. We are excited to hear about your thoughts and let us work together to promote its future. :)
 
 # Installation
 
