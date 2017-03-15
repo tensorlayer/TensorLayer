@@ -4894,7 +4894,7 @@ class MultiplexerLayer(Layer):
 
 ## Wrapper
 class EmbeddingAttentionSeq2seqWrapper(Layer):
-  """Sequence-to-sequence model with attention and for multiple buckets.
+  """Sequence-to-sequence model with attention and for multiple buckets (Deprecated after TF0.12).
 
     This example implements a multi-layer recurrent neural network as encoder,
     and an attention-based decoder. This is the same as the model described in
@@ -4956,6 +4956,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     self.learning_rate_decay_op = self.learning_rate.assign(
         self.learning_rate * learning_rate_decay_factor)
     self.global_step = tf.Variable(0, trainable=False, name='global_step')
+
+    if tf.__version__ >= "0.12":
+        raise Exception("Deprecated after TF0.12 : use other seq2seq layers instead.")
 
     # =========== Fake output Layer for compute cost ======
     # If we use sampled softmax, we need an output projection.
@@ -5136,7 +5139,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
       return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
 
   def get_batch(self, data, bucket_id, PAD_ID=0, GO_ID=1, EOS_ID=2, UNK_ID=3):
-    """Get a random batch of data from the specified bucket, prepare for step.
+    """ Get a random batch of data from the specified bucket, prepare for step.
 
     To feed data in step(..) it must be a list of batch-major vectors, while
     data here contains single length-major cases. So the main logic of this
