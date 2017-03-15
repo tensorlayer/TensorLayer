@@ -17,24 +17,24 @@
 
 TensorLayer is a deep learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
 
-# New Features
+# What's New
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 * Compatible with TensorFlow 1.0 release. 
 
 # Why TensorLayer
 
-TensorLayer grow out from our need to combine the power of TensorFlow with the right modules of deep neural networks in building end-to-end machine learning workflows. Its development is guided by the following principles:
+TensorLayer grow out from our need to combine the power of TensorFlow with the right deep learning modules in crafting diverse machine learning workflows. It is architected by the following design principles:
 
-- **Simplicity**: TensorLayer lifts the low-level dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with rich examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our high-level APIs, and then dive into their implementation only if need. 
-- **Composibility**: If possible, machine learning modules should be composed, not built. By providing connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and enables an eco-system that allows easy plug-in of novel modules.
-- **Flexibility**: A domain-specific DL algorithm can require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a fine-grain control of the training engine.
+- **Simplicity**: TensorLayer lifts the dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our abstracted modules, and then dive into implementation if need. 
+- **Composibility**: If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows easy plug-in of new modules.
+- **Flexibility**: A DL workflow usually require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a flexible control of the engine.
 - **Performance**: TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
-A frequent question regarding TensorLayer is that why don't we use existing libraries like Keras and Tflearn. A DL user may find it comfortable to start with these libraries. They provide abstractions for the ease of use but in turn hide the underlying engine. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is necessary in tackling many real-world problems. 
+A frequent question regarding TensorLayer is that why don't we use existing libraries like Keras and Tflearn. A DL scientist may find it comfortable to start with these libraries. They provide abstractions to lower adoption barrier; but in turn hide the underlying engine. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
 
-In contrast, TensorLayer advocates a flexible and composable approach where neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of using powerful pre-built modules without sacrificing fine-grain control. This noninvasive nature makes it viable to consolidate with other TF's libraries such as TF-Slim and Keras. However, flexibility does not always come with the loss of performance. TensorLayer allows seamless distributed and heterogeneous deployment with its zero-cost compatibility to TensorFlow.
+In contrast, TensorLayer advocates a more flexible and composable approach where neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the power of pre-built modules without sacrificing control of the engine. This noninvasive nature makes it viable to consolidate with other TF's libraries such as TF-Slim and Keras. However, flexibility does not always come with the loss of performance. TensorLayer allows seamless distributed and heterogeneous deployment with its zero-cost compatibility to TensorFlow.
 
-TensorLayer is in an active development stage and has received many contributions from an opend community. We are excited to hear about your thoughts and let us work together to promote its future. :)
+TensorLayer is in an active development stage and has received many contributions from an opend community. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
 
 # Installation
 
