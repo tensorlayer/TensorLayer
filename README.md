@@ -38,7 +38,7 @@ A frequent question regarding TensorLayer is that why don't we use libraries lik
 
 Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. This noninvasive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
 
-TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA and etc, as well as engineers from Google, Microsoft, Alibaba, Tencent, Bloomberg and many others. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
+TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA, Linköping University and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, Bloomberg and many others. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
 
 # Installation
 
