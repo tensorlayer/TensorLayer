@@ -25,7 +25,7 @@ TensorLayer is a deep learning library based on [Google TensorFlow](https://www.
 
 As deep learning researchers and engineers, we have been looking for a library that can serve for various scenarios. This library shall be easy for beginners by providing mass tutorials for diverse neural networks along with applications. Later, they shall be allowed to use the same library in solving actual problems by adopting native TensorFlow APIs in sophisticated algorithms. In the end, the same library can be used again for production deployment that may has strict requirements for performance.
 
-TensorLayer is designed for beginning, intermediate and professional deep learning users. Its architecture is partially inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
+TensorLayer is designed for beginning, intermediate and professional deep learning users. Its architecture is largely inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
 
 - *Simplicity* : TensorLayer lifts the low-level dataflow interface of TensorFlow to high-level deep learning modules. These modules come with detailed examples that can be deployed in minutes. A user may find it easy to bootstrap with TensorLayer, and then dive into module implementation if need. 
 - *Composability* : If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to develop ideas and allows easy module plug-in.
