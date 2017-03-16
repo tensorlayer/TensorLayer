@@ -177,12 +177,9 @@ We have included the corresponding modularized implementations of Google TensorF
 
 TensorLayer is releazed under the Apache 2.0 license.
 
-# Contribution Guideline
+# Contributions
 
-TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. TensorLayer contributors are from Imperial College, Tsinghua University, Carnegie Mellon University, Google, Microsoft, Bloomberg and etc.
-The goal of the project is to develop a compositional language while complex learning systems
-can be build through composition of neural network modules.
-The whole development is now participated by numerous contributors [here](https://github.com/zsdonghao/tensorlayer/releases).
+TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/releases).
 
 <!--
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
@@ -190,4 +187,3 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 
 - 🇬🇧 If you are in London, we can discuss in person. Drop us an email to organize a meetup: tensorlayer@gmail.com.
 - 🇨🇳 我们有官方的 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest)。另外, 我们建立了多种交流渠道，如[QQ 群](img/img_qq.png)和微信群*（申请入群时请star该项目，并告知github用户名）*. 需加入微信群，请将个人介绍和微信号发送到 tensorlayer@gmail.com.
-- 🇹🇭 เราขอเรียนเชิญนักพัฒนาคนไทยทุกคนที่สนใจจะเข้าร่วมทีมพัฒนา TensorLayer ติดต่อสอบถามรายละเอียดเพิ่มเติมได้ที่ tensorlayer@gmail.com.
