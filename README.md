@@ -32,13 +32,13 @@ TensorLayer is designed for beginning, intermediate and professional deep learni
 - *Flexibility* : A deep learning workflow can require many careful tunings. TensorLayer provides the access to the native APIs of TensorFlow and therefore help users to achieve a flexible control within the engine.
 - *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers while offering native TensorFlow performance.
 
-TensorLayer is in an active development stage and has received many contributions from an open community. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
-
 # Why TensorLayer
 
 A frequent question regarding TensorLayer is that why don't we use libraries like Keras and Tflearn. These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; but in turn mask the underlying engine from users. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
 
 Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. This noninvasive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
+
+TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA and etc, as well as engineers from Google, Microsoft, Alibaba, Tencent, Bloomberg and many others. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
 
 # Installation
 
