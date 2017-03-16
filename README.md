@@ -23,12 +23,12 @@ TensorLayer is a deep learning library based on [Google TensorFlow](https://www.
 
 # Why TensorLayer
 
-As deep learning researchers and engineers, we have been looking for a library that can serve through all learning stages. This library shall be easy for beginners by providing mass tutorials for various neural networks as well as their applications. Later on, they shall be allowed to use the same library in solving real-world problems by adopting the native TensorFlow APIs to develop sophisticated algorithms. In the end, the same library can again be used to deploy the algorithm into production that may has a high requiremment for performance and cross-platform supports.
+As deep learning researchers and engineers, we have been looking for a library that can serve through all learning stages. This library shall be easy for beginners by providing mass tutorials for various neural networks as well as their applications. Later, they shall be allowed to use the same library in solving real-world problems by adopting the native TensorFlow APIs to develop sophisticated algorithms. In the end, the same library can again be used to deploy the algorithm into production that may has a strict requirement for performance and cross-platform supports.
 
-TensorLayer is designed for beginning, intermediate and professional deap learning users. Its architecture is inspired by the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy):
+TensorLayer is designed for beginning, intermediate and professional deep learning users. Its architecture is inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy):
 
 - *Simplicity* - TensorLayer lifts the dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our abstracted modules, and then dive into implementation if need. 
-- *Composibility* - If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows easy plug-in of new modules.
+- *Composability* - If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows easy plug-in of new modules.
 - *Flexibility* - A DL workflow usually require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a flexible control of the engine.
 - *Performance* - TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
@@ -36,7 +36,7 @@ A frequent question regarding TensorLayer is that why don't we simply extend exi
 
 In contrast, TensorLayer advocates a more flexible and composable approach where neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the power of pre-built modules without sacrificing control of the engine. This noninvasive nature makes it viable to consolidate with other TF's libraries such as TF-Slim and Keras. However, flexibility does not always come with the loss of performance. TensorLayer allows seamless distributed and heterogeneous deployment with its zero-cost compatibility to TensorFlow.
 
-TensorLayer is in an active development stage and has received many contributions from an opend community. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
+TensorLayer is in an active development stage and has received many contributions from an open community. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
 
 # Installation
 
