@@ -27,10 +27,10 @@ As deep learning researchers and engineers, we have been looking for a library t
 
 TensorLayer is designed for beginning, intermediate and professional deap learning users. Its architecture is inspired by the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy):
 
-- *Simplicity*: TensorLayer lifts the dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our abstracted modules, and then dive into implementation if need. 
-- *Composibility*: If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows easy plug-in of new modules.
-- *Flexibility*: A DL workflow usually require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a flexible control of the engine.
-- *Performance*: TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
+- *Simplicity* - TensorLayer lifts the dataflow paradigm of TensorFlow to abstracted DL and RL modules. These modules come with detailed examples that can be deployed in minutes. A TensorLayer user may find it easy to bootstrap with our abstracted modules, and then dive into implementation if need. 
+- *Composibility* - If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to explore ideas and allows easy plug-in of new modules.
+- *Flexibility* - A DL workflow usually require many careful tunings. TensorLayer allows users to manipulate the native APIs of TensorFlow and therefore have a flexible control of the engine.
+- *Performance* - TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers without compromise in performance.
 
 A frequent question regarding TensorLayer is that why don't we simply extend existing libraries like Keras and Tflearn. These libraries are comfortable to start with. They provide abstractions to lower adoption barrier; but in turn hide the details of the underlying engine. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
 
