@@ -4093,8 +4093,8 @@ class Seq2Seq(Layer):
         The number of RNN layers.
     return_seq_2d : boolean
         - When return_last = False
-        - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer or computing cost after it.
-        - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), 2 * n_hidden], for stacking multiple RNN after it.
+        - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
+        - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), n_hidden], for stacking multiple RNN after it.
     name : a string or None
         An optional name to attach to this layer.
 
