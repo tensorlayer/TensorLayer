@@ -315,7 +315,7 @@ class InputLayer(Layer):
 
     Parameters
     ----------
-    inputs : a TensorFlow placeholder
+    inputs : a placeholder or tensor
         The input tensor data.
     name : a string or None
         An optional name to attach to this layer.
@@ -328,6 +328,43 @@ class InputLayer(Layer):
         Layer.__init__(self, inputs=inputs, name=name)
         print("  [TL] InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
+        self.all_layers = []
+        self.all_params = []
+        self.all_drop = {}
+
+## OneHot layer
+class OneHotInputLayer(Layer):
+    """
+    The :class:`OneHotInputLayer` class is the starting layer of a neural network, see ``tf.one_hot``.
+
+    Parameters
+    ----------
+    inputs : a placeholder or tensor
+        The input tensor data.
+    name : a string or None
+        An optional name to attach to this layer.
+    depth : If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension axis (default: the new axis is appended at the end).
+    on_value : If on_value is not provided, it will default to the value 1 with type dtype.
+        default, None
+    off_value : If off_value is not provided, it will default to the value 0 with type dtype.
+        default, None
+    axis : default, None
+    dtype : default, None
+    """
+    def __init__(
+        self,
+        inputs = None,
+        depth = None,
+        on_value = None,
+        off_value = None,
+        axis = None,
+        dtype=None,
+        name ='input_layer'
+    ):
+        Layer.__init__(self, inputs=inputs, name=name)
+        assert depth != None, "depth is not given"
+        print("  [TL]:Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}

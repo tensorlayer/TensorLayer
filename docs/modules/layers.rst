@@ -266,6 +266,7 @@ Layer list
    Layer
 
    InputLayer
+   OneHotInputLayer
    Word2vecEmbeddingInputlayer
    EmbeddingInputlayer
 
@@ -373,6 +374,10 @@ Input layer
 ------------
 .. autoclass:: InputLayer
   :members:
+
+One-Hot layer
+----------------
+.. autoclass:: OneHotInputLayer
 
 Word Embedding Input layer
 -----------------------------
