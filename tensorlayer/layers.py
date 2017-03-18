@@ -319,17 +319,10 @@ class InputLayer(Layer):
         The input tensor data.
     name : a string or None
         An optional name to attach to this layer.
-    n_features : a int
-        The number of features. If not specify, it will assume the input is
-        with the shape of [batch_size, n_features], then select the second
-        element as the n_features. It is used to specify the matrix size of
-        next layer. If apply Convolutional layer after InputLayer,
-        n_features is not important.
     """
     def __init__(
         self,
         inputs = None,
-        n_features = None,
         name ='input_layer'
     ):
         Layer.__init__(self, inputs=inputs, name=name)
