@@ -175,7 +175,7 @@ We have included the corresponding modularized implementations of Google TensorF
 
 # License
 
-TensorLayer is releazed under the Apache 2.0 license.
+TensorLayer is released under the Apache 2.0 license.
 
 # Contributions
 
