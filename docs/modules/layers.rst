@@ -324,6 +324,7 @@ Layer list
    ExpandDimsLayer
    TileLayer
 
+   EstimatorLayer
    SlimNetsLayer
    KerasLayer
 
@@ -375,7 +376,7 @@ Input layer
 .. autoclass:: InputLayer
   :members:
 
-One-Hot layer
+One-hot layer
 ----------------
 .. autoclass:: OneHotInputLayer
 
@@ -637,8 +638,9 @@ Tile layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: TileLayer
 
-
-
+Estimator layer
+------------------
+.. autoclass:: EstimatorLayer
 
 Connect TF-Slim
 ------------------

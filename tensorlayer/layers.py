@@ -4750,6 +4750,43 @@ class KerasLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
 
+## Estimator layer
+class EstimatorLayer(Layer):
+    """
+    The :class:`EstimatorLayer` class accepts ``model_fn`` that described the model.
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    model_fn : a function that described the model.
+    args : dictionary
+        The arguments for the model_fn.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        model_fn = None,
+        args = {},
+        name ='estimator_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert model_fn is not None
+        self.inputs = layer.outputs
+        print("  [TL] EstimatorLayer %s: %s" % (self.name, model_fn))
+        with tf.variable_scope(name) as vs:
+            self.outputs = model_fn(self.inputs, **args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
+
 ## Special activation
 class PReluLayer(Layer):
     """
