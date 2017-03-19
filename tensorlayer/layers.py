@@ -1113,7 +1113,7 @@ class Conv1dLayer(Layer):
     act : activation function, None for identity.
     shape : list of shape
         shape of the filters, [filter_length, in_channels, out_channels].
-    strides : an int.
+    stride : an int.
         The number of entries by which the filter is moved right at each step.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
@@ -1134,8 +1134,8 @@ class Conv1dLayer(Layer):
         self,
         layer = None,
         act = tf.identity,
-        shape = [5, 5, 1],
-        strides= 1,
+        shape = [5, 1, 5],
+        stride = 1,
         padding='SAME',
         use_cudnn_on_gpu=None,
         data_format=None,
@@ -1147,18 +1147,18 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv1dLayer %s: shape:%s strides:%s pad:%s act:%s" %
-                            (self.name, str(shape), str(strides), padding, act.__name__))
+        print("  [TL] Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" %
+                            (self.name, str(shape), str(stride), padding, act.__name__))
         if act is None:
             act = tf.identity
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, **W_init_args )
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=strides, padding=padding,
+                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding,
                             use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b ) #1.2
             else:
-                self.outputs = act( tf.nn.conv1d(self.inputs, W, strides=strides, padding=padding,
+                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding,
                             use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
 
         self.all_layers = list(layer.all_layers)
