@@ -288,8 +288,10 @@ Layer list
    AtrousConv2dLayer
    SeparableConv2dLayer
 
+   Conv1d
    Conv2d
    DeConv2d
+   
    MaxPool1d
    MeanPool1d
    MaxPool2d
@@ -463,6 +465,10 @@ Convolutional layer (Simplified)
 For users don't familiar with TensorFlow, the following simplified functions may easier for you.
 We will provide more simplified functions later, but if you are good at TensorFlow, the professional
 APIs may better for you.
+
+1D Convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: Conv1d
 
 2D Convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^

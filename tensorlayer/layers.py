@@ -1791,6 +1791,39 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 ## Convolutional layer (Simplified)
+def Conv1d(net, n_filter=32, filter_size=5, stride=1, act=None,
+        padding='SAME', use_cudnn_on_gpu=None,data_format=None,
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {}, b_init_args = {}, name ='conv1d',):
+    """Wrapper for :class:`Conv1dLayer`, if you don't understand how to use :class:`Conv1dLayer`, this function may be easier.
+
+    Parameters
+    ----------
+    net : TensorLayer layer.
+    n_filter : number of filter.
+    filter_size : an int.
+    stride : an int.
+    act : None or activation function.
+    others : see :class:`Conv1dLayer`.
+    """
+    if act is None:
+        act = tf.identity
+    net = Conv1dLayer(layer = net,
+            act = act,
+            shape = [filter_size, int(net.outputs.get_shape()[-1]), n_filter],
+            stride = stride,
+            padding = padding,
+            use_cudnn_on_gpu = use_cudnn_on_gpu,
+            data_format = data_format,
+            W_init = W_init,
+            b_init = b_init,
+            W_init_args = W_init_args,
+            b_init_args = b_init_args,
+            name = name,
+        )
+    return net
+
 def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
         padding='SAME', W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
         W_init_args = {}, b_init_args = {}, name ='conv2d',):
