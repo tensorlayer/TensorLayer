@@ -259,7 +259,9 @@ class Layer(object):
         name ='layer'
     ):
         self.inputs = inputs
-        name = tf.get_variable_scope().name + "/" + name
+        scope_name=tf.get_variable_scope().name
+        if scope_name:
+            name = scope_name + '/' + name
         if (name in set_keep['_layers_name_list']) and name_reuse == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
@@ -304,9 +306,9 @@ class Layer(object):
         return n_params
 
     def __str__(self):
-        print("\nIt is a Layer class")
-        self.print_params(False)
-        self.print_layers()
+        # print("\nIt is a Layer class")
+        # self.print_params(False)
+        # self.print_layers()
         return "  Last layer is: %s" % self.__class__.__name__
 
 ## Input layer
@@ -3657,6 +3659,30 @@ def retrieve_seq_length_op2(data):
     return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
 
 
+def retrieve_seq_length_op3(data, pad_val=0):
+    data_shape_size = data.get_shape().ndims
+    if data_shape_size == 3:
+        return tf.reduce_sum(tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), 1)
+    elif data_shape_size == 2:
+        return tf.reduce_sum(tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32), 1)
+    elif data_shape_size == 1:
+        raise ValueError("retrieve_seq_length_op3: data has wrong shape!")
+    else:
+        raise ValueError("retrieve_seq_length_op3: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
+
+
+def target_mask_op(data, pad_val=0):
+    data_shape_size = data.get_shape().ndims
+    if data_shape_size == 3:
+        return tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
+    elif data_shape_size == 2:
+        return tf.cast(tf.not_equal(data, pad_val), dtype=tf.int32)
+    elif data_shape_size == 1:
+        raise ValueError("target_mask_op: data has wrong shape!")
+    else:
+        raise ValueError("target_mask_op: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
+
+
 # Dynamic RNN
 class DynamicRNNLayer(Layer):
     """
@@ -3762,6 +3788,7 @@ class DynamicRNNLayer(Layer):
         n_layer = 1,
         return_last = False,
         return_seq_2d = False,
+        dynamic_rnn_init_args={},
         name = 'dyrnn_layer',
     ):
         Layer.__init__(self, name=name)
@@ -3795,7 +3822,8 @@ class DynamicRNNLayer(Layer):
         self.batch_size = batch_size
 
         # Creats the cell function
-        self.cell = cell_fn(num_units=n_hidden, **cell_init_args)
+        cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+        # self.cell = cell_fn(num_units=n_hidden, **cell_init_args)
 
         # Apply dropout
         if dropout:
@@ -3812,10 +3840,15 @@ class DynamicRNNLayer(Layer):
             except:
                 DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
 
-            self.cell = DropoutWrapper_fn(
-                      self.cell,
-                      input_keep_prob=in_keep_prob,
-                      output_keep_prob=out_keep_prob)
+            cell_instance_fn1=cell_instance_fn
+            cell_instance_fn=DropoutWrapper_fn(
+                                cell_instance_fn1(),
+                                input_keep_prob=in_keep_prob,
+                                output_keep_prob=out_keep_prob)
+            # self.cell = DropoutWrapper_fn(
+            #           self.cell,
+            #           input_keep_prob=in_keep_prob,
+            #           output_keep_prob=out_keep_prob)
         # Apply multiple layers
         if n_layer > 1:
             try:
@@ -3823,11 +3856,15 @@ class DynamicRNNLayer(Layer):
             except:
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
+            cell_instance_fn2=cell_instance_fn
             try:
-                self.cell = MultiRNNCell_fn([self.cell] * n_layer, state_is_tuple=True)
+                cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True)
+                # self.cell = MultiRNNCell_fn([self.cell] * n_layer, state_is_tuple=True)
             except:
-                self.cell = MultiRNNCell_fn([self.cell] * n_layer)
+                cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)])
+                # self.cell = MultiRNNCell_fn([self.cell] * n_layer)
 
+        self.cell=cell_instance_fn()
         # Initialize initial_state
         if initial_state is None:
             self.initial_state = self.cell.zero_state(batch_size, dtype=tf.float32)#dtype="float")
@@ -3852,6 +3889,7 @@ class DynamicRNNLayer(Layer):
                 # dtype=tf.float64,
                 sequence_length=sequence_length,
                 initial_state = self.initial_state,
+                **dynamic_rnn_init_args
                 )
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
@@ -3986,6 +4024,7 @@ class BiDynamicRNNLayer(Layer):
         n_layer = 1,
         return_last = False,
         return_seq_2d = False,
+        dynamic_rnn_init_args={},
         name = 'bi_dyrnn_layer',
     ):
         Layer.__init__(self, name=name)
@@ -4020,8 +4059,9 @@ class BiDynamicRNNLayer(Layer):
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             # Creats the cell function
-            self.fw_cell = cell_fn(num_units=n_hidden, **cell_init_args)
-            self.bw_cell = cell_fn(num_units=n_hidden, **cell_init_args)
+            cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+            # self.fw_cell = cell_fn(num_units=n_hidden, **cell_init_args)
+            # self.bw_cell = cell_fn(num_units=n_hidden, **cell_init_args)
 
             # Apply dropout
             if dropout:
@@ -4038,14 +4078,20 @@ class BiDynamicRNNLayer(Layer):
                 except:
                     DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
 
-                self.fw_cell = DropoutWrapper_fn(
-                    self.fw_cell,
-                    input_keep_prob=in_keep_prob,
-                    output_keep_prob=out_keep_prob)
-                self.bw_cell = DropoutWrapper_fn(
-                    self.bw_cell,
-                    input_keep_prob=in_keep_prob,
-                    output_keep_prob=out_keep_prob)
+                    cell_instance_fn1=cell_instance_fn
+                    cell_instance_fn=lambda: DropoutWrapper_fn(
+                                        cell_instance_fn1(),
+                                        input_keep_prob=in_keep_prob,
+                                        output_keep_prob=out_keep_prob)
+
+                # self.fw_cell = DropoutWrapper_fn(
+                #     self.fw_cell,
+                #     input_keep_prob=in_keep_prob,
+                #     output_keep_prob=out_keep_prob)
+                # self.bw_cell = DropoutWrapper_fn(
+                #     self.bw_cell,
+                #     input_keep_prob=in_keep_prob,
+                #     output_keep_prob=out_keep_prob)
             # Apply multiple layers
             if n_layer > 1:
                 try:
@@ -4053,8 +4099,12 @@ class BiDynamicRNNLayer(Layer):
                 except:
                     MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
-                self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer)
-                self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer)
+                cell_instance_fn2=cell_instance_fn
+                cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)])
+                # self.fw_cell = MultiRNNCell_fn([self.fw_cell] * n_layer)
+                # self.bw_cell = MultiRNNCell_fn([self.bw_cell] * n_layer)
+            self.fw_cell=cell_instance_fn()
+            self.bw_cell=cell_instance_fn()
             # Initial state of RNN
             if fw_initial_state is None:
                 self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=tf.float32)
@@ -4080,6 +4130,7 @@ class BiDynamicRNNLayer(Layer):
                 sequence_length=sequence_length,
                 initial_state_fw=self.fw_initial_state,
                 initial_state_bw=self.bw_initial_state,
+                **dynamic_rnn_init_args
             )
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
