@@ -290,7 +290,7 @@ def flip_axis(x, axis, is_random=False):
         - 1, flip left and right
         - 2, flip channel
     is_random : boolean, default False
-        If True, randomly zoom.
+        If True, randomly flip.
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
