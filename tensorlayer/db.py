@@ -165,10 +165,13 @@ class TensorDB(object):
             return False, False
         # print(f_id)
         # exit()
-        params = pickle.loads(self.paramsfs.get(f_id).read())
-        # print(self.paramsfs)
-        print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-s, 2)))
-        return params, f_id
+        try:
+            params = pickle.loads(self.paramsfs.get(f_id).read())
+            # print(self.paramsfs)
+            print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-s, 2)))
+            return params, f_id
+        except:
+            return False, False
 
     def find_all_params(self, args={}):
         """ Find all parameter from MongoDB Buckets """
