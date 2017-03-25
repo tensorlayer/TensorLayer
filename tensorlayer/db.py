@@ -60,8 +60,6 @@ class TensorDB(object):
         self.modelfs = gridfs.GridFS(self.db, collection="modelfs")
         self.paramsfs = gridfs.GridFS(self.db, collection="paramsfs")
         ##
-        self.buckets_f_id = {'mnist' : 0}
-        ##
         print("[TensorDB] Connect SUCCESS {}:{} {} {}".format(ip, port, db_name, user_name))
 
     # def save_bulk_data(self, data=None, filename='filename'):
