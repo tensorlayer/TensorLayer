@@ -294,7 +294,7 @@ class TensorDB(object):
             f = open('_' + temp['script_name'], 'wb')
             f.write(temp['script'])
             f.close()
-
+        print("[TensorDB] Find Job: {}".format(args))
         return temp
 
     def train_log(self, args={}):
