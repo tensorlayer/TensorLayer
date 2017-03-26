@@ -219,7 +219,7 @@ class TensorDB(object):
 
         Parameters
         -----------
-        args : dictionary, find items to delete.
+        args : dictionary, find items to delete, leave it empty to delete all parameters.
         """
         pc = self.db.Params.find(args)
         f_id_list = pc.distinct('f_id')
@@ -255,9 +255,14 @@ class TensorDB(object):
         print("[TensorDB] TrainLog: " +_log)
         return _result
 
-    def del_train_log(self):
-        """ Delete train log. """
-        self.db.TrainLog.delete_many({})
+    def del_train_log(self, args={}):
+        """ Delete train log.
+
+        Parameters
+        -----------
+        args : dictionary, find items to delete, leave it empty to delete all log.
+        """
+        self.db.TrainLog.delete_many(args)
         print("[TensorDB] Delete TrainLog SUCCESS")
 
     def valid_log(self, args={}):
@@ -277,9 +282,14 @@ class TensorDB(object):
         print("[TensorDB] ValidLog: " +_log)
         return _result
 
-    def del_valid_log(self):
-        """ Delete validation log. """
-        self.db.ValidLog.delete_many({})
+    def del_valid_log(self, args={}):
+        """ Delete validation log.
+
+        Parameters
+        -----------
+        args : dictionary, find items to delete, leave it empty to delete all log.
+        """
+        self.db.ValidLog.delete_many(args)
         print("[TensorDB] Delete ValidLog SUCCESS")
 
     def test_log(self, args={}):
@@ -299,9 +309,14 @@ class TensorDB(object):
         print("[TensorDB] TestLog: " +_log)
         return _result
 
-    def del_test_log(self):
-        """ Delete test log. """
-        self.db.TestLog.delete_many({})
+    def del_test_log(self, args={}):
+        """ Delete test log.
+
+        Parameters
+        -----------
+        args : dictionary, find items to delete, leave it empty to delete all log.
+        """
+        self.db.TestLog.delete_many(args)
         print("[TensorDB] Delete TestLog SUCCESS")
 
     def __str__(self):
