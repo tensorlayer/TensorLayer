@@ -28,7 +28,13 @@ class TensorDB(object):
     Properties
     ------------
     db : ``pymongo.MongoClient[db_name]``, xxxxxx
-    fs : ``gridfs.GridFS(db)``, xxxxxxxxxx
+    datafs : ``gridfs.GridFS(self.db, collection="datafs")``, xxxxxxxxxx
+    modelfs : ``gridfs.GridFS(self.db, collection="modelfs")``,
+    paramsfs : ``gridfs.GridFS(self.db, collection="paramsfs")``,
+    db.Params : Collection for
+    db.TrainLog : Collection for
+    db.ValidLog : Collection for
+    db.TestLog : Collection for
 
     Dependencies
     -------------
@@ -51,16 +57,20 @@ class TensorDB(object):
     ):
         ## connect mongodb
         client = MongoClient(ip, port)
-        db = client[db_name]
+        self.db = client[db_name]
         if user_name != None:
-            db.authenticate(user_name, password)
-        self.db = db
+            self.db.authenticate(user_name, password)
         ## define file system (Buckets)
         self.datafs = gridfs.GridFS(self.db, collection="datafs")
         self.modelfs = gridfs.GridFS(self.db, collection="modelfs")
         self.paramsfs = gridfs.GridFS(self.db, collection="paramsfs")
         ##
         print("[TensorDB] Connect SUCCESS {}:{} {} {}".format(ip, port, db_name, user_name))
+
+        self.ip = ip
+        self.port = port
+        self.db_name = db_name
+        self.user_name = user_name
 
     # def save_bulk_data(self, data=None, filename='filename'):
     #     """ Put bulk data into TensorDB.datafs, return file ID.
