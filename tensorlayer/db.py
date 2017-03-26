@@ -250,6 +250,53 @@ class TensorDB(object):
                 string += str(key) + ": "+ str(value) + " / "
         return string
 
+    def save_job(self, script=None, args={}):
+        """Save the job.
+
+        Parameters
+        -----------
+        script : a script file name or None.
+        args : dictionary, items to save.
+
+        Examples
+        ---------
+        >>> # Save your job
+        >>> db.save_job('your_script.py', {'job_id': 1, 'learning_rate': 0.01, 'n_units': 100})
+        >>> # Run your job
+        >>> temp = db.find_one_job(args={'job_id': 1})
+        >>> print(temp['learning_rate'])
+        ... 0.01
+        >>> import _your_script
+        ... running your script
+        """
+        if script is None:
+            _script = open(script, 'rb').read()
+            args.update({'script': _script, 'script_name': script})
+        _result = self.db.Job.insert_one(args)
+        _log = self._print_dict(args)
+        print("[TensorDB] Save Job: {}".format(script))
+        return _result
+
+    def find_one_job(self, args={}):
+        """ Find one job from MongoDB Job Collections.
+
+        Parameters
+        ----------
+        args : dictionary, find items.
+
+        Returns
+        --------
+        dictionary : contains all meta data and script.
+        """
+        temp = self.db.Job.find_one(args)
+
+        if 'script_name' in temp.keys():
+            f = open('_' + temp['script_name'], 'wb')
+            f.write(temp['script'])
+            f.close()
+
+        return temp
+
     def train_log(self, args={}):
         """Save the training log.
 
@@ -339,95 +386,17 @@ class TensorDB(object):
 
 
 
+if __name__ == '__main__':
 
+    db = TensorDB(ip='localhost', port=27017, db_name='mnist', user_name=None, password=None)
 
+    db.save_job('your_script.py', {'job_id': 1, 'learning_rate': 0.01, 'n_units': 100})
+    temp = db.find_one_job(args={'job_id': 1})
 
+    print(temp['learning_rate'])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    import _your_script
+    print("import _your_script SUCCESS")
 
 
 
