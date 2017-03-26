@@ -142,7 +142,17 @@ class TensorDB(object):
     #     pass
 
     def save_params(self, params=[], args={}):#, file_name='parameters'):
-        """ Save parameters into MongoDB Buckets, and save the file ID into Params Collections. """
+        """ Save parameters into MongoDB Buckets, and save the file ID into Params Collections.
+
+        Parameters
+        ----------
+        params : a list of parameters
+        args : dictionary, item meta data.
+
+        Returns
+        ---------
+        f_id : the Buckets ID of the parameters.
+        """
         s = time.time()
         f_id = self.paramsfs.put(pickle.dumps(params, protocol=2))#, file_name=file_name)
         args.update({'f_id': f_id, 'time': datetime.utcnow()})
@@ -152,7 +162,17 @@ class TensorDB(object):
         return f_id
 
     def find_one_params(self, args={}):
-        """ Find one parameter from MongoDB Buckets """
+        """ Find one parameter from MongoDB Buckets.
+
+        Parameters
+        ----------
+        args : dictionary, find items.
+
+        Returns
+        --------
+        params : the parameters, return False if nothing found.
+        f_id : the Buckets ID of the parameters, return False if nothing found.
+        """
         s = time.time()
         d = self.db.Params.find_one(args)
 
@@ -161,58 +181,39 @@ class TensorDB(object):
         else:
             print("[TensorDB] FAIL! Cannot find: {}".format(args))
             return False, False
-        # print(f_id)
-        # exit()
         try:
             params = pickle.loads(self.paramsfs.get(f_id).read())
-            # print(self.paramsfs)
             print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-s, 2)))
             return params, f_id
         except:
             return False, False
 
     def find_all_params(self, args={}):
-        """ Find all parameter from MongoDB Buckets """
+        """ Find all parameter from MongoDB Buckets
+
+        Parameters
+        ----------
+        args : dictionary, find items
+
+        Returns
+        --------
+        params : the parameters, return False if nothing found.
+        """
         s = time.time()
         pc = self.db.Params.find(args)
 
         if pc is not None:
-            # f_id = d['f_id']
             f_id_list = pc.distinct('f_id')
-            # print(f_id_list[0], type(f_id_list[0]))
-            # # print(int(f_id_list[0]))
-            # # print(pc)
-            # # print(pc['f_id'])
-            # tmp = self.paramsfs.get(f_id_list[0]).read()
-            # print('xxx...')
-            # data = pickle.loads(tmp)
-            # print(data)
-            # exit()
-            # fldict = {}
             params = []
             for f_id in f_id_list: # you may have multiple Buckets files
-                # print('f_id', f_id)
                 tmp = self.paramsfs.get(f_id).read()
-                # print(pickle.loads(tmp)[0].shape)
                 params.append(pickle.loads(tmp))
-                # fldict[f_id] = pickle.loads(tmp)
-                # print(type(fldict[f_id]))
-                # print(pickle.loads(tmp))
-            # data = [fldict[x['f_id']][x['id']] for x in pc]
-            # params = np.asarray(params)
-            # params = np.append(params, axis=0)
-            # print('')
         else:
             print("[TensorDB] FAIL! Cannot find any: {}".format(args))
             return False
 
         print("[TensorDB] Find all params SUCCESS, took: {}s".format(round(time.time()-s, 2)))
         return params
-
-    # def del_params(self, args={}):
-    #     """ Delete parameters. """
-    #     self.db.Params.delete_many(args)
-    #     print("[TensorDB] Delete TrainLog SUCCESS")
 
     def del_params(self, args={}):
         """ Delete params in MongoDB uckets.
@@ -248,7 +249,7 @@ class TensorDB(object):
 
         Examples
         ---------
-        >>> db.train_log(time=time.time(), {'loss': loss})
+        >>> db.train_log(time=time.time(), {'loss': loss, 'acc': acc})
         """
         _result = self.db.TrainLog.insert_one(args)
         _log = self._print_dict(args)
@@ -274,7 +275,7 @@ class TensorDB(object):
 
         Examples
         ---------
-        >>> db.valid_log(time=time.time(), {'loss': loss})
+        >>> db.valid_log(time=time.time(), {'loss': loss, 'acc': acc})
         """
         _result = self.db.ValidLog.insert_one(args)
         # _log = "".join(str(key) + ": " + str(value) for key, value in args.items())
@@ -301,7 +302,7 @@ class TensorDB(object):
 
         Examples
         ---------
-        >>> db.test_log(time=time.time(), {'loss': loss})
+        >>> db.test_log(time=time.time(), {'loss': loss, 'acc': acc})
         """
         _result = self.db.TestLog.insert_one(args)
         # _log = "".join(str(key) + str(value) for key, value in args.items())
