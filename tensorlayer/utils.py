@@ -54,6 +54,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
         of the weight histograms every tensorboard_epoch_freq epoch (default True)
     tensorboard_graph_vis : boolean
         if True stores the graph in the tensorboard summaries saved to log/ (default True)
+        
     Examples
     --------
     >>> see tutorial_mnist_simple.py
