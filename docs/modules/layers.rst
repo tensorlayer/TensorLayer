@@ -291,13 +291,15 @@ Layer list
    Conv1d
    Conv2d
    DeConv2d
-   
+
    MaxPool1d
    MeanPool1d
    MaxPool2d
    MeanPool2d
    MaxPool3d
    MeanPool3d
+
+   SubpixelConv2d
 
    BatchNormLayer
    LocalResponseNormLayer
@@ -502,6 +504,9 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool3d
 
+Super-resolution layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: SubpixelConv2d
 
 Pooling layer
 ----------------
