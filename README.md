@@ -15,7 +15,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-TensorLayer is a deep learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
 
 # What's New
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
