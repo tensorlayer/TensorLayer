@@ -11,7 +11,7 @@ import os
 ## Save images
 import scipy.misc
 def save_images(images, size, image_path):
-    """Save images.
+    """Save mutiple images into one single image.
 
     Parameters
     -----------
@@ -22,8 +22,8 @@ def save_images(images, size, image_path):
 
     Examples
     ---------
-    >>> images = np.random.rand(64,100,100,3)
-    >>> save_images(images, [8, 8], 'samples/temp.png')
+    >>> images = np.random.rand(64, 100, 100, 3)
+    >>> tl.visualize.save_images(images, [8, 8], 'temp.png')
     """
     def merge(images, size):
         h, w = images.shape[1], images.shape[2]
