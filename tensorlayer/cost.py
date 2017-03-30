@@ -193,7 +193,7 @@ def iou_coe(output, target, threshold=0.5, epsilon=1e-10):
     return tf.reduce_sum(intersection) / (tf.reduce_sum(union) + epsilon)
 
 
-def cross_entropy_seq(logits, target_seqs):#, batch_size=1, num_steps=None):
+def cross_entropy_seq(logits, target_seqs, batch_size=None):#, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
     softmax internally. Normally be used for Fixed Length RNN outputs.
 
@@ -222,6 +222,8 @@ def cross_entropy_seq(logits, target_seqs):#, batch_size=1, num_steps=None):
         [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)])
         # [tf.ones([batch_size * num_steps])])
     cost = tf.reduce_sum(loss) #/ batch_size
+    if batch_size is not None:
+        cost = cost / batch_size
     return cost
 
 
