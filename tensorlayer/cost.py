@@ -81,10 +81,8 @@ def mean_squared_error(output, target):
 
     Parameters
     ----------
-    output : tensorflow variable
-        A distribution with shape: [batch_size, n_feature].
-    target : tensorflow variable
-        A distribution with shape: [batch_size, n_feature].
+    output : tensor.
+    target : tensor.
     """
     with tf.name_scope("mean_squared_error_loss"):
         mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
