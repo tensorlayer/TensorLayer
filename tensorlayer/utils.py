@@ -54,7 +54,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
         of the weight histograms every tensorboard_epoch_freq epoch (default True)
     tensorboard_graph_vis : boolean
         if True stores the graph in the tensorboard summaries saved to log/ (default True)
-        
+
     Examples
     --------
     >>> see tutorial_mnist_simple.py
@@ -405,8 +405,20 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     # ================ End of Classes balancing
     return X_train, y_train
 
+## Random
+def get_random_int(min=0, max=10, number=5, seed=None):
+    """Return a list of random integer by the given range and quantity.
 
-
+    Examples
+    ---------
+    >>> r = get_random_int(min=0, max=10, number=5)
+    ... [10, 2, 3, 3, 7]
+    """
+    rnd = random.Random()
+    if seed:
+        rnd = random.Random(seed)
+    # return [random.randint(min,max) for p in range(0, number)]
+    return [rnd.randint(min,max) for p in range(0, number)]
 
 #
 # def class_balancing_sequence_4D(X_train, y_train, sequence_length, model='downsampling' ,printable=True):

@@ -10,6 +10,7 @@ API - Utility
    predict
    evaluation
    class_balancing_oversample
+   get_random_int
    dict_to_one
    flatten_list
 
@@ -36,6 +37,9 @@ Class balancing functions
 ----------------------------
 .. autofunction:: class_balancing_oversample
 
+Random functions
+----------------------------
+.. autofunction:: get_random_int
 
 Helper functions
 --------------------
