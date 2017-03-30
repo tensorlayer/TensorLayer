@@ -203,6 +203,8 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):#, batch_size=1, num
         2D tensor, ``network.outputs``, [batch_size*n_steps (n_examples), number of output units]
     target_seqs : Tensorflow variable
         target : 2D tensor [batch_size, n_steps], if the number of step is dynamic, please use ``cross_entropy_seq_with_mask`` instead.
+    batch_size : None or int.
+        If not None, the return cost will be divided by batch_size.
 
     Examples
     --------
