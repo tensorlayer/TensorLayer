@@ -219,9 +219,9 @@ def cross_entropy_seq(logits, target_seqs):#, batch_size=1, num_steps=None):
     loss = sequence_loss_by_example_fn(
         [logits],
         [tf.reshape(target_seqs, [-1])],
-        [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)])
+        [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)])
         # [tf.ones([batch_size * num_steps])])
-    cost = tf.reduce_sum(loss) / batch_size
+    cost = tf.reduce_sum(loss) #/ batch_size
     return cost
 
 
