@@ -26,3 +26,6 @@ from . import rein
 
 
 __version__ = "1.4.1"
+
+global_flag = {}
+global_dict = {}
