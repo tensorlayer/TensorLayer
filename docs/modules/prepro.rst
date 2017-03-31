@@ -5,7 +5,7 @@ API - Preprocessing
 We provide abundant data augmentation and processing functions by using Numpy, Scipy, Threading and Queue.
 However, we recommend you to use TensorFlow operation function like ``tf.image.central_crop``,
 more TensorFlow data augmentation method can be found
-`here <https://www.tensorflow.org/versions/master/api_docs/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
+`here <https://www.tensorflow.org/api_guides/python/image.html>`_ and ``tutorial_cifar10_tfrecord.py``.
 Some of the code in this package are borrowed from Keras.
 
 .. automodule:: tensorlayer.prepro
