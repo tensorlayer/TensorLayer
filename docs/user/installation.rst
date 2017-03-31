@@ -184,7 +184,7 @@ The NVIDIA CUDA® Deep Neural Network library (cuDNN) is a GPU-accelerated libra
 
 `cuDNN download <https://developer.nvidia.com/cuDNN>`_
 
-After extracting cuDNN, you will get three folders (bin, lib, include). Then these folders should be copied to CUDA installation. (The default installation directory is “C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0”)
+After extracting cuDNN, you will get three folders (bin, lib, include). Then these folders should be copied to CUDA installation. (The default installation directory is `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0`)
 
 Installing TensorLayer
 ------------------------
