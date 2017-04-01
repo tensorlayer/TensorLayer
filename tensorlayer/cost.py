@@ -85,7 +85,10 @@ def mean_squared_error(output, target):
     target : tensor.
     """
     with tf.name_scope("mean_squared_error_loss"):
-        mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
+        if output.get_shape().ndims == 2:   # [batch_size, n_feature]
+            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
+        elif output.get_shape().ndims == 4: # [batch_size, w, h, c]
+            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]))
         return mse
 
 
