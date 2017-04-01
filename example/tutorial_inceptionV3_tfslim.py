@@ -13,7 +13,10 @@ import skimage
 import skimage.io
 import skimage.transform
 import time, os
-from data.imagenet_classes import *
+try:
+    from data.imagenet_classes import *
+except Exception as e:
+    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 import numpy as np
 """
 You will learn:
