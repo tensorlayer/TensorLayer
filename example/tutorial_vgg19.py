@@ -6,7 +6,11 @@
 
 import tensorflow as tf
 import tensorlayer as tl
-from data.imagenet_classes import *
+try:
+    from data.imagenet_classes import *
+except Exception as e:
+    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
+
 import os
 import numpy as np
 import time
