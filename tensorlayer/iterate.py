@@ -21,6 +21,11 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     shuffle : boolean
         Indicating whether to use a shuffling queue, shuffle the dataset before return.
 
+    Hints
+    -------
+    - If you have two inputs, e.g. X1 (1000, 100) and X2 (1000, 80), you can ``np.hstack((X1, X2))
+    into (1000, 180) and feed into ``inputs``, then you can split a batch of X1 and X2.
+
     Examples
     --------
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
@@ -71,7 +76,7 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ...         dtype='<U1'), array([2, 3, 3, 4]))
     ...
     ...
-    
+
     - Many to One
     >>> return_last = True
     >>> num_steps = 2
@@ -117,7 +122,7 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     - Hint, if the input data are images, you can modify the code as follow.
 
     .. code-block:: python
-        
+
         from
         data = np.zeros([batch_size, batch_len)
         to
