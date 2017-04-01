@@ -85,8 +85,8 @@ def mean_squared_error(output, target, is_mean=False):
     target : 2D or 4D tensor.
     is_mean : boolean, if True, use ``tf.reduce_mean`` to compute the loss of one data, otherwise, use ``tf.reduce_sum`` (default).
 
-    Notes
-    -------
+    References
+    ------------
     - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`_
     """
     with tf.name_scope("mean_squared_error_loss"):
