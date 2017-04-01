@@ -9,7 +9,10 @@ import sys
 import numpy as np
 import time
 from scipy.misc import imread, imresize
-from data.imagenet_classes import *
+try:
+    from data.imagenet_classes import *
+except Exception as e:
+    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 
 """
 VGG-16 for ImageNet
