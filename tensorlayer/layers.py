@@ -4624,10 +4624,9 @@ class LambdaLayer(Layer):
         name = 'lambda_layer',
     ):
         Layer.__init__(self, name=name)
-
-        self.inputs = layer.outputs
         assert layer is not None
         assert fn is not None
+        self.inputs = layer.outputs
         print("  [TL] LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
