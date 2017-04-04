@@ -4624,8 +4624,10 @@ class LambdaLayer(Layer):
         name = 'lambda_layer',
     ):
         Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
 
+        self.inputs = layer.outputs
+        assert layer is not None
+        assert fn is not None
         print("  [TL] LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
@@ -4922,6 +4924,7 @@ class KerasLayer(Layer):
         assert keras_layer is not None
         self.inputs = layer.outputs
         print("  [TL] KerasLayer %s: %s" % (self.name, keras_layer))
+        print("       This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = keras_layer(self.inputs, **keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -4959,6 +4962,7 @@ class EstimatorLayer(Layer):
         assert model_fn is not None
         self.inputs = layer.outputs
         print("  [TL] EstimatorLayer %s: %s" % (self.name, model_fn))
+        print("       This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = model_fn(self.inputs, **args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

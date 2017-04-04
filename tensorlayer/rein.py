@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 
-def discount_episode_rewards(rewards=[], gamma=0.99):
+def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
     """ Take 1D float array of rewards and compute discounted rewards for an
     episode. When encount a non-zero value, consider as the end a of an episode.
 
@@ -17,6 +17,9 @@ def discount_episode_rewards(rewards=[], gamma=0.99):
         a list of rewards
     gamma : float
         discounted factor
+    mode : int
+        if mode == 0, reset the discount process when encount a non-zero reward (Ping-pong game).
+        if mode == 1, would not reset the discount process.
 
     Examples
     ----------
@@ -26,11 +29,16 @@ def discount_episode_rewards(rewards=[], gamma=0.99):
     >>> print(discount_rewards)
     ... [ 0.72899997  0.81        0.89999998  1.          0.72899997  0.81
     ... 0.89999998  1.          0.72899997  0.81        0.89999998  1.        ]
+    >>> discount_rewards = tl.rein.discount_episode_rewards(rewards, gamma, mode=1)
+    >>> print(discount_rewards)
+    ... [ 1.52110755  1.69011939  1.87791049  2.08656716  1.20729685  1.34144104
+    ... 1.49048996  1.65610003  0.72899997  0.81        0.89999998  1.        ]
     """
     discounted_r = np.zeros_like(rewards, dtype=np.float32)
     running_add = 0
     for t in reversed(xrange(0, rewards.size)):
-        if rewards[t] != 0: running_add = 0
+        if mode == 0:
+            if rewards[t] != 0: running_add = 0
 
         running_add = running_add * gamma + rewards[t]
         discounted_r[t] = running_add
@@ -69,7 +77,7 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     except:
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions)
         # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
-        
+
     try: ## TF1.0
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
     except: ## TF0.12
