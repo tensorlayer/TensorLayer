@@ -2086,6 +2086,10 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
+    scope_name = tf.get_variable_scope().name
+    if scope_name:
+        name = scope_name + '/' + name
+
     def _phase_shift(I, r):
         if tf.__version__ < '1.0':
             raise Exception("Only support TF1.0+")
@@ -2121,7 +2125,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
         assert int(inputs.get_shape()[-1])/ (scale ** 2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1])/ (scale ** 2))
 
-    print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s" % (name, scale, n_out_channel))
+    print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
     net_new = Layer(inputs, name=name)
     net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
