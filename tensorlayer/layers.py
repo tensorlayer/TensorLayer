@@ -2036,7 +2036,7 @@ def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels
     return net_new
 
 ## Super resolution
-def SubpixelConv2d(net, scale=2, n_out_channel=None, name='subpixel_conv2d'):
+def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used
     for super-resolution application.
 
@@ -2047,6 +2047,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, name='subpixel_conv2d'):
     n_out_channel : int or None, the number of output channels.
         Note that, the number of input channels == (scale x scale) x The number of output channels.
         If None, automatically set n_out_channel == the number of input channels / (scale x scale).
+    act : activation function.
     name : string.
         An optional name to attach to this layer.
 
@@ -2123,7 +2124,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, name='subpixel_conv2d'):
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s" % (name, scale, n_out_channel))
 
     net_new = Layer(inputs, name=name)
-    net_new.outputs = _PS(inputs, r=scale, n_out_channel=n_out_channel)
+    net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
 
     net_new.all_layers = list(net.all_layers)
     net_new.all_params = list(net.all_params)
