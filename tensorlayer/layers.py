@@ -3948,10 +3948,9 @@ class DynamicRNNLayer(Layer):
             #                     cell_instance_fn1(),
             #                     input_keep_prob=in_keep_prob,
             #                     output_keep_prob=out_keep_prob)
-            self.cell = DropoutWrapper_fn(
-                      self.cell,
-                      input_keep_prob=in_keep_prob,
-                      output_keep_prob=out_keep_prob)
+            self.cell = DropoutWrapper_fn(self.cell,
+                      input_keep_prob=in_keep_prob, output_keep_prob=1.0)#out_keep_prob)
+
         # Apply multiple layers
         if n_layer > 1:
             try:
@@ -3963,9 +3962,13 @@ class DynamicRNNLayer(Layer):
             try:
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
                 self.cell = MultiRNNCell_fn([self.cell] * n_layer, state_is_tuple=True)
-            except:
+            except: # when GRU
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
                 self.cell = MultiRNNCell_fn([self.cell] * n_layer)
+
+        if dropout:
+            self.cell = DropoutWrapper_fn(self.cell,
+                      input_keep_prob=1.0, output_keep_prob=out_keep_prob)
 
         # self.cell=cell_instance_fn() # HanSheng
 
@@ -4333,23 +4336,24 @@ class Seq2Seq(Layer):
     >>> decode_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="decode_seqs")
     >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_seqs")
     >>> target_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_mask") # tl.prepro.sequences_get_mask()
-    >>> with tf.variable_scope("model") as vs:#, reuse=reuse):
+    >>> with tf.variable_scope("model"):
     ...     # for chatbot, you can use the same embedding layer,
     ...     # for translation, you may want to use 2 seperated embedding layers
-    >>>     net_encode = EmbeddingInputlayer(
-    ...             inputs = encode_seqs,
-    ...             vocabulary_size = 10000,
-    ...             embedding_size = 200,
-    ...             name = 'seq_embedding')
-    >>>     vs.reuse_variables()
-    >>>     tl.layers.set_name_reuse(True)
-    >>>     net_decode = EmbeddingInputlayer(
-    ...             inputs = decode_seqs,
-    ...             vocabulary_size = 10000,
-    ...             embedding_size = 200,
-    ...             name = 'seq_embedding')
+    >>>     with tf.variable_scope("embedding") as vs:
+    >>>         net_encode = EmbeddingInputlayer(
+    ...                 inputs = encode_seqs,
+    ...                 vocabulary_size = 10000,
+    ...                 embedding_size = 200,
+    ...                 name = 'seq_embedding')
+    >>>         vs.reuse_variables()
+    >>>         tl.layers.set_name_reuse(True)
+    >>>         net_decode = EmbeddingInputlayer(
+    ...                 inputs = decode_seqs,
+    ...                 vocabulary_size = 10000,
+    ...                 embedding_size = 200,
+    ...                 name = 'seq_embedding')
     >>>     net = Seq2Seq(net_encode, net_decode,
-    ...             cell_fn = tf.nn.rnn_cell.LSTMCell,
+    ...             cell_fn = tf.contrib.rnn.BasicLSTMCell,
     ...             n_hidden = 200,
     ...             initializer = tf.random_uniform_initializer(-0.1, 0.1),
     ...             encode_sequence_length = retrieve_seq_length_op2(encode_seqs),
