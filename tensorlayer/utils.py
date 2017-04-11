@@ -346,6 +346,7 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     --------
     - One X
     >>> X_train, y_train = class_balancing_oversample(X_train, y_train, printable=True)
+
     - Two X
     >>> X, y = tl.utils.class_balancing_oversample(X_train=np.hstack((X1, X2)), y_train=y, printable=False)
     >>> X1 = X[:, 0:5]
