@@ -1198,6 +1198,8 @@ class Conv2dLayer(Layer):
         The arguments for the weights tf.get_variable().
     b_init_args : dictionary
         The arguments for the biases tf.get_variable().
+    use_cudnn_on_gpu : an optional string from: "NHWC", "NCHW". Defaults to "NHWC".
+    data_format : an optional bool. Defaults to True.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -1245,6 +1247,8 @@ class Conv2dLayer(Layer):
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
         b_init_args = {},
+        use_cudnn_on_gpu = None,
+        data_format = None,
         name ='cnn_layer',
     ):
         Layer.__init__(self, name=name)
@@ -1256,9 +1260,9 @@ class Conv2dLayer(Layer):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding) + b ) #1.2
+                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b )
             else:
-                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding))
+                self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -1829,7 +1833,7 @@ def Conv1d(net, n_filter=32, filter_size=5, stride=1, act=None,
 
 def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
         padding='SAME', W_init = tf.truncated_normal_initializer(stddev=0.02), b_init = tf.constant_initializer(value=0.0),
-        W_init_args = {}, b_init_args = {}, name ='conv2d',):
+        W_init_args = {}, b_init_args = {}, use_cudnn_on_gpu = None, data_format = None,name ='conv2d',):
     """Wrapper for :class:`Conv2dLayer`, if you don't understand how to use :class:`Conv2dLayer`, this function may be easier.
 
     Parameters
@@ -1865,6 +1869,8 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
                        W_init_args = W_init_args,
                        b_init = b_init,
                        b_init_args = b_init_args,
+                       use_cudnn_on_gpu = use_cudnn_on_gpu,
+                       data_format = data_format,
                        name = name)
     return net
 
