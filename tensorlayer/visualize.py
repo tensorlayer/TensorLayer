@@ -2,7 +2,9 @@
 # -*- coding: utf8 -*-
 
 
-
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
