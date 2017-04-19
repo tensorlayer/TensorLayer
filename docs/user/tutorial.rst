@@ -971,16 +971,16 @@ challenging task of language modeling.
 
 Given a sentence "I am from Imperial College London", the model can learn to
 predict "Imperial College London" from "from Imperial College". In other
-word, it predict next words in a text given a history of previous words.
-In previous example , ``num_steps (sequence length)`` is 3.
+word, it predict the next word in a text given a history of previous words.
+In the previous example , ``num_steps`` (sequence length) is 3.
 
 .. code-block:: bash
 
   python tutorial_ptb_lstm.py
 
 
-The script provides three settings (small, medium, large), larger model has
-better performance, you can choice different setting in:
+The script provides three settings (small, medium, large), where a larger model has
+better performance. You can choose different settings in:
 
 .. code-block:: python
 
@@ -988,7 +988,7 @@ better performance, you can choice different setting in:
       "model", "small",
       "A type of model. Possible options are: small, medium, large.")
 
-If you choice small setting, you can see:
+If you choose the small setting, you can see:
 
 .. code-block:: text
 
@@ -1021,11 +1021,11 @@ If you choice small setting, you can see:
   Epoch: 13 Valid Perplexity: 121.475
   Test Perplexity: 116.716
 
-The PTB example proves RNN is able to modeling language, but this example
-did not do something practical. However, you should read through this example
-and “Understand LSTM” in order to understand the basic of RNN.
-After that, you learn how to generate text, how to achieve language translation
-and how to build a questions answering system by using RNN.
+The PTB example shows that RNN is able to model language, but this example
+did not do something practically interesting. However, you should read through this example
+and “Understand LSTM” in order to understand the basics of RNN.
+After that, you will learn how to generate text, how to achieve language translation,
+and how to build a question answering system by using RNN.
 
 
 Understand LSTM
@@ -1038,7 +1038,7 @@ We personally think Andrey Karpathy's blog is the best material to
 `Understand Recurrent Neural Network`_ , after reading that, Colah's blog can
 help you to `Understand LSTM Network`_ `[chinese] <http://dataunion.org/9331.html>`_
 which can solve The Problem of Long-Term
-Dependencies. We do not describe more about RNN, please read through these blogs
+Dependencies. We will not describe more about the theory of RNN, so please read through these blogs
 before you go on.
 
 .. _fig_0601:
@@ -1051,28 +1051,28 @@ Image by Andrey Karpathy
 Synced sequence input and output
 ---------------------------------
 
-The model in PTB example is a typically type of synced sequence input and output,
+The model in PTB example is a typical type of synced sequence input and output,
 which was described by Karpathy as
 "(5) Synced sequence input and output (e.g. video classification where we wish
-to label each frame of the video). Notice that in every case are no pre-specified
-constraints on the lengths sequences because the recurrent transformation (green)
-is fixed and can be applied as many times as we like."
+to label each frame of the video). Notice that in every case there are no pre-specified
+constraints on the lengths of sequences because the recurrent transformation (green)
+can be applied as many times as we like."
 
-The model is built as follow. Firstly, transfer the words into word vectors by
-looking up an embedding matrix, in this tutorial, no pre-training on embedding
-matrix. Secondly, we stacked two LSTMs together use dropout among the embedding
-layer, LSTM layers and output layer for regularization. In the last layer,
+The model is built as follows. Firstly, we transfer the words into word vectors by
+looking up an embedding matrix. In this tutorial, there is no pre-training on the embedding
+matrix. Secondly, we stack two LSTMs together using dropout between the embedding
+layer, LSTM layers, and the output layer for regularization. In the final layer,
 the model provides a sequence of softmax outputs.
 
-The first LSTM layer outputs [batch_size, num_steps, hidden_size] for stacking
-another LSTM after it. The second LSTM layer outputs [batch_size*num_steps, hidden_size]
-for stacking DenseLayer after it, then compute the softmax outputs of each example
-（n_examples = batch_size*num_steps).
+The first LSTM layer outputs ``[batch_size, num_steps, hidden_size]`` for stacking
+another LSTM after it. The second LSTM layer outputs ``[batch_size*num_steps, hidden_size]``
+for stacking a DenseLayer after it. Then the DenseLayer computes the softmax outputs of each example
+（``n_examples = batch_size*num_steps``).
 
 To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 <https://www.tensorflow.org/versions/r0.9/tutorials/recurrent/index.html#recurrent-neural-networks>`_.
 
-(Note that, TensorLayer supports DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layer in one single layer)
+(Note that, TensorLayer supports DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layers in one single layer)
 
 
 .. code-block:: python
@@ -1118,26 +1118,26 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 Dataset iteration
 ^^^^^^^^^^^^^^^^^
 
-The batch_size can be seem as how many concurrent computations.
-As the following example shows, the first batch learn the sequence information by using 0 to 9.
-The second batch learn the sequence information by using 10 to 19.
-So it ignores the information from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all information from 0 to 20.
+The ``batch_size`` can be seen as the number of concurrent computations we are running.
+As the following example shows, the first batch learns the sequence information by using items 0 to 9.
+The second batch learn the sequence information by using items 10 to 19.
+So it ignores the information from items 9 to 10 !\n
+If only if we set ``batch_size = 1```, it will consider all the information from items 0 to 20.
 
-The meaning of batch_size here is not the same with the batch_size in MNIST example. In MNIST example,
-batch_size reflects how many examples we consider in each iteration, while in
-PTB example, batch_size is how many concurrent processes (segments)
-for speed up computation.
+The meaning of ``batch_size`` here is not the same as the ``batch_size`` in the MNIST example. In the MNIST example,
+``batch_size`` reflects how many examples we consider in each iteration, while in the
+PTB example, ``batch_size`` is the number of concurrent processes (segments)
+for accelerating the computation.
 
-Some Information will be ignored if batch_size > 1, however, if your dataset
-is "long" enough (a text corpus usually has billions words), the ignored
-information would not effect the final result.
+Some information will be ignored if ``batch_size`` > 1, however, if your dataset
+is "long" enough (a text corpus usually has billions of words), the ignored
+information would not affect the final result.
 
-In PTB tutorial, we set batch_size = 20, so we cut the dataset into 20 segments.
-At the beginning of each epoch, we initialize (reset) the 20 RNN states for 20
-segments, then go through 20 segments separately.
+In the PTB tutorial, we set ``batch_size = 20``, so we divide the dataset into 20 segments.
+At the beginning of each epoch, we initialize (reset) the 20 RNN states for the 20
+segments to zero, then go through the 20 segments separately.
 
-A example of generating training data as follow:
+A example of generating training data is as follows:
 
 .. code-block:: python
 
@@ -1169,7 +1169,7 @@ A example of generating training data as follow:
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cost function is the averaged cost of each mini-batch:
+The cost function is the average cost of each mini-batch:
 
 .. code-block:: python
 
@@ -1181,7 +1181,7 @@ The cost function is the averaged cost of each mini-batch:
       # targets : 2D tensor [batch_size, num_steps], need to be reshaped.
       # n_examples = batch_size * num_steps
       # so
-      # cost is the averaged cost of each mini-batch (concurrent process).
+      # cost is the average cost of each mini-batch (concurrent process).
       loss = tf.nn.seq2seq.sequence_loss_by_example(
           [outputs],
           [tf.reshape(targets, [-1])],
@@ -1193,9 +1193,7 @@ The cost function is the averaged cost of each mini-batch:
   cost = loss_fn(network.outputs, targets, batch_size, num_steps)
 
 
-For updating, this example decreases the initial learning rate after several
-epochs (defined by ``max_epoch``), by multiplying a ``lr_decay``. In addition,
-truncated backpropagation clips values of gradients by the ratio of the sum of
+For updating, truncated backpropagation clips values of gradients by the ratio of the sum of
 their norms, so as to make the learning process tractable.
 
 .. code-block:: python
@@ -1210,7 +1208,7 @@ their norms, so as to make the learning process tractable.
   train_op = optimizer.apply_gradients(zip(grads, tvars))
 
 
-If the epoch index greater than ``max_epoch``, decrease the learning rate
+In addition, if the epoch index is greater than ``max_epoch``, we decrease the learning rate
 by multipling ``lr_decay``.
 
 .. code-block:: python
@@ -1220,8 +1218,8 @@ by multipling ``lr_decay``.
 
 
 At the beginning of each epoch, all states of LSTMs need to be reseted
-(initialized) to zero states, then after each iteration, the LSTMs' states
-is updated, so the new LSTM states (final states) need to be assigned as the initial states of next iteration:
+(initialized) to zero states. Then after each iteration, the LSTMs' states
+is updated, so the new LSTM states (final states) need to be assigned as the initial states of the next iteration:
 
 .. code-block:: python
 
@@ -1249,8 +1247,8 @@ Predicting
 ^^^^^^^^^^^^^
 
 After training the model, when we predict the next output, we no long consider
-the number of steps (sequence length), i.e. ``batch_size, num_steps`` are ``1``.
-Then we can output the next word step by step, instead of predict a sequence
+the number of steps (sequence length), i.e. ``batch_size, num_steps`` are set to ``1``.
+Then we can output the next word one by one, instead of predicting a sequence
 of words from a sequence of words.
 
 .. code-block:: python
@@ -1291,12 +1289,12 @@ of words from a sequence of words.
 What Next?
 -----------
 
-Now, you understand Synced sequence input and output. Let think about
-Many to one (Sequence input and one output), LSTM is able to predict
+Now, you have understood Synced sequence input and output. Let's think about
+Many to one (Sequence input and one output), so that LSTM is able to predict
 the next word "English" from "I am from London, I speak ..".
 
-Please read and understand the code of ``tutorial_generate_text.py``,
-it show you how to restore a pre-trained Embedding matrix and how to learn text
+Please read and understand the code of ``tutorial_generate_text.py``.
+It shows you how to restore a pre-trained Embedding matrix and how to learn text
 generation from a given context.
 
 Karpathy's blog :
