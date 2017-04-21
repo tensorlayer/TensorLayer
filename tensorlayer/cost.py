@@ -223,7 +223,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):#, batch_size=1, num
     >>> see PTB tutorial for more details
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
     >>> targets = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> cost = tf.cost.cross_entropy_seq(network.outputs, targets)
+    >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
     """
     try: # TF 1.0
         sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
