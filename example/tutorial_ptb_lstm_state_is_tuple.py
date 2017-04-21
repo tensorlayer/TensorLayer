@@ -180,7 +180,7 @@ def main(_):
     # same with MNIST example, it is the number of concurrent processes for
     # computational reasons.
 
-    # Training and Validing
+    # Training and Validation
     input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
     targets = tf.placeholder(tf.int32, [batch_size, num_steps])
     # Testing (Evaluation)
@@ -251,7 +251,7 @@ def main(_):
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
 
-    def loss_fn(outputs, targets):#, batch_size, num_steps):
+    def loss_fn(outputs, targets, batch_size):
         # See tl.cost.cross_entropy_seq()
         # Returns the cost function of Cross-entropy of two sequences, implement
         # softmax internally.
@@ -270,11 +270,11 @@ def main(_):
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets)#, batch_size, num_steps)
+    cost = loss_fn(network.outputs, targets, batch_size)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets)#, batch_size, num_steps)
+    cost_val = loss_fn(network_val.outputs, targets, batch_size)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(network_test.outputs, targets_test)#, 1, 1)
+    cost_test = loss_fn(network_test.outputs, targets_test, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -339,7 +339,7 @@ def main(_):
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch,
                                                             train_perplexity))
 
-        # Validing
+        # Validation
         start_time = time.time()
         costs = 0.0; iters = 0
         # reset all states at the begining of every epoch
