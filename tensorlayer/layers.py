@@ -903,6 +903,8 @@ class DropoutLayer(Layer):
         Default False, if True, the keeping probability is fixed and cannot be changed via feed_dict.
     is_train : boolean
         If False, skip this layer, default is True.
+    seed : int or None
+        An integer or None to create random seed.
     name : a string or None
         An optional name to attach to this layer.
 
@@ -939,6 +941,7 @@ class DropoutLayer(Layer):
         keep = 0.5,
         is_fix = False,
         is_train = True,
+        seed = None,
         name = 'dropout_layer',
     ):
         Layer.__init__(self, name=name)
@@ -955,10 +958,10 @@ class DropoutLayer(Layer):
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
             if is_fix:
-                self.outputs = tf.nn.dropout(self.inputs, keep, name=name)
+                self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
             else:
                 set_keep[name] = tf.placeholder(tf.float32)
-                self.outputs = tf.nn.dropout(self.inputs, set_keep[name], name=name) # 1.2
+                self.outputs = tf.nn.dropout(self.inputs, set_keep[name], seed=seed, name=name) # 1.2
 
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
@@ -997,6 +1000,8 @@ class GaussianNoiseLayer(Layer):
     stddev : float
     is_train : boolean
         If False, skip this layer, default is True.
+    seed : int or None
+        An integer or None to create random seed.
     name : a string or None
         An optional name to attach to this layer.
     """
@@ -1020,7 +1025,7 @@ class GaussianNoiseLayer(Layer):
             print("  [TL] GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
             with tf.variable_scope(name) as vs:
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-                noise = tf.random_normal(shape = self.inputs.get_shape(), mean=mean, stddev=stddev)
+                noise = tf.random_normal(shape = self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
                 self.outputs = self.inputs + noise
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
