@@ -1011,6 +1011,7 @@ class GaussianNoiseLayer(Layer):
         mean = 0.0,
         stddev = 1.0,
         is_train = True,
+        seed = None,
         name = 'gaussian_noise_layer',
     ):
         Layer.__init__(self, name=name)
