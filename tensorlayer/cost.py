@@ -72,8 +72,8 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 #         output = ops.convert_to_tensor(output, name="preds")
 #         target = ops.convert_to_tensor(targets, name="target")
     with tf.name_scope(name):
-        return tf.reduce_mean(-(target * tf.log(output + epsilon) +
-                              (1. - target) * tf.log(1. - output + epsilon)))
+        return tf.reduce_mean(tf.reduce_sum(-(target * tf.log(output + epsilon) +
+                              (1. - target) * tf.log(1. - output + epsilon)), axis=1))
 
 
 def mean_squared_error(output, target, is_mean=False):
