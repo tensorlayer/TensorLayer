@@ -20,7 +20,6 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 # What's New
 * Support [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution.
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
-* Compatible with TensorFlow 1.0.1 release. 
 
 # Design Philosophy
 
