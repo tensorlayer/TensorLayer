@@ -14,9 +14,9 @@ sess = tf.InteractiveSession()
 
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(
                                     shape=(-1, 32, 32, 3), plotable=False)
-scale = X_train.max()
-X_train /= scale
-X_test /= scale
+# scale = X_train.max()
+# X_train /= scale
+# X_test /= scale
 
 def model(x, y_, is_train, reuse):
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
@@ -63,6 +63,59 @@ def model(x, y_, is_train, reuse):
 
         return network, cost, acc
 
+
+def model2(x, y_, is_train, reuse):
+    W_init = tf.truncated_normal_initializer(stddev=5e-2)
+    b_init = tf.constant_initializer(value=0.0)
+    W_init2 = tf.truncated_normal_initializer(stddev=0.04)
+    b_init2 = tf.constant_initializer(value=0.1)
+    with tf.variable_scope("model", reuse=reuse):
+        tl.layers.set_name_reuse(reuse)
+        network = tl.layers.InputLayer(x, name='input')
+        network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
+                    shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
+                    W_init=W_init, b_init=b_init, name ='cnn1')       # output: (batch_size, 24, 24, 64)
+        network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                    strides=[1, 2, 2, 1], padding='SAME',
+                    pool = tf.nn.max_pool, name ='pool1',)            # output: (batch_size, 12, 12, 64)
+        # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
+        #                                                 beta=0.75, name='norm1')
+        network = tl.layers.LocalResponseNormLayer(network, depth_radius=4, bias=1.0,
+                    alpha=0.001 / 9.0, beta=0.75, name='norm1')
+        network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
+                    shape=[5, 5, 64, 64], strides=[1, 1, 1, 1], padding='SAME',# 64 features for each 5x5 patch
+                    W_init=W_init, b_init=b_init, name ='cnn2')       # output: (batch_size, 12, 12, 64)
+        # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
+        #                                                 beta=0.75, name='norm2')
+        network = tl.layers.LocalResponseNormLayer(network, depth_radius=4, bias=1.0,
+                    alpha=0.001 / 9.0, beta=0.75, name='norm2')
+        network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
+                    strides=[1, 2, 2, 1], padding='SAME',
+                    pool = tf.nn.max_pool, name ='pool2')             # output: (batch_size, 6, 6, 64)
+        network = tl.layers.FlattenLayer(network, name='flatten')     # output: (batch_size, 2304)
+        network = tl.layers.DenseLayer(network, n_units=384, act=tf.nn.relu,
+                    W_init=W_init2, b_init=b_init2, name='relu1')           # output: (batch_size, 384)
+        network = tl.layers.DenseLayer(network, n_units=192, act=tf.nn.relu,
+                    W_init=W_init2, b_init=b_init2, name='relu2')           # output: (batch_size, 192)
+        network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity,
+                    W_init=tf.truncated_normal_initializer(stddev=1/192.0),
+                    b_init = tf.constant_initializer(value=0.0),
+                    name='output')    # output: (batch_size, 10)
+        y = network.outputs
+
+        ce = tl.cost.cross_entropy(y, y_, name='cost')
+        # L2 for the MLP, without this, the accuracy will be reduced by 15%.
+        L2 = tf.contrib.layers.l2_regularizer(0.004)(network.all_params[4]) + \
+                tf.contrib.layers.l2_regularizer(0.004)(network.all_params[6])
+        cost = ce + L2
+
+        # correct_prediction = tf.equal(tf.argmax(tf.nn.softmax(y), 1), y_)
+        correct_prediction = tf.equal(tf.argmax(y, 1), y_)
+        acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+        return network, cost, acc
+
+
 def distort_fn(x, is_train=False):
     """
     Description
@@ -76,18 +129,33 @@ def distort_fn(x, is_train=False):
     .. Randomly distort the image brightness.
     .. Randomly zoom in.
     """
+    # print('begin',x.shape, np.min(x), np.max(x))
     x = tl.prepro.crop(x, 24, 24, is_random=is_train)
+    # print('after crop',x.shape, np.min(x), np.max(x))
     if is_train:
-        x = tl.prepro.zoom(x, zoom_range=(0.9, 1.0), is_random=True)
+        # x = tl.prepro.zoom(x, zoom_range=(0.9, 1.0), is_random=True)
+        # print('after zoom', x.shape, np.min(x), np.max(x))
         x = tl.prepro.flip_axis(x, axis=1, is_random=True)
-        x = tl.prepro.brightness(x, gamma=0.2, gain=1, is_random=True)
+        # print('after flip',x.shape, np.min(x), np.max(x))
+        x = tl.prepro.brightness(x, gamma=0.1, gain=1, is_random=True)
+        # print('after brightness',x.shape, np.min(x), np.max(x))
+        # tmp = np.max(x)
+        # x += np.random.uniform(-0.1, 0.1)
+        # x /= tmp
+    # normalize the image
+    x = (x - np.mean(x)) / max(np.std(x), 1.0/24.0) # avoid values divided by 0
+    # print('after norm', x.shape, np.min(x), np.max(x), np.mean(x))
     return x
+
+# x = X_train[0]
+# x = distort_fn(x, True)
+# exit()
 
 x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 
-network, cost, _ = model(x, y_, True, False)
-_, cost_test, acc = model(x, y_, False, True)
+network, cost, _ = model2(x, y_, True, False)
+_, cost_test, acc = model2(x, y_, False, True)
 
 ## train
 n_epoch = 50000

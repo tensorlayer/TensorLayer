@@ -113,18 +113,18 @@ def read_and_decode(filename, is_train=None):
         # 4. Randomly change contrast.
         img = tf.image.random_contrast(img, lower=0.2, upper=1.8)
         # 5. Subtract off the mean and divide by the variance of the pixels.
-        try: # TF12
+        try: # TF 0.12+
             img = tf.image.per_image_standardization(img)
-        except: #earlier TF versions
+        except: # earlier TF versions
             img = tf.image.per_image_whitening(img)
 
     elif is_train == False:
         # 1. Crop the central [height, width] of the image.
         img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
         # 2. Subtract off the mean and divide by the variance of the pixels.
-        try: # TF12
+        try: # TF 0.12+
             img = tf.image.per_image_standardization(img)
-        except: #earlier TF versions
+        except: # earlier TF versions
             img = tf.image.per_image_whitening(img)
     elif is_train == None:
         img = img
@@ -201,19 +201,22 @@ with tf.device('/cpu:0'):
             network = tl.layers.InputLayer(x_crop, name='input')
             network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
                         shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
-                        W_init=W_init, b_init=b_init, name ='cnn1')       # output: (batch_size, 24, 24, 64)
+                        W_init=W_init, b_init=b_init, name ='cnn_layer1')       # output: (batch_size, 24, 24, 64)
             network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
                         strides=[1, 2, 2, 1], padding='SAME',
                         pool = tf.nn.max_pool, name ='pool1',)            # output: (batch_size, 12, 12, 64)
-            # you can also use tl.layers.LocalResponseNormLayer
-            network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
-                                                            beta=0.75, name='norm1')
+            # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
+            #                                                 beta=0.75, name='norm1')
+            network = tl.layers.LocalResponseNormLayer(network, depth_radius=4, bias=1.0,
+                        alpha=0.001 / 9.0, beta=0.75, name='norm1')
 
             network = tl.layers.Conv2dLayer(network, act=tf.nn.relu,
                         shape=[5, 5, 64, 64], strides=[1, 1, 1, 1], padding='SAME',# 64 features for each 5x5 patch
                         W_init=W_init, b_init=b_init, name ='cnn2')       # output: (batch_size, 12, 12, 64)
-            network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
-                                                            beta=0.75, name='norm2')
+            # network.outputs = tf.nn.lrn(network.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
+            #                                                 beta=0.75, name='norm2')
+            network = tl.layers.LocalResponseNormLayer(network, depth_radius=4, bias=1.0,
+                        alpha=0.001 / 9.0, beta=0.75, name='norm2')
             network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
                         strides=[1, 2, 2, 1], padding='SAME',
                         pool = tf.nn.max_pool, name ='pool2')             # output: (batch_size, 6, 6, 64)
@@ -252,27 +255,27 @@ with tf.device('/cpu:0'):
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
-            network = tl.layers.InputLayer(x_crop, name='input_layer')
+            network = tl.layers.InputLayer(x_crop, name='input')
 
             network = tl.layers.Conv2dLayer(network, act=tf.identity,
                         shape=[5, 5, 3, 64], strides=[1, 1, 1, 1], padding='SAME', # 64 features for each 5x5x3 patch
-                        W_init=W_init, b_init=None, name='cnn_layer1')                            # output: (batch_size, 24, 24, 64)
+                        W_init=W_init, b_init=None, name='cnn1')                            # output: (batch_size, 24, 24, 64)
             network = tl.layers.BatchNormLayer(network, is_train=is_train,
-                        act=tf.nn.relu, name='batch_norm1')
+                        act=tf.nn.relu, name='batch1')
             network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
                         strides=[1, 2, 2, 1], padding='SAME',
-                        pool=tf.nn.max_pool, name='pool_layer1',)               # output: (batch_size, 12, 12, 64)
+                        pool=tf.nn.max_pool, name='pool1',)               # output: (batch_size, 12, 12, 64)
 
             network = tl.layers.Conv2dLayer(network, act=tf.identity,
                         shape=[5, 5, 64, 64], strides=[1, 1, 1, 1], padding='SAME',# 64 features for each 5x5 patch
-                        W_init=W_init, b_init=None, name ='cnn_layer2')         # output: (batch_size, 12, 12, 64)
+                        W_init=W_init, b_init=None, name ='cnn2')         # output: (batch_size, 12, 12, 64)
             network = tl.layers.BatchNormLayer(network, is_train=is_train,
-                        act=tf.nn.relu, name='batch_norm2')
+                        act=tf.nn.relu, name='batch2')
             network = tl.layers.PoolLayer(network, ksize=[1, 3, 3, 1],
                         strides=[1, 2, 2, 1], padding='SAME',
-                        pool = tf.nn.max_pool, name ='pool_layer2')             # output: (batch_size, 6, 6, 64)
+                        pool = tf.nn.max_pool, name ='pool2')             # output: (batch_size, 6, 6, 64)
 
-            network = tl.layers.FlattenLayer(network, name='flatten_layer')     # output: (batch_size, 2304)
+            network = tl.layers.FlattenLayer(network, name='flatten')     # output: (batch_size, 2304)
             network = tl.layers.DenseLayer(network, n_units=384, act=tf.nn.relu,
                         W_init=W_init2, b_init=b_init2, name='relu1')           # output: (batch_size, 384)
             network = tl.layers.DenseLayer(network, n_units=192, act = tf.nn.relu,
@@ -280,7 +283,7 @@ with tf.device('/cpu:0'):
             network = tl.layers.DenseLayer(network, n_units=10, act = tf.identity,
                         W_init=tf.truncated_normal_initializer(stddev=1/192.0),
                         b_init = tf.constant_initializer(value=0.0),
-                        name='output_layer')                                    # output: (batch_size, 10)
+                        name='output')                                    # output: (batch_size, 10)
             y = network.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
