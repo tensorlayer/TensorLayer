@@ -175,6 +175,59 @@ def conv_layers(net_in):
     return network
 
 
+def conv_layers_simple_api(net_in):
+    with tf.name_scope('preprocess') as scope:
+        """
+        Notice that we include a preprocessing layer that takes the RGB image
+        with pixels values in the range of 0-255 and subtracts the mean image
+        values (calculated over the entire ImageNet training set).
+        """
+        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
+        net_in.outputs = net_in.outputs - mean
+    """ conv1 """
+    network = tl.layers.Conv2d(net_in, n_filter=64, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu,padding='SAME', name='conv1_1')
+    network = tl.layers.Conv2d(network, n_filter=64, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu,padding='SAME', name='conv1_2')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool1')
+    """ conv2 """
+    network = tl.layers.Conv2d(network, n_filter=128, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
+    network = tl.layers.Conv2d(network,n_filter=128, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool2')
+    """ conv3 """
+    network = tl.layers.Conv2d(network, n_filter=256, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
+    network = tl.layers.Conv2d(network, n_filter=256, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
+    network = tl.layers.Conv2d(network, n_filter=256, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool3')
+    """ conv4 """
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool4')
+    """ conv5 """
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')
+    network = tl.layers.Conv2d(network, n_filter=512, filter_size=(3, 3),
+            strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
+    network = tl.layers.MaxPool2d(network, filter_size=(2, 2), strides=(2, 2),
+            padding='SAME', name='pool5')
+    return network
+
+
 def fc_layers(net):
     network = tl.layers.FlattenLayer(net, name='flatten')
     network = tl.layers.DenseLayer(network, n_units=4096,
@@ -194,17 +247,18 @@ sess = tf.InteractiveSession()
 x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
-net_in = tl.layers.InputLayer(x, name='input_layer')
-net_cnn = conv_layers(net_in)
+net_in = tl.layers.InputLayer(x, name='input')
+net_cnn = conv_layers(net_in)               # professional CNN APIs
+# net_cnn = conv_layers_simple_api(net_in)  # simplified CNN APIs
 network = fc_layers(net_cnn)
 
 y = network.outputs
 probs = tf.nn.softmax(y)
-y_op = tf.argmax(tf.nn.softmax(y), 1)
-cost = tl.cost.cross_entropy(y, y_, name='cost')
-
-correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
-acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# y_op = tf.argmax(tf.nn.softmax(y), 1)
+# cost = tl.cost.cross_entropy(y, y_, name='cost')
+#
+# correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
+# acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # sess.run(tf.initialize_all_variables())
 tl.layers.initialize_global_variables(sess)
