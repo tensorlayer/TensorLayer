@@ -5,10 +5,8 @@
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import os
-import sys
+import os, sys, time
 import numpy as np
-import time
 from scipy.misc import imread, imresize
 try:
     from data.imagenet_classes import *

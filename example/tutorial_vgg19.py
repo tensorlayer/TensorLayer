@@ -12,11 +12,8 @@ try:
 except Exception as e:
     raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 
-import os
+import os, time, inspect, skimage
 import numpy as np
-import time
-import inspect
-import skimage
 import skimage.io
 import skimage.transform
 
