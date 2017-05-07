@@ -2153,7 +2153,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
 # ## Normalization layer
 class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization``.
+    """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
     The 4-D input tensor is treated as a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
     Within a given vector, each component is divided by the weighted, squared sum of inputs within depth_radius.
 
@@ -2175,11 +2175,12 @@ class LocalResponseNormLayer(Layer):
         beta = None,
         name ='lrn_layer',
     ):
+        Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         print("  [TL] LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" %
                             (self.name, depth_radius, bias, alpha, beta))
         with tf.variable_scope(name) as vs:
-            self.outputs = tf.nn.local_response_normalization(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
+            self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
