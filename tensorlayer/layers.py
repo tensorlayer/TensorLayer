@@ -2038,7 +2038,7 @@ def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels
     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
     name : A string, the name of the layer.
     """
-    print("  [TL] MeanPool3d %s: filter_size:%s strides:%s padding:%s name:%s" %
+    print("  [TL] MeanPool3d %s: filter_size:%s strides:%s padding:%s" %
                         (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
