@@ -3095,7 +3095,7 @@ class PadLayer(Layer):
         Layer.__init__(self, name=name)
         assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
         self.inputs = layer.outputs
-        print("  [TL] PoolLayer   %s: paddings:%s mode:%s" %
+        print("  [TL] PadLayer   %s: paddings:%s mode:%s" %
                             (self.name, list(paddings.get_shape()), mode))
 
         self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
