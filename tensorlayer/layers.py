@@ -3775,7 +3775,7 @@ def retrieve_seq_length_op2(data):
     return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
 
 
-def retrieve_seq_length_op3(data, pad_val=0):
+def retrieve_seq_length_op3(data, pad_val=0): # HangSheng: return tensor for sequence length, if input is tf.string
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.reduce_sum(tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), 1)
@@ -3787,7 +3787,7 @@ def retrieve_seq_length_op3(data, pad_val=0):
         raise ValueError("retrieve_seq_length_op3: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
 
 
-def target_mask_op(data, pad_val=0):
+def target_mask_op(data, pad_val=0):        # HangSheng: return tensor for mask,if input is tf.string
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
