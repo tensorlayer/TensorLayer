@@ -49,7 +49,7 @@ def load_image(path):
     yy = int((img.shape[0] - short_edge) / 2)
     xx = int((img.shape[1] - short_edge) / 2)
     crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
-    # resize to 224, 224
+    # resize to 299, 299
     resized_img = skimage.transform.resize(crop_img, (299, 299))
     return resized_img
 
@@ -116,7 +116,7 @@ saver = tf.train.Saver()
 if not os.path.isfile("inception_v3.ckpt"):
     print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/slim#Install")
     exit()
-try:    # TF12
+try:    # TF12+
     saver.restore(sess, "./inception_v3.ckpt")
 except: # TF11
     saver.restore(sess, "inception_v3.ckpt")
