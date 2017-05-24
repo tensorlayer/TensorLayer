@@ -350,8 +350,13 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     ...   Words in vocabulary: 8
     ...   Wrote vocabulary file: vocab.txt
     >>> vocab = tl.nlp.Vocabulary('vocab.txt', start_word="<S>", end_word="</S>", unk_word="<UNK>")
-    ...   [TL] Instantiate Vocabulary from vocab.txt : <S> </S> <UNK>
-    ...   vocabulary with 9 words (includes unk_word)
+    ... INFO:tensorflow:Initializing vocabulary from file: vocab.txt
+    ... [TL] Vocabulary from vocab.txt : <S> </S> <UNK>
+    ... vocabulary with 10 words (includes start_word, end_word, unk_word)
+    ...     start_id: 2
+    ...     end_id: 3
+    ...     unk_id: 9
+    ...     pad_id: 0
     """
     from collections import Counter
     print("  [TL] Creating vocabulary.")
