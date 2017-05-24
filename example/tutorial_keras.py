@@ -28,7 +28,8 @@ def keras_block(x):
     return logits
 
 network = InputLayer(x, name='input')
-network = KerasLayer(network, keras_layer=keras_block, name='keras')
+# network = KerasLayer(network, keras_layer=keras_block, name='keras')
+network = LambdaLayer(network, fn=keras_block, name='keras')        # the same
 
 y = network.outputs
 network.print_params(False)
