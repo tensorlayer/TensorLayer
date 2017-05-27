@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'TensorLayer'
-copyright = '2016, TensorLayer contributors'
+copyright = '2016~2017, TensorLayer contributors'
 author = 'TensorLayer contributors'
 
 # The version info for the project you're documenting, acts as replacement for

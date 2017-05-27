@@ -19,15 +19,23 @@ xxx ``xxx`` or ``xxx``.
 
 Get Start
 --------------
-.. code-block:: python
 
+Install database
+^^^^^^^^^^^^^^^^^^^^^^^^
+xx
+
+Connect to database
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: python
+  from tensorlayer.db import TensorDB
   db = TensorDB(ip='146.169.15.140', port=27017, db_name='your_db', user_name=None, password=None, studyID='1')
+
 
 
 TensorDB API
 ---------------
 
-.. automodule:: tensorlayer.db
+.. automodule:: tensorlayer.dbx
 
 .. autosummary::
 
