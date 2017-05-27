@@ -3,8 +3,8 @@ API - Database
 
 This is the alpha version of database management system.
 
-Understand TensorDB
--------------------------
+Why TensorDB
+----------------
 
 XXX:
 
@@ -17,29 +17,15 @@ XXX:
 
 xxx ``xxx`` or ``xxx``.
 
-
+Get Start
+--------------
 .. code-block:: python
 
   db = TensorDB(ip='146.169.15.140', port=27017, db_name='your_db', user_name=None, password=None, studyID='1')
 
-Class list
-------------
-
-.. automodule:: tensorlayer.db
-
-.. autosummary::
-
-   TensorDB
 
 TensorDB
----------------------------------
+---------------
 
-
-Why TensorDB
-^^^^^^^^^^^^^^^^
-xxxxx
-
-API
-^^^^^^
 .. autoclass:: TensorDB
   :members:
