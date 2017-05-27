@@ -1,0 +1,2 @@
+model_checkpoint_path: "model_word2vec_50k_128.ckpt"
+all_model_checkpoint_paths: "model_word2vec_50k_128.ckpt"
