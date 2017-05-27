@@ -50,6 +50,7 @@ method, this part of the documentation is for you.
   modules/visualize
   modules/ops
   modules/activation
+  modules/db
 
 
 Indices and tables
