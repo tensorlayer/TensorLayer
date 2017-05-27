@@ -56,7 +56,8 @@ FLAGS = flags.FLAGS
 
 
 def main_word2vec_basic():
-
+    # sess = tf.InteractiveSession()
+    sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
     """ Step 1: Download the data, read the context into a list of strings.
     Set hyperparameters.
     """
@@ -223,7 +224,7 @@ def main_word2vec_basic():
         # load_params = tl.files.load_npz(name=model_file_name+'.npz')
         # tl.files.assign_params(sess, load_params, emb_net)
 
-    emb_net.print_params()
+    emb_net.print_params(False)
     emb_net.print_layers()
 
     # save vocabulary to txt
@@ -253,7 +254,7 @@ def main_word2vec_basic():
         # Prints out nearby words given a list of words.
         # Note that this is expensive (~20% slowdown if computed every 500 steps)
         if step % (print_freq * 5) == 0:
-            sim = similarity.eval()
+            sim = similarity.eval(session=sess)
             for i in xrange(valid_size):
                 valid_word = reverse_dictionary[valid_examples[i]]
                 top_k = 8 # number of nearest neighbors to print
@@ -361,7 +362,6 @@ def main_word2vec_basic():
 
 
 if __name__ == '__main__':
-    sess = tf.InteractiveSession()
     main_word2vec_basic()
 
 
