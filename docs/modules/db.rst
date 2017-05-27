@@ -27,5 +27,7 @@ Get Start
 TensorDB
 ---------------
 
+.. automodule:: tensorlayer.db
+
 .. autoclass:: TensorDB
   :members:
