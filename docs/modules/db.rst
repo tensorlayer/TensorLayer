@@ -48,7 +48,7 @@ TensorDB API
 ---------------
 
 
-
+.. module:: tensorlayer.db
 
 .. class:: tensorlayer.db.TensorDB
    :members:
