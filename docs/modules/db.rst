@@ -24,10 +24,14 @@ Get Start
   db = TensorDB(ip='146.169.15.140', port=27017, db_name='your_db', user_name=None, password=None, studyID='1')
 
 
-TensorDB
+TensorDB API
 ---------------
 
 .. automodule:: tensorlayer.db
 
+.. autosummary::
+
+   TensorDB
+
 .. autoclass:: TensorDB
-  :members:
+   :members:
