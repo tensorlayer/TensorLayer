@@ -3,6 +3,10 @@ API - Database
 
 This is the alpha version of database management system.
 
+
+If you have trouble, you can ask for help on `fangde.liu@imperial.ac.uk <fangde.liu@imperial.ac.uk>`_ .
+
+
 Why TensorDB
 ----------------
 
@@ -33,21 +37,25 @@ Connect to database
   from tensorlayer.db import TensorDB
   db = TensorDB(ip='146.169.15.140', port=27017, db_name='your_db', user_name=None, password=None, studyID='1')
 
-Save and load big data
---------------------------
+Save and load data
+---------------------
 
-Save
-^^^^^^^^^
+Save data
+^^^^^^^^^^^^^^^
 
-Load
-^^^^^^^^^
-
-
-TensorDB API
----------------
+Load data
+^^^^^^^^^^^^^^
 
 
-.. module:: tensorlayer.db
 
-.. class:: TensorDB
+
+
+
+
+
+
+
+.. automodule:: tensorlayer.db
+
+.. autoclass:: TensorDB
    :members:
