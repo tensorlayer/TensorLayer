@@ -36,7 +36,7 @@ TensorDB API
 ---------------
 
 
-.. automodule:: ../../tensorlayer/db.py
 
-.. autoclass:: TensorDB
+
+.. autoclass:: tensorlayer.db.TensorDB
    :members:
