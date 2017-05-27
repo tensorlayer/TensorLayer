@@ -2,9 +2,11 @@ API - Database
 =========================
 
 This is the alpha version of database management system.
-
-
 If you have trouble, you can ask for help on `fangde.liu@imperial.ac.uk <fangde.liu@imperial.ac.uk>`_ .
+
+
+.. note::
+   We are writing up the documentation, please wait in patient.
 
 
 Why TensorDB
