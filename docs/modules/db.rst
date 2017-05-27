@@ -38,5 +38,5 @@ TensorDB API
 
 
 
-.. autoclass:: tensorlayer.db.TensorDB
+.. class:: tensorlayer.db.TensorDB
    :members:
