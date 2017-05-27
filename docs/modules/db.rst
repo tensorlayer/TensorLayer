@@ -35,9 +35,8 @@ Connect to database
 TensorDB API
 ---------------
 
-.. include:: ../../tensorlayer/db.py
 
-.. automodule:: tensorlayer.db
+.. automodule:: ../../tensorlayer/db.py
 
 .. autoclass:: TensorDB
    :members:
