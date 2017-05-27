@@ -35,7 +35,7 @@ Connect to database
 TensorDB API
 ---------------
 
-.. automodule:: tensorlayer.dbx
+.. automodule:: tensorlayer.db.TensorDB
 
 .. autosummary::
 
