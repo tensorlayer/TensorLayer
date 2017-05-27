@@ -17,15 +17,14 @@ XXX:
 
 xxx ``xxx`` or ``xxx``.
 
-Get Start
+Preparation
 --------------
 
 Install MongoDB
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 xx
 
-
-XXXXXX
+Start MongoDB service
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Connect to database
@@ -50,5 +49,5 @@ TensorDB API
 
 .. module:: tensorlayer.db
 
-.. class:: tensorlayer.db.TensorDB
+.. class:: TensorDB
    :members:
