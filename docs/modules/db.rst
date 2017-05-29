@@ -20,12 +20,7 @@ TensorDB introduce the database infracture to address the many challenges in lar
 3. how shoud we managment different models and version, and comparing different models.
 4. How to automate the whole training, evaluaiton and deploy machine learning model automatically.
 
-
 In the TensorLayer system, we introduce the database technology to the issues above.
-
-There is an academic publication which could be seen as the white paper of the TensorDB system.
-<https://www.dropbox.com/s/jyuy54n8t7k3l2e/tensordb-database-infrastructure.pdf?dl=0>
-
 
 TensorDB is designed by following three principles.
 
