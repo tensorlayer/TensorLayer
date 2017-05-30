@@ -97,17 +97,17 @@ Install MongoDB
 ^^^^^^^^^^^^^^^^^
 
 The installation instruction of Mongodb can be found at
-< https://docs.mongodb.com/manual/installation/ >
+`MongoDB Docs <https://docs.mongodb.com/manual/installation/>`_
 there are also managed mongodb service from amazon or gcp, or mongo atlas from mongodb
 
 
-User can also user docker, which is a powerful tool for deploy software < https://hub.docker.com/_/mongo/ >
+User can also user docker, which is a powerful tool for `deploy software <https://hub.docker.com/_/mongo/>`_
 
 
 after install mongodb, a mongod db management tool with graphic user interface will be extremely valuale.
 
 users can install the Studio3T( mongochef), which is free for none commerical user interface.
-< https://studio3t.com/ >
+`studio3t <https://studio3t.com/>`_
 
 
 Start MongoDB service
