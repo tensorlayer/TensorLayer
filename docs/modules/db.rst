@@ -46,7 +46,10 @@ Everying is identified by Query
 
 Within TensorDB framework, any entity within the data warehouse, such as  the data, model or jobs are specified by the database query language.  
 The first advantage is the query is more efficient  in space and can specify multiple objects in a concise way.
-The advantage such a design is to enable a highly flexible software system. data, model architecture and training are interchangeable.Many work can be implemented by simply rewire different components. This enable us to develop many new application just by change the query without change any applicaition code.
+The advantage such a design is to enable a highly flexible software system.
+data, model architecture and training are interchangeable.
+Many work can be implemented by simply rewire different components. 
+This enable us to develop many new application just by change the query without change any applicaition code.
 
 An pulling based Stream processing pipeline.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,7 +58,10 @@ Also with a large dataset, we can assume that the data is unlimited.
 TensorDB provides a streaming interface, implemented in python as generators, it keeps return the new data during training.
 Also the training system have no clue of epochs, instead, it knows batchize and store parameters after how many steps.
 
-Many techniques are introduced behind the streaming interface. The stream is implemented based on the database cursor technology,  so for every search, only the cursors are returned, not the actual data. Only when the generator is evaluated, the acutal data is loaded. The data loading is further optimise 
+Many techniques are introduced behind the streaming interface. 
+The stream is implemented based on the database cursor technology,  so for every search, only the cursors are returned, not the actual data. 
+Only when the generator is evaluated, the acutal data is loaded. 
+The data loading is further optimise 
 
 1. data are compressed and decompressed, 
 2. the dataloaded in bulk model to optimise the IO traffic 
@@ -115,9 +121,9 @@ Start MongoDB service
 
 After mongodb is installed, you shoud start the database.
 
-`` mongod start ``
+``mongod start``
 
-You can specificy the path the database files with `` -d ``  flag
+You can specificy the path the database files with ``-d``  flag
 
 Quick Start
 -----------
@@ -131,7 +137,8 @@ Connect to database
 To use TensorDB mongodb implmentaiton,  you need pymongo client.
 
 you can install it by 
-`` pip install pymongo ``
+``pip install pymongo``
+``pip install lz4``
 
 
 it is very strateford to connected to the TensorDB system.
@@ -158,11 +165,9 @@ The basic application is use TensorDB to save the model parameters and training/
 to use tensorDB, this can be easily done by replacing the print function by the db.log function
 
 for save the trainning log, we have
-``
-db.train_log
-``
+``db.train_log``
 and 
-`` db. save_parameter ``
+``db. save_parameter``
 
 methods
 
@@ -222,6 +227,11 @@ As long as the comtent in the database in the same, user can use whatever tools 
 
 the TesorLabDemo has an import data interface, which allow the user to injecting data in future
 
+user can import data by the following code
+
+``db.import_data(X,y,{'type':'train'})``
+
+
 
 Application Framework
 ----------------------
@@ -239,36 +249,30 @@ users can based on the TensorLabDemo code, overrite the interface to suits their
 
 when training, the overall archtiecture is 
 first, find a data generator from the dataset module
-``
-g=datase.data_generator({"type":XXXX})
-``
+``g=datase.data_generator({"type":XXXX})``
 then intialize a model with a name
-``
-m=model('mytes')
-``
+``m=model('mytes')``
 
 during training, connected the db logger and tensordb togehter
 
-``
-m.fit_generator(g,dblogger(tensordb,m),1000,100)
-``
+``m.fit_generator(g,dblogger(tensordb,m),1000,100)``
 
 if the work is distributed, we have to save the model archtiecture and reload and excute it
-``
-db.save_model_architecture(code,{'name':'mlp'})
-db.push_job({'name':'mlp'},{'type':XXXX},{'batch:1000','epoch':100)
-``
+.. code-block:: python
+   db.save_model_architecture(code,{'name':'mlp'})
+   db.push_job({'name':'mlp'},{'type':XXXX},{'batch:1000','epoch':100)
+
 
 the worker will run the job as the following code
-``
-j=job.pop
-g=dataset.data_generator(j.filter)
-c=tensordb.load_model_architecutre(j.march)
-exec c
-m=model()
-m.fit_generator(g,dblooger(tensordb,m),j.bach_size,j.epoch}
+.. code-block:: python
+   j=job.pop
+   g=dataset.data_generator(j.filter)
+   c=tensordb.load_model_architecutre(j.march)
+   exec c
+   m=model()
+   m.fit_generator(g,dblooger(tensordb,m),j.bach_size,j.epoch}
 
-``
+
 
 
 
