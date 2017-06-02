@@ -258,12 +258,14 @@ during training, connected the db logger and tensordb togehter
 ``m.fit_generator(g,dblogger(tensordb,m),1000,100)``
 
 if the work is distributed, we have to save the model archtiecture and reload and excute it
+
 .. code-block:: python
    db.save_model_architecture(code,{'name':'mlp'})
    db.push_job({'name':'mlp'},{'type':XXXX},{'batch:1000','epoch':100)
 
 
 the worker will run the job as the following code
+
 .. code-block:: python
    j=job.pop
    g=dataset.data_generator(j.filter)
