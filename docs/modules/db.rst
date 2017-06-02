@@ -113,7 +113,7 @@ A fully working example with mnist training set is the _TensorLabDemo.ipnb_
 
 
 Connect to database
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 To use TensorDB mongodb implmentaiton,  you need pymongo client.
 
@@ -144,7 +144,7 @@ it is very easy for us to evaluate different model architecture.
 
 
 log and parameters 
-------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The basic application is use TensorDB to save the model parameters and training/evaluation/testing logs.
 to use tensorDB, this can be easily done by replacing the print function by the db.log function
@@ -171,7 +171,7 @@ the code for save validation log and test log are similar.
 
 
 Model Architecture and Jobs
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TensorDb also supporting the model architecture and jobs system
 in the current version, both the model architecture and job are just simply strings.
 it is up to the user to specifiy how to convert the string back to models or job.
@@ -195,7 +195,7 @@ for example, in many our our cases, we just simpliy specify the python code.
    
    
 Database Interface
-------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The trainning set is managed by a seperate database.
 each application has its own database.
