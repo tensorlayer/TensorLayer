@@ -134,6 +134,7 @@ it is very strateford to connected to the TensorDB system.
 you can try the following code
 
 .. code-block:: python
+
   from tensorlayer.db import TensorDB
   db = TensorDB(ip='127.0.0.1', port=27017, db_name='your_db', user_name=None, password=None, studyID='ministMLP')
   
@@ -165,6 +166,7 @@ methods
 suppose we save the log each step and save the parameters each epoch, we can have the code like this
 
 .. code-block:: python
+
    for epoch in range(0,epoch_count):
       [~,ac]=sess.run([train_op,loss],feed_dict({x:x,y:y_}
       db.train_log({'accuracy':ac})
@@ -181,6 +183,7 @@ it is up to the user to specifiy how to convert the string back to models or job
 for example, in many our our cases, we just simpliy specify the python code.
 
 .. code-block:: python
+
    code= '''
    print "hello
    '''
@@ -220,7 +223,9 @@ the TesorLabDemo has an import data interface, which allow the user to injecting
 
 user can import data by the following code
 
-``db.import_data(X,y,{'type':'train'})``
+.. code-block:: python
+
+  db.import_data(X,y,{'type':'train'})
 
 
 
@@ -241,19 +246,26 @@ users can based on the TensorLabDemo code, overrite the interface to suits their
 when training, the overall archtiecture is 
 first, find a data generator from the dataset module
 
-``g=datase.data_generator({"type":XXXX})``
+.. code-block:: python
+
+  g=datase.data_generator({"type":[your type]})
 
 then intialize a model with a name
 
-``m=model('mytes')``
+.. code-block:: python
+
+  m=model('mytes')
 
 during training, connected the db logger and tensordb togehter
 
-``m.fit_generator(g,dblogger(tensordb,m),1000,100)``
+.. code-block:: python
+
+  m.fit_generator(g,dblogger(tensordb,m),1000,100)
 
 if the work is distributed, we have to save the model archtiecture and reload and excute it
 
 .. code-block:: python
+
    db.save_model_architecture(code,{'name':'mlp'})
    db.push_job({'name':'mlp'},{'type':XXXX},{'batch:1000','epoch':100)
 
@@ -261,6 +273,7 @@ if the work is distributed, we have to save the model archtiecture and reload an
 the worker will run the job as the following code
 
 .. code-block:: python
+
    j=job.pop
    g=dataset.data_generator(j.filter)
    c=tensordb.load_model_architecutre(j.march)
