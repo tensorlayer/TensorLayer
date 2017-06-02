@@ -137,7 +137,9 @@ Connect to database
 To use TensorDB mongodb implmentaiton,  you need pymongo client.
 
 you can install it by 
+
 ``pip install pymongo``
+
 ``pip install lz4``
 
 
@@ -166,7 +168,9 @@ to use tensorDB, this can be easily done by replacing the print function by the 
 
 for save the trainning log, we have
 ``db.train_log``
+
 and 
+
 ``db. save_parameter``
 
 methods
@@ -192,7 +196,7 @@ for example, in many our our cases, we just simpliy specify the python code.
 .. code-block:: python
    code= '''
    print "hello
-   ```
+   '''
    db.save_model_architecutre(code,{'name':'print'}
    
    c,fid=db.find_model_architecutre({'name':'print'})
@@ -249,8 +253,11 @@ users can based on the TensorLabDemo code, overrite the interface to suits their
 
 when training, the overall archtiecture is 
 first, find a data generator from the dataset module
+
 ``g=datase.data_generator({"type":XXXX})``
+
 then intialize a model with a name
+
 ``m=model('mytes')``
 
 during training, connected the db logger and tensordb togehter
@@ -258,14 +265,12 @@ during training, connected the db logger and tensordb togehter
 ``m.fit_generator(g,dblogger(tensordb,m),1000,100)``
 
 if the work is distributed, we have to save the model archtiecture and reload and excute it
-
 .. code-block:: python
    db.save_model_architecture(code,{'name':'mlp'})
    db.push_job({'name':'mlp'},{'type':XXXX},{'batch:1000','epoch':100)
 
 
 the worker will run the job as the following code
-
 .. code-block:: python
    j=job.pop
    g=dataset.data_generator(j.filter)
@@ -273,9 +278,6 @@ the worker will run the job as the following code
    exec c
    m=model()
    m.fit_generator(g,dblooger(tensordb,m),j.bach_size,j.epoch}
-
-
-
 
 
 
