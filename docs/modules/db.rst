@@ -74,19 +74,6 @@ On the distributed system, the model training, validation and deployment can be 
 The trainer can keeps on optimising the models, the evaluation keeps evaluating the recent added models and the deployment system keeps pulling the best models from the TensorDB warehouse.
 
 
-
-
-XXX:
-
- - ``xxx`` : xxx.
- - ``xxx`` : xxx.
- - ``xxx`` : xxx.
-
-
-``xxx`` = [x, x, x, x, x, x]
-
-xxx ``xxx`` or ``xxx``.
-
 Preparation
 --------------
 
@@ -96,7 +83,7 @@ Further implementaiton on other database will be released depends on progress.
 It will be stragihtford to port the tensorDB system to google cloud , aws and azure.
 
 
-The following tutorial is base on the MongoDb implmenetation.
+The following tutorial is based on the MongoDb implmenetation.
 
 
 Install MongoDB
