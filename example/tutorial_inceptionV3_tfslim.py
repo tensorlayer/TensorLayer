@@ -114,7 +114,7 @@ network.print_params(False)
 
 saver = tf.train.Saver()
 if not os.path.isfile("inception_v3.ckpt"):
-    print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/slim#Install")
+    print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/slim#Pretrained")
     exit()
 try:    # TF12+
     saver.restore(sess, "./inception_v3.ckpt")
