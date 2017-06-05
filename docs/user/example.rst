@@ -36,7 +36,7 @@ Reinforcement Learning
 ==============================
 
  - Deep Reinforcement Learning - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py`` on `GitHub`_.
-
+ - Asynchronous Deep Reinforcement Learning - Pong Game by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
 
 Applications
 ==============
