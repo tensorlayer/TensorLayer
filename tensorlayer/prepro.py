@@ -1208,6 +1208,70 @@ def array_to_img(x, dim_ordering=(0,1,2), scale=True):
         raise Exception('Unsupported channel number: ', x.shape[2])
 
 
+
+
+def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low'):
+    """ Find iso-valued contours in a 2D array for a given level value, returns list of (n, 2)-ndarrays
+    see `skimage.measure.find_contours <http://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.find_contours>`_ .
+
+    Parameters
+    ------------
+    x : 2D ndarray of double. Input data in which to find contours.
+    level : float. Value along which to find contours in the array.
+    fully_connected : str, {‘low’, ‘high’}.  Indicates whether array elements below the given level value are to be considered fully-connected (and hence elements above the value will only be face connected), or vice-versa. (See notes below for details.)
+    positive_orientation : either ‘low’ or ‘high’. Indicates whether the output contours will produce positively-oriented polygons around islands of low- or high-valued elements. If ‘low’ then contours will wind counter-clockwise around elements below the iso-value. Alternately, this means that low-valued elements are always on the left of the contour.
+    """
+    return skimage.measure.find_contours(x, level, fully_connected='low', positive_orientation='low')
+
+def pt2map(list_points=[], size=(100, 100), val=1):
+    """ Inputs a list of points, return a 2D image.
+
+    Parameters
+    --------------
+    list_points : list of [x, y].
+    size : tuple of (w, h) for output size.
+    val : float or int for the contour value.
+    """
+    i_m = np.zeros(size)
+    if list_points == []:
+        return i_m
+    for xx in list_points:
+        for x in xx:
+            # print(x)
+            i_m[int(np.round(x[0]))][int(np.round(x[1]))] = val
+    return i_m
+
+def binary_dilation(x, radius=3):
+    """ Return fast binary morphological dilation of an image.
+    see `skimage.morphology.binary_dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_dilation>`_.
+
+    Parameters
+    -----------
+    x : 2D array image.
+    radius : int for the radius of mask.
+    """
+    from skimage.morphology import disk, binary_dilation
+    mask = disk(radius)
+    x = binary_dilation(image, selem=mask)
+    return x
+
+def dilation(x, radius=3):
+    """ Return greyscale morphological dilation of an image,
+    see `skimage.morphology.dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.dilation>`_.
+
+    Parameters
+    -----------
+    x : 2D array image.
+    radius : int for the radius of mask.
+    """
+    from skimage.morphology import disk, dilation
+    mask = disk(radius)
+    x = dilation(x, selem=mask)
+    return x
+
+
+
+
 ## Sequence
 def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncating='pre', value=0.):
     """Pads each sequence to the same length:

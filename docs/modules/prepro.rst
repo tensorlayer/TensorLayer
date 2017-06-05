@@ -51,6 +51,11 @@ Some of the code in this package are borrowed from Keras.
 
    array_to_img
 
+   find_contours
+   pt2map
+   binary_dilation
+   dilation
+
    pad_sequences
    process_sequences
    sequences_add_start_id
@@ -144,6 +149,21 @@ Numpy and PIL
 ^^^^^^^^^^^^^^
 .. autofunction:: array_to_img
 
+Find contours
+^^^^^^^^^^^^^^
+.. autofunction:: find_contours
+
+Points to Image
+^^^^^^^^^^^^^^^^^
+.. autofunction:: pt2map
+
+Binary dilation
+^^^^^^^^^^^^^^^^^
+.. autofunction:: binary_dilation
+
+Greyscale dilation
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: dilation
 
 Sequence
 ---------
