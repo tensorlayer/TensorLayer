@@ -175,6 +175,7 @@ We have included the corresponding modularized implementations of Google TensorF
  - MultiplexerLayer. ``tutorial_mnist_multiplexer.py``.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see ``tutorial_tfrecord*.py`` and ``tutorial_cifar10_tfrecord.py``.
  - Data augmentation with TensorLayer, see ``tutorial_image_preprocess.py``.
+ - TensorDB by [fangde](https://github.com/fangde) see [here](https://github.com/akaraspt/tl_paper).
 
 # License
 
