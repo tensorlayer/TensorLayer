@@ -32,6 +32,11 @@ try:  # For TF12 and later
 except:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
+try:  # TF1.0
+    from tensorflow.contrib import legacy_seq2seq as seq2seq
+except:
+    from tensorflow.nn import seq2seq
+
 ## Variable Operation
 def flatten_reshape(variable, name=''):
     """Reshapes high-dimension input to a vector.
@@ -5275,7 +5280,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
         # ============== Seq Decode Layer ============
         # The seq2seq function: we use embedding for the input and attention.
         def seq2seq_f(encoder_inputs, decoder_inputs, do_decode):
-          return tf.nn.seq2seq.embedding_attention_seq2seq(
+          return seq2seq.embedding_attention_seq2seq(
               encoder_inputs, decoder_inputs, cell,
               num_encoder_symbols=source_vocab_size,
               num_decoder_symbols=target_vocab_size,
@@ -5305,7 +5310,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 
         # Training outputs and losses.
         if forward_only:
-          self.outputs, self.losses = tf.nn.seq2seq.model_with_buckets(
+          self.outputs, self.losses = seq2seq.model_with_buckets(
               self.encoder_inputs, self.decoder_inputs, targets,
               self.target_weights, buckets, lambda x, y: seq2seq_f(x, y, True),
               softmax_loss_function=softmax_loss_function)
@@ -5317,7 +5322,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
                   for output in self.outputs[b]
               ]
         else:
-          self.outputs, self.losses = tf.nn.seq2seq.model_with_buckets(
+          self.outputs, self.losses = seq2seq.model_with_buckets(
               self.encoder_inputs, self.decoder_inputs, targets,
               self.target_weights, buckets,
               lambda x, y: seq2seq_f(x, y, False),
