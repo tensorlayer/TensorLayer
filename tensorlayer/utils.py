@@ -238,7 +238,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         print("   test acc: %f" % (test_acc/ n_batch))
 
 
-def predict(sess, network, X, x, y_op):
+def predict(sess, network, X, x, y_op, batch_size=None):
     """
     Return the predict results of given non time-series network.
 
@@ -254,6 +254,9 @@ def predict(sess, network, X, x, y_op):
         for inputs
     y_op : placeholder
         the argmax expression of softmax outputs
+    batch_size : int or None
+        batch size for prediction, when dataset is large, we should use minibatche for prediction.
+        when dataset is small, we can set it to None.
 
     Examples
     --------
@@ -262,10 +265,25 @@ def predict(sess, network, X, x, y_op):
     >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
     >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
     """
-    dp_dict = dict_to_one( network.all_drop )    # disable noise layers
-    feed_dict = {x: X,}
-    feed_dict.update(dp_dict)
-    return sess.run(y_op, feed_dict=feed_dict)
+    if batch_size is None:
+        dp_dict = dict_to_one( network.all_drop )    # disable noise layers
+        feed_dict = {x: X,}
+        feed_dict.update(dp_dict)
+        return sess.run(y_op, feed_dict=feed_dict)
+    else:
+        result = None
+        for X_a, _ in iterate.minibatches(
+                X, X, batch_size, shuffle=False):
+            dp_dict = dict_to_one( network.all_drop )
+            feed_dict = {x: X_a, }
+            feed_dict.update(dp_dict)
+            result_a = sess.run(y_op, feed_dict=feed_dict)
+            if result is None:
+                result = result_a
+            else:
+                result = np.hstack((result, result_a))
+        return result
+
 
 ## Evaluation
 def evaluation(y_test=None, y_predict=None, n_classes=None):
