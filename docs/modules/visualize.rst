@@ -8,6 +8,7 @@ to visualize the model, activations etc. Here we provide more functions for data
 
 .. autosummary::
 
+   save_image
    save_images
    W
    CNN2d
@@ -18,6 +19,10 @@ to visualize the model, activations etc. Here we provide more functions for data
 
 Save images
 --------------
+
+Save one image
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: save_image
 
 Save multiple images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
