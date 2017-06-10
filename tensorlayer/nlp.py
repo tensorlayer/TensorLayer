@@ -298,6 +298,12 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     >>> c = tl.nlp.process_sentence(c)
     >>> print(c)
     ... ['<S>', 'how', 'are', 'you', '?', '</S>']
+
+    Notes
+    -------
+    - You have to install the following package.
+    - `Installing NLTK <http://www.nltk.org/install.html>`_
+    - `Installing NLTK data <http://www.nltk.org/data.html>`_
     """
     try:
         import nltk
