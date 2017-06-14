@@ -523,7 +523,7 @@ Depending on the problem you are solving, you will need different loss functions
 see :mod:`tensorlayer.cost` for more.
 
 Having the model and the loss function defined, we create update expressions
-for training the network. TensorLayer do not provide many optimizer, we used TensorFlow's
+for training the network. TensorLayer do not provide many optimizers, we used TensorFlow's
 optimizer instead:
 
 .. code-block:: python
