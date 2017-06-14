@@ -375,7 +375,7 @@ output represents the class index. While ``cost`` is the cross-entropy between t
 Denoising Autoencoder (DAE)
 --------------------------------------
 
-Autoencoder is a unsupervised learning models which able to extract representative features,
+Autoencoder is a unsupervised learning models which is able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
 For vanilla Autoencoder see `Deeplearning Tutorial`_.
 
