@@ -607,11 +607,16 @@ def assign_params(sess, params, network):
 
     Parameters
     ----------
-    sess : TensorFlow Session
+    sess : TensorFlow Session. Automatically run when sess is not None.
     params : a list
         A list of parameters in order.
     network : a :class:`Layer` class
         The network to be assigned
+
+    Returns
+    --------
+    ops : list
+        A list of tf ops in order that assign params. Support sess.run(ops) manually.
 
     Examples
     --------
@@ -632,7 +637,9 @@ def assign_params(sess, params, network):
     ops = []
     for idx, param in enumerate(params):
         ops.append(network.all_params[idx].assign(param))
-    sess.run(ops)
+    if sess is not None:
+        sess.run(ops)
+    return ops
 
 def load_and_assign_npz(sess=None, name=None, network=None):
     """Load model from npz and assign to a network.
