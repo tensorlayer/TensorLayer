@@ -42,7 +42,9 @@ sake of cross-platform.
    load_wmt_en_fr_dataset
 
    save_npz
+   save_npz_dict
    load_npz
+   load_npz_dict
    assign_params
    load_and_assign_npz
 
@@ -92,13 +94,21 @@ English-to-French translation data from the WMT'15 Website
 Load and save network
 ----------------------
 
-Save network as .npz
-^^^^^^^^^^^^^^^^^^^^^^^^
+Save network into list
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_npz
 
-Load network from .npz
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Save network into dict
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: save_npz_dict
+
+Load network from save_npz
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_npz
+
+Load network from save_npz_dict
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_npz_dict
 
 Assign parameters to network
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

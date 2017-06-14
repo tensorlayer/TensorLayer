@@ -678,7 +678,7 @@ def assign_params(sess, params, network):
     >>> network.print_params()
     ...
     ... Next time, load and assign your network as follow:
-    >>> sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign
+    >>> tl.layers.initialize_global_variables(sess)
     >>> load_params = tl.files.load_npz(name='model_test.npz')
     >>> tl.files.assign_params(sess, load_params, network)
     >>> network.print_params()
