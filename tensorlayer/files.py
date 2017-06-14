@@ -600,8 +600,12 @@ def load_npz(path='', name='model.npz'):
     # for val in sorted( d.items() ):
     #     params = val
     #     return params
-    saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
-    return saved_list_var
+    if 'params' in d:
+        # Old API
+        return d['params']
+    else:
+        saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
+        return saved_list_var
     # print(d.items()[0][1]['params'])
     # exit()
     # return d.items()[0][1]['params']
