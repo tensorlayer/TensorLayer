@@ -375,7 +375,7 @@ output represents the class index. While ``cost`` is the cross-entropy between t
 Denoising Autoencoder (DAE)
 --------------------------------------
 
-Autoencoder is a unsupervised learning models which able to extract representative features,
+Autoencoder is a unsupervised learning models which is able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
 For vanilla Autoencoder see `Deeplearning Tutorial`_.
 
@@ -523,7 +523,7 @@ Depending on the problem you are solving, you will need different loss functions
 see :mod:`tensorlayer.cost` for more.
 
 Having the model and the loss function defined, we create update expressions
-for training the network. TensorLayer do not provide many optimizer, we used TensorFlow's
+for training the network. TensorLayer do not provide many optimizers, we used TensorFlow's
 optimizer instead:
 
 .. code-block:: python
