@@ -549,9 +549,12 @@ def save_npz(save_list=[], name='model.npz', sess=None):
                 save_list_var.append(value.eval())
         except:
             print(" Fail to save model, Hint: pass the session into this function, save_npz(network.all_params, name='model.npz', sess=sess)")
-    np.savez(name, params=save_list_var)
+    save_var_dict = {str(idx):val for idx, val in enumerate(save_list_var)}
+    np.savez(name, **save_var_dict)
     save_list_var = None
+    save_var_dict = None
     del save_list_var
+    del save_var_dict
     print("[*] %s saved" % name)
 
     ## save params into a dictionary
@@ -597,7 +600,12 @@ def load_npz(path='', name='model.npz'):
     # for val in sorted( d.items() ):
     #     params = val
     #     return params
-    return d['params']
+    if 'params' in d:
+        # Old API
+        return d['params']
+    else:
+        saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
+        return saved_list_var
     # print(d.items()[0][1]['params'])
     # exit()
     # return d.items()[0][1]['params']
