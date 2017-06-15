@@ -102,6 +102,23 @@ def mean_squared_error(output, target, is_mean=False):
                 mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]))
         return mse
 
+def normalize_mean_squared_error(output, target):
+    """Return the TensorFlow expression of normalized mean-squre-error of two distributions.
+
+    Parameters
+    ----------
+    output : 2D or 4D tensor.
+    target : 2D or 4D tensor.
+    """
+    with tf.name_scope("mean_squared_error_loss"):
+        if output.get_shape().ndims == 2:   # [batch_size, n_feature]
+            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
+            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
+        elif output.get_shape().ndims == 4: # [batch_size, w, h, c]
+            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1,2,3]))
+            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1,2,3]))
+        nmse = tf.reduce_mean(nmse_a / nmse_b)
+    return nmse
 
 
 def dice_coe(output, target, epsilon=1e-10):

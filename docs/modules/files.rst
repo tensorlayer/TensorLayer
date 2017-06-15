@@ -94,12 +94,12 @@ English-to-French translation data from the WMT'15 Website
 Load and save network
 ----------------------
 
-Save network into list
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Save network into list (npz)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_npz
 
-Save network into dict
-^^^^^^^^^^^^^^^^^^^^^^^^
+Save network into dict (npz)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_npz_dict
 
 Load network from save_npz
