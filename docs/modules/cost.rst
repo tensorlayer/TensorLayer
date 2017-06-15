@@ -120,7 +120,7 @@ to the cost function.
    sigmoid_cross_entropy
    binary_cross_entropy
    mean_squared_error
-   normalize_mean_squared_error
+   normalized_mean_square_error
    dice_coe
    dice_hard_coe
    iou_coe
@@ -150,9 +150,9 @@ Mean squared error
 -------------------------
 .. autofunction:: mean_squared_error
 
-Normalized mean squared error
+Normalized mean square error
 --------------------------------
-.. autofunction:: normalize_mean_squared_error
+.. autofunction:: normalized_mean_square_error
 
 Dice coefficient
 -------------------------

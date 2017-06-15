@@ -102,7 +102,7 @@ def mean_squared_error(output, target, is_mean=False):
                 mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]))
         return mse
 
-def normalize_mean_squared_error(output, target):
+def normalized_mean_square_error(output, target):
     """Return the TensorFlow expression of normalized mean-squre-error of two distributions.
 
     Parameters
