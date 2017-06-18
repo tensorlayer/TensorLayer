@@ -18,6 +18,7 @@
 TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
 
 # What's New
+* Support TensorFlow 1.2
 * Join [Slack](https://join.slack.com/tensorlayer/shared_invite/MTk1MjM0NDk5MDg5LTE0OTcwOTQyNTEtODFjY2QzYjdmZQ) Now.
 * [Attention Seq2seq](https://github.com/zsdonghao/tensorlayer/issues/164) help wanted.
 * Support [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution.

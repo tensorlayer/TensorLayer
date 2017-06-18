@@ -26,7 +26,8 @@ X = np.random.randn(2, 10, 8)   # [batch_size, n_step, n_features]
 X[1,6:] = 0
 X_lengths = [10, 6]
 
-cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
+cell =tf.contrib.rnn.BasicLSTMCell(num_units=64, state_is_tuple=True)
+# cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True) # TF 0.12
 
 outputs, last_states = tf.nn.dynamic_rnn(
     cell=cell,
@@ -47,7 +48,8 @@ assert (result[0]["outputs"][1,7,:] == np.zeros(cell.output_size)).all()
 ## 2. How to control the initial state
 batch_size = X.shape[0]
 with tf.variable_scope('name') as vs:
-    cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
+    cell =tf.contrib.rnn.BasicLSTMCell(num_units=64, state_is_tuple=True)
+    # cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True) # TF 0.12
     initial_state = cell.zero_state(batch_size, dtype=tf.float64)#"float")
     outputs, last_states = tf.nn.dynamic_rnn(
                         cell=cell,
@@ -84,11 +86,12 @@ def retrieve_seq_length_op(data):
     return length
 
 sequence_length = retrieve_seq_length_op(
-            incoming if isinstance(X, tf.Tensor) else tf.pack(X))
+            incoming if isinstance(X, tf.Tensor) else tf.stack(X))#tf.pack(X))
 
 batch_size = X.shape[0]
 with tf.variable_scope('name2') as vs: #, initializer=tf.constant_initializer(value=0.1)) as vs:
-    cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True)
+    cell =tf.contrib.rnn.BasicLSTMCell(num_units=64, state_is_tuple=True)
+    # cell = tf.nn.rnn_cell.LSTMCell(num_units=64, state_is_tuple=True) # TF 0.12
     initial_state = cell.zero_state(batch_size, dtype=tf.float64)#"float")
     outputs, last_states = tf.nn.dynamic_rnn(
                         cell=cell,
@@ -106,11 +109,11 @@ print('all outputs', result[0]["outputs"])
 # print(sequence_length)
 # exit()
 # automatically get the last output
-outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
+outputs = tf.transpose(tf.stack(outputs), [1, 0, 2]) #outputs = tf.transpose(tf.pack(outputs), [1, 0, 2])
 last_outputs = advanced_indexing_op(outputs, sequence_length)
 last_states = result[0]["last_states"]
 sess = tf.Session()
-sess.run(tf.initialize_all_variables())
+tl.layers.initialize_global_variables(sess)
 # print('last outputs',sess.run(last_outputs)) # (2, 64)  # TO DO
 # print('last lstm states',last_states, last_states.c.shape, last_states.h.shape)
 

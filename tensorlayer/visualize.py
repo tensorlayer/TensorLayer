@@ -3,9 +3,13 @@
 
 
 import matplotlib
-matplotlib.use('Agg')
+
+## use this, if you got the following error:
+#  _tkinter.TclError: no display name and no $DISPLAY environment variable
+
+# matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
-# import matplotlib.pyplot as plt
 import numpy as np
 import os
 
