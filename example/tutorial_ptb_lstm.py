@@ -378,6 +378,7 @@ def main(_):
     test_perplexity = np.exp(costs / iters)
     print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))
 
+    print("More example: Text generation using Trump's speech data: https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py -- def main_lstm_generate_text():")
 
 if __name__ == "__main__":
     tf.app.run()
