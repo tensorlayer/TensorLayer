@@ -685,8 +685,11 @@ class DenseLayer(Layer):
         print("  [TL] DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
-            if b_init:
-                b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+            if b_init is not None:
+                try:
+                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+                except: # If initializer is a constant, do not specify shape.
+                    b = tf.get_variable(name='b', initializer=b_init, **b_init_args )
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
@@ -697,7 +700,7 @@ class DenseLayer(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-        if b_init:
+        if b_init is not None:
             self.all_params.extend( [W, b] )
         else:
             self.all_params.extend( [W] )
