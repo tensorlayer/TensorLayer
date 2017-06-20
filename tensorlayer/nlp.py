@@ -241,8 +241,12 @@ class Vocabulary(object):
     with tf.gfile.GFile(vocab_file, mode="r") as f:
       reverse_vocab = list(f.readlines())
     reverse_vocab = [line.split()[0] for line in reverse_vocab]
-    assert start_word in reverse_vocab
-    assert end_word in reverse_vocab
+    # assert start_word in reverse_vocab
+    # assert end_word in reverse_vocab
+    if start_word not in reverse_vocab: # haodong
+      reverse_vocab.append(start_word)
+    if end_word not in reverse_vocab:
+      reverse_vocab.append(end_word)
     if unk_word not in reverse_vocab:
       reverse_vocab.append(unk_word)
     vocab = dict([(x, y) for (y, x) in enumerate(reverse_vocab)])

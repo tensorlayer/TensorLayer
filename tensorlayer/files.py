@@ -327,7 +327,8 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
 
     with zipfile.ZipFile(os.path.join(path, filename)) as f:
         word_list = f.read(f.namelist()[0]).split()
-
+        for idx, word in enumerate(word_list):
+            word_list[idx] = word_list[idx].decode()
     return word_list
 
 
