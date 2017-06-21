@@ -16,13 +16,13 @@ TensorLayer provides a simple way to create you own cost function. Take a MLP be
 
 .. code-block:: python
 
-  network = InputLayer(x, name='input_layer')
+  network = InputLayer(x, name='input')
   network = DropoutLayer(network, keep=0.8, name='drop1')
-  network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+  network = DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu1')
   network = DropoutLayer(network, keep=0.5, name='drop2')
-  network = DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+  network = DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu2')
   network = DropoutLayer(network, keep=0.5, name='drop3')
-  network = DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+  network = DenseLayer(network, n_units=10, act=tf.identity, name='output')
 
 The network parameters will be ``[W1, b1, W2, b2, W_out, b_out]``,
 then you can apply L2 regularization on the weights matrix of first two layer as follow.
@@ -52,7 +52,7 @@ observed by using ``network.print_params()``.
 
 .. code-block:: python
 
-  sess.run(tf.initialize_all_variables())
+  tl.layers.initialize_global_variables(sess)
   network.print_params()
 
 .. code-block:: text
