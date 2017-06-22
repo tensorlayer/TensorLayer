@@ -1117,6 +1117,7 @@ class DropconnectDenseLayer(Layer):
 class Conv1dLayer(Layer):
     """
     The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`_.
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -1629,7 +1630,7 @@ def AtrousConv1dLayer(net, n_filter=32, filter_size=2, stride=1, dilation=1, act
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {}, b_init_args = {},name ='conv1d',):
     """Wrapper for :class:`AtrousConv1dLayer`, if you don't understand how to use :class:`Conv1dLayer`, this function may be easier.
-    
+
     Parameters
     ----------
     net : TensorLayer layer.
