@@ -112,64 +112,40 @@ At the end, as a layer with parameter, we also need to append the parameters int
 
 .. code-block:: python
 
-  class DenseLayer(Layer):
-      """
-      The :class:`DenseLayer` class is a fully connected layer.
+  class MyDenseLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        n_units = 100,
+        act = tf.nn.relu,
+        name ='simple_dense',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
 
-      Parameters
-      ----------
-      layer : a :class:`Layer` instance
-          The `Layer` class feeding into this layer.
-      n_units : int
-          The number of units of the layer.
-      act : activation function
-          The function that is applied to the layer activations.
-      W_init : weights initializer
-          The initializer for initializing the weight matrix.
-      b_init : biases initializer
-          The initializer for initializing the bias vector. If None, skip biases.
-      W_init_args : dictionary
-          The arguments for the weights tf.get_variable.
-      b_init_args : dictionary
-          The arguments for the biases tf.get_variable.
-      name : a string or None
-          An optional name to attach to this layer.
-      """
-      def __init__(
-          self,
-          layer = None,
-          n_units = 100,
-          act = tf.nn.relu,
-          W_init = tf.truncated_normal_initializer(stddev=0.1),
-          b_init = tf.constant_initializer(value=0.0),
-          W_init_args = {},
-          b_init_args = {},
-          name ='dense_layer',
-      ):
-          Layer.__init__(self, name=name)
-          self.inputs = layer.outputs
-          if self.inputs.get_shape().ndims != 2:
-              raise Exception("The input dimension must be rank 2")
-          n_in = int(self.inputs._shape[-1])
-          self.n_units = n_units
-          print("  tensorlayer:Instantiate DenseLayer %s: %d, %s" % (self.name, self.n_units, act))
-          with tf.variable_scope(name) as vs:
-              W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
-              if b_init:
-                  b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
-                  self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name)
-              else:
-                  self.outputs = act(tf.matmul(self.inputs, W))
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
 
-          # Hint : list(), dict() is pass by value (shallow).
-          self.all_layers = list(layer.all_layers)
-          self.all_params = list(layer.all_params)
-          self.all_drop = dict(layer.all_drop)
-          self.all_layers.extend( [self.outputs] )
-          if b_init:
-             self.all_params.extend( [W, b] )
-          else:
-             self.all_params.extend( [W] )
+        # print out info (customized)
+        print("  MyDenseLayer %s: %d, %s" % (self.name, n_units, act))
+
+        # operation (customized)
+        n_in = int(self.inputs._shape[-1])
+        with tf.variable_scope(name) as vs:
+            # create new parameters
+            W = tf.get_variable(name='W', shape=(n_in, n_units))
+            b = tf.get_variable(name='b', shape=(n_units))
+            # tensor operation
+            self.outputs = act(tf.matmul(self.inputs, W) + b)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( [W, b] )
 
 Your layer
 -----------------
@@ -190,13 +166,21 @@ The following is an example implementation of a layer that multiplies its input 
           layer = None,
           name ='double_layer',
       ):
+          # check layer name (fixed)
           Layer.__init__(self, name=name)
+
+          # the input of this layer is the output of previous layer (fixed)
           self.inputs = layer.outputs
+
+          # operation (customized)
           self.outputs = self.inputs * 2
 
+          # get stuff from previous layer (fixed)
           self.all_layers = list(layer.all_layers)
           self.all_params = list(layer.all_params)
           self.all_drop = dict(layer.all_drop)
+
+          # update layer (customized)
           self.all_layers.extend( [self.outputs] )
 
 
