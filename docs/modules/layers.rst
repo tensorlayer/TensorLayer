@@ -285,6 +285,7 @@ Layer list
    Padlayer
    UpSampling2dLayer
    DownSampling2dLayer
+   AtrousConv1dLayer
    AtrousConv2dLayer
    SeparableConv2dLayer
 
@@ -452,6 +453,10 @@ Convolutional layer (Pro)
 2D DownSampling layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DownSampling2dLayer
+
+1D Atrous convolutional layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AtrousConv1dLayer
 
 2D Atrous convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

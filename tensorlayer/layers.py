@@ -1116,8 +1116,7 @@ class DropconnectDenseLayer(Layer):
 
 class Conv1dLayer(Layer):
     """
-    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.conv1d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv1d>`_.
-
+    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`_.
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -1127,10 +1126,12 @@ class Conv1dLayer(Layer):
         shape of the filters, [filter_length, in_channels, out_channels].
     stride : an int.
         The number of entries by which the filter is moved right at each step.
+    dilation_rate : an int.
+        Specifies the filter upsampling/input downsampling rate.
     padding : a string from: "SAME", "VALID".
         The type of padding algorithm to use.
     use_cudnn_on_gpu : An optional bool. Defaults to True.
-    data_format : An optional string from "NHWC", "NCHW". Defaults to "NHWC", the data is stored in the order of [batch, in_width, in_channels]. The "NCHW" format stores data as [batch, in_channels, in_width].
+    data_format : As it is 1D conv, default is 'NWC'.
     W_init : weights initializer
         The initializer for initializing the weight matrix.
     b_init : biases initializer or None
@@ -1148,9 +1149,10 @@ class Conv1dLayer(Layer):
         act = tf.identity,
         shape = [5, 1, 5],
         stride = 1,
+        dilation_rate = 1,
         padding='SAME',
         use_cudnn_on_gpu=None,
-        data_format=None,
+        data_format='NWC',
         W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {},
@@ -1165,13 +1167,19 @@ class Conv1dLayer(Layer):
             act = tf.identity
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, **W_init_args )
+            self.outputs = tf.nn.convolution(
+                self.inputs,
+                W,
+                strides=(stride,),
+                padding=padding,
+                dilation_rate=(dilation_rate,),
+                data_format=data_format
+            ) #1.2
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, **b_init_args )
-                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding,
-                            use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b ) #1.2
-            else:
-                self.outputs = act( tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding,
-                            use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+                self.outputs = self.outputs + b
+
+            self.outputs = act(self.outputs)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -1614,6 +1622,43 @@ class DownSampling2dLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+
+def AtrousConv1dLayer(net, n_filter=32, filter_size=2, stride=1, dilation=1, act=None,
+        padding='SAME', use_cudnn_on_gpu=None,data_format='NWC',
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {}, b_init_args = {},name ='conv1d',):
+    """Wrapper for :class:`AtrousConv1dLayer`, if you don't understand how to use :class:`Conv1dLayer`, this function may be easier.
+    
+    Parameters
+    ----------
+    net : TensorLayer layer.
+    n_filter : number of filter.
+    filter_size : an int.
+    stride : an int.
+    dilation : an int, filter dilation size.
+    act : None or activation function.
+    others : see :class:`Conv1dLayer`.
+    """
+    if act is None:
+        act = tf.identity
+    net = Conv1dLayer(layer = net,
+            act = act,
+            shape = [filter_size, int(net.outputs.get_shape()[-1]), n_filter],
+            stride = stride,
+            padding = padding,
+            dilation_rate = dilation,
+            use_cudnn_on_gpu = use_cudnn_on_gpu,
+            data_format = data_format,
+            W_init = W_init,
+            b_init = b_init,
+            W_init_args = W_init_args,
+            b_init_args = b_init_args,
+            name = name,
+        )
+    return net
+
+
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
 
@@ -1807,8 +1852,8 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 ## Convolutional layer (Simplified)
-def Conv1d(net, n_filter=32, filter_size=5, stride=1, act=None,
-        padding='SAME', use_cudnn_on_gpu=None,data_format=None,
+def Conv1d(net, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None,
+        padding='SAME', use_cudnn_on_gpu=None, data_format="NWC",
         W_init = tf.truncated_normal_initializer(stddev=0.02),
         b_init = tf.constant_initializer(value=0.0),
         W_init_args = {}, b_init_args = {}, name ='conv1d',):
@@ -1820,6 +1865,7 @@ def Conv1d(net, n_filter=32, filter_size=5, stride=1, act=None,
     n_filter : number of filter.
     filter_size : an int.
     stride : an int.
+    dilation_rate : As it is 1D conv, the default is "NWC".
     act : None or activation function.
     others : see :class:`Conv1dLayer`.
     """
@@ -1829,6 +1875,7 @@ def Conv1d(net, n_filter=32, filter_size=5, stride=1, act=None,
             act = act,
             shape = [filter_size, int(net.outputs.get_shape()[-1]), n_filter],
             stride = stride,
+            dilation_rate = dilation_rate,
             padding = padding,
             use_cudnn_on_gpu = use_cudnn_on_gpu,
             data_format = data_format,
