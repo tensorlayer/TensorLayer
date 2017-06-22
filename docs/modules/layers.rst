@@ -282,7 +282,7 @@ Layer list
    Conv3dLayer
    DeConv3dLayer
    PoolLayer
-   Padlayer
+   PadLayer
    UpSampling2dLayer
    DownSampling2dLayer
    AtrousConv1dLayer
