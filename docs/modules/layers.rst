@@ -456,7 +456,7 @@ Convolutional layer (Pro)
 
 1D Atrous convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AtrousConv1dLayer
+.. autofunction:: AtrousConv1dLayer
 
 2D Atrous convolutional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
