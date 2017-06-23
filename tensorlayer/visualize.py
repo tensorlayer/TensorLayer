@@ -25,7 +25,11 @@ def save_image(image, image_path):
     images : numpy array [w, h, c]
     image_path : string.
     """
-    scipy.misc.imsave(image_path, image)
+    try: # RGB
+        scipy.misc.imsave(image_path, image)
+    except: # Greyscale
+        scipy.misc.imsave(image_path, image[:,:,0])
+
 
 def save_images(images, size, image_path):
     """Save mutiple images into one single image.
