@@ -277,12 +277,12 @@ class Layer(object):
                 try:
                     # print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
                     val = p.eval()
-                    print("  param {:3}: {:20} {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(i, p.name, str(val.shape), val.mean(), np.median(val), val.std()))
+                    print("  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()))
                 except Exception as e:
                     print(str(e))
                     raise Exception("Hint: print params details after tl.layers.initialize_global_variables(sess) or use network.print_params(False).")
             else:
-                print("  param {:3}: {:20} {:15}".format(i, p.name, str(p.get_shape())))
+                print("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
         print("  num of params: %d" % self.count_params())
 
     def print_layers(self):
