@@ -286,6 +286,10 @@ Layer list
 
    SubpixelConv2d
 
+   SpatialTransformer2dAffineLayer
+   transformer
+   batch_transformer
+
    BatchNormLayer
    LocalResponseNormLayer
 
@@ -496,6 +500,23 @@ APIs may better for you.
 Super-resolution layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv2d
+
+
+Spatial Transformer
+-----------------------
+
+2D Affine Transformation layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: SpatialTransformer2dAffineLayer
+
+2D Affine Transformation function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: transformer
+
+Batch 2D Affine Transformation function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: batch_transformer
+
 
 Pooling layer
 ----------------
