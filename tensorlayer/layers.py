@@ -270,7 +270,6 @@ class Layer(object):
             if name not in ['', None, False]:
                 set_keep['_layers_name_list'].append(name)
 
-
     def print_params(self, details=True):
         ''' Print all info of parameters in the network'''
         for i, p in enumerate(self.all_params):
@@ -286,8 +285,9 @@ class Layer(object):
 
     def print_layers(self):
         ''' Print all info of layers in the network '''
-        for i, p in enumerate(self.all_layers):
-            print("  layer %d: %s" % (i, str(p)))
+        for i, layer in enumerate(self.all_layers):
+            # print("  layer %d: %s" % (i, str(layer)))
+            print("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name))
 
     def count_params(self):
         ''' Return the number of parameters in the network '''
