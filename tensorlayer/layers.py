@@ -1917,9 +1917,14 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
     assert len(strides) == 2, "len(strides) should be 2, Conv2d and Conv2dLayer are different."
     if act is None:
         act = tf.identity
+
+    try:
+        pre_channel = int(net.outputs.get_shape()[-1])
+    except: # if pre_channel is ?, it happens when using Spatial Transformer Net
+        pre_channel = 1
     net = Conv2dLayer(net,
                        act = act,
-                       shape = [filter_size[0], filter_size[1], int(net.outputs.get_shape()[-1]), n_filter],  # 32 features for each 5x5 patch
+                       shape = [filter_size[0], filter_size[1], pre_channel, n_filter],  # 32 features for each 5x5 patch
                        strides = [1, strides[0], strides[1], 1],
                        padding = padding,
                        W_init = W_init,
