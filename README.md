@@ -188,7 +188,7 @@ TensorLayer is released under the Apache 2.0 license.
 
 # Contributions
 
-TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/releases).
+TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/graphs/contributors).
 
 <!--
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
