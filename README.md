@@ -19,9 +19,9 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 
 # What's New
 * Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
+* Release [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN)
 * Join [Slack](https://join.slack.com/tensorlayer/shared_invite/MTk1MjM0NDk5MDg5LTE0OTcwOTQyNTEtODFjY2QzYjdmZQ) Now.
 * [Attention Seq2seq](https://github.com/zsdonghao/tensorlayer/issues/164) help wanted.
-* Release [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution.
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 
 # Design Philosophy
