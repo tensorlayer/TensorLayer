@@ -288,7 +288,7 @@ def main_lstm_generate_text():
         lr = tf.Variable(0.0, trainable=False)
     ## You can get all trainable parameters as follow.
     # tvars = tf.trainable_variables()
-    ## Alternatively, you can specific the parameters for training as follw.
+    ## Alternatively, you can specify the parameters for training as follw.
     #  tvars = network.all_params      $ all parameters
     #  tvars = network.all_params[1:]  $ parameters except embedding matrix
     ## Train the whole network.
