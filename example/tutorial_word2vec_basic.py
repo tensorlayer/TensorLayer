@@ -274,12 +274,15 @@ def main_word2vec_basic():
                 'dictionary': dictionary, 'reverse_dictionary':
                 reverse_dictionary}, name=model_file_name+'.npy')
 
+        '''
         if step == num_steps-1:
             keeptrain = input("Training %d finished enter 1 to keep training: " % num_steps)
             if keeptrain == '1':
                 step = 0
                 learning_rate = float(input("Input new learning rate: "))
                 train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+        '''
+        
         step += 1
 
 
@@ -289,7 +292,8 @@ def main_word2vec_basic():
     final_embeddings = normalized_embeddings.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
                 plot_only=500, second=5, saveable=False, name='word2vec_basic')
-
+    
+    '''
     """ Step 7: Evaluate by analogy questions.
         see tensorflow/models/embedding/word2vec_optimized.py
     """
@@ -358,11 +362,12 @@ def main_word2vec_basic():
                     break
     print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
                                              correct * 100.0 / total))
-
+    '''
 
 if __name__ == '__main__':
-    sess = tf.InteractiveSession()
-    main_word2vec_basic()
+
+    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+        main_word2vec_basic()
 
 
 

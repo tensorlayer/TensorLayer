@@ -454,9 +454,9 @@ def main_lstm_generate_text():
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
     """Restore a pretrained embedding matrix."""
-    # main_restore_embedding_layer()
+    main_restore_embedding_layer()
     """How to generate text from a given context."""
-    main_lstm_generate_text()
+    #main_lstm_generate_text()
 
 
 
