@@ -282,6 +282,7 @@ def main_word2vec_basic():
                 learning_rate = float(input("Input new learning rate: "))
                 train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
         '''
+        
         step += 1
 
 
@@ -291,7 +292,8 @@ def main_word2vec_basic():
     final_embeddings = normalized_embeddings.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary,
                 plot_only=500, second=5, saveable=False, name='word2vec_basic')
-
+    
+    '''
     """ Step 7: Evaluate by analogy questions.
         see tensorflow/models/embedding/word2vec_optimized.py
     """
@@ -360,7 +362,7 @@ def main_word2vec_basic():
                     break
     print("Eval %4d/%d accuracy = %4.1f%%" % (correct, total,
                                              correct * 100.0 / total))
-
+    '''
 
 if __name__ == '__main__':
 
