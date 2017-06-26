@@ -2398,7 +2398,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     -----------
     layer : a layer class with 4-D Tensor of shape [batch, height, width, channels]
     theta_layer : a layer class for the localisation network.
-        This layer will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+        In this layer, we will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
     out_size : tuple of two ints.
         The size of the output of the network (height, width), the feature maps will be resized by this.
 
