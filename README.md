@@ -151,7 +151,7 @@ We have included the corresponding modularized implementations of Google TensorF
  - InceptionV3 (ImageNet). A Convolutional neural network implementation for classifying ImageNet dataset, see ``tutorial_inceptionV3_tfslim.py``.
  - Wide ResNet (CIFAR) by [ritchieng](https://github.com/ritchieng/wideresnet-tensorlayer).
  - More CNN implementations of [TF-Slim](https://github.com/tensorflow/models/tree/master/slim#pre-trained-models) can be connected to TensorLayer via SlimNetsLayer.
- - [Spatial Transformer Networks](https://arxiv.org/abs/1506.02025) by [zsdonghao](https://github.com/zsdonghao/Spatial-Transformer-Nets)
+ - [Spatial Transformer Networks](https://arxiv.org/abs/1506.02025) by [zsdonghao](https://github.com/zsdonghao/Spatial-Transformer-Nets).
 
 ## Natural Language Processing
  - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see ``tutorial_ptb_lstm_state_is_tuple.py``.
@@ -168,12 +168,12 @@ We have included the corresponding modularized implementations of Google TensorF
 
 ## Reinforcement Learning
  - Deep Reinforcement Learning - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py``.
- - Asynchronous Deep Reinforcement Learning - Pong Game by [nebulaV](https://github.com/akaraspt/tl_paper)
+ - Asynchronous Deep Reinforcement Learning - Pong Game by [nebulaV](https://github.com/akaraspt/tl_paper).
 
 
 ## Applications
 - Image Captioning - Reimplementation of Google's [im2txt](https://github.com/tensorflow/models/tree/master/im2txt) by [zsdonghao](https://github.com/zsdonghao/Image-Captioning).
-- A simple web service - [TensorFlask](https://github.com/JoelKronander/TensorFlask) by [JoelKronander](https://github.com/JoelKronander)
+- A simple web service - [TensorFlask](https://github.com/JoelKronander/TensorFlask) by [JoelKronander](https://github.com/JoelKronander).
 
 ## Special Examples
  - Merge TF-Slim into TensorLayer. ``tutorial_inceptionV3_tfslim.py``.
