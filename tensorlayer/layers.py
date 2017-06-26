@@ -1924,6 +1924,7 @@ def Conv2d(net, n_filter=32, filter_size=(3, 3), strides=(1, 1), act = None,
         pre_channel = int(net.outputs.get_shape()[-1])
     except: # if pre_channel is ?, it happens when using Spatial Transformer Net
         pre_channel = 1
+        print("[warnings] unknow input channels, set to 1")
     net = Conv2dLayer(net,
                        act = act,
                        shape = [filter_size[0], filter_size[1], pre_channel, n_filter],  # 32 features for each 5x5 patch
@@ -2399,7 +2400,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     theta_layer : a layer class for the localisation network.
         This layer will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
     out_size : tuple of two ints.
-        The size of the output of the network (height, width)
+        The size of the output of the network (height, width), the feature maps will be resized by this.
 
     References
     -----------
@@ -2434,7 +2435,23 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 2.3 transformation matrix
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)
             ## 3. Spatial Transformer Sampling
+            # 3.1 transformation
             self.outputs = transformer(self.inputs, self.theta, out_size=out_size)
+            # 3.2 automatically set batch_size and channels
+            # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]/ Hao Dong
+            #
+            fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+            if fixed_batch_size.value:
+                batch_size = fixed_batch_size.value
+            else:
+                from tensorflow.python.ops import array_ops
+                batch_size = array_ops.shape(self.inputs)[0]
+            size = self.inputs.get_shape().as_list()
+            n_channels = self.inputs.get_shape().as_list()[-1]
+            # print(self.outputs)
+            self.outputs = tf.reshape(self.outputs, shape=[batch_size, out_size[0], out_size[1], n_channels])
+            # print(self.outputs)
+            # exit()
             ## 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
