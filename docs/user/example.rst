@@ -38,6 +38,7 @@ Adversarial Learning
  - DCGAN - Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`_ by `zsdonghao <https://github.com/zsdonghao/dcgan>`_.
  - `Generative Adversarial Text to Image Synthesis <https://github.com/zsdonghao/text-to-image>`_ by `zsdonghao <https://github.com/zsdonghao/text-to-image>`_.
  - `Unsupervised Image to Image Translation with Generative Adversarial Networks <https://github.com/zsdonghao/Unsup-Im2Im>`_ by `zsdonghao <https://github.com/zsdonghao/Unsup-Im2Im>`_.
+ - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`_ by `zsdonghao <https://github.com/zsdonghao/SRGAN>`_.
 
 Reinforcement Learning
 ==============================
