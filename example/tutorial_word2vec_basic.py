@@ -274,12 +274,14 @@ def main_word2vec_basic():
                 'dictionary': dictionary, 'reverse_dictionary':
                 reverse_dictionary}, name=model_file_name+'.npy')
 
+        '''
         if step == num_steps-1:
             keeptrain = input("Training %d finished enter 1 to keep training: " % num_steps)
             if keeptrain == '1':
                 step = 0
                 learning_rate = float(input("Input new learning rate: "))
                 train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+        '''
         step += 1
 
 
@@ -361,8 +363,9 @@ def main_word2vec_basic():
 
 
 if __name__ == '__main__':
-    sess = tf.InteractiveSession()
-    main_word2vec_basic()
+
+    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+        main_word2vec_basic()
 
 
 
