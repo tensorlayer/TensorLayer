@@ -1,15 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
-
+# import matplotlib
+# matplotlib.use('GTK')
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
 import numpy as np
-import time
 from PIL import Image
-import os
-import io
+import os, io, time
+
 
 """
 You will learn:
@@ -102,6 +102,7 @@ with tf.Session() as sess:
         # exit()
         print(val.shape, l)
         tl.visualize.images2d(val, second=1, saveable=False, name='batch'+str(i), dtype=np.uint8, fig_idx=2020121)
+        tl.vis.save_images(val, [2, 2], '_batch_%d.png' % i)
 
     coord.request_stop()
     coord.join(threads)
