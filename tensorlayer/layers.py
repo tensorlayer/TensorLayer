@@ -87,7 +87,7 @@ def set_name_reuse(enable=True):
 
     Parameters
     ------------
-    enable : boolean, enable name reuse.
+    enable : boolean, enable name reuse. (None means False).
 
     Examples
     ------------

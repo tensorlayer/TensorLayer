@@ -40,7 +40,7 @@ def threading_data(data=None, fn=None, **kwargs):
 
     Parameters
     -----------
-    data : numpy array or zip of numpy array, see Examples below.
+    data : numpy array, file names and etc, see Examples below.
     fn : the function for data processing.
     more args : the args for fn, see Examples below.
 
