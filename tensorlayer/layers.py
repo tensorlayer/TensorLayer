@@ -2109,7 +2109,7 @@ def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels
 ## Super resolution
 def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used
-    for super-resolution application.
+    for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
     Parameters
     ------------
