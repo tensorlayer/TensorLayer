@@ -82,7 +82,7 @@ If you run the script via SSH control, sometime you may find the following error
   _tkinter.TclError: no display name and no $DISPLAY environment variable
 
 If happen, use ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
-Alternatively, add the following code into the top of ``visualize.py``.
+Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
 
 .. code-block:: python
 
