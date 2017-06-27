@@ -513,7 +513,7 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
         If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
         If you want to get all images, set to ``None``.
     path : string
-        The path that the data is downloaded to, defaults is ``data/flickr25k/``
+        The path that the data is downloaded to, defaults is ``data/flickr25k/``.
     n_threads : int, number of thread to read image.
     printable : bool, print infomation when reading images, default is False.
 
@@ -521,7 +521,7 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
     -----------
     - Get images with tag of sky
     >>> images = tl.files.load_flickr25k_dataset(tag='sky')
-    
+
     - Get all images
     >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
     """
@@ -534,12 +534,12 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
         del_file(path+'/'+filename)
     ## return images by the given tag.
     # 1. image path list
-    folder_imgs = "data/flickr25k/mirflickr"
+    folder_imgs = path+"/mirflickr"
     path_imgs = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     path_imgs.sort(key=natural_keys)
     # print(path_imgs[0:10])
     # 2. tag path list
-    folder_tags = "data/flickr25k/mirflickr/meta/tags"
+    folder_tags = path+"/mirflickr/meta/tags"
     path_tags = load_file_list(path=folder_tags, regx='\\.txt', printable=False)
     path_tags.sort(key=natural_keys)
     # print(path_tags[0:10])
@@ -557,6 +557,91 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
 
     images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
     return images
+
+
+
+def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50, printable=False):
+    """Returns a list of images by a given tag from Flickr1M dataset,
+    it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
+    at the first time you use it.
+
+    Parameters
+    ------------
+    tag : string or None
+        If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
+        If you want to get all images, set to ``None``.
+    size : int 1 to 10.
+        1 means 100k images ... 5 means 500k images, 10 means all 1 million images. Default is 10.
+    path : string
+        The path that the data is downloaded to, defaults is ``data/flickr25k/``.
+    n_threads : int, number of thread to read image.
+    printable : bool, print infomation when reading images, default is False.
+    """
+    print("[Flickr1M] using {}% of images = {}".format(size*10, size*100000))
+    images_zip = ['images0.zip', 'images1.zip', 'images2.zip', 'images3.zip',
+             'images4.zip',  'images5.zip', 'images6.zip', 'images7.zip',
+             'images8.zip',  'images9.zip']
+    tag_zip = 'tags.zip'
+    url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
+    ## download dataset
+    for image_zip in images_zip[0:size]:
+        image_folder = image_zip.split(".")[0]
+        # print(path+"/"+image_folder)
+        if folder_exists(path+"/"+image_folder) is False:
+            # print(image_zip)
+            print("[Flickr1M] {} is missing in {}".format(image_folder, path))
+            maybe_download_and_extract(image_zip, path, url, extract=True)
+            del_file(path+'/'+image_zip)
+            os.system("mv {} {}".format(path+'/images',path+'/'+image_folder))
+        else:
+            print("[Flickr1M] {} exists in {}".format(image_folder, path))
+    ## download tag
+    if folder_exists(path+"/tags") is False:
+        print("[Flickr1M] tag files is nonexistent in {}".format(path))
+        maybe_download_and_extract(tag_zip, path, url, extract=True)
+        del_file(path+'/'+tag_zip)
+    else:
+        print("[Flickr1M] tags exists in {}".format(path))
+
+    ## 1. image path list
+    images_list = []
+    images_folder_list = []
+    for i in range(0, size):
+        images_folder_list += load_folder_list(path=path+'/images%d'%i)
+    images_folder_list.sort(key=lambda s : int(s.split('/')[-1]))   # folder/images/ddd
+    # print(images_folder_list)
+    # exit()
+    for folder in images_folder_list[0:size*10]:
+        tmp = load_file_list(path=folder, regx='\\.jpg', printable=False)
+        tmp.sort(key=lambda s : int(s.split('.')[-2]))  # ddd.jpg
+        # print(tmp[0::570])
+        images_list.extend([folder+'/'+x for x in tmp])
+    # print('IM', len(images_list), images_list[0::6000])
+    ## 2. tag path list
+    tag_list = []
+    tag_folder_list = load_folder_list(path+"/tags")
+    tag_folder_list.sort(key=lambda s : int(s.split('/')[-1]))  # folder/images/ddd
+
+    for folder in tag_folder_list[0:size*10]:
+        # print(folder)
+        tmp = load_file_list(path=folder, regx='\\.txt', printable=False)
+        tmp.sort(key=lambda s : int(s.split('.')[-2])) # ddd.txt
+        tmp = [folder+'/'+s for s in tmp]
+        tag_list += tmp
+    # print('T', len(tag_list), tag_list[0::6000])
+    # exit()
+    ## 3. select images
+    print("[Flickr1M] searching tag: {}".format(tag))
+    select_images_list = []
+    for idx in range(0, len(tag_list)):
+        tags = read_file(tag_list[idx]).split('\n')
+        if tag in tags:
+            select_images_list.append(images_list[idx])
+            # print(idx, tags, tag_list[idx], images_list[idx])
+    print("[Flickr1M] reading images with tag: {}".format(tag))
+    images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
+    return images
+
 
 
 ## Load and save network

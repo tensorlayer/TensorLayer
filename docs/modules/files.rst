@@ -41,6 +41,7 @@ sake of cross-platform.
    load_nietzsche_dataset
    load_wmt_en_fr_dataset
    load_flickr25k_dataset
+   load_flickr1M_dataset
 
    save_npz
    save_npz_dict
@@ -101,6 +102,9 @@ Flickr25k
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_flickr25k_dataset
 
+Flickr1M
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_flickr1M_dataset
 
 
 Load and save network
