@@ -268,9 +268,9 @@ with tf.device('/cpu:0'):
 
             net = FlattenLayer(net, name='flatten')                             # output: (batch_size, 2304)
             net = DenseLayer(net, n_units=384, act=tf.nn.relu,
-                        W_init=W_init2, b_init=b_init2, name='relu1')           # output: (batch_size, 384)
+                        W_init=W_init2, b_init=b_init2, name='d1relu')           # output: (batch_size, 384)
             net = DenseLayer(net, n_units=192, act = tf.nn.relu,
-                        W_init=W_init2, b_init=b_init2, name='relu2')           # output: (batch_size, 192)
+                        W_init=W_init2, b_init=b_init2, name='d2relu')           # output: (batch_size, 192)
             net = DenseLayer(net, n_units=10, act = tf.identity,
                         W_init=tf.truncated_normal_initializer(stddev=1/192.0),
                         name='output')                                          # output: (batch_size, 10)
@@ -278,11 +278,11 @@ with tf.device('/cpu:0'):
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
             # L2 for the MLP, without this, the accuracy will be reduced by 15%.
-            L2 = tf.contrib.layers.l2_regularizer(0.004)(net.all_params[4]) + \
-                    tf.contrib.layers.l2_regularizer(0.004)(net.all_params[6])
+            L2 = 0
+            for p in tl.layers.get_variables_with_name('relu/W', True, True):
+                L2 += tf.contrib.layers.l2_regularizer(0.004)(p)
             cost = ce + L2
 
-            # correct_prediction = tf.equal(tf.argmax(tf.nn.softmax(y), 1), y_)
             correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.int32), y_)
             acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -295,10 +295,10 @@ with tf.device('/cpu:0'):
     # cost, acc, network = model(x_crop, y_, None)
 
     with tf.device('/gpu:0'): # <-- remove it if you don't have GPU
-        # network in gpu
+        ## using local response normalization
         network, cost, acc, = model(x_train_batch, y_train_batch, False)
         _, cost_test, acc_test = model(x_test_batch, y_test_batch, True)
-        # you may want to try batch normalization
+        ## you may want to try batch normalization
         # network, cost, acc, = model_batch_norm(x_train_batch, y_train_batch, None, is_train=True)
         # _, cost_test, acc_test = model_batch_norm(x_test_batch, y_test_batch, True, is_train=False)
 
