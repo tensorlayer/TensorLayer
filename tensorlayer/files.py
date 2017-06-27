@@ -576,6 +576,14 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
         The path that the data is downloaded to, defaults is ``data/flickr25k/``.
     n_threads : int, number of thread to read image.
     printable : bool, print infomation when reading images, default is False.
+
+    Examples
+    ----------
+    - Use 200k images
+    >>> images = tl.files.load_flickr1M_dataset(tag='zebra', size=2)
+    
+    - Use 1 Million images
+    >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
     """
     print("[Flickr1M] using {}% of images = {}".format(size*10, size*100000))
     images_zip = ['images0.zip', 'images1.zip', 'images2.zip', 'images3.zip',
