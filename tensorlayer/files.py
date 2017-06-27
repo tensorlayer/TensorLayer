@@ -28,9 +28,9 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     Parameters
     ----------
     shape : tuple
-        The shape of digit images, defaults to (-1,784)
+        The shape of digit images, defaults is (-1,784)
     path : string
-        Path to download data to, defaults to data/mnist/
+        The path that the data is downloaded to, defaults is data/mnist/
 
     Examples
     --------
@@ -102,7 +102,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     second : int
         If ``plotable`` is True, ``second`` is the display time.
     path : string
-        Path to download data to, defaults to data/cifar10/
+        The path that the data is downloaded to, defaults is data/cifar10/
 
     Examples
     --------
@@ -249,7 +249,7 @@ def load_ptb_dataset(path='data/ptb/'):
     Parameters
     ----------
     path : : string
-        Path to download data to, defaults to data/ptb/
+        The path that the data is downloaded to, defaults is data/ptb/
 
     Returns
     --------
@@ -302,7 +302,7 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
     Parameters
     ----------
     path : : string
-        Path to download data to, defaults to data/mm_test8/
+        The path that the data is downloaded to, defaults is data/mm_test8/
 
     Returns
     --------
@@ -336,7 +336,7 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
     Parameters
     ----------
     path : : string
-        Path to download data to, defaults to data/imdb/
+        The path that the data is downloaded to, defaults is data/imdb/
 
     Examples
     --------
@@ -419,7 +419,7 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
     Parameters
     ----------
     path : string
-        Path to download data to, defaults to data/nietzsche/
+        The path that the data is downloaded to, defaults is data/nietzsche/
 
     Examples
     --------
@@ -447,7 +447,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
     Parameters
     ----------
     path : string
-        Path to download data to, defaults to data/wmt_en_fr/
+        The path that the data is downloaded to, defaults is data/wmt_en_fr/
 
     References
     ----------
@@ -502,16 +502,20 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
 
     return train_path, dev_path
 
-def load_flickr25k_dataset(tag='sky', path="data/flickr25k"):
+def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, printable=False):
     """Returns a list of images by a given tag from Flick25k dataset,
     it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
     at the first time you use it.
 
     Parameters
     ------------
-    tag : string like 'dog', 'red' see `Flickr Search <https://www.flickr.com/search/>`_.
+    tag : string or None
+        If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
+        If you want to get all images, set to ``None``.
     path : string
-        Path to download data to, defaults to ``data/flickr25k/``
+        The path that the data is downloaded to, defaults is ``data/flickr25k/``
+    n_threads : int, number of thread to read image.
+    printable : bool, print infomation when reading images, default is False.
 
     Examples
     -----------
@@ -536,14 +540,18 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k"):
     path_tags.sort(key=natural_keys)
     # print(path_tags[0:10])
     # 3. select images
-    images = []
+    if tag is None:
+        print("[Flickr25k] reading all images")
+    else:
+        print("[Flickr25k] reading images with tag: {}".format(tag))
+    images_list = []
     for idx in range(0, len(path_tags)):
         tags = read_file(folder_tags+'/'+path_tags[idx]).split('\n')
         # print(idx+1, tags)
-        if tag in tags:
-            images.append(visualize.read_image(path_imgs[idx], folder_imgs))
-            # print(idx+1, tags)
-            # exit()
+        if tag is None or tag in tags:
+            images_list.append(path_imgs[idx])
+
+    images = visualize.read_images(images_list, folder_imgs, n_threads=50, printable=False)
     return images
 
 ## Load and save network
@@ -903,11 +911,11 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
         A folder path to search for the file in and dowload the file to
     url : string
         The URL to download the file from
-    extract : bool, defaults to False
+    extract : bool, defaults is False
         If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file
     expected_bytes : int/None
         If set tries to verify that the downloaded file is of the specified size, otherwise raises an Exception,
-        defaults to None which corresponds to no check being performed
+        defaults is None which corresponds to no check being performed
 
     Returns
     ----------

@@ -12,20 +12,41 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from . import prepro
 
 
 ## Save images
 import scipy.misc
 
-def read_image(image, image_path=''):
+def read_image(image, path=''):
     """ Read one image.
 
     Parameters
     -----------
     images : string, file name.
-    image_path : string, path.
+    path : string, path.
     """
-    return scipy.misc.imread(os.path.join(image_path, image))
+    return scipy.misc.imread(os.path.join(path, image))
+
+def read_images(img_list, path='', n_threads=10, printable=True):
+    """ Returns all images in list by given path and name of each image file.
+
+    Parameters
+    -------------
+    img_list : list of string, the image file names.
+    path : string, image folder path.
+    n_threads : int, number of thread to read image.
+    printable : bool, print infomation when reading images, default is True.
+    """
+    imgs = []
+    for idx in range(0, len(img_list), n_threads):
+        b_imgs_list = img_list[idx : idx + n_threads]
+        b_imgs = prepro.threading_data(b_imgs_list, fn=read_image, path=path)
+        # print(b_imgs.shape)
+        imgs.extend(b_imgs)
+        if printable:
+            print('read %d from %s' % (len(imgs), path))
+    return imgs
 
 def save_image(image, image_path=''):
     """Save one image.

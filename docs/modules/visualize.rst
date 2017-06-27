@@ -9,6 +9,7 @@ to visualize the model, activations etc. Here we provide more functions for data
 .. autosummary::
 
    read_image
+   read_images
    save_image
    save_images
    W
@@ -24,6 +25,10 @@ Save and read images
 Read one image
 ^^^^^^^^^^^^^^^^^
 .. autofunction:: read_image
+
+Read multiple images
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: read_images
 
 Save one image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
