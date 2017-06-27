@@ -519,7 +519,10 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
 
     Examples
     -----------
+    - Get images with tag of sky
     >>> images = tl.files.load_flickr25k_dataset(tag='sky')
+    - Get all images
+    >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
     """
     filename = 'mirflickr25k.zip'
     url = 'http://press.liacs.nl/mirflickr/mirflickr25k/'
@@ -551,8 +554,9 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
         if tag is None or tag in tags:
             images_list.append(path_imgs[idx])
 
-    images = visualize.read_images(images_list, folder_imgs, n_threads=50, printable=False)
+    images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
     return images
+
 
 ## Load and save network
 def save_npz(save_list=[], name='model.npz', sess=None):
@@ -771,6 +775,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         assign_params(sess, params, network)
         print("[*] Load {} SUCCESS!".format(name))
         return network
+
 
 ## Load and save variables
 def save_any_to_npy(save_dict={}, name='file.npy'):
