@@ -83,7 +83,6 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     y_test = np.asarray(y_test, dtype=np.int32)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-
 def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=False, second=3):
     """The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with
     6000 images per class. There are 50000 training images and 10000 test images.
@@ -218,7 +217,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
 
     return X_train, y_train, X_test, y_test
 
-
 def load_ptb_dataset(path='data/ptb/'):
     """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
     including "Empirical Evaluation and Combination of Advanced Language
@@ -295,7 +293,6 @@ def load_ptb_dataset(path='data/ptb/'):
     # exit()
     return train_data, valid_data, test_data, vocabulary
 
-
 def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
     """Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
@@ -330,7 +327,6 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
         for idx, word in enumerate(word_list):
             word_list[idx] = word_list[idx].decode()
     return word_list
-
 
 def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
               maxlen=None, test_split=0.2, seed=113,
@@ -506,6 +502,49 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
 
     return train_path, dev_path
 
+def load_flickr25k_dataset(tag='sky', path="data/flickr25k"):
+    """Returns a list of images by a given tag from Flick25k dataset,
+    it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
+    at the first time you use it.
+
+    Parameters
+    ------------
+    tag : string like 'dog', 'red' see `Flickr Search <https://www.flickr.com/search/>`_.
+    path : string
+        Path to download data to, defaults to ``data/flickr25k/``
+
+    Examples
+    -----------
+    >>> images = tl.files.load_flickr25k_dataset(tag='sky')
+    """
+    filename = 'mirflickr25k.zip'
+    url = 'http://press.liacs.nl/mirflickr/mirflickr25k/'
+    ## download dataset
+    if folder_exists(path+"/mirflickr") is False:
+        print("[*] Flickr25k is nonexistent in {}".format(path))
+        maybe_download_and_extract(filename, path, url, extract=True)
+        del_file(path+'/'+filename)
+    ## return images by the given tag.
+    # 1. image path list
+    folder_imgs = "data/flickr25k/mirflickr"
+    path_imgs = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    path_imgs.sort(key=natural_keys)
+    # print(path_imgs[0:10])
+    # 2. tag path list
+    folder_tags = "data/flickr25k/mirflickr/meta/tags"
+    path_tags = load_file_list(path=folder_tags, regx='\\.txt', printable=False)
+    path_tags.sort(key=natural_keys)
+    # print(path_tags[0:10])
+    # 3. select images
+    images = []
+    for idx in range(0, len(path_tags)):
+        tags = read_file(folder_tags+'/'+path_tags[idx]).split('\n')
+        # print(idx+1, tags)
+        if tag in tags:
+            images.append(visualize.read_image(path_imgs[idx], folder_imgs))
+            # print(idx+1, tags)
+            # exit()
+    return images
 
 ## Load and save network
 def save_npz(save_list=[], name='model.npz', sess=None):
@@ -725,7 +764,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         print("[*] Load {} SUCCESS!".format(name))
         return network
 
-# Load and save variables
+## Load and save variables
 def save_any_to_npy(save_dict={}, name='file.npy'):
     """Save variables to .npy file.
 
@@ -758,30 +797,33 @@ def load_npy_to_any(path='', name='file.npy'):
             exit()
 
 
-# Visualizing npz files
-def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
+## Folder functions
+def file_exists(filepath):
+    """ Check whether a file exists by given file path. """
+    return os.path.isfile(filepath)
 
-    Parameters
-    ----------
-    path : a string or None
-        A folder path to npz files.
-    regx : a string
-        Regx for the file name.
+def folder_exists(folderpath):
+    """ Check whether a folder exists by given folder path. """
+    return os.path.isdir(folderpath)
+
+def del_file(filepath):
+    """ Delete a file by given file path. """
+    os.remove(filepath)
+
+def del_folder(folderpath):
+    """ Delete a folder by given folder path. """
+    os.rmdir(folderpath)
+
+def read_file(filepath):
+    """ Read a file and return a string.
 
     Examples
-    --------
-    >>> Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
-    >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
+    ---------
+    >>> data = tl.files.read_file('data.txt')
     """
-    file_list = load_file_list(path=path, regx=regx)
-    for f in file_list:
-        W = load_npz(path, f)[0]
-        print("%s --> %s" % (f, f.split('.')[0]+'.pdf'))
-        visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
+    with open(filepath, 'r') as afile:
+        return afile.read()
 
-
-## Helper functions
 def load_file_list(path=None, regx='\.npz', printable=True):
     """Return a file list in a folder by given a path and regular expression.
 
@@ -854,7 +896,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     and optionally also tries to extract the file if format is ".zip" or ".tar"
 
     Parameters
-    ----------
+    -----------
     filename : string
         The name of the (to be) dowloaded file.
     working_directory : string
@@ -866,6 +908,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     expected_bytes : int/None
         If set tries to verify that the downloaded file is of the specified size, otherwise raises an Exception,
         defaults to None which corresponds to no check being performed
+
     Returns
     ----------
     filepath to dowloaded (uncompressed) file
@@ -917,3 +960,48 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
             else:
                 print("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
     return filepath
+
+
+## Sort
+def natural_keys(text):
+    """Sort list of string with number in human order.
+
+    Examples
+    ----------
+    >>> l = ['im1.jpg', 'im31.jpg', 'im11.jpg', 'im21.jpg', 'im03.jpg', 'im05.jpg']
+    >>> l.sort(key=tl.files.natural_keys)
+    ... ['im1.jpg', 'im03.jpg', 'im05', 'im11.jpg', 'im21.jpg', 'im31.jpg']
+    >>> l.sort() # that is what we dont want
+    ... ['im03.jpg', 'im05', 'im1.jpg', 'im11.jpg', 'im21.jpg', 'im31.jpg']
+
+    Reference
+    ----------
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    """
+    def atoi(text):
+        return int(text) if text.isdigit() else text
+    return [ atoi(c) for c in re.split('(\d+)', text) ]
+
+# Visualizing npz files
+def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
+    """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
+
+    Parameters
+    ----------
+    path : a string or None
+        A folder path to npz files.
+    regx : a string
+        Regx for the file name.
+
+    Examples
+    --------
+    >>> Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+    >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
+    """
+    file_list = load_file_list(path=path, regx=regx)
+    for f in file_list:
+        W = load_npz(path, f)[0]
+        print("%s --> %s" % (f, f.split('.')[0]+'.pdf'))
+        visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)

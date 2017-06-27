@@ -8,6 +8,7 @@ to visualize the model, activations etc. Here we provide more functions for data
 
 .. autosummary::
 
+   read_image
    save_image
    save_images
    W
@@ -17,8 +18,12 @@ to visualize the model, activations etc. Here we provide more functions for data
    tsne_embedding
 
 
-Save images
---------------
+Save and read images
+----------------------
+
+Read one image
+^^^^^^^^^^^^^^^^^
+.. autofunction:: read_image
 
 Save one image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -17,7 +17,17 @@ import os
 ## Save images
 import scipy.misc
 
-def save_image(image, image_path):
+def read_image(image, image_path=''):
+    """ Read one image.
+
+    Parameters
+    -----------
+    images : string, file name.
+    image_path : string, path.
+    """
+    return scipy.misc.imread(os.path.join(image_path, image))
+
+def save_image(image, image_path=''):
     """Save one image.
 
     Parameters
@@ -31,7 +41,7 @@ def save_image(image, image_path):
         scipy.misc.imsave(image_path, image[:,:,0])
 
 
-def save_images(images, size, image_path):
+def save_images(images, size, image_path=''):
     """Save mutiple images into one single image.
 
     Parameters

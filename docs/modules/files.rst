@@ -40,6 +40,7 @@ sake of cross-platform.
    load_imdb_dataset
    load_nietzsche_dataset
    load_wmt_en_fr_dataset
+   load_flickr25k_dataset
 
    save_npz
    save_npz_dict
@@ -51,12 +52,19 @@ sake of cross-platform.
    save_any_to_npy
    load_npy_to_any
 
-   npz_to_W_pdf
-
+   file_exists
+   folder_exists
+   del_file
+   del_folder
+   read_file
    load_file_list
    load_folder_list
    exists_or_mkdir
    maybe_download_and_extract
+
+   natural_keys
+
+   npz_to_W_pdf
 
 Load dataset functions
 ------------------------
@@ -85,10 +93,14 @@ Nietzsche
 ^^^^^^^^^^^^^^
 .. autofunction:: load_nietzsche_dataset
 
-
 English-to-French translation data from the WMT'15 Website
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_wmt_en_fr_dataset
+
+Flickr25k
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_flickr25k_dataset
+
 
 
 Load and save network
@@ -130,13 +142,28 @@ Load variables from .npy
 .. autofunction:: load_npy_to_any
 
 
-Visualizing npz file
-----------------------
-.. autofunction:: npz_to_W_pdf
+Folder/File functions
+------------------------
 
+Check file exists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: file_exists
 
-Folder functions
-------------------
+Check folder exists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: folder_exists
+
+Delete file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: del_file
+
+Delete folder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: del_folder
+
+Read file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: read_file
 
 Load file list from folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -153,3 +180,14 @@ Check and Create folder
 Download or extract
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: maybe_download_and_extract
+
+Sort
+-------
+
+List of string with number in human order
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: natural_keys
+
+Visualizing npz file
+----------------------
+.. autofunction:: npz_to_W_pdf
