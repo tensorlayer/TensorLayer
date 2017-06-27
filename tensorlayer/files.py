@@ -30,7 +30,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     shape : tuple
         The shape of digit images, defaults is (-1,784)
     path : string
-        The path that the data is downloaded to, defaults is data/mnist/
+        The path that the data is downloaded to, defaults is ``data/mnist/``.
 
     Examples
     --------
@@ -102,7 +102,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     second : int
         If ``plotable`` is True, ``second`` is the display time.
     path : string
-        The path that the data is downloaded to, defaults is data/cifar10/
+        The path that the data is downloaded to, defaults is ``data/cifar10/``.
 
     Examples
     --------
@@ -221,35 +221,13 @@ def load_ptb_dataset(path='data/ptb/'):
     """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
     including "Empirical Evaluation and Combination of Advanced Language
     Modeling Techniques", "Recurrent Neural Network Regularization".
-
     It consists of 929k training words, 73k validation words, and 82k test
     words. It has 10k words in its vocabulary.
-
-    In "Recurrent Neural Network Regularization", they trained regularized LSTMs
-    of two sizes; these are denoted the medium LSTM and large LSTM. Both LSTMs
-    have two layers and are unrolled for 35 steps. They initialize the hidden
-    states to zero. They then use the final hidden states of the current
-    minibatch as the initial hidden state of the subsequent minibatch
-    (successive minibatches sequentially traverse the training set).
-    The size of each minibatch is 20.
-
-    The medium LSTM has 650 units per layer and its parameters are initialized
-    uniformly in [−0.05, 0.05]. They apply 50% dropout on the non-recurrent
-    connections. They train the LSTM for 39 epochs with a learning rate of 1,
-    and after 6 epochs they decrease it by a factor of 1.2 after each epoch.
-    They clip the norm of the gradients (normalized by minibatch size) at 5.
-
-    The large LSTM has 1500 units per layer and its parameters are initialized
-    uniformly in [−0.04, 0.04]. We apply 65% dropout on the non-recurrent
-    connections. They train the model for 55 epochs with a learning rate of 1;
-    after 14 epochs they start to reduce the learning rate by a factor of 1.15
-    after each epoch. They clip the norm of the gradients (normalized by
-    minibatch size) at 10.
 
     Parameters
     ----------
     path : : string
-        The path that the data is downloaded to, defaults is data/ptb/
+        The path that the data is downloaded to, defaults is ``data/ptb/``.
 
     Returns
     --------
@@ -302,7 +280,7 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
     Parameters
     ----------
     path : : string
-        The path that the data is downloaded to, defaults is data/mm_test8/
+        The path that the data is downloaded to, defaults is ``data/mm_test8/``.
 
     Returns
     --------
@@ -336,7 +314,7 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
     Parameters
     ----------
     path : : string
-        The path that the data is downloaded to, defaults is data/imdb/
+        The path that the data is downloaded to, defaults is ``data/imdb/``.
 
     Examples
     --------
@@ -419,7 +397,7 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
     Parameters
     ----------
     path : string
-        The path that the data is downloaded to, defaults is data/nietzsche/
+        The path that the data is downloaded to, defaults is ``data/nietzsche/``.
 
     Examples
     --------
@@ -447,7 +425,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
     Parameters
     ----------
     path : string
-        The path that the data is downloaded to, defaults is data/wmt_en_fr/
+        The path that the data is downloaded to, defaults is ``data/wmt_en_fr/``.
 
     References
     ----------
@@ -515,7 +493,7 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
     path : string
         The path that the data is downloaded to, defaults is ``data/flickr25k/``.
     n_threads : int, number of thread to read image.
-    printable : bool, print infomation when reading images, default is False.
+    printable : bool, print infomation when reading images, default is ``False``.
 
     Examples
     -----------
@@ -575,7 +553,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     path : string
         The path that the data is downloaded to, defaults is ``data/flickr25k/``.
     n_threads : int, number of thread to read image.
-    printable : bool, print infomation when reading images, default is False.
+    printable : bool, print infomation when reading images, default is ``False``.
 
     Examples
     ----------
