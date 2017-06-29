@@ -1137,7 +1137,7 @@ In the PTB tutorial, we set ``batch_size = 20``, so we divide the dataset into 2
 At the beginning of each epoch, we initialize (reset) the 20 RNN states for the 20
 segments to zero, then go through the 20 segments separately.
 
-A example of generating training data is as follows:
+An example of generating training data is as follows:
 
 .. code-block:: python
 
