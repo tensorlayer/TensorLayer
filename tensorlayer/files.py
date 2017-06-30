@@ -536,8 +536,6 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
     images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
     return images
 
-
-
 def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50, printable=False):
     """Returns a list of images by a given tag from Flickr1M dataset,
     it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
@@ -559,7 +557,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     ----------
     - Use 200k images
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra', size=2)
-    
+
     - Use 1 Million images
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
     """
