@@ -1523,7 +1523,7 @@ class UpSampling2dLayer(Layer):
     Parameters
     -----------
     layer : a layer class with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels].
-    size : a tupe of int or float.
+    size : a tuple of int or float.
         (height, width) scale factor or new size of height and width.
     is_scale : boolean, if True (default), size is scale factor, otherwise, size is number of pixels of height and width.
     method : 0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
