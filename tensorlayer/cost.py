@@ -139,7 +139,7 @@ def dice_coe(output, target, loss_type='jaccard', epsilon=1e-10):
 
     Examples
     ---------
-    >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
+    >>> outputs = tf.nn.sigmoid(network.outputs)
     >>> dice_loss = 1 - tl.cost.dice_coe(outputs, y_)
 
     References
@@ -182,11 +182,6 @@ def dice_hard_coe(output, target, threshold=0.5, epsilon=1e-10):
     epsilon : float
         An small value be added to the numerator and denominator.
 
-    Examples
-    ---------
-    >>> outputs = pixel_wise_softmax(network.outputs)
-    >>> dice_loss = 1 - dice_coe(outputs, y_, epsilon=1e-5)
-
     References
     -----------
     - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
@@ -224,8 +219,8 @@ def iou_coe(output, target, threshold=0.5, epsilon=1e-10):
 
     Examples
     ---------
-    >>> outputs = tl.act.pixel_wise_softmax(network.outputs)
-    >>> iou = tl.cost.iou_coe(outputs[:,:,:,0], y_[:,:,:,0])
+    >>> outputs = tf.nn.sigmoid(network.outputs)
+    >>> iou = tl.cost.iou_coe(outputs, y_)
 
     Notes
     ------
