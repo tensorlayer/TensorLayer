@@ -23,6 +23,8 @@ Computer Vision
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`_.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ can be connected to TensorLayer via SlimNetsLayer.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
+ - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`_.
+
 
 Natural Language Processing
 ==============================
