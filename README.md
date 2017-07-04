@@ -132,7 +132,9 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 
 
-# More Examples
+# Examples
+
+Examples can be found [in this repository](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [TensorLayer Topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
 
 ## Basics
  - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see ``tutorial_mnist_simple.py``.
