@@ -1550,12 +1550,12 @@ class UpSampling2dLayer(Layer):
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[0])
                 size_w = size[1] * int(self.inputs.get_shape()[1])
-                size = [size_h, size_w]
+                size = [int(size_h), int(size_w)]
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[1])
                 size_w = size[1] * int(self.inputs.get_shape()[2])
-                size = [size_h, size_w]
+                size = [int(size_h), int(size_w)]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
         print("  [TL] UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" %
@@ -1604,12 +1604,12 @@ class DownSampling2dLayer(Layer):
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[0])
                 size_w = size[1] * int(self.inputs.get_shape()[1])
-                size = [size_h, size_w]
+                size = [int(size_h), int(size_w)]
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[1])
                 size_w = size[1] * int(self.inputs.get_shape()[2])
-                size = [size_h, size_w]
+                size = [int(size_h), int(size_w)]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
         print("  [TL] DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" %
