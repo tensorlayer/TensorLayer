@@ -21,7 +21,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 * Release [Flickr dataset loader](http://press.liacs.nl/mirflickr/mirdownload.html), see [load_flickr25k](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr25k) and [load_flickr1M](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr1m).
 * Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
 * Release [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
-* Join [Slack](https://join.slack.com/tensorlayer/shared_invite/MTk1MjM0NDk5MDg5LTE0OTcwOTQyNTEtODFjY2QzYjdmZQ) Now.
+* Join [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw) Now.
 * [Attention Seq2seq](https://github.com/zsdonghao/tensorlayer/issues/164) help wanted.
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 
@@ -184,7 +184,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 
 ## Notes
 * TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro)and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
-* If you get into trouble, you can start a discussion on [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
+* If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
 [QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer交流群介绍.md).
 
