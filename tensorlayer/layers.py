@@ -2174,7 +2174,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
             bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
             Xs=tf.split(X,r,3) #b*h*w*r*r
             Xr=tf.concat(Xs,2) #b*h*(r*w)*r
-            X=tf.reshape(Xr,(b,r*h,r*w,c)) # b*(r*h)*(r*w)*c
+            X=tf.reshape(Xr,(b,r*a,r*b,c)) # b*(r*h)*(r*w)*c
         else:
             print(_err_log)
         return X
