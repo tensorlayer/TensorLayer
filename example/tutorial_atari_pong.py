@@ -2,7 +2,8 @@
 # -*- coding: utf8 -*-
 
 
-"""
+""" Policy Network π(a|s)
+
 To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
 you to go through a famous blog called “Deep Reinforcement Learning: Pong from

@@ -166,7 +166,9 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 - [Super Resolution GAN](https://arxiv.org/abs/1609.04802) by [zsdonghao](https://github.com/zsdonghao/SRGAN).
 
 ## Reinforcement Learning
- - Deep Reinforcement Learning - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py``.
+ - Policy Gradient / Network - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py``.
+ - Q-Network - Frozen lake, see ``tutorial_frozenlake_q_network.py``.
+ - Q-Table learning algorithm, see ``tutorial_frozenlake_q_table.py``.
  - Asynchronous Deep Reinforcement Learning - Pong Game by [nebulaV](https://github.com/akaraspt/tl_paper).
 
 
