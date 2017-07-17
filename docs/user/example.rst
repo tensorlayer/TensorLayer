@@ -47,7 +47,7 @@ Reinforcement Learning
 
  - Policy Gradient / Network - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py`` on `GitHub`_.
  - Q-Network - Frozen lake, see ``tutorial_frozenlake_q_network.py`` on `GitHub`_.
- - Q-Table learning algorithm, see ``tutorial_frozenlake_q_table.py`` on `GitHub`_.
+ - Q-Table learning algorithm - Frozen lake, see ``tutorial_frozenlake_q_table.py`` on `GitHub`_.
  - Asynchronous Deep Reinforcement Learning - Pong Game by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
 
 Applications

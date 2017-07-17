@@ -168,7 +168,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 ## Reinforcement Learning
  - Policy Gradient / Network - Pong Game. Teach a machine to play Pong games, see ``tutorial_atari_pong.py``.
  - Q-Network - Frozen lake, see ``tutorial_frozenlake_q_network.py``.
- - Q-Table learning algorithm, see ``tutorial_frozenlake_q_table.py``.
+ - Q-Table learning algorithm - Frozen lake, see ``tutorial_frozenlake_q_table.py``.
  - Asynchronous Deep Reinforcement Learning - Pong Game by [nebulaV](https://github.com/akaraspt/tl_paper).
 
 
@@ -188,7 +188,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 * TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
 * If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
-[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer交流群介绍.md).
+[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
 # License
@@ -204,4 +204,4 @@ TensorLayer started as an internal repository at Imperial College London, helpin
  -->
 
 - 🇬🇧 If you are in London, we can discuss in person. Drop us an email to organize a meetup: tensorlayer@gmail.com.
-- 🇨🇳 我们有官方的 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest)。另外, 我们建立了多种交流渠道，如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer交流群介绍.md).
+- 🇨🇳 我们有官方的 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest)。另外, 我们建立了多种交流渠道，如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
