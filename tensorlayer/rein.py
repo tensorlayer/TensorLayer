@@ -83,3 +83,32 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     except: ## TF0.12
         loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
     return loss
+
+
+def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
+    """Choice and return an an action by given the action probability distribution.
+
+    Parameters
+    ------------
+    probs : a list of float.
+        The probability distribution of all actions.
+    action_list : None or a list of action in integer.
+        If None, return an integer range between 0 and len(probs)-1.
+
+    Examples
+    ----------
+    >>> for _ in range(5):
+    >>>     a = choice_action_by_probs(probs=[0.2, 0.4, 0.4])
+    >>>     print(a)
+    ... 0
+    ... 1
+    ... 1
+    ... 2
+    ... 1
+    """
+    if action_list is None:
+        n_action = len(probs)
+        action_list = np.arange(n_action)
+    else:
+        assert len(action_list) == len(probs), "Number of actions should equal to number of probabilities."
+    return np.random.choice(action_list, p=probs)

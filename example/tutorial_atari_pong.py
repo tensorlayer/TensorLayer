@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 
-""" Policy Network π(a|s)
+""" Monte-Carlo Policy Network π(a|s)  (REINFORCE)
 
 To understand Reinforcement Learning, we let computer to learn how to play
 Pong game from the original screen inputs. Before we start, we highly recommend
@@ -24,9 +24,8 @@ http://karpathy.github.io/2016/05/31/rl/
 
 import tensorflow as tf
 import tensorlayer as tl
-import gym
+import gym, time
 import numpy as np
-import time
 
 # hyperparameters
 image_size = 80
@@ -101,7 +100,8 @@ with tf.Session() as sess:
             feed_dict={states_batch_pl: x}
         )
         # action. 1: STOP  2: UP  3: DOWN
-        action = np.random.choice([1,2,3], p=prob.flatten())
+        # action = np.random.choice([1,2,3], p=prob.flatten())
+        action = tl.rein.choice_action_by_probs(prob.flatten(), [1,2,3]) 
 
         observation, reward, done, _ = env.step(action)
         reward_sum += reward
