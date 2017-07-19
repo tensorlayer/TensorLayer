@@ -24,6 +24,7 @@ http://karpathy.github.io/2016/05/31/rl/
 
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import *
 import gym, time
 import numpy as np
 
@@ -35,11 +36,10 @@ batch_size = 10
 learning_rate = 1e-4
 gamma = 0.99
 decay_rate = 0.99
-render = False      # display the game environment
-resume = False      # load existing policy network
+render = False          # display the game environment
+# resume = True         # load existing policy network
 model_file_name = "model_pong"
 np.set_printoptions(threshold=np.nan)
-
 
 def prepro(I):
     """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
@@ -59,29 +59,25 @@ episode_number = 0
 
 xs, ys, rs = [], [], []
 # observation for training and inference
-states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])
+t_states = tf.placeholder(tf.float32, shape=[None, D])
 # policy network
-network = tl.layers.InputLayer(states_batch_pl, name='input_layer')
-network = tl.layers.DenseLayer(network, n_units=H,
-                                        act = tf.nn.relu, name='relu1')
-network = tl.layers.DenseLayer(network, n_units=3,
-                            act = tf.identity, name='output_layer')
+network = InputLayer(t_states, name='input')
+network = DenseLayer(network, n_units=H, act=tf.nn.relu, name='hidden')
+network = DenseLayer(network, n_units=3, name='output')
 probs = network.outputs
 sampling_prob = tf.nn.softmax(probs)
 
-actions_batch_pl = tf.placeholder(tf.int32, shape=[None])
-discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
-loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl,
-                                                    discount_rewards_batch_pl)
+t_actions = tf.placeholder(tf.int32, shape=[None])
+t_discount_rewards = tf.placeholder(tf.float32, shape=[None])
+loss = tl.rein.cross_entropy_reward_loss(probs, t_actions, t_discount_rewards)
 train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
 
 with tf.Session() as sess:
-    # init = tf.initialize_all_variables()
-    # sess.run(init)
     tl.layers.initialize_global_variables(sess)
-    if resume:
-        load_params = tl.files.load_npz(name=model_file_name+'.npz')
-        tl.files.assign_params(sess, load_params, network)
+    # if resume:
+    #     load_params = tl.files.load_npz(name=model_file_name+'.npz')
+    #     tl.files.assign_params(sess, load_params, network)
+    tl.files.load_and_assign_npz(sess, model_file_name+'.npz', network)
     network.print_params()
     network.print_layers()
 
@@ -97,17 +93,18 @@ with tf.Session() as sess:
 
         prob = sess.run(
             sampling_prob,
-            feed_dict={states_batch_pl: x}
+            feed_dict={t_states: x}
         )
         # action. 1: STOP  2: UP  3: DOWN
         # action = np.random.choice([1,2,3], p=prob.flatten())
-        action = tl.rein.choice_action_by_probs(prob.flatten(), [1,2,3]) 
+        action = tl.rein.choice_action_by_probs(prob.flatten(), [1,2,3])
 
         observation, reward, done, _ = env.step(action)
         reward_sum += reward
         xs.append(x)            # all observations in a episode
         ys.append(action - 1)   # all fake labels in a episode (action begins from 1, so minus 1)
         rs.append(reward)       # all rewards in a episode
+        
         if done:
             episode_number += 1
             game_number = 0
@@ -126,9 +123,9 @@ with tf.Session() as sess:
                 sess.run(
                     train_op,
                     feed_dict={
-                        states_batch_pl: epx,
-                        actions_batch_pl: epy,
-                        discount_rewards_batch_pl: disR
+                        t_states: epx,
+                        t_actions: epy,
+                        t_discount_rewards: disR
                     }
                 )
 
