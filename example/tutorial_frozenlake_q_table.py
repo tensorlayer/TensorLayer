@@ -4,7 +4,7 @@ import numpy as np
 """Q-Table learning algorithm, non deep learning - TD Learning, Off-Policy, e-Greedy Exploration
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
-if alpha == 1: Q(S, A) <- R + lambda * Q(newS, newA)
+
 See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
 
 For Q-Network, see tutorial_frozenlake_q_network.py
@@ -22,7 +22,7 @@ running_reward = None
 ## Initialize table with all zeros
 Q = np.zeros([env.observation_space.n,env.action_space.n])
 ## Set learning parameters
-lr = .85        # alpha
+lr = .85        # alpha, if use value function approximation, we can ignore it
 lambd = .99     # decay factor
 num_episodes = 10000
 rList = []  # rewards for each episode

@@ -2,12 +2,14 @@ import gym, random, time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import *
 import matplotlib.pyplot as plt
 
 """ Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
-if alpha == 1: Q(S, A) <- R + lambda * Q(newS, newA)
+delta_w = R + lambda * Q(newS, newA)
+
 See David Silver RL Tutorial Lecture 5 - Q-Learning for more details.
 
 EN: https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0#.5m3361vlw
@@ -44,8 +46,8 @@ tf.reset_default_graph()
 ## Define Q-network q(a,s) that ouput the rewards of 4 actions by given state, i.e. Action-Value Function.
 # 4x4 grid can be represented by one-hot vector with 16 integers.
 inputs = tf.placeholder(shape=[1, 16], dtype=tf.float32)
-net = tl.layers.InputLayer(inputs, name='observation')
-net = tl.layers.DenseLayer(net, n_units=4, act=tf.identity,
+net = InputLayer(inputs, name='observation')
+net = DenseLayer(net, n_units=4, act=tf.identity,
     W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')
 y = net.outputs             # action-value / rewards of 4 actions
 predict = tf.argmax(y, 1)   # chose action greedily with reward
@@ -81,7 +83,8 @@ with tf.Session() as sess:
             ## Obtain maxQ' and set our target value for chosen action.
             maxQ1 = np.max(Q1)
             targetQ = allQ
-            targetQ[0, a[0]] = r + lambd * maxQ1
+            # targetQ[0, a[0]] = r + lambd * maxQ1
+            # targetQ[0, a[0]] = targetQ[0, a[0]] + alpha * (r + lambd * maxQ1 - targetQ[0, a[0]])
             ## Train network using target and predicted Q values
             _ = sess.run(train_op, {inputs : [to_one_hot(s, 16)], nextQ : targetQ})
             rAll += r
