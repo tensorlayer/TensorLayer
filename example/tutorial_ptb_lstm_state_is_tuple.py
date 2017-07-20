@@ -196,31 +196,33 @@ def main(_):
         """
         print("\nnum_steps : %d, is_training : %s, reuse : %s" %
                                                 (num_steps, is_training, reuse))
-        initializer = tf.random_uniform_initializer(init_scale, init_scale)
+        initializer = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
             tl.layers.set_name_reuse(reuse)
             network = tl.layers.EmbeddingInputlayer(
-                        inputs = x,
-                        vocabulary_size = vocab_size,
-                        embedding_size = hidden_size,
-                        E_init = tf.random_uniform_initializer(-init_scale, init_scale),
-                        name ='embedding')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
+                        inputs=x,
+                        vocabulary_size=vocab_size,
+                        embedding_size=hidden_size,
+                        E_init=initializer,
+                        name='embedding')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob,
+                        is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(network,
                         cell_fn=tf.contrib.rnn.BasicLSTMCell, #tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
-                        initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+                        initializer=initializer,
                         n_steps=num_steps,
                         return_last=False,
                         name='basic_lstm1')
             lstm1 = network
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob,
+                        is_fix=True, is_train=is_training, name='drop2')
             network = tl.layers.RNNLayer(network,
                         cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
                         cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
                         n_hidden=hidden_size,
-                        initializer=tf.random_uniform_initializer(-init_scale, init_scale),
+                        initializer=initializer,
                         n_steps=num_steps,
                         return_last=False,
                         return_seq_2d=True,
@@ -230,12 +232,11 @@ def main(_):
             # you can reshape the outputs as follow:
             # network = tl.layers.ReshapeLayer(network,
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            network = tl.layers.DenseLayer(network,
-                        n_units=vocab_size,
-                        W_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                        b_init=tf.random_uniform_initializer(-init_scale, init_scale),
-                        act = tf.identity, name='output')
+            network = tl.layers.DropoutLayer(network, keep=keep_prob,
+                        is_fix=True, is_train=is_training, name='drop3')
+            network = tl.layers.DenseLayer(network, n_units=vocab_size,
+                        W_init=initializer, b_init=initializer,
+                        act=tf.identity, name='output')
         return network, lstm1, lstm2
 
     # Inference for Training
