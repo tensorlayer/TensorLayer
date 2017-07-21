@@ -18,9 +18,10 @@
 TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
 
 # What's New
+* Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
 * Release [Flickr dataset loader](http://press.liacs.nl/mirflickr/mirdownload.html), see [load_flickr25k](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr25k) and [load_flickr1M](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr1m).
 * Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
-* Release [Sub-pixel Convolution](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
+* Release [Sub-pixel Convolution 2D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
 * Join [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw) Now.
 * [Attention Seq2seq](https://github.com/zsdonghao/tensorlayer/issues/164) help wanted.
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
