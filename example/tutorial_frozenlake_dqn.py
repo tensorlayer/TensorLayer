@@ -83,7 +83,7 @@ with tf.Session() as sess:
             ## Obtain maxQ' and set our target value for chosen action.
             maxQ1 = np.max(Q1)
             targetQ = allQ
-            # targetQ[0, a[0]] = r + lambd * maxQ1
+            targetQ[0, a[0]] = r + lambd * maxQ1
             # targetQ[0, a[0]] = targetQ[0, a[0]] + alpha * (r + lambd * maxQ1 - targetQ[0, a[0]])
             ## Train network using target and predicted Q values
             _ = sess.run(train_op, {inputs : [to_one_hot(s, 16)], nextQ : targetQ})
