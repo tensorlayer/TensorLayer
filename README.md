@@ -166,7 +166,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 - [Super Resolution GAN](https://arxiv.org/abs/1609.04802) by [zsdonghao](https://github.com/zsdonghao/SRGAN).
 
 ## Reinforcement Learning
- - Policy Gradient / Network - Pong. Atari Ping Pong, see [tutorial\_atari_pong.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py).
+ - Policy Gradient / Network - Atari Ping Pong, see [tutorial\_atari_pong.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py).
  - Deep Q-Network - Frozen lake, see [tutorial\_frozenlake_dqn.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py).
  - Q-Table learning algorithm - Frozen lake, see [tutorial\_frozenlake\_q_table.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py).
  - Asynchronous Deep Reinforcement Learning - Pong Game by [nebulaV](https://github.com/akaraspt/tl_paper).
