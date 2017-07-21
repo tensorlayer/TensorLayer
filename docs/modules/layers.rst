@@ -284,6 +284,7 @@ Layer list
    MaxPool3d
    MeanPool3d
 
+   SubpixelConv1d
    SubpixelConv2d
 
    SpatialTransformer2dAffineLayer
@@ -498,6 +499,13 @@ APIs may better for you.
 .. autofunction:: MeanPool3d
 
 Super-resolution layer
+------------------------
+
+1D Supixel Convolutional
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: SubpixelConv1d
+
+2D Supixel Convolutional
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv2d
 

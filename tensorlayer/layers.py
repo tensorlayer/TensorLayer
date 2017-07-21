@@ -2301,7 +2301,49 @@ def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='
     return net_new
 
 
+def SubpixelConv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
+    """One-dimensional subpixel upsampling layer.
+    Calls a tensorflow function that directly implements this functionality.
+    We assume input has dim (batch, width, r)
 
+    Parameters
+    ------------
+    net : TensorLayer layer.
+    scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
+    act : activation function.
+    name : string.
+        An optional name to attach to this layer.
+
+    Examples
+    ----------
+    >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
+    >>> n = InputLayer(t_signal, name='in')
+    >>> n = SubpixelConv1d(n, scale=2, name='s')
+    >>> print(n.outputs.shape)
+    ... (10, 200, 2)
+
+    References
+    -----------
+    - `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
+    """
+    def _PS(I, r):
+        X = tf.transpose(I, [2,1,0]) # (r, w, b)
+        X = tf.batch_to_space_nd(X, [r], [[0,0]]) # (1, r*w, b)
+        X = tf.transpose(X, [2,1,0])
+        return X
+
+    print("  [TL] SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
+
+    inputs = net.outputs
+    net_new = Layer(inputs, name=name)
+    with tf.name_scope(name):
+        net_new.outputs = act(_PS(inputs, r=scale))
+
+    net_new.all_layers = list(net.all_layers)
+    net_new.all_params = list(net.all_params)
+    net_new.all_drop = dict(net.all_drop)
+    net_new.all_layers.extend( [net_new.outputs] )
+    return net_new
 
 ## Spatial Transformer Nets
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs):
