@@ -498,7 +498,7 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool3d
 
-Super-resolution layer
+Super-Resolution layer
 ------------------------
 
 1D Supixel Convolutional
