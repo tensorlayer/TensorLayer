@@ -2198,6 +2198,110 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
     net_new.all_layers.extend( [net_new.outputs] )
     return net_new
 
+def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+    """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used
+    for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
+
+    Parameters
+    ------------
+    net : TensorLayer layer.
+    scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
+    n_out_channel : int or None, the number of output channels.
+        Note that, the number of input channels == (scale x scale) x The number of output channels.
+        If None, automatically set n_out_channel == the number of input channels / (scale x scale).
+    act : activation function.
+    name : string.
+        An optional name to attach to this layer.
+
+    Examples
+    ---------
+    >>> # examples here just want to tell you how to set the n_out_channel.
+    >>> x = np.random.rand(2, 16, 16, 4)
+    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4), name="X")
+    >>> net = InputLayer(X, name='input')
+    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=1, name='subpixel_conv2d')
+    >>> y = sess.run(net.outputs, feed_dict={X: x})
+    >>> print(x.shape, y.shape)
+    ... (2, 16, 16, 4) (2, 32, 32, 1)
+    >>>
+    >>> x = np.random.rand(2, 16, 16, 4*10)
+    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4*10), name="X")
+    >>> net = InputLayer(X, name='input2')
+    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=10, name='subpixel_conv2d2')
+    >>> y = sess.run(net.outputs, feed_dict={X: x})
+    >>> print(x.shape, y.shape)
+    ... (2, 16, 16, 40) (2, 32, 32, 10)
+    >>>
+    >>> x = np.random.rand(2, 16, 16, 25*10)
+    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 25*10), name="X")
+    >>> net = InputLayer(X, name='input3')
+    >>> net = SubpixelConv2d(net, scale=5, n_out_channel=None, name='subpixel_conv2d3')
+    >>> y = sess.run(net.outputs, feed_dict={X: x})
+    >>> print(x.shape, y.shape)
+    ... (2, 16, 16, 250) (2, 80, 80, 10)
+
+    References
+    ------------
+    - `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network <https://arxiv.org/pdf/1609.05158.pdf>`_
+    """
+    # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
+
+    _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+
+    scope_name = tf.get_variable_scope().name
+    if scope_name:
+        name = scope_name + '/' + name
+
+    def _phase_shift(I, r):
+        if tf.__version__ < '1.0':
+            raise Exception("Only support TF1.0+")
+        bsize, a, b, c = I.get_shape().as_list()
+        bsize = tf.shape(I)[0] # Handling Dimension(None) type for undefined batch dim
+        X = tf.reshape(I, (bsize, a, b, r, r))
+        X = tf.transpose(X, (0, 1, 2, 4, 3))  # bsize, a, b, 1, 1 # tf 0.12
+        # X = tf.split(1, a, X)  # a, [bsize, b, r, r] # tf 0.12
+        X = tf.split(X, a, 1)
+        # X = tf.concat(2, [tf.squeeze(x, axis=1) for x in X])  # bsize, b, a*r, r # tf 0.12
+        X = tf.concat([tf.squeeze(x, axis=1) for x in X], 2)
+        # X = tf.split(1, b, X)  # b, [bsize, a*r, r] # tf 0.12
+        X = tf.split(X, b, 1)
+        # X = tf.concat(2, [tf.squeeze(x, axis=1) for x in X])  # bsize, a*r, b*r # tf 0.12
+        X = tf.concat([tf.squeeze(x, axis=1) for x in X], 2)
+        return tf.reshape(X, (bsize, a*r, b*r, 1))
+
+    def _PS(X, r, n_out_channel):
+        if n_out_channel > 1:
+            assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
+            Xc = tf.split(X, n_out_channel, 3)
+            X = tf.concat([_phase_shift(x, r) for x in Xc], 3)
+        elif n_out_channel == 1:
+            assert int(X.get_shape()[-1]) == (r ** 2), _err_log
+            X = _phase_shift(X, r)
+        else:
+            print(_err_log)
+        return X
+
+    inputs = net.outputs
+
+    if n_out_channel is None:
+        assert int(inputs.get_shape()[-1])/ (scale ** 2) % 1 == 0, _err_log
+        n_out_channel = int(int(inputs.get_shape()[-1])/ (scale ** 2))
+
+    print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
+
+    net_new = Layer(inputs, name=name)
+    # with tf.name_scope(name):
+    with tf.variable_scope(name) as vs:
+        net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
+
+    net_new.all_layers = list(net.all_layers)
+    net_new.all_params = list(net.all_params)
+    net_new.all_drop = dict(net.all_drop)
+    net_new.all_layers.extend( [net_new.outputs] )
+    return net_new
+
+
+
 
 ## Spatial Transformer Nets
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs):
