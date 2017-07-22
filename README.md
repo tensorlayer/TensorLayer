@@ -169,7 +169,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - Policy Gradient / Network - Atari Ping Pong, see [tutorial\_atari_pong.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py).
  - Deep Q-Network - Frozen lake, see [tutorial\_frozenlake_dqn.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py).
  - Q-Table learning algorithm - Frozen lake, see [tutorial\_frozenlake\_q_table.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py).
- - Asynchronous Deep Reinforcement Learning - Atari Ping Pong by [nebulaV](https://github.com/akaraspt/tl_paper).
+ - Asynchronous Policy Gradient using TensorDB - Atari Ping Pong by [nebulaV](https://github.com/akaraspt/tl_paper).
 
 
 ## Applications
