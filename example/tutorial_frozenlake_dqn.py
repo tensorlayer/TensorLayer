@@ -61,7 +61,6 @@ train_op = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(loss)
 lambd = .99    # decay factor
 e = 0.1        # e-Greedy Exploration, the larger the more random
 num_episodes = 10000
-rList = []     # rewards for each episode
 with tf.Session() as sess:
     tl.layers.initialize_global_variables(sess)
     for i in range(num_episodes):
@@ -95,6 +94,6 @@ with tf.Session() as sess:
                 break
 
         ## Note that, the rewards here with random action
-        running_reward = r if running_reward is None else running_reward * 0.99 + r * 0.01
+        running_reward = rAll if running_reward is None else running_reward * 0.99 + rAll * 0.01
         print("Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" %
             (i, num_episodes, rAll, running_reward, time.time()-episode_time, '' if rAll == 0 else ' !!!!!!!!'))
