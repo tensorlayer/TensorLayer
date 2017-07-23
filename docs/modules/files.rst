@@ -44,11 +44,14 @@ sake of cross-platform.
    load_flickr1M_dataset
 
    save_npz
-   save_npz_dict
    load_npz
-   load_npz_dict
    assign_params
-   load_and_assign_npz
+   load_and_assign_npz   
+   save_npz_dict
+   load_npz_dict
+   save_ckpt
+   load_ckpt
+
 
    save_any_to_npy
    load_npy_to_any
@@ -114,25 +117,37 @@ Save network into list (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_npz
 
+Load network from list (npz)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_npz
+
+Assign a list of parameters to network
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: assign_params
+
+Load and assign a list of parameters to network
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_and_assign_npz
+
+
 Save network into dict (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_npz_dict
 
-Load network from save_npz
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_npz
-
-Load network from save_npz_dict
+Load network from dict (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_npz_dict
 
-Assign parameters to network
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: assign_params
 
-Load and assign parameters to network
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_and_assign_npz
+Save network into ckpt
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: save_ckpt
+
+Load network from ckpt
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_ckpt
+
+
 
 Load and save variables
 ------------------------
