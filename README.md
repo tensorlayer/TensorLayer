@@ -204,3 +204,16 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 
 - 🇬🇧 If you are in London, we can discuss in person. Drop us an email to organize a meetup: tensorlayer@gmail.com.
 - 🇨🇳 我们有官方的 [中文文档](http://tensorlayercn.readthedocs.io/zh/latest)。另外, 我们建立了多种交流渠道，如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+
+# Citation
+If you find it is useful, please cite our paper in your project and paper.
+
+```
+@article{TensorLayer2017,
+author = {Dong, Hao and Supratak, Akara and Mai, Luo and Liu, Fangde and Oehmichen, Axel and Yu, Simiao and Guo, Yike},
+journal = {ACM Multimedia},
+title = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},
+url = {http://tensorlayer.org},
+year = {2017}
+}
+```
