@@ -5,7 +5,7 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 import matplotlib.pyplot as plt
 
-""" Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration
+""" Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE)
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
 delta_w = R + lambda * Q(newS, newA)
@@ -90,7 +90,7 @@ with tf.Session() as sess:
             s = s1
             ## Reduce chance of random action if an episode is done.
             if d == True:
-                e = 1./((i/50) + 10)    # reduce e
+                e = 1./((i/50) + 10)    # reduce e, GLIE: Greey in the limit with infinite Exploration
                 break
 
         ## Note that, the rewards here with random action
