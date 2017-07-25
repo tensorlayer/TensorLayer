@@ -26,7 +26,7 @@ from . import rein
 act = activation
 vis = visualize
 
-__version__ = "1.5.4"
+__version__ = "1.6.0"
 
 global_flag = {}
 global_dict = {}
