@@ -30,17 +30,20 @@ from skimage import transform
 from skimage import exposure
 import skimage
 
+from multiprocessing import Pool
+
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
 
 ## Threading
-def threading_data(data=None, fn=None, **kwargs):
+def threading_data(data=None, thread_count=None, fn=None, **kwargs):
     """Return a batch of result by given data.
     Usually be used for data augmentation.
 
     Parameters
     -----------
     data : numpy array, file names and etc, see Examples below.
+    thread_count : the number of threads to use
     fn : the function for data processing.
     more args : the args for fn, see Examples below.
 
@@ -48,14 +51,23 @@ def threading_data(data=None, fn=None, **kwargs):
     --------
     - Single array
     >>> X --> [batch_size, row, col, 1] greyscale
-    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=True)
+    >>> results = threading_data(X, None, zoom, zoom_range=[0.5, 1], is_random=True)
     ... results --> [batch_size, row, col, channel]
     >>> tl.visualize.images2d(images=np.asarray(results), second=0.01, saveable=True, name='after', dtype=None)
     >>> tl.visualize.images2d(images=np.asarray(X), second=0.01, saveable=True, name='before', dtype=None)
 
     - List of array (e.g. functions with ``multi``)
     >>> X, Y --> [batch_size, row, col, 1]  greyscale
-    >>> data = threading_data([_ for _ in zip(X, Y)], zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    >>> data = threading_data([_ for _ in zip(X, Y)], None, zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    ... data --> [batch_size, 2, row, col, 1]
+    >>> X_, Y_ = data.transpose((1,0,2,3,4))
+    ... X_, Y_ --> [batch_size, row, col, 1]
+    >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
+    >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
+    
+    - Single array split across ``thread_count`` threads (e.g. functions with ``multi``)
+    >>> X, Y --> [batch_size, row, col, 1]  greyscale
+    >>> data = threading_data(X, 8, zoom_multi, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
     ... X_, Y_ --> [batch_size, row, col, 1]
@@ -87,54 +99,78 @@ def threading_data(data=None, fn=None, **kwargs):
         results[i] = fn(data, **kwargs)
 
     ## start multi-threaded reading.
-    results = [None] * len(data) ## preallocate result list
-    threads = []
-    for i in range(len(data)):
-        t = threading.Thread(
-                        name='threading_and_return',
-                        target=apply_fn,
-                        args=(results, i, data[i], kwargs)
-                        )
-        t.start()
-        threads.append(t)
+    if thread_count is None:
+        results = [None] * len(data) ## preallocate result list
+        threads = []
+        for i in range(len(data)):
+            t = threading.Thread(
+                            name='threading_and_return',
+                            target=apply_fn,
+                            args=(results, i, data[i], kwargs)
+                            )
+            t.start()
+            threads.append(t)
+    else:
+        divs = np.linspace(0, len(data), thread_count + 1)
+        divs = np.round(divs).astype(int)
+        results = [None] * thread_count
+        threads = []
+        for i in range(thread_count):
+            t = threading.Thread(
+                name='threading_and_return',
+                target=apply_fn,
+                args=(results, i, data[divs[i]:divs[i + 1]], kwargs)
+            )
+            t.start()
+            threads.append(t)
 
     ## <Milo> wait for all threads to complete
     for t in threads:
         t.join()
 
+    if thread_count is None:
+        return np.asarray(results)
+    else:
+        return np.concatenate(results)
+
+## Pool
+def pooling_data(data, pool: Pool, fn=None):
+    """Return a batch of result by given data using multiprocessor.Pool
+    Usually be used for data augmentation.
+
+    Parameters
+    -----------
+    data : numpy array, file names and etc, see Examples below.
+    pool : multiprocessing.Pool, the pool must be started from a function under ``if __name__ == "__main__":`` on Windows 
+    fn : the function for data processing, must be a top level function with only one parameter
+
+    Examples
+    --------
+    def distort_fn(x):
+        x = tl.prepro.zoom(x, zoom_range=(0.5, 1.0), is_random=True, fill_mode='constant', cval=0.0)
+        return x
+        
+    def main():
+        # Setup graph ...
+        # ...
+        
+        # Train
+        pool = Pool(16)
+        for i in range(epochs):       
+            X_train_distorted = t.prepro.pooling_data(X_train, pool, distort_fn)
+            # Batches
+            for X, y in tl.iterate.minibatches(X_train_distorted, onehot_train, batch_size, shuffle=True):
+                # ... rest of training code
+
+    if __name__ == "__main__":
+        main()
+    
+    References
+    ----------
+    - `reason for running Pool under __main__ <https://stackoverflow.com/questions/42602584/how-to-use-multiprocessing-pool-in-an-imported-module>`_
+    """
+    results = pool.map(fn, data)
     return np.asarray(results)
-
-    ## old implementation
-    # define function for threading
-    # def function(q, i, data, kwargs):
-    #     result = fn(data, **kwargs)
-    #     q.put([i, result])
-    # ## start threading
-    # q = queue.Queue()
-    # threads = []
-    # for i in range(len(data)):
-    #     t = threading.Thread(
-    #                     name='threading_and_return',
-    #                     target=function,
-    #                     args=(q, i, data[i], kwargs)
-    #                     )
-    #     t.start()
-    #     threads.append(t)
-    #
-    # ## <Milo> wait for all threads to complete
-    # for t in threads:
-    #     t.join()
-    #
-    # ## get results
-    # results = []
-    # for i in range(len(data)):
-    #     result = q.get()
-    #     results.append(result)
-    # results = sorted(results)
-    # for i in range(len(results)):
-    #     results[i] = results[i][1]
-    # return np.asarray(results)
-
 
 ## Image
 def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2,
