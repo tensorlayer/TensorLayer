@@ -36,7 +36,7 @@ from multiprocessing import Pool
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
 
 ## Threading
-def threading_data(data=None, thread_count=None, fn=None, **kwargs):
+def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     """Return a batch of result by given data.
     Usually be used for data augmentation.
 
@@ -51,14 +51,14 @@ def threading_data(data=None, thread_count=None, fn=None, **kwargs):
     --------
     - Single array
     >>> X --> [batch_size, row, col, 1] greyscale
-    >>> results = threading_data(X, None, zoom, zoom_range=[0.5, 1], is_random=True)
+    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=True)
     ... results --> [batch_size, row, col, channel]
     >>> tl.visualize.images2d(images=np.asarray(results), second=0.01, saveable=True, name='after', dtype=None)
     >>> tl.visualize.images2d(images=np.asarray(X), second=0.01, saveable=True, name='before', dtype=None)
 
     - List of array (e.g. functions with ``multi``)
     >>> X, Y --> [batch_size, row, col, 1]  greyscale
-    >>> data = threading_data([_ for _ in zip(X, Y)], None, zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    >>> data = threading_data([_ for _ in zip(X, Y)], zoom_multi, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
     ... X_, Y_ --> [batch_size, row, col, 1]
@@ -67,7 +67,7 @@ def threading_data(data=None, thread_count=None, fn=None, **kwargs):
     
     - Single array split across ``thread_count`` threads (e.g. functions with ``multi``)
     >>> X, Y --> [batch_size, row, col, 1]  greyscale
-    >>> data = threading_data(X, 8, zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    >>> data = threading_data(X, zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
     ... X_, Y_ --> [batch_size, row, col, 1]
