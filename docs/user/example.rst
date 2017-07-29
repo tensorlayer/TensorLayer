@@ -48,6 +48,7 @@ Reinforcement Learning
  - Deep Q-Network - Frozen lake, see `tutorial_frozenlake_dqn.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py>`_.
  - Q-Table learning algorithm - Frozen lake, see `tutorial_frozenlake_q_table.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py>`_.
  - Asynchronous Policy Gradient using TensorDB  - Atari Ping Pong by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
+ - AC for discrete action space - Cartpole, see `tutorial_cartpole_ac.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`_.
  - A3C for continuous action space - Bipedal Walker, see `tutorial_bipedalwalker_a3c*.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`_.
 
 
