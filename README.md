@@ -170,6 +170,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - Deep Q-Network - Frozen lake, see [tutorial\_frozenlake_dqn.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py).
  - Q-Table learning algorithm - Frozen lake, see [tutorial\_frozenlake\_q_table.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py).
  - Asynchronous Policy Gradient using TensorDB - Atari Ping Pong by [nebulaV](https://github.com/akaraspt/tl_paper).
+ - AC for discrete action space - Cartpole, see [tutorial\_cartpole_ac.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py).
  - A3C for continuous action space - Bipedal Walker, see [tutorial\_bipedalwalker_a3c*.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py).
 
 
