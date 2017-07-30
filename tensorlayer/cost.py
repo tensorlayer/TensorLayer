@@ -1,8 +1,7 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf8 -*-
 
-
-
+import logging
 import tensorflow as tf
 import numbers
 from tensorflow.python.framework import ops
