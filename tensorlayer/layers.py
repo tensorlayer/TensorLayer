@@ -231,10 +231,10 @@ def initialize_global_variables(sess=None):
     sess : a Session
     """
     assert sess is not None
-    try:    # TF12
-        sess.run(tf.global_variables_initializer())
-    except: # TF11
-        sess.run(tf.initialize_all_variables())
+    # try:    # TF12+
+    sess.run(tf.global_variables_initializer())
+    # except: # TF11
+    #     sess.run(tf.initialize_all_variables())
 
 
 ## Basic layer
