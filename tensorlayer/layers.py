@@ -1218,8 +1218,8 @@ class Conv2dLayer(Layer):
         The arguments for the weights tf.get_variable().
     b_init_args : dictionary
         The arguments for the biases tf.get_variable().
-    use_cudnn_on_gpu : an optional string from: "NHWC", "NCHW". Defaults to "NHWC".
-    data_format : an optional bool. Defaults to True.
+    use_cudnn_on_gpu : bool, default is None.
+    data_format : string "NHWC" or "NCHW", default is "NHWC"
     name : a string or None
         An optional name to attach to this layer.
 
