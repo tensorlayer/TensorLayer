@@ -1871,6 +1871,23 @@ def Conv1d(net, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None,
     dilation_rate : As it is 1D conv, the default is "NWC".
     act : None or activation function.
     others : see :class:`Conv1dLayer`.
+
+
+    Examples
+    ---------
+    >>> x = tf.placeholder(tf.float32, [batch_size, width])
+    >>> n = InputLayer(x, name='in')
+    >>> n = ReshapeLayer(n, [-1, width, 1], name='rs')
+    >>> n = Conv1d(n, 64, 3, 1, act=tf.nn.relu, name='c1')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m1')
+    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c2')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m2')
+    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c3')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m3')
+    >>> n = FlattenLayer(n, name='f')
+    >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
+    >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
+    >>> n = DenseLayer(n, 2, tf.identity, name='o')
     """
     if act is None:
         act = tf.identity
