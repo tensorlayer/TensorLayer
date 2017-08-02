@@ -1,4 +1,4 @@
-.. _more:
+.. _example:
 
 ============
 Example
