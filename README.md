@@ -103,8 +103,7 @@ y_op = tf.argmax(tf.nn.softmax(y), 1)
 
 # Define the optimizer
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
-                            epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # Initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
