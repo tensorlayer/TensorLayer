@@ -137,7 +137,9 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 Examples can be found [in this repository](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [TensorLayer Topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
 
 ## Basics
- - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial\_mnist\_simple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py), [tutorial\_mlp_dropout1.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py) and [tutorial\_mlp_dropout2.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py).
+ - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial\_mnist\_simple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py).
+ - Multi-layer perceptron (MNIST) classification using Iterator, see [method1](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py) and [method2](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py).
+
 
 ## Computer Vision
  - Denoising Autoencoder (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial_mnist.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py).
