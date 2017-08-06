@@ -9,6 +9,7 @@ Basics
 ============
 
  - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see `tutorial_mnist_simple.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
+ - Multi-layer perceptron (MNIST) classification using Iterator, see `method1 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `method2 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_.
 
 Computer Vision
 ==================
@@ -33,6 +34,7 @@ Natural Language Processing
  - Word Embedding - Word2vec. Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py>`_.
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
+ - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`_.
 
 Adversarial Learning
 ========================

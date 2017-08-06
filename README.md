@@ -157,6 +157,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - Word Embedding - Word2vec. Train a word embedding matrix, see [tutorial\_word2vec_basic.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py).
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see [tutorial\_generate_text.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py).
  - Text Generation. Generates new text scripts, using LSTM network, see [tutorial\_generate_text.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py).
+ - Chinese Text Anti-Spam by [pakrchen](https://github.com/pakrchen/text-antispam).
 
 ## Adversarial Learning
 - DCGAN - Generating images by [Deep Convolutional Generative Adversarial Networks](http://arxiv.org/abs/1511.06434) by [zsdonghao](https://github.com/zsdonghao/dcgan).
