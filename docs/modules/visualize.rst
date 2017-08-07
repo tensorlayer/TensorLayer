@@ -1,7 +1,7 @@
 API - Visualize Model and Data
 ================================
 
-TensorFlow provides `TensorBoard <https://www.tensorflow.org/versions/master/how_tos/summaries_and_tensorboard/index.html>`_
+TensorFlow provides `TensorBoard <https://www.tensorflow.org/get_started/summaries_and_tensorboard>`_
 to visualize the model, activations etc. Here we provide more functions for data visualization.
 
 .. automodule:: tensorlayer.visualize
