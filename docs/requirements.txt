@@ -3,4 +3,3 @@ numpydoc
 scipy
 scikit-image
 matplotlib
-Sphinx>=1.6
