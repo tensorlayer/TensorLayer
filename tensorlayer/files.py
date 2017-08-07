@@ -626,6 +626,36 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
     return images
 
+def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan'):
+    """Load image data from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+
+    Parameters
+    ------------
+    filename : string
+        The dataset you want, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+    path : string
+        The path that the data is downloaded to, defaults is `data/cyclegan`
+
+    Examples
+    ---------
+    - im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
+    """
+    url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
+
+    if folder_exists(path+"/"+filename) is False:
+        print("[*] {} is nonexistent in {}".format(filename, path))
+        maybe_download_and_extract(filename+'.zip', path, url, extract=True)
+        del_file(path+'/'+filename+'.zip')
+
+    def load_image_from_folder(path):
+        path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
+        return tl.vis.read_images(path_imgs, path=path, n_threads=10, printable=False)
+    im_train_A = load_image_from_folder(path+"/"+filename+"/trainA")
+    im_train_B = load_image_from_folder(path+"/"+filename+"/trainB")
+    im_test_A = load_image_from_folder(path+"/"+filename+"/testA")
+    im_test_B = load_image_from_folder(path+"/"+filename+"/testB")
+
+    return im_train_A, im_train_B, im_test_A, im_test_B
 
 
 ## Load and save network list npz
