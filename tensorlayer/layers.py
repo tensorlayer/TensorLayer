@@ -3490,6 +3490,37 @@ class BatchNormLayer(Layer):
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( [beta, gamma] )
 
+class InstanceNormLayer(Layer):
+    def __init__(
+    self,
+    layer = None,
+    act = tf.identity,
+    epsilon = 1e-5,
+    scale_init = tf.truncated_normal_initializer(mean=1.0, stddev=0.02),
+    offset_init = tf.constant_initializer(0.0),
+    name ='instan_norm',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  [TL] InstanceNormLayer %s: epsilon:%f act:%s" %
+                            (self.name, epsilon, act.__name__))
+
+        with tf.variable_scope(name) as vs:
+            mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+            scale = tf.get_variable('scale',[self.inputs.get_shape()[-1]],
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02))
+            offset = tf.get_variable('offset',[self.inputs.get_shape()[-1]],initializer=tf.constant_initializer(0.0))
+            self.outputs = scale * tf.div(self.inputs-mean, tf.sqrt(var+epsilon)) + offset
+            self.outputs = act(self.outputs)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
+
+
 ## Pooling layer
 class PoolLayer(Layer):
     """
@@ -3567,7 +3598,7 @@ class PadLayer(Layer):
         assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
         self.inputs = layer.outputs
         print("  [TL] PadLayer   %s: paddings:%s mode:%s" %
-                            (self.name, list(paddings.get_shape()), mode))
+                            (self.name, list(paddings), mode))
 
         self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
 
