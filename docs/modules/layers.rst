@@ -293,6 +293,7 @@ Layer list
 
    BatchNormLayer
    LocalResponseNormLayer
+   InstanceNormLayer
 
    TimeDistributedLayer
 
@@ -556,6 +557,9 @@ Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LocalResponseNormLayer
 
+Instance Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNormLayer
 
 Time distributed layer
 ------------------------

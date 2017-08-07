@@ -3491,6 +3491,22 @@ class BatchNormLayer(Layer):
 #         self.all_params.extend( [beta, gamma] )
 
 class InstanceNormLayer(Layer):
+    """The :class:`InstanceNormLayer` class is a for instance normalization.
+
+    Parameters
+    -----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function.
+    epsilon : float
+        A small float number.
+    scale_init : beta initializer
+        The initializer for initializing beta
+    offset_init : gamma initializer
+        The initializer for initializing gamma
+    name : a string or None
+        An optional name to attach to this layer.
+    """
     def __init__(
     self,
     layer = None,
