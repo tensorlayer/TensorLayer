@@ -110,7 +110,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
                             )
             t.start()
             threads.append(t)
-    else: # by geometrikal 
+    else: # by geometrikal
         divs = np.linspace(0, len(data), thread_count + 1)
         divs = np.round(divs).astype(int)
         results = [None] * thread_count
@@ -133,44 +133,6 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     else:
         return np.concatenate(results)
 
-## Pool
-def pooling_data(data, pool: Pool, fn=None):
-    """Return a batch of result by given data using multiprocessor.Pool
-    Usually be used for data augmentation.
-
-    Parameters
-    -----------
-    data : numpy array, file names and etc, see Examples below.
-    pool : multiprocessing.Pool, the pool must be started from a function under ``if __name__ == "__main__":`` on Windows
-    fn : the function for data processing, must be a top level function with only one parameter
-
-    Examples
-    --------
-    def distort_fn(x):
-        x = tl.prepro.zoom(x, zoom_range=(0.5, 1.0), is_random=True, fill_mode='constant', cval=0.0)
-        return x
-
-    def main():
-        # Setup graph ...
-        # ...
-
-        # Train
-        pool = Pool(16)
-        for i in range(epochs):
-            X_train_distorted = t.prepro.pooling_data(X_train, pool, distort_fn)
-            # Batches
-            for X, y in tl.iterate.minibatches(X_train_distorted, onehot_train, batch_size, shuffle=True):
-                # ... rest of training code
-
-    if __name__ == "__main__":
-        main()
-
-    References
-    ----------
-    - `reason for running Pool under __main__ <https://stackoverflow.com/questions/42602584/how-to-use-multiprocessing-pool-in-an-imported-module>`_
-    """
-    results = pool.map(fn, data)
-    return np.asarray(results)
 
 ## Image
 def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2,
