@@ -638,7 +638,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
 
     Examples
     ---------
-    - im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
+    >>> im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
     """
     url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
 
