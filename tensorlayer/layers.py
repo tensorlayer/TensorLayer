@@ -3713,11 +3713,11 @@ class RNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    n_steps : a int
+    n_steps : an int
         The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
@@ -3977,11 +3977,11 @@ class BiRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    n_steps : a int
+    n_steps : an int
         The sequence length.
     fw_initial_state : None or forward RNN State
         If None, initial_state is zero_state.
@@ -3989,7 +3989,7 @@ class BiRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         - If True, return the last output, "Sequence input and single output"
@@ -4330,7 +4330,7 @@ class DynamicRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4343,7 +4343,7 @@ class DynamicRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         - If True, return the last output, "Sequence input and single output"
@@ -4588,7 +4588,7 @@ class BiDynamicRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4604,7 +4604,7 @@ class BiDynamicRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         If True, return the last output, "Sequence input and single output"\n
@@ -4830,7 +4830,7 @@ class Seq2Seq(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4840,7 +4840,7 @@ class Seq2Seq(Layer):
         If None, initial_state is of encoder zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_seq_2d : boolean
         - When return_last = False
@@ -5662,7 +5662,7 @@ class MultiplexerLayer(Layer):
 #     ----------
 #     layer : a list of :class:`Layer` instances
 #         The `Layer` class feeding into this layer.
-#     n_outputs : a int
+#     n_outputs : an int
 #         The number of output
 #     name : a string or None
 #         An optional name to attach to this layer.
