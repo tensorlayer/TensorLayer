@@ -8,6 +8,7 @@ Operation system, more functions can be found in `TensorFlow API <https://www.te
 .. autosummary::
 
    exit_tf
+   open_tb
    clear_all
    set_gpu_fraction
    disable_print
