@@ -24,7 +24,7 @@ Close TF session and associated processes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: exit_tf
 
-Open tensorboard
+Open TensorBoard
 ^^^^^^^^^^^^^^^^^^^
 .. autofunction:: open_tb
 

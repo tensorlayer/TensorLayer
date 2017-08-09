@@ -14,17 +14,17 @@ from sys import exit as _exit
 
 
 def exit_tf(sess=None, port=6006):
-    """Close tensorflow session, tensorboard and nvidia-process if available
+    """Close TensorFlow session, TensorBoard and Nvidia-process if available.
 
     Parameters
     ----------
     sess : a session instance of TensorFlow
         TensorFlow session
     tb_port : an integer
-        TensorBoard port you want to close, 6006 is tensorboard default
+        TensorBoard port you want to close, 6006 as default.
     """
-    text = "[tl] Close tensorboard and nvidia-process if available"
-    text2 = "[tl] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
+    text = "[TL] Close tensorboard and nvidia-process if available"
+    text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
     if sess != None:
         sess.close()
     # import time
@@ -54,11 +54,11 @@ def open_tb(logdir='/tmp/tensorflow', port=6006):
     port : an integer
         TensorBoard port you want to open, 6006 is tensorboard default
     """
-    text = "[tl] Open tensorboard, go to localhost:" + str(port) + " to access"
+    text = "[TL] Open tensorboard, go to localhost:" + str(port) + " to access"
     text2 = " not yet supported by this function (tl.ops.open_tb)"
 
     if not tl.files.exists_or_mkdir(logdir, verbose=False):
-        print("[tl] Log reportory was created at %s" % logdir)
+        print("[TL] Log reportory was created at %s" % logdir)
 
     if _platform == "linux" or _platform == "linux2":
         print('linux %s' % text2)
@@ -128,7 +128,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     ----------
     - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
     """
-    print("  tensorlayer: GPU MEM Fraction %f" % gpu_fraction)
+    print("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config = tf.ConfigProto(gpu_options = gpu_options))
     return sess
@@ -220,10 +220,10 @@ def get_site_packages_directory():
     import site
     try:
         loc = site.getsitepackages()
-        print("  tl.ops : site-packages in ", loc)
+        print("[TL] tl.ops : site-packages in ", loc)
         return loc
     except:
-        print("  tl.ops : Cannot find package dir from virtual environment")
+        print("[TL] tl.ops : Cannot find package dir from virtual environment")
         return False
 
 
@@ -232,7 +232,7 @@ def empty_trash():
     """Empty trash folder.
 
     """
-    text = "[tl] Empty the trash"
+    text = "[TL] Empty the trash"
     if _platform == "linux" or _platform == "linux2":
         print('linux: %s' % text)
         os.system("rm -rf ~/.local/share/Trash/*")
