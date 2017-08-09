@@ -19,9 +19,13 @@ Operation system, more functions can be found in `TensorFlow API <https://www.te
 TensorFlow functions
 ---------------------------
 
-Kill nvidia process
-^^^^^^^^^^^^^^^^^^^^^^^
+Close TF session and associated processes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: exit_tf
+
+Open tensorboard
+^^^^^^^^^^^^^^^^^^^
+.. autofunction:: open_tb
 
 Delete placeholder
 ^^^^^^^^^^^^^^^^^^^^^^^^

@@ -8,3 +8,4 @@ tensorlayer.egg-info
 data/.DS_Store
 *.pyc
 *.gz
+.spyproject/
