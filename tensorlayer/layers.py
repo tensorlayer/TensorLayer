@@ -4739,6 +4739,13 @@ class BiDynamicRNNLayer(Layer):
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)])
                 self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
                 self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
+
+            if dropout:
+                self.fw_cell = DropoutWrapper_fn(self.fw_cell,
+                          input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+                self.bw_cell = DropoutWrapper_fn(self.bw_cell,
+                          input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+
             # self.fw_cell=cell_instance_fn()
             # self.bw_cell=cell_instance_fn()
             # Initial state of RNN

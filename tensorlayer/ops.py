@@ -43,10 +43,10 @@ def exit_tf(sess=None, port=6006):
         # TODO
     else:
         print(text2 + _platform)
-    
+
 def open_tb(logdir='/tmp/tensorflow', port=6006):
-    """Open tensorboard
-    
+    """Open Tensorboard.
+
     Parameters
     ----------
     logdir : a string
@@ -54,13 +54,12 @@ def open_tb(logdir='/tmp/tensorflow', port=6006):
     port : an integer
         TensorBoard port you want to open, 6006 is tensorboard default
     """
-
     text = "[tl] Open tensorboard, go to localhost:" + str(port) + " to access"
     text2 = " not yet supported by this function (tl.ops.open_tb)"
-    
+
     if not tl.files.exists_or_mkdir(logdir, verbose=False):
         print("[tl] Log reportory was created at %s" % logdir)
-    
+
     if _platform == "linux" or _platform == "linux2":
         print('linux %s' % text2)
         # TODO
