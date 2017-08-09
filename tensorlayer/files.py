@@ -649,7 +649,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
 
     def load_image_from_folder(path):
         path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
-        return tl.vis.read_images(path_imgs, path=path, n_threads=10, printable=False)
+        return read_images(path_imgs, path=path, n_threads=10, printable=False)
     im_train_A = load_image_from_folder(path+"/"+filename+"/trainA")
     im_train_B = load_image_from_folder(path+"/"+filename+"/trainB")
     im_test_A = load_image_from_folder(path+"/"+filename+"/testA")
