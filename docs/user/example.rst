@@ -52,7 +52,7 @@ Reinforcement Learning
  - Asynchronous Policy Gradient using TensorDB  - Atari Ping Pong by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
  - AC for discrete action space - Cartpole, see `tutorial_cartpole_ac.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`_.
  - A3C for continuous action space - Bipedal Walker, see `tutorial_bipedalwalker_a3c*.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`_.
-
+ - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ - `Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`_ by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
 
 Applications
 ==============
