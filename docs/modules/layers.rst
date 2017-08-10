@@ -311,6 +311,8 @@ Layer list
 
    FlattenLayer
    ReshapeLayer
+   TransposeLayer
+   
    LambdaLayer
 
    ConcatLayer
@@ -640,6 +642,11 @@ Flatten layer
 Reshape layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: ReshapeLayer
+
+Transpose layer
+^^^^^^^^^^^^^^^^^
+.. autoclass:: TransposeLayer
+
 
 Lambda layer
 ---------------

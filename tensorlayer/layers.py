@@ -2182,7 +2182,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     scope_name = tf.get_variable_scope().name
     if scope_name:
-        name = scope_name + '/' + name
+        whole_name = scope_name + '/' + name
 
     def _PS(X, r, n_out_channel):
         if n_out_channel >= 1:
@@ -2204,7 +2204,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(inputs, name=name)
+    net_new = Layer(inputs, name=whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name) as vs:
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
@@ -5377,6 +5377,41 @@ class TileLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
+
+
+class TransposeLayer(Layer):
+    """
+    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    perm: list, a permutation of the dimensions
+        Similar with numpy.transpose.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        perm = None,
+        name = 'transpose',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        assert perm is not None
+
+        print("  [TL] TransposeLayer  %s: perm:%s" % (self.name, perm))
+        # with tf.variable_scope(name) as vs:
+        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( variables )
+
+
 
 ## TF-Slim layer
 class SlimNetsLayer(Layer):
