@@ -2180,10 +2180,6 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
-    scope_name = tf.get_variable_scope().name
-    if scope_name:
-        name = scope_name + '/' + name
-
     def _PS(X, r, n_out_channel):
         if n_out_channel >= 1:
             assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
