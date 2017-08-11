@@ -2183,6 +2183,8 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
     scope_name = tf.get_variable_scope().name
     if scope_name:
         whole_name = scope_name + '/' + name
+    else:
+        whole_name = name
 
     def _PS(X, r, n_out_channel):
         if n_out_channel >= 1:
@@ -5189,8 +5191,7 @@ class LambdaLayer(Layer):
 ## Merge layer
 class ConcatLayer(Layer):
     """
-    The :class:`ConcatLayer` class is layer which concat (merge) two or more
-    :class:`DenseLayer` to a single class:`DenseLayer`.
+    The :class:`ConcatLayer` class is layer which concat (merge) two or more tensor by given axis..
 
     Parameters
     ----------
@@ -5240,8 +5241,8 @@ class ConcatLayer(Layer):
             self.outputs = tf.concat(self.inputs, concat_dim, name=name)
         except: # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
-        self.n_units = int(self.outputs.get_shape()[-1])
-        print("  [TL] ConcatLayer %s: %d" % (self.name, self.n_units))
+
+        print("  [TL] ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)

@@ -49,7 +49,7 @@ sake of cross-platform.
    assign_params
    load_and_assign_npz
    save_npz_dict
-   load_npz_dict
+   load_and_assign_npz_dict
    save_ckpt
    load_ckpt
 
@@ -142,7 +142,7 @@ Save network into dict (npz)
 
 Load network from dict (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_npz_dict
+.. autofunction:: load_and_assign_npz_dict
 
 
 Save network into ckpt
