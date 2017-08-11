@@ -6044,42 +6044,42 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     return batch_encoder_inputs, batch_decoder_inputs, batch_weights
 
 ## Developing or Untested
-class MaxoutLayer(Layer):
-    """
-    Waiting for contribution
-
-    Single DenseLayer with Max-out behaviour, work well with Dropout.
-
-    References
-    -----------
-    `Goodfellow (2013) Maxout Networks <http://arxiv.org/abs/1302.4389>`_
-    """
-    def __init__(
-        self,
-        layer = None,
-        n_units = 100,
-        name ='maxout_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-
-        print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
-        print("    Waiting for contribution")
-        with tf.variable_scope(name) as vs:
-            pass
-            # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
-            # b = tf.Variable(tf.zeros([n_units]), name='b')
-
-        # self.outputs = act(tf.matmul(self.inputs, W) + b)
-        # https://www.tensorflow.org/versions/r0.9/api_docs/python/array_ops.html#pack
-        # http://stackoverflow.com/questions/34362193/how-to-explicitly-broadcast-a-tensor-to-match-anothers-shape-in-tensorflow
-        # tf.concat tf.pack  tf.tile
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
+# class MaxoutLayer(Layer):
+#     """
+#     Waiting for contribution
+#
+#     Single DenseLayer with Max-out behaviour, work well with Dropout.
+#
+#     References
+#     -----------
+#     `Goodfellow (2013) Maxout Networks <http://arxiv.org/abs/1302.4389>`_
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         n_units = 100,
+#         name ='maxout_layer',
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#
+#         print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
+#         print("    Waiting for contribution")
+#         with tf.variable_scope(name) as vs:
+#             pass
+#             # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
+#             # b = tf.Variable(tf.zeros([n_units]), name='b')
+#
+#         # self.outputs = act(tf.matmul(self.inputs, W) + b)
+#         # https://www.tensorflow.org/versions/r0.9/api_docs/python/array_ops.html#pack
+#         # http://stackoverflow.com/questions/34362193/how-to-explicitly-broadcast-a-tensor-to-match-anothers-shape-in-tensorflow
+#         # tf.concat tf.pack  tf.tile
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( [W, b] )
 
 
 

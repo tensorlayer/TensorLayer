@@ -932,11 +932,11 @@ def zca_whitening(x, principal_components):
         An image with dimension of [row, col, channel] (default).
     principal_components : matrix from ``get_zca_whitening_principal_components_img``.
     """
-    # flatx = np.reshape(x, (x.size))
-    print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    flatx = np.reshape(x, (x.size))
+    # print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
     # flatx = np.reshape(x, (x.shape))
     # flatx = np.reshape(x, (x.shape[0], ))
-    print(flatx.shape)  # (160, 176, 1)
+    # print(flatx.shape)  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -1250,7 +1250,7 @@ def binary_dilation(x, radius=3):
     """
     from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
-    x = binary_dilation(image, selem=mask)
+    x = binary_dilation(x, selem=mask)
     return x
 
 def dilation(x, radius=3):
