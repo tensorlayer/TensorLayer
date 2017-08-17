@@ -156,7 +156,6 @@ def main_word2vec_basic():
         print(batch[i], reverse_dictionary[batch[i]],
             '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
-
     """ Step 4: Build a Skip-Gram model.
     """
     print()
@@ -211,7 +210,7 @@ def main_word2vec_basic():
         # multiply all valid word vector with all word vector.
         # transpose_b=True, normalized_embeddings is transposed before multiplication.
 
-    """ Step 5: Begin training.
+    """ Step 5: Start training.
     """
     print()
     # sess.run(tf.initialize_all_variables())

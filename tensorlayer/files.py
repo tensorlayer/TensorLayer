@@ -318,7 +318,7 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
 
     Examples
     --------
-    >>> X_train, y_train, X_test, y_test = tl.files.load_imbd_dataset(
+    >>> X_train, y_train, X_test, y_test = tl.files.load_imdb_dataset(
     ...                                 nb_words=20000, test_split=0.2)
     >>> print('X_train.shape', X_train.shape)
     ... (20000,)  [[1, 62, 74, ... 1033, 507, 27],[1, 60, 33, ... 13, 1053, 7]..]
