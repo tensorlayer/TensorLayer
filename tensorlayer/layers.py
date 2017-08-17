@@ -1871,6 +1871,23 @@ def Conv1d(net, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None,
     dilation_rate : As it is 1D conv, the default is "NWC".
     act : None or activation function.
     others : see :class:`Conv1dLayer`.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder(tf.float32, [batch_size, width])
+    >>> y_ = tf.placeholder(tf.int64, shape=[batch_size,])
+    >>> n = InputLayer(x, name='in')
+    >>> n = ReshapeLayer(n, [-1, width, 1], name='rs')
+    >>> n = Conv1d(n, 64, 3, 1, act=tf.nn.relu, name='c1')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m1')
+    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c2')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m2')
+    >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c3')
+    >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m3')
+    >>> n = FlattenLayer(n, name='f')
+    >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
+    >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
+    >>> n = DenseLayer(n, 2, tf.identity, name='o')
     """
     if act is None:
         act = tf.identity
@@ -2165,7 +2182,9 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     scope_name = tf.get_variable_scope().name
     if scope_name:
-        name = scope_name + '/' + name
+        whole_name = scope_name + '/' + name
+    else:
+        whole_name = name
 
     def _PS(X, r, n_out_channel):
         if n_out_channel >= 1:
@@ -2187,7 +2206,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(inputs, name=name)
+    net_new = Layer(inputs, name=whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name) as vs:
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
@@ -3473,6 +3492,53 @@ class BatchNormLayer(Layer):
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( [beta, gamma] )
 
+class InstanceNormLayer(Layer):
+    """The :class:`InstanceNormLayer` class is a for instance normalization.
+
+    Parameters
+    -----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function.
+    epsilon : float
+        A small float number.
+    scale_init : beta initializer
+        The initializer for initializing beta
+    offset_init : gamma initializer
+        The initializer for initializing gamma
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+    self,
+    layer = None,
+    act = tf.identity,
+    epsilon = 1e-5,
+    scale_init = tf.truncated_normal_initializer(mean=1.0, stddev=0.02),
+    offset_init = tf.constant_initializer(0.0),
+    name ='instan_norm',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  [TL] InstanceNormLayer %s: epsilon:%f act:%s" %
+                            (self.name, epsilon, act.__name__))
+
+        with tf.variable_scope(name) as vs:
+            mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+            scale = tf.get_variable('scale',[self.inputs.get_shape()[-1]],
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02))
+            offset = tf.get_variable('offset',[self.inputs.get_shape()[-1]],initializer=tf.constant_initializer(0.0))
+            self.outputs = scale * tf.div(self.inputs-mean, tf.sqrt(var+epsilon)) + offset
+            self.outputs = act(self.outputs)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( variables )
+
+
 ## Pooling layer
 class PoolLayer(Layer):
     """
@@ -3550,7 +3616,7 @@ class PadLayer(Layer):
         assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
         self.inputs = layer.outputs
         print("  [TL] PadLayer   %s: paddings:%s mode:%s" %
-                            (self.name, list(paddings.get_shape()), mode))
+                            (self.name, list(paddings), mode))
 
         self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
 
@@ -3649,11 +3715,11 @@ class RNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    n_steps : a int
+    n_steps : an int
         The sequence length.
     initial_state : None or RNN State
         If None, initial_state is zero_state.
@@ -3913,11 +3979,11 @@ class BiRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    n_steps : a int
+    n_steps : an int
         The sequence length.
     fw_initial_state : None or forward RNN State
         If None, initial_state is zero_state.
@@ -3925,7 +3991,7 @@ class BiRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         - If True, return the last output, "Sequence input and single output"
@@ -4266,7 +4332,7 @@ class DynamicRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4279,7 +4345,7 @@ class DynamicRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         - If True, return the last output, "Sequence input and single output"
@@ -4524,7 +4590,7 @@ class BiDynamicRNNLayer(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4540,7 +4606,7 @@ class BiDynamicRNNLayer(Layer):
         If None, initial_state is zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
         If True, return the last output, "Sequence input and single output"\n
@@ -4675,6 +4741,13 @@ class BiDynamicRNNLayer(Layer):
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)])
                 self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
                 self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
+
+            if dropout:
+                self.fw_cell = DropoutWrapper_fn(self.fw_cell,
+                          input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+                self.bw_cell = DropoutWrapper_fn(self.bw_cell,
+                          input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+
             # self.fw_cell=cell_instance_fn()
             # self.bw_cell=cell_instance_fn()
             # Initial state of RNN
@@ -4766,7 +4839,7 @@ class Seq2Seq(Layer):
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
         The arguments for the cell initializer.
-    n_hidden : a int
+    n_hidden : an int
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
@@ -4776,7 +4849,7 @@ class Seq2Seq(Layer):
         If None, initial_state is of encoder zero_state.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
-    n_layer : a int, default is 1.
+    n_layer : an int, default is 1.
         The number of RNN layers.
     return_seq_2d : boolean
         - When return_last = False
@@ -5118,8 +5191,7 @@ class LambdaLayer(Layer):
 ## Merge layer
 class ConcatLayer(Layer):
     """
-    The :class:`ConcatLayer` class is layer which concat (merge) two or more
-    :class:`DenseLayer` to a single class:`DenseLayer`.
+    The :class:`ConcatLayer` class is layer which concat (merge) two or more tensor by given axis..
 
     Parameters
     ----------
@@ -5169,8 +5241,8 @@ class ConcatLayer(Layer):
             self.outputs = tf.concat(self.inputs, concat_dim, name=name)
         except: # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
-        self.n_units = int(self.outputs.get_shape()[-1])
-        print("  [TL] ConcatLayer %s: %d" % (self.name, self.n_units))
+
+        print("  [TL] ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -5306,6 +5378,41 @@ class TileLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
+
+
+class TransposeLayer(Layer):
+    """
+    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    perm: list, a permutation of the dimensions
+        Similar with numpy.transpose.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        perm = None,
+        name = 'transpose',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        assert perm is not None
+
+        print("  [TL] TransposeLayer  %s: perm:%s" % (self.name, perm))
+        # with tf.variable_scope(name) as vs:
+        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( variables )
+
+
 
 ## TF-Slim layer
 class SlimNetsLayer(Layer):
@@ -5598,7 +5705,7 @@ class MultiplexerLayer(Layer):
 #     ----------
 #     layer : a list of :class:`Layer` instances
 #         The `Layer` class feeding into this layer.
-#     n_outputs : a int
+#     n_outputs : an int
 #         The number of output
 #     name : a string or None
 #         An optional name to attach to this layer.
@@ -5937,42 +6044,42 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     return batch_encoder_inputs, batch_decoder_inputs, batch_weights
 
 ## Developing or Untested
-class MaxoutLayer(Layer):
-    """
-    Waiting for contribution
-
-    Single DenseLayer with Max-out behaviour, work well with Dropout.
-
-    References
-    -----------
-    `Goodfellow (2013) Maxout Networks <http://arxiv.org/abs/1302.4389>`_
-    """
-    def __init__(
-        self,
-        layer = None,
-        n_units = 100,
-        name ='maxout_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-
-        print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
-        print("    Waiting for contribution")
-        with tf.variable_scope(name) as vs:
-            pass
-            # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
-            # b = tf.Variable(tf.zeros([n_units]), name='b')
-
-        # self.outputs = act(tf.matmul(self.inputs, W) + b)
-        # https://www.tensorflow.org/versions/r0.9/api_docs/python/array_ops.html#pack
-        # http://stackoverflow.com/questions/34362193/how-to-explicitly-broadcast-a-tensor-to-match-anothers-shape-in-tensorflow
-        # tf.concat tf.pack  tf.tile
-
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
+# class MaxoutLayer(Layer):
+#     """
+#     Waiting for contribution
+#
+#     Single DenseLayer with Max-out behaviour, work well with Dropout.
+#
+#     References
+#     -----------
+#     `Goodfellow (2013) Maxout Networks <http://arxiv.org/abs/1302.4389>`_
+#     """
+#     def __init__(
+#         self,
+#         layer = None,
+#         n_units = 100,
+#         name ='maxout_layer',
+#     ):
+#         Layer.__init__(self, name=name)
+#         self.inputs = layer.outputs
+#
+#         print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
+#         print("    Waiting for contribution")
+#         with tf.variable_scope(name) as vs:
+#             pass
+#             # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
+#             # b = tf.Variable(tf.zeros([n_units]), name='b')
+#
+#         # self.outputs = act(tf.matmul(self.inputs, W) + b)
+#         # https://www.tensorflow.org/versions/r0.9/api_docs/python/array_ops.html#pack
+#         # http://stackoverflow.com/questions/34362193/how-to-explicitly-broadcast-a-tensor-to-match-anothers-shape-in-tensorflow
+#         # tf.concat tf.pack  tf.tile
+#
+#         self.all_layers = list(layer.all_layers)
+#         self.all_params = list(layer.all_params)
+#         self.all_drop = dict(layer.all_drop)
+#         self.all_layers.extend( [self.outputs] )
+#         self.all_params.extend( [W, b] )
 
 
 

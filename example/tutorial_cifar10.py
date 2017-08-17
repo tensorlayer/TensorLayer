@@ -22,8 +22,8 @@ def model(x, y_, reuse):
     with tf.variable_scope("model", reuse=reuse):
         tl.layers.set_name_reuse(reuse)
         net = InputLayer(x, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME',
-                    W_init=W_init, name='cnn1')
+        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu,
+                    padding='SAME', W_init=W_init, name='cnn1')
         # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 3, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5x3 patch
         #             W_init=W_init, name ='cnn1')           # output: (batch_size, 24, 24, 64)
@@ -35,8 +35,8 @@ def model(x, y_, reuse):
         # net.outputs = tf.nn.lrn(net.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
         #            beta=0.75, name='norm1')
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME',
-                    W_init=W_init, name='cnn2')
+        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu,
+                    padding='SAME', W_init=W_init, name='cnn2')
         # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 64, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5 patch
         #             W_init=W_init, name ='cnn2')           # output: (batch_size, 12, 12, 64)

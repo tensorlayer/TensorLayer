@@ -64,7 +64,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     ... X_, Y_ --> [batch_size, row, col, 1]
     >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
     >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
-    
+
     - Single array split across ``thread_count`` threads (e.g. functions with ``multi``)
     >>> X, Y --> [batch_size, row, col, 1]  greyscale
     >>> data = threading_data(X, zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
@@ -99,7 +99,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         results[i] = fn(data, **kwargs)
 
     ## start multi-threaded reading.
-    if thread_count is None:
+    if thread_count is None: # by Milo
         results = [None] * len(data) ## preallocate result list
         threads = []
         for i in range(len(data)):
@@ -110,7 +110,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
                             )
             t.start()
             threads.append(t)
-    else:
+    else: # by geometrikal
         divs = np.linspace(0, len(data), thread_count + 1)
         divs = np.round(divs).astype(int)
         results = [None] * thread_count
@@ -133,44 +133,6 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     else:
         return np.concatenate(results)
 
-## Pool
-def pooling_data(data, pool: Pool, fn=None):
-    """Return a batch of result by given data using multiprocessor.Pool
-    Usually be used for data augmentation.
-
-    Parameters
-    -----------
-    data : numpy array, file names and etc, see Examples below.
-    pool : multiprocessing.Pool, the pool must be started from a function under ``if __name__ == "__main__":`` on Windows 
-    fn : the function for data processing, must be a top level function with only one parameter
-
-    Examples
-    --------
-    def distort_fn(x):
-        x = tl.prepro.zoom(x, zoom_range=(0.5, 1.0), is_random=True, fill_mode='constant', cval=0.0)
-        return x
-        
-    def main():
-        # Setup graph ...
-        # ...
-        
-        # Train
-        pool = Pool(16)
-        for i in range(epochs):       
-            X_train_distorted = t.prepro.pooling_data(X_train, pool, distort_fn)
-            # Batches
-            for X, y in tl.iterate.minibatches(X_train_distorted, onehot_train, batch_size, shuffle=True):
-                # ... rest of training code
-
-    if __name__ == "__main__":
-        main()
-    
-    References
-    ----------
-    - `reason for running Pool under __main__ <https://stackoverflow.com/questions/42602584/how-to-use-multiprocessing-pool-in-an-imported-module>`_
-    """
-    results = pool.map(fn, data)
-    return np.asarray(results)
 
 ## Image
 def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2,
@@ -978,11 +940,11 @@ def zca_whitening(x, principal_components):
         An image with dimension of [row, col, channel] (default).
     principal_components : matrix from ``get_zca_whitening_principal_components_img``.
     """
-    # flatx = np.reshape(x, (x.size))
-    print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    flatx = np.reshape(x, (x.size))
+    # print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
     # flatx = np.reshape(x, (x.shape))
     # flatx = np.reshape(x, (x.shape[0], ))
-    print(flatx.shape)  # (160, 176, 1)
+    # print(flatx.shape)  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -1305,7 +1267,7 @@ def binary_dilation(x, radius=3):
     """
     from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
-    x = binary_dilation(image, selem=mask)
+    x = binary_dilation(x, selem=mask)
     return x
 
 def dilation(x, radius=3):

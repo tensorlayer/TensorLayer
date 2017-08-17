@@ -626,6 +626,36 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
     return images
 
+def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan'):
+    """Load image data from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+
+    Parameters
+    ------------
+    filename : string
+        The dataset you want, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+    path : string
+        The path that the data is downloaded to, defaults is `data/cyclegan`
+
+    Examples
+    ---------
+    >>> im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
+    """
+    url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
+
+    if folder_exists(path+"/"+filename) is False:
+        print("[*] {} is nonexistent in {}".format(filename, path))
+        maybe_download_and_extract(filename+'.zip', path, url, extract=True)
+        del_file(path+'/'+filename+'.zip')
+
+    def load_image_from_folder(path):
+        path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
+        return visualize.read_images(path_imgs, path=path, n_threads=10, printable=False)
+    im_train_A = load_image_from_folder(path+"/"+filename+"/trainA")
+    im_train_B = load_image_from_folder(path+"/"+filename+"/trainB")
+    im_test_A = load_image_from_folder(path+"/"+filename+"/testA")
+    im_test_B = load_image_from_folder(path+"/"+filename+"/testB")
+
+    return im_train_A, im_train_B, im_test_A, im_test_B
 
 
 ## Load and save network list npz
@@ -795,57 +825,112 @@ def load_and_assign_npz(sess=None, name=None, network=None):
 
 ## Load and save network dict npz
 def save_npz_dict(save_list=[], name='model.npz', sess=None):
-    """Input parameters and the file name, save parameters as a dictionary into .npz file. Use tl.utils.load_npz_dict() to restore.
+    """Input parameters and the file name, save parameters as a dictionary into .npz file.
+    Use ``tl.files.load_and_assign_npz_dict()`` to restore.
 
     Parameters
     ----------
-    save_list : a list
+    save_list : a list to tensor for parameters
         Parameters want to be saved.
-    name : a string or None
+    name : a string
         The name of the .npz file.
-    sess : None or Session
-
-    Notes
-    -----
-    This function tries to avoid a potential broadcasting error raised by numpy.
-
+    sess : Session
     """
-    ## save params into a list
-    save_list_var = []
-    if sess:
-        save_list_var = sess.run(save_list)
-    else:
-        try:
-            for k, value in enumerate(save_list):
-                save_list_var.append(value.eval())
-        except:
-            print(" Fail to save model, Hint: pass the session into this function, save_npz_dict(network.all_params, name='model.npz', sess=sess)")
-    save_var_dict = {str(idx):val for idx, val in enumerate(save_list_var)}
+    assert sess is not None
+    save_list_names = [tensor.name for tensor in save_list]
+    save_list_var = sess.run(save_list)
+    save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
     np.savez(name, **save_var_dict)
     save_list_var = None
     save_var_dict = None
     del save_list_var
     del save_var_dict
-    print("[*] %s saved" % name)
+    print("[*] Model saved in npz_dict %s" % name)
 
-def load_npz_dict(path='', name='model.npz'):
-    """Load the parameters of a Model saved by tl.files.save_npz_dict().
+def load_and_assign_npz_dict(name='model.npz', sess=None):
+    """Restore the parameters saved by ``tl.files.save_npz_dict()``.
 
     Parameters
     ----------
-    path : a string
-        Folder path to .npz file.
-    name : a string or None
+    name : a string
         The name of the .npz file.
-
-    Returns
-    --------
-    params : list
-        A list of parameters in order.
+    sess : Session
     """
-    d = np.load( path+name )
-    saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
-    return saved_list_var
+    assert sess is not None
+    params = np.load(name)
+    if len(params.keys()) != len(set(params.keys())):
+        raise Exception("Duplication in model npz_dict %s" % name)
+    ops = list()
+    for key in params.keys():
+        try:
+            # tensor = tf.get_default_graph().get_tensor_by_name(key)
+            varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
+            if len(varlist) > 1:
+                raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
+            elif len(varlist) == 0:
+                raise KeyError
+            ops.append(varlist[0].assign(params[key]))
+            print("[*] params restored: %s" % key)
+        except KeyError:
+            print("[!] Warning: Tensor named %s not found in network." % key)
+
+    sess.run(ops)
+    print("[*] Model restored from npz_dict %s" % name)
+
+# def save_npz_dict(save_list=[], name='model.npz', sess=None):
+#     """Input parameters and the file name, save parameters as a dictionary into .npz file. Use tl.utils.load_npz_dict() to restore.
+#
+#     Parameters
+#     ----------
+#     save_list : a list
+#         Parameters want to be saved.
+#     name : a string or None
+#         The name of the .npz file.
+#     sess : None or Session
+#
+#     Notes
+#     -----
+#     This function tries to avoid a potential broadcasting error raised by numpy.
+#
+#     """
+#     ## save params into a list
+#     save_list_var = []
+#     if sess:
+#         save_list_var = sess.run(save_list)
+#     else:
+#         try:
+#             for k, value in enumerate(save_list):
+#                 save_list_var.append(value.eval())
+#         except:
+#             print(" Fail to save model, Hint: pass the session into this function, save_npz_dict(network.all_params, name='model.npz', sess=sess)")
+#     save_var_dict = {str(idx):val for idx, val in enumerate(save_list_var)}
+#     np.savez(name, **save_var_dict)
+#     save_list_var = None
+#     save_var_dict = None
+#     del save_list_var
+#     del save_var_dict
+#     print("[*] %s saved" % name)
+#
+# def load_npz_dict(path='', name='model.npz'):
+#     """Load the parameters of a Model saved by tl.files.save_npz_dict().
+#
+#     Parameters
+#     ----------
+#     path : a string
+#         Folder path to .npz file.
+#     name : a string or None
+#         The name of the .npz file.
+#
+#     Returns
+#     --------
+#     params : list
+#         A list of parameters in order.
+#     """
+#     d = np.load( path+name )
+#     saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
+#     return saved_list_var
+
+
 
 ## Load and save network ckpt
 def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=[], global_step=None, printable=False):
@@ -869,7 +954,7 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list == []:
         var_list = tf.global_variables()
 
-    print("[*] save %s ckpt n_params: %d" % (ckpt_file, len(var_list)))
+    print("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):
@@ -912,7 +997,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list == []:
         var_list = tf.global_variables()
 
-    print("[*] load %s ckpt n_params: %d" % (ckpt_file, len(var_list)))
+    print("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):

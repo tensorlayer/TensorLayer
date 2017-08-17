@@ -293,6 +293,7 @@ Layer list
 
    BatchNormLayer
    LocalResponseNormLayer
+   InstanceNormLayer
 
    TimeDistributedLayer
 
@@ -310,6 +311,8 @@ Layer list
 
    FlattenLayer
    ReshapeLayer
+   TransposeLayer
+   
    LambdaLayer
 
    ConcatLayer
@@ -556,6 +559,9 @@ Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LocalResponseNormLayer
 
+Instance Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNormLayer
 
 Time distributed layer
 ------------------------
@@ -636,6 +642,11 @@ Flatten layer
 Reshape layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: ReshapeLayer
+
+Transpose layer
+^^^^^^^^^^^^^^^^^
+.. autoclass:: TransposeLayer
+
 
 Lambda layer
 ---------------

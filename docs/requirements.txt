@@ -2,3 +2,4 @@ tensorflow
 numpydoc
 scipy
 scikit-image
+matplotlib

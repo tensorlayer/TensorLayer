@@ -1,4 +1,4 @@
-.. _more:
+.. _example:
 
 ============
 Example
@@ -9,6 +9,7 @@ Basics
 ============
 
  - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see `tutorial_mnist_simple.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
+ - Multi-layer perceptron (MNIST) classification using Iterator, see `method1 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `method2 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_.
 
 Computer Vision
 ==================
@@ -24,7 +25,7 @@ Computer Vision
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ can be connected to TensorLayer via SlimNetsLayer.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
  - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`_.
-
+ - Variational Autoencoder (VAE) for CelebA by `yzwxx <https://github.com/yzwxx/vae-celebA>`_.
 
 Natural Language Processing
 ==============================
@@ -33,6 +34,7 @@ Natural Language Processing
  - Word Embedding - Word2vec. Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py>`_.
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
+ - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`_.
 
 Adversarial Learning
 ========================
@@ -50,7 +52,7 @@ Reinforcement Learning
  - Asynchronous Policy Gradient using TensorDB  - Atari Ping Pong by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
  - AC for discrete action space - Cartpole, see `tutorial_cartpole_ac.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`_.
  - A3C for continuous action space - Bipedal Walker, see `tutorial_bipedalwalker_a3c*.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`_.
-
+ - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ - `Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`_ by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
 
 Applications
 ==============

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python
 # -*- coding: utf8 -*-
 
 import logging
@@ -31,19 +31,19 @@ def cross_entropy(output, target, name=None):
     - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
-    try: # old
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
-    except: # TF 1.0
-        assert name is not None, "Please give a unique name to tl.cost.cross_entropy for TF1.0+"
-        return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    # try: # old
+    #     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
+    # except: # TF 1.0
+    assert name is not None, "Please give a unique name to tl.cost.cross_entropy for TF1.0+"
+    return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
 
 def sigmoid_cross_entropy(output, target, name=None):
     """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
     """
-    try: # TF 1.0
-        return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
-    except:
-        return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, targets=target))
+    # try: # TF 1.0
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    # except:
+    #     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, targets=target))
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
@@ -298,10 +298,10 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):#, batch_size=1, num
     >>> targets = tf.placeholder(tf.int32, [batch_size, num_steps])
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
     """
-    try: # TF 1.0
-        sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
-    except:
-        sequence_loss_by_example_fn = tf.nn.seq2seq.sequence_loss_by_example
+    # try: # TF 1.0
+    sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
+    # except:
+    #     sequence_loss_by_example_fn = tf.nn.seq2seq.sequence_loss_by_example
 
     loss = sequence_loss_by_example_fn(
         [logits],
@@ -339,14 +339,14 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name) * weights
     #losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
 
-    try: ## TF1.0
-        loss = tf.divide(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
-                        tf.reduce_sum(weights),
-                        name="seq_loss_with_mask")
-    except: ## TF0.12
-        loss = tf.div(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
-                        tf.reduce_sum(weights),
-                        name="seq_loss_with_mask")
+    # try: ## TF1.0
+    loss = tf.divide(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
+                    tf.reduce_sum(weights),
+                    name="seq_loss_with_mask")
+    # except: ## TF0.12
+    #     loss = tf.div(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
+    #                     tf.reduce_sum(weights),
+    #                     name="seq_loss_with_mask")
     if return_details:
         return loss, losses, weights, targets
     else:
@@ -364,10 +364,10 @@ def cosine_similarity(v1, v2):
     -----------
     a tensor of [batch_size, ]
     """
-    try: ## TF1.0
-        cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
-    except: ## TF0.12
-        cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
+    # try: ## TF1.0
+    cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
+    # except: ## TF0.12
+    #     cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
     return cost
 
 
@@ -415,14 +415,14 @@ def li_regularizer(scale, scope=None):
         my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                            name='scale')
-        if tf.__version__ <= '0.12':
-            standard_ops_fn = standard_ops.mul
-        else:
-            standard_ops_fn = standard_ops.multiply
-            return standard_ops_fn(
-              my_scale,
-              standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
-              name=scope)
+        # if tf.__version__ <= '0.12':
+        #     standard_ops_fn = standard_ops.mul
+        # else:
+        standard_ops_fn = standard_ops.multiply
+        return standard_ops_fn(
+          my_scale,
+          standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
+          name=scope)
   return li
 
 
@@ -470,10 +470,10 @@ def lo_regularizer(scale, scope=None):
         my_scale = ops.convert_to_tensor(scale,
                                        dtype=weights.dtype.base_dtype,
                                        name='scale')
-        if tf.__version__ <= '0.12':
-            standard_ops_fn = standard_ops.mul
-        else:
-            standard_ops_fn = standard_ops.multiply
+        # if tf.__version__ <= '0.12':
+        #     standard_ops_fn = standard_ops.mul
+        # else:
+        standard_ops_fn = standard_ops.multiply
         return standard_ops_fn(
           my_scale,
           standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
@@ -523,10 +523,10 @@ def maxnorm_regularizer(scale=1.0, scope=None):
           my_scale = ops.convert_to_tensor(scale,
                                            dtype=weights.dtype.base_dtype,
                                            name='scale')
-          if tf.__version__ <= '0.12':
-              standard_ops_fn = standard_ops.mul
-          else:
-              standard_ops_fn = standard_ops.multiply
+        #   if tf.__version__ <= '0.12':
+        #       standard_ops_fn = standard_ops.mul
+        #   else:
+          standard_ops_fn = standard_ops.multiply
           return standard_ops_fn(my_scale, standard_ops.reduce_max(standard_ops.abs(weights)), name=scope)
   return mn
 

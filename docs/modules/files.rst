@@ -42,13 +42,14 @@ sake of cross-platform.
    load_wmt_en_fr_dataset
    load_flickr25k_dataset
    load_flickr1M_dataset
+   load_cyclegan_dataset
 
    save_npz
    load_npz
    assign_params
-   load_and_assign_npz   
+   load_and_assign_npz
    save_npz_dict
-   load_npz_dict
+   load_and_assign_npz_dict
    save_ckpt
    load_ckpt
 
@@ -109,6 +110,11 @@ Flickr1M
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_flickr1M_dataset
 
+CycleGAN
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: load_cyclegan_dataset
+
+
 
 Load and save network
 ----------------------
@@ -136,7 +142,7 @@ Save network into dict (npz)
 
 Load network from dict (npz)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: load_npz_dict
+.. autofunction:: load_and_assign_npz_dict
 
 
 Save network into ckpt

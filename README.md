@@ -84,9 +84,9 @@ y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
 # Define the neural network structure
 network = tl.layers.InputLayer(x, name='input')
 network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
+network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
 network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 
 # The softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
@@ -103,8 +103,7 @@ y_op = tf.argmax(tf.nn.softmax(y), 1)
 
 # Define the optimizer
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
-                            epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # Initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
@@ -138,7 +137,9 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 Examples can be found [in this repository](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [TensorLayer Topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
 
 ## Basics
- - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial\_mnist\_simple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py), [tutorial\_mlp_dropout1.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py) and [tutorial\_mlp_dropout2.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py).
+ - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial\_mnist\_simple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py).
+ - Multi-layer perceptron (MNIST) classification using Iterator, see [method1](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py) and [method2](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py).
+
 
 ## Computer Vision
  - Denoising Autoencoder (MNIST). A multi-layer perceptron implementation for MNIST classification task, see [tutorial_mnist.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py).
@@ -152,12 +153,14 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - More CNN implementations of [TF-Slim](https://github.com/tensorflow/models/tree/master/slim#pre-trained-models) can be connected to TensorLayer via SlimNetsLayer.
  - [Spatial Transformer Networks](https://arxiv.org/abs/1506.02025) by [zsdonghao](https://github.com/zsdonghao/Spatial-Transformer-Nets).
  - [U-Net for brain tumor segmentation](https://github.com/zsdonghao/u-net-brain-tumor) by [zsdonghao](https://github.com/zsdonghao/u-net-brain-tumor).
+ - Variational Autoencoder (VAE) for CelebA by [yzwxx](https://github.com/yzwxx/vae-celebA).
 
 ## Natural Language Processing
  - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see [tutorial_ptb_lstm.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm.py) and [tutorial\_ptb\_lstm\_state\_is_tuple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py).
  - Word Embedding - Word2vec. Train a word embedding matrix, see [tutorial\_word2vec_basic.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py).
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see [tutorial\_generate_text.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py).
  - Text Generation. Generates new text scripts, using LSTM network, see [tutorial\_generate_text.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py).
+ - Chinese Text Anti-Spam by [pakrchen](https://github.com/pakrchen/text-antispam).
 
 ## Adversarial Learning
 - DCGAN - Generating images by [Deep Convolutional Generative Adversarial Networks](http://arxiv.org/abs/1511.06434) by [zsdonghao](https://github.com/zsdonghao/dcgan).
@@ -172,6 +175,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - Asynchronous Policy Gradient using TensorDB - Atari Ping Pong by [nebulaV](https://github.com/akaraspt/tl_paper).
  - AC for discrete action space - Cartpole, see [tutorial\_cartpole_ac.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py).
  - A3C for continuous action space - Bipedal Walker, see [tutorial\_bipedalwalker_a3c*.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py).
+ - [DAGGER](https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf) - [Gym Torcs](https://github.com/ugo-nama-kun/gym_torcs) by [zsdonghao](https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs).
 
 
 ## Applications
