@@ -410,7 +410,7 @@ def simple_read_words(filename="nietzsche.txt"):
     --------
     The context in a string
     """
-    with open("nietzsche.txt", "r") as f:
+    with open(filename, "r") as f:
         words = f.read()
         return words
 
