@@ -108,23 +108,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     --------
     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=True)
 
-    Notes
-    ------
-    CIFAR-10 images can only be display without color change under uint8.
-    >>> X_train = np.asarray(X_train, dtype=np.uint8)
-    >>> plt.ion()
-    >>> fig = plt.figure(1232)
-    >>> count = 1
-    >>> for row in range(10):
-    >>>     for col in range(10):
-    >>>         a = fig.add_subplot(10, 10, count)
-    >>>         plt.imshow(X_train[count-1], interpolation='nearest')
-    >>>         plt.gca().xaxis.set_major_locator(plt.NullLocator())    # 不显示刻度(tick)
-    >>>         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    >>>         count = count + 1
-    >>> plt.draw()
-    >>> plt.pause(3)
-
     References
     ----------
     - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
