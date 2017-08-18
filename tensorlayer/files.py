@@ -96,7 +96,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     Parameters
     ----------
     shape : tupe
-        The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32*32*3)
+        The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32, 32, 3)
     plotable : True, False
         Whether to plot some image examples.
     second : int
