@@ -55,6 +55,8 @@ Some of the code in this package are borrowed from Keras.
    pt2map
    binary_dilation
    dilation
+   binary_erosion
+   erosion
 
    pad_sequences
    process_sequences
@@ -164,6 +166,15 @@ Binary dilation
 Greyscale dilation
 ^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: dilation
+
+Binary erosion
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: binary_erosion
+
+Greyscale erosion
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: erosion
+
 
 Sequence
 ---------

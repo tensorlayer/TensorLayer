@@ -1107,7 +1107,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
         - 2 Bi-quadratic
         - 3 Bi-cubic
         - 4 Bi-quartic
-        - 5 Bi-quintic   
+        - 5 Bi-quintic
 
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
@@ -1285,6 +1285,33 @@ def dilation(x, radius=3):
     return x
 
 
+def binary_erosion(x, radius=3):
+    """ Return binary morphological erosion of an image,
+    see `skimage.morphology.binary_erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_erosion>`_.
+
+    Parameters
+    -----------
+    x : 2D array image.
+    radius : int for the radius of mask.
+    """
+    from skimage.morphology import disk, dilation, binary_erosion
+    mask = disk(radius)
+    x = binary_erosion(x, selem=mask)
+    return x
+
+def erosion(x, radius=3):
+    """ Return greyscale morphological erosion of an image,
+    see `skimage.morphology.erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.erosion>`_.
+
+    Parameters
+    -----------
+    x : 2D array image.
+    radius : int for the radius of mask.
+    """
+    from skimage.morphology import disk, dilation, erosion
+    mask = disk(radius)
+    x = erosion(x, selem=mask)
+    return x
 
 
 ## Sequence
