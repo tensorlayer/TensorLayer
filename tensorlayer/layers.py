@@ -1976,14 +1976,14 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
         act = tf.identity
-    # if batch_size is None:
+    if batch_size is None:
     #     batch_size = tf.shape(net.outputs)[0]
-    fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
-    if fixed_batch_size.value:
-        batch_size = fixed_batch_size.value
-    else:
-        from tensorflow.python.ops import array_ops
-        batch_size = array_ops.shape(net.outputs)[0]
+        fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
+        if fixed_batch_size.value:
+            batch_size = fixed_batch_size.value
+        else:
+            from tensorflow.python.ops import array_ops
+            batch_size = array_ops.shape(net.outputs)[0]
     net = DeConv2dLayer(layer = net,
                     act = act,
                     shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs.get_shape()[-1])],
