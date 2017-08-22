@@ -176,7 +176,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - AC for discrete action space - Cartpole, see [tutorial\_cartpole_ac.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py).
  - A3C for continuous action space - Bipedal Walker, see [tutorial\_bipedalwalker_a3c*.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py).
  - [DAGGER](https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf) - [Gym Torcs](https://github.com/ugo-nama-kun/gym_torcs) by [zsdonghao](https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs).
-
+ - [TRPO](https://arxiv.org/abs/1502.05477) for continuous and discrete action space by [jjkke88](https://github.com/jjkke88/RL_toolbox).
 
 ## Applications
 - Image Captioning - Reimplementation of Google's [im2txt](https://github.com/tensorflow/models/tree/master/im2txt) by [zsdonghao](https://github.com/zsdonghao/Image-Captioning).
