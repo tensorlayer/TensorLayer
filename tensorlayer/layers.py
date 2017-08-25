@@ -259,10 +259,10 @@ class Layer(object):
         name ='layer'
     ):
         self.inputs = inputs
-        scope_name=tf.get_variable_scope().name
+        scope_name = tf.get_variable_scope().name
         if scope_name:
             name = scope_name + '/' + name
-        if (name in set_keep['_layers_name_list']) and name_reuse == False:
+        if (name in set_keep['_layers_name_list']) and set_keep['name_reuse'] == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
         else:
