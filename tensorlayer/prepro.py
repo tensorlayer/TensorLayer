@@ -811,7 +811,7 @@ def constant_multi():
     pass
 
 # resize
-def imresize(x, size=[100, 100], interp='bilinear', mode=None):
+def imresize(x, size=[100, 100], interp='‘bicubic', mode=None):
     """Resize an image by given output size and method. Warning, this function
     will rescale the value to [0, 255].
 
