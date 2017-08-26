@@ -28,11 +28,11 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 
 # Design Philosophy
 
-As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing tutorials for diverse neural networks. Later, it can be extended to address real-world problems by fine-tuning the training backends to exhibit fine-grain cognitive behaviours. In the end, it shall be able to serve in challenging production deployment.
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address real-world problems by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging production environments.
 
-TensorLayer is designed for beginning, intermediate and professional deep learning users. It has the following design goals inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
+TensorLayer is designed for beginning, intermediate and professional deep learning users. It has the following design goals:
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to high-level deep learning modules. A user may find it easy to bootstrap with TensorLayer, and then dive into module implementation if need. 
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to high-level deep learning modules. A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
 - *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., connected with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
 - *Flexibility* : TensorLayer provides access to the native APIs of TensorFlow. This helps users achieve flexible controls within the training engine.
 - *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can run on distributed yet heterogeneous platforms.
