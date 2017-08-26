@@ -15,7 +15,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data processing,  training and serving modules to help researchers and engineers build practical machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help researchers and engineers build practical machine learning workflows.  
 
 # What's New
 * Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
@@ -34,8 +34,8 @@ TensorLayer is designed for beginning, intermediate and professional deep learni
 
 - *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to high-level deep learning modules. 
 A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
+- *Transparency* : TensorLayer provides access to the native APIs of TensorFlow. This helps users achieve flexible controls within the training engine.
 - *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., connected with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
-- *Flexibility* : TensorLayer provides access to the native APIs of TensorFlow. This helps users achieve flexible controls within the training engine.
 - *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can run on distributed yet heterogeneous platforms.
 
 # Why TensorLayer
