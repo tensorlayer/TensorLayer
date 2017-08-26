@@ -15,7 +15,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data processing,  training and serving modules to help researchers and engineers build practical machine learning workflows.  
 
 # What's New
 * Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
@@ -28,22 +28,23 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 
 # Design Philosophy
 
-As deep learning researchers and engineers, we have been looking for a library that can serve for various scenarios. This library shall be easy for beginners by providing mass tutorials for diverse neural networks along with applications. Later, they shall be allowed to use the same library in solving actual problems by adopting native TensorFlow APIs in sophisticated algorithms. In the end, the same library can be used again for production deployment that may has strict requirements for performance.
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing tutorials for diverse neural networks. Later, it can be extended to address real-world problems by fine-tuning the training backends to exhibit fine-grain cognitive behaviours. In the end, it shall be able to serve in challenging production deployment.
 
-TensorLayer is designed for beginning, intermediate and professional deep learning users. Its architecture is largely inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
+TensorLayer is designed for beginning, intermediate and professional deep learning users. It has the following design goals inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow interface of TensorFlow to high-level deep learning modules. These modules come with detailed examples that can be deployed in minutes. A user may find it easy to bootstrap with TensorLayer, and then dive into module implementation if need. 
-- *Composability* : If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to develop ideas and allows easy module plug-in.
-- *Flexibility* : A deep learning workflow can require many careful tunings. TensorLayer provides the access to the native APIs of TensorFlow and therefore help users to achieve a flexible control within the engine.
-- *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers while offering native TensorFlow performance.
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to high-level deep learning modules. A user may find it easy to bootstrap with TensorLayer, and then dive into module implementation if need. 
+- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., connected with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
+- *Flexibility* : TensorLayer provides access to the native APIs of TensorFlow. This helps users achieve flexible controls within the training engine.
+- *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can run on distributed yet heterogeneous platforms.
 
 # Why TensorLayer
 
 A frequent question regarding TensorLayer is that why don't we use libraries like Keras and Tflearn. These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; but in turn mask the underlying engine from users. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
 
-Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. This noninvasive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
+Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. This non-intrusive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
 
-TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA, Linköping University and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, ReFULE4, Bloomberg and many others. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
+TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA, Linköping University and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, ReFULE4, Bloomberg and many others.
+
 
 # Installation
 
