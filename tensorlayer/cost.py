@@ -76,7 +76,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
 
 def mean_squared_error(output, target, is_mean=False):
-    """Return the TensorFlow expression of mean-squre-error of two distributions.
+    """Return the TensorFlow expression of mean-square-error of two distributions.
 
     Parameters
     ----------
@@ -102,7 +102,7 @@ def mean_squared_error(output, target, is_mean=False):
         return mse
 
 def normalized_mean_square_error(output, target):
-    """Return the TensorFlow expression of normalized mean-squre-error of two distributions.
+    """Return the TensorFlow expression of normalized mean-square-error of two distributions.
 
     Parameters
     ----------
