@@ -778,7 +778,7 @@ class ReconLayer(DenseLayer):
         print("     lambda_l2_w: %f" % lambda_l2_w)
         print("     learning_rate: %f" % learning_rate)
 
-        # Mean-squre-error i.e. quadratic-cost
+        # Mean-square-error i.e. quadratic-cost
         mse = tf.reduce_sum(tf.squared_difference(y, x_recon),  1)
         mse = tf.reduce_mean(mse)            # in theano: mse = ((y - x) ** 2 ).sum(axis=1).mean()
             # mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)),  1))
