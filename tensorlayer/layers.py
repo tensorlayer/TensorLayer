@@ -3638,9 +3638,9 @@ class ROIPoolingLayer(Layer):
     pool_width : int, size of the pooling sections.
     pool_width : int, size of the pooling sections.
 
-    References
+    Notes
     -----------
-    - From `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ .
+    - This implementation is from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ , please install it by following the instruction.
     """
     def __init__(
         self,
