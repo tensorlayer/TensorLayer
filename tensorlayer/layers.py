@@ -3640,7 +3640,8 @@ class ROIPoolingLayer(Layer):
 
     Notes
     -----------
-    - This implementation is from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ , please install it by following the instruction.
+    - This implementation is from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ .
+    - Please install it by the instruction `HERE <https://github.com/zsdonghao/tensorlayer/blob/master/tensorlayer/third_party/roi_pooling/README.md>`_.
     """
     def __init__(
         self,
