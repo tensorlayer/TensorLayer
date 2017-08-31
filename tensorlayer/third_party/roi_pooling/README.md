@@ -1,7 +1,7 @@
 # Hint from TensorLayer
-- From `https://github.com/deepsense-ai/roi-pooling` 
-- Date 31 Aug 2017
-- Remember to modify the `CUDA_LIB` in Makefile before `python setup.py install`.
+- This implementation is from `https://github.com/deepsense-ai/roi-pooling`, date: 31 Aug 2017.
+- To install this, you have to clone TensorLayer from Github instead of pip install.
+- Remember to modify the `CUDA_LIB` in Makefile before running `python setup.py install` in this folder.
 - Make sure `roi_pooling_example.py` and `test_roi_layer.py` is runable.
 
 
