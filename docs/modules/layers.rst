@@ -295,6 +295,8 @@ Layer list
    LocalResponseNormLayer
    InstanceNormLayer
 
+   ROIPoolingLayer
+
    TimeDistributedLayer
 
    RNNLayer
@@ -565,6 +567,15 @@ Local Response Normalization
 Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: InstanceNormLayer
+
+
+Object Detection
+-------------------
+
+ROI layer
+^^^^^^^^^^^
+.. autoclass:: ROIPoolingLayer
+
 
 Time distributed layer
 ------------------------
