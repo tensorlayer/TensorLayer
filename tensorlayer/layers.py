@@ -259,10 +259,10 @@ class Layer(object):
         name ='layer'
     ):
         self.inputs = inputs
-        scope_name=tf.get_variable_scope().name
+        scope_name = tf.get_variable_scope().name
         if scope_name:
             name = scope_name + '/' + name
-        if (name in set_keep['_layers_name_list']) and name_reuse == False:
+        if (name in set_keep['_layers_name_list']) and set_keep['name_reuse'] == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
         else:
@@ -778,7 +778,7 @@ class ReconLayer(DenseLayer):
         print("     lambda_l2_w: %f" % lambda_l2_w)
         print("     learning_rate: %f" % learning_rate)
 
-        # Mean-squre-error i.e. quadratic-cost
+        # Mean-square-error i.e. quadratic-cost
         mse = tf.reduce_sum(tf.squared_difference(y, x_recon),  1)
         mse = tf.reduce_mean(mse)            # in theano: mse = ((y - x) ** 2 ).sum(axis=1).mean()
             # mse = tf.reduce_mean(tf.reduce_sum(tf.square(tf.sub(y, x_recon)),  1))
@@ -1976,14 +1976,14 @@ def DeConv2d(net, n_out_channel = 32, filter_size=(3, 3),
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
         act = tf.identity
-    # if batch_size is None:
+    if batch_size is None:
     #     batch_size = tf.shape(net.outputs)[0]
-    fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
-    if fixed_batch_size.value:
-        batch_size = fixed_batch_size.value
-    else:
-        from tensorflow.python.ops import array_ops
-        batch_size = array_ops.shape(net.outputs)[0]
+        fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
+        if fixed_batch_size.value:
+            batch_size = fixed_batch_size.value
+        else:
+            from tensorflow.python.ops import array_ops
+            batch_size = array_ops.shape(net.outputs)[0]
     net = DeConv2dLayer(layer = net,
                     act = act,
                     shape = [filter_size[0], filter_size[1], n_out_channel, int(net.outputs.get_shape()[-1])],
@@ -3625,6 +3625,49 @@ class PadLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+## Object Detection
+class ROIPoolingLayer(Layer):
+    """
+    The :class:`ROIPoolingLayer` class is Region of interest pooling layer.
+
+    Parameters
+    -----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer, the feature maps on which to perform the pooling operation
+    rois : list of regions of interest in the format (feature map index, upper left, bottom right)
+    pool_width : int, size of the pooling sections.
+    pool_width : int, size of the pooling sections.
+
+    Notes
+    -----------
+    - This implementation is from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ .
+    - Please install it by the instruction `HERE <https://github.com/zsdonghao/tensorlayer/blob/master/tensorlayer/third_party/roi_pooling/README.md>`_.
+    """
+    def __init__(
+        self,
+        #inputs = None,
+        layer = None,
+        rois = None,
+        pool_height = 2,
+        pool_width = 2,
+        name = 'roipooling_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print ("  [TL] ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
+        try:
+            from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
+        except Exception as e:
+            print(e)
+            print("\nHINT: \n1. https://github.com/deepsense-ai/roi-pooling  \n2. tensorlayer/third_party/roi_pooling\n")
+        self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
+
 ## TimeDistributedLayer
 class TimeDistributedLayer(Layer):
     """
@@ -5141,6 +5184,39 @@ class ReshapeLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
 
+class TransposeLayer(Layer):
+    """
+    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    perm: list, a permutation of the dimensions
+        Similar with numpy.transpose.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+    def __init__(
+        self,
+        layer = None,
+        perm = None,
+        name = 'transpose',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        assert perm is not None
+
+        print("  [TL] TransposeLayer  %s: perm:%s" % (self.name, perm))
+        # with tf.variable_scope(name) as vs:
+        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        # self.all_params.extend( variables )
+
+## Lambda
 class LambdaLayer(Layer):
     """
     The :class:`LambdaLayer` class is a layer which is able to use the provided function.
@@ -5311,7 +5387,7 @@ class ElementwiseLayer(Layer):
         self.all_params = list_remove_repeat(self.all_params)
         # self.all_drop = list_remove_repeat(self.all_drop)
 
-# Extend
+## Extend
 class ExpandDimsLayer(Layer):
     """
     The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
@@ -5379,40 +5455,94 @@ class TileLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         # self.all_params.extend( variables )
 
-
-class TransposeLayer(Layer):
+## Stack Unstack
+class StackLayer(Layer):
     """
-    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+    The :class:`StackLayer` class is layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`_.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
+    layer : a list of :class:`Layer` instances
         The `Layer` class feeding into this layer.
-    perm: list, a permutation of the dimensions
-        Similar with numpy.transpose.
+    axis : an int
+        Dimension along which to concatenate.
     name : a string or None
         An optional name to attach to this layer.
     """
     def __init__(
         self,
-        layer = None,
-        perm = None,
-        name = 'transpose',
+        layer = [],
+        axis = 0,
+        name ='stack',
     ):
         Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        assert perm is not None
+        self.inputs = []
+        for l in layer:
+            self.inputs.append(l.outputs)
 
-        print("  [TL] TransposeLayer  %s: perm:%s" % (self.name, perm))
-        # with tf.variable_scope(name) as vs:
-        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend( [self.outputs] )
-        # self.all_params.extend( variables )
+        self.outputs = tf.stack(self.inputs, axis=axis, name=name)
 
+        print("  [TL] StackLayer %s: axis: %d" % (self.name, axis))
 
+        self.all_layers = list(layer[0].all_layers)
+        self.all_params = list(layer[0].all_params)
+        self.all_drop = dict(layer[0].all_drop)
+
+        for i in range(1, len(layer)):
+            self.all_layers.extend(list(layer[i].all_layers))
+            self.all_params.extend(list(layer[i].all_params))
+            self.all_drop.update(dict(layer[i].all_drop))
+
+        self.all_layers = list_remove_repeat(self.all_layers)
+        self.all_params = list_remove_repeat(self.all_params)
+
+def UnStackLayer(
+        layer = None,
+        num = None,
+        axis = 0,
+        name ='unstack',):
+    """
+    The `UnStackLayer` is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`_.
+
+    Parameters
+    ----------
+    layer : a list of :class:`Layer` instances
+        The `Layer` class feeding into this layer.
+    num : an int
+        The length of the dimension axis. Automatically inferred if None (the default).
+    axis : an int
+        Dimension along which to concatenate.
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Returns
+    --------
+    The list of layer objects unstacked from the input.
+    """
+    inputs = layer.outputs
+    with tf.variable_scope(name) as vs:
+        outputs = tf.unstack(inputs, num=num, axis=axis)
+
+    print("  [TL] UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (name, num, axis, len(outputs)))
+
+    net_new = []
+    scope_name = tf.get_variable_scope().name
+    if scope_name:
+        whole_name = scope_name + '/' + name
+    else:
+        whole_name = name
+
+    for i in range(len(outputs)):
+        n = Layer(None, name=whole_name+str(i))
+        n.outputs = outputs[i]
+        n.all_layers = list(layer.all_layers)
+        n.all_params = list(layer.all_params)
+        n.all_drop = dict(layer.all_drop)
+        n.all_layers.extend( [inputs] )
+
+        net_new.append(n)
+
+    return net_new
 
 ## TF-Slim layer
 class SlimNetsLayer(Layer):

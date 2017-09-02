@@ -852,8 +852,9 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
                 raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
             elif len(varlist) == 0:
                 raise KeyError
-            ops.append(varlist[0].assign(params[key]))
-            print("[*] params restored: %s" % key)
+            else:
+                ops.append(varlist[0].assign(params[key]))
+                print("[*] params restored: %s" % key)
         except KeyError:
             print("[!] Warning: Tensor named %s not found in network." % key)
 

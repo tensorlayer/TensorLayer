@@ -295,6 +295,8 @@ Layer list
    LocalResponseNormLayer
    InstanceNormLayer
 
+   ROIPoolingLayer
+
    TimeDistributedLayer
 
    RNNLayer
@@ -312,7 +314,7 @@ Layer list
    FlattenLayer
    ReshapeLayer
    TransposeLayer
-   
+
    LambdaLayer
 
    ConcatLayer
@@ -320,6 +322,9 @@ Layer list
 
    ExpandDimsLayer
    TileLayer
+
+   StackLayer
+   UnStackLayer
 
    EstimatorLayer
    SlimNetsLayer
@@ -563,6 +568,15 @@ Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: InstanceNormLayer
 
+
+Object Detection
+-------------------
+
+ROI layer
+^^^^^^^^^^^
+.. autoclass:: ROIPoolingLayer
+
+
 Time distributed layer
 ------------------------
 
@@ -673,14 +687,28 @@ Expand dims layer
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: ExpandDimsLayer
 
-
 Tile layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: TileLayer
 
+
+Stack layer
+-------------
+
+Stack layer
+^^^^^^^^^^^^^^
+.. autoclass:: StackLayer
+
+Unstack layer
+^^^^^^^^^^^^^^^
+.. autofunction:: UnStackLayer
+
+
 Estimator layer
 ------------------
 .. autoclass:: EstimatorLayer
+
+
 
 Connect TF-Slim
 ------------------

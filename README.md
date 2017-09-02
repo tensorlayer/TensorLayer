@@ -15,35 +15,47 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data pre-processing,  training, post-processing and serving modules that help researchers and engineers in building complex machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library based on [Google TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help researchers and engineers build practical machine learning workflows.  
 
 # What's New
+* Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
 * Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
 * Release [Flickr dataset loader](http://press.liacs.nl/mirflickr/mirdownload.html), see [load_flickr25k](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr25k) and [load_flickr1M](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#flickr1m).
 * Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
 * Release [Sub-pixel Convolution 2D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
-* Join [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw) Now.
-* [Attention Seq2seq](https://github.com/zsdonghao/tensorlayer/issues/164) help wanted.
+* Join [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA) Now.
 * You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 
 # Design Philosophy
 
-As deep learning researchers and engineers, we have been looking for a library that can serve for various scenarios. This library shall be easy for beginners by providing mass tutorials for diverse neural networks along with applications. Later, they shall be allowed to use the same library in solving actual problems by adopting native TensorFlow APIs in sophisticated algorithms. In the end, the same library can be used again for production deployment that may has strict requirements for performance.
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address real-world problems by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging production environments.
 
-TensorLayer is designed for beginning, intermediate and professional deep learning users. Its architecture is largely inspired by the [UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) :
+TensorLayer is designed for beginning, intermediate and professional deep learning users with following goals:
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow interface of TensorFlow to high-level deep learning modules. These modules come with detailed examples that can be deployed in minutes. A user may find it easy to bootstrap with TensorLayer, and then dive into module implementation if need. 
-- *Composability* : If possible, deep learning modules should be composed, not built. By offering connectors to [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras), TensorLayer can be used to glue existing pieces together. This yields a much better time to develop ideas and allows easy module plug-in.
-- *Flexibility* : A deep learning workflow can require many careful tunings. TensorLayer provides the access to the native APIs of TensorFlow and therefore help users to achieve a flexible control within the engine.
-- *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can easily run on heterogeneous platforms or multiple servers while offering native TensorFlow performance.
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to high-level deep learning modules. 
+A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
+- *Transparency* : TensorLayer provides access to the native APIs of TensorFlow. This helps users achieve flexible controls within the training engine.
+- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., connected with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
+- *Performance* : TensorLayer provides zero-cost compatibility for TensorFlow. It can run on distributed yet heterogeneous platforms.
 
 # Why TensorLayer
 
-A frequent question regarding TensorLayer is that why don't we use libraries like Keras and Tflearn. These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; but in turn mask the underlying engine from users. Though good for bootstrap, it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
+A frequent question regarding TensorLayer is that why don't we use libraries like Keras and Tflearn. 
+These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
+but in turn mask the underlying engine from users. Though good for bootstrap, 
+it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
 
-Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: neural network libraries shall be used interchangeably with the native engine. This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. This noninvasive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
+Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: 
+neural network libraries shall be used interchangeably with the native engine. 
+This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. 
+This non-intrusive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. 
+However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
 
-TensorLayer is in an active development stage and has received numerous contributions from an open community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, Tsinghua University, UCLA, Linköping University and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, ReFULE4, Bloomberg and many others. We are excited to hear about your thoughts and anticipate collaborations to promote its future. :)
+TensorLayer is in an active development stage and has received numerous contributions from an open community. 
+It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
+Tsinghua University, UCLA, Linköping University and etc., 
+as well as engineers from Google, Microsoft, Alibaba, Tencent, ReFULE4, Bloomberg and many others.
+
 
 # Installation
 
@@ -176,7 +188,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
  - AC for discrete action space - Cartpole, see [tutorial\_cartpole_ac.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py).
  - A3C for continuous action space - Bipedal Walker, see [tutorial\_bipedalwalker_a3c*.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py).
  - [DAGGER](https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf) - [Gym Torcs](https://github.com/ugo-nama-kun/gym_torcs) by [zsdonghao](https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs).
-
+ - [TRPO](https://arxiv.org/abs/1502.05477) for continuous and discrete action space by [jjkke88](https://github.com/jjkke88/RL_toolbox).
 
 ## Applications
 - Image Captioning - Reimplementation of Google's [im2txt](https://github.com/tensorflow/models/tree/master/im2txt) by [zsdonghao](https://github.com/zsdonghao/Image-Captioning).
@@ -191,7 +203,7 @@ Examples can be found [in this repository](https://github.com/zsdonghao/tensorla
 
 ## Notes
 * TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
-* If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjExMjMzODAwNjI0LTE0OTk4ODEzMjUtNmVjNjQ4ZjMzMw), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
+* If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
 [QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
