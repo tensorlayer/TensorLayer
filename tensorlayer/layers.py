@@ -100,7 +100,7 @@ def set_name_reuse(enable=True):
     ...                     embedding_size = embedding_size,
     ...                     name = 'e_embedding')
     >>>        network = tl.layers.DynamicRNNLayer(network,
-    ...                     cell_fn = tf.nn.rnn_cell.BasicLSTMCell,
+    ...                     cell_fn = tf.contrib.rnn.BasicLSTMCell,
     ...                     n_hidden = embedding_size,
     ...                     dropout = (0.7 if is_train else None),
     ...                     initializer = w_init,
@@ -3812,7 +3812,7 @@ class RNNLayer(Layer):
     >>> if is_training:
     >>>     network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
     >>> network = tl.layers.RNNLayer(network,
-    ...             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+    ...             cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
     ...             n_hidden=hidden_size,
     ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -3823,7 +3823,7 @@ class RNNLayer(Layer):
     >>> if is_training:
     >>>     network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
     >>> network = tl.layers.RNNLayer(network,
-    ...             cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+    ...             cell_fn=tf.contrib.rnn.BasicLSTMCell,
     ...             cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
     ...             n_hidden=hidden_size,
     ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
