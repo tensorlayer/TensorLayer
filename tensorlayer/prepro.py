@@ -763,7 +763,7 @@ def brightness(x, gamma=1, gain=1, is_random=False):
     x : numpy array
         An image with dimension of [row, col, channel] (default).
     gamma : float, small than 1 means brighter.
-        Non negative real number. Default value is 1.
+        Non negative real number. Default value is 1, smaller means brighter.
 
         - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
     gain : float
