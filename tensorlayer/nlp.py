@@ -44,9 +44,8 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
     Examples
     --------
-    >>> Setting num_skips=2, skip_window=1, use the right and left words.
-    >>> In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
-
+    - Setting num_skips=2, skip_window=1, use the right and left words.
+     In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
     >>> data = [1,2,3,4,5,6,7,8,9,10,11]
     >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     >>> print(batch)
@@ -109,10 +108,9 @@ def sample(a=[], temperature=1.0):
 
     Notes
     ------
-    No matter what is the temperature and input list, the sum of all probabilities will be one.
+    - No matter what is the temperature and input list, the sum of all probabilities will be one.
     Even if input list = [1, 100, 200], the sum of all probabilities will still be one.
-
-    For large vocabulary_size, choice a higher temperature to avoid error.
+    - For large vocabulary_size, choice a higher temperature to avoid error.
     """
     b = np.copy(a)
     try:
