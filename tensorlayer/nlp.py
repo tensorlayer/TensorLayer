@@ -425,7 +425,7 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
 
     Returns
     --------
-    The context in a list, split by space by default, and use ``'<eos>'`` to represent ``'\n'``,
+    The context in a list, split by space by default, and use ``'<eos>'`` to represent ``'\\n'``,
     e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
 
     Code References
