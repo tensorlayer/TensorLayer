@@ -413,13 +413,13 @@ def simple_read_words(filename="nietzsche.txt"):
         return words
 
 def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
-    """File to list format context. Note that, this script can not handle punctuations.
+    """ File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
-    ----------
+    -----------
     filename : a string
-        A file path (like .txt file),
+        A file path (like .txt file)
     replace : a list
         [original string, target string], to disable replace use ['', '']
 
