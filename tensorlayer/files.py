@@ -840,6 +840,10 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     sess : Session
     """
     assert sess is not None
+    if not os.path.exists(name):
+        print("[!] Load {} failed!".format(name))
+        return False
+
     params = np.load(name)
     if len(params.keys()) != len(set(params.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
@@ -847,7 +851,8 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     for key in params.keys():
         try:
             # tensor = tf.get_default_graph().get_tensor_by_name(key)
-            varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
+            # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
+            varlist = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=key)
             if len(varlist) > 1:
                 raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
             elif len(varlist) == 0:
