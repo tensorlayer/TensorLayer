@@ -4885,8 +4885,10 @@ class Seq2Seq(Layer):
         The initializer for initializing the parameters.
     encode_sequence_length : tensor for encoder sequence length, see :class:`DynamicRNNLayer` .
     decode_sequence_length : tensor for decoder sequence length, see :class:`DynamicRNNLayer` .
-    initial_state : None or forward RNN State
-        If None, initial_state is of encoder zero_state.
+    initial_state_encode : None or encoder.
+        If None, initial_state_encode is of zero state.
+    initial_state_decode : None or decoder.
+        If None, initial_state_decode is of the final state of encoder.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
     n_layer : an int, default is 1.
@@ -4936,7 +4938,7 @@ class Seq2Seq(Layer):
     ...             initializer = tf.random_uniform_initializer(-0.1, 0.1),
     ...             encode_sequence_length = retrieve_seq_length_op2(encode_seqs),
     ...             decode_sequence_length = retrieve_seq_length_op2(decode_seqs),
-    ...             initial_state = None,
+    ...             initial_state_encode = None,
     ...             dropout = None,
     ...             n_layer = 1,
     ...             return_seq_2d = True,
@@ -4965,7 +4967,8 @@ class Seq2Seq(Layer):
         initializer = tf.random_uniform_initializer(-0.1, 0.1),
         encode_sequence_length = None,
         decode_sequence_length = None,
-        initial_state = None,
+        initial_state_encode = None,
+        initial_state_decode = None,
         dropout = None,
         n_layer = 1,
         # return_last = False,
@@ -4991,7 +4994,7 @@ class Seq2Seq(Layer):
                      cell_fn = cell_fn,
                      cell_init_args = cell_init_args,
                      n_hidden = n_hidden,
-                     initial_state = initial_state,
+                     initial_state = initial_state_encode,
                      dropout = dropout,
                      n_layer = n_layer,
                      sequence_length = encode_sequence_length,
@@ -5004,7 +5007,7 @@ class Seq2Seq(Layer):
                      cell_fn = cell_fn,
                      cell_init_args = cell_init_args,
                      n_hidden = n_hidden,
-                     initial_state = network_encode.final_state,
+                     initial_state = (network_encode.final_state if initial_state_decode is None else initial_state_decode),
                      dropout = dropout,
                      n_layer = n_layer,
                      sequence_length = decode_sequence_length,
@@ -5016,7 +5019,8 @@ class Seq2Seq(Layer):
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # Final state
-        self.final_state = network_decode.final_state
+        self.final_state_encode = network_encode.final_state
+        self.final_state_encode = network_decode.final_state
 
         # self.sequence_length = sequence_length
         self.all_layers = list(network_decode.all_layers)
