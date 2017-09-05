@@ -4865,7 +4865,7 @@ class BiDynamicRNNLayer(Layer):
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a Simple :class:`DynamicRNNLayer` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`_.
-    See `Model <https://camo.githubusercontent.com/242210d7d0151cae91107ee63bff364a860db5dd/687474703a2f2f6936342e74696e797069632e636f6d2f333031333674652e706e67>`_
+    See `Model <https://camo.githubusercontent.com/9e88497fcdec5a9c716e0de5bc4b6d1793c6e23f/687474703a2f2f73757269796164656570616e2e6769746875622e696f2f696d672f736571327365712f73657132736571322e706e67>`_
     and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`_.
 
     - Please check the example `Chatbot in 200 lines of code <https://github.com/zsdonghao/seq2seq-chatbot>`_.
