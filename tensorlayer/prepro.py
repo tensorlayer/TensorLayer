@@ -1384,7 +1384,7 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
             x[idx, -len(trunc):] = trunc
         else:
             raise ValueError('Padding type "%s" not understood' % padding)
-    return x
+    return x.tolist()
 
 def remove_pad_sequences(sequences, pad_id=0):
     """Remove padding.
@@ -1496,6 +1496,7 @@ def sequences_add_end_id(sequences, end_id=888):
     for i in range(len(sequences)):
         sequences_out[i] = sequences[i] + [end_id]
     return sequences_out
+
 
 def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
     """Add special end token(id) in the end of each sequence.
