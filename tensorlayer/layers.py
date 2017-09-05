@@ -4885,10 +4885,10 @@ class Seq2Seq(Layer):
         The initializer for initializing the parameters.
     encode_sequence_length : tensor for encoder sequence length, see :class:`DynamicRNNLayer` .
     decode_sequence_length : tensor for decoder sequence length, see :class:`DynamicRNNLayer` .
-    initial_state_encode : None or encoder.
+    initial_state_encode : None or RNN state (from placeholder or other RNN).
         If None, initial_state_encode is of zero state.
-    initial_state_decode : None or decoder.
-        If None, initial_state_decode is of the final state of encoder.
+    initial_state_decode : None or RNN state (from placeholder or other RNN).
+        If None, initial_state_decode is of the final state of the RNN encoder.
     dropout : `tuple` of `float`: (input_keep_prob, output_keep_prob).
         The input and output keep probability.
     n_layer : an int, default is 1.
@@ -5020,7 +5020,7 @@ class Seq2Seq(Layer):
 
         # Final state
         self.final_state_encode = network_encode.final_state
-        self.final_state_encode = network_decode.final_state
+        self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
         self.all_layers = list(network_decode.all_layers)
