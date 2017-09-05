@@ -1386,6 +1386,33 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
             raise ValueError('Padding type "%s" not understood' % padding)
     return x
 
+def remove_pad_sequences(sequences, pad_id=0):
+    """Remove padding.
+
+    Parameters
+    -----------
+    sequences : list of list.
+    pad_id : int.
+
+    Examples
+    ----------
+    >>> sequences = [[2,3,4,0,0], [5,1,2,3,4,0,0,0], [4,5,0,2,4,0,0,0]]
+    >>> print(remove_pad_sequences(sequences, pad_id=0))
+    ... [[2, 3, 4], [5, 1, 2, 3, 4], [4, 5, 0, 2, 4]]
+    """
+    import copy
+    sequences_out = copy.deepcopy(sequences)
+    for i in range(len(sequences)):
+        # for j in range(len(sequences[i])):
+        #     if sequences[i][j] == pad_id:
+        #         sequences_out[i] = sequences_out[i][:j]
+        #         break
+        for j in range(1, len(sequences[i])):
+            if sequences[i][-j] != pad_id:
+                sequences_out[i] = sequences_out[i][0:-j+1]
+                break
+    return sequences_out
+
 def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_end_id=False):
     """Set all tokens(ids) after END token to the padding value, and then shorten (option) it to the maximum sequence length in this batch.
 
@@ -1449,6 +1476,62 @@ def sequences_add_start_id(sequences, start_id=0, remove_last=False):
             sequences_out[i] = [start_id] + sequences[i][:-1]
         else:
             sequences_out[i] = [start_id] + sequences[i]
+    return sequences_out
+
+def sequences_add_end_id(sequences, end_id=888):
+    """Add special end token(id) in the end of each sequence.
+
+    Parameters
+    -----------
+    sequences : list of list.
+    end_id : int.
+
+    Examples
+    ---------
+    >>> sequences = [[1,2,3],[4,5,6,7]]
+    >>> print(sequences_add_end_id(sequences, end_id=999))
+    ... [[1, 2, 3, 999], [4, 5, 6, 999]]
+    """
+    sequences_out = [[] for _ in range(len(sequences))]#[[]] * len(sequences)
+    for i in range(len(sequences)):
+        sequences_out[i] = sequences[i] + [end_id]
+    return sequences_out
+
+def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
+    """Add special end token(id) in the end of each sequence.
+
+    Parameters
+    -----------
+    sequences : list of list.
+    end_id : int.
+    pad_id : int.
+
+    Examples
+    ---------
+    >>> sequences = [[1,2,0,0], [1,2,3,0], [1,2,3,4]]
+    >>> print(sequences_add_end_id_after_pad(sequences, end_id=99, pad_id=0))
+    ... [[1, 2, 99, 0], [1, 2, 3, 99], [1, 2, 3, 4]]
+    """
+    # sequences_out = [[] for _ in range(len(sequences))]#[[]] * len(sequences)
+    import copy
+    sequences_out = copy.deepcopy(sequences)
+    # # add a pad to all
+    # for i in range(len(sequences)):
+    #     for j in range(len(sequences[i])):
+    #         sequences_out[i].append(pad_id)
+    # # pad -- > end
+    # max_len = 0
+    for i in range(len(sequences)):
+        for j in range(len(sequences[i])):
+            if sequences[i][j] == pad_id:
+                sequences_out[i][j] = end_id
+                # if j > max_len:
+                #     max_len = j
+                break
+    # # remove pad if too long
+    # for i in range(len(sequences)):
+    #     for j in range(len(sequences[i])):
+    #         sequences_out[i] = sequences_out[i][:max_len+1]
     return sequences_out
 
 def sequences_get_mask(sequences, pad_val=0):

@@ -4864,10 +4864,12 @@ class BiDynamicRNNLayer(Layer):
 # Seq2seq
 class Seq2Seq(Layer):
     """
-    The :class:`Seq2Seq` class is a simple :class:`DynamicRNNLayer` based Seq2seq layer,
-    both encoder and decoder are :class:`DynamicRNNLayer`, network details
-    see `Model <https://camo.githubusercontent.com/242210d7d0151cae91107ee63bff364a860db5dd/687474703a2f2f6936342e74696e797069632e636f6d2f333031333674652e706e67>`_
-    and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`_ .
+    The :class:`Seq2Seq` class is a Simple :class:`DynamicRNNLayer` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`_.
+    See `Model <https://camo.githubusercontent.com/242210d7d0151cae91107ee63bff364a860db5dd/687474703a2f2f6936342e74696e797069632e636f6d2f333031333674652e706e67>`_
+    and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`_.
+
+    - Please check the example `Twitter Chatbot <>`_.
+    - The Author recommends users to read the source code of :class:`DynamicRNNLayer` and :class:`Seq2Seq`.
 
     Parameters
     ----------
@@ -4904,9 +4906,23 @@ class Seq2Seq(Layer):
     ------------
     outputs : a tensor
         The output of RNN decoder.
+    initial_state_encode : a tensor or StateTuple
+        Initial state of RNN encoder.
+    initial_state_decode : a tensor or StateTuple
+        Initial state of RNN decoder.
+    final_state_encode : a tensor or StateTuple
+        Final state of RNN encoder.
+    final_state_decode : a tensor or StateTuple
+        Final state of RNN decoder.
 
-    final_state : a tensor or StateTuple
-        Final state of decoder, see :class:`DynamicRNNLayer` .
+    Notes
+    --------
+    - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
+    - input_seqs : ``['how', 'are', 'you', '<PAD_ID'>]``
+    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID'>]``
+    - target_seqs : ``['I', 'am', 'fine', '<END_ID', '<PAD_ID'>]``
+    - target_mask : ``[1, 1, 1, 1, 0]``
+    - related functions : tl.prepro <pad_sequences, precess_sequences, sequences_add_start_id, sequences_get_mask>
 
     Examples
     ----------
@@ -4948,14 +4964,7 @@ class Seq2Seq(Layer):
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
 
-    Notes
-    --------
-    - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
-    - input_seqs : ``['how', 'are', 'you', '<PAD_ID'>]``
-    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID'>]``
-    - target_seqs : ``['I', 'am', 'fine', '<END_ID']``
-    - target_mask : ``[1, 1, 1, 1, 0]``
-    - related functions : tl.prepro <pad_sequences, precess_sequences, sequences_add_start_id, sequences_get_mask>
+
     """
     def __init__(
         self,
@@ -5017,6 +5026,10 @@ class Seq2Seq(Layer):
             self.outputs = network_decode.outputs
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        # Initial state
+        self.initial_state_encode = network_encode.initial_state
+        self.initial_state_decode = network_decode.initial_state
 
         # Final state
         self.final_state_encode = network_encode.final_state
