@@ -67,11 +67,11 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
     ...            X_val=X_val, y_val=y_val, eval_train=False,
     ...            tensorboard=True, tensorboard_weight_histograms=True, tensorboard_graph_vis=True)
 
-    Note
+    Notes
     --------
-        If tensorboard=True, the global_variables_initializer will be run inside the fit function
-        in order to initalize the automatically generated summary nodes used for tensorboard visualization,
-        thus tf.global_variables_initializer().run() before the fit() call will be undefined.
+    If tensorboard=True, the global_variables_initializer will be run inside the fit function
+    in order to initalize the automatically generated summary nodes used for tensorboard visualization,
+    thus tf.global_variables_initializer().run() before the fit() call will be undefined.
     """
     assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
 
@@ -130,7 +130,7 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                     result = sess.run(merged, feed_dict=feed_dict)
                     train_writer.add_summary(result, tensorboard_train_index)
                     tensorboard_train_index += 1
-                if (X_val is not None) and (y_val is not None):                      
+                if (X_val is not None) and (y_val is not None):
                         for X_val_a, y_val_a in iterate.minibatches(
                                         X_val, y_val, batch_size, shuffle=True):
                                 dp_dict = dict_to_one( network.all_drop )    # disable noise layers

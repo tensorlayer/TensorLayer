@@ -201,7 +201,7 @@ class Vocabulary(object):
   end_word : Special word denoting sentence end.
   unk_word : Special word denoting unknown words.
 
-  Properties
+  Attributes
   ------------
   vocab : a dictionary from word to id.
   reverse_vocab : a list from id to word.
@@ -338,9 +338,9 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     --------
     - tl.nlp.SimpleVocabulary object.
 
-    Mores
-    -----
-    - ``tl.nlp.build_vocab()``
+    Notes
+    -------
+    - See more ``tl.nlp.build_vocab()``
 
     Examples
     --------
@@ -428,7 +428,7 @@ def read_words(filename="nietzsche.txt", replace = ['\n', '<eos>']):
     The context in a list, split by space by default, and use ``<eos>`` to represent ``\\n``,
     e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
 
-    Code References
+    References
     ---------------
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
@@ -520,7 +520,7 @@ def build_vocab(data):
     word_to_id : a dictionary
         mapping words to unique IDs. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
 
-    Code References
+    References
     ---------------
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
 
@@ -594,7 +594,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     >>> vocabulary_size = 50000
     >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size)
 
-    Code References
+    References
     -----------------
     - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
@@ -653,7 +653,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key = 'UNK'):
     >>> print(context)
     ... [b'hello', b'how', b'are', b'you']
 
-    Code References
+    References
     ---------------
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """

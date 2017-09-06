@@ -220,12 +220,9 @@ def load_ptb_dataset(path='data/ptb/'):
     --------
     >>> train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
 
-    Code References
+    References
     ---------------
     - ``tensorflow.models.rnn.ptb import reader``
-
-    Download Links
-    ---------------
     - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
     print("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
@@ -1213,7 +1210,7 @@ def natural_keys(text):
     >>> l.sort() # that is what we dont want
     ... ['im03.jpg', 'im05', 'im1.jpg', 'im11.jpg', 'im21.jpg', 'im31.jpg']
 
-    Reference
+    References
     ----------
     alist.sort(key=natural_keys) sorts in human order
     http://nedbatchelder.com/blog/200712/human_sorting.html

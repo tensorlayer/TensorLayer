@@ -410,7 +410,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     --------------
     nce_cost : a tensor
         The NCE loss.
@@ -543,7 +543,7 @@ class EmbeddingInputlayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     ------------
     outputs : a tensor
         The outputs of embedding layer.
@@ -3777,7 +3777,7 @@ class RNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     --------------
     outputs : a tensor
         The output of this RNN.
@@ -4044,7 +4044,7 @@ class BiRNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     --------------
     outputs : a tensor
         The output of this RNN.
@@ -4634,7 +4634,7 @@ class BiDynamicRNNLayer(Layer):
         The number of hidden units in the layer.
     initializer : initializer
         The initializer for initializing the parameters.
-    sequence_length : a tensor, array or None
+    sequence_length : a tensor, array or None.
         The sequence length of each row of input data, see ``Advanced Ops for Dynamic RNN``.
             - If None, it uses ``retrieve_seq_length_op`` to compute the sequence_length, i.e. when the features of padding (on right hand side) are all zeros.
             - If using word embedding, you may need to compute the sequence_length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
@@ -4659,7 +4659,7 @@ class BiDynamicRNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     -----------------------
     outputs : a tensor
         The output of this RNN.
@@ -4902,7 +4902,7 @@ class Seq2Seq(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     ------------
     outputs : a tensor
         The output of RNN decoder.
