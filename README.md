@@ -229,7 +229,7 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 If you find it is useful, please cite our paper in your project and paper.
 
 ```
-@article{TensorLayer2017,
+@article{haoTL2017,
 author = {Dong, Hao and Supratak, Akara and Mai, Luo and Liu, Fangde and Oehmichen, Axel and Yu, Simiao and Guo, Yike},
 journal = {ACM Multimedia},
 title = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},
