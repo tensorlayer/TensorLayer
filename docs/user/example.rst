@@ -26,6 +26,7 @@ Computer Vision
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
  - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`_.
  - Variational Autoencoder (VAE) for (CelebA) by `yzwxx <https://github.com/yzwxx/vae-celebA>`_.
+ - Image Captioning - Reimplementation of Google's `im2txt <https://github.com/tensorflow/models/tree/master/im2txt>`_ by `zsdonghao <https://github.com/zsdonghao/Image-Captioning>`_.
 
 Natural Language Processing
 ==============================
@@ -56,12 +57,6 @@ Reinforcement Learning
  - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ for (`Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`) by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
  - `TRPO <https://arxiv.org/abs/1502.05477>`_ for continuous and discrete action space by `jjkke88 <https://github.com/jjkke88/RL_toolbox>`_.
 
-Applications
-==============
-
-- Image Captioning - Reimplementation of Google's `im2txt <https://github.com/tensorflow/models/tree/master/im2txt>`_ by `zsdonghao <https://github.com/zsdonghao/Image-Captioning>`_.
-- A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`_.
-
 Special Examples
 =================
 
@@ -70,6 +65,7 @@ Special Examples
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/zsdonghao/tensorlayer/tree/master/example>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
  - Data augmentation with TensorLayer, see `tutorial_image_preprocess.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`_.
  - TensorDB by `fangde <https://github.com/fangde>`_ see `here <https://github.com/akaraspt/tl_paper>`_.
+ - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`_.
 
 ..
   Applications
