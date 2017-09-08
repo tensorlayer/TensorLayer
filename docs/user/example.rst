@@ -8,19 +8,19 @@ Example
 Basics
 ============
 
- - Multi-layer perceptron (MNIST). A multi-layer perceptron implementation for MNIST classification task, see `tutorial_mnist_simple.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
- - Multi-layer perceptron (MNIST) classification using Iterator, see `method1 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `method2 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_.
+ - Multi-layer perceptron (MNIST). Classification task, see `tutorial_mnist_simple.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
+ - Multi-layer perceptron (MNIST). Classification using Iterator, see `method1 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `method2 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_.
 
 Computer Vision
 ==================
 
- - Denoising Autoencoder (MNIST). A multi-layer perceptron implementation for MNIST classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
- - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A multi-layer perceptron implementation for MNIST classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
- - Convolutional Network (MNIST). A Convolutional neural network implementation for classifying MNIST dataset, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
- - Convolutional Network (CIFAR-10). A Convolutional neural network implementation for classifying CIFAR-10 dataset, see `tutorial_cifar10.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
- - VGG 16 (ImageNet). A Convolutional neural network implementation for classifying ImageNet dataset, see `tutorial_vgg16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg16.py>`_.
- - VGG 19 (ImageNet). A Convolutional neural network implementation for classifying ImageNet dataset, see `tutorial_vgg19.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg19.py>`_.
- - InceptionV3 (ImageNet). A Convolutional neural network implementation for classifying ImageNet dataset, see `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
+ - Denoising Autoencoder (MNIST). A MLP classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
+ - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
+ - Convolutional Network (MNIST). A CNN for classifying MNIST dataset, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
+ - Convolutional Network (CIFAR-10). A CNN for classifying CIFAR-10 dataset, see `tutorial_cifar10.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
+ - VGG 16 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_vgg16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg16.py>`_.
+ - VGG 19 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_vgg19.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg19.py>`_.
+ - InceptionV3 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`_.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ can be connected to TensorLayer via SlimNetsLayer.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
