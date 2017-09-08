@@ -16,11 +16,11 @@ Computer Vision
 
  - Denoising Autoencoder (MNIST). A MLP classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
  - Stacked Denoising Autoencoder and Fine-Tuning (MNIST). A MLP classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
- - Convolutional Network (MNIST). A CNN for classifying MNIST dataset, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
- - Convolutional Network (CIFAR-10). A CNN for classifying CIFAR-10 dataset, see `tutorial_cifar10.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
- - VGG 16 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_vgg16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg16.py>`_.
- - VGG 19 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_vgg19.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg19.py>`_.
- - InceptionV3 (ImageNet). A CNN for classifying ImageNet dataset, see `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
+ - Convolutional Network (MNIST). A CNN classification task, see `tutorial_mnist.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py>`_.
+ - Convolutional Network (CIFAR-10). A CNN classification task, see `tutorial_cifar10.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10.py>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
+ - VGG 16 (ImageNet). A CNN classification task, see `tutorial_vgg16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg16.py>`_.
+ - VGG 19 (ImageNet). A CNN classification task, see `tutorial_vgg19.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_vgg19.py>`_.
+ - InceptionV3 (ImageNet). A CNN classification task, see `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`_.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ can be connected to TensorLayer via SlimNetsLayer.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
