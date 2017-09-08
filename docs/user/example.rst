@@ -25,13 +25,13 @@ Computer Vision
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ can be connected to TensorLayer via SlimNetsLayer.
  - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
  - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`_.
- - Variational Autoencoder (VAE) for CelebA by `yzwxx <https://github.com/yzwxx/vae-celebA>`_.
+ - Variational Autoencoder (VAE) for (CelebA) by `yzwxx <https://github.com/yzwxx/vae-celebA>`_.
 
 Natural Language Processing
 ==============================
 
  - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see `tutorial_ptb_lstm_state_is_tuple.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_.
- - Word Embedding - Word2vec. Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py>`_.
+ - Word Embedding (Word2vec). Train a word embedding matrix, see `tutorial_word2vec_basic.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py>`_.
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`_.
@@ -39,7 +39,7 @@ Natural Language Processing
 
 Adversarial Learning
 ========================
- - DCGAN - Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`_ by `zsdonghao <https://github.com/zsdonghao/dcgan>`_.
+ - DCGAN (CelebA). Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`_ by `zsdonghao <https://github.com/zsdonghao/dcgan>`_.
  - `Generative Adversarial Text to Image Synthesis <https://github.com/zsdonghao/text-to-image>`_ by `zsdonghao <https://github.com/zsdonghao/text-to-image>`_.
  - `Unsupervised Image to Image Translation with Generative Adversarial Networks <https://github.com/zsdonghao/Unsup-Im2Im>`_ by `zsdonghao <https://github.com/zsdonghao/Unsup-Im2Im>`_.
  - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`_ by `zsdonghao <https://github.com/zsdonghao/SRGAN>`_.
@@ -47,13 +47,13 @@ Adversarial Learning
 Reinforcement Learning
 ==============================
 
- - Policy Gradient / Network - Atari Ping Pong, see `tutorial_atari_pong.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py>`_.
- - Deep Q-Network - Frozen lake, see `tutorial_frozenlake_dqn.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py>`_.
- - Q-Table learning algorithm - Frozen lake, see `tutorial_frozenlake_q_table.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py>`_.
- - Asynchronous Policy Gradient using TensorDB  - Atari Ping Pong by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
- - AC for discrete action space - Cartpole, see `tutorial_cartpole_ac.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`_.
- - A3C for continuous action space - Bipedal Walker, see `tutorial_bipedalwalker_a3c*.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`_.
- - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ - `Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`_ by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
+ - Policy Gradient / Network (Atari Ping Pong), see `tutorial_atari_pong.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py>`_.
+ - Deep Q-Network (Frozen lake), see `tutorial_frozenlake_dqn.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_dqn.py>`_.
+ - Q-Table learning algorithm (Frozen lake), see `tutorial_frozenlake_q_table.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_frozenlake_q_table.py>`_.
+ - Asynchronous Policy Gradient using TensorDB (Atari Ping Pong) by `nebulaV <https://github.com/akaraspt/tl_paper>`_.
+ - AC for discrete action space (Cartpole), see `tutorial_cartpole_ac.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cartpole_ac.py>`_.
+ - A3C for continuous action space (Bipedal Walker), see `tutorial_bipedalwalker_a3c*.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_bipedalwalker_a3c_continuous_action.py>`_.
+ - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ for (`Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`) by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
  - `TRPO <https://arxiv.org/abs/1502.05477>`_ for continuous and discrete action space by `jjkke88 <https://github.com/jjkke88/RL_toolbox>`_.
 
 Applications
