@@ -994,7 +994,7 @@ def channel_shift(x, intensity, is_random=False, channel_index=2):
     # x = np.rollaxis(x, 0, channel_index+1)
     # return x
 
-def channel_shift_multi(x, intensity, channel_index=2):
+def channel_shift_multi(x, intensity, is_random=False, channel_index=2):
     """Shift the channels of images with the same arguments, randomly or non-randomly, see `numpy.rollaxis <https://docs.scipy.org/doc/numpy/reference/generated/numpy.rollaxis.html>`_ .
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 

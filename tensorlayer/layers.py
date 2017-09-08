@@ -5973,9 +5973,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
         cell = cell_creator()
         if num_layers > 1:
           try: # TF1.0
-            cell = tf.contrib.rnn.MultiRNNCell([single_cell] * num_layers)
+            cell = tf.contrib.rnn.MultiRNNCell([cell] * num_layers)
           except:
-            cell = tf.nn.rnn_cell.MultiRNNCell([single_cell] * num_layers)
+            cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)
 
         # ============== Seq Decode Layer ============
         # The seq2seq function: we use embedding for the input and attention.
