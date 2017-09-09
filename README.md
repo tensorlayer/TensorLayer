@@ -25,7 +25,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Goog
 * Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
 * Release [Sub-pixel Convolution 2D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
 * Join [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA) Now.
-* You can now use TensorLayer with [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
+* You can now use TensorLayer with [TFSlim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras) together!
 
 # Design Philosophy
 
@@ -41,7 +41,7 @@ A user often find it easy to bootstrap with TensorLayer, and then dive into low-
 
 # Why TensorLayer
 
-A frequent question regarding TensorLayer is that why don't we use libraries like Keras and Tflearn. 
+A frequent question regarding TensorLayer is what is the different with other libraries like Keras, TFSlim and Tflearn. 
 These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
 but in turn mask the underlying engine from users. Though good for bootstrap, 
 it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
@@ -49,7 +49,7 @@ it becomes hard to tune and modify from the bottom, which is quite necessary in 
 Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: 
 neural network libraries shall be used interchangeably with the native engine. 
 This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. 
-This non-intrusive nature also makes it viable to consolidate with other TF's wrappers such as TF-Slim and Keras. 
+This non-intrusive nature also makes it viable to consolidate with other TF's wrappers. 
 However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
 
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
@@ -74,9 +74,9 @@ If you already had the pre-requisites ready (numpy, scipy, scikit-image, matplot
 The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. 
 
 We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our document.
-
 [Chinese documentation](http://tensorlayercn.readthedocs.io/zh/latest/) is also available.
 
+<!---
 # Your First Program
 
 The first program trains a multi-layer perception network to solve the MNIST problem. We use the well-known  [scikit](http://scikit-learn.org/stable/)-style functions such as ``fit()`` and ``test()``. The program is self-explained.
@@ -142,12 +142,12 @@ sess.close()
 We provide many helper functions (like `fit()` , `test()`) that is similar to Keras to facilitate your development; however, if you want to obtain a fine-grain control over the model or its training process, you can use TensorFlow’s methods like `sess.run()` in your program directly (`tutorial_mnist.py` provides more details about this). Many more DL and RL examples can be found [here](http://tensorlayer.readthedocs.io/en/latest/user/example.html).
 
 [Tricks to use TL](https://github.com/wagamamaz/tensorlayer-tricks) is also a good introduction to use TensorLayer.
-
+-->
 
 
 # Examples
 
-Examples can be found [in this repository](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [TensorLayer Topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
+Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [Github topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
 
 ## Basics
  - Multi-layer perceptron (MNIST) - Classification task, see [tutorial\_mnist\_simple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py).
