@@ -212,9 +212,6 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 [Tricks to use TL](https://github.com/wagamamaz/tensorlayer-tricks) is also a good introduction to use TensorLayer.
 -->
 
-# License
-
-TensorLayer is released under the Apache 2.0 license.
 
 # Contributions
 
@@ -239,3 +236,7 @@ url = {http://tensorlayer.org},
 year = {2017}
 }
 ```
+
+# License
+
+TensorLayer is released under the Apache 2.0 license.
