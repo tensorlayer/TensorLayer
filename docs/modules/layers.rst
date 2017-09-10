@@ -294,6 +294,7 @@ Layer list
    BatchNormLayer
    LocalResponseNormLayer
    InstanceNormLayer
+   LayerNormLayer
 
    ROIPoolingLayer
 
@@ -568,6 +569,9 @@ Instance Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: InstanceNormLayer
 
+Layer Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: LayerNormLayer
 
 Object Detection
 -------------------

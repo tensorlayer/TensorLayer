@@ -3538,6 +3538,56 @@ class InstanceNormLayer(Layer):
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
 
+class LayerNormLayer(Layer):
+    """
+    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    act : activation function
+        The function that is applied to the layer activations.
+    others : see  `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_
+    """
+    def __init__(self,
+                layer=None,
+                center=True,
+                scale=True,
+                act=tf.identity,
+                reuse=None,
+                variables_collections=None,
+                outputs_collections=None,
+                trainable=True,
+                begin_norm_axis=1,
+                begin_params_axis=-1,
+                name='layernorm'
+                ):
+
+        if tf.__version__ < "1.3":
+            raise Exception("Please use TF 1.3+")
+
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  [TL] LayerNormLayer %s: act:%s" %
+                            (self.name, act.__name__))
+        self.outputs = tf.contrib.layers.layer_norm(self.inputs,
+            center=center,
+            scale=scale,
+            activation_fn=act,
+            reuse=reuse,
+            variables_collections=variables_collections,
+            outputs_collections=outputs_collections,
+            trainable=trainable,
+            begin_norm_axis=begin_norm_axis,
+            begin_params_axis=begin_params_axis,
+            scope=name
+            )
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+
 
 ## Pooling layer
 class PoolLayer(Layer):
