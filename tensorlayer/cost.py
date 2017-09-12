@@ -94,11 +94,18 @@ def mean_squared_error(output, target, is_mean=False):
                 mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), 1))
             else:
                 mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
+        elif output.get_shape().ndims == 3: # [batch_size, w, h]
+            if is_mean:
+                mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2]))
+            else:
+                mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2]))
         elif output.get_shape().ndims == 4: # [batch_size, w, h, c]
             if is_mean:
                 mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2, 3]))
             else:
                 mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]))
+        else:
+            raise Exception("Unknow dimension")
         return mse
 
 def normalized_mean_square_error(output, target):
