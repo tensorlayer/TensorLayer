@@ -3571,23 +3571,26 @@ class LayerNormLayer(Layer):
         self.inputs = layer.outputs
         print("  [TL] LayerNormLayer %s: act:%s" %
                             (self.name, act.__name__))
-        self.outputs = tf.contrib.layers.layer_norm(self.inputs,
-            center=center,
-            scale=scale,
-            activation_fn=act,
-            reuse=reuse,
-            variables_collections=variables_collections,
-            outputs_collections=outputs_collections,
-            trainable=trainable,
-            begin_norm_axis=begin_norm_axis,
-            begin_params_axis=begin_params_axis,
-            scope=name
-            )
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.contrib.layers.layer_norm(self.inputs,
+                center=center,
+                scale=scale,
+                activation_fn=act,
+                reuse=reuse,
+                variables_collections=variables_collections,
+                outputs_collections=outputs_collections,
+                trainable=trainable,
+                begin_norm_axis=begin_norm_axis,
+                begin_params_axis=begin_params_axis,
+                scope=None,
+                )
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend( [self.outputs] )
-
+        self.all_params.extend( variables )
 
 ## Pooling layer
 class PoolLayer(Layer):
