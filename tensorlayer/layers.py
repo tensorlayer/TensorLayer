@@ -3582,7 +3582,7 @@ class LayerNormLayer(Layer):
                 trainable=trainable,
                 begin_norm_axis=begin_norm_axis,
                 begin_params_axis=begin_params_axis,
-                scope=None,
+                scope='var',
                 )
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
