@@ -17,9 +17,9 @@
 
 TensorLayer is a deep learning and reinforcement learning library based on [TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help both **researchers** and **engineers** build practical machine learning workflows.  
 
-- Useful links: [Documentation](http://tensorlayer.readthedocs.io) [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html) [Tricks](https://github.com/wagamamaz/tensorlayer-tricks) [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA) [中文文档](https://tensorlayercn.readthedocs.io)
+- Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Chinese Documentation](https://tensorlayercn.readthedocs.io)
 
-# What's New
+# News
 * [Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
 * [Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
 * [Aug] Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
@@ -106,9 +106,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 [QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
-
-
-# Design Philosophy
+# Design Principles
 
 As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address **real-world problems** by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging **production environments**.
 
@@ -118,9 +116,21 @@ TensorLayer is designed for beginning, intermediate and professional deep learni
 A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
 - *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., **connected with** [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
-- *Performance* : TensorLayer provides **zero-cost** compatibility for TensorFlow. It can run on distributed yet heterogeneous platforms.
+- *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
-# Why TensorLayer
+# Benchmark
+
+A common concern towards TensorLayer
+is performance overhead. We investigate this by running classic
+models using TensorLayer and native TensorFlow implementations
+on a Titan X Pascal GPU. The following are the training throughputs of respective tasks:
+
+|             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
+|-------------	|---------------	|---------------	|---------------	|
+| TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
+| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
+
+# Frequent Questions
 
 A frequent question regarding TensorLayer is what is the different with other libraries like Keras, TFSlim and Tflearn. 
 These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
@@ -131,7 +141,6 @@ Without compromise in simplicity, TensorLayer advocates a more flexible and comp
 neural network libraries shall be used interchangeably with the native engine. 
 This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. 
 This non-intrusive nature also makes it viable to consolidate with other TF's wrappers. 
-However, flexibility does not sacrifice performance. TensorLayer allows seamless distributed and heterogeneous deployment.
 
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
