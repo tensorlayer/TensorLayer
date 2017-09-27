@@ -20,6 +20,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Tens
 - Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Chinese Documentation](https://tensorlayercn.readthedocs.io)
 
 # News
+* [Sep] New example [Improved CycleGAN](https://github.com/luoxier/CycleGAN_Tensorlayer) with resize-convolution.
 * [Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
 * [Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
 * [Aug] Release [Sub-pixel Convolution 1D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-supixel-convolutional) for Audio Super-resolution.
@@ -79,6 +80,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 - DCGAN (CelebA). Generating images by [Deep Convolutional Generative Adversarial Networks](http://arxiv.org/abs/1511.06434) by [zsdonghao](https://github.com/zsdonghao/dcgan).
 - [Generative Adversarial Text to Image Synthesis](https://github.com/zsdonghao/text-to-image) by [zsdonghao](https://github.com/zsdonghao/text-to-image).
 - [Unsupervised Image to Image Translation with Generative Adversarial Networks](https://github.com/zsdonghao/Unsup-Im2Im) by [zsdonghao](https://github.com/zsdonghao/Unsup-Im2Im).
+- [Improved CycleGAN](https://github.com/luoxier/CycleGAN_Tensorlayer) with resize-convolution for unsupervised image-to-image translation by [luoxier](https://github.com/luoxier/CycleGAN_Tensorlayer)
 - [Super Resolution GAN](https://arxiv.org/abs/1609.04802) by [zsdonghao](https://github.com/zsdonghao/SRGAN).
 
 ## Reinforcement Learning
