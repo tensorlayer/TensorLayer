@@ -24,7 +24,7 @@ You will learn:
 1. How to combine TensorLayer and TF-Slim ?
 
 Introduction of Slim    : https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim
-Slim Pre-trained Models : https://github.com/tensorflow/models/tree/master/slim
+Slim Pre-trained Models : https://github.com/tensorflow/models/tree/master/research/slim
 
 With the help of SlimNetsLayer, all Slim Model can be combined into TensorLayer.
 All models in the following link, end with `return net, end_points`` are available.
@@ -114,7 +114,7 @@ network.print_params(False)
 
 saver = tf.train.Saver()
 if not os.path.isfile("inception_v3.ckpt"):
-    print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/slim#Pretrained")
+    print("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/research/slim")
     exit()
 try:    # TF12+
     saver.restore(sess, "./inception_v3.ckpt")
