@@ -635,6 +635,18 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
     im_test_A = load_image_from_folder(path+"/"+filename+"/testA")
     im_test_B = load_image_from_folder(path+"/"+filename+"/testB")
 
+    def if_2d_to_3d(images):         # [h, w] --> [h, w, 3]
+        for i in range(len(images)):
+            if len(images[i].shape) == 2:
+                images[i] = images[i][:, :, np.newaxis]
+                images[i] = np.tile(images[i], (1, 1, 3))
+        return images
+
+    im_train_A = if_2d_to_3d(im_train_A)
+    im_train_B = if_2d_to_3d(im_train_B)
+    im_test_A = if_2d_to_3d(im_test_A)
+    im_test_B = if_2d_to_3d(im_test_B)
+
     return im_train_A, im_train_B, im_test_A, im_test_B
 
 

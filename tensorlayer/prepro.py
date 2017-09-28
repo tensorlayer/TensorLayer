@@ -129,7 +129,10 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         t.join()
 
     if thread_count is None:
-        return np.asarray(results)
+        try:
+            return np.asarray(results)
+        except:     # if dim don't match
+            return results
     else:
         return np.concatenate(results)
 
