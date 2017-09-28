@@ -21,7 +21,7 @@
 """Example of Synced sequence input and output.
 Generate text using LSTM.
 
-Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/trump
+Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
 
 """
 
@@ -201,7 +201,7 @@ def main_lstm_generate_text():
     model_file_name = "model_generate_text.npz"
 
     ##===== Prepare Data
-    words = customized_read_words(input_fpath="trump_text.txt")
+    words = customized_read_words(input_fpath="data/trump/trump_text.txt")
 
     vocab = tl.nlp.create_vocab([words], word_counts_output_file='vocab.txt', min_word_count=1)
     vocab = tl.nlp.Vocabulary('vocab.txt', unk_word="<UNK>")

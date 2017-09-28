@@ -62,7 +62,7 @@ SEQ_FIR = cwd + '/data/cat_caption.json'
 VOC_FIR = cwd + '/vocab.txt'
 # read image captions from JSON
 with tf.gfile.FastGFile(SEQ_FIR, "r") as f:
-    caption_data = json.loads(str(f.read(), encoding = "utf-8"))
+    caption_data = json.loads(str(f.read()))#, encoding = "utf-8"))
 
 processed_capts, img_capts = [], []
 for idx in range(len(caption_data['images'])):
@@ -227,8 +227,8 @@ def distort_image(image, thread_id):
 #   image_summary("final_image", image)
 #
 #   # Rescale to [-1,1] instead of [0, 1]
-#   image = tf.sub(image, 0.5)
-#   image = tf.mul(image, 2.0)
+#   image = tf.subtract(image, 0.5)
+#   image = tf.multiply(image, 2.0)
 #   return image
 
 def prefetch_input_data(reader,
@@ -298,7 +298,8 @@ def prefetch_input_data(reader,
     enqueue_ops.append(values_queue.enqueue([value]))
   tf.train.queue_runner.add_queue_runner(tf.train.queue_runner.QueueRunner(
       values_queue, enqueue_ops))
-  tf.scalar_summary(
+
+  tf.summary.scalar(
       "queue/%s/fraction_of_%d_full" % (values_queue.name, capacity),
       tf.cast(values_queue.size(), tf.float32) * (1. / capacity))
 
@@ -356,8 +357,8 @@ else:
 if is_training:
     img = distort_image(img, thread_id=0)
 # Rescale to [-1, 1] instead of [0, 1]
-img = tf.sub(img, 0.5)
-img = tf.mul(img, 2.0)
+img = tf.subtract(img, 0.5)
+img = tf.multiply(img, 2.0)
 img_cap = sequence["image/caption"]
 img_cap_ids = sequence["image/caption_ids"]
 img_batch, img_cap_batch, img_cap_ids_batch = tf.train.batch([img, img_cap, img_cap_ids],   # Note: shuffle_batch doesn't support dynamic_pad
@@ -443,7 +444,7 @@ def batch_with_dynamic_pad(images_and_captions,
   enqueue_list = []
   for image, caption in images_and_captions:
     caption_length = tf.shape(caption)[0]
-    input_length = tf.expand_dims(tf.sub(caption_length, 1), 0)
+    input_length = tf.expand_dims(tf.subtract(caption_length, 1), 0)
 
     input_seq = tf.slice(caption, [0], input_length)
     target_seq = tf.slice(caption, [1], input_length)
@@ -459,9 +460,9 @@ def batch_with_dynamic_pad(images_and_captions,
 
   if add_summaries:
     lengths = tf.add(tf.reduce_sum(mask, 1), 1)
-    tf.scalar_summary("caption_length/batch_min", tf.reduce_min(lengths))
-    tf.scalar_summary("caption_length/batch_max", tf.reduce_max(lengths))
-    tf.scalar_summary("caption_length/batch_mean", tf.reduce_mean(lengths))
+    tf.summary.scalar("caption_length/batch_min", tf.reduce_min(lengths))
+    tf.summary.scalar("caption_length/batch_max", tf.reduce_max(lengths))
+    tf.summary.scalar("caption_length/batch_mean", tf.reduce_mean(lengths))
 
   return images, input_seqs, target_seqs, mask
 
