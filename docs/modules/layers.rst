@@ -340,6 +340,7 @@ Layer list
    clear_layers_name
    initialize_rnn_state
    list_remove_repeat
+   merge_networks
 
 
 Name Scope and Sharing Parameters
@@ -768,3 +769,7 @@ Initialize RNN state
 Remove repeated items in a list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: list_remove_repeat
+
+Merge networks attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: merge_networks

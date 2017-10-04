@@ -222,6 +222,36 @@ def list_remove_repeat(l=None):
     [l2.append(i) for i in l if not i in l2]
     return l2
 
+def merge_networks(layers=[]):
+    """Merge all parameters, layers and dropout probabilities to a :class:`Layer`.
+
+    Parameters
+    ----------
+    layer : list of :class:`Layer` instance
+        Merge all parameters, layers and dropout probabilities to the first layer in the list.
+
+    Examples
+    ---------
+    >>> n1 = ...
+    >>> n2 = ...
+    >>> n = merge_networks([n1, n2])
+    """
+    layer = layers[0]
+
+    all_params = []
+    all_layers = []
+    all_drop = {}
+    for l in layers:
+        all_params.extend(l.all_params)
+        all_layers.extend(l.all_layers)
+        all_drop.update(l.all_drop)
+
+    layer.all_params = list(all_params)
+    layer.all_layers = list(all_layers)
+    layer.all_drop = dict(all_drop)
+
+    return layer
+
 def initialize_global_variables(sess=None):
     """Excute ``sess.run(tf.global_variables_initializer())`` for TF12+ or
     sess.run(tf.initialize_all_variables()) for TF11.
@@ -4242,6 +4272,7 @@ class BiRNNLayer(Layer):
             )
 
             if return_last:
+                raise Exception("Do not support return_last at the moment.")
                 self.outputs = outputs[-1]
             else:
                 self.outputs = outputs
@@ -4880,6 +4911,7 @@ class BiDynamicRNNLayer(Layer):
                 outputs = tf.concat(2, outputs)
             if return_last:
                 # [batch_size, 2 * n_hidden]
+                raise Exception("Do not support return_last at the moment")
                 self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
