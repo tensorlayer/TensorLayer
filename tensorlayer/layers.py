@@ -666,7 +666,7 @@ class AverageEmbeddingInputlayer(Layer):
     References
     ------------
     - [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
-    - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011).`Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_ In Advances in Neural Information Processing Systems 24 (pp. 693–701).
+    - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011). `Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_ In NPIS 2011 (pp. 693–701).
     - [3] `TensorFlow Candidate Sampling <https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling>`_
     """
     def __init__(
