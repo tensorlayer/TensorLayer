@@ -38,6 +38,7 @@ Natural Language Processing
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`_.
  - `Chatbot in 200 lines of code <https://github.com/zsdonghao/seq2seq-chatbot>`_ for `Seq2Seq <http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq>`_.
+ - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py>`_ by `tomtung <https://github.com/tomtung>`_.
 
 Adversarial Learning
 ========================

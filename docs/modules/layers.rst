@@ -252,6 +252,7 @@ Layer list
    OneHotInputLayer
    Word2vecEmbeddingInputlayer
    EmbeddingInputlayer
+   AverageEmbeddingInputlayer
 
    DenseLayer
    ReconLayer
@@ -393,6 +394,10 @@ Word2vec layer for training
 Embedding Input layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: EmbeddingInputlayer
+
+Average Embedding Input layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AverageEmbeddingInputlayer
 
 Dense layer
 ------------

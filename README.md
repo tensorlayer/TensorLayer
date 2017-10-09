@@ -76,6 +76,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
  - Text Generation. Generates new text scripts, using LSTM network, see [tutorial\_generate_text.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py).
  - Chinese Text Anti-Spam by [pakrchen](https://github.com/pakrchen/text-antispam).
  - [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
+ - FastText Sentence Classification (IMDB), see [tutorial\_imdb\_fasttext.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py) by [tomtung](https://github.com/tomtung).
 
 ## Adversarial Learning
 - DCGAN (CelebA). Generating images by [Deep Convolutional Generative Adversarial Networks](http://arxiv.org/abs/1511.06434) by [zsdonghao](https://github.com/zsdonghao/dcgan).

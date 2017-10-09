@@ -234,7 +234,7 @@ def merge_networks(layers=[]):
     ---------
     >>> n1 = ...
     >>> n2 = ...
-    >>> n = merge_networks([n1, n2])
+    >>> n1 = merge_networks([n1, n2])
     """
     layer = layers[0]
 
@@ -648,6 +648,88 @@ class EmbeddingInputlayer(Layer):
 
         self.all_layers = [self.outputs]
         self.all_params = [embeddings]
+        self.all_drop = {}
+
+
+class AverageEmbeddingInputlayer(Layer):
+    def __init__(
+            self, inputs, vocabulary_size, embedding_size,
+            name='fasttext_layer',
+            embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            embeddings_kwargs={}):#None):
+        """The :class:`AverageEmbeddingInputlayer` class is for FastText Embedding for sentence classification, see `[1] <http://arxiv.org/abs/1607.01759>`_.
+
+        Parameters
+        ------------
+        inputs : input placeholder or tensor; zeros are paddings
+        vocabulary_size : an integer, the size of vocabulary
+        embedding_size : an integer, the dimension of embedding vectors
+        name : a string, the name of the layer
+        embeddings_initializer : the initializer of the embedding matrix
+        embeddings_kwargs : kwargs to get embedding matrix variable
+
+        References
+        ------------
+        - [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).
+            `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
+        - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011).
+            `Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_
+            In Advances in Neural Information Processing Systems 24 (pp. 693–701).
+        - [3] `TensorFlow Candidate Sampling <https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling>`_
+        """
+        super().__init__(name=name)
+
+        if inputs.get_shape().ndims != 2:
+            raise ValueError(
+                'inputs must be of size batch_size * batch_sentence_length')
+
+        self.inputs = inputs
+
+        print("  [TL] AverageEmbeddingInputLayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
+
+        with tf.variable_scope(name):
+            self.embeddings = tf.get_variable(
+                name='embeddings',
+                shape=(vocabulary_size, embedding_size),
+                initializer=embeddings_initializer,
+                # **(embeddings_kwargs or {}),
+                **embeddings_kwargs)
+
+            word_embeddings = tf.nn.embedding_lookup(
+                self.embeddings, self.inputs,
+                name='word_embeddings',
+            )
+
+            # Masks used to ignore padding words
+            masks = tf.expand_dims(
+                tf.sign(self.inputs),
+                axis=-1,
+                name='masks',
+            )
+            sum_word_embeddings = tf.reduce_sum(
+                word_embeddings * tf.cast(masks, tf.float32),
+                axis=1,
+            )
+
+            # Count number of non-padding words in each sentence
+            # Used to commute average word embeddings in sentences
+            sentence_lengths = tf.count_nonzero(
+                self.inputs,
+                axis=1,
+                keep_dims=True,
+                dtype=tf.float32,
+                name='sentence_lengths',
+            )
+
+            sentence_embeddings = tf.divide(
+                sum_word_embeddings,
+                sentence_lengths,
+                name='sentence_embeddings'
+            )
+
+        self.outputs = sentence_embeddings
+        self.all_layers = [self.outputs]
+        self.all_params = [self.embeddings]
         self.all_drop = {}
 
 ## Dense layer
