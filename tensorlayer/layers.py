@@ -652,31 +652,32 @@ class EmbeddingInputlayer(Layer):
 
 
 class AverageEmbeddingInputlayer(Layer):
+    """The :class:`AverageEmbeddingInputlayer` class is for FastText Embedding for sentence classification, see `[1] <http://arxiv.org/abs/1607.01759>`_.
+
+    Parameters
+    ------------
+    inputs : input placeholder or tensor; zeros are paddings
+    vocabulary_size : an integer, the size of vocabulary
+    embedding_size : an integer, the dimension of embedding vectors
+    name : a string, the name of the layer
+    embeddings_initializer : the initializer of the embedding matrix
+    embeddings_kwargs : kwargs to get embedding matrix variable
+
+    References
+    ------------
+    - [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).
+        `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
+    - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011).
+        `Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_
+        In Advances in Neural Information Processing Systems 24 (pp. 693–701).
+    - [3] `TensorFlow Candidate Sampling <https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling>`_
+    """
     def __init__(
             self, inputs, vocabulary_size, embedding_size,
             name='fasttext_layer',
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            embeddings_kwargs={}):#None):
-        """The :class:`AverageEmbeddingInputlayer` class is for FastText Embedding for sentence classification, see `[1] <http://arxiv.org/abs/1607.01759>`_.
-
-        Parameters
-        ------------
-        inputs : input placeholder or tensor; zeros are paddings
-        vocabulary_size : an integer, the size of vocabulary
-        embedding_size : an integer, the dimension of embedding vectors
-        name : a string, the name of the layer
-        embeddings_initializer : the initializer of the embedding matrix
-        embeddings_kwargs : kwargs to get embedding matrix variable
-
-        References
-        ------------
-        - [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).
-            `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
-        - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011).
-            `Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_
-            In Advances in Neural Information Processing Systems 24 (pp. 693–701).
-        - [3] `TensorFlow Candidate Sampling <https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling>`_
-        """
+            embeddings_kwargs={}
+    ):#None):
         super().__init__(name=name)
 
         if inputs.get_shape().ndims != 2:
