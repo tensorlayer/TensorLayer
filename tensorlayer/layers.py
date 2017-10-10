@@ -721,7 +721,7 @@ class AverageEmbeddingInputlayer(Layer):
 
             sentence_embeddings = tf.divide(
                 sum_word_embeddings,
-                sentence_lengths,
+                sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
                 name='sentence_embeddings'
             )
 
