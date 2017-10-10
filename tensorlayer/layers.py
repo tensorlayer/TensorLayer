@@ -659,7 +659,7 @@ class AverageEmbeddingInputLayer(Layer):
 
     Parameters
     ------------
-    inputs : input placeholder or tensor; zeros are paddings
+    inputs : input placeholder or tensor
     vocabulary_size : an integer, the size of vocabulary
     embedding_size : an integer, the dimension of embedding vectors
     pad_value : an integer, the scalar pad value used in inputs
