@@ -662,6 +662,7 @@ class AverageEmbeddingInputLayer(Layer):
     inputs : input placeholder or tensor; zeros are paddings
     vocabulary_size : an integer, the size of vocabulary
     embedding_size : an integer, the dimension of embedding vectors
+    pad_value : an integer, the scalar pad value used in inputs
     name : a string, the name of the layer
     embeddings_initializer : the initializer of the embedding matrix
     embeddings_kwargs : kwargs to get embedding matrix variable
@@ -673,6 +674,7 @@ class AverageEmbeddingInputLayer(Layer):
     """
     def __init__(
             self, inputs, vocabulary_size, embedding_size,
+            pad_value=0,
             name='average_embedding_layer',
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
             embeddings_kwargs=None,
@@ -699,22 +701,17 @@ class AverageEmbeddingInputLayer(Layer):
                 self.embeddings, self.inputs,
                 name='word_embeddings',
             )
-
-            # Masks used to ignore padding words
-            masks = tf.expand_dims(
-                tf.sign(self.inputs),
-                axis=-1,
-                name='masks',
+            # Zero out embeddings of pad value
+            masks = tf.not_equal(self.inputs, pad_value, name='masks')
+            word_embeddings *= tf.cast(
+                tf.expand_dims(masks, axis=-1),
+                tf.float32,
             )
-            sum_word_embeddings = tf.reduce_sum(
-                word_embeddings * tf.cast(masks, tf.float32),
-                axis=1,
-            )
+            sum_word_embeddings = tf.reduce_sum(word_embeddings, axis=1)
 
             # Count number of non-padding words in each sentence
-            # Used to commute average word embeddings in sentences
             sentence_lengths = tf.count_nonzero(
-                self.inputs,
+                masks,
                 axis=1,
                 keep_dims=True,
                 dtype=tf.float32,
