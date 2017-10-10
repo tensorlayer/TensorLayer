@@ -93,17 +93,17 @@ with tf.Session() as sess:
 
         prob = sess.run(
             sampling_prob,
-            feed_dict={t_states: x}
-        )
+            feed_dict={t_states: x})
+        
         # action. 1: STOP  2: UP  3: DOWN
         # action = np.random.choice([1,2,3], p=prob.flatten())
         action = tl.rein.choice_action_by_probs(prob.flatten(), [1,2,3])
 
         observation, reward, done, _ = env.step(action)
         reward_sum += reward
-        xs.append(x)            # all observations in a episode
-        ys.append(action - 1)   # all fake labels in a episode (action begins from 1, so minus 1)
-        rs.append(reward)       # all rewards in a episode
+        xs.append(x)            # all observations in an episode
+        ys.append(action - 1)   # all fake labels in an episode (action begins from 1, so minus 1)
+        rs.append(reward)       # all rewards in an episode
         
         if done:
             episode_number += 1
@@ -125,9 +125,7 @@ with tf.Session() as sess:
                     feed_dict={
                         t_states: epx,
                         t_actions: epy,
-                        t_discount_rewards: disR
-                    }
-                )
+                        t_discount_rewards: disR})
 
             if episode_number % (batch_size * 100) == 0:
                 tl.files.save_npz(network.all_params, name=model_file_name+'.npz')
