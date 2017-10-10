@@ -40,7 +40,7 @@ import numpy as np
 # in addition to unigrams.
 N_GRAM = 2
 
-# Size of vocabulary; less frequent works will be treated as "unknown"
+# Size of vocabulary; less frequent words will be treated as "unknown"
 VOCAB_SIZE = 100000
 
 # Number of buckets used for hashing n-grams
