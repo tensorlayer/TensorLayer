@@ -671,7 +671,7 @@ class AverageEmbeddingInputLayer(Layer):
     """
     def __init__(
             self, inputs, vocabulary_size, embedding_size,
-            name='fasttext_layer',
+            name='average_embedding_layer',
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
             embeddings_kwargs=None,
     ):
