@@ -651,7 +651,7 @@ class EmbeddingInputlayer(Layer):
         self.all_drop = {}
 
 
-class AverageEmbeddingInputlayer(Layer):
+class AverageEmbeddingInputLayer(Layer):
     """The :class:`AverageEmbeddingInputlayer` class is for FastText Embedding for sentence classification, see `[1] <http://arxiv.org/abs/1607.01759>`_.
 
     Parameters

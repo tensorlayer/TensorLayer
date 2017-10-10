@@ -71,7 +71,7 @@ class FastTextClassifier(object):
             tf.int32, shape=[None], name='labels')
 
         # Network structure
-        network = AverageEmbeddingInputlayer(
+        network = AverageEmbeddingInputLayer(
             self.inputs, self.vocab_size, self.embedding_size)
         self.network = DenseLayer(network, self.n_labels)
 
