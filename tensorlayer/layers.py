@@ -673,8 +673,8 @@ class AverageEmbeddingInputLayer(Layer):
             self, inputs, vocabulary_size, embedding_size,
             name='fasttext_layer',
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            embeddings_kwargs={}
-    ):#None):
+            embeddings_kwargs=None,
+    ):
         super().__init__(name=name)
 
         if inputs.get_shape().ndims != 2:
@@ -690,8 +690,8 @@ class AverageEmbeddingInputLayer(Layer):
                 name='embeddings',
                 shape=(vocabulary_size, embedding_size),
                 initializer=embeddings_initializer,
-                # **(embeddings_kwargs or {}),
-                **embeddings_kwargs)
+                **(embeddings_kwargs or {}),
+            )
 
             word_embeddings = tf.nn.embedding_lookup(
                 self.embeddings, self.inputs,
