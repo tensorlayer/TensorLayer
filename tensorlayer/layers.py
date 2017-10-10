@@ -652,7 +652,10 @@ class EmbeddingInputlayer(Layer):
 
 
 class AverageEmbeddingInputLayer(Layer):
-    """The :class:`AverageEmbeddingInputlayer` class is for FastText Embedding for sentence classification, see `[1] <http://arxiv.org/abs/1607.01759>`_.
+    """:class:`AverageEmbeddingInputlayer` averages over embeddings of inputs.
+
+    :class:`AverageEmbeddingInputlayer` can be used as the input layer
+    for models like DAN[1] and FastText[2].
 
     Parameters
     ------------
@@ -665,9 +668,8 @@ class AverageEmbeddingInputLayer(Layer):
 
     References
     ------------
-    - [1] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
-    - [2] Recht, B., Re, C., Wright, S., & Niu, F. (2011). `Hogwild: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent. <https://arxiv.org/abs/1106.5730>`_ In NPIS 2011 (pp. 693–701).
-    - [3] `TensorFlow Candidate Sampling <https://www.tensorflow.org/api_guides/python/nn#Candidate_Sampling>`_
+    - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
+    - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).`Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
     """
     def __init__(
             self, inputs, vocabulary_size, embedding_size,
