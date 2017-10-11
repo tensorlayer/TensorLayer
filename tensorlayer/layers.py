@@ -652,10 +652,7 @@ class EmbeddingInputlayer(Layer):
 
 
 class AverageEmbeddingInputLayer(Layer):
-    """:class:`AverageEmbeddingInputlayer` averages over embeddings of inputs.
-
-    :class:`AverageEmbeddingInputlayer` can be used as the input layer
-    for models like DAN[1] and FastText[2].
+    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs, can be used as the input layer for models like DAN[1] and FastText[2].
 
     Parameters
     ------------
