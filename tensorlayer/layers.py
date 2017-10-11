@@ -651,7 +651,7 @@ class EmbeddingInputlayer(Layer):
         self.all_drop = {}
 
 
-class AverageEmbeddingInputLayer(Layer):
+class AverageEmbeddingInputlayer(Layer):
     """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs, can be used as the input layer for models like DAN[1] and FastText[2].
 
     Parameters
@@ -684,7 +684,7 @@ class AverageEmbeddingInputLayer(Layer):
 
         self.inputs = inputs
 
-        print("  [TL] AverageEmbeddingInputLayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
+        print("  [TL] AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
