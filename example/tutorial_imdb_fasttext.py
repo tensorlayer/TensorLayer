@@ -87,6 +87,8 @@ class FastTextClassifier(object):
         self.prediction_probs = tf.nn.softmax(self.network.outputs)
         self.predictions = tf.argmax(
             self.network.outputs, axis=1, output_type=tf.int32)
+        # self.predictions = tf.cast(tf.argmax(             # for TF < 1.2
+        #     self.network.outputs, axis=1), tf.int32)
 
         # Evaluation
         are_predictions_correct = tf.equal(self.predictions, self.labels)

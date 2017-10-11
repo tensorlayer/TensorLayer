@@ -678,6 +678,9 @@ class AverageEmbeddingInputlayer(Layer):
     ):
         super().__init__(name=name)
 
+        # if embeddings_kwargs is None:
+        #     embeddings_kwargs = {}
+
         if inputs.get_shape().ndims != 2:
             raise ValueError(
                 'inputs must be of size batch_size * batch_sentence_length')
@@ -685,14 +688,14 @@ class AverageEmbeddingInputlayer(Layer):
         self.inputs = inputs
 
         print("  [TL] AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
-
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
                 name='embeddings',
                 shape=(vocabulary_size, embedding_size),
                 initializer=embeddings_initializer,
-                **(embeddings_kwargs or {}),
-            )
+                **(embeddings_kwargs or {})
+                # **embeddings_kwargs
+            ) # **(embeddings_kwargs or {}),
 
             word_embeddings = tf.nn.embedding_lookup(
                 self.embeddings, self.inputs,
