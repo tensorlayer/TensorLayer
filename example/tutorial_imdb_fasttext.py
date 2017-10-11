@@ -40,7 +40,7 @@ import numpy as np
 # in addition to unigrams.
 N_GRAM = 2
 
-# Size of vocabulary; less frequent works will be treated as "unknown"
+# Size of vocabulary; less frequent words will be treated as "unknown"
 VOCAB_SIZE = 100000
 
 # Number of buckets used for hashing n-grams
@@ -71,7 +71,7 @@ class FastTextClassifier(object):
             tf.int32, shape=[None], name='labels')
 
         # Network structure
-        network = AverageEmbeddingInputlayer(
+        network = AverageEmbeddingInputLayer(
             self.inputs, self.vocab_size, self.embedding_size)
         self.network = DenseLayer(network, self.n_labels)
 
