@@ -50,10 +50,10 @@ net = InputLayer(inputs, name='observation')
 net = DenseLayer(net, n_units=4, act=tf.identity,
     W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')
 y = net.outputs             # action-value / rewards of 4 actions
-predict = tf.argmax(y, 1)   # chose action greedily with reward
+predict = tf.argmax(y, 1)   # chose action greedily with reward. in Q-Learning, policy is greedy, so we use "max" to select the next action.
 
 ## Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.
-nextQ = tf.placeholder(shape=[1, 4],dtype=tf.float32)
+nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
 loss = tl.cost.mean_squared_error(nextQ, y, is_mean=False) # tf.reduce_sum(tf.square(nextQ - y))
 train_op = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(loss)
 
@@ -80,11 +80,15 @@ with tf.Session() as sess:
             ## Obtain the Q' values by feeding the new state through our network
             Q1 = sess.run(y, feed_dict={inputs : [to_one_hot(s1, 16)]})
             ## Obtain maxQ' and set our target value for chosen action.
-            maxQ1 = np.max(Q1)
+            maxQ1 = np.max(Q1)  # in Q-Learning, policy is greedy, so we use "max" to select the next action.
             targetQ = allQ
             targetQ[0, a[0]] = r + lambd * maxQ1
-            # targetQ[0, a[0]] = targetQ[0, a[0]] + alpha * (r + lambd * maxQ1 - targetQ[0, a[0]])
             ## Train network using target and predicted Q values
+            # it is not real target Q value, it is just an estimation,
+            # but check the Q-Learning update formula:
+            #    Q'(s,a) <- Q(s,a) + alpha(r + lambd * maxQ(s',a') - Q(s, a))
+            # minimizing |r + lambd * maxQ(s',a') - Q(s, a)|^2 equal forcing
+            #   Q'(s,a) ≈ Q(s,a)
             _ = sess.run(train_op, {inputs : [to_one_hot(s, 16)], nextQ : targetQ})
             rAll += r
             s = s1
