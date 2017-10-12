@@ -62,7 +62,7 @@ N_A = env.action_space.n
 print("observation dimension: %d" % N_F)                    # 4
 print("observation high: %s" % env.observation_space.high)  # [ 2.4 , inf , 0.41887902 , inf]
 print("observation low : %s" % env.observation_space.low)   # [-2.4 , -inf , -0.41887902 , -inf]
-print("num of actions: %d" % N_A)                           # 2 left or right
+print("num of actions: %d" % N_A)                           # 2 : left or right
 
 class Actor(object):
     def __init__(self, sess, n_features, n_actions, lr=0.001):
@@ -71,7 +71,7 @@ class Actor(object):
         self.a = tf.placeholder(tf.int32, [None], "act")
         self.td_error = tf.placeholder(tf.float32, [None], "td_error")  # TD_error
 
-        with tf.variable_scope('Actor'):
+        with tf.variable_scope('Actor'):    # Policy network
             n = InputLayer(self.s, name='in')
             n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
             # n = DenseLayer(n, n_units=10, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
@@ -86,7 +86,7 @@ class Actor(object):
         with tf.variable_scope('train'):
             self.train_op = tf.train.AdamOptimizer(lr).minimize(self.exp_v)
 
-        ## MorvanZhou
+        ## MorvanZhou (the same)
         # with tf.variable_scope('exp_v'):
         #     # log_prob = tf.log(self.acts_prob[0, self.a[0]])
         #     # self.exp_v = tf.reduce_mean(log_prob * self.td_error[0])  # advantage (TD_error) guided loss
@@ -100,11 +100,11 @@ class Actor(object):
         return exp_v
 
     def choose_action(self, s):
-        probs = self.sess.run(self.acts_prob, {self.s: [s]})   # get probabilities for all actions
+        probs = self.sess.run(self.acts_prob, {self.s: [s]})   # get probabilities of all actions
         return tl.rein.choice_action_by_probs(probs.ravel())
 
     def choose_action_greedy(self, s):
-        probs = self.sess.run(self.acts_prob, {self.s: [s]})   # get probabilities for all actions
+        probs = self.sess.run(self.acts_prob, {self.s: [s]})   # get probabilities of all actions
         return np.argmax(probs.ravel())
 
 class Critic(object):
@@ -114,7 +114,7 @@ class Critic(object):
         self.v_ = tf.placeholder(tf.float32, [1, 1], "v_next")
         self.r = tf.placeholder(tf.float32, None, 'r')
 
-        with tf.variable_scope('Critic'):
+        with tf.variable_scope('Critic'):   # we use Value-function here, not Action-Value-function
             n = InputLayer(self.s, name='in')
             n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
             # n = DenseLayer(n, n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
@@ -122,7 +122,7 @@ class Critic(object):
             self.v = n.outputs
 
         with tf.variable_scope('squared_TD_error'):
-            # TD_error = r + lambd * V(newS) - V(S)     Value-function, no Action-value-function
+            # TD_error = r + lambd * V(newS) - V(S)
             self.td_error = self.r + LAMBDA * self.v_ - self.v
             self.loss = tf.square(self.td_error)
 

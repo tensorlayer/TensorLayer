@@ -121,7 +121,7 @@ class ACNet(object):
 
     def _build_net(self):
         w_init = tf.contrib.layers.xavier_initializer()
-        with tf.variable_scope('actor'):
+        with tf.variable_scope('actor'):        # Policy network
             nn = InputLayer(self.s, name='in')
             nn = DenseLayer(nn, n_units=500, act=tf.nn.relu6, W_init=w_init, name='la')
             nn = DenseLayer(nn, n_units=300, act=tf.nn.relu6, W_init=w_init, name='la2')
@@ -130,7 +130,7 @@ class ACNet(object):
             self.mu = mu.outputs
             self.sigma = sigma.outputs
 
-        with tf.variable_scope('critic'):       # we use Value-function not Q-function here.
+        with tf.variable_scope('critic'):       # we use Value-function here, but not Q-function.
             nn = InputLayer(self.s, name='in')
             nn = DenseLayer(nn, n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')
             nn = DenseLayer(nn, n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')
