@@ -87,7 +87,7 @@ with tf.Session() as sess:
             # it is not real target Q value, it is just an estimation,
             # but check the Q-Learning update formula:
             #    Q'(s,a) <- Q(s,a) + alpha(r + lambd * maxQ(s',a') - Q(s, a))
-            # minimizing |r + lambd * maxQ(s',a') - Q(s, a)|^2 equal forcing
+            # minimizing |r + lambd * maxQ(s',a') - Q(s, a)|^2 equal to forcing
             #   Q'(s,a) ≈ Q(s,a)
             _ = sess.run(train_op, {inputs : [to_one_hot(s, 16)], nextQ : targetQ})
             rAll += r
