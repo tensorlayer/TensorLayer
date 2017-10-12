@@ -130,7 +130,7 @@ class ACNet(object):
             self.mu = mu.outputs
             self.sigma = sigma.outputs
 
-        with tf.variable_scope('critic'):
+        with tf.variable_scope('critic'):       # we use Value-function not Q-function here.
             nn = InputLayer(self.s, name='in')
             nn = DenseLayer(nn, n_units=500, act=tf.nn.relu6, W_init=w_init, name='lc')
             nn = DenseLayer(nn, n_units=200, act=tf.nn.relu6, W_init=w_init, name='lc2')
