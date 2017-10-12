@@ -7,7 +7,7 @@ A3C > DDPG (for continuous action space) > AC
 
 Advantage
 ----------
-Training faster and more stable than AC.
+Train faster and more stable than AC.
 
 Disadvantage
 -------------
