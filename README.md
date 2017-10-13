@@ -17,7 +17,7 @@
 
 TensorLayer is a deep learning and reinforcement learning library based on [TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help both **researchers** and **engineers** build practical machine learning workflows.  
 
-- Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Chinese Documentation](https://tensorlayercn.readthedocs.io)
+- Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc), [Chinese Documentation](https://tensorlayercn.readthedocs.io)
 
 # News
 * [Sep] New example [Improved CycleGAN](https://github.com/luoxier/CycleGAN_Tensorlayer) with resize-convolution.
