@@ -5189,7 +5189,7 @@ class Seq2Seq(Layer):
                      name = name+'_decode')
             self.outputs = network_decode.outputs
 
-            rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # Initial state
         self.initial_state_encode = network_encode.initial_state
@@ -5200,12 +5200,16 @@ class Seq2Seq(Layer):
         self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
-        self.all_layers = list(network_decode.all_layers)
-        self.all_params = list(network_decode.all_params)
-        self.all_drop = dict(network_decode.all_drop)
+        self.all_layers = list(network_encode.all_layers)
+        self.all_params = list(network_encode.all_params)
+        self.all_drop = dict(network_encode.all_drop)
+
+        self.all_layers.extend(list(network_decode.all_layers))
+        self.all_params.extend(list(network_decode.all_params))
+        self.all_drop.update(dict(network_decode.all_drop))
 
         self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( rnn_variables )
+        # self.all_params.extend( rnn_variables )
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
