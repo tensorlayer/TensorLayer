@@ -169,8 +169,8 @@ class Worker(object):
             s = self.env.reset()
             ep_r = 0
             while True:
-                ## visualize Workder_0 during training
-                if self.name == 'Workder_0' and total_step % 30 == 0:
+                ## visualize Worker_0 during training
+                if self.name == 'Worker_0' and total_step % 30 == 0:
                     self.env.render()
                 a = self.AC.choose_action(s)
                 s_, r, done, info = self.env.step(a)
