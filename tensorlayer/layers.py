@@ -5730,8 +5730,9 @@ def UnStackLayer(
 class SlimNetsLayer(Layer):
     """
     The :class:`SlimNetsLayer` class can be used to merge all TF-Slim nets into
-    TensorLayer. Model can be found in `slim-model <https://github.com/tensorflow/models/tree/master/slim#pre-trained-models>`_ , more about slim
-    see `slim-git <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim>`_ .
+    TensorLayer. Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`_,
+    see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
+
 
     Parameters
     ----------
@@ -5743,10 +5744,6 @@ class SlimNetsLayer(Layer):
         The arguments for the slim model.
     name : a string or None
         An optional name to attach to this layer.
-
-    Examples
-    --------
-    - see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer>`_
 
     Notes
     -----
@@ -5795,7 +5792,8 @@ class SlimNetsLayer(Layer):
 class KerasLayer(Layer):
     """
     The :class:`KerasLayer` class can be used to merge all Keras layers into
-    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_
+    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
 
     Parameters
     ----------
@@ -5833,7 +5831,8 @@ class KerasLayer(Layer):
 class EstimatorLayer(Layer):
     """
     The :class:`EstimatorLayer` class accepts ``model_fn`` that described the model.
-    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
 
     Parameters
     ----------
