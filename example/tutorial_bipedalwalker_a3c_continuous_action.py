@@ -149,6 +149,7 @@ class ACNet(object):
         return sess.run(self.A, {self.s: s})[0]
 
     def save_ckpt(self):
+        tl.files.exists_or_mkdir(self.scope)
         tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_params+self.c_params, save_dir=self.scope, printable=True)
 
     def load_ckpt(self):
@@ -255,18 +256,18 @@ if __name__ == "__main__":
     GLOBAL_AC.save_ckpt()
 
     ###============================= EVALUATION =============================###
-    env = gym.make(GAME)
-    GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
-    tl.layers.initialize_global_variables(sess)
-    GLOBAL_AC.load_ckpt()
-    while True:
-        s = env.reset()
-        rall = 0
-        while True:
-            env.render()
-            a = GLOBAL_AC.choose_action(s)
-            s, r, d, _ = env.step(a)
-            rall += r
-            if d:
-                print("reward", rall)
-                break
+    # env = gym.make(GAME)
+    # GLOBAL_AC = ACNet(GLOBAL_NET_SCOPE)
+    # tl.layers.initialize_global_variables(sess)
+    # GLOBAL_AC.load_ckpt()
+    # while True:
+    #     s = env.reset()
+    #     rall = 0
+    #     while True:
+    #         env.render()
+    #         a = GLOBAL_AC.choose_action(s)
+    #         s, r, d, _ = env.step(a)
+    #         rall += r
+    #         if d:
+    #             print("reward", rall)
+    #             break
