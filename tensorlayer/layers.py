@@ -5461,29 +5461,27 @@ class ConcatLayer(Layer):
         An optional name to attach to this layer.
 
     Examples
-    --------
+    ----------
     >>> sess = tf.InteractiveSession()
     >>> x = tf.placeholder(tf.float32, shape=[None, 784])
     >>> inputs = tl.layers.InputLayer(x, name='input_layer')
-    >>> net1 = tl.layers.DenseLayer(inputs, n_units=800, act = tf.nn.relu, name='relu1_1')
-    >>> net2 = tl.layers.DenseLayer(inputs, n_units=300, act = tf.nn.relu, name='relu2_1')
-    >>> net = tl.layers.ConcatLayer(layer = [net1, net2], name ='concat_layer')
+    >>> net1 = tl.layers.DenseLayer(inputs, 800, act=tf.nn.relu, name='relu1_1')
+    >>> net2 = tl.layers.DenseLayer(inputs, 300, act=tf.nn.relu, name='relu2_1')
+    >>> net = tl.layers.ConcatLayer([net1, net2], 1, name ='concat_layer')
     ...     [TL] InputLayer input_layer (?, 784)
-    ...     [TL] DenseLayer relu1_1: 800, <function relu at 0x1108e41e0>
-    ...     [TL] DenseLayer relu2_1: 300, <function relu at 0x1108e41e0>
+    ...     [TL] DenseLayer relu1_1: 800, relu
+    ...     [TL] DenseLayer relu2_1: 300, relu
     ...     [TL] ConcatLayer concat_layer, 1100
-    ...
     >>> tl.layers.initialize_global_variables(sess)
     >>> net.print_params()
     ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
-    ...     param 1: (800,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     param 1: (800,)     (mean: 0.000000, median: 0.000000  std: 0.000000)
     ...     param 2: (784, 300) (mean: 0.000000, median: -0.000048 std: 0.042947)
-    ...     param 3: (300,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    ...     param 3: (300,)     (mean: 0.000000, median: 0.000000  std: 0.000000)
     ...     num of params: 863500
     >>> net.print_layers()
-    ...     layer 0: Tensor("Relu:0", shape=(?, 800), dtype=float32)
+    ...     layer 0: ("Relu:0", shape=(?, 800), dtype=float32)
     ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
-    ...
     """
     def __init__(
         self,
