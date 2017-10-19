@@ -33,8 +33,6 @@ Note: Policy Network has been proved to be better than Q-Learning, see tutorial_
 env = gym.make('FrozenLake-v0')
 
 def to_one_hot(i, n_classes=None):
-    if n_classes is None:
-        raise Exception("n_classes must be an integer")
     a = np.zeros(n_classes, 'uint8')
     a[i] = 1
     return a
