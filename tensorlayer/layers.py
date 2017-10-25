@@ -106,7 +106,7 @@ def set_name_reuse(enable=True):
     ...                     initializer = w_init,
     ...                     sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
     ...                     return_last = True,
-    ...                     name = 'e_dynamicrnn',)
+    ...                     name = 'e_dynamicrnn')
     >>>    return network
     >>>
     >>> net_train = embed_seq(t_caption, is_train=True, reuse=False)
@@ -151,7 +151,7 @@ def print_all_variables(train_only=False):
         t_vars = tf.trainable_variables()
         print("  [*] printing trainable variables")
     else:
-        try: # TF1.0
+        try: # TF1.0+
             t_vars = tf.global_variables()
         except: # TF0.12
             t_vars = tf.all_variables()
@@ -171,7 +171,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
     if train_only:
         t_vars = tf.trainable_variables()
     else:
-        try: # TF1.0
+        try: # TF1.0+
             t_vars = tf.global_variables()
         except: # TF0.12
             t_vars = tf.all_variables()
@@ -199,7 +199,6 @@ def get_layers_with_name(network=None, name="", printable=False):
         if name in layer.name:
             layers.append(layer)
             if printable:
-                # print(layer.name)
                 print("  got {:3}: {:15}   {}".format(i, layer.name, str(layer.get_shape())))
                 i = i + 1
     return layers
