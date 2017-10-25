@@ -1,9 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
-
-
-
 import tensorflow as tf
 import os, re
 from sys import platform as _platform
@@ -225,7 +222,6 @@ class Vocabulary(object):
   >>> and 139109
   >>> is 97322
   """
-
   def __init__(self,
                vocab_file,
                start_word="<S>",
