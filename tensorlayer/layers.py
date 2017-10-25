@@ -1,8 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
-
-
 import tensorflow as tf
 import time
 from . import visualize
@@ -20,7 +18,6 @@ import inspect
 #     "Layer",
 #     "DenseLayer",
 # ]
-
 
 # set_keep = locals()
 set_keep = globals()
