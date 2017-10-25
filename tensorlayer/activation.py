@@ -1,8 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
-
-
 import tensorflow as tf
 
 def identity(x, name=None):
@@ -36,7 +34,6 @@ def ramp(x=None, v_min=0, v_max=1, name=None):
         if input(s) greater than v_max, change inputs to v_max
     name : a string or None
         An optional name to attach to this activation function.
-
 
     Returns
     --------
