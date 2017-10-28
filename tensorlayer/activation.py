@@ -76,6 +76,15 @@ lrelu = leaky_relu
 
 def swish(x, name='swish'):
     """The Swish function, see `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`_.
+
+    Parameters
+    ----------
+    x : a tensor input
+        input(s)
+
+    Returns
+    --------
+    A `Tensor` with the same type as `x`.
     """
     with tf.name_scope(name) as scope:
         x =  tf.nn.sigmoid(x) * x
