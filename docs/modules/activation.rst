@@ -22,8 +22,6 @@ For more complex activation, TensorFlow API will be required.
   def double_activation(x):
       return x * 2
 
-
-
 .. automodule:: tensorlayer.activation
 
 .. autosummary::
@@ -31,6 +29,7 @@ For more complex activation, TensorFlow API will be required.
    identity
    ramp
    leaky_relu
+   swish
    pixel_wise_softmax
 
 Identity
@@ -44,6 +43,10 @@ Ramp
 Leaky Relu
 ------------
 .. autofunction:: leaky_relu
+
+Swish
+------------
+.. autofunction:: swish
 
 Pixel-wise Softmax
 --------------------

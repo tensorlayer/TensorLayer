@@ -11,7 +11,6 @@ def identity(x, name=None):
     x : a tensor input
         input(s)
 
-
     Returns
     --------
     A `Tensor` with the same type as `x`.
@@ -73,6 +72,14 @@ def leaky_relu(x=None, alpha=0.1, name="LeakyReLU"):
 
 #Shortcut
 lrelu = leaky_relu
+
+
+def swish(x, name='swish'):
+    """The Swish function, see `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`_.
+    """
+    with tf.name_scope(name) as scope:
+        x =  tf.nn.sigmoid(x) * x
+    return x
 
 def pixel_wise_softmax(output, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
