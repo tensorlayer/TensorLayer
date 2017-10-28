@@ -20,6 +20,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Tens
 - Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc), [Chinese Documentation](https://tensorlayercn.readthedocs.io)
 
 # News
+* [Oct] We won the open source software award @ACM MM 2017, previous DL software winner is Caffe.
 * [Sep] New example [Improved CycleGAN](https://github.com/luoxier/CycleGAN_Tensorlayer) with resize-convolution.
 * [Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
 * [Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
