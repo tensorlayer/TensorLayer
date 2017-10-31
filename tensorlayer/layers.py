@@ -1897,6 +1897,7 @@ class SeparableConv2dLayer(Layer):# Untested
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
 
+
 ## Initializers for Convuolutional Layers
 def deconv2d_bilinear_upsampling_initializer(shape):
     """Returns initializer that can be passed to DeConv2dLayer to initalize the
