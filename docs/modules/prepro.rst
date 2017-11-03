@@ -32,8 +32,11 @@ Some of the code in this package are borrowed from Keras.
 
    zoom
    zoom_multi
+
    brightness
    brightness_multi
+
+   illumination
 
    imresize
 
@@ -66,8 +69,6 @@ Some of the code in this package are borrowed from Keras.
    sequences_add_end_id_after_pad
    sequences_get_mask
 
-   distorted_images
-   crop_central_whiten_images
 
 
 Threading
@@ -125,6 +126,10 @@ Brightness
 ^^^^^^^^^^^^
 .. autofunction:: brightness
 .. autofunction:: brightness_multi
+
+Illumination
+^^^^^^^^^^^^^^
+.. autofunction:: illumination
 
 Resize
 ^^^^^^^^^^^^
@@ -213,13 +218,3 @@ Add End ID after pad
 Get Mask
 ^^^^^^^^^
 .. autofunction:: sequences_get_mask
-
-
-Tensor Opt
-------------
-
-.. note::
-  These functions will be deprecated, see ``tutorial_cifar10_tfrecord.py`` for new information.
-
-.. autofunction:: distorted_images
-.. autofunction:: crop_central_whiten_images
