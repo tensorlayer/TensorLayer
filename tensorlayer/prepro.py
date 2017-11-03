@@ -1722,7 +1722,50 @@ def crop_central_whiten_images(images=None, height=24, width=24):
     return result
 
 
+def illumination(x, gamma = 1, contrast=1, saturation=1, is_random=False):
+    """perform illumination augmentation for a single image, randomly or non-randomly.
 
+    Parameters
+    -----------
+    x : numpy array 
+        an image with dimension of [row, col, channel] (default).
+    gamma : change brightness
+    contrast : change contrast
+    saturation : change saturation
+    is_random : whether the parameters are randomly set
+    """
+    from PIL import Image, ImageEnhance
+
+    if is_random:
+        ## random change brightness  # small --> brighter
+        illum_settings = np.random.randint(0,3) # 0-brighter, 1-darker, 2 keep normal
+
+        if illum_settings == 0: # brighter
+            gamma = np.random.uniform(.5, 1.0)
+        elif illum_settings == 1: # darker
+            gamma = np.random.uniform(1.0, 5.0)
+        else:
+            gamma = 1
+        im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
+
+        # print("using contrast and saturation")
+        image = Image.fromarray(im_) # array -> PIL
+        contrast_adjust = ImageEnhance.Contrast(image)
+        image = contrast_adjust.enhance(np.random.uniform(0.3,0.9))
+
+        saturation_adjust = ImageEnhance.Color(image)
+        image = saturation_adjust.enhance(np.random.uniform(0.7,1.0))
+        im_ = np.array(image) # PIL -> array
+    else:
+        im_ = brightness(im_, gamma=gamma, gain=1, is_random=False)
+        image = Image.fromarray(im_) # array -> PIL
+        contrast_adjust = ImageEnhance.Contrast(image)
+        image = contrast_adjust.enhance(contrast)
+
+        saturation_adjust = ImageEnhance.Color(image)
+        image = saturation_adjust.enhance(saturation)
+        im_ = np.array(image) # PIL -> array
+    return np.asarray(im_)
 
 
 
