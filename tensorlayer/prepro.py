@@ -838,7 +838,7 @@ def illumination(x, gamma=1, contrast=1, saturation=1, is_random=False):
         image = saturation_adjust.enhance(np.random.uniform(0.7,1.0))
         im_ = np.array(image) # PIL -> array
     else:
-        im_ = brightness(im_, gamma=gamma, gain=1, is_random=False)
+        im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
         image = Image.fromarray(im_) # array -> PIL
         contrast_adjust = ImageEnhance.Contrast(image)
         image = contrast_adjust.enhance(contrast)
