@@ -147,7 +147,7 @@ This non-intrusive nature also makes it viable to consolidate with other TF's wr
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
-as well as engineers from Google, Microsoft, Alibaba, Tencent, ReFULE4, Bloomberg and many others.
+as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg and many others.
 
 # Documentation
 
