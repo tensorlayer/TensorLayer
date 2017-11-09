@@ -223,9 +223,9 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
     ----------
     x : numpy array
         An image with dimension of [row, col, channel] (default).
-    wrg : float
-        Size of weight.
-    hrg : float
+    wrg : int
+        Size of width.
+    hrg : int
         Size of height.
     is_random : boolean, default False
         If True, randomly crop, else central crop.
