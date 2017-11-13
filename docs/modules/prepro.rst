@@ -25,6 +25,8 @@ Some of the code in this package are borrowed from Keras.
 
    shear
    shear_multi
+   shear2
+   shear_multi2
    swirl
    swirl_multi
    elastic_transform
@@ -106,6 +108,11 @@ Shear
 ^^^^^^^^^
 .. autofunction:: shear
 .. autofunction:: shear_multi
+
+Shear V2
+^^^^^^^^^^^
+.. autofunction:: shear2
+.. autofunction:: shear_multi2
 
 Swirl
 ^^^^^^^^^
