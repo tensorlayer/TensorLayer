@@ -430,39 +430,39 @@ Dropconnect + Dense layer
 Convolutional layer (Pro)
 --------------------------
 
-1D Convolutional layer
+1D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Conv1dLayer
 
-2D Convolutional layer
+2D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Conv2dLayer
 
-2D Deconvolutional layer
+2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DeConv2dLayer
 
-3D Convolutional layer
+3D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Conv3dLayer
 
-3D Deconvolutional layer
+3D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DeConv3dLayer
 
-2D UpSampling layer
+2D UpSampling
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: UpSampling2dLayer
 
-2D DownSampling layer
+2D DownSampling
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DownSampling2dLayer
 
-1D Atrous convolutional layer
+1D Atrous convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: AtrousConv1dLayer
 
-2D Atrous convolutional layer
+2D Atrous convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AtrousConv2dLayer
 
@@ -474,54 +474,54 @@ For users don't familiar with TensorFlow, the following simplified functions may
 We will provide more simplified functions later, but if you are good at TensorFlow, the professional
 APIs may better for you.
 
-1D Convolutional layer
+1D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: Conv1d
 
-2D Convolutional layer
+2D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: Conv2d
 
-2D Deconvolutional layer
+2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: DeConv2d
 
-1D Max pooling layer
+1D Max pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MaxPool1d
 
-1D Mean pooling layer
+1D Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool1d
 
-2D Max pooling layer
+2D Max pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MaxPool2d
 
-2D Mean pooling layer
+2D Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool2d
 
-3D Max pooling layer
+3D Max pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MaxPool3d
 
-3D Mean pooling layer
+3D Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool3d
 
-2D Depthwise/Separable conv layer
+2D Depthwise/Separable Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DepthwiseConv2d
 
 Super-Resolution layer
 ------------------------
 
-1D Supixel Convolutional
+1D Supixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv1d
 
-2D Supixel Convolutional
+2D Supixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv2d
 
@@ -529,7 +529,7 @@ Super-Resolution layer
 Spatial Transformer
 -----------------------
 
-2D Affine Transformation layer
+2D Affine Transformation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: SpatialTransformer2dAffineLayer
 
@@ -550,7 +550,7 @@ Pooling layer for any dimensions and any pooling functions.
 .. autoclass:: PoolLayer
 
 
-Padding layer
+Padding
 ----------------
 
 Padding layer for any modes.
