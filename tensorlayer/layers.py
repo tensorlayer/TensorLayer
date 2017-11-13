@@ -2235,6 +2235,96 @@ def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels
     net_new.all_layers.extend( [outputs] )
     return net_new
 
+class DepthwiseConv2d(Layer):
+    """Separable/Depthwise Convolutional 2D, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.
+
+    Input:
+        4-D Tensor [batch, height, width, in_channels].
+    Output:
+        4-D Tensor [batch, new height, new width, in_channels * channel_multiplier].
+
+    Parameters
+    ------------
+    net : TensorLayer layer.
+    channel_multiplier : int, The number of channels to expand to.
+    filter_size : tuple (height, width) for filter size.
+    strides : tuple (height, width) for strides.
+    act : None or activation function.
+    padding : a string from: "SAME", "VALID".
+        The type of padding algorithm to use.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weights tf.get_variable().
+    b_init_args : dictionary
+        The arguments for the biases tf.get_variable().
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Examples
+    ---------
+    >>> t_im = tf.placeholder("float32", [None, 256, 256, 3])
+    >>> net = InputLayer(t_im, name='in')
+    >>> net = DepthwiseConv2d(net, 32, (3, 3), (1, 1, 1, 1), tf.nn.relu, padding="SAME", name='dep')
+    >>> print(net.outputs.get_shape())
+    ... (?, 256, 256, 96)
+
+    References
+    -----------
+    - tflearn's `SeparableConv2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`_
+    - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`_
+    """
+    def __init__(
+        self,
+        layer = None,
+        # n_filter = 32,
+        channel_multiplier = 3,
+        shape = (3, 3),
+        strides = (1, 1, 1, 1),
+        act = None,
+        padding='SAME',
+        W_init = tf.truncated_normal_initializer(stddev=0.02),
+        b_init = tf.constant_initializer(value=0.0),
+        W_init_args = {},
+        b_init_args = {},
+        name ='depthwise_conv2d',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        print("  [TL] DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
+                            (self.name, str(shape), str(strides), padding, act.__name__))
+
+        assert len(strides) == 4, "len(strides) should be 4."
+        if act is None:
+            act = tf.identity
+
+        try:
+            pre_channel = int(layer.outputs.get_shape()[-1])
+        except: # if pre_channel is ?, it happens when using Spatial Transformer Net
+            pre_channel = 1
+            print("[warnings] unknow input channels, set to 1")
+
+        shape = [shape[0], shape[1], pre_channel, channel_multiplier]
+
+        with tf.variable_scope(name) as vs:
+            W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
+            if b_init:
+                b = tf.get_variable(name='b_sepconv2d', shape=(pre_channel*channel_multiplier), initializer=b_init, **b_init_args )
+                self.outputs = act( tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding) + b )
+            else:
+                self.outputs = act( tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding) )
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend( [self.outputs] )
+        if b_init:
+            self.all_params.extend( [W, b] )
+        else:
+            self.all_params.extend( [W] )
+
 ## Super resolution
 def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used

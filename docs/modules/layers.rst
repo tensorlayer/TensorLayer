@@ -271,7 +271,6 @@ Layer list
    DownSampling2dLayer
    AtrousConv1dLayer
    AtrousConv2dLayer
-   SeparableConv2dLayer
 
    Conv1d
    Conv2d
@@ -283,6 +282,8 @@ Layer list
    MeanPool2d
    MaxPool3d
    MeanPool3d
+
+   DepthwiseConv2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -465,9 +466,6 @@ Convolutional layer (Pro)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AtrousConv2dLayer
 
-2D Separable convolutional layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SeparableConv2dLayer
 
 Convolutional layer (Simplified)
 -----------------------------------
@@ -511,6 +509,10 @@ APIs may better for you.
 3D Mean pooling layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool3d
+
+2D Depthwise/Separable conv layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DepthwiseConv2d
 
 Super-Resolution layer
 ------------------------
