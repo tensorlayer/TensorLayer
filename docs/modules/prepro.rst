@@ -156,10 +156,16 @@ Noise
 ^^^^^^^^^^^^^^
 .. autofunction:: drop
 
-Manual transform
-^^^^^^^^^^^^^^^^^
+Transform matrix offset
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: transform_matrix_offset_center
+
+Apply affine transform by matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: apply_transform
+
+Projective transform by points
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: projective_transform_by_points
 
 Numpy and PIL
