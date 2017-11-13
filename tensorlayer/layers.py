@@ -2273,7 +2273,7 @@ class DepthwiseConv2d(Layer):
 
     References
     -----------
-    - tflearn's `SeparableConv2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`_
+    - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`_
     - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`_
     """
     def __init__(
