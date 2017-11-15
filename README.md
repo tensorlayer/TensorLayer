@@ -31,9 +31,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Tens
 
 # Installation
 
-TensorLayer has install prerequisites including TensorFlow, numpy and matplotlib. For GPU support, CUDA and cuDNN are required. Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions.
-
-If you already had the pre-requisites ready (numpy, scipy, scikit-image, matplotlib and nltk(optional)), the simplest way to install TensorLayer in your python program is: 
+TensorLayer has install prerequisites including TensorFlow, numpy, matplotlib and nltk(optional). For GPU support, CUDA and cuDNN are required. Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. The simplest way to install TensorLayer in your python program is: 
 
 ```bash
 [for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Highly Recommended)
