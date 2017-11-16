@@ -518,8 +518,8 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
     if is_random:
-        shear[0] = np.random.uniform(-shear[0], -shear[0])
-        shear[1] = np.random.uniform(-shear[1], -shear[1])
+        shear[0] = np.random.uniform(-shear[0], shear[0])
+        shear[1] = np.random.uniform(-shear[1], shear[1])
 
     shear_matrix = np.array([[1, shear[0], 0],
                              [shear[1], 1, 0],
@@ -543,8 +543,8 @@ def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1,
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
     if is_random:
-        shear[0] = np.random.uniform(-shear[0], -shear[0])
-        shear[1] = np.random.uniform(-shear[1], -shear[1])
+        shear[0] = np.random.uniform(-shear[0], shear[0])
+        shear[1] = np.random.uniform(-shear[1], shear[1])
 
     shear_matrix = np.array([[1, shear[0], 0],
                              [shear[1], 1, 0],
