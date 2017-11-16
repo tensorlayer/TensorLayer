@@ -1255,7 +1255,7 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
     x : numpy array
         An image with dimension of [row, col, channel] (default).
     src : list or numpy
-        The original coordinates, usually 4 coordinates of (x, y).
+        The original coordinates, usually 4 coordinates of (width, height).
     dst : list or numpy
         The coordinates after transformation, the number of coordinates is the same with src.
     map_args : dict, optional
@@ -1283,7 +1283,7 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
     Examples
     --------
     >>> Assume X is an image from CIFAR 10, i.e. shape == (32, 32, 3)
-    >>> src = [[0,0],[0,32],[32,0],[32,32]]
+    >>> src = [[0,0],[0,32],[32,0],[32,32]]     # [w, h]
     >>> dst = [[10,10],[0,32],[32,0],[32,32]]
     >>> x = projective_transform_by_points(X, src, dst)
 
