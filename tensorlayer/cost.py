@@ -113,19 +113,50 @@ def normalized_mean_square_error(output, target):
 
     Parameters
     ----------
-    output : 2D or 4D tensor.
-    target : 2D or 4D tensor.
+    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
+    target : 2D, 3D or 4D tensor.
     """
     with tf.name_scope("mean_squared_error_loss"):
         if output.get_shape().ndims == 2:   # [batch_size, n_feature]
             nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
             nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
+        elif output.get_shape().ndims == 3:   # [batch_size, w, h]
+            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1,2]))
+            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1,2]))
         elif output.get_shape().ndims == 4: # [batch_size, w, h, c]
             nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1,2,3]))
             nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1,2,3]))
         nmse = tf.reduce_mean(nmse_a / nmse_b)
     return nmse
 
+def absolute_difference_error(output, target, is_mean=False):
+    """ Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
+
+    Parameters
+    ----------
+    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
+    target : 2D, 3D or 4D tensor.
+    is_mean : boolean, if True, use ``tf.reduce_mean`` to compute the loss of one data, otherwise, use ``tf.reduce_sum`` (default).
+    """
+    with tf.name_scope("mean_squared_error_loss"):
+        if output.get_shape().ndims == 2:   # [batch_size, n_feature]
+            if is_mean:
+                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), 1))
+            else:
+                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), 1))
+        elif output.get_shape().ndims == 3: # [batch_size, w, h]
+            if is_mean:
+                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2]))
+            else:
+                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2]))
+        elif output.get_shape().ndims == 4: # [batch_size, w, h, c]
+            if is_mean:
+                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2, 3]))
+            else:
+                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2, 3]))
+        else:
+            raise Exception("Unknow dimension")
+        return loss
 
 
 def dice_coe(output, target, loss_type='jaccard', axis=[1,2,3], smooth=1e-5):
