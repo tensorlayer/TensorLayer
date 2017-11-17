@@ -664,16 +664,13 @@ def save_npz(save_list=[], name='model.npz', sess=None):
 
     Examples
     --------
-    >>> tl.files.save_npz(network.all_params, name='model_test.npz', sess=sess)
-    ... File saved to: model_test.npz
-    >>> load_params = tl.files.load_npz(name='model_test.npz')
-    ... Loading param0, (784, 800)
-    ... Loading param1, (800,)
-    ... Loading param2, (800, 800)
-    ... Loading param3, (800,)
-    ... Loading param4, (800, 10)
-    ... Loading param5, (10,)
-    >>> put parameters into a TensorLayer network, please see assign_params()
+    - Save model to npz
+    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+    - Load model from npz (Method 1)
+    >>> load_params = tl.files.load_npz(name='model.npz')
+    >>> tl.files.assign_params(sess, load_params, network)
+    - Load model from npz (Method 2)
+    >>> tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 
     Notes
     -----
@@ -722,7 +719,7 @@ def load_npz(path='', name='model.npz'):
 
     Examples
     --------
-    - See save_npz and assign_params
+    - See ``save_npz``
 
     References
     ----------
@@ -764,15 +761,13 @@ def assign_params(sess, params, network):
 
     Examples
     --------
-    >>> Save your network as follow:
-    >>> tl.files.save_npz(network.all_params, name='model_test.npz')
-    >>> network.print_params()
-    ...
-    ... Next time, load and assign your network as follow:
-    >>> tl.layers.initialize_global_variables(sess)
-    >>> load_params = tl.files.load_npz(name='model_test.npz')
+    - Save model to npz
+    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+    - Load model from npz (Method 1)
+    >>> load_params = tl.files.load_npz(name='model.npz')
     >>> tl.files.assign_params(sess, load_params, network)
-    >>> network.print_params()
+    - Load model from npz (Method 2)
+    >>> tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 
     References
     ----------
@@ -802,6 +797,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
 
     Examples
     ---------
+    >>> tl.files.save_npz(net.all_params, name='net.npz', sess=sess)
     >>> tl.files.load_and_assign_npz(sess=sess, name='net.npz', network=net)
     """
     assert network is not None
