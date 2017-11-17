@@ -76,12 +76,12 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
 
 def mean_squared_error(output, target, is_mean=False):
-    """Return the TensorFlow expression of mean-square-error of two distributions.
+    """ Return the TensorFlow expression of mean-square-error (L2) of two batch of data.
 
     Parameters
     ----------
-    output : 2D or 4D tensor.
-    target : 2D or 4D tensor.
+    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
+    target : 2D, 3D or 4D tensor.
     is_mean : boolean, if True, use ``tf.reduce_mean`` to compute the loss of one data, otherwise, use ``tf.reduce_sum`` (default).
 
     References
