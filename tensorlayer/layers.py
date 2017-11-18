@@ -2385,11 +2385,14 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
     def _PS(X, r, n_out_channel):
         if n_out_channel >= 1:
             assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
+            '''
             bsize, a, b, c = X.get_shape().as_list()
             bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
             Xs=tf.split(X,r,3) #b*h*w*r*r
             Xr=tf.concat(Xs,2) #b*h*(r*w)*r
             X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
+            '''
+            X=tf.depth_to_space(X,r)
         else:
             print(_err_log)
         return X
@@ -2467,31 +2470,12 @@ def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='
     if scope_name:
         name = scope_name + '/' + name
 
-    def _phase_shift(I, r):
-        if tf.__version__ < '1.0':
-            raise Exception("Only support TF1.0+")
-        bsize, a, b, c = I.get_shape().as_list()
-        bsize = tf.shape(I)[0] # Handling Dimension(None) type for undefined batch dim
-        X = tf.reshape(I, (bsize, a, b, r, r))
-        X = tf.transpose(X, (0, 1, 2, 4, 3))  # bsize, a, b, 1, 1 # tf 0.12
-        # X = tf.split(1, a, X)  # a, [bsize, b, r, r] # tf 0.12
-        X = tf.split(X, a, 1)
-        # X = tf.concat(2, [tf.squeeze(x, axis=1) for x in X])  # bsize, b, a*r, r # tf 0.12
-        X = tf.concat([tf.squeeze(x, axis=1) for x in X], 2)
-        # X = tf.split(1, b, X)  # b, [bsize, a*r, r] # tf 0.12
-        X = tf.split(X, b, 1)
-        # X = tf.concat(2, [tf.squeeze(x, axis=1) for x in X])  # bsize, a*r, b*r # tf 0.12
-        X = tf.concat([tf.squeeze(x, axis=1) for x in X], 2)
-        return tf.reshape(X, (bsize, a*r, b*r, 1))
-
     def _PS(X, r, n_out_channel):
         if n_out_channel > 1:
             assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
-            Xc = tf.split(X, n_out_channel, 3)
-            X = tf.concat([_phase_shift(x, r) for x in Xc], 3)
-        elif n_out_channel == 1:
-            assert int(X.get_shape()[-1]) == (r ** 2), _err_log
-            X = _phase_shift(X, r)
+            X=tf.transpose(X,[0,2,1,3])
+            X=tf.depth_to_space(X,r)
+            X=tf.transpose(X,[0,2,1,3])
         else:
             print(_err_log)
         return X
