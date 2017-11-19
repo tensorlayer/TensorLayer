@@ -906,7 +906,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
 
     if is_random:
         try:
-            assert len(gamma) = len(contrast) == len(saturation), "if is_random = True, the arguments are (min, max)"
+            assert len(gamma) == len(contrast) == len(saturation) == 2, "if is_random = True, the arguments are (min, max)"
         except:
             raise Exception("if is_random = True, the arguments are (min, max)")
         ## random change brightness  # small --> brighter
