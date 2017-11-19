@@ -884,7 +884,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     -----------
     x : numpy array
         an image with dimension of [row, col, channel] (default).
-    gamma : change brightness
+    gamma : change brightness (the same with ``tl.prepro.brightness``)
         - if is_random=False, one float number, small than one means brighter, greater than one means darker.
         - if is_random=True, tuple of two float numbers, (min, max).
     contrast : change contrast
