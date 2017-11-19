@@ -877,7 +877,7 @@ def brightness_multi(x, gamma=1, gain=1, is_random=False):
     return np.asarray(results)
 
 # illumination
-def illumination(x, gamma=1, contrast=1, saturation=1, is_random=False):
+def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     """Perform illumination augmentation for a single image, randomly or non-randomly.
 
     Parameters
@@ -885,20 +885,37 @@ def illumination(x, gamma=1, contrast=1, saturation=1, is_random=False):
     x : numpy array
         an image with dimension of [row, col, channel] (default).
     gamma : change brightness
+        - if is_random=False, one float number, small than one means brighter, greater than one means darker.
+        - if is_random=True, tuple of two float numbers, (min, max).
     contrast : change contrast
+        - if is_random=False, one float number, small than one means blur.
+        - if is_random=True, tuple of two float numbers, (min, max).
     saturation : change saturation
-    is_random : whether the parameters are randomly set
+        - if is_random=False, one float number, small than one means unsaturation.
+        - if is_random=True, tuple of two float numbers, (min, max).
+    is_random : whether the parameters are randomly set.
+
+    Examples
+    ---------
+    - Random
+    >>> x = illumination(x, gamma=(0.5, 5.0), contrast=(0.3, 1.0), saturation=(0.7, 1.0), is_random=True)
+    - Non-random
+    >>> x = illumination(x, 0.5, 0.6, 0.8, is_random=False)
     """
     from PIL import Image, ImageEnhance
 
     if is_random:
+        try:
+            assert len(gamma) = len(contrast) == len(saturation), "if is_random = True, the arguments are (min, max)"
+        except:
+            raise Exception("if is_random = True, the arguments are (min, max)")
         ## random change brightness  # small --> brighter
         illum_settings = np.random.randint(0,3) # 0-brighter, 1-darker, 2 keep normal
 
         if illum_settings == 0: # brighter
-            gamma = np.random.uniform(.5, 1.0)
+            gamma = np.random.uniform(gamma[0], 1.0) # (.5, 1.0)
         elif illum_settings == 1: # darker
-            gamma = np.random.uniform(1.0, 5.0)
+            gamma = np.random.uniform(1.0, gamma[1])# (1.0, 5.0)
         else:
             gamma = 1
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
@@ -906,10 +923,10 @@ def illumination(x, gamma=1, contrast=1, saturation=1, is_random=False):
         # print("using contrast and saturation")
         image = Image.fromarray(im_) # array -> PIL
         contrast_adjust = ImageEnhance.Contrast(image)
-        image = contrast_adjust.enhance(np.random.uniform(0.3,0.9))
+        image = contrast_adjust.enhance(np.random.uniform(contrast[0], contrast[1]))#0.3,0.9))
 
         saturation_adjust = ImageEnhance.Color(image)
-        image = saturation_adjust.enhance(np.random.uniform(0.7,1.0))
+        image = saturation_adjust.enhance(np.random.uniform(saturation[0], saturation[1]))# (0.7,1.0))
         im_ = np.array(image) # PIL -> array
     else:
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
