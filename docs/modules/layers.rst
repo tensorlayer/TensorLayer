@@ -100,14 +100,50 @@ For evaluating and testing, disable all dropout layers as follow.
 For more details, please read the MNIST examples on Github.
 
 
-Understand Dense layer
---------------------------
+Customized layer
+-----------------
+
+A Simple layer
+^^^^^^^^^^^^^^^
+
+To implement a custom layer in TensorLayer, you will have to write a Python class
+that subclasses Layer and implement the ``outputs`` expression.
+
+The following is an example implementation of a layer that multiplies its input by 2:
+
+.. code-block:: python
+
+  class DoubleLayer(Layer):
+      def __init__(
+          self,
+          layer = None,
+          name ='double_layer',
+      ):
+          # check layer name (fixed)
+          Layer.__init__(self, name=name)
+
+          # the input of this layer is the output of previous layer (fixed)
+          self.inputs = layer.outputs
+
+          # operation (customized)
+          self.outputs = self.inputs * 2
+
+          # get stuff from previous layer (fixed)
+          self.all_layers = list(layer.all_layers)
+          self.all_params = list(layer.all_params)
+          self.all_drop = dict(layer.all_drop)
+
+          # update layer (customized)
+          self.all_layers.extend( [self.outputs] )
+
+
+Your Dense layer
+^^^^^^^^^^^^^^^^^^^
 
 Before creating your own TensorLayer layer, let's have a look at Dense layer.
 It creates a weights matrix and biases vector if not exists, then implement
 the output expression.
 At the end, as a layer with parameter, we also need to append the parameters into ``all_params``.
-
 
 .. code-block:: python
 
@@ -145,42 +181,6 @@ At the end, as a layer with parameter, we also need to append the parameters int
         # update layer (customized)
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( [W, b] )
-
-Your layer
------------------
-
-A simple layer
-^^^^^^^^^^^^^^^
-
-To implement a custom layer in TensorLayer, you will have to write a Python class
-that subclasses Layer and implement the ``outputs`` expression.
-
-The following is an example implementation of a layer that multiplies its input by 2:
-
-.. code-block:: python
-
-  class DoubleLayer(Layer):
-      def __init__(
-          self,
-          layer = None,
-          name ='double_layer',
-      ):
-          # check layer name (fixed)
-          Layer.__init__(self, name=name)
-
-          # the input of this layer is the output of previous layer (fixed)
-          self.inputs = layer.outputs
-
-          # operation (customized)
-          self.outputs = self.inputs * 2
-
-          # get stuff from previous layer (fixed)
-          self.all_layers = list(layer.all_layers)
-          self.all_params = list(layer.all_params)
-          self.all_drop = dict(layer.all_drop)
-
-          # update layer (customized)
-          self.all_layers.extend( [self.outputs] )
 
 
 Modifying Pre-train Behaviour
