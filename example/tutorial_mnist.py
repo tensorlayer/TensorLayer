@@ -151,14 +151,13 @@ def main_test_layers(model='relu'):
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
                 # You can visualize the weight of 1st hidden layer as follow.
-                tl.visualize.W(network.all_params[0].eval(), second=10,
+                tl.vis.W(network.all_params[0].eval(), second=10,
                                         saveable=True, shape=[28, 28],
                                         name='w1_'+str(epoch+1), fig_idx=2012)
                 # You can also save the weight of 1st hidden layer to .npz file.
                 # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
             except:
-                raise Exception("You should change visualize_W(), if you want \
-                            to save the feature images for different dataset")
+                print("You should change vis.W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -390,11 +389,11 @@ def main_test_stacked_denoise_AE(model='relu'):
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
                 # visualize the 1st hidden layer during fine-tune
-                tl.visualize.W(network.all_params[0].eval(), second=10,
+                tl.vis.W(network.all_params[0].eval(), second=10,
                             saveable=True, shape=[28, 28],
                             name='w1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("# You should change visualize_W(), if you want to save the feature images for different dataset")
+                print("You should change vis.W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -558,11 +557,11 @@ def main_test_cnn_layer():
             print("   val loss: %f" % (val_loss/ n_batch))
             print("   val acc: %f" % (val_acc/ n_batch))
             try:
-                tl.visualize.CNN2d(network.all_params[0].eval(),
+                tl.vis.CNN2d(network.all_params[0].eval(),
                                     second=10, saveable=True,
                                     name='cnn1_'+str(epoch+1), fig_idx=2012)
             except:
-                raise Exception("# You should change visualize.CNN(), if you want to save the feature images for different dataset")
+                print("You should change vis.CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
