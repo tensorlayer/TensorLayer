@@ -517,11 +517,11 @@ APIs may better for you.
 Super-Resolution layer
 ------------------------
 
-1D Supixel Convolution
+1D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv1d
 
-2D Supixel Convolution
+2D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: SubpixelConv2d
 
