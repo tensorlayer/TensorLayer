@@ -649,6 +649,62 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
 
     return im_train_A, im_train_B, im_test_A, im_test_B
 
+def download_file_from_google_drive(id, destination):
+    """ Download file from Google Driver, see ``load_celeba_dataset`` for example.
+
+    Parameters
+    --------------
+    id : driver ID
+    destination : string, save path.
+    """
+    from tqdm import tqdm
+    import requests
+    def save_response_content(response, destination, chunk_size=32*1024):
+        total_size = int(response.headers.get('content-length', 0))
+        with open(destination, "wb") as f:
+            for chunk in tqdm(response.iter_content(chunk_size), total=total_size,
+                    unit='B', unit_scale=True, desc=destination):
+                if chunk: # filter out keep-alive new chunks
+                    f.write(chunk)
+    def get_confirm_token(response):
+        for key, value in response.cookies.items():
+            if key.startswith('download_warning'):
+                return value
+        return None
+    URL = "https://docs.google.com/uc?export=download"
+    session = requests.Session()
+
+    response = session.get(URL, params={ 'id': id }, stream=True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = { 'id' : id, 'confirm' : token }
+        response = session.get(URL, params=params, stream=True)
+    save_response_content(response, destination)
+
+def load_celebA_dataset(dirpath='data'):
+    """ Automatically download celebA dataset, and return a list of image path. """
+    import zipfile, os
+    data_dir = 'celebA'
+    filename, drive_id  = "img_align_celeba.zip", "0B7EVK8r0v71pZjFTYXZWM3FlRnM"
+    save_path = os.path.join(dirpath, filename)
+    image_path = os.path.join(dirpath, data_dir)
+    if os.path.exists(image_path):
+        print('[*] {} already exists'.format(save_path))
+    else:
+        exists_or_mkdir(dirpath)
+        download_file_from_google_drive(drive_id, save_path)
+        zip_dir = ''
+        with zipfile.ZipFile(save_path) as zf:
+            zip_dir = zf.namelist()[0]
+            zf.extractall(dirpath)
+        os.remove(save_path)
+        os.rename(os.path.join(dirpath, zip_dir), image_path)
+
+    data_files = load_file_list(path=image_path, regx='\\.jpg', printable=False)
+    for i in range(len(data_files)):
+        data_files[i] =  os.path.join(image_path, data_files[i])
+    return data_files
 
 ## Load and save network list npz
 def save_npz(save_list=[], name='model.npz', sess=None):

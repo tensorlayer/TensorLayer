@@ -44,6 +44,8 @@ sake of cross-platform.
    load_flickr25k_dataset
    load_flickr1M_dataset
    load_cyclegan_dataset
+   load_celebA_dataset
+   download_file_from_google_drive
 
    save_npz
    load_npz
@@ -115,7 +117,13 @@ CycleGAN
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: load_cyclegan_dataset
 
+CelebA
+^^^^^^^^^
+.. autofunction:: load_celebA_dataset
 
+Google Drive
+^^^^^^^^^^^^^^^^
+.. autofunction:: download_file_from_google_drive
 
 Load and save network
 ----------------------
