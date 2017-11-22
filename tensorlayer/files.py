@@ -650,7 +650,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
     return im_train_A, im_train_B, im_test_A, im_test_B
 
 def download_file_from_google_drive(id, destination):
-    """ Download file from Google Driver, see ``load_celeba_dataset`` for example.
+    """ Download file from Google Drive, see ``load_celebA_dataset`` for example.
 
     Parameters
     --------------
