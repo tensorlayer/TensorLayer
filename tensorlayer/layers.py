@@ -4743,7 +4743,7 @@ class BasicConvLSTMCell(ConvRNNCell):
             if self._state_is_tuple:
                 c, h = state
             else:
-                print state
+                # print state
                 # c, h = tf.split(3, 2, state)
                 c, h = tf.split(state, 2, 3)
             concat = _conv_linear([inputs, h], self.filter_size, self.num_features * 4, True)
