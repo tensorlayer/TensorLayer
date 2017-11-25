@@ -1842,7 +1842,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
 
 class DeformableConv2dLayer(Layer):
     """The :class:`DeformableConv2dLayer` class is a
-    `Deformable Convolutional Layer <https://arxiv.org/abs/1703.06211>`
+    `Deformable Convolutional Layer <https://arxiv.org/abs/1703.06211>`_ .
 
     Parameters
     -----------
@@ -4664,7 +4664,7 @@ class BiRNNLayer(Layer):
 
 # ConvLSTM layer
 class ConvRNNCell(object):
-    """Abstract object representing an Convolutional RNN cell.
+    """Abstract object representing an Convolutional RNN Cell.
     """
 
     def __call__(self, inputs, state, scope=None):
@@ -4699,21 +4699,23 @@ class ConvRNNCell(object):
         return zeros
 
 class BasicConvLSTMCell(ConvRNNCell):
-    """Basic Conv LSTM recurrent network cell. The
+    """Basic Conv LSTM recurrent network cell.
+
+    Parameters
+    -----------
+    shape : int tuple thats the height and width of the cell
+    filter_size : int tuple thats the height and width of the filter
+    num_features : int thats the depth of the cell
+    forget_bias : float, The bias added to forget gates (see above).
+    input_size : Deprecated and unused.
+    state_is_tuple : If True, accepted and returned states are 2-tuples of
+        the `c_state` and `m_state`.  If False, they are concatenated
+        along the column axis.  The latter behavior will soon be deprecated.
+    activation : Activation function of the inner states.
     """
     def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None,
                  state_is_tuple=False, activation=tf.nn.tanh):
         """Initialize the basic Conv LSTM cell.
-        Args:
-          shape: int tuple thats the height and width of the cell
-          filter_size: int tuple thats the height and width of the filter
-          num_features: int thats the depth of the cell
-          forget_bias: float, The bias added to forget gates (see above).
-          input_size: Deprecated and unused.
-          state_is_tuple: If True, accepted and returned states are 2-tuples of
-            the `c_state` and `m_state`.  If False, they are concatenated
-            along the column axis.  The latter behavior will soon be deprecated.
-          activation: Activation function of the inner states.
         """
         # if not state_is_tuple:
         # logging.warn("%s: Using a concatenated state is slower and will soon be "
@@ -4764,16 +4766,22 @@ class BasicConvLSTMCell(ConvRNNCell):
 
 def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=None):
     """convolution:
-    Args:
+
+    Parameters
+    ----------
       args: a 4D Tensor or a list of 4D, batch x n, Tensors.
       filter_size: int tuple of filter height and width.
       num_features: int, number of features.
       bias_start: starting value to initialize the bias; 0 by default.
       scope: VariableScope for the created subgraph; defaults to "Linear".
-    Returns:
-      A 4D Tensor with shape [batch h w num_features]
-    Raises:
-      ValueError: if some of the arguments has unspecified or wrong shape.
+
+    Returns
+    --------
+    - A 4D Tensor with shape [batch h w num_features]
+
+    Raises
+    -------
+    - ValueError : if some of the arguments has unspecified or wrong shape.
     """
 
     # Calculate the total size of arguments on dimension 1.
@@ -4808,8 +4816,9 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
 
 class ConvLSTMLayer(Layer):
     """
-    The :class:`ConvLSTMLayer` class is a Convolutional LSTM layer.
-    `Convolutional LSTM Layer <https://arxiv.org/abs/1506.04214>`
+    The :class:`ConvLSTMLayer` class is a Convolutional LSTM layer,
+    see `Convolutional LSTM Layer <https://arxiv.org/abs/1506.04214>`_ .
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -4857,9 +4866,7 @@ class ConvLSTMLayer(Layer):
 
     batch_size : int or tensor
         Is int, if able to compute the batch_size, otherwise, tensor for ``?``.
-
     """
-
     def __init__(
             self,
             layer=None,
