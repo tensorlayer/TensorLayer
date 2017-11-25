@@ -2489,7 +2489,7 @@ class DepthwiseConv2d(Layer):
         # n_filter = 32,
         channel_multiplier = 3,
         shape = (3, 3),
-        strides = (1, 1, 1, 1),
+        strides = (1, 1),
         act = None,
         padding='SAME',
         W_init = tf.truncated_normal_initializer(stddev=0.02),
@@ -2500,10 +2500,13 @@ class DepthwiseConv2d(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+
+        if act is None:
+            act = tf.identity
+
         print("  [TL] DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
 
-        assert len(strides) == 4, "len(strides) should be 4."
         if act is None:
             act = tf.identity
 
@@ -2514,6 +2517,11 @@ class DepthwiseConv2d(Layer):
             print("[warnings] unknow input channels, set to 1")
 
         shape = [shape[0], shape[1], pre_channel, channel_multiplier]
+
+        if len(strides) == 2:
+            strides = [1, strides[0], strides[1], 1]
+
+        assert len(strides) == 4, "len(strides) should be 4."            
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
