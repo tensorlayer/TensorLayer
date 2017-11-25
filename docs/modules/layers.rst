@@ -619,7 +619,7 @@ Bidirectional layer
 
 
 
-Convolutional Recurrent layer
+Recurrent Convolutional layer
 -------------------------------
 
 Conv RNN Cell
