@@ -1847,8 +1847,8 @@ class DeformableConv2dLayer(Layer):
     Parameters
     -----------
     layer : TensorLayer layer.
-    offset_layer: TensorLayer layer, to predict the offset of convolutional operations. The shape of its output should be (batchsize, input height, input width, 2*(number of element in the convolutional kernel))
-    e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
+    offset_layer : TensorLayer layer, to predict the offset of convolutional operations. The shape of its output should be (batchsize, input height, input width, 2*(number of element in the convolutional kernel))
+        e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
     channel_multiplier : int, The number of channels to expand to.
     filter_size : tuple (height, width) for filter size.
     strides : tuple (height, width) for strides.
