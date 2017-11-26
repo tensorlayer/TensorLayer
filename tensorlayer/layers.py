@@ -1731,6 +1731,214 @@ class DownSampling2dLayer(Layer):
         self.all_layers.extend( [self.outputs] )
 
 
+# ## 2D deformable convolutional layer
+def _to_bc_h_w(x, x_shape):
+    """(b, h, w, c) -> (b*c, h, w)"""
+    x = tf.transpose(x, [0, 3, 1, 2])
+    x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
+    return x
+
+def _to_b_h_w_n_c(x, x_shape):
+    """(b*c, h, w, n) -> (b, h, w, n, c)"""
+    x = tf.reshape(
+        x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
+    x = tf.transpose(x, [0, 2, 3, 4, 1])
+    return x
+
+def tf_repeat(a, repeats):
+    """TensorFlow version of np.repeat for 1D"""
+    # https://github.com/tensorflow/tensorflow/issues/8521
+    assert len(a.get_shape()) == 1
+
+    a = tf.expand_dims(a, -1)
+    a = tf.tile(a, [1, repeats])
+    a = tf_flatten(a)
+    return a
+
+def tf_batch_map_coordinates(inputs, coords):
+    """Batch version of tf_map_coordinates
+
+    Only supports 2D feature maps
+
+    Parameters
+    ----------
+    input : tf.Tensor. shape = (b*c, h, w)
+    coords : tf.Tensor. shape = (b*c, h, w, n, 2)
+
+    Returns
+    -------
+    tf.Tensor. shape = (b*c, h, w, n)
+    """
+
+    input_shape = inputs.get_shape()
+    coords_shape = coords.get_shape()
+    batch_channel = tf.shape(inputs)[0]
+    input_h = int(input_shape[1])
+    input_w = int(input_shape[2])
+    kernel_n = int(coords_shape[3])
+    n_coords = input_h * input_w * kernel_n
+
+    coords_lt = tf.cast(tf.floor(coords), 'int32')
+    coords_rb = tf.cast(tf.ceil(coords), 'int32')
+    coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
+    coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
+
+    idx = tf_repeat(tf.range(batch_channel), n_coords)
+
+    vals_lt = _get_vals_by_coords(inputs, coords_lt, idx, (batch_channel, input_h, input_w, kernel_n))
+    vals_rb = _get_vals_by_coords(inputs, coords_rb, idx, (batch_channel, input_h, input_w, kernel_n))
+    vals_lb = _get_vals_by_coords(inputs, coords_lb, idx, (batch_channel, input_h, input_w, kernel_n))
+    vals_rt = _get_vals_by_coords(inputs, coords_rt, idx, (batch_channel, input_h, input_w, kernel_n))
+
+    coords_offset_lt = coords - tf.cast(coords_lt, 'float32')
+
+    vals_t = vals_lt + (vals_rt - vals_lt) * coords_offset_lt[:, :, :, :, 0]
+    vals_b = vals_lb + (vals_rb - vals_lb) * coords_offset_lt[:, :, :, :, 0]
+    mapped_vals = vals_t + (vals_b - vals_t) * coords_offset_lt[:, :, :, :, 1]
+
+    return mapped_vals
+
+def tf_batch_map_offsets(inputs, offsets, grid_offset):
+    """Batch map offsets into input
+
+    Parameters
+    ---------
+    inputs : tf.Tensor. shape = (b, h, w, c)
+    offsets: tf.Tensor. shape = (b, h, w, 2*n)
+    grid_offset: Offset grids
+
+    Returns
+    -------
+    tf.Tensor. shape = (b, h, w, c)
+    """
+
+    input_shape = inputs.get_shape()
+    batch_size = tf.shape(inputs)[0]
+    kernel_n = int(int(offsets.get_shape()[3]) / 2)
+    input_h = input_shape[1]
+    input_w = input_shape[2]
+    channel = input_shape[3]
+    batch_channel = batch_size * input_shape[3]
+
+    # inputs (b, h, w, c) --> (b*c, h, w)
+    inputs = _to_bc_h_w(inputs, input_shape)
+
+    # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
+    offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))
+    # offsets (b, h, w, n, 2) --> (b*c, h, w, n, 2)
+    offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
+
+    coords = tf.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
+    coords = tf.tile(coords, [batch_channel, 1, 1, 1, 1]) + offsets  # grid_offset --> (b*c, h, w, n, 2)
+    # clip out of bound
+    coords = tf.stack([tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
+                       tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))], axis=-1)
+
+    mapped_vals = tf_batch_map_coordinates(inputs, coords)
+    # (b*c, h, w, n) --> (b, h, w, n, c)
+    mapped_vals = _to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
+
+    return mapped_vals
+
+class DeformableConv2dLayer(Layer):
+    """The :class:`DeformableConv2dLayer` class is a
+    `Deformable Convolutional Layer <https://arxiv.org/abs/1703.06211>`_ .
+
+    Parameters
+    -----------
+    layer : TensorLayer layer.
+    offset_layer : TensorLayer layer, to predict the offset of convolutional operations. The shape of its output should be (batchsize, input height, input width, 2*(number of element in the convolutional kernel))
+        e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
+    channel_multiplier : int, The number of channels to expand to.
+    filter_size : tuple (height, width) for filter size.
+    strides : tuple (height, width) for strides.
+    act : None or activation function.
+    shape : list of shape
+        shape of the filters, [filter_height, filter_width, in_channels, out_channels].
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weights tf.get_variable().
+    b_init_args : dictionary
+        The arguments for the biases tf.get_variable().
+    name : a string or None
+        An optional name to attach to this layer.
+
+    Notes
+    -----------
+    - The stride is fixed as (1, 1, 1, 1)
+    - `The padding is fixed as 'same'
+    - The current implementation is memory-inefficient, please use carefully
+    """
+    def __init__(
+            self,
+            layer=None,
+            offset_layer=None,
+            act=tf.identity,
+            shape=[3, 3, 10, 10],
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args={},
+            b_init_args={},
+            name='deformable_conv_2d_layer',
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        self.offset_layer = offset_layer
+
+        print("  [TL] DeformableConv2dLayer %s: shape:%s, act:%s" %
+              (self.name, str(shape), act.__name__))
+
+        with tf.variable_scope(name) as vs:
+            offset = self.offset_layer.outputs
+            assert offset.get_shape()[-1] == 2 * shape[0] * shape[1]
+
+            ## Grid initialisation
+            input_h = int(self.inputs.get_shape()[1])
+            input_w = int(self.inputs.get_shape()[2])
+            kernel_n = shape[0] * shape[1]
+            initial_offsets = tf.stack(tf.meshgrid(tf.range(shape[0]),
+                                                   tf.range(shape[1]),
+                                                   indexing='ij'))  # initial_offsets --> (kh, kw, 2)
+            initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
+            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
+            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
+            initial_offsets = tf.tile(initial_offsets, [input_h, input_w, 1, 1])  # initial_offsets --> (h, w, n, 2)
+            initial_offsets = tf.cast(initial_offsets, 'float32')
+            grid = tf.meshgrid(
+                tf.range(input_h), tf.range(input_w), indexing='ij'
+            )
+            grid = tf.stack(grid, axis=-1)
+            grid = tf.cast(grid, 'float32')  # grid --> (h, w, 2)
+            grid = tf.expand_dims(grid, 2)  # grid --> (h, w, 1, 2)
+            grid = tf.tile(grid, [1, 1, kernel_n, 1])  # grid --> (h, w, n, 2)
+            grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
+
+            input_deform = tf_batch_map_offsets(self.inputs, offset, grid_offset)
+
+            W = tf.get_variable(name='W_conv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
+                                initializer=W_init, **W_init_args)
+            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args)
+
+            self.outputs = tf.reshape(act(
+                tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
+                (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
+
+        ## fixed
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        ## offset_layer
+        self.all_layers.extend(offset_layer.all_layers)
+        self.all_params.extend(offset_layer.all_params)
+        self.all_drop.update(offset_layer.all_drop)
+
+        ## this layer
+        self.all_layers.extend([self.outputs])
+
 def AtrousConv1dLayer(net, n_filter=32, filter_size=2, stride=1, dilation=1, act=None,
         padding='SAME', use_cudnn_on_gpu=None,data_format='NWC',
         W_init = tf.truncated_normal_initializer(stddev=0.02),
@@ -1765,7 +1973,6 @@ def AtrousConv1dLayer(net, n_filter=32, filter_size=2, stride=1, dilation=1, act
             name = name,
         )
     return net
-
 
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
@@ -2282,7 +2489,7 @@ class DepthwiseConv2d(Layer):
         # n_filter = 32,
         channel_multiplier = 3,
         shape = (3, 3),
-        strides = (1, 1, 1, 1),
+        strides = (1, 1),
         act = None,
         padding='SAME',
         W_init = tf.truncated_normal_initializer(stddev=0.02),
@@ -2293,10 +2500,13 @@ class DepthwiseConv2d(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+
+        if act is None:
+            act = tf.identity
+
         print("  [TL] DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
                             (self.name, str(shape), str(strides), padding, act.__name__))
 
-        assert len(strides) == 4, "len(strides) should be 4."
         if act is None:
             act = tf.identity
 
@@ -2307,6 +2517,11 @@ class DepthwiseConv2d(Layer):
             print("[warnings] unknow input channels, set to 1")
 
         shape = [shape[0], shape[1], pre_channel, channel_multiplier]
+
+        if len(strides) == 2:
+            strides = [1, strides[0], strides[1], 1]
+
+        assert len(strides) == 4, "len(strides) should be 4."            
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
@@ -2802,218 +3017,6 @@ class SpatialTransformer2dAffineLayer(Layer):
         ## this layer
         self.all_layers.extend( [self.outputs] )
         self.all_params.extend( variables )
-
-
-
-def _to_bc_h_w(x, x_shape):
-    """(b, h, w, c) -> (b*c, h, w)"""
-    x = tf.transpose(x, [0, 3, 1, 2])
-    x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
-    return x
-
-
-def _to_b_h_w_n_c(x, x_shape):
-    """(b*c, h, w, n) -> (b, h, w, n, c)"""
-    x = tf.reshape(
-        x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
-    x = tf.transpose(x, [0, 2, 3, 4, 1])
-    return x
-
-def tf_repeat(a, repeats):
-    """TensorFlow version of np.repeat for 1D"""
-    # https://github.com/tensorflow/tensorflow/issues/8521
-    assert len(a.get_shape()) == 1
-
-    a = tf.expand_dims(a, -1)
-    a = tf.tile(a, [1, repeats])
-    a = tf_flatten(a)
-    return a
-
-def tf_batch_map_coordinates(inputs, coords):
-    """Batch version of tf_map_coordinates
-
-    Only supports 2D feature maps
-
-    Parameters
-    ----------
-    input : tf.Tensor. shape = (b*c, h, w)
-    coords : tf.Tensor. shape = (b*c, h, w, n, 2)
-
-    Returns
-    -------
-    tf.Tensor. shape = (b*c, h, w, n)
-    """
-
-    input_shape = inputs.get_shape()
-    coords_shape = coords.get_shape()
-    batch_channel = tf.shape(inputs)[0]
-    input_h = int(input_shape[1])
-    input_w = int(input_shape[2])
-    kernel_n = int(coords_shape[3])
-    n_coords = input_h * input_w * kernel_n
-
-    coords_lt = tf.cast(tf.floor(coords), 'int32')
-    coords_rb = tf.cast(tf.ceil(coords), 'int32')
-    coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
-    coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
-
-    idx = tf_repeat(tf.range(batch_channel), n_coords)
-
-    vals_lt = _get_vals_by_coords(inputs, coords_lt, idx, (batch_channel, input_h, input_w, kernel_n))
-    vals_rb = _get_vals_by_coords(inputs, coords_rb, idx, (batch_channel, input_h, input_w, kernel_n))
-    vals_lb = _get_vals_by_coords(inputs, coords_lb, idx, (batch_channel, input_h, input_w, kernel_n))
-    vals_rt = _get_vals_by_coords(inputs, coords_rt, idx, (batch_channel, input_h, input_w, kernel_n))
-
-    coords_offset_lt = coords - tf.cast(coords_lt, 'float32')
-
-    vals_t = vals_lt + (vals_rt - vals_lt) * coords_offset_lt[:, :, :, :, 0]
-    vals_b = vals_lb + (vals_rb - vals_lb) * coords_offset_lt[:, :, :, :, 0]
-    mapped_vals = vals_t + (vals_b - vals_t) * coords_offset_lt[:, :, :, :, 1]
-
-    return mapped_vals
-
-def tf_batch_map_offsets(inputs, offsets, grid_offset):
-    """Batch map offsets into input
-
-    Parameters
-    ---------
-    inputs : tf.Tensor. shape = (b, h, w, c)
-    offsets: tf.Tensor. shape = (b, h, w, 2*n)
-    grid_offset: Offset grids
-
-    Returns
-    -------
-    tf.Tensor. shape = (b, h, w, c)
-    """
-
-    input_shape = inputs.get_shape()
-    batch_size = tf.shape(inputs)[0]
-    kernel_n = int(int(offsets.get_shape()[3]) / 2)
-    input_h = input_shape[1]
-    input_w = input_shape[2]
-    channel = input_shape[3]
-    batch_channel = batch_size * input_shape[3]
-
-    # inputs (b, h, w, c) --> (b*c, h, w)
-    inputs = _to_bc_h_w(inputs, input_shape)
-
-    # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
-    offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))
-    # offsets (b, h, w, n, 2) --> (b*c, h, w, n, 2)
-    offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
-
-    coords = tf.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
-    coords = tf.tile(coords, [batch_channel, 1, 1, 1, 1]) + offsets  # grid_offset --> (b*c, h, w, n, 2)
-    # clip out of bound
-    coords = tf.stack([tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
-                       tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))], axis=-1)
-
-    mapped_vals = tf_batch_map_coordinates(inputs, coords)
-    # (b*c, h, w, n) --> (b, h, w, n, c)
-    mapped_vals = _to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
-
-    return mapped_vals
-
-# ## 2D deformable convolutional layer
-class DeformableConv2dLayer(Layer):
-    """The :class:`DeformableConv2dLayer` class is a
-    `Deformable Convolutional Layer <https://arxiv.org/abs/1703.06211>`
-
-    Parameters
-    -----------
-    layer : TensorLayer layer.
-    offset_layer: TensorLayer layer, to predict the offset of convolutional operations. The shape of its output should be (batchsize, input height, input width, 2*(number of element in the convolutional kernel))
-    e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
-    channel_multiplier : int, The number of channels to expand to.
-    filter_size : tuple (height, width) for filter size.
-    strides : tuple (height, width) for strides.
-    act : None or activation function.
-    shape : list of shape
-        shape of the filters, [filter_height, filter_width, in_channels, out_channels].
-    W_init : weights initializer
-        The initializer for initializing the weight matrix.
-    b_init : biases initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
-    W_init_args : dictionary
-        The arguments for the weights tf.get_variable().
-    b_init_args : dictionary
-        The arguments for the biases tf.get_variable().
-    name : a string or None
-        An optional name to attach to this layer.
-
-
-    Note
-    -----------
-    - The stride is fixed as (1, 1, 1, 1)
-    - `The padding is fixed as 'same'
-    - The current implementation is memory-inefficient, please use carefully
-    """
-    def __init__(
-            self,
-            layer=None,
-            offset_layer=None,
-            act=tf.identity,
-            shape=[3, 3, 10, 10],
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
-            name='deformable_conv_2d_layer',
-    ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        self.offset_layer = offset_layer
-
-        print("  [TL] DeformableConv2dLayer %s: shape:%s, act:%s" %
-              (self.name, str(shape), act.__name__))
-
-        with tf.variable_scope(name) as vs:
-            offset = self.offset_layer.outputs
-            assert offset.get_shape()[-1] == 2 * shape[0] * shape[1]
-
-            ## Grid initialisation
-            input_h = int(self.inputs.get_shape()[1])
-            input_w = int(self.inputs.get_shape()[2])
-            kernel_n = shape[0] * shape[1]
-            initial_offsets = tf.stack(tf.meshgrid(tf.range(shape[0]),
-                                                   tf.range(shape[1]),
-                                                   indexing='ij'))  # initial_offsets --> (kh, kw, 2)
-            initial_offsets = tf.reshape(initial_offsets, (-1, 2))  # initial_offsets --> (n, 2)
-            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, n, 2)
-            initial_offsets = tf.expand_dims(initial_offsets, 0)  # initial_offsets --> (1, 1, n, 2)
-            initial_offsets = tf.tile(initial_offsets, [input_h, input_w, 1, 1])  # initial_offsets --> (h, w, n, 2)
-            initial_offsets = tf.cast(initial_offsets, 'float32')
-            grid = tf.meshgrid(
-                tf.range(input_h), tf.range(input_w), indexing='ij'
-            )
-            grid = tf.stack(grid, axis=-1)
-            grid = tf.cast(grid, 'float32')  # grid --> (h, w, 2)
-            grid = tf.expand_dims(grid, 2)  # grid --> (h, w, 1, 2)
-            grid = tf.tile(grid, [1, 1, kernel_n, 1])  # grid --> (h, w, n, 2)
-            grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
-
-            input_deform = tf_batch_map_offsets(self.inputs, offset, grid_offset)
-
-            W = tf.get_variable(name='W_conv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
-                                initializer=W_init, **W_init_args)
-            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args)
-
-            self.outputs = tf.reshape(act(
-                tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
-                (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
-
-        ## fixed
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-
-        ## offset_layer
-        self.all_layers.extend(offset_layer.all_layers)
-        self.all_params.extend(offset_layer.all_params)
-        self.all_drop.update(offset_layer.all_drop)
-
-        ## this layer
-        self.all_layers.extend([self.outputs])
 
 
 # ## Normalization layer
@@ -4667,8 +4670,9 @@ class BiRNNLayer(Layer):
         self.all_params.extend( rnn_variables )
 
 
+# ConvLSTM layer
 class ConvRNNCell(object):
-    """Abstract object representing an Convolutional RNN cell.
+    """Abstract object representing an Convolutional RNN Cell.
     """
 
     def __call__(self, inputs, state, scope=None):
@@ -4702,24 +4706,24 @@ class ConvRNNCell(object):
         zeros = tf.zeros([batch_size, shape[0], shape[1], num_features * 2])
         return zeros
 
-
 class BasicConvLSTMCell(ConvRNNCell):
-    """Basic Conv LSTM recurrent network cell. The
-    """
+    """Basic Conv LSTM recurrent network cell.
 
+    Parameters
+    -----------
+    shape : int tuple thats the height and width of the cell
+    filter_size : int tuple thats the height and width of the filter
+    num_features : int thats the depth of the cell
+    forget_bias : float, The bias added to forget gates (see above).
+    input_size : Deprecated and unused.
+    state_is_tuple : If True, accepted and returned states are 2-tuples of
+        the `c_state` and `m_state`.  If False, they are concatenated
+        along the column axis.  The latter behavior will soon be deprecated.
+    activation : Activation function of the inner states.
+    """
     def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None,
                  state_is_tuple=False, activation=tf.nn.tanh):
         """Initialize the basic Conv LSTM cell.
-        Args:
-          shape: int tuple thats the height and width of the cell
-          filter_size: int tuple thats the height and width of the filter
-          num_features: int thats the depth of the cell
-          forget_bias: float, The bias added to forget gates (see above).
-          input_size: Deprecated and unused.
-          state_is_tuple: If True, accepted and returned states are 2-tuples of
-            the `c_state` and `m_state`.  If False, they are concatenated
-            along the column axis.  The latter behavior will soon be deprecated.
-          activation: Activation function of the inner states.
         """
         # if not state_is_tuple:
         # logging.warn("%s: Using a concatenated state is slower and will soon be "
@@ -4735,11 +4739,13 @@ class BasicConvLSTMCell(ConvRNNCell):
 
     @property
     def state_size(self):
+        """ State size of the LSTMStateTuple. """
         return (LSTMStateTuple(self._num_units, self._num_units)
                 if self._state_is_tuple else 2 * self._num_units)
 
     @property
     def output_size(self):
+        """ Number of units in outputs. """
         return self._num_units
 
     def __call__(self, inputs, state, scope=None):
@@ -4749,7 +4755,7 @@ class BasicConvLSTMCell(ConvRNNCell):
             if self._state_is_tuple:
                 c, h = state
             else:
-                print state
+                # print state
                 # c, h = tf.split(3, 2, state)
                 c, h = tf.split(state, 2, 3)
             concat = _conv_linear([inputs, h], self.filter_size, self.num_features * 4, True)
@@ -4768,19 +4774,24 @@ class BasicConvLSTMCell(ConvRNNCell):
                 new_state = tf.concat([new_c, new_h], 3)
             return new_h, new_state
 
-
 def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=None):
     """convolution:
-    Args:
+
+    Parameters
+    ----------
       args: a 4D Tensor or a list of 4D, batch x n, Tensors.
       filter_size: int tuple of filter height and width.
       num_features: int, number of features.
       bias_start: starting value to initialize the bias; 0 by default.
       scope: VariableScope for the created subgraph; defaults to "Linear".
-    Returns:
-      A 4D Tensor with shape [batch h w num_features]
-    Raises:
-      ValueError: if some of the arguments has unspecified or wrong shape.
+
+    Returns
+    --------
+    - A 4D Tensor with shape [batch h w num_features]
+
+    Raises
+    -------
+    - ValueError : if some of the arguments has unspecified or wrong shape.
     """
 
     # Calculate the total size of arguments on dimension 1.
@@ -4813,11 +4824,11 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
                 bias_start, dtype=dtype))
     return res + bias_term
 
-## ConvLSTM layer
 class ConvLSTMLayer(Layer):
     """
-    The :class:`ConvLSTMLayer` class is a Convolutional LSTM layer.
-    `Convolutional LSTM Layer <https://arxiv.org/abs/1506.04214>`
+    The :class:`ConvLSTMLayer` class is a Convolutional LSTM layer,
+    see `Convolutional LSTM Layer <https://arxiv.org/abs/1506.04214>`_ .
+
     Parameters
     ----------
     layer : a :class:`Layer` instance
@@ -4865,9 +4876,7 @@ class ConvLSTMLayer(Layer):
 
     batch_size : int or tensor
         Is int, if able to compute the batch_size, otherwise, tensor for ``?``.
-
     """
-
     def __init__(
             self,
             layer=None,
@@ -4884,7 +4893,7 @@ class ConvLSTMLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  tensorlayer:Instantiate RNNLayer %s: feature_map:%d, n_steps:%d, "
+        print("  [TL] ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
               "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map,
                                              n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(),
                                              cell_fn.__name__))
@@ -4960,6 +4969,8 @@ class ConvLSTMLayer(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend([self.outputs])
         self.all_params.extend(rnn_variables)
+
+
 
 # Advanced Ops for Dynamic RNN
 def advanced_indexing_op(input, index):
@@ -5075,7 +5086,6 @@ def retrieve_seq_length_op2(data):
     """
     return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
 
-
 def retrieve_seq_length_op3(data, pad_val=0): # HangSheng: return tensor for sequence length, if input is tf.string
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
@@ -5086,7 +5096,6 @@ def retrieve_seq_length_op3(data, pad_val=0): # HangSheng: return tensor for seq
         raise ValueError("retrieve_seq_length_op3: data has wrong shape!")
     else:
         raise ValueError("retrieve_seq_length_op3: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
-
 
 def target_mask_op(data, pad_val=0):        # HangSheng: return tensor for mask,if input is tf.string
     data_shape_size = data.get_shape().ndims
