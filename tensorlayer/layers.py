@@ -1888,7 +1888,10 @@ class DeformableConv2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.offset_layer = offset_layer
-
+        
+        if tf.__version__ < "1.4":
+            raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version")
+            
         print("  [TL] DeformableConv2dLayer %s: shape:%s, act:%s" %
               (self.name, str(shape), act.__name__))
 
@@ -6968,6 +6971,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 #         self.all_drop = dict(layer.all_drop)
 #         self.all_layers.extend( [self.outputs] )
 #         self.all_params.extend( [W, b] )
+
 
 
 
