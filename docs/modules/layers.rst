@@ -269,6 +269,7 @@ Layer list
    PadLayer
    UpSampling2dLayer
    DownSampling2dLayer
+   DeformableConv2dLayer
    AtrousConv1dLayer
    AtrousConv2dLayer
 
@@ -303,6 +304,11 @@ Layer list
 
    RNNLayer
    BiRNNLayer
+
+   ConvRNNCell
+   BasicConvLSTMCell
+   ConvLSTMLayer
+
    advanced_indexing_op
    retrieve_seq_length_op
    retrieve_seq_length_op2
@@ -458,6 +464,10 @@ Convolutional layer (Pro)
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DownSampling2dLayer
 
+2D Deformable Conv
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DeformableConv2dLayer
+
 1D Atrous convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: AtrousConv1dLayer
@@ -606,6 +616,24 @@ RNN layer
 Bidirectional layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: BiRNNLayer
+
+
+
+Recurrent Convolutional layer
+-------------------------------
+
+Conv RNN Cell
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ConvRNNCell
+
+Basic Conv LSTM Cell
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BasicConvLSTMCell
+
+Conv LSTM layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ConvLSTMLayer
+
 
 
 Advanced Ops for Dynamic RNN
