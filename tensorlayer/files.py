@@ -749,8 +749,8 @@ def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=
     Examples
     ----------
     >>> imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
-    ... classes, classes_in_person, classes_dict,\
-    ... n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
+    >>>     classes, classes_in_person, classes_dict,\
+    >>>     n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
     >>> idx = 26
     >>> print(classes)
     ... ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
