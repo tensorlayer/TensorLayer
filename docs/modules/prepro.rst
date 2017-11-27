@@ -220,6 +220,45 @@ Greyscale erosion
 Object detection
 -------------------
 
+Tutorial for Image Aug
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Hi, here is an example for image augmentation on VOC dataset.
+
+.. code-block:: python
+
+  ## download the VOC dataset
+  imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
+      classes, classes_in_person, classes_dict,\
+      n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
+
+  ## parse the annotation into list format
+  ann_list = []
+  for info in objs_info_list:
+      ann = tl.prepro.parse_darknet_ann_str_to_list(info)
+      c, b = tl.prepro.parse_darknet_ann_list_to_cls_box(ann)
+      ann_list.append([c, b])
+
+  ## different types of image augmentation
+  image = tl.vis.read_image(imgs_file_list[idx])
+  tl.vis.draw_boxes_and_labels_to_image(image, ann_list[idx][0], ann_list[idx][1], [], classes, True, save_name='_im_original.png')
+
+  im_flip, coords = tl.prepro.obj_box_left_right_flip(image, coords=ann_list[idx][1], is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_flip, ann_list[idx][0], coords, [], classes, True, save_name='_im_flip.png')
+
+  im_resize, coords = tl.prepro.obj_box_imresize(image, coords=ann_list[idx][1], size=[300, 200], is_rescale=True)
+  tl.vis.draw_boxes_and_labels_to_image(im_resize, ann_list[idx][0], coords, [], classes, True, save_name='_im_resize.png')
+
+  im_crop, clas, coords = tl.prepro.obj_box_crop(image, classes=ann_list[idx][0], coords=ann_list[idx][1], wrg=200, hrg=200, is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_crop, clas, coords, [], classes, True, save_name='_im_crop.png')
+
+  im_shfit, clas, coords = tl.prepro.obj_box_shift(image, classes=ann_list[idx][0], coords=ann_list[idx][1], wrg=0.1, hrg=0.1, is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_shfit, clas, coords, [], classes, True, save_name='_im_shift.png')
+
+  im_zoom, clas, coords = tl.prepro.obj_box_zoom(image, classes=ann_list[idx][0], coords=ann_list[idx][1], zoom_range=(1.3, 0.7), is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_zoom, clas, coords, [], classes, True, save_name='_im_zoom.png')
+
+
 Coordinate pixel unit to percentage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: obj_box_coord_rescale

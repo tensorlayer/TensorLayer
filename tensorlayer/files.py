@@ -708,10 +708,10 @@ def load_celebA_dataset(dirpath='data'):
     return data_files
 
 def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=False):
-    """Pascal VOC 2012 Dataset has 20 objects ``"aeroplane", "bicycle", "bird",
+    """ Pascal VOC 2012 Dataset has 20 objects "aeroplane", "bicycle", "bird",
         "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
         "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
-        "train", "tvmonitor"`` and additional 3 classes ``"head", "hand", "foot"``
+        "train", "tvmonitor"`` and additional 3 classes ``"head", "hand", "foot"
         for person.
 
     Parameters
@@ -745,6 +745,32 @@ def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=
     objs_info_dicts : dictionary.
         ``{imgs_file_list : dictionary for annotation}``, the annotation of all images in ``imgs_file_list``,
         format from `TensorFlow/Models/object-detection <https://github.com/tensorflow/models/blob/master/object_detection/create_pascal_tf_record.py>`_.
+
+    Examples
+    ----------
+    >>> imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
+    ... classes, classes_in_person, classes_dict,\
+    ... n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
+    >>> idx = 26
+    >>> print(classes)
+    ... ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
+    >>> print(classes_dict)
+    ... {'sheep': 16, 'horse': 12, 'bicycle': 1, 'bottle': 4, 'cow': 9, 'sofa': 17, 'car': 6, 'dog': 11, 'cat': 7, 'person': 14, 'train': 18, 'diningtable': 10, 'aeroplane': 0, 'bus': 5, 'pottedplant': 15, 'tvmonitor': 19, 'chair': 8, 'bird': 2, 'boat': 3, 'motorbike': 13}
+    >>> print(imgs_file_list[idx])
+    ... data/VOC/VOC2012/JPEGImages/2007_000423.jpg
+    >>> print(n_objs_list[idx])
+    ... 2
+    >>> print(imgs_ann_file_list[idx])
+    ... data/VOC/VOC2012/Annotations/2007_000423.xml
+    >>> print(objs_info_list[idx])
+    ... 14 0.173 0.461333333333 0.142 0.496
+    ... 14 0.828 0.542666666667 0.188 0.594666666667
+    >>> ann = tl.prepro.parse_darknet_ann_str_to_list(objs_info_list[idx])
+    >>> print(ann)
+    ... [[14, 0.173, 0.461333333333, 0.142, 0.496], [14, 0.828, 0.542666666667, 0.188, 0.594666666667]]
+    >>> c, b = tl.prepro.parse_darknet_ann_list_to_cls_box(ann)
+    >>> print(c, b)
+    ... [14, 14] [[0.173, 0.461333333333, 0.142, 0.496], [0.828, 0.542666666667, 0.188, 0.594666666667]]
 
     References
     -------------
