@@ -3,18 +3,15 @@
 
 
 import matplotlib
-
 ## use this, if you got the following error:
 #  _tkinter.TclError: no display name and no $DISPLAY environment variable
-
 # matplotlib.use('Agg')
 
 import numpy as np
 import os
 from . import prepro
 
-
-## Save images
+# save/read image(s)
 import scipy.misc
 
 def read_image(image, path=''):
@@ -60,7 +57,6 @@ def save_image(image, image_path=''):
     except: # Greyscale
         scipy.misc.imsave(image_path, image[:,:,0])
 
-
 def save_images(images, size, image_path=''):
     """Save mutiple images into one single image.
 
@@ -91,6 +87,73 @@ def save_images(images, size, image_path=''):
     assert len(images) <= size[0] * size[1], "number of images should be equal or less than size[0] * size[1] {}".format(len(images))
     return imsave(images, size, image_path)
 
+# for object detection
+def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
+                scores=[], classes_list=[],
+                bbox_center_to_rectangle=True, save_name=None):
+    """ Draw bboxes and class labels on image. Return or save the image with bboxes.
+
+    Parameters
+    -----------
+    image : RGB image in numpy.array, [height, width, channel].
+    classes : list of class ID (int).
+    coords : list of list for coordinates.
+        - [x, y, x2, y2] (up-left and botton-right)
+        - or [x_center, y_center, w, h] (set bbox_center_to_rectangle to True).
+    scores : list of score (int). (Optional)
+    classes_list : list of string, for converting ID to string.
+    bbox_center_to_rectangle : boolean, defalt is False.
+        If True, convert [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
+    save_name : None or string
+        The name of image file (i.e. image.png), if None, not to save image.
+
+    References
+    -----------
+    - OpenCV rectangle and putText.
+    - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`_.
+    """
+    assert len(coords) == len(classes), "number of coordinates and classes are equal"
+    if len(scores) > 0:
+        assert len(scores) == len(classes), "number of scores and classes are equal"
+
+    import cv2
+
+        # image = copy.copy(image)    # don't change the original image
+    image = image.copy()    # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
+
+    imh, imw = image.shape[0:2]
+    thick = int((imh + imw) // 430)
+
+    for i in range(len(coords)):
+        if bbox_center_to_rectangle:
+            x, y, x2, y2 = prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
+        else:
+            x, y, x2, y2 = coords[i]
+
+        x, y, x2, y2 = prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
+
+        cv2.rectangle(image,
+            (x, y), (x2, y2),   # up-left and botton-right
+            [0,255,0],
+            thick)
+
+        cv2.putText(
+            image,
+            classes_list[classes[i]] + ((" " + str(scores[i])) if (len(scores) != 0) else " "),
+            (x, y),             # button left
+            0,
+            1.5e-3 * imh,       # bigger = larger font
+            [0,0,256],          # self.meta['colors'][max_indx],
+            int(thick/2)+1)     # bold
+
+    if save_name is not None:
+        # cv2.imwrite('_my.png', image)
+        save_image(image, save_name)
+    # if len(coords) == 0:
+    #     print("draw_boxes_and_labels_to_image: no bboxes exist, cannot draw !")
+    return image
+
+# old APIs
 def W(W=None, second=10, saveable=True, shape=[28,28], name='mnist', fig_idx=2396512):
     """Visualize every columns of the weight matrix to a group of Greyscale img.
 
@@ -256,7 +319,6 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     else:
         plt.draw()
         plt.pause(second)
-
 
 def images2d(images=None, second=10, saveable=True, name='images', dtype=None,
                                                             fig_idx=3119362):

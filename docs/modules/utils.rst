@@ -12,6 +12,7 @@ API - Utility
    class_balancing_oversample
    get_random_int
    dict_to_one
+   list_string_to_dict
    flatten_list
 
 Training, testing and predicting
@@ -41,12 +42,16 @@ Random functions
 ----------------------------
 .. autofunction:: get_random_int
 
-Helper functions
+Dictionary
 --------------------
 
 Set all items in dictionary to one
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: dict_to_one
+
+Convert list of string to dictionary
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: list_string_to_dict
 
 Flatten a list
 ^^^^^^^^^^^^^^^^^^^

@@ -178,7 +178,6 @@ def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_
                 print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
     print("Total training time: %fs" % (time.time() - start_time_begin))
 
-
 def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
     """
     Test a given non time-series network by the given test data and metric.
@@ -236,7 +235,6 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         if cost is not None:
             print("   test loss: %f" % (test_loss/ n_batch))
         print("   test acc: %f" % (test_acc/ n_batch))
-
 
 def predict(sess, network, X, x, y_op, batch_size=None):
     """
@@ -363,7 +361,6 @@ def flatten_list(list_of_list=[[],[]]):
     """
     return sum(list_of_list, [])
 
-
 def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     """Input the features and labels, return the features and labels after oversampling.
 
@@ -444,6 +441,7 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     # ================ End of Classes balancing
     return X_train, y_train
 
+
 ## Random
 def get_random_int(min=0, max=10, number=5, seed=None):
     """Return a list of random integer by the given range and quantity.
@@ -458,6 +456,13 @@ def get_random_int(min=0, max=10, number=5, seed=None):
         rnd = random.Random(seed)
     # return [random.randint(min,max) for p in range(0, number)]
     return [rnd.randint(min,max) for p in range(0, number)]
+
+def list_string_to_dict(string):
+    """Inputs ``['a', 'b', 'c']``, returns ``{'a': 0, 'b': 1, 'c': 2}``."""
+    dictionary = {}
+    for idx, c in enumerate(string):
+        dictionary.update({c:idx})
+    return dictionary
 
 #
 # def class_balancing_sequence_4D(X_train, y_train, sequence_length, model='downsampling' ,printable=True):

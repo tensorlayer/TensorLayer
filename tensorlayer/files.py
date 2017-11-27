@@ -12,6 +12,7 @@ import gzip
 import zipfile
 from . import visualize
 from . import nlp
+from . import utils
 import pickle
 from six.moves import urllib
 from six.moves import cPickle
@@ -705,6 +706,217 @@ def load_celebA_dataset(dirpath='data'):
     for i in range(len(data_files)):
         data_files[i] =  os.path.join(image_path, data_files[i])
     return data_files
+
+def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=False):
+    """Pascal VOC 2012 Dataset has 20 objects ``"aeroplane", "bicycle", "bird",
+        "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+        "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
+        "train", "tvmonitor"`` and additional 3 classes ``"head", "hand", "foot"``
+        for person.
+
+    Parameters
+    -----------
+    path : string
+        The path that the data is downloaded to, defaults is ``data/VOC``.
+    dataset : string, 2012 or 2007
+        The VOC dataset version.
+    contain_classes_in_person : If True, dataset will contains labels of head, hand and foot.
+
+    Returns
+    ---------
+    imgs_file_list : list of string.
+        Full paths of all images.
+    imgs_semseg_file_list : list of string.
+        Full paths of all maps for semantic segmentation. Note that not all images have this map!
+    imgs_insseg_file_list : list of string.
+        Full paths of all maps for instance segmentation. Note that not all images have this map!
+    imgs_ann_file_list : list of string.
+        Full paths of all annotations for bounding box and object class, all images have this annotations.
+    classes : list of string.
+        Classes in order.
+    classes_in_person : list of string.
+        Classes in person.
+    classes_dict : dictionary.
+        Class label to integer.
+    n_objs_list : list of integer
+        Number of objects in all images in ``imgs_file_list` in order.
+    objs_info_list : list of string.
+        Darknet format for the annotation of all images in ``imgs_file_list`` in order. ``[class_id x_centre y_centre width height]`` in ratio format.
+    objs_info_dicts : dictionary.
+        ``{imgs_file_list : dictionary for annotation}``, the annotation of all images in ``imgs_file_list``,
+        format from `TensorFlow/Models/object-detection <https://github.com/tensorflow/models/blob/master/object_detection/create_pascal_tf_record.py>`_.
+
+    References
+    -------------
+    - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`_.
+    - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`_.
+    - `TensorFlow/Models/object-detection <https://github.com/zsdonghao/object-detection/blob/master/g3doc/preparing_inputs.md>`_.
+    """
+
+    def _recursive_parse_xml_to_dict(xml):
+      """Recursively parses XML contents to python dict.
+      We assume that `object` tags are the only ones that can appear
+      multiple times at the same level of a tree.
+
+      Args:
+        xml: xml tree obtained by parsing XML file contents using lxml.etree
+
+      Returns:
+        Python dictionary holding XML contents.
+      """
+      if not xml:
+      # if xml is not None:
+        return {xml.tag: xml.text}
+      result = {}
+      for child in xml:
+        child_result = _recursive_parse_xml_to_dict(child)
+        if child.tag != 'object':
+          result[child.tag] = child_result[child.tag]
+        else:
+          if child.tag not in result:
+            result[child.tag] = []
+          result[child.tag].append(child_result[child.tag])
+      return {xml.tag: result}
+
+    from lxml import etree # pip install lxml
+    import xml.etree.ElementTree as ET
+
+    ##
+    if dataset == "2012":
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
+        tar_filename = "VOCtrainval_11-May-2012.tar"
+        extracted_filename = "VOC2012"#"VOCdevkit/VOC2012"
+        print("    [============= VOC 2012 =============]")
+    elif dataset == "2007":
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
+        tar_filename = "VOCtrainval_06-Nov-2007.tar"
+        extracted_filename = "VOC2007"
+        print("    [============= VOC 2007 =============]")
+    else:
+        raise Exception("Please set the dataset aug to either 2012 or 2007.")
+
+    ##======== download dataset
+    if folder_exists(path+"/"+extracted_filename) is False:
+        print("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
+        maybe_download_and_extract(tar_filename, path, url, extract=True)
+        del_file(path+'/'+tar_filename)
+        if dataset == "2012":
+            os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
+        elif dataset == "2007":
+            os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+        del_folder(path+'/VOCdevkit')
+    ##======== object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
+    classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car",
+            "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
+            "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+    if contain_classes_in_person:
+        classes_in_person = ["head", "hand", "foot"]
+    else:
+        classes_in_person = []
+
+    classes += classes_in_person    # use extra 3 classes for person
+
+    classes_dict = utils.list_string_to_dict(classes)
+    print("[VOC] object classes {}".format(classes_dict))
+
+    ##======== 1. image path list
+    folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
+    imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    print("[VOC] {} images found".format(len(imgs_file_list)))
+    imgs_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.jpg --> 2007000027
+    imgs_file_list = [folder_imgs+s for s in imgs_file_list]
+        # print('IM',imgs_file_list[0::3333], imgs_file_list[-1])
+    ##======== 2. semantic segmentation maps path list
+    folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
+    imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
+    print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
+    imgs_semseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
+    imgs_semseg_file_list = [folder_semseg+s for s in imgs_semseg_file_list]
+        # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
+    ##======== 3. instance segmentation maps path list
+    folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
+    imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
+    print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
+    imgs_insseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
+    imgs_insseg_file_list = [folder_semseg+s for s in imgs_insseg_file_list]
+        # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
+    ##======== 4. annotations for bounding box and object class
+    folder_ann = path+"/"+extracted_filename+"/Annotations/"
+    imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
+    print("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
+    imgs_ann_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.xml --> 2007000027
+    imgs_ann_file_list = [folder_ann+s for s in imgs_ann_file_list]
+        # print('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
+    ##======== parse XML annotations
+    def convert(size, box):
+        dw = 1./size[0]
+        dh = 1./size[1]
+        x = (box[0] + box[1])/2.0
+        y = (box[2] + box[3])/2.0
+        w = box[1] - box[0]
+        h = box[3] - box[2]
+        x = x*dw
+        w = w*dw
+        y = y*dh
+        h = h*dh
+        return (x,y,w,h)
+
+    def convert_annotation(file_name):
+        """ Given VOC2012 XML Annotations, returns number of objects and info. """
+        in_file = open(file_name)
+        out_file = ""
+        tree = ET.parse(in_file)
+        root = tree.getroot()
+        size = root.find('size')
+        w = int(size.find('width').text)
+        h = int(size.find('height').text)
+        n_objs = 0
+
+        for obj in root.iter('object'):
+            difficult = obj.find('difficult').text
+            cls = obj.find('name').text
+            if cls not in classes or int(difficult) == 1:
+                continue
+            cls_id = classes.index(cls)
+            xmlbox = obj.find('bndbox')
+            b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+            bb = convert((w,h), b)
+            # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
+            out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+            n_objs += 1
+            if cls in "person":
+                for part in obj.iter('part'):
+                    cls = part.find('name').text
+                    if cls not in classes_in_person:
+                        continue
+                    cls_id = classes.index(cls)
+                    xmlbox = part.find('bndbox')
+                    b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+                    bb = convert((w,h), b)
+                    # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
+                    out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+                    n_objs += 1
+        in_file.close()
+        return n_objs, out_file
+
+    print("[VOC] Parsing xml annotations files")
+    n_objs_list = []
+    objs_info_list = [] # Darknet Format list of string
+    objs_info_dicts = {}
+    for idx, ann_file in enumerate(imgs_ann_file_list):
+        n_objs, objs_info = convert_annotation(ann_file)
+        n_objs_list.append(n_objs)
+        objs_info_list.append(objs_info)
+        with tf.gfile.GFile(ann_file, 'r') as fid:
+            xml_str = fid.read()
+        xml = etree.fromstring(xml_str)
+        data = _recursive_parse_xml_to_dict(xml)['annotation']
+        objs_info_dicts.update({imgs_file_list[idx]: data})
+
+    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
+        classes, classes_in_person, classes_dict,\
+        n_objs_list, objs_info_list, objs_info_dicts
+
 
 ## Load and save network list npz
 def save_npz(save_list=[], name='model.npz', sess=None):
