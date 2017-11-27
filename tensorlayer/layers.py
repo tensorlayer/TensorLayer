@@ -1888,10 +1888,10 @@ class DeformableConv2dLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.offset_layer = offset_layer
-        
+
         if tf.__version__ < "1.4":
             raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version")
-            
+
         print("  [TL] DeformableConv2dLayer %s: shape:%s, act:%s" %
               (self.name, str(shape), act.__name__))
 
@@ -2525,7 +2525,7 @@ class DepthwiseConv2d(Layer):
         if len(strides) == 2:
             strides = [1, strides[0], strides[1], 1]
 
-        assert len(strides) == 4, "len(strides) should be 4."            
+        assert len(strides) == 4, "len(strides) should be 4."
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
@@ -2546,8 +2546,8 @@ class DepthwiseConv2d(Layer):
 
 ## Super resolution
 def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-    """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used
-    for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
+    """It is a sub-pixel 2d upsampling layer, usually be used
+    for Super-Resolution applications, see `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
     Parameters
     ------------
@@ -2636,7 +2636,7 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
     return net_new
 
 def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-    """The :class:`SubpixelConv2d` class is a sub-pixel 2d convolutional ayer, usually be used
+    """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
     Parameters
@@ -4924,7 +4924,7 @@ class ConvLSTMLayer(Layer):
             print("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
-        
+
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
         if initial_state is None:
