@@ -1758,7 +1758,7 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
 
 def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100,
     is_rescale=False, is_center=False, is_random=False,
-    thresh_wh=0.01, thresh_wh2=15.):
+    thresh_wh=0.02, thresh_wh2=12.):
     """Randomly or centrally crop an image, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
@@ -1885,7 +1885,7 @@ def obj_box_shift(im, classes=[], coords=[], wrg=0.1, hrg=0.1,
     row_index=0, col_index=1, channel_index=2,
     fill_mode='nearest', cval=0., order=1,
     is_rescale=False, is_center=False, is_random=False,
-    thresh_wh=0.01, thresh_wh2=15.):
+    thresh_wh=0.02, thresh_wh2=12.):
     """ Shift an image randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
@@ -1995,7 +1995,7 @@ def obj_box_shift(im, classes=[], coords=[], wrg=0.1, hrg=0.1,
 def obj_box_zoom(im, classes=[], coords=[], zoom_range=(0.9, 1.1),
     row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1,
     is_rescale=False, is_center=False, is_random=False,
-    thresh_wh=0.01, thresh_wh2=15.):
+    thresh_wh=0.02, thresh_wh2=12.):
     """Zoom in and out of a single image, randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
