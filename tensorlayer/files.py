@@ -707,8 +707,8 @@ def load_celebA_dataset(dirpath='data'):
         data_files[i] =  os.path.join(image_path, data_files[i])
     return data_files
 
-def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=False):
-    """ Pascal VOC 2012 Dataset has 20 objects "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"`` and additional 3 classes ``"head", "hand", "foot" for person.
+def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
+    """ Pascal VOC 2012 Dataset has 20 objects "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor" and additional 3 classes "head", "hand", "foot" for person.
 
     Parameters
     -----------
@@ -774,6 +774,7 @@ def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=
     - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`_.
     - `TensorFlow/Models/object-detection <https://github.com/zsdonghao/object-detection/blob/master/g3doc/preparing_inputs.md>`_.
     """
+    path= os.path.join(path, 'VOC')
 
     def _recursive_parse_xml_to_dict(xml):
       """Recursively parses XML contents to python dict.
@@ -842,28 +843,32 @@ def load_voc_dataset(path='data/VOC', dataset='2012', contain_classes_in_person=
     print("[VOC] object classes {}".format(classes_dict))
 
     ##======== 1. image path list
-    folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
+    # folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
+    folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     print("[VOC] {} images found".format(len(imgs_file_list)))
     imgs_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.jpg --> 2007000027
     imgs_file_list = [folder_imgs+s for s in imgs_file_list]
         # print('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     ##======== 2. semantic segmentation maps path list
-    folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
+    # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
+    folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
     imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
     print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
     imgs_semseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
     imgs_semseg_file_list = [folder_semseg+s for s in imgs_semseg_file_list]
         # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
     ##======== 3. instance segmentation maps path list
-    folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
+    # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
+    folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
     imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
     print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
     imgs_insseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
     imgs_insseg_file_list = [folder_semseg+s for s in imgs_insseg_file_list]
         # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     ##======== 4. annotations for bounding box and object class
-    folder_ann = path+"/"+extracted_filename+"/Annotations/"
+    # folder_ann = path+"/"+extracted_filename+"/Annotations/"
+    folder_ann = os.path.join(path, extracted_filename, "Annotations")
     imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
     print("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
     imgs_ann_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.xml --> 2007000027
