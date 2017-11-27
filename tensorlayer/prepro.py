@@ -751,7 +751,7 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
         An image with dimension of [row, col, channel] (default).
     zoom_range : list or tuple
         - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-        - If is_random=True, (min zoom out, max zoom out) for x and y with different random zoom in/out factor.
+        - If is_random=True, it is (min zoom out, max zoom out) for x and y with different random zoom in/out factor.
         e.g (0.5, 1) zoom in 1~2 times.
     is_random : boolean, default False
         If True, randomly zoom.
@@ -2005,7 +2005,7 @@ def obj_box_zoom(im, classes=[], coords=[], zoom_range=(0.9, 1.1),
         An image with dimension of [row, col, channel] (default).
     classes : list of class ID (int).
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    zoom_range, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.shift``.
+    zoom_range, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.zoom``.
     is_rescale : boolean, default False
         Set to True, if the coordinates are rescaled to [0, 1].
     is_center : boolean, default False
