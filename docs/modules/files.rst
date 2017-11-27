@@ -45,6 +45,7 @@ sake of cross-platform.
    load_flickr1M_dataset
    load_cyclegan_dataset
    load_celebA_dataset
+   load_voc_dataset
    download_file_from_google_drive
 
    save_npz
@@ -120,6 +121,10 @@ CycleGAN
 CelebA
 ^^^^^^^^^
 .. autofunction:: load_celebA_dataset
+
+VOC 2007/2012
+^^^^^^^^^^^^^^^^
+.. autofunction:: load_voc_dataset
 
 Google Drive
 ^^^^^^^^^^^^^^^^

@@ -63,6 +63,25 @@ Some of the code in this package are borrowed from Keras.
    binary_erosion
    erosion
 
+
+   obj_box_coord_rescale
+   obj_box_coords_rescale
+   obj_box_coord_scale_to_pixelunit
+   obj_box_coord_centroid_to_upleft_butright
+   obj_box_coord_centroid_to_upleft
+   obj_box_coord_upleft_to_centroid
+
+   parse_darknet_ann_str_to_list
+   parse_darknet_ann_list_to_cls_box
+
+   obj_box_left_right_flip
+   obj_box_imresize
+   obj_box_crop
+   obj_box_shift
+   obj_box_zoom
+
+
+
    pad_sequences
    remove_pad_sequences
    process_sequences
@@ -195,6 +214,66 @@ Binary erosion
 Greyscale erosion
 ^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: erosion
+
+
+
+Object detection
+-------------------
+
+Coordinate pixel unit to percentage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_rescale
+
+Coordinates pixel unit to percentage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coords_rescale
+
+Coordinate percentage to pixel unit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_scale_to_pixelunit
+
+Coordinate [x_center, x_center, w, h] to up-left button-right
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_centroid_to_upleft_butright
+
+Coordinate [x_center, x_center, w, h] to up-left-width-high
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_centroid_to_upleft
+
+Coordinate up-left-width-high to [x_center, x_center, w, h]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_upleft_to_centroid
+
+Darknet format string to list
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: parse_darknet_ann_str_to_list
+
+Darknet format split class and coordinate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: parse_darknet_ann_list_to_cls_box
+
+Image Aug - Flip
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_left_right_flip
+
+Image Aug - Resize
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_imresize
+
+Image Aug - Crop
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_crop
+
+Image Aug - Shift
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction::  obj_box_shift
+
+Image Aug - Zoom
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_zoom
+
+
+
 
 
 Sequence
