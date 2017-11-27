@@ -229,37 +229,55 @@ Hi, here is an example for image augmentation on VOC dataset.
 
   import tensorlayer as tl
 
-  ## download the VOC dataset
-  imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
-      classes, classes_in_person, classes_dict,\
-      n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
+  ## download VOC 2012 dataset
+  imgs_file_list, _, _, _, classes, _, _,\
+      _, objs_info_list, _ = tl.files.load_voc_dataset(dataset="2012")
 
-  ## parse the annotation into list format
+  ## parse annotation and convert it into list format
   ann_list = []
   for info in objs_info_list:
       ann = tl.prepro.parse_darknet_ann_str_to_list(info)
       c, b = tl.prepro.parse_darknet_ann_list_to_cls_box(ann)
       ann_list.append([c, b])
 
-  ## different types of image augmentation
-  idx = 2
+  # read and save one image
+  idx = 2  # you can select your own image
   image = tl.vis.read_image(imgs_file_list[idx])
-  tl.vis.draw_boxes_and_labels_to_image(image, ann_list[idx][0], ann_list[idx][1], [], classes, True, save_name='_im_original.png')
+  tl.vis.draw_boxes_and_labels_to_image(image, ann_list[idx][0],
+       ann_list[idx][1], [], classes, True, save_name='_im_original.png')
 
-  im_flip, coords = tl.prepro.obj_box_left_right_flip(image, coords=ann_list[idx][1], is_rescale=True, is_center=True, is_random=False)
-  tl.vis.draw_boxes_and_labels_to_image(im_flip, ann_list[idx][0], coords, [], classes, True, save_name='_im_flip.png')
+  # left right flip
+  im_flip, coords = tl.prepro.obj_box_left_right_flip(image,
+          ann_list[idx][1], is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_flip, ann_list[idx][0],
+          coords, [], classes, True, save_name='_im_flip.png')
 
-  im_resize, coords = tl.prepro.obj_box_imresize(image, coords=ann_list[idx][1], size=[300, 200], is_rescale=True)
-  tl.vis.draw_boxes_and_labels_to_image(im_resize, ann_list[idx][0], coords, [], classes, True, save_name='_im_resize.png')
+  # resize
+  im_resize, coords = tl.prepro.obj_box_imresize(image,
+          coords=ann_list[idx][1], size=[300, 200], is_rescale=True)
+  tl.vis.draw_boxes_and_labels_to_image(im_resize, ann_list[idx][0],
+          coords, [], classes, True, save_name='_im_resize.png')
 
-  im_crop, clas, coords = tl.prepro.obj_box_crop(image, classes=ann_list[idx][0], coords=ann_list[idx][1], wrg=200, hrg=200, is_rescale=True, is_center=True, is_random=False)
-  tl.vis.draw_boxes_and_labels_to_image(im_crop, clas, coords, [], classes, True, save_name='_im_crop.png')
+  # crop
+  im_crop, clas, coords = tl.prepro.obj_box_crop(image, ann_list[idx][0],
+           ann_list[idx][1], wrg=200, hrg=200,
+           is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_crop, clas, coords, [],
+           classes, True, save_name='_im_crop.png')
 
-  im_shfit, clas, coords = tl.prepro.obj_box_shift(image, classes=ann_list[idx][0], coords=ann_list[idx][1], wrg=0.1, hrg=0.1, is_rescale=True, is_center=True, is_random=False)
-  tl.vis.draw_boxes_and_labels_to_image(im_shfit, clas, coords, [], classes, True, save_name='_im_shift.png')
+  # shift
+  im_shfit, clas, coords = tl.prepro.obj_box_shift(image, ann_list[idx][0],
+          ann_list[idx][1], wrg=0.1, hrg=0.1,
+          is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_shfit, clas, coords, [],
+          classes, True, save_name='_im_shift.png')
 
-  im_zoom, clas, coords = tl.prepro.obj_box_zoom(image, classes=ann_list[idx][0], coords=ann_list[idx][1], zoom_range=(1.3, 0.7), is_rescale=True, is_center=True, is_random=False)
-  tl.vis.draw_boxes_and_labels_to_image(im_zoom, clas, coords, [], classes, True, save_name='_im_zoom.png')
+  # zoom
+  im_zoom, clas, coords = tl.prepro.obj_box_zoom(image, ann_list[idx][0],
+          ann_list[idx][1], zoom_range=(1.3, 0.7),
+          is_rescale=True, is_center=True, is_random=False)
+  tl.vis.draw_boxes_and_labels_to_image(im_zoom, clas, coords, [],
+          classes, True, save_name='_im_zoom.png')
 
 
 In practice, you may want to use threading method to process a batch of images as follows.
@@ -276,33 +294,45 @@ In practice, you may want to use threading method to process a batch of images a
   def _data_pre_aug_fn(data):
       im, ann = data
       clas, coords = ann
-      ###### image only
-      im = tl.prepro.illumination(im, gamma=(0.5, 1.5), contrast=(0.5, 1.5), saturation=(0.5, 1.5), is_random=True)
-      ###### image and coordinates
-      ## random flip
-      im, coords = tl.prepro.obj_box_left_right_flip(im, coords=coords, is_rescale=True, is_center=True, is_random=True)
-      ## random resize
+      ## change image brightness, contrast and saturation randomly
+      im = tl.prepro.illumination(im, gamma=(0.5, 1.5),
+               contrast=(0.5, 1.5), saturation=(0.5, 1.5), is_random=True)
+      ## flip randomly
+      im, coords = tl.prepro.obj_box_left_right_flip(im, coords,
+               is_rescale=True, is_center=True, is_random=True)
+      ## randomly resize and crop image, it can have same effect as random zoom
       tmp0 = random.randint(1, int(im_size[0]*jitter))
       tmp1 = random.randint(1, int(im_size[1]*jitter))
-      im, coords = tl.prepro.obj_box_imresize(im, coords=coords, size=[im_size[0]+tmp0, im_size[1]+tmp1], is_rescale=True, interp='bicubic')
-      im, clas, coords = tl.prepro.obj_box_crop(im, classes=clas, coords=coords, wrg=im_size[1], hrg=im_size[0], is_rescale=True, is_center=True, is_random=True)
-      ###### rescale pixel value from [0, 255] to [-1, 1] (optional)
+      im, coords = tl.prepro.obj_box_imresize(im, coords,
+              [im_size[0]+tmp0, im_size[1]+tmp1], is_rescale=True,
+               interp='bicubic')
+      im, clas, coords = tl.prepro.obj_box_crop(im, clas, coords,
+               wrg=im_size[1], hrg=im_size[0], is_rescale=True,
+               is_center=True, is_random=True)
+      ## rescale value from [0, 255] to [-1, 1] (optional)
       im = im / 127.5 - 1
       return im, [clas, coords]
 
+  # randomly read a batch of image and the corresponding annotations
   idexs = tl.utils.get_random_int(min=0, max=n_data-1, number=batch_size)
   b_im_path = [imgs_file_list[i] for i in idexs]
   b_images = tl.prepro.threading_data(b_im_path, fn=tl.vis.read_image)
-
   b_ann = [ann_list[i] for i in idexs]
 
-  data = tl.prepro.threading_data([_ for _ in zip(b_images, b_ann)], _data_pre_aug_fn)
+  # threading process
+  data = tl.prepro.threading_data([_ for _ in zip(b_images, b_ann)],
+                _data_pre_aug_fn)
   b_images2 = [d[0] for d in data]
   b_ann = [d[1] for d in data]
 
+  # save all images
   for i in range(len(b_images)):
-      tl.vis.draw_boxes_and_labels_to_image(b_images[i], ann_list[idexs[i]][0], ann_list[idexs[i]][1], [], classes, True, save_name='_bbox_vis_%d_original.png' % i)
-      tl.vis.draw_boxes_and_labels_to_image((b_images2[i]+1)*127.5, b_ann[i][0], b_ann[i][1], [], classes, True, save_name='_bbox_vis_%d.png' % i)
+      tl.vis.draw_boxes_and_labels_to_image(b_images[i],
+               ann_list[idexs[i]][0], ann_list[idexs[i]][1], [],
+               classes, True, save_name='_bbox_vis_%d_original.png' % i)
+      tl.vis.draw_boxes_and_labels_to_image((b_images2[i]+1)*127.5,
+               b_ann[i][0], b_ann[i][1], [], classes, True,
+               save_name='_bbox_vis_%d.png' % i)
 
 
 Coordinate pixel unit to percentage
