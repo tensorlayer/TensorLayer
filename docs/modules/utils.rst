@@ -42,7 +42,7 @@ Random functions
 ----------------------------
 .. autofunction:: get_random_int
 
-Dictionary
+Dictionary and list
 --------------------
 
 Set all items in dictionary to one

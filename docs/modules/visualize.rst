@@ -12,6 +12,7 @@ to visualize the model, activations etc. Here we provide more functions for data
    read_images
    save_image
    save_images
+   draw_boxes_and_labels_to_image
    W
    CNN2d
    frame
@@ -37,6 +38,11 @@ Save one image
 Save multiple images
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: save_images
+
+Save image for object detection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: draw_boxes_and_labels_to_image
+
 
 
 Visualize model parameters
