@@ -102,7 +102,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
         - or [x_center, y_center, w, h] (set bbox_center_to_rectangle to True).
     scores : list of score (int). (Optional)
     classes_list : list of string, for converting ID to string.
-    bbox_center_to_rectangle : boolean, defalt is False.
+    bbox_center_to_rectangle : boolean, defalt is True.
         If True, convert [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
     save_name : None or string
         The name of image file (i.e. image.png), if None, not to save image.
