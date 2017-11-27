@@ -21,7 +21,7 @@ from tensorflow.python.platform import gfile
 
 
 ## Load dataset functions
-def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
+def load_mnist_dataset(shape=(-1,784), path="data"):
     """Automatically download MNIST dataset
     and return the training, validation and test set with 50000, 10000 and 10000
     digit images respectively.
@@ -38,6 +38,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
     """
+    path = os.path.join(path, 'mnist')
     # We first define functions for loading MNIST images and labels.
     # For convenience, they also download the requested files if needed.
     def load_mnist_images(path, filename):
@@ -84,7 +85,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     y_test = np.asarray(y_test, dtype=np.int32)
     return X_train, y_train, X_val, y_val, X_test, y_test
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=False, second=3):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, second=3):
     """The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with
     6000 images per class. There are 50000 training images and 10000 test images.
 
@@ -115,7 +116,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
     - `Code references <https://teratail.com/questions/28932>`_
     """
-
+    path = os.path.join(path, 'cifar10')
     print("Load or Download cifar10 > {}".format(path))
 
     #Helper function to unpickle the data
@@ -201,7 +202,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
 
     return X_train, y_train, X_test, y_test
 
-def load_ptb_dataset(path='data/ptb/'):
+def load_ptb_dataset(path='data'):
     """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
     including "Empirical Evaluation and Combination of Advanced Language
     Modeling Techniques", "Recurrent Neural Network Regularization".
@@ -226,6 +227,7 @@ def load_ptb_dataset(path='data/ptb/'):
     - ``tensorflow.models.rnn.ptb import reader``
     - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
+    path = os.path.join(path, 'ptb')
     print("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
     #Maybe dowload and uncompress tar, or load exsisting files
@@ -252,7 +254,7 @@ def load_ptb_dataset(path='data/ptb/'):
     # exit()
     return train_data, valid_data, test_data, vocabulary
 
-def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
+def load_matt_mahoney_text8_dataset(path='data'):
     """Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
     Extract the first file enclosed in a zip file as a list of words.
@@ -274,7 +276,7 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> print('Data size', len(words))
     """
-
+    path = os.path.join(path, 'mm_test8')
     print("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
 
     filename = 'text8.zip'
@@ -287,7 +289,7 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
             word_list[idx] = word_list[idx].decode()
     return word_list
 
-def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
+def load_imdb_dataset(path='data', nb_words=None, skip_top=0,
               maxlen=None, test_split=0.2, seed=113,
               start_char=1, oov_char=2, index_from=3):
     """Load IMDB dataset
@@ -310,6 +312,7 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
     -----------
     - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
     """
+    path = os.path.join(path, 'imdb')
 
     filename = "imdb.pkl"
     url = 'https://s3.amazonaws.com/text-datasets/'
@@ -623,18 +626,18 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
     """
     url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
 
-    if folder_exists(path+"/"+filename) is False:
+    if folder_exists(os.path.join(path, filename)) is False:
         print("[*] {} is nonexistent in {}".format(filename, path))
         maybe_download_and_extract(filename+'.zip', path, url, extract=True)
-        del_file(path+'/'+filename+'.zip')
+        del_file(os.path.join(path, filename+'.zip'))
 
     def load_image_from_folder(path):
         path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
         return visualize.read_images(path_imgs, path=path, n_threads=10, printable=False)
-    im_train_A = load_image_from_folder(path+"/"+filename+"/trainA")
-    im_train_B = load_image_from_folder(path+"/"+filename+"/trainB")
-    im_test_A = load_image_from_folder(path+"/"+filename+"/testA")
-    im_test_B = load_image_from_folder(path+"/"+filename+"/testB")
+    im_train_A = load_image_from_folder(os.path.join(path, filename, "trainA"))
+    im_train_B = load_image_from_folder(os.path.join(path, filename, "trainB"))
+    im_test_A = load_image_from_folder(os.path.join(path, filename, "testA"))
+    im_test_B = load_image_from_folder(os.path.join(path, filename, "testB"))
 
     def if_2d_to_3d(images):         # [h, w] --> [h, w, 3]
         for i in range(len(images)):
@@ -819,15 +822,22 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         raise Exception("Please set the dataset aug to either 2012 or 2007.")
 
     ##======== download dataset
-    if folder_exists(path+"/"+extracted_filename) is False:
+    from sys import platform as _platform
+    if folder_exists(os.path.join(path, extracted_filename)) is False:
         print("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
         maybe_download_and_extract(tar_filename, path, url, extract=True)
-        del_file(path+'/'+tar_filename)
+        del_file(os.path.join(path, tar_filename))
         if dataset == "2012":
-            os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
+            if _platform == "win32":
+                os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(path, path))
+            else:
+                os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
         elif dataset == "2007":
-            os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
-        del_folder(path+'/VOCdevkit')
+            if _platform == "win32":
+                os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
+            else:
+                os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+        del_folder(os.path.join(path, 'VOCdevkit'))
     ##======== object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car",
             "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
@@ -848,7 +858,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     print("[VOC] {} images found".format(len(imgs_file_list)))
     imgs_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.jpg --> 2007000027
-    imgs_file_list = [folder_imgs+s for s in imgs_file_list]
+    imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
         # print('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     ##======== 2. semantic segmentation maps path list
     # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
@@ -856,7 +866,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
     print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
     imgs_semseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
-    imgs_semseg_file_list = [folder_semseg+s for s in imgs_semseg_file_list]
+    imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
     ##======== 3. instance segmentation maps path list
     # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
@@ -864,7 +874,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
     print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
     imgs_insseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
-    imgs_insseg_file_list = [folder_semseg+s for s in imgs_insseg_file_list]
+    imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     ##======== 4. annotations for bounding box and object class
     # folder_ann = path+"/"+extracted_filename+"/Annotations/"
@@ -872,7 +882,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
     print("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
     imgs_ann_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.xml --> 2007000027
-    imgs_ann_file_list = [folder_ann+s for s in imgs_ann_file_list]
+    imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
         # print('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
     ##======== parse XML annotations
     def convert(size, box):
