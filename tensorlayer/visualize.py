@@ -90,7 +90,7 @@ def save_images(images, size, image_path=''):
 # for object detection
 def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
                 scores=[], classes_list=[],
-                bbox_center_to_rectangle=True, save_name=None):
+                box_centroid_to_upleft_butright=True, save_name=None):
     """ Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
@@ -99,11 +99,12 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
     classes : list of class ID (int).
     coords : list of list for coordinates.
         - [x, y, x2, y2] (up-left and botton-right)
-        - or [x_center, y_center, w, h] (set bbox_center_to_rectangle to True).
+        - or [x_center, y_center, w, h] (set box_centroid_to_upleft_butright to True).
     scores : list of score (int). (Optional)
     classes_list : list of string, for converting ID to string.
-    bbox_center_to_rectangle : boolean, defalt is True.
-        If True, convert [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
+    box_centroid_to_upleft_butright : boolean, defalt is True.
+        If coords is [x_center, y_center, w, h], set it to True for converting [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
+        If coords is [x1, x2, y1, y2], set it to False.
     is_rescale : boolean, defalt is True.
         If True, the input coordinates are the portion of width and high, this API will scale the coordinates to pixel unit internally.
         If False, feed the coordinates with pixel unit format.
@@ -128,7 +129,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
     thick = int((imh + imw) // 430)
 
     for i in range(len(coords)):
-        if bbox_center_to_rectangle:
+        if box_centroid_to_upleft_butright:
             x, y, x2, y2 = prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
         else:
             x, y, x2, y2 = coords[i]
