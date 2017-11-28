@@ -90,18 +90,18 @@ def save_images(images, size, image_path=''):
 # for object detection
 def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
                 scores=[], classes_list=[],
-                box_centroid_to_upleft_butright=True, save_name=None):
+                box_centroid_to_upleft_butright=True, is_rescale=True, save_name=None):
     """ Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
     -----------
     image : RGB image in numpy.array, [height, width, channel].
-    classes : list of class ID (int).
-    coords : list of list for coordinates.
-        - [x, y, x2, y2] (up-left and botton-right)
-        - or [x_center, y_center, w, h] (set box_centroid_to_upleft_butright to True).
-    scores : list of score (int). (Optional)
-    classes_list : list of string, for converting ID to string.
+    classes : a list of class ID (int).
+    coords : a list of list for coordinates.
+        - Should be [x, y, x2, y2] (up-left and botton-right format)
+        - If [x_center, y_center, w, h] (set box_centroid_to_upleft_butright to True).
+    scores : a list of score (float). (Optional)
+    classes_list : list of string, for converting ID to string on image.
     box_centroid_to_upleft_butright : boolean, defalt is True.
         If coords is [x_center, y_center, w, h], set it to True for converting [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
         If coords is [x1, x2, y1, y2], set it to False.
