@@ -1942,6 +1942,7 @@ class DeformableConv2dLayer(Layer):
 
         ## this layer
         self.all_layers.extend([self.outputs])
+        self.all_params.extend([W, b])
 
 def AtrousConv1dLayer(net, n_filter=32, filter_size=2, stride=1, dilation=1, act=None,
         padding='SAME', use_cudnn_on_gpu=None,data_format='NWC',
