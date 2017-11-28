@@ -1621,7 +1621,7 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
         An image with dimension of [row, col, channel] (default).
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
     is_rescale : boolean, default False
-        Set to True, if the coordinates are rescaled to [0, 1].
+        Set to True, if the input coordinates are rescaled to [0, 1].
     is_center : boolean, default False
         Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
     is_random : boolean, default False
@@ -1700,7 +1700,7 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
     size, interp, mode : see ``tl.prepro.imresize`` for details.
     is_rescale : boolean, default False
-        Set to True, if the coordinates are rescaled to [0, 1], then return the original coordinates.
+        Set to True, if the input coordinates are rescaled to [0, 1], then return the original coordinates.
 
     Examples
     --------
@@ -1770,7 +1770,7 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100,
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
     wrg, hrg, is_random : see ``tl.prepro.crop`` for details.
     is_rescale : boolean, default False
-        Set to True, if the coordinates are rescaled to [0, 1].
+        Set to True, if the input coordinates are rescaled to [0, 1].
     is_center : boolean, default False
         Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
     thresh_wh : float
@@ -1897,7 +1897,7 @@ def obj_box_shift(im, classes=[], coords=[], wrg=0.1, hrg=0.1,
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
     wrg, hrg, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.shift``.
     is_rescale : boolean, default False
-        Set to True, if the coordinates are rescaled to [0, 1].
+        Set to True, if the input coordinates are rescaled to [0, 1].
     is_center : boolean, default False
         Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
     thresh_wh : float
@@ -2007,7 +2007,7 @@ def obj_box_zoom(im, classes=[], coords=[], zoom_range=(0.9, 1.1),
     coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
     zoom_range, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.zoom``.
     is_rescale : boolean, default False
-        Set to True, if the coordinates are rescaled to [0, 1].
+        Set to True, if the input coordinates are rescaled to [0, 1].
     is_center : boolean, default False
         Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
     thresh_wh : float
