@@ -711,7 +711,7 @@ def load_celebA_dataset(dirpath='data'):
     return data_files
 
 def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
-    """ Pascal VOC 2012 Dataset has 20 objects "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor" and additional 3 classes "head", "hand", "foot" for person.
+    """ Pascal VOC 2007/2012 Dataset has 20 objects "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor" and additional 3 classes "head", "hand", "foot" for person.
 
     Parameters
     -----------
