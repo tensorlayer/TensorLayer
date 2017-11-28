@@ -104,6 +104,9 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
     classes_list : list of string, for converting ID to string.
     bbox_center_to_rectangle : boolean, defalt is True.
         If True, convert [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
+    is_rescale : boolean, defalt is True.
+        If True, the input coordinates are the portion of width and high, this API will scale the coordinates to pixel unit internally.
+        If False, feed the coordinates with pixel unit format.
     save_name : None or string
         The name of image file (i.e. image.png), if None, not to save image.
 
@@ -130,7 +133,8 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
         else:
             x, y, x2, y2 = coords[i]
 
-        x, y, x2, y2 = prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
+        if is_rescale: # scale back to pixel unit if the coords are the portion of width and high
+            x, y, x2, y2 = prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
 
         cv2.rectangle(image,
             (x, y), (x2, y2),   # up-left and botton-right
