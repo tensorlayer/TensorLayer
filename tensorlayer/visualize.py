@@ -144,7 +144,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
 
         cv2.putText(
             image,
-            classes_list[classes[i]] + ((" " + str(scores[i])) if (len(scores) != 0) else " "),
+            classes_list[classes[i]] + ((" %.2f" % (scores[i])) if (len(scores) != 0) else " "),
             (x, y),             # button left
             0,
             1.5e-3 * imh,       # bigger = larger font
