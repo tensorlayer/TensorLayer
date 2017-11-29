@@ -1542,7 +1542,7 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
 # exit()
 
 def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
-    """ Convert one coordinate [x_center, y_center, w, h] to [x, y, x2, y2] in up-left and botton-right format.
+    """ Convert one coordinate [x_center, y_center, w, h] to [x1, y1, x2, y2] in up-left and botton-right format.
 
     Examples
     ---------
@@ -1551,8 +1551,8 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
     """
     assert len(coord) == 4,  "coordinate should be 4 values : [x, y, w, h]"
     x_center, y_center, w, h = coord
-    x  = x_center - w / 2
-    y  = y_center - h / 2
+    x  = x_center - w / 2.
+    y  = y_center - h / 2.
     x2 = x + w
     y2 = y + h
     if to_int:
@@ -1564,14 +1564,27 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
 # print(coord)    [20, 30, 40, 50]
 # exit()
 
+def obj_box_coord_upleft_butright_to_centroid(coord):
+    """ Convert one coordinate [x1, y1, x2, y2] to [x_center, y_center, w, h].
+    It is the reverse process of ``obj_box_coord_centroid_to_upleft_butright``.
+    """
+    assert len(coord) == 4,  "coordinate should be 4 values : [x1, y1, x2, y2]"
+    x1, y1, x2, y2 = coord
+    w = x2 - x1
+    h = y2 - y1
+    x_c = x1 + w / 2.
+    y_c = y1 + h / 2.
+    return [x_c, y_c, w, h]
+
+
 def obj_box_coord_centroid_to_upleft(coord):
     """ Convert one coordinate [x_center, y_center, w, h] to [x, y, w, h].
     It is the reverse process of ``obj_box_coord_upleft_to_centroid``.
     """
     assert len(coord) == 4,  "coordinate should be 4 values : [x, y, w, h]"
     x_center, y_center, w, h = coord
-    x  = x_center - w / 2
-    y  = y_center - h / 2
+    x  = x_center - w / 2.
+    y  = y_center - h / 2.
     return [x, y, w, h]
 
 def obj_box_coord_upleft_to_centroid(coord):
@@ -1580,8 +1593,8 @@ def obj_box_coord_upleft_to_centroid(coord):
     """
     assert len(coord) == 4,  "coordinate should be 4 values : [x, y, w, h]"
     x, y, w, h = coord
-    x_center = x + w / 2
-    y_center = y + h / 2
+    x_center = x + w / 2.
+    y_center = y + h / 2.
     return [x_center, y_center, w, h]
 
 ##

@@ -68,6 +68,7 @@ Some of the code in this package are borrowed from Keras.
    obj_box_coords_rescale
    obj_box_coord_scale_to_pixelunit
    obj_box_coord_centroid_to_upleft_butright
+   obj_box_coord_upleft_butright_to_centroid
    obj_box_coord_centroid_to_upleft
    obj_box_coord_upleft_to_centroid
 
@@ -350,6 +351,10 @@ Coordinate percentage to pixel unit
 Coordinate [x_center, x_center, w, h] to up-left button-right
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: obj_box_coord_centroid_to_upleft_butright
+
+Coordinate up-left button-right to [x_center, x_center, w, h]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: obj_box_coord_upleft_butright_to_centroid
 
 Coordinate [x_center, x_center, w, h] to up-left-width-high
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
