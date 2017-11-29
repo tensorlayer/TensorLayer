@@ -138,14 +138,14 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[],
             x, y, x2, y2 = prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
 
         cv2.rectangle(image,
-            (x, y), (x2, y2),   # up-left and botton-right
+            (int(x), int(y)), (int(x2), int(y2)),   # up-left and botton-right
             [0,255,0],
             thick)
 
         cv2.putText(
             image,
             classes_list[classes[i]] + ((" %.2f" % (scores[i])) if (len(scores) != 0) else " "),
-            (x, y),             # button left
+            (int(x), int(y)),   # button left
             0,
             1.5e-3 * imh,       # bigger = larger font
             [0,0,256],          # self.meta['colors'][max_indx],
