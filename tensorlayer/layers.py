@@ -1935,7 +1935,7 @@ class DeformableConv2dLayer(Layer):
             grid = tf.tile(grid, [1, 1, kernel_n, 1])  # grid --> (h, w, n, 2)
             grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
 
-            input_deform = efficient_tf_batch_map_offsets(self.inputs, offset, grid_offset)
+            input_deform = tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(name='W_conv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
                               initializer=W_init, **W_init_args)
