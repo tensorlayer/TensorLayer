@@ -1900,7 +1900,7 @@ class DeformableConv2dLayer(Layer):
     ):
         if tf.__version__ < "1.4":
             raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version")
-        
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.offset_layer = offset_layer
@@ -3099,6 +3099,7 @@ class BatchNormLayer(Layer):
         The initializer for initializing beta
     gamma_init : gamma initializer
         The initializer for initializing gamma
+    dtype : tf.float32 (default) or tf.float16
     name : a string or None
         An optional name to attach to this layer.
 
@@ -3116,6 +3117,7 @@ class BatchNormLayer(Layer):
         is_train = False,
         beta_init = tf.zeros_initializer,
         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002), # tf.ones_initializer,
+        dtype = tf.float32,
         name ='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -3136,10 +3138,13 @@ class BatchNormLayer(Layer):
                 beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape,
                                initializer=beta_init,
+                               dtype=dtype,
                                trainable=is_train)#, restore=restore)
 
             gamma = tf.get_variable('gamma', shape=params_shape,
-                                initializer=gamma_init, trainable=is_train,
+                                initializer=gamma_init,
+                                dtype=dtype,
+                                trainable=is_train,
                                 )#restore=restore)
 
             ## 2.
@@ -3150,10 +3155,12 @@ class BatchNormLayer(Layer):
             moving_mean = tf.get_variable('moving_mean',
                                       params_shape,
                                       initializer=moving_mean_init,
-                                      trainable=False,)#   restore=restore)
+                                      dtype=dtype,
+                                      trainable=False)#   restore=restore)
             moving_variance = tf.get_variable('moving_variance',
                                           params_shape,
                                           initializer=tf.constant_initializer(1.),
+                                          dtype=dtype,
                                           trainable=False,)#   restore=restore)
 
             ## 3.
