@@ -1843,7 +1843,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
 
 class DeformableConv2dLayer(Layer):
     """The :class:`DeformableConv2dLayer` class is a
-    `Deformable Convolutional Layer <https://arxiv.org/abs/1703.06211>`_ .
+    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_ .
 
     Parameters
     -----------
@@ -1870,9 +1870,9 @@ class DeformableConv2dLayer(Layer):
     Examples
     --------
     >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> offset_1 = tl.layers.Conv2dLayer(layer=network, act =act, shape=[3, 3, 3, 18], strides=[1, 1, 1, 1],padding='SAME', name='offset_layer1')
+    >>> offset_1 = tl.layers.Conv2dLayer(layer=network, act=act, shape=[3, 3, 3, 18], strides=[1, 1, 1, 1],padding='SAME', name='offset_layer1')
     >>> network = tl.layers.DeformableConv2dLayer(layer=network, act=act, offset_layer=offset_1,  shape=[3, 3, 3, 32],  name='deformable_conv_2d_layer1')
-    >>> offset_2 = tl.layers.Conv2dLayer(layer=network, act = act, shape=[3, 3, 32, 18], strides=[1, 1, 1, 1], padding='SAME', name='offset_layer2')
+    >>> offset_2 = tl.layers.Conv2dLayer(layer=network, act=act, shape=[3, 3, 32, 18], strides=[1, 1, 1, 1], padding='SAME', name='offset_layer2')
     >>> network = tl.layers.DeformableConv2dLayer(layer=network, act = act, offset_layer=offset_2, shape=[3, 3, 32, 64], name='deformable_conv_2d_layer2')
 
     References
@@ -1881,11 +1881,10 @@ class DeformableConv2dLayer(Layer):
 
     Notes
     -----------
-    - The stride is fixed as (1, 1, 1, 1)
-    - `The padding is fixed as 'SAME'
-    - The current implementation is memory-inefficient, please use carefully
+    - The stride is fixed as (1, 1, 1, 1).
+    - The padding is fixed as 'SAME'.
+    - The current implementation is memory-inefficient, please use carefully.
     """
-
     def __init__(
             self,
             layer=None,
