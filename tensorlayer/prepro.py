@@ -281,7 +281,7 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_i
         return np.asarray(results)
 
 # flip
-def flip_axis(x, axis, is_random=False):
+def flip_axis(x, axis=1, is_random=False):
     """Flip the axis of an image, such as flip left and right, up and down, randomly or non-randomly,
 
     Parameters
