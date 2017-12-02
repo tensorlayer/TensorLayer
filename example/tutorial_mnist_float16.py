@@ -7,13 +7,15 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 import time
 
+D_TYPE = tf.float16         # tf.float32  tf.float16
+tl.layers.D_TYPE = D_TYPE   # define global dtype in tl.layers
+
 X_train, y_train, X_val, y_val, X_test, y_test = \
                 tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
 sess = tf.InteractiveSession()
 
 batch_size = 128
-D_TYPE = tf.float16 # tf.float32  tf.float16
 
 x = tf.placeholder(D_TYPE, shape=[batch_size, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[batch_size,])
@@ -23,22 +25,18 @@ def model(x, is_train=True, reuse=False):
         tl.layers.set_name_reuse(reuse)
         n = InputLayer(x, name='input')
         # cnn
-        n = Conv2d(n, 32, (5, 5), (1, 1), padding='SAME',
-            W_init_args={'dtype': D_TYPE}, b_init_args={'dtype': D_TYPE}, name='cnn1')
-        n = BatchNormLayer(n, act=tf.nn.relu, is_train=is_train, dtype=D_TYPE, name='bn1')
+        n = Conv2d(n, 32, (5, 5), (1, 1), padding='SAME', name='cnn1')
+        n = BatchNormLayer(n, act=tf.nn.relu, is_train=is_train, name='bn1')
         n = MaxPool2d(n, (2, 2), (2, 2), padding='SAME', name='pool1')
-        n = Conv2d(n, 64, (5, 5), (1, 1), padding='SAME',
-            W_init_args={'dtype': D_TYPE}, b_init_args={'dtype': D_TYPE}, name='cnn2')
-        n = BatchNormLayer(n, act=tf.nn.relu, is_train=is_train, dtype=D_TYPE, name='bn2')
+        n = Conv2d(n, 64, (5, 5), (1, 1), padding='SAME', name='cnn2')
+        n = BatchNormLayer(n, act=tf.nn.relu, is_train=is_train, name='bn2')
         n = MaxPool2d(n, (2, 2), (2, 2), padding='SAME', name='pool2')
         # mlp
         n = FlattenLayer(n, name='flatten')
         n = DropoutLayer(n, 0.5, True, is_train, name='drop1')
-        n = DenseLayer(n, 256, act=tf.nn.relu,
-            W_init_args={'dtype': D_TYPE}, b_init_args={'dtype': D_TYPE}, name='relu1')
+        n = DenseLayer(n, 256, act=tf.nn.relu, name='relu1')
         n = DropoutLayer(n, 0.5, True, is_train, name='drop2')
-        n = DenseLayer(n, 10, act=tf.identity,
-            W_init_args={'dtype': D_TYPE}, b_init_args={'dtype': D_TYPE}, name='output')
+        n = DenseLayer(n, 10, act=tf.identity, name='output')
     return n
 
 # define inferences
