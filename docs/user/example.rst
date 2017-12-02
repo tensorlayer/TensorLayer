@@ -69,6 +69,7 @@ Special Examples
  - Data augmentation with TensorLayer, see `tutorial_image_preprocess.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`_.
  - TensorDB by `fangde <https://github.com/fangde>`_ see `here <https://github.com/akaraspt/tl_paper>`_.
  - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`_.
+ - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_float16.py>`_.
 
 ..
   Applications
