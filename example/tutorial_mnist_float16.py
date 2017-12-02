@@ -13,7 +13,7 @@ X_train, y_train, X_val, y_val, X_test, y_test = \
 sess = tf.InteractiveSession()
 
 batch_size = 128
-D_TYPE = tf.float32 # tf.float32  tf.float16
+D_TYPE = tf.float16 # tf.float32  tf.float16
 
 x = tf.placeholder(D_TYPE, shape=[batch_size, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[batch_size,])
