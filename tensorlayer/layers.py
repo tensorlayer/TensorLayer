@@ -24,6 +24,8 @@ set_keep = globals()
 set_keep['_layers_name_list'] =[]
 set_keep['name_reuse'] = False
 
+D_TYPE = tf.float32
+
 try:  # For TF12 and later
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
 except:  # For TF11 and before
@@ -514,26 +516,29 @@ class Word2vecEmbeddingInputlayer(Layer):
             embeddings = tf.get_variable(name='embeddings',
                                     shape=(vocabulary_size, embedding_size),
                                     initializer=E_init,
+                                    dtype=D_TYPE,
                                     **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(name='nce_weights',
                                     shape=(vocabulary_size, embedding_size),
                                     initializer=nce_W_init,
+                                    dtype=D_TYPE,
                                     **nce_W_init_args)
             nce_biases = tf.get_variable(name='nce_biases',
                                     shape=(vocabulary_size),
                                     initializer=nce_b_init,
+                                    dtype=D_TYPE,
                                     **nce_b_init_args)
 
         # Compute the average NCE loss for the batch.
         # tf.nce_loss automatically draws a new sample of the negative labels
         # each time we evaluate the loss.
         self.nce_cost = tf.reduce_mean(
-            tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
-                           inputs=embed, labels=train_labels,
-                           num_sampled=num_sampled, num_classes=vocabulary_size,
-                           **nce_loss_args))
+                tf.nn.nce_loss(weights=nce_weights, biases=nce_biases,
+                inputs=embed, labels=train_labels,
+                num_sampled=num_sampled, num_classes=vocabulary_size,
+                **nce_loss_args))
 
         self.outputs = embed
         self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
@@ -637,6 +642,7 @@ class EmbeddingInputlayer(Layer):
             embeddings = tf.get_variable(name='embeddings',
                                     shape=(vocabulary_size, embedding_size),
                                     initializer=E_init,
+                                    dtype=D_TYPE,
                                     **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
@@ -689,6 +695,7 @@ class AverageEmbeddingInputlayer(Layer):
                 name='embeddings',
                 shape=(vocabulary_size, embedding_size),
                 initializer=embeddings_initializer,
+                dtype=D_TYPE,
                 **(embeddings_kwargs or {})
                 # **embeddings_kwargs
             ) # **(embeddings_kwargs or {}),
@@ -701,7 +708,8 @@ class AverageEmbeddingInputlayer(Layer):
             masks = tf.not_equal(self.inputs, pad_value, name='masks')
             word_embeddings *= tf.cast(
                 tf.expand_dims(masks, axis=-1),
-                tf.float32,
+                # tf.float32,
+                dtype=D_TYPE,
             )
             sum_word_embeddings = tf.reduce_sum(word_embeddings, axis=1)
 
@@ -710,7 +718,8 @@ class AverageEmbeddingInputlayer(Layer):
                 masks,
                 axis=1,
                 keep_dims=True,
-                dtype=tf.float32,
+                # dtype=tf.float32,
+                dtype=D_TYPE,
                 name='sentence_lengths',
             )
 
@@ -791,12 +800,12 @@ class DenseLayer(Layer):
         self.n_units = n_units
         print("  [TL] DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args )
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 except: # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, **b_init_args )
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
@@ -1204,8 +1213,8 @@ class DropconnectDenseLayer(Layer):
         print("  [TL] DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, **b_init_args )
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args )
+            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args )
             self.outputs = act(tf.matmul(self.inputs, W) + b)#, name=name)    # 1.2
 
         set_keep[name] = tf.placeholder(tf.float32)
@@ -1274,7 +1283,7 @@ class Conv1dLayer(Layer):
         if act is None:
             act = tf.identity
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, **W_init_args )
+            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
             self.outputs = tf.nn.convolution(
                 self.inputs,
                 W,
@@ -1284,7 +1293,7 @@ class Conv1dLayer(Layer):
                 data_format=data_format
             ) #1.2
             if b_init:
-                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = self.outputs + b
 
             self.outputs = act(self.outputs)
@@ -1382,9 +1391,9 @@ class Conv2dLayer(Layer):
                             (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, **W_init_args )
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
             if b_init:
-                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b )
             else:
                 self.outputs = act( tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
@@ -1488,9 +1497,9 @@ class DeConv2dLayer(Layer):
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
         # print("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, **W_init_args )
+            W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
             if b_init:
-                b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, **b_init_args )
+                b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = act( tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
             else:
                 self.outputs = act( tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding))
@@ -1551,8 +1560,8 @@ class Conv3dLayer(Layer):
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
-            W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, **b_init_args )
+            W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
+            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args )
             self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
         # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
@@ -1611,8 +1620,8 @@ class DeConv3dLayer(Layer):
                             (self.name, str(shape), str(output_shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, **W_init_args )
-            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, **b_init_args )
+            W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
+            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=D_TYPE, **b_init_args )
 
             self.outputs = act( tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b )
 
@@ -1937,8 +1946,9 @@ class DeformableConv2dLayer(Layer):
             input_deform = tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(name='W_conv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
-                              initializer=W_init, **W_init_args)
-            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, **b_init_args)
+                              initializer=W_init, dtype=D_TYPE, **W_init_args)
+            b = tf.get_variable(name='b_conv2d', shape=(shape[-1]),
+                                initializer=b_init, dtype=D_TYPE, **b_init_args)
 
             self.outputs = tf.reshape(act(
                 tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
@@ -2036,9 +2046,9 @@ class AtrousConv2dLayer(Layer):
             act = tf.identity
         with tf.variable_scope(name) as vs:
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
-            filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, **W_init_args )
+            filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args )
             if b_init:
-                b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, **b_init_args )
+                b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding) + b)
             else:
                 self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
@@ -2171,7 +2181,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     num_in_channels = shape[3]
 
     #Create bilinear filter kernel as numpy array
-    bilinear_kernel = np.zeros([filter_size, filter_size], dtype=np.float32)
+    bilinear_kernel = np.zeros([filter_size, filter_size], dtype=D_TYPE) # dtype=np.float32)
     scale_factor = (filter_size + 1) // 2
     if filter_size % 2 == 1:
         center = scale_factor - 1
@@ -2186,7 +2196,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
         weights[:, :, i, i] = bilinear_kernel
 
     #assign numpy array to constant_initalizer and pass to get_variable
-    bilinear_weights_init = tf.constant_initializer(value=weights, dtype=tf.float32)
+    bilinear_weights_init = tf.constant_initializer(value=weights, dtype=D_TYPE) #dtype=tf.float32)
     return bilinear_weights_init
 
 ## Convolutional layer (Simplified)
@@ -2546,9 +2556,9 @@ class DepthwiseConv2d(Layer):
         assert len(strides) == 4, "len(strides) should be 4."
 
         with tf.variable_scope(name) as vs:
-            W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
+            W = tf.get_variable(name='W_sepconv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args ) # [filter_height, filter_width, in_channels, channel_multiplier]
             if b_init:
-                b = tf.get_variable(name='b_sepconv2d', shape=(pre_channel*channel_multiplier), initializer=b_init, **b_init_args )
+                b = tf.get_variable(name='b_sepconv2d', shape=(pre_channel*channel_multiplier), initializer=b_init, dtype=D_TYPE, **b_init_args )
                 self.outputs = act( tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding) + b )
             else:
                 self.outputs = act( tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding) )
@@ -2999,10 +3009,10 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 2.1 W
             n_in = int(self.theta_layer.outputs.get_shape()[-1])
             shape = (n_in, 6)
-            W = tf.get_variable(name='W', initializer=tf.zeros(shape))
+            W = tf.get_variable(name='W', initializer=tf.zeros(shape), dtype=D_TYPE)
             # 2.2 b
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
-            b = tf.get_variable(name='b', initializer=identity)
+            b = tf.get_variable(name='b', initializer=identity, dtype=D_TYPE)
             # 2.3 transformation matrix
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)
             ## 3. Spatial Transformer Sampling
@@ -3116,7 +3126,7 @@ class BatchNormLayer(Layer):
         is_train = False,
         beta_init = tf.zeros_initializer,
         gamma_init = tf.random_normal_initializer(mean=1.0, stddev=0.002), # tf.ones_initializer,
-        dtype = tf.float32,
+        # dtype = tf.float32,
         name ='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -3137,12 +3147,12 @@ class BatchNormLayer(Layer):
                 beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape,
                                initializer=beta_init,
-                               dtype=dtype,
+                               dtype=D_TYPE,
                                trainable=is_train)#, restore=restore)
 
             gamma = tf.get_variable('gamma', shape=params_shape,
                                 initializer=gamma_init,
-                                dtype=dtype,
+                                dtype=D_TYPE,
                                 trainable=is_train,
                                 )#restore=restore)
 
@@ -3154,12 +3164,12 @@ class BatchNormLayer(Layer):
             moving_mean = tf.get_variable('moving_mean',
                                       params_shape,
                                       initializer=moving_mean_init,
-                                      dtype=dtype,
+                                      dtype=D_TYPE,
                                       trainable=False)#   restore=restore)
             moving_variance = tf.get_variable('moving_variance',
                                           params_shape,
                                           initializer=tf.constant_initializer(1.),
-                                          dtype=dtype,
+                                          dtype=D_TYPE,
                                           trainable=False,)#   restore=restore)
 
             ## 3.
@@ -3950,8 +3960,9 @@ class InstanceNormLayer(Layer):
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
             scale = tf.get_variable('scale',[self.inputs.get_shape()[-1]],
-                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02))
-            offset = tf.get_variable('offset',[self.inputs.get_shape()[-1]],initializer=tf.constant_initializer(0.0))
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=D_TYPE)
+            offset = tf.get_variable('offset',[self.inputs.get_shape()[-1]],
+                initializer=tf.constant_initializer(0.0), dtype=D_TYPE)
             self.outputs = scale * tf.div(self.inputs-mean, tf.sqrt(var+epsilon)) + offset
             self.outputs = act(self.outputs)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -4439,7 +4450,7 @@ class RNNLayer(Layer):
         else:
             self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(batch_size, dtype=D_TYPE)  #dtype=tf.float32)  # 1.2.3
         state = self.initial_state
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -4639,11 +4650,11 @@ class BiRNNLayer(Layer):
 
             # Initial state of RNN
             if fw_initial_state is None:
-                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=tf.float32)
+                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=D_TYPE) # dtype=tf.float32)
             else:
                 self.fw_initial_state = fw_initial_state
             if bw_initial_state is None:
-                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=tf.float32)
+                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=D_TYPE) # dtype=tf.float32)
             else:
                 self.bw_initial_state = bw_initial_state
             # exit()
@@ -4953,7 +4964,7 @@ class ConvLSTMLayer(Layer):
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(batch_size, dtype=D_TYPE) # dtype=tf.float32)  # 1.2.3
         state = self.initial_state
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -5318,7 +5329,7 @@ class DynamicRNNLayer(Layer):
 
         # Initialize initial_state
         if initial_state is None:
-            self.initial_state = self.cell.zero_state(batch_size, dtype=tf.float32)
+            self.initial_state = self.cell.zero_state(batch_size, dtype=D_TYPE) # dtype=tf.float32)
         else:
             self.initial_state = initial_state
 
@@ -5562,11 +5573,11 @@ class BiDynamicRNNLayer(Layer):
             # self.bw_cell=cell_instance_fn()
             # Initial state of RNN
             if fw_initial_state is None:
-                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=tf.float32)
+                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=D_TYPE) # dtype=tf.float32)
             else:
                 self.fw_initial_state = fw_initial_state
             if bw_initial_state is None:
-                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=tf.float32)
+                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=D_TYPE) # dtype=tf.float32)
             else:
                 self.bw_initial_state = bw_initial_state
             # Computes sequence_length
@@ -6510,7 +6521,7 @@ class PReluLayer(Layer):
 
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name) as vs:
-            alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, **a_init_args )
+            alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, dtype=D_TYPE, **a_init_args )
             try:  ## TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
             except: ## TF 0.12
@@ -6718,9 +6729,9 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
         softmax_loss_function = None
         # Sampled softmax only makes sense if we sample less than vocabulary size.
         if num_samples > 0 and num_samples < self.target_vocab_size:
-          w = tf.get_variable("proj_w", [size, self.target_vocab_size])
+          w = tf.get_variable("proj_w", [size, self.target_vocab_size], dtype=D_TYPE)
           w_t = tf.transpose(w)
-          b = tf.get_variable("proj_b", [self.target_vocab_size])
+          b = tf.get_variable("proj_b", [self.target_vocab_size], dtype=D_TYPE)
           output_projection = (w, b)
 
           def sampled_loss(inputs, labels):
