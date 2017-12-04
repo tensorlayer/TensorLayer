@@ -723,7 +723,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     -----------
     path : string
         The path that the data is downloaded to, defaults is ``data/VOC``.
-    dataset : string, 2012 or 2007
+    dataset : string, 2012, 2012test or 2007.
         The VOC dataset version.
     contain_classes_in_person : If True, dataset will contains labels of head, hand and foot.
 
@@ -830,15 +830,15 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
         # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
         # tar_filename = "VOC2012test.tar"
-        print("Unfinished API, 2012 test JPEG and Annotation are not matched !")
-        exit()
+        # print("Unfinished API, 2012 test JPEG and Annotation are not matched !")
+        # exit()
     elif dataset == "2007":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtrainval_06-Nov-2007.tar"
         extracted_filename = "VOC2007"
         print("    [============= VOC 2007 =============]")
     else:
-        raise Exception("Please set the dataset aug to either 2012 or 2007.")
+        raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
 
     ##======== download dataset
     if dataset != "2012test":
@@ -908,6 +908,18 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_ann_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
         # print('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
+
+    if dataset == "2012test": # remove unused images in JPEG folder
+        imgs_file_list_new = []
+        for ann in imgs_ann_file_list:
+            ann = os.path.split(ann)[-1].split('.')[0]
+            for im in imgs_file_list:
+                if ann in im:
+                    imgs_file_list_new.append(im)
+                    break
+        imgs_file_list = imgs_file_list_new
+        print("[VOC] keep %d images" % len(imgs_file_list_new))
+
     ##======== parse XML annotations
     def convert(size, box):
         dw = 1./size[0]
