@@ -374,7 +374,7 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0,
 
     return X_train, y_train, X_test, y_test
 
-def load_nietzsche_dataset(path='data/nietzsche/'):
+def load_nietzsche_dataset(path='data'):
     """Load Nietzsche dataset.
     Returns a string.
 
@@ -391,6 +391,7 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
     >>> words = words.split()
     """
     print("Load or Download nietzsche dataset > {}".format(path))
+    path = os.path.join(path, 'nietzsche')
 
     filename = "nietzsche.txt"
     url = 'https://s3.amazonaws.com/text-datasets/'
@@ -400,7 +401,7 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
         words = f.read()
         return words
 
-def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
+def load_wmt_en_fr_dataset(path='data'):
     """It will download English-to-French translation data from the WMT'15
     Website (10^9-French-English corpus), and the 2013 news test from
     the same site as development set.
@@ -419,6 +420,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
     -----
     Usually, it will take a long time to download this dataset.
     """
+    path = os.path.join(path, 'wmt_en_fr')
     # URLs for WMT data.
     _WMT_ENFR_TRAIN_URL = "http://www.statmt.org/wmt10/"
     _WMT_ENFR_DEV_URL = "http://www.statmt.org/wmt15/"
@@ -464,7 +466,7 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
 
     return train_path, dev_path
 
-def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, printable=False):
+def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False):
     """Returns a list of images by a given tag from Flick25k dataset,
     it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
     at the first time you use it.
@@ -487,6 +489,8 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
     - Get all images
     >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
     """
+    path = os.path.join(path, 'flickr25k')
+
     filename = 'mirflickr25k.zip'
     url = 'http://press.liacs.nl/mirflickr/mirflickr25k/'
     ## download dataset
@@ -520,7 +524,7 @@ def load_flickr25k_dataset(tag='sky', path="data/flickr25k", n_threads=50, print
     images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
     return images
 
-def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50, printable=False):
+def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printable=False):
     """Returns a list of images by a given tag from Flickr1M dataset,
     it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
     at the first time you use it.
@@ -545,6 +549,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     - Use 1 Million images
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
     """
+    path = os.path.join(path, 'flickr1M')
     print("[Flickr1M] using {}% of images = {}".format(size*10, size*100000))
     images_zip = ['images0.zip', 'images1.zip', 'images2.zip', 'images3.zip',
              'images4.zip',  'images5.zip', 'images6.zip', 'images7.zip',
@@ -610,7 +615,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data/flickr1M", n_threads=50
     images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
     return images
 
-def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan'):
+def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
     """Load image data from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
 
     Parameters
@@ -624,6 +629,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data/cyclegan
     ---------
     >>> im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
     """
+    path = os.path.join(path, 'cyclegan')
     url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
 
     if folder_exists(os.path.join(path, filename)) is False:
@@ -813,6 +819,19 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         tar_filename = "VOCtrainval_11-May-2012.tar"
         extracted_filename = "VOC2012"#"VOCdevkit/VOC2012"
         print("    [============= VOC 2012 =============]")
+    elif dataset == "2012test":
+        extracted_filename = "VOC2012test"#"VOCdevkit/VOC2012"
+        print("    [============= VOC 2012 Test Set =============]")
+        if os.path.isdir(os.path.join(path, extracted_filename)) is False:
+            print("For VOC 2012 Test data - online registration required")
+            print(" Please download VOC2012test.tar from:  \n register: http://host.robots.ox.ac.uk:8080 \n voc2012 : http://host.robots.ox.ac.uk:8080/eval/challenges/voc2012/ \ndownload: http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar")
+            print(" unzip VOC2012test.tar rename the folder to VOC2012test and put it into %s" % path)
+            exit()
+        # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
+        # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
+        # tar_filename = "VOC2012test.tar"
+        print("Unfinished API, 2012 test JPEG and Annotation are not matched !")
+        exit()
     elif dataset == "2007":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtrainval_06-Nov-2007.tar"
@@ -822,22 +841,23 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         raise Exception("Please set the dataset aug to either 2012 or 2007.")
 
     ##======== download dataset
-    from sys import platform as _platform
-    if folder_exists(os.path.join(path, extracted_filename)) is False:
-        print("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
-        maybe_download_and_extract(tar_filename, path, url, extract=True)
-        del_file(os.path.join(path, tar_filename))
-        if dataset == "2012":
-            if _platform == "win32":
-                os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(path, path))
-            else:
-                os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
-        elif dataset == "2007":
-            if _platform == "win32":
-                os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
-            else:
-                os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
-        del_folder(os.path.join(path, 'VOCdevkit'))
+    if dataset != "2012test":
+        from sys import platform as _platform
+        if folder_exists(os.path.join(path, extracted_filename)) is False:
+            print("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
+            maybe_download_and_extract(tar_filename, path, url, extract=True)
+            del_file(os.path.join(path, tar_filename))
+            if dataset == "2012":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
+            elif dataset == "2007":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+            del_folder(os.path.join(path, 'VOCdevkit'))
     ##======== object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car",
             "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike",
@@ -860,22 +880,26 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     imgs_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000027.jpg --> 2007000027
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
         # print('IM',imgs_file_list[0::3333], imgs_file_list[-1])
-    ##======== 2. semantic segmentation maps path list
-    # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
-    folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
-    imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
-    print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
-    imgs_semseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
-    imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
-        # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
-    ##======== 3. instance segmentation maps path list
-    # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
-    folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
-    imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
-    print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
-    imgs_insseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
-    imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
-        # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
+    if dataset != "2012test":
+        ##======== 2. semantic segmentation maps path list
+        # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
+        folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
+        imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
+        print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
+        imgs_semseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
+            # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
+        ##======== 3. instance segmentation maps path list
+        # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
+        folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
+        imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
+        print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
+        imgs_insseg_file_list.sort(key=lambda s : int(s.replace('.',' ').replace('_', '').split(' ')[-2])) # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
+            # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
+    else:
+        imgs_semseg_file_list = []
+        imgs_insseg_file_list = []
     ##======== 4. annotations for bounding box and object class
     # folder_ann = path+"/"+extracted_filename+"/Annotations/"
     folder_ann = os.path.join(path, extracted_filename, "Annotations")
@@ -909,11 +933,18 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         h = int(size.find('height').text)
         n_objs = 0
 
+        # print(file_name, w, h, size)
+        # exit()
         for obj in root.iter('object'):
-            difficult = obj.find('difficult').text
-            cls = obj.find('name').text
-            if cls not in classes or int(difficult) == 1:
-                continue
+            if dataset != "2012test":
+                difficult = obj.find('difficult').text
+                cls = obj.find('name').text
+                if cls not in classes or int(difficult) == 1:
+                    continue
+            else:
+                cls = obj.find('name').text
+                if cls not in classes:
+                    continue
             cls_id = classes.index(cls)
             xmlbox = obj.find('bndbox')
             b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
@@ -941,6 +972,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     objs_info_list = [] # Darknet Format list of string
     objs_info_dicts = {}
     for idx, ann_file in enumerate(imgs_ann_file_list):
+        # print(ann_file)
         n_objs, objs_info = convert_annotation(ann_file)
         n_objs_list.append(n_objs)
         objs_info_list.append(objs_info)
@@ -953,6 +985,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
         classes, classes_in_person, classes_dict,\
         n_objs_list, objs_info_list, objs_info_dicts
+
 
 
 ## Load and save network list npz
