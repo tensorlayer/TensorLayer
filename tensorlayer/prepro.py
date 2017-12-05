@@ -939,15 +939,113 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
         im_ = np.array(image) # PIL -> array
     return np.asarray(im_)
 
-# contrast
-def constant(x, cutoff=0.5, gain=10, inv=False, is_random=False):
-    # TODO
-    x = exposure.adjust_sigmoid(x, cutoff=cutoff, gain=gain, inv=inv)
-    return x
+# hue
+def rgb_to_hsv(rgb):
+    """ Input RGB image [0~255] return HSV image [0~1].
 
-def constant_multi():
-    #TODO
-    pass
+    Parameters
+    -------------
+    rgb : should be a numpy arrays with values between 0 and 255.
+    """
+    # Translated from source of colorsys.rgb_to_hsv
+    # r,g,b should be a numpy arrays with values between 0 and 255
+    # rgb_to_hsv returns an array of floats between 0.0 and 1.0.
+    rgb = rgb.astype('float')
+    hsv = np.zeros_like(rgb)
+    # in case an RGBA array was passed, just copy the A channel
+    hsv[..., 3:] = rgb[..., 3:]
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    maxc = np.max(rgb[..., :3], axis=-1)
+    minc = np.min(rgb[..., :3], axis=-1)
+    hsv[..., 2] = maxc
+    mask = maxc != minc
+    hsv[mask, 1] = (maxc - minc)[mask] / maxc[mask]
+    rc = np.zeros_like(r)
+    gc = np.zeros_like(g)
+    bc = np.zeros_like(b)
+    rc[mask] = (maxc - r)[mask] / (maxc - minc)[mask]
+    gc[mask] = (maxc - g)[mask] / (maxc - minc)[mask]
+    bc[mask] = (maxc - b)[mask] / (maxc - minc)[mask]
+    hsv[..., 0] = np.select(
+        [r == maxc, g == maxc], [bc - gc, 2.0 + rc - bc], default=4.0 + gc - rc)
+    hsv[..., 0] = (hsv[..., 0] / 6.0) % 1.0
+    return hsv
+
+def hsv_to_rgb(hsv):
+    """ Input HSV image [0~1] return RGB image [0~255].
+
+    Parameters
+    -------------
+    hsv : should be a numpy arrays with values between 0.0 and 1.0
+    """
+    # Translated from source of colorsys.hsv_to_rgb
+    # h,s should be a numpy arrays with values between 0.0 and 1.0
+    # v should be a numpy array with values between 0.0 and 255.0
+    # hsv_to_rgb returns an array of uints between 0 and 255.
+    rgb = np.empty_like(hsv)
+    rgb[..., 3:] = hsv[..., 3:]
+    h, s, v = hsv[..., 0], hsv[..., 1], hsv[..., 2]
+    i = (h * 6.0).astype('uint8')
+    f = (h * 6.0) - i
+    p = v * (1.0 - s)
+    q = v * (1.0 - s * f)
+    t = v * (1.0 - s * (1.0 - f))
+    i = i % 6
+    conditions = [s == 0.0, i == 1, i == 2, i == 3, i == 4, i == 5]
+    rgb[..., 0] = np.select(conditions, [v, q, p, p, t, v], default=v)
+    rgb[..., 1] = np.select(conditions, [v, v, v, q, p, p], default=t)
+    rgb[..., 2] = np.select(conditions, [v, p, t, v, v, q], default=p)
+    return rgb.astype('uint8')
+
+
+def adjust_hue(im, hout=0.66, is_random=False):
+    """ Adjust hue of an RGB image. This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
+    For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_.
+
+    Parameters
+    -----------
+    im : should be a numpy arrays with values between 0 and 255.
+    hout : float.
+        - If is_random is False. 0 is red; 0.33 is green; 0.66 is blue.
+        - If is_random is True, add [-hout, hout] offset to the hue channel.
+    is_random : boolean, default False
+
+    Examples
+    ---------
+    - Random
+    >>> im_ = adjust_hue(im, hout=0.2, is_random=True)
+    - Non-random
+    >>> red_hue = 0
+    >>> im_ = adjust_hue(im, red_hue, is_random=False)
+    >>> green_hue = 0.33
+    >>> im_ = adjust_hue(im, green_hue, is_random=False)
+    >>> blue_hue = 0.66
+    >>> im_ = adjust_hue(im, blue_hue, is_random=False)
+
+    References
+    -----------
+    - `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_.
+    - `StackOverflow: Changing image hue with python PIL <https://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil>`_.
+    """
+    hsv = rgb_to_hsv(im)
+    if is_random:
+        hout = np.random.uniform(-hout, hout)
+        hsv[...,0] += hout
+    else:
+        hsv[...,0] = hout
+    rgb = hsv_to_rgb(hsv)
+    return rgb
+
+
+# # contrast
+# def constant(x, cutoff=0.5, gain=10, inv=False, is_random=False):
+#     # TODO
+#     x = exposure.adjust_sigmoid(x, cutoff=cutoff, gain=gain, inv=inv)
+#     return x
+#
+# def constant_multi():
+#     #TODO
+#     pass
 
 # resize
 def imresize(x, size=[100, 100], interp='bicubic', mode=None):

@@ -40,6 +40,10 @@ Some of the code in this package are borrowed from Keras.
 
    illumination
 
+   rgb_to_hsv
+   hsv_to_rgb
+   adjust_hue
+
    imresize
 
    samplewise_norm
@@ -154,9 +158,21 @@ Brightness
 .. autofunction:: brightness
 .. autofunction:: brightness_multi
 
-Illumination
-^^^^^^^^^^^^^^
+Brightness, contrast and saturation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: illumination
+
+RGB to HSV
+^^^^^^^^^^^^^^
+.. autofunction:: rgb_to_hsv
+
+HSV to RGB
+^^^^^^^^^^^^^^
+.. autofunction:: hsv_to_rgb
+
+Adjust HSV
+^^^^^^^^^^^^^^
+.. autofunction:: adjust_hue
 
 Resize
 ^^^^^^^^^^^^
