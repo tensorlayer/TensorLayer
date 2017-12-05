@@ -1014,6 +1014,7 @@ def adjust_hue(im, hout=0.66, is_random=False):
     ---------
     - Random
     >>> im_ = adjust_hue(im, hout=0.2, is_random=True)
+
     - Non-random
     >>> red_hue = 0
     >>> im_ = adjust_hue(im, red_hue, is_random=False)
@@ -1101,6 +1102,7 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
     ----------
     - Random
     >>> im = pixel_value_scale(im, 0.1, [0, 255], is_random=True)
+    
     - Non-random
     >>> im = pixel_value_scale(im, 0.9, [0, 255], is_random=False)
     """
