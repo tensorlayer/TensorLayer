@@ -1000,7 +1000,7 @@ def hsv_to_rgb(hsv):
 
 def adjust_hue(im, hout=0.66, is_random=False):
     """ Adjust hue of an RGB image. This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
-    For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_.
+    For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_ and `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
 
     Parameters
     -----------
@@ -1024,6 +1024,7 @@ def adjust_hue(im, hout=0.66, is_random=False):
 
     References
     -----------
+    - `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
     - `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_.
     - `StackOverflow: Changing image hue with python PIL <https://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil>`_.
     """
@@ -1031,6 +1032,7 @@ def adjust_hue(im, hout=0.66, is_random=False):
     if is_random:
         hout = np.random.uniform(-hout, hout)
         hsv[...,0] += hout
+        # hsv[...,0] = np.clip(hsv[...,0], 0, 1)  # Hao : can remove green dots
     else:
         hsv[...,0] = hout
     rgb = hsv_to_rgb(hsv)
@@ -1083,6 +1085,35 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
         return scipy.misc.imresize(x, size, interp=interp, mode=mode)
     else:
         raise Exception("Unsupported channel %d" % x.shape[-1])
+
+# value scale
+def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
+    """Scales each value in the pixels of the image.
+
+    Parameters
+    -----------
+    im : numpy array for one image.
+    val : float.
+        - If is_random=False, multiply this value with all pixels.
+        - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
+
+    Examples
+    ----------
+    - Random
+    >>> im = pixel_value_scale(im, 0.1, [0, 255], is_random=True)
+    - Non-random
+    >>> im = pixel_value_scale(im, 0.9, [0, 255], is_random=False)
+    """
+    if is_random:
+        scale = 1 + np.random.uniform(-val, val)
+        im = im * scale
+    else:
+        im = im * val
+
+    if len(clip) == 2:
+        im = np.clip(im, clip[0], clip[1])
+
+    return im
 
 # normailization
 def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_normalization=False,

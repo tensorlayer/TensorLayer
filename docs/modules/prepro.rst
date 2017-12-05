@@ -46,6 +46,8 @@ Some of the code in this package are borrowed from Keras.
 
    imresize
 
+   pixel_value_scale
+
    samplewise_norm
    featurewise_norm
 
@@ -177,6 +179,10 @@ Adjust HSV
 Resize
 ^^^^^^^^^^^^
 .. autofunction:: imresize
+
+Pixel value scale
+^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: pixel_value_scale
 
 Normalization
 ^^^^^^^^^^^^^^^
