@@ -10,14 +10,38 @@ class TaskSpecDef(object):
     the parameter servers and the worker servers
     """
 
-    def __init__(self, job_name='master', index=0, ps_hosts=None, worker_hosts=None, master=None):
-        self.job_name = job_name
+    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
+        """Definition of a task in distributed training.
+
+        Parameters
+        ----------
+        type : A string with the job name, it will be 'master', 'worker' or 'ps
+        index : The zero-based index of the task. Distributed training jobs will have a single
+            master task, one or more parameter servers, and one or more workers.
+        trial : The identifier of the trial being run.
+        ps_hosts : A string with a coma separate list of hosts for the parameter servers
+            or a list of hosts.
+        worker_hosts : A string with a coma separate list of hosts for the worker servers
+            or a list of hosts.
+        master : A string with the master hosts
+
+        Note
+        ----------
+        master might not be included in TF_CONFIG and can be None. The shard_index is adjusted
+        in any case to assign 0 to master and >= 1 to workers.
+
+        References
+        ----------
+        - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+        """
+        self.type = type
         self._index = int(index)
         self._cluster_spec = None
         self.num_workers = 1
         self.num_ps = 0
         self.shard_index = int(index)
         self._master = True
+        self.trial = trial
 
         if ps_hosts and worker_hosts:
             ps = ps_hosts if isinstance(ps_hosts, list) else ps_hosts.split(',')
@@ -29,19 +53,19 @@ class TaskSpecDef(object):
                                                            'master': master})
                 # master is a worker too
                 self.num_workers = len(worker) + 1
-                if self.job_name == 'worker':
+                if self.type == 'worker':
                     self.shard_index = self._index + 1
-                self._master = self.job_name == 'master'
+                self._master = self.type == 'master'
             else:
                 self._cluster_spec = tf.train.ClusterSpec({'ps'    : ps,
                                                            'worker': worker})
-                if self.job_name == 'worker':
+                if self.type == 'worker':
                     self.shard_index = self._index
-                self._master = self.job_name == 'worker' and self._index == 0
+                self._master = self.type == 'worker' and self._index == 0
 
             # create server and join if it is a parameter server
             self._server = tf.train.Server(self._cluster_spec,
-                                           job_name=self.job_name,
+                                           job_name=self.type,
                                            task_index=self._index)
             if self.is_ps():
                 self._server.join()
@@ -49,16 +73,16 @@ class TaskSpecDef(object):
             self._server = None
 
     def is_ps(self):
-        return self.job_name == 'ps'
+        return self.type == 'ps'
 
     def is_worker(self):
-        return self.job_name == 'worker'
+        return self.type == 'worker'
 
     def is_master(self):
         return self._master
 
     def device_fn(self):
-        current_device = '/job:{}/task:{}'.format(self.job_name, self._index)
+        current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
         return tf.train.replica_device_setter(ps_device=ps_devices,
                                               worker_device=current_device,
@@ -72,12 +96,20 @@ class TaskSpecDef(object):
 
 
 def TaskSpec():
+    """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed
+    training.
+
+    References
+    ----------
+    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    """
     if 'TF_CONFIG' in os.environ:
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
-        return TaskSpecDef(job_name=task_data['type'],
+        return TaskSpecDef(type=task_data['type'],
                            index=task_data['index'],
+                           trial=task_data['trial'] if 'trial' in task_data else None,
                            ps_hosts=cluster_data['ps'],
                            worker_hosts=cluster_data['worker'],
                            master=cluster_data['master'] if 'master' in cluster_data else None)
@@ -137,8 +169,7 @@ def DistributedSession(task_spec=None,
 
     Parameters
     ----------
-    task_spec : TaskSpecDef
-        the task spec definition from TaskSpec()
+    task_spec : TaskSpecDef. The task spec definition from TaskSpec()
     checkpoint_dir: A string.  Optional path to a directory where to restore
       variables.
     scaffold: A `Scaffold` used for gathering or building supportive ops. If
