@@ -723,8 +723,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     -----------
     path : string
         The path that the data is downloaded to, defaults is ``data/VOC``.
-    dataset : string, 2012, 2012test or 2007.
-        The VOC dataset version.
+    dataset : string, 2012, 2007, 2007test or 2012test.
+        The VOC dataset version, we usually train model on 2007+2012 and test it on 2007test.
     contain_classes_in_person : If True, dataset will contains labels of head, hand and foot.
 
     Returns
