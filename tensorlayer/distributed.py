@@ -118,7 +118,8 @@ def DistributedSession(task_spec=None,
     >>> task_spec = TaskSpec()
     >>> # dataset is a :class:`tf.data.Dataset` with the raw data
     >>> dataset = create_dataset()
-    >>> dataset = dataset.shard(task_spec.num_workers, task_spec.shard_index)
+    >>> if task_spec is not None:
+    >>>     dataset = dataset.shard(task_spec.num_workers, task_spec.shard_index)
     >>> # shuffle or apply a map function to the new sharded dataset, for example:
     >>> dataset = dataset.shuffle(buffer_size=10000)
     >>> dataset = dataset.batch(batch_size)
