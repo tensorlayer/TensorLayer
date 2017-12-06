@@ -6,8 +6,7 @@ import json
 
 
 class TaskSpecDef(object):
-    """
-    Specification for the distributed task with the job name, index of the task,
+    """Specification for the distributed task with the job name, index of the task,
     the parameter servers and the worker servers
     """
 
@@ -170,7 +169,7 @@ def DistributedSession(task_spec=None,
     - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train
     /MonitoredTrainingSession>`_
     """
-    return tf.train.MonitoredTrainingSession(master=task_spec.target,
+    return tf.train.MonitoredTrainingSession(master=task_spec.target(),
                                              is_chief=task_spec.is_master(),
                                              checkpoint_dir=checkpoint_dir,
                                              scaffold=scaffold,
