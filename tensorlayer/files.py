@@ -822,20 +822,28 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     elif dataset == "2012test":
         extracted_filename = "VOC2012test"#"VOCdevkit/VOC2012"
         print("    [============= VOC 2012 Test Set =============]")
+        print("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
+        import time
+        time.sleep(3)
         if os.path.isdir(os.path.join(path, extracted_filename)) is False:
             print("For VOC 2012 Test data - online registration required")
             print(" Please download VOC2012test.tar from:  \n register: http://host.robots.ox.ac.uk:8080 \n voc2012 : http://host.robots.ox.ac.uk:8080/eval/challenges/voc2012/ \ndownload: http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar")
-            print(" unzip VOC2012test.tar rename the folder to VOC2012test and put it into %s" % path)
+            print(" unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s" % path)
             exit()
         # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
         # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
         # tar_filename = "VOC2012test.tar"
-        # print("Unfinished API, 2012 test JPEG and Annotation are not matched !")
-        # exit()
     elif dataset == "2007":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtrainval_06-Nov-2007.tar"
         extracted_filename = "VOC2007"
+        print("    [============= VOC 2007 =============]")
+    elif dataset == "2007test":
+        # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html#testdata
+        # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
+        tar_filename = "VOCtest_06-Nov-2007.tar"
+        extracted_filename = "VOC2007test"
         print("    [============= VOC 2007 =============]")
     else:
         raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
@@ -857,6 +865,11 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
                 else:
                     os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+            elif dataset == "2007test":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007test".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007test".format(path, path))
             del_folder(os.path.join(path, 'VOCdevkit'))
     ##======== object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car",
