@@ -717,7 +717,7 @@ def load_celebA_dataset(dirpath='data'):
     return data_files
 
 def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
-    """ Pascal VOC 2007/2012 Dataset has 20 objects "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor" and additional 3 classes "head", "hand", "foot" for person.
+    """ Pascal VOC 2007/2012 Dataset has 20 objects : aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor and additional 3 classes : head, hand, foot for person.
 
     Parameters
     -----------
@@ -844,7 +844,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtest_06-Nov-2007.tar"
         extracted_filename = "VOC2007test"
-        print("    [============= VOC 2007 =============]")
+        print("    [============= VOC 2007 Test Set =============]")
     else:
         raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
 
