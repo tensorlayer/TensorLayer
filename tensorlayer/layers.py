@@ -250,6 +250,9 @@ def merge_networks(layers=[]):
     layer.all_layers = list(all_layers)
     layer.all_drop = dict(all_drop)
 
+    layer.all_layers = list_remove_repeat(layer.all_layers)
+    layer.all_params = list_remove_repeat(layer.all_params)
+
     return layer
 
 def initialize_global_variables(sess=None):
