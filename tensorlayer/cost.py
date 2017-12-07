@@ -75,7 +75,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
                               (1. - target) * tf.log(1. - output + epsilon)), axis=1))
 
 
-def mean_squared_error(output, target, is_mean=False):
+def mean_squared_error(output, target, is_mean=False, name="mean_squared_error"):
     """ Return the TensorFlow expression of mean-square-error (L2) of two batch of data.
 
     Parameters
@@ -88,7 +88,7 @@ def mean_squared_error(output, target, is_mean=False):
     ------------
     - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`_
     """
-    with tf.name_scope("mean_squared_error_loss"):
+    with tf.name_scope(name):
         if output.get_shape().ndims == 2:   # [batch_size, n_feature]
             if is_mean:
                 mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), 1))
