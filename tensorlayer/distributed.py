@@ -140,7 +140,11 @@ def TaskSpec():
     ----------
     - `ML-engine trainer considerations
     <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    - `TensorPort Distributed Computing
+    <https://www.tensorport.com/documentation/code-details/>`_
     """
+
+    # TF_CONFIG is used in ML-engine
     if 'TF_CONFIG' in os.environ:
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
@@ -151,6 +155,14 @@ def TaskSpec():
                            ps_hosts=cluster_data['ps'],
                            worker_hosts=cluster_data['worker'],
                            master=cluster_data['master'] if 'master' in cluster_data else None)
+
+    # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
+    if 'JOB_NAME' in os.environ:
+        return TaskSpecDef(type=os.environ['JOB_NAME'],
+                        index=os.environ['TASK_INDEX'],
+                        ps_hosts=os.environ.get('PS_HOSTS', None),
+                        worker_hosts=os.environ.get('WORKER_HOSTS', None),
+                        master=os.environ.get('MASTER_HOST', None))
     return None
 
 
@@ -238,8 +250,10 @@ def DistributedSession(task_spec=None,
     - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train
     /MonitoredTrainingSession>`_
     """
-    return tf.train.MonitoredTrainingSession(master=task_spec.target(),
-                                             is_chief=task_spec.is_master(),
+    target = task_spec.target() if task_spec is not None else None
+    is_chief = task_spec.is_master() if task_spec is not None else True
+    return tf.train.MonitoredTrainingSession(master=target,
+                                             is_chief=is_chief,
                                              checkpoint_dir=checkpoint_dir,
                                              scaffold=scaffold,
                                              save_checkpoint_secs=save_checkpoint_secs,
