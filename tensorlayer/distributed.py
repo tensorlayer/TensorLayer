@@ -1,39 +1,47 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 import tensorflow as tf
+from tensorflow.python.training import session_run_hook
 import os
 import json
+import time
 
 
 class TaskSpecDef(object):
     """Specification for the distributed task with the job name, index of the task,
-    the parameter servers and the worker servers
+    the parameter servers and the worker servers. If you want to use the last worker
+    for continuous evaluation you can call the method `user_last_worker_as_evaluator`
+    which returns a new :class:`TaskSpecDef` object without the last worker in the
+    cluster specification.
+
+    Parameters
+    ----------
+    type : A string with the job name, it will be 'master', 'worker' or 'ps
+    index : The zero-based index of the task. Distributed training jobs will have a single
+        master task, one or more parameter servers, and one or more workers.
+    trial : The identifier of the trial being run.
+    ps_hosts : A string with a coma separate list of hosts for the parameter servers
+        or a list of hosts.
+    worker_hosts : A string with a coma separate list of hosts for the worker servers
+        or a list of hosts.
+    master : A string with the master hosts
+
+    Note
+    ----------
+    master might not be included in TF_CONFIG and can be None. The shard_index is adjusted
+    in any case to assign 0 to master and >= 1 to workers.
+    This implementation doesn't support sparse arrays in the TF_CONFIG variable as the
+    official TensorFlow documentation shows, as it is not a supported by the json
+    definition.
+
+    References
+    ----------
+    - `ML-engine trainer considerations
+    <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     """
 
-    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
-        """Definition of a task in distributed training.
-
-        Parameters
-        ----------
-        type : A string with the job name, it will be 'master', 'worker' or 'ps
-        index : The zero-based index of the task. Distributed training jobs will have a single
-            master task, one or more parameter servers, and one or more workers.
-        trial : The identifier of the trial being run.
-        ps_hosts : A string with a coma separate list of hosts for the parameter servers
-            or a list of hosts.
-        worker_hosts : A string with a coma separate list of hosts for the worker servers
-            or a list of hosts.
-        master : A string with the master hosts
-
-        Note
-        ----------
-        master might not be included in TF_CONFIG and can be None. The shard_index is adjusted
-        in any case to assign 0 to master and >= 1 to workers.
-
-        References
-        ----------
-        - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
-        """
+    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None,
+                 master=None):
         self.type = type
         self._index = int(index)
         self._cluster_spec = None
@@ -42,6 +50,9 @@ class TaskSpecDef(object):
         self.shard_index = int(index)
         self._master = True
         self.trial = trial
+        self.ps_hosts = ps_hosts
+        self.worker_hosts = worker_hosts
+        self.master = master
 
         if ps_hosts and worker_hosts:
             ps = ps_hosts if isinstance(ps_hosts, list) else ps_hosts.split(',')
@@ -73,15 +84,23 @@ class TaskSpecDef(object):
             self._server = None
 
     def is_ps(self):
+        """Returns true if this server is a parameter server"""
         return self.type == 'ps'
 
     def is_worker(self):
+        """Returns true if this server is a worker server"""
         return self.type == 'worker'
 
     def is_master(self):
+        """Returns true if this server is the master server"""
         return self._master
 
+    def is_evaluator(self):
+        """Returns true if this server is the evaluator server"""
+        return self.type == 'worker' and len(self.worker_hosts) == self._index
+
     def device_fn(self):
+        """Returns the function with the specification to create the graph in this server"""
         current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
         return tf.train.replica_device_setter(ps_device=ps_devices,
@@ -94,6 +113,24 @@ class TaskSpecDef(object):
         else:
             return None
 
+    def user_last_worker_as_evaluator(self):
+        """ Returns a new :class:`TaskSpecDef` where the last worker has been removed from
+         the list of worker_hosts, so it is not used for training anymore. You can call
+         is_evaluator to know whether this server is the evaluator one or not.
+         In case there is only one server for training this method raises an exception, as
+         you cannot use any server for evaluation.
+         """
+        if self.worker_hosts is None \
+                or len(self.worker_hosts) == 0 \
+                or (self.master is None and len(self.worker_hosts) == 1):
+            raise Exception('You need more than one worker instance to use one as evaluator')
+        return TaskSpecDef(type=self.type,
+                           index=self._index,
+                           trial=self.trial,
+                           ps_hosts=self.ps_hosts,
+                           worker_hosts=self.worker_hosts[:-1],
+                           master=self.master)
+
 
 def TaskSpec():
     """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed
@@ -101,7 +138,8 @@ def TaskSpec():
 
     References
     ----------
-    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    - `ML-engine trainer considerations
+    <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     """
     if 'TF_CONFIG' in os.environ:
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))
@@ -212,3 +250,48 @@ def DistributedSession(task_spec=None,
                                              config=config,
                                              hooks=hooks,
                                              chief_only_hooks=chief_only_hooks)
+
+
+
+class StopAtTimeHook(session_run_hook.SessionRunHook):
+    """Hook that requests stop after a specified time.
+
+    Parameters
+    ----------
+    time_running: Maximum time running in seconds
+    """
+
+    def __init__(self, time_running):
+        self._time_running = time_running
+
+    def begin(self):
+        self._end_time = time.time() + self._time_running
+
+    def after_run(self, run_context, run_values):
+        if time.time() > self._end_time:
+            run_context.request_stop()
+
+
+class LoadCheckpoint(session_run_hook.SessionRunHook):
+    """Hook that loads a checkpoint after the session is created.
+
+    >>> from tensorflow.python.ops import variables as tf_variables
+    >>> from tensorflow.python.training.monitored_session import SingularMonitoredSession
+    >>>
+    >>> tensors = create_graph()
+    >>> saver = tf.train.Saver(var_list=tf_variables.trainable_variables())
+    >>> checkpoint_hook = LoadCheckpoint(saver, my_checkpoint_file)
+    >>> with tf.SingularMonitoredSession(hooks=[checkpoint_hook]) as session:
+    >>>      while not session.should_stop():
+    >>>           session.run(tensors)
+    """
+
+    def __init__(self, saver, checkpoint):
+        self._saver = saver
+        self._checkpoint = checkpoint
+        self._loaded = False
+
+    def after_create_session(self, session, coord):
+        if not self._loaded:
+            self._loaded = True
+            self._saver.restore(self._checkpoint)
