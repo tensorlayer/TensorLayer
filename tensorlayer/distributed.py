@@ -36,8 +36,7 @@ class TaskSpecDef(object):
 
     References
     ----------
-    - `ML-engine trainer considerations
-    <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     """
 
     def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None,
@@ -138,10 +137,8 @@ def TaskSpec():
 
     References
     ----------
-    - `ML-engine trainer considerations
-    <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
-    - `TensorPort Distributed Computing
-    <https://www.tensorport.com/documentation/code-details/>`_
+    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`_
     """
 
     # TF_CONFIG is used in ML-engine
@@ -247,8 +244,7 @@ def DistributedSession(task_spec=None,
 
     References
     ----------
-    - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train
-    /MonitoredTrainingSession>`_
+    - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession>`_
     """
     target = task_spec.target() if task_spec is not None else None
     is_chief = task_spec.is_master() if task_spec is not None else True
