@@ -303,13 +303,13 @@ class Layer(object):
             if name not in ['', None, False]:
                 set_keep['_layers_name_list'].append(name)
 
-    def print_params(self, details=True):
+    def print_params(self, details=True, session=None):
         ''' Print all info of parameters in the network'''
         for i, p in enumerate(self.all_params):
             if details:
                 try:
                     # print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
-                    val = p.eval()
+                    val = p.eval(session=session)
                     print("  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()))
                 except Exception as e:
                     print(str(e))

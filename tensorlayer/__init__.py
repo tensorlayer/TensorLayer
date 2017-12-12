@@ -21,6 +21,7 @@ from . import visualize
 from . import prepro
 from . import nlp
 from . import rein
+from . import distributed
 
 # alias
 act = activation
