@@ -29,10 +29,10 @@
 # 随书资源与引用链接
 
 ### 第二章
-* [Neural Networks, Manifolds, and Topology - Colah's Blog](http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/)
 * [代码－实现手写数字分类](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py)
 * [代码－通过`all_drop`启动与关闭 Dropout](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py)
 * [代码－通过参数共享实现训练测试切换](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py)
+* [Neural Networks, Manifolds, and Topology - Colah's Blog](http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/)
 * [深度学习中的正则化方法－小毛驴](http://xudongyang.coding.me/regularization-in-deep-learning/)
 
 ### 第三章
@@ -46,13 +46,13 @@
 * [代码－CIFAR10－TFRecord做数据增强（TensorFlow官方）](https://www.tensorflow.org/tutorials/deep_cnn)
 
 ### 第五章
-* [Word2vec Parameter Learning Explained - Xin Rong](https://arxiv.org/abs/1411.2738)
 * [代码－Word2vec](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_word2vec_basic.py)
 * [代码－重载预训练矩阵](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py)
+* [Word2vec Parameter Learning Explained - Xin Rong](https://arxiv.org/abs/1411.2738)
 
 ### 第六章
-* [Recurrent neural network - Wikipedia](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [代码－实现生成句子](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py)
+* [Recurrent neural network - Wikipedia](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [特朗普演讲数据](https://github.com/zsdonghao/tensorlayer/tree/master/example/data/trump)
 
 ### 第七章
@@ -64,8 +64,8 @@
 * [代码－DCGAN实现人脸生成](https://github.com/zsdonghao/dcgan)
 
 ### 第九章
+* [代码－与其它框架对接](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py)
 * [TensorLayer使用小技巧－Wagamamaz](https://github.com/wagamamaz/tensorlayer-tricks)
-* [代码－与Keras对接](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py)
 * [安装NLTK](http://www.nltk.org/install.html)
 * [安装NLTK data](http://www.nltk.org/data.html)
 * [Jieba分词](https://github.com/fxsjy/jieba)
@@ -80,10 +80,10 @@
 * [TF-Slim预训练模型](https://github.com/tensorflow/models/tree/master/research/slim)
 
 ### 第十一章：实例二
-* [Pascal VOC数据集](http://host.robots.ox.ac.uk/pascal/VOC)
-* [从特斯拉到计算机视觉之「图像语义分割」－ 魏秀参
-](https://zhuanlan.zhihu.com/p/21824299)
 * [代码－U-Net脑肿瘤分割](https://github.com/zsdonghao/u-net-brain-tumor)
+* [Pascal VOC数据集](http://host.robots.ox.ac.uk/pascal/VOC)
+* [从特斯拉到计算机视觉之「图像语义分割」－ 魏秀参](https://zhuanlan.zhihu.com/p/21824299)
+
 
 ### 第十二章：实例三
 * [代码－GAN-CLS](https://github.com/zsdonghao/text-to-image)
