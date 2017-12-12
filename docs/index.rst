@@ -54,6 +54,7 @@ method, this part of the documentation is for you.
   modules/ops
   modules/activation
   modules/db
+  modules/distributed
 
 
 Indices and tables
