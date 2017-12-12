@@ -52,8 +52,8 @@
 
 ### 第六章
 * [代码－实现生成句子](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py)
-* [Recurrent neural network - Wikipedia](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 * [特朗普演讲数据](https://github.com/zsdonghao/tensorlayer/tree/master/example/data/trump)
+* [Recurrent neural network - Wikipedia](https://en.wikipedia.org/wiki/Recurrent_neural_network)
 
 ### 第七章
 * [代码－乒乓球](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_atari_pong.py)
