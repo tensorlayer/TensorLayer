@@ -31,9 +31,9 @@
 ### 第二章
 * [Neural Networks, Manifolds, and Topology - Colah's Blog](http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/)
 * [代码－实现手写数字分类](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py)
-* [深度学习中的正则化方法－小毛驴](http://xudongyang.coding.me/regularization-in-deep-learning/)
 * [代码－通过`all_drop`启动与关闭 Dropout](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py)
 * [代码－通过参数共享实现训练测试切换](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py)
+* [深度学习中的正则化方法－小毛驴](http://xudongyang.coding.me/regularization-in-deep-learning/)
 
 ### 第三章
 * [代码－MNIST](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist.py)
