@@ -144,7 +144,7 @@ You can use one of the workers to run an evaluation for the saved checkpoints:
 Session Hooks
 ----------------------
 
-TensorFlow provides some `Session Hooks <https://www.tensorflow.org/api_guides/python/train#Training_Hooks>`
+TensorFlow provides some `Session Hooks <https://www.tensorflow.org/api_guides/python/train#Training_Hooks>`_
 to do some operations in the sessions. We added more to help with common operations.
 
 
