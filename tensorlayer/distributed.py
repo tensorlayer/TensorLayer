@@ -16,7 +16,7 @@ class TaskSpecDef(object):
 
     Parameters
     ----------
-    type : A string with the job name, it will be 'master', 'worker' or 'ps
+    type : A string with the job name, it will be `master`, `worker` or `ps`.
     index : The zero-based index of the task. Distributed training jobs will have a single
         master task, one or more parameter servers, and one or more workers.
     trial : The identifier of the trial being run.
@@ -30,7 +30,7 @@ class TaskSpecDef(object):
     ----------
     master might not be included in TF_CONFIG and can be None. The shard_index is adjusted
     in any case to assign 0 to master and >= 1 to workers.
-    This implementation doesn't support sparse arrays in the TF_CONFIG variable as the
+    This implementation doesn't support sparse arrays in the `TF_CONFIG` variable as the
     official TensorFlow documentation shows, as it is not a supported by the json
     definition.
 
@@ -174,7 +174,7 @@ def DistributedSession(task_spec=None,
                        config=None,
                        stop_grace_period_secs=120,
                        log_step_count_steps=100):
-    """Creates a distributed session. It calls MonitoredTrainingSession to create a
+    """Creates a distributed session. It calls `MonitoredTrainingSession` to create a
     :class:`MonitoredSession` for distributed training.
 
     Examples
