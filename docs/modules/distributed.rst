@@ -36,7 +36,7 @@ Data sharding
 
 In some cases we want to shard the data among all the training servers and
 not use all the data in all servers. TensorFlow >=1.4 provides some helper classes
-to work with data that support data sharding: `Datasets <https://www.tensorflow.org/programmers_guide/datasets>`
+to work with data that support data sharding: `Datasets <https://www.tensorflow.org/programmers_guide/datasets>`_
 
 It is important in sharding that the shuffle or any non deterministic operation
 is done after creating the shards:
