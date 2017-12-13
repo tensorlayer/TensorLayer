@@ -24,7 +24,7 @@ you to implement your own methods easily. For discussion, we recommend
 `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_,
 `Help Wanted Issues <https://waffle.io/zsdonghao/tensorlayer>`_,
 `QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_
-and `Wechat group <tensorlayer@gmail.com>`_.
+and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`_.
 
 Beginner
 ^^^^^^^^^^^^^^
