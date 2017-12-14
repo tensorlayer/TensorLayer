@@ -48,7 +48,7 @@ Swish
 ------------
 .. autofunction:: swish
 
-Pixel-wise Softmax
+Pixel-wise softmax
 --------------------
 .. autofunction:: pixel_wise_softmax
 
