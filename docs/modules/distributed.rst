@@ -1,4 +1,4 @@
-API - Distributed
+API - Distribution
 ======================
 
 Helper sessions and methods to run a distributed training.
