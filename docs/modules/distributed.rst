@@ -26,8 +26,8 @@ Create TaskSpecDef from environment variables
 
 .. autofunction:: TaskSpec
 
-Distributed Session object
-^^^^^^^^^^^^^^^^^^^^^^
+Distributed session object
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: DistributedSession
 
@@ -141,7 +141,7 @@ You can use one of the workers to run an evaluation for the saved checkpoints:
 
 
 
-Session Hooks
+Session hooks
 ----------------------
 
 TensorFlow provides some `Session Hooks <https://www.tensorflow.org/api_guides/python/train#Training_Hooks>`_
