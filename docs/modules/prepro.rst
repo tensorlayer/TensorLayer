@@ -172,7 +172,7 @@ HSV to RGB
 ^^^^^^^^^^^^^^
 .. autofunction:: hsv_to_rgb
 
-Adjust HSV
+Adjust Hue
 ^^^^^^^^^^^^^^
 .. autofunction:: adjust_hue
 
