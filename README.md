@@ -232,7 +232,7 @@ TensorLayer is maintained by numerous Github contributors [here](https://github.
 This project is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
-as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg and many others.
+as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
 <!--
 TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
