@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
+# Alpha Version for Distributed Training
 
 # you can test this example in your local machine using 2 workers and 1 ps like below,
 # where CUDA_VISIBLE_DEVICES can be used to set the GPUs the process can use.
