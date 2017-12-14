@@ -1551,7 +1551,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
         _download(filename, working_directory, url_source)
         print()
         statinfo = os.stat(filepath)
-        print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
+        print('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))#, 'bytes.')
         if(not(expected_bytes is None) and (expected_bytes != statinfo.st_size)):
             raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
         if(extract):
