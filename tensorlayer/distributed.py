@@ -52,35 +52,28 @@ class TaskSpecDef(object):
         self.ps_hosts = ps_hosts
         self.worker_hosts = worker_hosts
         self.master = master
+        self._server = None
 
         if ps_hosts and worker_hosts:
-            ps = ps_hosts if isinstance(ps_hosts, list) else ps_hosts.split(',')
-            self.num_ps = len(ps)
-            worker = worker_hosts if isinstance(worker_hosts, list) else worker_hosts.split(',')
+            self.ps_hosts = ps_hosts if isinstance(ps_hosts, list) else ps_hosts.split(',')
+            self.num_ps = len(self.ps_hosts)
+            self.worker_hosts = worker_hosts if isinstance(worker_hosts, list) else worker_hosts.split(',')
             if master is not None and len(master) > 0:
-                self._cluster_spec = tf.train.ClusterSpec({'ps'    : ps,
-                                                           'worker': worker,
+                self._cluster_spec = tf.train.ClusterSpec({'ps'    : self.ps_hosts,
+                                                           'worker': self.worker_hosts,
                                                            'master': master})
                 # master is a worker too
-                self.num_workers = len(worker) + 1
+                self.num_workers = len(self.worker_hosts) + 1
                 if self.type == 'worker':
                     self.shard_index = self._index + 1
                 self._master = self.type == 'master'
             else:
-                self._cluster_spec = tf.train.ClusterSpec({'ps'    : ps,
-                                                           'worker': worker})
+                self._cluster_spec = tf.train.ClusterSpec({'ps'    : self.ps_hosts,
+                                                           'worker': self.worker_hosts})
+                self.num_workers = len(self.worker_hosts)
                 if self.type == 'worker':
                     self.shard_index = self._index
                 self._master = self.type == 'worker' and self._index == 0
-
-            # create server and join if it is a parameter server
-            self._server = tf.train.Server(self._cluster_spec,
-                                           job_name=self.type,
-                                           task_index=self._index)
-            if self.is_ps():
-                self._server.join()
-        else:
-            self._server = None
 
     def is_ps(self):
         """Returns true if this server is a parameter server"""
@@ -96,7 +89,7 @@ class TaskSpecDef(object):
 
     def is_evaluator(self):
         """Returns true if this server is the evaluator server"""
-        return self.type == 'worker' and len(self.worker_hosts) == self._index
+        return self.type == 'worker' and self.num_workers == self._index
 
     def device_fn(self):
         """Returns the function with the specification to create the graph in this server"""
@@ -106,7 +99,18 @@ class TaskSpecDef(object):
                                               worker_device=current_device,
                                               cluster=self._cluster_spec)
 
+    def create_server(self):
+        if self._server is None and self.ps_hosts and self.worker_hosts and not self.is_evaluator():
+            # create server and join if it is a parameter server
+            self._server = tf.train.Server(self._cluster_spec,
+                                           job_name=self.type,
+                                           task_index=self._index)
+            if self.is_ps():
+                self._server.join()
+
     def target(self):
+        if self._server is None:
+            self.create_server()
         if self._server is not None:
             return self._server.target
         else:
@@ -119,9 +123,7 @@ class TaskSpecDef(object):
          In case there is only one server for training this method raises an exception, as
          you cannot use any server for evaluation.
          """
-        if self.worker_hosts is None \
-                or len(self.worker_hosts) == 0 \
-                or (self.master is None and len(self.worker_hosts) == 1):
+        if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
         return TaskSpecDef(type=self.type,
                            index=self._index,

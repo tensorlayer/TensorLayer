@@ -104,7 +104,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
     dataset = tf.data.TextLineDataset([file])
     dataset = dataset.repeat(epochs)
     # split the dataset in shards
-    if task_spec is not None and task_spec.num_workers > 1:
+    if task_spec is not None and task_spec.num_workers > 1 and not task_spec.is_evaluator():
         dataset = dataset.shard(task_spec.num_workers, task_spec.shard_index)
     if shuffle_size > 0:
         dataset = dataset.shuffle(buffer_size=shuffle_size)
@@ -136,8 +136,8 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
     dataset = dataset.batch(batch_size)
     images, one_hot_classes = dataset.make_one_shot_iterator().get_next()
 
-    images = tf.reshape(images, [batch_size, image_size, image_size, 3])
-    one_hot_classes = tf.reshape(one_hot_classes, [batch_size, num_classes])
+    images = tf.reshape(images, [-1, image_size, image_size, 3])
+    one_hot_classes = tf.reshape(one_hot_classes, [-1, num_classes])
 
     return images, one_hot_classes, num_classes, size
 
@@ -146,17 +146,13 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
 
 def build_network(image_input, num_classes=1001, is_training=False):
-    def sigmoid_fn(logits, scope=None):
-        return tf.nn.sigmoid(logits, name=scope)
-
     net_in = tl.layers.InputLayer(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
         network = tl.layers.SlimNetsLayer(layer=net_in,
                                           slim_layer=inception_v3,
                                           slim_args={
-                                              'num_classes'  : num_classes,
-                                              'is_training'  : is_training,
-                                              'prediction_fn': sigmoid_fn
+                                              'num_classes': num_classes,
+                                              'is_training': is_training
                                               },
                                           name='InceptionV3')
     return network
@@ -191,7 +187,7 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
                 raise EvaluatorStops('Waited more than half an hour to load a new checkpoint')
 
         # restore the checkpoint
-        self.saver.restore(session, last_checkpoint=checkpoint)
+        self.saver.restore(session, checkpoint)
         self.lastest_checkpoint = checkpoint
 
     def end(self, session):
@@ -250,7 +246,7 @@ def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
     tf.summary.scalar('fall-out', fall_out)
     tf.summary.scalar('f1-score', f1_score)
 
-    init_op = [tf.assign(0, tp_v), tf.assign(0, tn_v), tf.assign(0, fp_v), tf.assign(0, fn_v)]
+    init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0), tf.assign(fn_v, 0)]
     metrics_ops = {'accuracy' : accuracy,
                    'precision': precision,
                    'recall'   : recall,
@@ -270,8 +266,9 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
         network = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
+        predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
         metrics_init_op, metrics_ops = evaluator_metrics(
-                predicted_batch=network.outputs['Predictions'],
+                predicted_batch=predictions,
                 real_batch=one_hot_classes)
         # tensorboard summary
         summary_op = tf.summary.merge_all()
@@ -337,15 +334,27 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
         with tl.distributed.DistributedSession(task_spec=task_spec,
                                                hooks=hooks,
                                                checkpoint_dir=checkpoints_path,
-                                               save_summaries_secs=None) as sess:
+                                               save_summaries_secs=None,
+                                               save_summaries_steps=100) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
                 network.print_layers()
             # run training
             try:
+                last_log_time = time.time()
+                next_log_time = last_log_time + 60
                 while not sess.should_stop():
-                    sess.run(train_op)
+                    step, loss_val, _ = sess.run([global_step, loss, train_op])
+                    if task_spec is None or task_spec.is_master():
+                        now = time.time()
+                        if now > next_log_time:
+                            last_log_time = now
+                            next_log_time = last_log_time + 60
+                            current_epoch = int(step / steps_per_epoch)
+                            max_steps = epochs * steps_per_epoch
+                            print('Epoch: {} Steps: {}/{} Loss: {}'.format(current_epoch, step,
+                                                                           max_steps, loss_val))
             except OutOfRangeError:
                 pass
 
@@ -371,4 +380,5 @@ if __name__ == '__main__':
         if task_spec.is_evaluator():
             run_evaluator(task_spec, CHECKPOINTS_PATH)
         else:
+            task_spec.create_server()
             run_worker(task_spec, CHECKPOINTS_PATH)
