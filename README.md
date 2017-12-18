@@ -25,7 +25,7 @@ TensorLayer is a deep learning and reinforcement learning library based on [Tens
 * [Nov] Support [Convolutional LSTM](https://arxiv.org/abs/1506.04214), see [ConvLSTMLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#conv-lstm-layer).
 * [Nov] Support [Deformable Convolution](https://arxiv.org/abs/1703.06211), see [DeformableConv2dLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-deformable-conv).
 * [Nov] Download [VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) in one line, see [load\_voc_dataset](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#voc-2007-2012).
-* [Oct] We win the **Best Open Source Software Award** [@ACM MM](http://www.acmmm.org/2017/mm-2017-awardees/) 2017, here is the slide for the presentation [[click]](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer%20ACM%20MM.pdf).
+* [Oct] We won the **Best Open Source Software Award** [@ACM MM](http://www.acmmm.org/2017/mm-2017-awardees/) 2017, here is the slide for the presentation [[click]](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer%20ACM%20MM.pdf).
 * [Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
 * [Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
 * [Jun] Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
