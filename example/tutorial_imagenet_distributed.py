@@ -21,12 +21,12 @@ from tensorflow.python.training.monitored_session import SingularMonitoredSessio
 ########## VARIABLES ##########
 
 
-# get the dataset: https://www.kaggle.com/c/imagenet-object-detection-challenge/data
+# get the dataset: https://www.kaggle.com/c/imagenet-object-localization-challenge/data
 
 # get the synset dictionary: http://www.image-net.org/archive/words.txt
 
 BASE_DIR = './'
-ILSVRC_DIR = os.path.join(BASE_DIR, 'train/ILSVRC')
+ILSVRC_DIR = os.path.join(BASE_DIR, 'ILSVRC')
 SYNSET_DICT = os.path.join(BASE_DIR, 'words.txt')
 TRAIN_FILE = os.path.join(BASE_DIR, 'train.csv')
 VAL_FILE = os.path.join(BASE_DIR, 'val.csv')
@@ -49,13 +49,12 @@ def get_data_sample(annotation_file, annotations_dir, data_dir):
         image_file = None
     return image_file, labels
 
-
 def might_create_dataset(prefix, file, shuffle=False, suffix='**/*.xml'):
     # load data
     data = []
     labels = set()
-    annotations_dir = os.path.join(ILSVRC_DIR, 'Annotations', 'DET', prefix)
-    data_dir = os.path.join(ILSVRC_DIR, 'Data', 'DET', prefix)
+    annotations_dir = os.path.join(ILSVRC_DIR, 'Annotations', 'CLS-LOC', prefix)
+    data_dir = os.path.join(ILSVRC_DIR, 'Data', 'CLS-LOC', prefix)
     for filename in tf.gfile.Glob(os.path.join(annotations_dir, suffix)):
         image_path, image_labels = get_data_sample(filename, annotations_dir, data_dir)
         if image_path is not None and len(image_labels) > 0:
