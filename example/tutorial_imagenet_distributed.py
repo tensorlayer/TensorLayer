@@ -350,7 +350,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                         if now > next_log_time:
                             last_log_time = now
                             next_log_time = last_log_time + 60
-                            current_epoch = '{:.2}'.format(step / steps_per_epoch))
+                            current_epoch = '{:.2}'.format(step / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
                             print('Epoch: {} Steps: {}/{} Loss: {}'.format(current_epoch, step,
                                                                            max_steps, loss_val))
