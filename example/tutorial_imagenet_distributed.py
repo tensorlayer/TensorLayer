@@ -258,7 +258,7 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
     with tf.Graph().as_default():
         # load dataset
         images_input, one_hot_classes, num_classes, dataset_size = \
-            load_data(file=TRAIN_FILE,
+            load_data(file=VAL_FILE,
                       task_spec=task_spec,
                       batch_size=batch_size,
                       epochs=1)
