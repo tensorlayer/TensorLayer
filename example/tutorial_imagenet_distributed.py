@@ -226,7 +226,7 @@ def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
     # calculate metrics
     precision = tp / (tp + fp)
     recall = tp / (tp + fn)
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    # accuracy = (tp + tn) / (tp + tn + fp + fn)
     fall_out = fp / (tn + fp)
     f1_score = tp * 2 / (tp * 2 + fp + fn)
 
@@ -234,19 +234,19 @@ def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
     zero = tf.constant(0, dtype=tf.float32)
     precision = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: precision)
     recall = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: recall)
-    accuracy = tf.cond(tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
+    # accuracy = tf.cond(tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
     fall_out = tf.cond(tf.equal(fp, 0.0), lambda: zero, lambda: fall_out)
     f1_score = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: f1_score)
 
     # add to tensorboard
-    tf.summary.scalar('accuracy', accuracy)
+    # tf.summary.scalar('accuracy', accuracy)
     tf.summary.scalar('precision', precision)
     tf.summary.scalar('recall', recall)
     tf.summary.scalar('fall-out', fall_out)
     tf.summary.scalar('f1-score', f1_score)
 
     init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0), tf.assign(fn_v, 0)]
-    metrics_ops = {'accuracy' : accuracy,
+    metrics_ops = { #'accuracy' : accuracy,
                    'precision': precision,
                    'recall'   : recall,
                    'fall-out' : fall_out,
@@ -265,7 +265,7 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
         network = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
-        predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
+        predictions = tf.nn.softmax(network.outputs, name='Predictions')
         metrics_init_op, metrics_ops = evaluator_metrics(
                 predicted_batch=predictions,
                 real_batch=one_hot_classes)
@@ -350,7 +350,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                         if now > next_log_time:
                             last_log_time = now
                             next_log_time = last_log_time + 60
-                            current_epoch = int(step / steps_per_epoch)
+                            current_epoch = '{:.2}'.format(step / steps_per_epoch))
                             max_steps = epochs * steps_per_epoch
                             print('Epoch: {} Steps: {}/{} Loss: {}'.format(current_epoch, step,
                                                                            max_steps, loss_val))
