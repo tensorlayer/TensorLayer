@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 """ tl.prepro for data augmentation """
 
