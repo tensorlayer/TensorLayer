@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 
 # Copyright 2016 The TensorLayer Contributors. All Rights Reserved.
