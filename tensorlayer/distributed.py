@@ -3,9 +3,14 @@
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 import os
+import sys
 import json
 import time
 
+# Disable buffer for stdout.
+# When running in container, or other environments where stdout is redirected,
+# the default buffer behavior will seriously delay the message written by `print`.
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'wb', 0)
 
 class TaskSpecDef(object):
     """Specification for the distributed task with the job name, index of the task,
