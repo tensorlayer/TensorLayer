@@ -1303,668 +1303,674 @@ classified as expressing positive or negative sentiment). "
 
 
 
+More Tutorials
+===================
+
+In Example page, we provide many examples include Seq2seq, different type of Adversarial Learning, Reinforcement Learning and etc.
 
 
 
 
 
 
-Run the Translation example
-===========================
 
-.. code-block:: python
+..
+  Run the Translation example
+  ===========================
 
-  python tutorial_translate.py
+  .. code-block:: python
 
-This script is going to training a neural network to translate English to French.
-If everything is correct, you will see.
+    python tutorial_translate.py
 
-- Download WMT English-to-French translation data, includes training and testing data.
-- Create vocabulary files for English and French from training data.
-- Create the tokenized training and testing data from original training and
-  testing data.
+  This script is going to training a neural network to translate English to French.
+  If everything is correct, you will see.
 
-.. code-block:: bash
+  - Download WMT English-to-French translation data, includes training and testing data.
+  - Create vocabulary files for English and French from training data.
+  - Create the tokenized training and testing data from original training and
+    testing data.
 
-  Prepare raw data
-  Load or Download WMT English-to-French translation > wmt
-  Training data : wmt/giga-fren.release2
-  Testing data : wmt/newstest2013
+  .. code-block:: bash
 
-  Create vocabularies
-  Vocabulary of French : wmt/vocab40000.fr
-  Vocabulary of English : wmt/vocab40000.en
-  Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
-    processing line 100000
-    processing line 200000
-    processing line 300000
-    processing line 400000
-    processing line 500000
-    processing line 600000
-    processing line 700000
-    processing line 800000
-    processing line 900000
-    processing line 1000000
-    processing line 1100000
-    processing line 1200000
+    Prepare raw data
+    Load or Download WMT English-to-French translation > wmt
+    Training data : wmt/giga-fren.release2
+    Testing data : wmt/newstest2013
+
+    Create vocabularies
+    Vocabulary of French : wmt/vocab40000.fr
+    Vocabulary of English : wmt/vocab40000.en
+    Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
+      processing line 100000
+      processing line 200000
+      processing line 300000
+      processing line 400000
+      processing line 500000
+      processing line 600000
+      processing line 700000
+      processing line 800000
+      processing line 900000
+      processing line 1000000
+      processing line 1100000
+      processing line 1200000
+      ...
+      processing line 22500000
+    Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
+      processing line 100000
+      ...
+      processing line 22500000
+
     ...
-    processing line 22500000
-  Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
-    processing line 100000
+
+  Firstly, we download English-to-French translation data from the WMT'15
+  Website. The training and testing data as follow. The training data is used to
+  train the model, the testing data is used to evaluate the model.
+
+  .. code-block:: text
+
+    wmt/training-giga-fren.tar  <-- Training data for English-to-French (2.6GB)
+                                    giga-fren.release2.* are extracted from it.
+    wmt/dev-v2.tgz              <-- Testing data for different language (21.4MB)
+                                    newstest2013.* are extracted from it.
+
+    wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+    wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+    wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+    wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+  As ``giga-fren.release2.*`` are the training data, the context of ``giga-fren.release2.fr`` look as follow.
+
+  .. code-block:: text
+
+    Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
+    Plan du site
+    Rétroaction
+    Crédits
+    English
+    Qu’est-ce que la lumière?
+    La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
+    Le ciel des premiers habitants La vision contemporaine de l'Univers L’astronomie pour tous
+    Bande dessinée
+    Liens
+    Glossaire
+    Observatoires
     ...
-    processing line 22500000
 
-  ...
+  While ``giga-fren.release2.en`` look as follow, we can see words or sentences
+  are separated by ``|`` or ``\n``.
 
-Firstly, we download English-to-French translation data from the WMT'15
-Website. The training and testing data as follow. The training data is used to
-train the model, the testing data is used to evaluate the model.
+  .. code-block:: text
 
-.. code-block:: text
-
-  wmt/training-giga-fren.tar  <-- Training data for English-to-French (2.6GB)
-                                  giga-fren.release2.* are extracted from it.
-  wmt/dev-v2.tgz              <-- Testing data for different language (21.4MB)
-                                  newstest2013.* are extracted from it.
-
-  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
-  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
-
-  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
-  wmt/newstest2013.en         <-- Testing data of English   (333KB)
-
-As ``giga-fren.release2.*`` are the training data, the context of ``giga-fren.release2.fr`` look as follow.
-
-.. code-block:: text
-
-  Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
-  Plan du site
-  Rétroaction
-  Crédits
-  English
-  Qu’est-ce que la lumière?
-  La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
-  Le ciel des premiers habitants La vision contemporaine de l'Univers L’astronomie pour tous
-  Bande dessinée
-  Liens
-  Glossaire
-  Observatoires
-  ...
-
-While ``giga-fren.release2.en`` look as follow, we can see words or sentences
-are separated by ``|`` or ``\n``.
-
-.. code-block:: text
-
-  Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
-  Site map
-  Feedback
-  Credits
-  Français
-  What is light ?
-  The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
-  The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
-  Cartoon
-  Links
-  Glossary
-  Observatories
+    Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
+    Site map
+    Feedback
+    Credits
+    Français
+    What is light ?
+    The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
+    The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
+    Cartoon
+    Links
+    Glossary
+    Observatories
 
 
-The testing data ``newstest2013.en`` and ``newstest2013.fr`` look as follow.
+  The testing data ``newstest2013.en`` and ``newstest2013.fr`` look as follow.
 
-.. code-block:: text
+  .. code-block:: text
 
-  newstest2013.en :
-  A Republican strategy to counter the re-election of Obama
-  Republican leaders justified their policy by the need to combat electoral fraud.
-  However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
+    newstest2013.en :
+    A Republican strategy to counter the re-election of Obama
+    Republican leaders justified their policy by the need to combat electoral fraud.
+    However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
 
-  newstest2013.fr :
-  Une stratégie républicaine pour contrer la réélection d'Obama
-  Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
-  Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
-
-
-After downloading the dataset, it start to create vocabulary files,
-``vocab40000.fr`` and ``vocab40000.en`` from the training data ``giga-fren.release2.fr``
-and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
-reflects the vocabulary size.
-
-The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
-
-.. code-block:: text
-
-  _PAD
-  _GO
-  _EOS
-  _UNK
-  de
-  ,
-  .
-  '
-  la
-  et
-  des
-  les
-  à
-  le
-  du
-  l
-  en
-  )
-  d
-  0
-  (
-  00
-  pour
-  dans
-  un
-  que
-  une
-  sur
-  au
-  0000
-  a
-  par
-
-The ``vocab40000.en`` (344KB) stores one-item-per-line as follow as well.
-
-.. code-block:: text
-
-  _PAD
-  _GO
-  _EOS
-  _UNK
-  the
-  .
-  ,
-  of
-  and
-  to
-  in
-  a
-  )
-  (
-  0
-  for
-  00
-  that
-  is
-  on
-  The
-  0000
-  be
-  by
-  with
-  or
-  :
-  as
-  "
-  000
-  are
-  ;
+    newstest2013.fr :
+    Une stratégie républicaine pour contrer la réélection d'Obama
+    Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
+    Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
 
 
-And then, we start to create the tokenized training and testing data for both
-English and French. It will take a while as well.
+  After downloading the dataset, it start to create vocabulary files,
+  ``vocab40000.fr`` and ``vocab40000.en`` from the training data ``giga-fren.release2.fr``
+  and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
+  reflects the vocabulary size.
 
-.. code-block:: text
+  The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
 
-  Tokenize data
-  Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
-    tokenizing line 100000
-    tokenizing line 200000
-    tokenizing line 300000
-    tokenizing line 400000
+  .. code-block:: text
+
+    _PAD
+    _GO
+    _EOS
+    _UNK
+    de
+    ,
+    .
+    '
+    la
+    et
+    des
+    les
+    à
+    le
+    du
+    l
+    en
+    )
+    d
+    0
+    (
+    00
+    pour
+    dans
+    un
+    que
+    une
+    sur
+    au
+    0000
+    a
+    par
+
+  The ``vocab40000.en`` (344KB) stores one-item-per-line as follow as well.
+
+  .. code-block:: text
+
+    _PAD
+    _GO
+    _EOS
+    _UNK
+    the
+    .
+    ,
+    of
+    and
+    to
+    in
+    a
+    )
+    (
+    0
+    for
+    00
+    that
+    is
+    on
+    The
+    0000
+    be
+    by
+    with
+    or
+    :
+    as
+    "
+    000
+    are
+    ;
+
+
+  And then, we start to create the tokenized training and testing data for both
+  English and French. It will take a while as well.
+
+  .. code-block:: text
+
+    Tokenize data
+    Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
+      tokenizing line 100000
+      tokenizing line 200000
+      tokenizing line 300000
+      tokenizing line 400000
+      ...
+      tokenizing line 22500000
+    Tokenizing data in wmt/giga-fren.release2.en  <-- Training data of English
+      tokenizing line 100000
+      tokenizing line 200000
+      tokenizing line 300000
+      tokenizing line 400000
+      ...
+      tokenizing line 22500000
+    Tokenizing data in wmt/newstest2013.fr        <-- Testing data of French
+    Tokenizing data in wmt/newstest2013.en        <-- Testing data of English
+
+
+  In the end, all files we have as follow.
+
+  .. code-block:: text
+
+    wmt/training-giga-fren.tar  <-- Compressed Training data for English-to-French (2.6GB)
+                                    giga-fren.release2.* are extracted from it.
+    wmt/dev-v2.tgz              <-- Compressed Testing data for different language (21.4MB)
+                                    newstest2013.* are extracted from it.
+
+    wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+    wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+    wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+    wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+    wmt/vocab40000.fr           <-- Vocabulary of French      (381KB)
+    wmt/vocab40000.en           <-- Vocabulary of English     (344KB)
+
+    wmt/giga-fren.release2.ids40000.fr   <-- Tokenized Training data of French (2.81GB)
+    wmt/giga-fren.release2.ids40000.en   <-- Tokenized Training data of English (2.38GB)
+
+    wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
+    wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
+
+
+  Now, read all tokenized data into buckets and compute the number of data of each bucket.
+
+  .. code-block:: text
+
+    Read development (test) data into buckets
+    dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
+    en word_ids: [13388, 4, 949]
+    en context: [b'Preventing', b'the', b'disease']
+    fr word_ids: [23113, 8, 910, 2]
+    fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
+
+    Read training data into buckets (limit: 0)
+      reading data line 100000
+      reading data line 200000
+      reading data line 300000
+      reading data line 400000
+      reading data line 500000
+      reading data line 600000
+      reading data line 700000
+      reading data line 800000
+      ...
+      reading data line 22400000
+      reading data line 22500000
+    train_bucket_sizes: [239121, 1344322, 5239557, 10445326]
+    train_total_size: 17268326.0
+    train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
+    train data: (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
+    en word_ids: [1368, 3344]
+    en context: [b'Site', b'map']
+    fr word_ids: [1089, 14, 261, 2]
+    fr context: [b'Plan', b'du', b'site', b'_EOS']
+
+    the num of training data in each buckets: [239121, 1344322, 5239557, 10445326]
+    the num of training data: 17268326
+    train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
+
+
+  Start training by using the tokenized bucket data, the training process can
+  only be terminated by stop the program.
+  When ``steps_per_checkpoint = 10`` you will see.
+
+  .. code-block:: text
+
+    Create Embedding Attention Seq2seq Model
+
+    global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
+      eval: bucket 0 perplexity 5887.75
+      eval: bucket 1 perplexity 3891.96
+      eval: bucket 2 perplexity 3748.77
+      eval: bucket 3 perplexity 4940.10
+    global step 20 learning rate 0.5000 step-time 20.38 perplexity 28761.36
+      eval: bucket 0 perplexity 10137.01
+      eval: bucket 1 perplexity 12809.90
+      eval: bucket 2 perplexity 15758.65
+      eval: bucket 3 perplexity 26760.93
+    global step 30 learning rate 0.5000 step-time 20.64 perplexity 6372.95
+      eval: bucket 0 perplexity 1789.80
+      eval: bucket 1 perplexity 1690.00
+      eval: bucket 2 perplexity 2190.18
+      eval: bucket 3 perplexity 3808.12
+    global step 40 learning rate 0.5000 step-time 16.10 perplexity 3418.93
+      eval: bucket 0 perplexity 4778.76
+      eval: bucket 1 perplexity 3698.90
+      eval: bucket 2 perplexity 3902.37
+      eval: bucket 3 perplexity 22612.44
+    global step 50 learning rate 0.5000 step-time 14.84 perplexity 1811.02
+      eval: bucket 0 perplexity 644.72
+      eval: bucket 1 perplexity 759.16
+      eval: bucket 2 perplexity 984.18
+      eval: bucket 3 perplexity 1585.68
+    global step 60 learning rate 0.5000 step-time 19.76 perplexity 1580.55
+      eval: bucket 0 perplexity 1724.84
+      eval: bucket 1 perplexity 2292.24
+      eval: bucket 2 perplexity 2698.52
+      eval: bucket 3 perplexity 3189.30
+    global step 70 learning rate 0.5000 step-time 17.16 perplexity 1250.57
+      eval: bucket 0 perplexity 298.55
+      eval: bucket 1 perplexity 502.04
+      eval: bucket 2 perplexity 645.44
+      eval: bucket 3 perplexity 604.29
+    global step 80 learning rate 0.5000 step-time 18.50 perplexity 793.90
+      eval: bucket 0 perplexity 2056.23
+      eval: bucket 1 perplexity 1344.26
+      eval: bucket 2 perplexity 767.82
+      eval: bucket 3 perplexity 649.38
+    global step 90 learning rate 0.5000 step-time 12.61 perplexity 541.57
+      eval: bucket 0 perplexity 180.86
+      eval: bucket 1 perplexity 350.99
+      eval: bucket 2 perplexity 326.85
+      eval: bucket 3 perplexity 383.22
+    global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
+      eval: bucket 0 perplexity 216.63
+      eval: bucket 1 perplexity 348.96
+      eval: bucket 2 perplexity 318.20
+      eval: bucket 3 perplexity 389.92
+    global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
+      eval: bucket 0 perplexity 8049.85
+      eval: bucket 1 perplexity 1677.24
+      eval: bucket 2 perplexity 936.98
+      eval: bucket 3 perplexity 657.46
+    global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
+      eval: bucket 0 perplexity 189.22
+      eval: bucket 1 perplexity 360.69
+      eval: bucket 2 perplexity 410.57
+      eval: bucket 3 perplexity 456.40
+    global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
+      eval: bucket 0 perplexity 196.93
+      eval: bucket 1 perplexity 655.18
+      eval: bucket 2 perplexity 860.44
+      eval: bucket 3 perplexity 1062.36
+    global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
+      eval: bucket 0 perplexity 391.88
+      eval: bucket 1 perplexity 339.09
+      eval: bucket 2 perplexity 320.08
+      eval: bucket 3 perplexity 376.44
+    global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
+      eval: bucket 0 perplexity 269.16
+      eval: bucket 1 perplexity 286.51
+      eval: bucket 2 perplexity 391.78
+      eval: bucket 3 perplexity 485.23
+    global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
+      eval: bucket 0 perplexity 137.00
+      eval: bucket 1 perplexity 198.85
+      eval: bucket 2 perplexity 276.58
+      eval: bucket 3 perplexity 357.78
+    global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
+      eval: bucket 0 perplexity 1051.29
+      eval: bucket 1 perplexity 626.64
+      eval: bucket 2 perplexity 496.32
+      eval: bucket 3 perplexity 458.85
+    global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
+      eval: bucket 0 perplexity 178.12
+      eval: bucket 1 perplexity 299.86
+      eval: bucket 2 perplexity 294.84
+      eval: bucket 3 perplexity 296.46
+    global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
+      eval: bucket 0 perplexity 860.60
+      eval: bucket 1 perplexity 910.16
+      eval: bucket 2 perplexity 909.24
+      eval: bucket 3 perplexity 786.04
+    global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
+      eval: bucket 0 perplexity 152.13
+      eval: bucket 1 perplexity 234.41
+      eval: bucket 2 perplexity 249.66
+      eval: bucket 3 perplexity 285.95
     ...
-    tokenizing line 22500000
-  Tokenizing data in wmt/giga-fren.release2.en  <-- Training data of English
-    tokenizing line 100000
-    tokenizing line 200000
-    tokenizing line 300000
-    tokenizing line 400000
+    global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
+      eval: bucket 0 perplexity 78.45
+      eval: bucket 1 perplexity 108.40
+      eval: bucket 2 perplexity 137.83
+      eval: bucket 3 perplexity 173.53
+    global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
+      eval: bucket 0 perplexity 78.37
+      eval: bucket 1 perplexity 119.72
+      eval: bucket 2 perplexity 169.11
+      eval: bucket 3 perplexity 202.89
+    global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
+      eval: bucket 0 perplexity 76.52
+      eval: bucket 1 perplexity 125.97
+      eval: bucket 2 perplexity 150.13
+      eval: bucket 3 perplexity 181.07
     ...
-    tokenizing line 22500000
-  Tokenizing data in wmt/newstest2013.fr        <-- Testing data of French
-  Tokenizing data in wmt/newstest2013.en        <-- Testing data of English
-
-
-In the end, all files we have as follow.
-
-.. code-block:: text
-
-  wmt/training-giga-fren.tar  <-- Compressed Training data for English-to-French (2.6GB)
-                                  giga-fren.release2.* are extracted from it.
-  wmt/dev-v2.tgz              <-- Compressed Testing data for different language (21.4MB)
-                                  newstest2013.* are extracted from it.
-
-  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
-  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
-
-  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
-  wmt/newstest2013.en         <-- Testing data of English   (333KB)
-
-  wmt/vocab40000.fr           <-- Vocabulary of French      (381KB)
-  wmt/vocab40000.en           <-- Vocabulary of English     (344KB)
-
-  wmt/giga-fren.release2.ids40000.fr   <-- Tokenized Training data of French (2.81GB)
-  wmt/giga-fren.release2.ids40000.en   <-- Tokenized Training data of English (2.38GB)
-
-  wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
-  wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
-
-
-Now, read all tokenized data into buckets and compute the number of data of each bucket.
-
-.. code-block:: text
-
-  Read development (test) data into buckets
-  dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
-  en word_ids: [13388, 4, 949]
-  en context: [b'Preventing', b'the', b'disease']
-  fr word_ids: [23113, 8, 910, 2]
-  fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
-
-  Read training data into buckets (limit: 0)
-    reading data line 100000
-    reading data line 200000
-    reading data line 300000
-    reading data line 400000
-    reading data line 500000
-    reading data line 600000
-    reading data line 700000
-    reading data line 800000
-    ...
-    reading data line 22400000
-    reading data line 22500000
-  train_bucket_sizes: [239121, 1344322, 5239557, 10445326]
-  train_total_size: 17268326.0
-  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
-  train data: (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
-  en word_ids: [1368, 3344]
-  en context: [b'Site', b'map']
-  fr word_ids: [1089, 14, 261, 2]
-  fr context: [b'Plan', b'du', b'site', b'_EOS']
-
-  the num of training data in each buckets: [239121, 1344322, 5239557, 10445326]
-  the num of training data: 17268326
-  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
-
-
-Start training by using the tokenized bucket data, the training process can
-only be terminated by stop the program.
-When ``steps_per_checkpoint = 10`` you will see.
-
-.. code-block:: text
-
-  Create Embedding Attention Seq2seq Model
-
-  global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
-    eval: bucket 0 perplexity 5887.75
-    eval: bucket 1 perplexity 3891.96
-    eval: bucket 2 perplexity 3748.77
-    eval: bucket 3 perplexity 4940.10
-  global step 20 learning rate 0.5000 step-time 20.38 perplexity 28761.36
-    eval: bucket 0 perplexity 10137.01
-    eval: bucket 1 perplexity 12809.90
-    eval: bucket 2 perplexity 15758.65
-    eval: bucket 3 perplexity 26760.93
-  global step 30 learning rate 0.5000 step-time 20.64 perplexity 6372.95
-    eval: bucket 0 perplexity 1789.80
-    eval: bucket 1 perplexity 1690.00
-    eval: bucket 2 perplexity 2190.18
-    eval: bucket 3 perplexity 3808.12
-  global step 40 learning rate 0.5000 step-time 16.10 perplexity 3418.93
-    eval: bucket 0 perplexity 4778.76
-    eval: bucket 1 perplexity 3698.90
-    eval: bucket 2 perplexity 3902.37
-    eval: bucket 3 perplexity 22612.44
-  global step 50 learning rate 0.5000 step-time 14.84 perplexity 1811.02
-    eval: bucket 0 perplexity 644.72
-    eval: bucket 1 perplexity 759.16
-    eval: bucket 2 perplexity 984.18
-    eval: bucket 3 perplexity 1585.68
-  global step 60 learning rate 0.5000 step-time 19.76 perplexity 1580.55
-    eval: bucket 0 perplexity 1724.84
-    eval: bucket 1 perplexity 2292.24
-    eval: bucket 2 perplexity 2698.52
-    eval: bucket 3 perplexity 3189.30
-  global step 70 learning rate 0.5000 step-time 17.16 perplexity 1250.57
-    eval: bucket 0 perplexity 298.55
-    eval: bucket 1 perplexity 502.04
-    eval: bucket 2 perplexity 645.44
-    eval: bucket 3 perplexity 604.29
-  global step 80 learning rate 0.5000 step-time 18.50 perplexity 793.90
-    eval: bucket 0 perplexity 2056.23
-    eval: bucket 1 perplexity 1344.26
-    eval: bucket 2 perplexity 767.82
-    eval: bucket 3 perplexity 649.38
-  global step 90 learning rate 0.5000 step-time 12.61 perplexity 541.57
-    eval: bucket 0 perplexity 180.86
-    eval: bucket 1 perplexity 350.99
-    eval: bucket 2 perplexity 326.85
-    eval: bucket 3 perplexity 383.22
-  global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
-    eval: bucket 0 perplexity 216.63
-    eval: bucket 1 perplexity 348.96
-    eval: bucket 2 perplexity 318.20
-    eval: bucket 3 perplexity 389.92
-  global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
-    eval: bucket 0 perplexity 8049.85
-    eval: bucket 1 perplexity 1677.24
-    eval: bucket 2 perplexity 936.98
-    eval: bucket 3 perplexity 657.46
-  global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
-    eval: bucket 0 perplexity 189.22
-    eval: bucket 1 perplexity 360.69
-    eval: bucket 2 perplexity 410.57
-    eval: bucket 3 perplexity 456.40
-  global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
-    eval: bucket 0 perplexity 196.93
-    eval: bucket 1 perplexity 655.18
-    eval: bucket 2 perplexity 860.44
-    eval: bucket 3 perplexity 1062.36
-  global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
-    eval: bucket 0 perplexity 391.88
-    eval: bucket 1 perplexity 339.09
-    eval: bucket 2 perplexity 320.08
-    eval: bucket 3 perplexity 376.44
-  global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
-    eval: bucket 0 perplexity 269.16
-    eval: bucket 1 perplexity 286.51
-    eval: bucket 2 perplexity 391.78
-    eval: bucket 3 perplexity 485.23
-  global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
-    eval: bucket 0 perplexity 137.00
-    eval: bucket 1 perplexity 198.85
-    eval: bucket 2 perplexity 276.58
-    eval: bucket 3 perplexity 357.78
-  global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
-    eval: bucket 0 perplexity 1051.29
-    eval: bucket 1 perplexity 626.64
-    eval: bucket 2 perplexity 496.32
-    eval: bucket 3 perplexity 458.85
-  global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
-    eval: bucket 0 perplexity 178.12
-    eval: bucket 1 perplexity 299.86
-    eval: bucket 2 perplexity 294.84
-    eval: bucket 3 perplexity 296.46
-  global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
-    eval: bucket 0 perplexity 860.60
-    eval: bucket 1 perplexity 910.16
-    eval: bucket 2 perplexity 909.24
-    eval: bucket 3 perplexity 786.04
-  global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
-    eval: bucket 0 perplexity 152.13
-    eval: bucket 1 perplexity 234.41
-    eval: bucket 2 perplexity 249.66
-    eval: bucket 3 perplexity 285.95
-  ...
-  global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
-    eval: bucket 0 perplexity 78.45
-    eval: bucket 1 perplexity 108.40
-    eval: bucket 2 perplexity 137.83
-    eval: bucket 3 perplexity 173.53
-  global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
-    eval: bucket 0 perplexity 78.37
-    eval: bucket 1 perplexity 119.72
-    eval: bucket 2 perplexity 169.11
-    eval: bucket 3 perplexity 202.89
-  global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
-    eval: bucket 0 perplexity 76.52
-    eval: bucket 1 perplexity 125.97
-    eval: bucket 2 perplexity 150.13
-    eval: bucket 3 perplexity 181.07
-  ...
-
-
-After training the model for 350000 steps, you can play with the translation by switch
-``main_train()`` to ``main_decode()``. You type in a English sentence, the program will outputs
-a French sentence.
-
-
-.. code-block:: text
-
-  Reading model parameters from wmt/translate.ckpt-350000
-  >  Who is the president of the United States?
-  Qui est le président des États-Unis ?
-
-
-
-
-
-
-
-Understand Translation
-======================
-
-Seq2seq
----------
-
-Sequence to sequence model is commonly be used to translate a language to another.
-Actually it can do many thing you can't imagine, we can translate
-a long sentence into short and simple sentence, for example, translation going
-from Shakespeare to modern English.
-With CNN, we can also translate a video into a sentence, i.e. video captioning.
-
-If you just want to use Seq2seq but not going to design a new algorithm, the
-only think you need to consider is the data format including how to split
-the words, how to tokenize the words etc.
-In this tutorial, we described a lot about data formating.
-
-
-
-Basics
-^^^^^^
-
-Sequence to sequence model is a type of "Many to many" but different with Synced
-sequence input and output in PTB tutorial. Seq2seq generates sequence output
-after feeding all sequence inputs. The following two methods can improve the
-accuracy:
- - Reversing the inputs
- - Attention mechanism
-
-To speed up the computation, we used:
-
- - Sampled softmax
-
-Karpathy's blog described Seq2seq as:
-"(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
-reads a sentence in English and then outputs a sentence in French)."
-
-.. _fig_0601:
-
-.. image:: my_figs/basic_seq2seq.png
-  :scale: 100 %
-  :align: center
-
-As the above figure shows, the encoder inputs, decoder inputs and targets are:
-
-.. code-block:: text
-
-   encoder_input =  A    B    C
-   decoder_input =  <go> W    X    Y    Z
-   targets       =  W    X    Y    Z    <eos>
-
-   Note: in the code, the size of targets is one smaller than the size
-   of decoder_input, not like this figure. More details will be show later.
-
-Papers
-^^^^^^^^
-
-The English-to-French example implements a multi-layer recurrent neural
-network as encoder, and an Attention-based decoder.
-It is the same as the model described in this paper:
- - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
-
-The example uses sampled softmax to handle large output vocabulary size.
-In this example, as ``target_vocab_size=4000``, for vocabularies smaller
-than ``512``, it might be a better idea to just use a standard softmax loss.
-Sampled softmax is described in Section 3 of the this paper:
- - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
-
-Reversing the inputs and Multi-layer cells have been successfully used in
-sequence-to-sequence models for translation has beed described in this paper:
- - `Sequence to Sequence Learning with Neural Networks <http://arxiv.org/abs/1409.3215>`_
-
-Attention mechanism allows the decoder more direct access to the input, it was
-described in this paper:
- - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
-
-Alternatively, the model can also be implemented by a single-layer
-version, but with Bi-directional encoder, was presented in this paper:
- - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
-
-
-
-Implementation
----------------
-
-Bucketing and Padding
-^^^^^^^^^^^^^^^^^^^^^
-
-(Note that, TensorLayer supports Dynamic RNN layer after v1.2, so bucketing is not longer necessary in many cases)
-
-Bucketing is a method to efficiently handle sentences of different length.
-When translating English to French, we will have English sentences of
-different lengths ``L1`` on input, and French sentences of different
-lengths ``L2`` on output. We should in principle create a seq2seq model
-for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
-lengths of an English and French sentence.
-
-To minimize the number of buckets and find the closest bucket for each pair, then we could just pad every
-sentence with a special PAD symbol in the end if the bucket is bigger
-than the sentence
-
-We use a number of buckets and pad to the closest one for efficiency.
-In this example, we used 4 buckets as follow.
-
-.. code-block:: python
-
-  buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-
-If the input is an English sentence with ``3`` tokens, and the corresponding
-output is a French sentence with ``6`` tokens, then they will be put in the
-first bucket and padded to length ``5`` for encoder inputs (English sentence),
-and length ``10`` for decoder inputs.
-If we have an English sentence with 8 tokens and the corresponding French
-sentence has 18 tokens, then they will be fit into ``(20, 25)`` bucket.
-
-In other word, bucket ``(I, O)`` is ``(encoder_input_size, decoder_inputs_size)``.
-
-Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
-we fit it into bucket ``(5, 10)``.
-The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
-and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
-are decoder inputs shifted by one. The ``target_weights`` is the mask of
-``targets``.
-
-
-.. code-block:: text
-
-  bucket = (I, O) = (5, 10)
-  encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5  x batch_size
-  decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 x batch_size
-  target_weights = [1   1     1     1   0 0 0 0 0 0 0]          <-- 10 x batch_size
-  targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
-
-
-In this example, one sentence is represented by one column, so assume
-``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
-
-.. code-block:: text
-
-  encoder_inputs    decoder_inputs    target_weights    targets
-  0    0    0       1    1    1       1    1    1       87   71   16748
-  0    0    0       87   71   16748   1    1    1       2    3    14195
-  0    0    0       2    3    14195   0    1    1       0    2    2
-  0    0    3233    0    2    2       0    0    0       0    0    0
-  3    698  4061    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0
-
-  where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
-
-During training, the decoder inputs are the targets, while
-during prediction, the next decoder input is the last decoder output.
-
-
-Special vocabulary symbols, punctuations and digits
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The special vocabulary symbols in this example are:
-
-.. code-block:: python
-
-  _PAD = b"_PAD"
-  _GO = b"_GO"
-  _EOS = b"_EOS"
-  _UNK = b"_UNK"
-  PAD_ID = 0      <-- index (row number) in vocabulary
-  GO_ID = 1
-  EOS_ID = 2
-  UNK_ID = 3
-  _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
-
-.. code-block:: text
-
-          ID    MEANINGS
-  _PAD    0     Padding, empty word
-  _GO     1     1st element of decoder_inputs
-  _EOS    2     End of Sentence of targets
-  _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
-
-
-For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
-must be consistent, if ``normalize_digits=True`` all digits will be replaced by ``0``. Like
-``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
-`0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
-
-Otherwise, if ``normalize_digits=False``, different digits
-will be seem in the vocabulary, then the vocabulary size will be very big.
-The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
-(see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
-
-For word split, the regular expression is
-``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use the symbols like
-``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
-``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
-``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
-
-
-All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
-of both English and French.
-
-
-
-Sampled softmax
-^^^^^^^^^^^^^^^
-
-Sampled softmax is a method to reduce the computation of cost so as to
-handle large output vocabulary. Instead of compute the cross-entropy of large
-output, we compute the loss from samples of ``num_samples``.
-
-
-Dataset iteration
-^^^^^^^^^^^^^^^^^
-
-The iteration is done by ``EmbeddingAttentionSeq2seqWrapper.get_batch``, which get a random batch of data
-from the specified bucket, prepare for step. The data
-
-
-Loss and update expressions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``EmbeddingAttentionSeq2seqWrapper`` has built in SGD optimizer.
-
-
-What Next?
------------
-
-Try other applications.
+
+
+  After training the model for 350000 steps, you can play with the translation by switch
+  ``main_train()`` to ``main_decode()``. You type in a English sentence, the program will outputs
+  a French sentence.
+
+
+  .. code-block:: text
+
+    Reading model parameters from wmt/translate.ckpt-350000
+    >  Who is the president of the United States?
+    Qui est le président des États-Unis ?
+
+
+
+
+
+
+
+  Understand Translation
+  ======================
+
+  Seq2seq
+  ---------
+
+  Sequence to sequence model is commonly be used to translate a language to another.
+  Actually it can do many thing you can't imagine, we can translate
+  a long sentence into short and simple sentence, for example, translation going
+  from Shakespeare to modern English.
+  With CNN, we can also translate a video into a sentence, i.e. video captioning.
+
+  If you just want to use Seq2seq but not going to design a new algorithm, the
+  only think you need to consider is the data format including how to split
+  the words, how to tokenize the words etc.
+  In this tutorial, we described a lot about data formating.
+
+
+
+  Basics
+  ^^^^^^
+
+  Sequence to sequence model is a type of "Many to many" but different with Synced
+  sequence input and output in PTB tutorial. Seq2seq generates sequence output
+  after feeding all sequence inputs. The following two methods can improve the
+  accuracy:
+   - Reversing the inputs
+   - Attention mechanism
+
+  To speed up the computation, we used:
+
+   - Sampled softmax
+
+  Karpathy's blog described Seq2seq as:
+  "(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
+  reads a sentence in English and then outputs a sentence in French)."
+
+  .. _fig_0601:
+
+  .. image:: my_figs/basic_seq2seq.png
+    :scale: 100 %
+    :align: center
+
+  As the above figure shows, the encoder inputs, decoder inputs and targets are:
+
+  .. code-block:: text
+
+     encoder_input =  A    B    C
+     decoder_input =  <go> W    X    Y    Z
+     targets       =  W    X    Y    Z    <eos>
+
+     Note: in the code, the size of targets is one smaller than the size
+     of decoder_input, not like this figure. More details will be show later.
+
+  Papers
+  ^^^^^^^^
+
+  The English-to-French example implements a multi-layer recurrent neural
+  network as encoder, and an Attention-based decoder.
+  It is the same as the model described in this paper:
+   - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
+
+  The example uses sampled softmax to handle large output vocabulary size.
+  In this example, as ``target_vocab_size=4000``, for vocabularies smaller
+  than ``512``, it might be a better idea to just use a standard softmax loss.
+  Sampled softmax is described in Section 3 of the this paper:
+   - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
+
+  Reversing the inputs and Multi-layer cells have been successfully used in
+  sequence-to-sequence models for translation has beed described in this paper:
+   - `Sequence to Sequence Learning with Neural Networks <http://arxiv.org/abs/1409.3215>`_
+
+  Attention mechanism allows the decoder more direct access to the input, it was
+  described in this paper:
+   - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+  Alternatively, the model can also be implemented by a single-layer
+  version, but with Bi-directional encoder, was presented in this paper:
+   - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+
+
+  Implementation
+  ---------------
+
+  Bucketing and Padding
+  ^^^^^^^^^^^^^^^^^^^^^
+
+  (Note that, TensorLayer supports Dynamic RNN layer after v1.2, so bucketing is not longer necessary in many cases)
+
+  Bucketing is a method to efficiently handle sentences of different length.
+  When translating English to French, we will have English sentences of
+  different lengths ``L1`` on input, and French sentences of different
+  lengths ``L2`` on output. We should in principle create a seq2seq model
+  for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
+  lengths of an English and French sentence.
+
+  To minimize the number of buckets and find the closest bucket for each pair, then we could just pad every
+  sentence with a special PAD symbol in the end if the bucket is bigger
+  than the sentence
+
+  We use a number of buckets and pad to the closest one for efficiency.
+  In this example, we used 4 buckets as follow.
+
+  .. code-block:: python
+
+    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+
+  If the input is an English sentence with ``3`` tokens, and the corresponding
+  output is a French sentence with ``6`` tokens, then they will be put in the
+  first bucket and padded to length ``5`` for encoder inputs (English sentence),
+  and length ``10`` for decoder inputs.
+  If we have an English sentence with 8 tokens and the corresponding French
+  sentence has 18 tokens, then they will be fit into ``(20, 25)`` bucket.
+
+  In other word, bucket ``(I, O)`` is ``(encoder_input_size, decoder_inputs_size)``.
+
+  Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
+  we fit it into bucket ``(5, 10)``.
+  The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
+  and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
+  are decoder inputs shifted by one. The ``target_weights`` is the mask of
+  ``targets``.
+
+
+  .. code-block:: text
+
+    bucket = (I, O) = (5, 10)
+    encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5  x batch_size
+    decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 x batch_size
+    target_weights = [1   1     1     1   0 0 0 0 0 0 0]          <-- 10 x batch_size
+    targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
+
+
+  In this example, one sentence is represented by one column, so assume
+  ``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
+
+  .. code-block:: text
+
+    encoder_inputs    decoder_inputs    target_weights    targets
+    0    0    0       1    1    1       1    1    1       87   71   16748
+    0    0    0       87   71   16748   1    1    1       2    3    14195
+    0    0    0       2    3    14195   0    1    1       0    2    2
+    0    0    3233    0    2    2       0    0    0       0    0    0
+    3    698  4061    0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0
+
+    where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
+
+  During training, the decoder inputs are the targets, while
+  during prediction, the next decoder input is the last decoder output.
+
+
+  Special vocabulary symbols, punctuations and digits
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  The special vocabulary symbols in this example are:
+
+  .. code-block:: python
+
+    _PAD = b"_PAD"
+    _GO = b"_GO"
+    _EOS = b"_EOS"
+    _UNK = b"_UNK"
+    PAD_ID = 0      <-- index (row number) in vocabulary
+    GO_ID = 1
+    EOS_ID = 2
+    UNK_ID = 3
+    _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
+
+  .. code-block:: text
+
+            ID    MEANINGS
+    _PAD    0     Padding, empty word
+    _GO     1     1st element of decoder_inputs
+    _EOS    2     End of Sentence of targets
+    _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
+
+
+  For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
+  must be consistent, if ``normalize_digits=True`` all digits will be replaced by ``0``. Like
+  ``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
+  `0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
+
+  Otherwise, if ``normalize_digits=False``, different digits
+  will be seem in the vocabulary, then the vocabulary size will be very big.
+  The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
+  (see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
+
+  For word split, the regular expression is
+  ``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use the symbols like
+  ``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
+  ``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
+  ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
+
+
+  All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
+  of both English and French.
+
+
+
+  Sampled softmax
+  ^^^^^^^^^^^^^^^
+
+  Sampled softmax is a method to reduce the computation of cost so as to
+  handle large output vocabulary. Instead of compute the cross-entropy of large
+  output, we compute the loss from samples of ``num_samples``.
+
+
+  Dataset iteration
+  ^^^^^^^^^^^^^^^^^
+
+  The iteration is done by ``EmbeddingAttentionSeq2seqWrapper.get_batch``, which get a random batch of data
+  from the specified bucket, prepare for step. The data
+
+
+  Loss and update expressions
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  The ``EmbeddingAttentionSeq2seqWrapper`` has built in SGD optimizer.
+
+
+  What Next?
+  -----------
+
+  Try other applications.
 
 
 
