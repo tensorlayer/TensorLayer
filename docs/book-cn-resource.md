@@ -28,6 +28,8 @@
 
 # 随书资源与引用链接
 
+* [资源下载](http://www.broadview.com.cn/book/5059)
+
 ### 第二章
 * [代码－实现手写数字分类](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py)
 * [代码－通过`all_drop`启动与关闭 Dropout](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py)
