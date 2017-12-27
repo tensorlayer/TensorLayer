@@ -2,10 +2,10 @@ Welcome to TensorLayer
 =======================================
 
 
-.. image:: user/my_figs/img_tensorlayer.png
-  :scale: 25 %
+.. image:: user/my_figs/tl_transparent_logo.png
+  :scale: 30 %
   :align: center
-  :target: https://github.com/zsdonghao/tensorlayer
+  :target: https://github.com/tensorlayer/tensorlayer
 
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
