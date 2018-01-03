@@ -14,6 +14,7 @@
 </a>
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 
 TensorLayer is a deep learning and reinforcement learning library based on [TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help both **researchers** and **engineers** build practical machine learning workflows.  
