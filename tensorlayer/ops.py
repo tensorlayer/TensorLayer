@@ -134,7 +134,20 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     return sess
 
 
+def setlinebuf():
+    """Set buffer mode to _IOLBF for stdout.
+    When running in container, or other environments where stdout is redirected,
+    the default buffer behavior will seriously delay the message written by `print`.
 
+    TODO: this method should be called automatically by default.
+
+    References
+    -----------
+    - `<https://docs.python.org/2/library/functions.html#open>`_
+    - `<https://docs.python.org/3/library/functions.html#open>`_
+    - `man setlinebuf <https://linux.die.net/man/3/setlinebuf>`_
+    """
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
 
 
 def disable_print():
