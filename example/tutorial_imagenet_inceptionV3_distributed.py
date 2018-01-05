@@ -9,6 +9,7 @@ import random
 from xml.etree import ElementTree
 import logging
 import sys
+import argparse
 import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.contrib import slim
@@ -130,6 +131,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
         image = tf.image.decode_jpeg(image_bytes, channels=3)
         image = tf.image.resize_images(image, size=[image_size, image_size])
         image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+        one_hot_labels = tf.reshape(one_hot_labels, [num_classes])
         return image, one_hot_labels
 
     max_cpus = multiprocessing.cpu_count()
@@ -138,8 +140,8 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
     dataset = dataset.batch(batch_size)
     images, one_hot_classes = dataset.make_one_shot_iterator().get_next()
 
-    images = tf.reshape(images, [-1, image_size, image_size, 3])
-    one_hot_classes = tf.reshape(one_hot_classes, [-1, num_classes])
+    images = tf.reshape(images, [batch_size, image_size, image_size, 3])
+    one_hot_classes = tf.reshape(one_hot_classes, [batch_size, num_classes])
 
     return images, one_hot_classes, num_classes, size
 
@@ -157,7 +159,9 @@ def build_network(image_input, num_classes=1001, is_training=False):
                                               'is_training': is_training
                                               },
                                           name='InceptionV3')
-    return network
+
+    predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
+    return network, predictions
 
 
 ########## EVALUATOR ##########
@@ -199,62 +203,75 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
         self.summary_writer.add_summary(self.summary, self.eval_step)
 
 
-def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
-    threshold_graph = tf.constant(threshold, name='threshold')
-    zero_point_five = tf.constant(0.5)
-    predicted_bool = tf.greater_equal(predicted_batch, threshold_graph)
-    real_bool = tf.greater_equal(real_batch, zero_point_five)
-    predicted_bool_neg = tf.logical_not(predicted_bool)
-    real_bool_neg = tf.logical_not(real_bool)
-    differences_bool = tf.logical_xor(predicted_bool, real_bool)
-    tp = tf.logical_and(predicted_bool, real_bool)
-    tn = tf.logical_and(predicted_bool_neg, real_bool_neg)
-    fn = tf.logical_and(differences_bool, real_bool)
-    fp = tf.logical_and(differences_bool, predicted_bool)
+########## METRICS ##########
 
-    # accumulative metrics
-    tp = tf.reduce_sum(tf.cast(tp, tf.int32))
-    tn = tf.reduce_sum(tf.cast(tn, tf.int32))
-    fn = tf.reduce_sum(tf.cast(fn, tf.int32))
-    fp = tf.reduce_sum(tf.cast(fp, tf.int32))
-    tp_v = tf.Variable(0, dtype=tf.int32, name='true_positive', trainable=False)
-    tn_v = tf.Variable(0, dtype=tf.int32, name='true_negative', trainable=False)
-    fp_v = tf.Variable(0, dtype=tf.int32, name='false_positive', trainable=False)
-    fn_v = tf.Variable(0, dtype=tf.int32, name='false_negative', trainable=False)
-    tp = tf.cast(tf.assign_add(tp_v, tp), dtype=tf.float32)
-    tn = tf.cast(tf.assign_add(tn_v, tn), dtype=tf.float32)
-    fp = tf.cast(tf.assign_add(fp_v, fp), dtype=tf.float32)
-    fn = tf.cast(tf.assign_add(fn_v, fn), dtype=tf.float32)
+def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=False, ema_decay=0.9):
+    with tf.variable_scope('metrics'):
+        threshold_graph = tf.constant(threshold, name='threshold')
+        zero_point_five = tf.constant(0.5)
+        predicted_bool = tf.greater_equal(predicted_batch, threshold_graph)
+        real_bool = tf.greater_equal(real_batch, zero_point_five)
+        predicted_bool_neg = tf.logical_not(predicted_bool)
+        real_bool_neg = tf.logical_not(real_bool)
+        differences_bool = tf.logical_xor(predicted_bool, real_bool)
+        tp = tf.logical_and(predicted_bool, real_bool)
+        tn = tf.logical_and(predicted_bool_neg, real_bool_neg)
+        fn = tf.logical_and(differences_bool, real_bool)
+        fp = tf.logical_and(differences_bool, predicted_bool)
+        tp = tf.reduce_sum(tf.cast(tp, tf.float32))
+        tn = tf.reduce_sum(tf.cast(tn, tf.float32))
+        fn = tf.reduce_sum(tf.cast(fn, tf.float32))
+        fp = tf.reduce_sum(tf.cast(fp, tf.float32))
 
-    # calculate metrics
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
-    # accuracy = (tp + tn) / (tp + tn + fp + fn)
-    fall_out = fp / (tn + fp)
-    f1_score = tp * 2 / (tp * 2 + fp + fn)
+        average_ops = None
+        init_op = None
+        if is_training:
+            ema = tf.train.ExponentialMovingAverage(decay=ema_decay)
+            average_ops = ema.apply([tp, tn, fp, fn])
+            tp = ema.average(tp)
+            tn = ema.average(tn)
+            fp = ema.average(fp)
+            fn = ema.average(fn)
+        else:
+            tp_v = tf.Variable(0, dtype=tf.float32, name='true_positive', trainable=False)
+            tn_v = tf.Variable(0, dtype=tf.float32, name='true_negative', trainable=False)
+            fp_v = tf.Variable(0, dtype=tf.float32, name='false_positive', trainable=False)
+            fn_v = tf.Variable(0, dtype=tf.float32, name='false_negative', trainable=False)
+            init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0),
+                       tf.assign(fn_v, 0)]
+            tp = tf.assign_add(tp_v, tp)
+            tn = tf.assign_add(tn_v, tn)
+            fp = tf.assign_add(fp_v, fp)
+            fn = tf.assign_add(fn_v, fn)
 
-    # remove NaNs and set them to 0
-    zero = tf.constant(0, dtype=tf.float32)
-    precision = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: precision)
-    recall = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: recall)
-    # accuracy = tf.cond(tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
-    fall_out = tf.cond(tf.equal(fp, 0.0), lambda: zero, lambda: fall_out)
-    f1_score = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: f1_score)
+        # calculate metrics
+        precision = tp / (tp + fp)
+        recall = tp / (tp + fn)
+        accuracy = (tp + tn) / (tp + tn + fp + fn)
+        fall_out = fp / (tn + fp)
+        f1_score = tp * 2 / (tp * 2 + fp + fn)
 
-    # add to tensorboard
-    # tf.summary.scalar('accuracy', accuracy)
-    tf.summary.scalar('precision', precision)
-    tf.summary.scalar('recall', recall)
-    tf.summary.scalar('fall-out', fall_out)
-    tf.summary.scalar('f1-score', f1_score)
+        # remove NaNs and set them to 0
+        zero = tf.constant(0, dtype=tf.float32)
+        precision = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: precision)
+        recall = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: recall)
+        accuracy = tf.cond(tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
+        fall_out = tf.cond(tf.equal(fp, 0.0), lambda: zero, lambda: fall_out)
+        f1_score = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: f1_score)
 
-    init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0), tf.assign(fn_v, 0)]
-    metrics_ops = {  # 'accuracy' : accuracy,
-        'precision': precision,
-        'recall'   : recall,
-        'fall-out' : fall_out,
-        'f1-score' : f1_score}
-    return init_op, metrics_ops
+        # add to tensorboard
+        # tf.summary.scalar('accuracy', accuracy)
+        tf.summary.scalar('precision', precision)
+        tf.summary.scalar('recall', recall)
+        tf.summary.scalar('fall-out', fall_out)
+        tf.summary.scalar('f1-score', f1_score)
+
+    metrics_ops = {#'accuracy' : accuracy,
+                   'precision': precision,
+                   'recall'   : recall,
+                   'fall-out' : fall_out,
+                   'f1-score' : f1_score}
+    return init_op, average_ops, metrics_ops
 
 
 def run_evaluator(task_spec, checkpoints_path, batch_size=32):
@@ -265,13 +282,15 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
                       task_spec=task_spec,
                       batch_size=batch_size,
                       epochs=1)
-        network = build_network(images_input, num_classes=num_classes, is_training=False)
+        network, predictions = build_network(images_input,
+                                             num_classes=num_classes,
+                                             is_training=False)
         saver = tf.train.Saver()
         # metrics
-        predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
-        metrics_init_op, metrics_ops = evaluator_metrics(
-                predicted_batch=predictions,
-                real_batch=one_hot_classes)
+        metrics_init_ops, _, metrics_ops = \
+            calculate_metrics(predicted_batch=predictions,
+                              real_batch=one_hot_classes,
+                              is_training=False)
         # tensorboard summary
         summary_op = tf.summary.merge_all()
         # session hook
@@ -281,7 +300,7 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
             # infinite loop
             while True:
                 with SingularMonitoredSession(hooks=[evaluator_hook]) as sess:
-                    sess.run(metrics_init_op)
+                    sess.run(metrics_init_ops)
                     try:
                         while not sess.should_stop():
                             metrics, summary = sess.run([metrics_ops, summary_op])
@@ -311,7 +330,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                           epochs=epochs,
                           shuffle_size=10000)
             # network
-            network = build_network(images_input, num_classes=num_classes, is_training=True)
+            network, predictions = build_network(images_input,
+                                                 num_classes=num_classes,
+                                                 is_training=True)
             # training operations
             loss = tl.cost.sigmoid_cross_entropy(output=network.outputs,
                                                  target=one_hot_classes,
@@ -329,7 +350,13 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             train_op = optimizer.minimize(loss=loss,
                                           var_list=network.all_params,
                                           global_step=global_step)
+            # metrics
             tf.summary.scalar('loss', loss)
+            _, metrics_average_ops, metrics_ops = calculate_metrics(predicted_batch=predictions,
+                                                                    real_batch=one_hot_classes,
+                                                                    is_training=True)
+            with tf.control_dependencies([train_op]):
+                train_op = tf.group(metrics_average_ops)
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
@@ -348,7 +375,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 last_log_time = time.time()
                 next_log_time = last_log_time + 60
                 while not sess.should_stop():
-                    step, loss_val, _ = sess.run([global_step, loss, train_op])
+                    step, loss_val, _, metrics = \
+                        sess.run([global_step, loss, train_op, metrics_ops])
                     if task_spec is None or task_spec.is_master():
                         now = time.time()
                         if now > next_log_time:
@@ -356,8 +384,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             next_log_time = last_log_time + 60
                             current_epoch = '{:.2}'.format(float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
-                            logging.info('Epoch: {}/{} Steps: {}/{} Loss: {}'.format(
-                                         current_epoch, epochs, step, max_steps, loss_val))
+                            logging.info('Epoch: {}/{} Steps: {}/{} Loss: {} Metrics: {}'.format(
+                                    current_epoch, epochs, step, max_steps, loss_val, metrics))
             except OutOfRangeError:
                 pass
 
@@ -369,6 +397,16 @@ if __name__ == '__main__':
     # print output logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
 
+    # args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--with_evaluator', dest='with_evaluator', action='store_true')
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=32)
+    parser.add_argument('--epochs', dest='epochs', type=int, default=10)
+    parser.set_defaults(with_evaluator=False)
+    args = parser.parse_args()
+    logging.info('Batch size: {}'.format(args.batch_size))
+    logging.info('Epochs: {}'.format(args.epochs))
+
     # check the dataset and create them if necessary
     might_create_training_set()
     might_create_validation_set()
@@ -378,13 +416,15 @@ if __name__ == '__main__':
 
     if task_spec is None:
         logging.info('Run in single node')
-        run_worker(task_spec, CHECKPOINTS_PATH)
+        run_worker(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size, epochs=args.epochs)
     else:
-        # run with evaluator
-        task_spec = task_spec.user_last_worker_as_evaluator()
+        if args.with_evaluator:
+            # run with evaluator
+            logging.info('Last worker is the evaluator')
+            task_spec = task_spec.user_last_worker_as_evaluator()
 
         if task_spec.is_evaluator():
-            run_evaluator(task_spec, CHECKPOINTS_PATH)
+            run_evaluator(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size)
         else:
             task_spec.create_server()
-            run_worker(task_spec, CHECKPOINTS_PATH)
+            run_worker(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size, epochs=args.epochs)
