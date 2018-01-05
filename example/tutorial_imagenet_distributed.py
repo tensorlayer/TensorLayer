@@ -7,6 +7,8 @@ import multiprocessing
 import numpy as np
 import random
 from xml.etree import ElementTree
+import logging
+import sys
 import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.contrib import slim
@@ -48,6 +50,7 @@ def get_data_sample(annotation_file, annotations_dir, data_dir):
     else:
         image_file = None
     return image_file, labels
+
 
 def might_create_dataset(prefix, file, shuffle=False, suffix='**/*.xml'):
     # load data
@@ -104,7 +107,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
     dataset = dataset.repeat(epochs)
     # split the dataset in shards
     if task_spec is not None and task_spec.num_workers > 1 and not task_spec.is_evaluator():
-        dataset = dataset.shard(task_spec.num_workers, task_spec.shard_index)
+        dataset = dataset.shard(num_shards=task_spec.num_workers, index=task_spec.shard_index)
     if shuffle_size > 0:
         dataset = dataset.shuffle(buffer_size=shuffle_size)
 
@@ -188,12 +191,12 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
         # restore the checkpoint
         self.saver.restore(session, checkpoint)
         self.lastest_checkpoint = checkpoint
+        self.eval_step = int(self.lastest_checkpoint.split('-')[-1])
 
     def end(self, session):
         super(EvaluatorHook, self).end(session)
         # save summaries
-        step = int(self.lastest_checkpoint.split('-')[-1])
-        self.summary_writer.add_summary(self.summary, step)
+        self.summary_writer.add_summary(self.summary, self.eval_step)
 
 
 def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
@@ -246,11 +249,11 @@ def evaluator_metrics(predicted_batch, real_batch, threshold=0.5):
     tf.summary.scalar('f1-score', f1_score)
 
     init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0), tf.assign(fn_v, 0)]
-    metrics_ops = { #'accuracy' : accuracy,
-                   'precision': precision,
-                   'recall'   : recall,
-                   'fall-out' : fall_out,
-                   'f1-score' : f1_score}
+    metrics_ops = {  # 'accuracy' : accuracy,
+        'precision': precision,
+        'recall'   : recall,
+        'fall-out' : fall_out,
+        'f1-score' : f1_score}
     return init_op, metrics_ops
 
 
@@ -265,7 +268,7 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
         network = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
-        predictions = tf.nn.softmax(network.outputs, name='Predictions')
+        predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
         metrics_init_op, metrics_ops = evaluator_metrics(
                 predicted_batch=predictions,
                 real_batch=one_hot_classes)
@@ -285,7 +288,7 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
                             evaluator_hook.summary = summary
                     except OutOfRangeError:
                         pass
-                    print(metrics)
+                    logging.info('step: {}  {}'.format(evaluator_hook.eval_step, metrics))
         except EvaluatorStops:
             # the evaluator has waited too long for a new checkpoint
             pass
@@ -298,6 +301,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
     device_fn = task_spec.device_fn() if task_spec is not None else None
     # create graph
     with tf.Graph().as_default():
+        global_step = tf.train.get_or_create_global_step()
         with tf.device(device_fn):
             # load dataset
             images_input, one_hot_classes, num_classes, dataset_size = \
@@ -307,7 +311,6 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                           epochs=epochs,
                           shuffle_size=10000)
             # network
-            global_step = tf.train.get_or_create_global_step()
             network = build_network(images_input, num_classes=num_classes, is_training=True)
             # training operations
             loss = tl.cost.sigmoid_cross_entropy(output=network.outputs,
@@ -316,8 +319,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             steps_per_epoch = dataset_size / batch_size
             learning_rate = tf.train.exponential_decay(learning_rate=0.1,
                                                        global_step=global_step,
-                                                       decay_steps=steps_per_epoch * 2,  # 2 epochs
-                                                       decay_rate=0.1,
+                                                       decay_steps=steps_per_epoch,  # 1 epochs
+                                                       decay_rate=0.5,
                                                        staircase=True,
                                                        name='learning_rate')
             optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate,
@@ -339,6 +342,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
                 network.print_layers()
+                sys.stdout.flush()
             # run training
             try:
                 last_log_time = time.time()
@@ -352,8 +356,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             next_log_time = last_log_time + 60
                             current_epoch = '{:.2}'.format(float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
-                            print('Epoch: {} Steps: {}/{} Loss: {}'.format(current_epoch, step,
-                                                                           max_steps, loss_val))
+                            logging.info('Epoch: {}/{} Steps: {}/{} Loss: {}'.format(
+                                         current_epoch, epochs, step, max_steps, loss_val))
             except OutOfRangeError:
                 pass
 
@@ -362,6 +366,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
 
 
 if __name__ == '__main__':
+    # print output logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
+
     # check the dataset and create them if necessary
     might_create_training_set()
     might_create_validation_set()
@@ -370,7 +377,7 @@ if __name__ == '__main__':
     task_spec = tl.distributed.TaskSpec()
 
     if task_spec is None:
-        print('Run in single node')
+        logging.info('Run in single node')
         run_worker(task_spec, CHECKPOINTS_PATH)
     else:
         # run with evaluator
