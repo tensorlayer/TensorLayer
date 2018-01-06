@@ -13,4 +13,4 @@ script:
   # - pytest
 
   # smoke tests
-  - python example/tutorial_mnist_tiny.py
+  - python tests/test_mnist_simple.py
