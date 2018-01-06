@@ -2186,7 +2186,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     num_in_channels = shape[3]
 
     #Create bilinear filter kernel as numpy array
-    bilinear_kernel = np.zeros([filter_size, filter_size], dtype=D_TYPE) # dtype=np.float32)
+    bilinear_kernel = np.zeros([filter_size, filter_size], dtype=np.float32)
     scale_factor = (filter_size + 1) // 2
     if filter_size % 2 == 1:
         center = scale_factor - 1
