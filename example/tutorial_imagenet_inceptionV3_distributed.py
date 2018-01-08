@@ -1,6 +1,11 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
 
+# Example of training an Inception V3 model with ImageNet. The parameters are set as in the
+# best results of the paper: https://arxiv.org/abs/1512.00567
+# The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition:
+# https://www.kaggle.com/c/imagenet-object-localization-challenge/data
+
 import os
 import time
 import multiprocessing
@@ -206,7 +211,7 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
 ########## METRICS ##########
 
 def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=False, ema_decay=0.9):
-    with tf.variable_scope('metrics'):
+    with tf.variable_scope('metric'):
         threshold_graph = tf.constant(threshold, name='threshold')
         zero_point_five = tf.constant(0.5)
         predicted_bool = tf.greater_equal(predicted_batch, threshold_graph)
@@ -265,12 +270,22 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
         tf.summary.scalar('recall', recall)
         tf.summary.scalar('fall-out', fall_out)
         tf.summary.scalar('f1-score', f1_score)
+        # tf.summary.scalar('true_positive', tp)
+        # tf.summary.scalar('true_negative', tn)
+        # tf.summary.scalar('false_positive', fp)
+        # tf.summary.scalar('false_negative', fn)
 
-    metrics_ops = {#'accuracy' : accuracy,
-                   'precision': precision,
-                   'recall'   : recall,
-                   'fall-out' : fall_out,
-                   'f1-score' : f1_score}
+    metrics_ops = {
+        # 'accuracy' : accuracy,
+        'precision'     : precision,
+        'recall'        : recall,
+        'fall-out'      : fall_out,
+        'f1-score'      : f1_score,
+        # 'true positive' : tp,
+        # 'true negative' : tn,
+        # 'false positive': fp,
+        # 'false negative': fn,
+        }
     return init_op, average_ops, metrics_ops
 
 
@@ -338,20 +353,28 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                                                  target=one_hot_classes,
                                                  name='loss')
             steps_per_epoch = dataset_size / batch_size
-            learning_rate = tf.train.exponential_decay(learning_rate=0.1,
+            learning_rate = tf.train.exponential_decay(learning_rate=0.045,
                                                        global_step=global_step,
-                                                       decay_steps=steps_per_epoch,  # 1 epochs
-                                                       decay_rate=0.5,
+                                                       decay_steps=steps_per_epoch * 2,  # 2 epochs
+                                                       decay_rate=0.94,
                                                        staircase=True,
                                                        name='learning_rate')
             optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate,
                                                   decay=0.9,
                                                   epsilon=1.0)
-            train_op = optimizer.minimize(loss=loss,
-                                          var_list=network.all_params,
-                                          global_step=global_step)
+            # clip and apply gradients
+            gvs = optimizer.compute_gradients(loss=loss,
+                                              var_list=network.all_params)
+            capped_gvs = []
+            for grad, var in gvs:
+                if grad is not None:
+                    grad = tf.clip_by_value(grad, -2., 2.)
+                capped_gvs.append((grad,var))
+            train_op = optimizer.apply_gradients(grads_and_vars=capped_gvs,
+                                                 global_step=global_step)
             # metrics
-            tf.summary.scalar('loss', loss)
+            tf.summary.scalar('learning_rate/value', learning_rate)
+            tf.summary.scalar('loss/logits', loss)
             _, metrics_average_ops, metrics_ops = calculate_metrics(predicted_batch=predictions,
                                                                     real_batch=one_hot_classes,
                                                                     is_training=True)
@@ -364,7 +387,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                                                hooks=hooks,
                                                checkpoint_dir=checkpoints_path,
                                                save_summaries_secs=None,
-                                               save_summaries_steps=100) as sess:
+                                               save_summaries_steps=300,
+                                               save_checkpoint_secs=60 * 60) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
@@ -375,17 +399,18 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 last_log_time = time.time()
                 next_log_time = last_log_time + 60
                 while not sess.should_stop():
-                    step, loss_val, _, metrics = \
-                        sess.run([global_step, loss, train_op, metrics_ops])
+                    step, loss_val, learning_rate_val, _, metrics = \
+                        sess.run([global_step, loss, learning_rate, train_op, metrics_ops])
                     if task_spec is None or task_spec.is_master():
                         now = time.time()
                         if now > next_log_time:
                             last_log_time = now
                             next_log_time = last_log_time + 60
-                            current_epoch = '{:.2}'.format(float(step) / steps_per_epoch)
+                            current_epoch = '{:.3f}'.format(float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
-                            logging.info('Epoch: {}/{} Steps: {}/{} Loss: {} Metrics: {}'.format(
-                                    current_epoch, epochs, step, max_steps, loss_val, metrics))
+                            m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
+                            logging.info(m.format(current_epoch, epochs, step, max_steps,
+                                                  loss_val, learning_rate_val, metrics))
             except OutOfRangeError:
                 pass
 
@@ -401,7 +426,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--with_evaluator', dest='with_evaluator', action='store_true')
     parser.add_argument('--batch_size', dest='batch_size', type=int, default=32)
-    parser.add_argument('--epochs', dest='epochs', type=int, default=10)
+    parser.add_argument('--epochs', dest='epochs', type=int, default=100)
     parser.set_defaults(with_evaluator=False)
     args = parser.parse_args()
     logging.info('Batch size: {}'.format(args.batch_size))
