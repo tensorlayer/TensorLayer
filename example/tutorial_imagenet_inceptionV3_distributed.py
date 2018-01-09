@@ -270,10 +270,10 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
         tf.summary.scalar('recall', recall)
         tf.summary.scalar('fall-out', fall_out)
         tf.summary.scalar('f1-score', f1_score)
-        # tf.summary.scalar('true_positive', tp)
-        # tf.summary.scalar('true_negative', tn)
-        # tf.summary.scalar('false_positive', fp)
-        # tf.summary.scalar('false_negative', fn)
+        tf.summary.scalar('true_positive', tp)
+        tf.summary.scalar('true_negative', tn)
+        tf.summary.scalar('false_positive', fp)
+        tf.summary.scalar('false_negative', fn)
 
     metrics_ops = {
         # 'accuracy' : accuracy,
@@ -281,10 +281,10 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
         'recall'        : recall,
         'fall-out'      : fall_out,
         'f1-score'      : f1_score,
-        # 'true positive' : tp,
-        # 'true negative' : tn,
-        # 'false positive': fp,
-        # 'false negative': fn,
+        'true positive' : tp,
+        'true negative' : tn,
+        'false positive': fp,
+        'false negative': fn,
         }
     return init_op, average_ops, metrics_ops
 
