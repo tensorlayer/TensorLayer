@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 # Alpha Version for Distributed Training
 
@@ -9,11 +9,13 @@
 # CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 0}}' python example/tutorial_mnist_distributed.py > output-master 2>&1 &
 # CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 1}}' python example/tutorial_mnist_distributed.py > output-worker 2>&1 &
 # CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "ps", "index": 0}}' python example/tutorial_mnist_distributed.py > output-ps 2>&1 &
-#
+# Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
 
 import tensorflow as tf
 import tensorlayer as tl
 
+# set buffer mode to _IOLBF for stdout
+tl.ops.setlinebuf()
 
 # load environment for distributed training
 task_spec = tl.distributed.TaskSpec()

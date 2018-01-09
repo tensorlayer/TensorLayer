@@ -27,7 +27,7 @@ from . import distributed
 act = activation
 vis = visualize
 
-__version__ = "1.7.2"
+__version__ = "1.7.3"
 
 global_flag = {}
 global_dict = {}
