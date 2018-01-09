@@ -1,0 +1,16 @@
+# https://docs.travis-ci.com/user/languages/python/
+language: python
+python:
+  - "2.7"
+  - "3.6"
+install:
+  - pip install tensorflow
+  - pip install .
+script:
+  # units test
+  # https://docs.pytest.org/en/latest/
+  # TODO: make it work
+  # - pytest
+
+  # smoke tests
+  - python tests/test_mnist_simple.py
