@@ -1,8 +1,9 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 import os
+import sys
 import json
 import time
 
