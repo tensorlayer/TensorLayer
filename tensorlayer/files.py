@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 
 import tensorflow as tf
@@ -98,7 +98,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
     Parameters
     ----------
     shape : tupe
-        The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32, 32, 3)
+        The shape of digit images: e.g. (-1, 3, 32, 32) and (-1, 32, 32, 3).
     plotable : True, False
         Whether to plot some image examples.
     second : int

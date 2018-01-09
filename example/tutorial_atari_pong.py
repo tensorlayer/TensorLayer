@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 
 """ Monte-Carlo Policy Network π(a|s)  (REINFORCE)
