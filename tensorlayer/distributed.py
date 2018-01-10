@@ -1,11 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-import tensorflow as tf
-from tensorflow.python.training import session_run_hook
+import json
 import os
 import sys
-import json
 import time
+
+import tensorflow as tf
+from tensorflow.python.training import session_run_hook
 
 
 class TaskSpecDef(object):

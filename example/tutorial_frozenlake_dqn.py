@@ -1,9 +1,12 @@
-import gym, random, time
+import random
+import time
+
+import gym
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import matplotlib.pyplot as plt
 
 """ Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE)
 

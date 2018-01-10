@@ -1,15 +1,17 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import io
+import os
+import time
+
+import numpy as np
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
-import numpy as np
 from PIL import Image
-import os, io, time
-
+from tensorlayer.layers import set_keep
 
 """
 You will learn:

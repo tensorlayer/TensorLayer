@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from distutils.core import setup
-from distutils.command.install import install as DistutilsInstall
-import sys
+
 import subprocess
+import sys
+from distutils.command.install import install as DistutilsInstall
+from distutils.core import setup
 
 try:
     import tensorflow
@@ -26,7 +27,3 @@ setup(name='roi-pooling',
             package_data={'roi_pooling': ['roi_pooling.so']},
             cmdclass={'install': MyInstall}
 )
-
-    
-
-

@@ -2,12 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
+import os
+import sys
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import *
-import os, sys, time
-import numpy as np
 from scipy.misc import imread, imresize
+from tensorlayer.layers import *
+
 try:
     from data.imagenet_classes import *
 except Exception as e:

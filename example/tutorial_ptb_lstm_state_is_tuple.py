@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
-import numpy as np
-import time
 
 """Example of Synced sequence input and output.
 This is a reimpmentation of the TensorFlow official PTB example in :

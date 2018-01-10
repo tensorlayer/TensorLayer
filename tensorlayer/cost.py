@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import tensorflow as tf
 import numbers
+
+import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
+
 
 ## Cost Functions
 

@@ -2,22 +2,28 @@
 # -*- coding: utf-8 -*-
 
 
-import tensorflow as tf
-import tensorlayer as tl
-slim = tf.contrib.slim
-from tensorflow.contrib.slim.python.slim.nets.alexnet import alexnet_v2
-from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3_base, inception_v3, inception_v3_arg_scope
+import os
+import time
+
+import numpy as np
 # from tensorflow.contrib.slim.python.slim.nets.resnet_v2 import resnet_v2_152
 # from tensorflow.contrib.slim.python.slim.nets.vgg import vgg_16
 import skimage
 import skimage.io
 import skimage.transform
-import time, os
+import tensorflow as tf
+import tensorlayer as tl
+from scipy.misc import imread, imresize
+from tensorflow.contrib.slim.python.slim.nets.alexnet import alexnet_v2
+from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
+                                                                   inception_v3_arg_scope,
+                                                                   inception_v3_base)
+
+slim = tf.contrib.slim
 try:
     from data.imagenet_classes import *
 except Exception as e:
     raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
-import numpy as np
 """
 You will learn:
 1. What is TF-Slim ?
@@ -122,7 +128,6 @@ except: # TF11
     saver.restore(sess, "inception_v3.ckpt")
 print("Model Restored")
 
-from scipy.misc import imread, imresize
 y = network.outputs
 probs = tf.nn.softmax(y)
 img1 = load_image("data/puzzle.jpeg") # test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data

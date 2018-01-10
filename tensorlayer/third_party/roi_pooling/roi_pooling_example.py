@@ -1,8 +1,7 @@
 from __future__ import print_function
 
-import tensorflow as tf
 import numpy as np
-
+import tensorflow as tf
 from roi_pooling.roi_pooling_ops import roi_pooling
 
 # input feature map going into the RoI pooling 
