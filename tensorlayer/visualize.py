@@ -2,17 +2,21 @@
 # -*- coding: utf-8 -*-
 
 
+import os
+
 import matplotlib
+import numpy as np
+# save/read image(s)
+import scipy.misc
+
+from . import prepro
+
+
 ## use this, if you got the following error:
 #  _tkinter.TclError: no display name and no $DISPLAY environment variable
 # matplotlib.use('Agg')
 
-import numpy as np
-import os
-from . import prepro
 
-# save/read image(s)
-import scipy.misc
 
 def read_image(image, path=''):
     """ Read one image.

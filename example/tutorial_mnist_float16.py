@@ -1,11 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import time
+
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import time
 
 D_TYPE = tf.float16         # tf.float32  tf.float16
 tl.layers.D_TYPE = D_TYPE   # define global dtype in tl.layers

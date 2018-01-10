@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 
 
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
-import numpy as np
-import time
-from PIL import Image
-import os
 import io
 import json
+import os
+import time
+
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from PIL import Image
+from tensorlayer.layers import set_keep
+
 
 """
 You will learn:
@@ -115,7 +117,6 @@ features, sequence_features = tf.parse_single_sequence_example(serialized_exampl
                         }
                     )
 c = tf.contrib.learn.run_n(features, n=1, feed_dict=None)
-from PIL import Image
 im = Image.frombytes('RGB', (299, 299), c[0]['image/img_raw'])
 tl.visualize.frame(np.asarray(im), second=1, saveable=False, name='frame', fig_idx=1236)
 c = tf.contrib.learn.run_n(sequence_features, n=1, feed_dict=None)

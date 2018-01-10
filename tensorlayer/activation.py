@@ -3,6 +3,7 @@
 
 import tensorflow as tf
 
+
 def identity(x, name=None):
     """The identity activation function, Shortcut is ``linear``.
 

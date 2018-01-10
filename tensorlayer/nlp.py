@@ -1,17 +1,21 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-import os
-import re
-from sys import platform as _platform
 import collections
+import os
 import random
-import numpy as np
-import warnings
-from six.moves import xrange
-from tensorflow.python.platform import gfile
 import re
+# Metric
+import subprocess
+import tempfile
+import warnings
+from sys import platform as _platform
+
+import numpy as np
+import tensorflow as tf
+from six.moves import urllib, xrange
+from tensorflow.python.platform import gfile
+
 
 # Iteration functions
 
@@ -965,10 +969,6 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
         print("Target path %s exists" % target_path)
 
 
-# Metric
-import subprocess
-import tempfile
-from six.moves import urllib
 
 
 def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp

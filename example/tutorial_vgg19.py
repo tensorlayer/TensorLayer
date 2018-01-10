@@ -4,18 +4,23 @@
 
 
 
+import inspect
+import os
+import time
+
+import numpy as np
+import skimage
+import skimage.io
+import skimage.transform
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
+
 try:
     from data.imagenet_classes import *
 except Exception as e:
     raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 
-import os, time, inspect, skimage
-import numpy as np
-import skimage.io
-import skimage.transform
 
 
 """

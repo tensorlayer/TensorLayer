@@ -21,11 +21,12 @@ http://karpathy.github.io/2016/05/31/rl/
 
 """
 
-import tensorflow as tf
-import tensorlayer as tl
+import time
+
 import gym
 import numpy as np
-import time
+import tensorflow as tf
+import tensorlayer as tl
 
 # hyperparameters
 image_size = 80

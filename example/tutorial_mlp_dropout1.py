@@ -1,6 +1,10 @@
 
 
 
+# train the network
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
@@ -47,9 +51,6 @@ tl.layers.initialize_global_variables(sess)
 network.print_params()
 network.print_layers()
 
-# train the network
-import time
-import numpy as np
 n_epoch = 500
 batch_size = 500
 print_freq = 5
