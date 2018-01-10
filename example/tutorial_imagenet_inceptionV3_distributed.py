@@ -1,5 +1,5 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 
 # Example of training an Inception V3 model with ImageNet. The parameters are set as in the
 # best results of the paper: https://arxiv.org/abs/1512.00567
@@ -20,7 +20,6 @@ import tensorlayer as tl
 from tensorflow.contrib import slim
 from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
                                                                    inception_v3_arg_scope)
-
 from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
@@ -28,9 +27,7 @@ from tensorflow.python.training.monitored_session import SingularMonitoredSessio
 
 ########## VARIABLES ##########
 
-
 # get the dataset: https://www.kaggle.com/c/imagenet-object-localization-challenge/data
-
 # get the synset dictionary: http://www.image-net.org/archive/words.txt
 
 BASE_DIR = './'
@@ -153,7 +150,6 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
 ########## NETWORK ##########
 
-
 def build_network(image_input, num_classes=1001, is_training=False):
     net_in = tl.layers.InputLayer(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
@@ -170,7 +166,6 @@ def build_network(image_input, num_classes=1001, is_training=False):
 
 
 ########## EVALUATOR ##########
-
 
 class EvaluatorStops(Exception):
     def __init__(self, message):
@@ -330,7 +325,6 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
 
 ########## TRAINING ##########
 
-
 def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
     device_fn = task_spec.device_fn() if task_spec is not None else None
     # create graph
@@ -369,7 +363,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             for grad, var in gvs:
                 if grad is not None:
                     grad = tf.clip_by_value(grad, -2., 2.)
-                capped_gvs.append((grad,var))
+                capped_gvs.append((grad, var))
             train_op = optimizer.apply_gradients(grads_and_vars=capped_gvs,
                                                  global_step=global_step)
             # metrics
@@ -416,7 +410,6 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
 
 
 ########## MAIN ##########
-
 
 if __name__ == '__main__':
     # print output logging
