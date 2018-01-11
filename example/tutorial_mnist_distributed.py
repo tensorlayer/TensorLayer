@@ -19,6 +19,7 @@ tl.ops.setlinebuf()
 
 # load environment for distributed training
 task_spec = tl.distributed.TaskSpec()
+task_spec.create_server()
 device_fn = task_spec.device_fn() if task_spec is not None else None
 
 # prepare data
