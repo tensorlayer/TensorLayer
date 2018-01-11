@@ -47,6 +47,7 @@ is done after creating the shards:
   from tensorflow.contrib.data import Dataset
 
   task_spec = TaskSpec()
+  task_spec.create_server()
   files_dataset = Dataset.list_files(files_pattern)
   dataset = TextLineDataset(files_dataset)
   dataset = dataset.map(your_python_map_function, num_threads=4)
@@ -137,6 +138,7 @@ You can use one of the workers to run an evaluation for the saved checkpoints:
   if task_spec.is_evaluator():
         Evaluator().run_evaluation()
   else:
+        task_spec.create_server()
         # run normal training
 
 
