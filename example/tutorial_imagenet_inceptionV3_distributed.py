@@ -6,15 +6,16 @@
 # The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition:
 # https://www.kaggle.com/c/imagenet-object-localization-challenge/data
 
-import os
-import time
-import multiprocessing
-import numpy as np
-import random
-from xml.etree import ElementTree
-import logging
-import sys
 import argparse
+import logging
+import multiprocessing
+import os
+import random
+import sys
+import time
+from xml.etree import ElementTree
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.contrib import slim
@@ -23,7 +24,8 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
 from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
-from tensorflow.python.training.monitored_session import SingularMonitoredSession
+from tensorflow.python.training.monitored_session import \
+    SingularMonitoredSession
 
 ########## VARIABLES ##########
 
