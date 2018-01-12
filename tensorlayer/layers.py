@@ -674,7 +674,7 @@ class AverageEmbeddingInputlayer(Layer):
     References
     ------------
     - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
-    - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016).`Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
+    - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
     """
     def __init__(
             self, inputs, vocabulary_size, embedding_size,
