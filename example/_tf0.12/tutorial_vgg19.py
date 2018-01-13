@@ -4,17 +4,17 @@
 
 
 
-import tensorflow as tf
-import tensorlayer as tl
-from data.imagenet_classes import *
-import os
-import numpy as np
-import time
 import inspect
+import os
+import time
+
+import numpy as np
 import skimage
 import skimage.io
 import skimage.transform
-
+import tensorflow as tf
+import tensorlayer as tl
+from data.imagenet_classes import *
 
 """
 VGG-19 for ImageNet

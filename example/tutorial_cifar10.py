@@ -3,12 +3,15 @@
 
 """ tl.prepro for data augmentation """
 
+import io
+import os
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import *
-import numpy as np
-import time, os, io
 from PIL import Image
+from tensorlayer.layers import *
 
 sess = tf.InteractiveSession()
 

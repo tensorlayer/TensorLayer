@@ -1,8 +1,9 @@
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.prepro import *
-import numpy as np
-import time
 
 """
 Data Augmentation by numpy, scipy, threading and queue.

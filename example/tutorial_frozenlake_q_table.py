@@ -1,4 +1,6 @@
-import gym, time
+import time
+
+import gym
 import numpy as np
 
 """Q-Table learning algorithm, non deep learning - TD Learning, Off-Policy, e-Greedy Exploration

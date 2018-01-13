@@ -1,12 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-import tensorflow as tf
-import tensorlayer as tl
-from . import iterate
-import numpy as np
-import time
 import math
 import random
+import time
+
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+
+from . import iterate
 
 
 def fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100,

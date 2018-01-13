@@ -23,11 +23,16 @@ Generate text using LSTM.
 
 """
 
+import os
+import re
+import time
+
+import nltk
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import numpy as np
-import time, re, nltk, os
+
 
 # # _UNK = "_UNK"
 

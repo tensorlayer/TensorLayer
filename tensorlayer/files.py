@@ -2,22 +2,20 @@
 # -*- coding: utf-8 -*-
 
 
-import tensorflow as tf
+import gzip
 import os
-import numpy as np
+import pickle
 import re
 import sys
 import tarfile
-import gzip
 import zipfile
-from . import visualize
-from . import nlp
-from . import utils
-import pickle
-from six.moves import urllib
-from six.moves import cPickle
-from six.moves import zip
+
+import numpy as np
+import tensorflow as tf
+from six.moves import cPickle, urllib, zip
 from tensorflow.python.platform import gfile
+
+from . import nlp, utils, visualize
 
 
 ## Load dataset functions
