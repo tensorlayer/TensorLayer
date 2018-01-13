@@ -4,13 +4,15 @@
 
 
 
-import tensorflow as tf
-import tensorlayer as tl
 import os
 import subprocess
 import sys
-from sys import platform as _platform
+from contextlib import contextmanager
 from sys import exit as _exit
+from sys import platform as _platform
+
+import tensorflow as tf
+import tensorlayer as tl
 
 
 def exit_tf(sess=None, port=6006):
@@ -197,7 +199,6 @@ def enable_print():
 #         return isinstance(value, TypeError)
 
 
-from contextlib import contextmanager
 @contextmanager
 def suppress_stdout():
     """Temporarily disable console output.

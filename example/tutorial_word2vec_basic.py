@@ -40,12 +40,16 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 """
 
 
-import collections, math, os, random, time
+import collections
+import math
+import os
+import random
+import time
+
 import numpy as np
-from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 import tensorlayer as tl
-import time
+from six.moves import xrange  # pylint: disable=redefined-builtin
 
 flags = tf.flags
 flags.DEFINE_string("model", "one", "A type of model.")

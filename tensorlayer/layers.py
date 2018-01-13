@@ -1,19 +1,18 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
-import time
-from . import visualize
-from . import utils
-from . import files
-from . import cost
-from . import iterate
-from . import ops
-import numpy as np
-from six.moves import xrange
-import random, warnings
 import copy
 import inspect
+import random
+import time
+import warnings
+
+import numpy as np
+import tensorflow as tf
+from six.moves import xrange
+
+from . import cost, files, iterate, ops, utils, visualize
+
 # __all__ = [
 #     "Layer",
 #     "DenseLayer",

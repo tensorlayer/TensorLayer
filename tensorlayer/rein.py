@@ -3,9 +3,10 @@
 
 
 
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 from six.moves import xrange
+
 
 def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
     """ Take 1D float array of rewards and compute discounted rewards for an

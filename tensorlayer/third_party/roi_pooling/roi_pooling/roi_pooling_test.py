@@ -1,5 +1,5 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 from roi_pooling_ops import roi_pooling
 
 

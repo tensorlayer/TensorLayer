@@ -49,17 +49,19 @@ http://www.statmt.org/wmt10/
 
 """
 from __future__ import print_function
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
-import numpy as np
-import random
+
 import math
-import time
 import os
+import random
 import re
 import sys
+import time
+
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
 from six.moves import xrange
+from tensorlayer.layers import set_keep
 
 # Data directory and vocabularies size
 data_dir = "wmt"                # Data directory

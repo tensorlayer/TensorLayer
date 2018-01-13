@@ -30,11 +30,16 @@ and joints angular speed, legs contact with ground, and 10 lidar rangefinder
 measurements. There's no coordinates in the state vector.
 """
 
-import multiprocessing, threading, gym, os, shutil
+import multiprocessing
+import os
+import shutil
+import threading
+
+import gym
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import numpy as np
 
 GAME = 'BipedalWalker-v2' # BipedalWalkerHardcore-v2
 OUTPUT_GRAPH = False

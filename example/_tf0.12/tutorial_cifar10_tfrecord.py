@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 
+import io
+import os
+import time
+
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
-import numpy as np
-import time
 from PIL import Image
-import os
-import io
+from tensorlayer.layers import set_keep
 
 """Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
 

@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
-import tensorflow as tf
-import tensorlayer as tl
 import os
 import sys
-import numpy as np
 import time
-from scipy.misc import imread, imresize
+
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
 from data.imagenet_classes import *
+from scipy.misc import imread, imresize
+
 
 """
 VGG-16 for ImageNet

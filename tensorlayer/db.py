@@ -7,22 +7,20 @@ Latest Version
 """
 
 
-import tensorflow as tf
-import tensorlayer as tl
-import numpy as np
-import time
+import inspect
 import math
-
-
-import uuid
-
-import pymongo
-import gridfs
 import pickle
-from pymongo import MongoClient
+import time
+import uuid
 from datetime import datetime
 
-import inspect
+import gridfs
+import numpy as np
+import pymongo
+import tensorflow as tf
+import tensorlayer as tl
+from pymongo import MongoClient
+
 
 def AutoFill(func):
     def func_wrapper(self,*args,**kwargs):

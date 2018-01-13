@@ -1,6 +1,9 @@
 
 
 
+# train the network
+import time
+
 import tensorflow as tf
 import tensorlayer as tl
 
@@ -54,8 +57,6 @@ train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999,
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
-# train the network
-import time
 n_epoch = 500
 batch_size = 500
 print_freq = 5

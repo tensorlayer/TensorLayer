@@ -30,11 +30,10 @@ import array
 import hashlib
 import time
 
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
-import numpy as np
-
 
 # Hashed n-grams with 1 < n <= N_GRAM are included as features
 # in addition to unigrams.

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-import numpy as np
 
 """
 You will learn:

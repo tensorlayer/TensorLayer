@@ -2,18 +2,27 @@
 # -*- coding: utf-8 -*-
 
 
-import tensorflow as tf
-import tensorlayer as tl
-import numpy as np
-
-import time
 import numbers
-import random
 import os
+import random
 import re
 import sys
-
 import threading
+import time
+from multiprocessing import Pool
+
+import numpy as np
+import scipy
+import scipy.ndimage as ndi
+import skimage
+import tensorflow as tf
+import tensorlayer as tl
+from scipy import linalg
+from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage.interpolation import map_coordinates
+from six.moves import range
+from skimage import exposure, transform
+
 # import Queue  # <-- donot work for py3
 is_py2 = sys.version[0] == '2'
 if is_py2:
@@ -21,16 +30,8 @@ if is_py2:
 else:
     import queue as queue
 
-from six.moves import range
-import scipy
-from scipy import linalg
-import scipy.ndimage as ndi
 
-from skimage import transform
-from skimage import exposure
-import skimage
 
-from multiprocessing import Pool
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -651,8 +652,6 @@ def swirl_multi(x, center=None, strength=1, radius=100, rotation=0, output_shape
 
 # elastic_transform
 
-from scipy.ndimage.interpolation import map_coordinates
-from scipy.ndimage.filters import gaussian_filter
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
     """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_ .
 

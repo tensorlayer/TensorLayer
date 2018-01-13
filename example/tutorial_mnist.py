@@ -1,11 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import time
+
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
-import time
+
 
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
