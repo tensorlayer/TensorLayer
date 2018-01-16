@@ -19,8 +19,8 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorflow.contrib import slim
-from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
-                                                                   inception_v3_arg_scope)
+from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (
+    inception_v3, inception_v3_arg_scope)
 from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
@@ -41,12 +41,13 @@ CLASSES_FILE = os.path.join(BASE_DIR, 'classes.csv')
 CLASSES_VAL_FILE = os.path.join(BASE_DIR, 'classes_val.csv')
 CHECKPOINTS_PATH = './checkpoints'
 
-
 ########## DATASETS ##########
+
 
 def get_data_sample(annotation_file, annotations_dir, data_dir):
     labels = []
-    image_file = annotation_file.replace(annotations_dir, data_dir).replace('.xml', '.JPEG')
+    image_file = annotation_file.replace(annotations_dir, data_dir).replace(
+        '.xml', '.JPEG')
     if tf.gfile.Exists(annotation_file) and tf.gfile.Exists(image_file):
         xmltree = ElementTree.parse(annotation_file)
         objects = xmltree.findall("object")
@@ -61,10 +62,12 @@ def might_create_dataset(prefix, file, shuffle=False, suffix='**/*.xml'):
     # load data
     data = []
     labels = set()
-    annotations_dir = os.path.join(ILSVRC_DIR, 'Annotations', 'CLS-LOC', prefix)
+    annotations_dir = os.path.join(ILSVRC_DIR, 'Annotations', 'CLS-LOC',
+                                   prefix)
     data_dir = os.path.join(ILSVRC_DIR, 'Data', 'CLS-LOC', prefix)
     for filename in tf.gfile.Glob(os.path.join(annotations_dir, suffix)):
-        image_path, image_labels = get_data_sample(filename, annotations_dir, data_dir)
+        image_path, image_labels = get_data_sample(filename, annotations_dir,
+                                                   data_dir)
         if image_path is not None and len(image_labels) > 0:
             data.append([image_path] + image_labels)
             for label in image_labels:
@@ -80,8 +83,7 @@ def might_create_dataset(prefix, file, shuffle=False, suffix='**/*.xml'):
 
 def might_create_training_set():
     if not tf.gfile.Exists(TRAIN_FILE):
-        labels = might_create_dataset('train', TRAIN_FILE,
-                                      shuffle=True)
+        labels = might_create_dataset('train', TRAIN_FILE, shuffle=True)
         with tf.gfile.Open(CLASSES_FILE, 'w') as f:
             for l in labels:
                 f.write('{}\n'.format(l))
@@ -111,8 +113,10 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
     dataset = tf.data.TextLineDataset([file])
     dataset = dataset.repeat(epochs)
     # split the dataset in shards
-    if task_spec is not None and task_spec.num_workers > 1 and not task_spec.is_evaluator():
-        dataset = dataset.shard(num_shards=task_spec.num_workers, index=task_spec.shard_index)
+    if task_spec is not None and task_spec.num_workers > 1 and not task_spec.is_evaluator(
+    ):
+        dataset = dataset.shard(
+            num_shards=task_spec.num_workers, index=task_spec.shard_index)
     if shuffle_size > 0:
         dataset = dataset.shuffle(buffer_size=shuffle_size)
 
@@ -129,8 +133,9 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
         return image_bytes, one_hot_labels
 
     def _map_fn(example_serialized):
-        image_bytes, one_hot_labels = tf.py_func(_parse_example_fn, [example_serialized],
-                                                 [tf.string, tf.float32], stateful=False)
+        image_bytes, one_hot_labels = tf.py_func(
+            _parse_example_fn, [example_serialized], [tf.string, tf.float32],
+            stateful=False)
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)
         image = tf.image.resize_images(image, size=[image_size, image_size])
@@ -152,16 +157,16 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
 ########## NETWORK ##########
 
+
 def build_network(image_input, num_classes=1001, is_training=False):
     net_in = tl.layers.InputLayer(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
-        network = tl.layers.SlimNetsLayer(layer=net_in,
-                                          slim_layer=inception_v3,
-                                          slim_args={
-                                              'num_classes': num_classes,
-                                              'is_training': is_training
-                                              },
-                                          name='InceptionV3')
+        network = tl.layers.SlimNetsLayer(
+            layer=net_in,
+            slim_layer=inception_v3,
+            slim_args={'num_classes': num_classes,
+                       'is_training': is_training},
+            name='InceptionV3')
 
     predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
     return network, predictions
@@ -169,16 +174,17 @@ def build_network(image_input, num_classes=1001, is_training=False):
 
 ########## EVALUATOR ##########
 
+
 class EvaluatorStops(Exception):
     def __init__(self, message):
         super(EvaluatorStops, self).__init__(message)
 
 
 class EvaluatorHook(session_run_hook.SessionRunHook):
-
     def __init__(self, checkpoints_path, saver):
         self.checkpoints_path = checkpoints_path
-        self.summary_writer = tf.summary.FileWriter(os.path.join(checkpoints_path, 'validation'))
+        self.summary_writer = tf.summary.FileWriter(
+            os.path.join(checkpoints_path, 'validation'))
         self.lastest_checkpoint = None
         self.saver = saver
         self.summary = None
@@ -192,7 +198,8 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
             checkpoint = tf.train.latest_checkpoint(self.checkpoints_path)
             total_waited_secs += 30
             if total_waited_secs > 30 * 60 * 60:
-                raise EvaluatorStops('Waited more than half an hour to load a new checkpoint')
+                raise EvaluatorStops(
+                    'Waited more than half an hour to load a new checkpoint')
 
         # restore the checkpoint
         self.saver.restore(session, checkpoint)
@@ -207,7 +214,12 @@ class EvaluatorHook(session_run_hook.SessionRunHook):
 
 ########## METRICS ##########
 
-def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=False, ema_decay=0.9):
+
+def calculate_metrics(predicted_batch,
+                      real_batch,
+                      threshold=0.5,
+                      is_training=False,
+                      ema_decay=0.9):
     with tf.variable_scope('metric'):
         threshold_graph = tf.constant(threshold, name='threshold')
         zero_point_five = tf.constant(0.5)
@@ -235,12 +247,20 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
             fp = ema.average(fp)
             fn = ema.average(fn)
         else:
-            tp_v = tf.Variable(0, dtype=tf.float32, name='true_positive', trainable=False)
-            tn_v = tf.Variable(0, dtype=tf.float32, name='true_negative', trainable=False)
-            fp_v = tf.Variable(0, dtype=tf.float32, name='false_positive', trainable=False)
-            fn_v = tf.Variable(0, dtype=tf.float32, name='false_negative', trainable=False)
-            init_op = [tf.assign(tp_v, 0), tf.assign(tn_v, 0), tf.assign(fp_v, 0),
-                       tf.assign(fn_v, 0)]
+            tp_v = tf.Variable(
+                0, dtype=tf.float32, name='true_positive', trainable=False)
+            tn_v = tf.Variable(
+                0, dtype=tf.float32, name='true_negative', trainable=False)
+            fp_v = tf.Variable(
+                0, dtype=tf.float32, name='false_positive', trainable=False)
+            fn_v = tf.Variable(
+                0, dtype=tf.float32, name='false_negative', trainable=False)
+            init_op = [
+                tf.assign(tp_v, 0),
+                tf.assign(tn_v, 0),
+                tf.assign(fp_v, 0),
+                tf.assign(fn_v, 0)
+            ]
             tp = tf.assign_add(tp_v, tp)
             tn = tf.assign_add(tn_v, tn)
             fp = tf.assign_add(fp_v, fp)
@@ -257,7 +277,8 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
         zero = tf.constant(0, dtype=tf.float32)
         precision = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: precision)
         recall = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: recall)
-        accuracy = tf.cond(tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
+        accuracy = tf.cond(
+            tf.equal(tp + tn, 0.0), lambda: zero, lambda: accuracy)
         fall_out = tf.cond(tf.equal(fp, 0.0), lambda: zero, lambda: fall_out)
         f1_score = tf.cond(tf.equal(tp, 0.0), lambda: zero, lambda: f1_score)
 
@@ -274,15 +295,15 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
 
     metrics_ops = {
         # 'accuracy' : accuracy,
-        'precision'     : precision,
-        'recall'        : recall,
-        'fall-out'      : fall_out,
-        'f1-score'      : f1_score,
-        'true positive' : tp,
-        'true negative' : tn,
+        'precision': precision,
+        'recall': recall,
+        'fall-out': fall_out,
+        'f1-score': f1_score,
+        'true positive': tp,
+        'true negative': tn,
         'false positive': fp,
         'false negative': fn,
-        }
+    }
     return init_op, average_ops, metrics_ops
 
 
@@ -294,9 +315,8 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
                       task_spec=task_spec,
                       batch_size=batch_size,
                       epochs=1)
-        network, predictions = build_network(images_input,
-                                             num_classes=num_classes,
-                                             is_training=False)
+        network, predictions = build_network(
+            images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
         metrics_init_ops, _, metrics_ops = \
@@ -306,7 +326,8 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
         # tensorboard summary
         summary_op = tf.summary.merge_all()
         # session hook
-        evaluator_hook = EvaluatorHook(checkpoints_path=checkpoints_path, saver=saver)
+        evaluator_hook = EvaluatorHook(
+            checkpoints_path=checkpoints_path, saver=saver)
 
         try:
             # infinite loop
@@ -315,17 +336,20 @@ def run_evaluator(task_spec, checkpoints_path, batch_size=32):
                     sess.run(metrics_init_ops)
                     try:
                         while not sess.should_stop():
-                            metrics, summary = sess.run([metrics_ops, summary_op])
+                            metrics, summary = sess.run(
+                                [metrics_ops, summary_op])
                             evaluator_hook.summary = summary
                     except OutOfRangeError:
                         pass
-                    logging.info('step: {}  {}'.format(evaluator_hook.eval_step, metrics))
+                    logging.info('step: {}  {}'.format(
+                        evaluator_hook.eval_step, metrics))
         except EvaluatorStops:
             # the evaluator has waited too long for a new checkpoint
             pass
 
 
 ########## TRAINING ##########
+
 
 def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
     device_fn = task_spec.device_fn() if task_spec is not None else None
@@ -341,50 +365,50 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                           epochs=epochs,
                           shuffle_size=10000)
             # network
-            network, predictions = build_network(images_input,
-                                                 num_classes=num_classes,
-                                                 is_training=True)
+            network, predictions = build_network(
+                images_input, num_classes=num_classes, is_training=True)
             # training operations
-            loss = tl.cost.sigmoid_cross_entropy(output=network.outputs,
-                                                 target=one_hot_classes,
-                                                 name='loss')
+            loss = tl.cost.sigmoid_cross_entropy(
+                output=network.outputs, target=one_hot_classes, name='loss')
             steps_per_epoch = dataset_size / batch_size
-            learning_rate = tf.train.exponential_decay(learning_rate=0.045,
-                                                       global_step=global_step,
-                                                       decay_steps=steps_per_epoch * 2,  # 2 epochs
-                                                       decay_rate=0.94,
-                                                       staircase=True,
-                                                       name='learning_rate')
-            optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate,
-                                                  decay=0.9,
-                                                  epsilon=1.0)
+            learning_rate = tf.train.exponential_decay(
+                learning_rate=0.045,
+                global_step=global_step,
+                decay_steps=steps_per_epoch * 2,  # 2 epochs
+                decay_rate=0.94,
+                staircase=True,
+                name='learning_rate')
+            optimizer = tf.train.RMSPropOptimizer(
+                learning_rate=learning_rate, decay=0.9, epsilon=1.0)
             # clip and apply gradients
-            gvs = optimizer.compute_gradients(loss=loss,
-                                              var_list=network.all_params)
+            gvs = optimizer.compute_gradients(
+                loss=loss, var_list=network.all_params)
             capped_gvs = []
             for grad, var in gvs:
                 if grad is not None:
                     grad = tf.clip_by_value(grad, -2., 2.)
                 capped_gvs.append((grad, var))
-            train_op = optimizer.apply_gradients(grads_and_vars=capped_gvs,
-                                                 global_step=global_step)
+            train_op = optimizer.apply_gradients(
+                grads_and_vars=capped_gvs, global_step=global_step)
             # metrics
             tf.summary.scalar('learning_rate/value', learning_rate)
             tf.summary.scalar('loss/logits', loss)
-            _, metrics_average_ops, metrics_ops = calculate_metrics(predicted_batch=predictions,
-                                                                    real_batch=one_hot_classes,
-                                                                    is_training=True)
+            _, metrics_average_ops, metrics_ops = calculate_metrics(
+                predicted_batch=predictions,
+                real_batch=one_hot_classes,
+                is_training=True)
             with tf.control_dependencies([train_op]):
                 train_op = tf.group(metrics_average_ops)
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
-        with tl.distributed.DistributedSession(task_spec=task_spec,
-                                               hooks=hooks,
-                                               checkpoint_dir=checkpoints_path,
-                                               save_summaries_secs=None,
-                                               save_summaries_steps=300,
-                                               save_checkpoint_secs=60 * 60) as sess:
+        with tl.distributed.DistributedSession(
+                task_spec=task_spec,
+                hooks=hooks,
+                checkpoint_dir=checkpoints_path,
+                save_summaries_secs=None,
+                save_summaries_steps=300,
+                save_checkpoint_secs=60 * 60) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
@@ -402,11 +426,14 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                         if now > next_log_time:
                             last_log_time = now
                             next_log_time = last_log_time + 60
-                            current_epoch = '{:.3f}'.format(float(step) / steps_per_epoch)
+                            current_epoch = '{:.3f}'.format(
+                                float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
-                            logging.info(m.format(current_epoch, epochs, step, max_steps,
-                                                  loss_val, learning_rate_val, metrics))
+                            logging.info(
+                                m.format(current_epoch, epochs, step,
+                                         max_steps, loss_val,
+                                         learning_rate_val, metrics))
             except OutOfRangeError:
                 pass
 
@@ -415,18 +442,26 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
 
 if __name__ == '__main__':
     # print output logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
+    logging.basicConfig(
+        level=logging.INFO, format='%(asctime)-15s %(message)s')
 
     if not tf.gfile.Exists(ILSVRC_DIR):
-        logging.error('We couldn\'t find the directory "{}"'.format(ILSVRC_DIR))
-        logging.error('You need to modify the variable BASE_DIR with the path where the dataset is.')
-        logging.error('The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition: https://www.kaggle.com/c/imagenet-object-localization-challenge/data')
+        logging.error(
+            'We couldn\'t find the directory "{}"'.format(ILSVRC_DIR))
+        logging.error(
+            'You need to modify the variable BASE_DIR with the path where the dataset is.'
+        )
+        logging.error(
+            'The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition: https://www.kaggle.com/c/imagenet-object-localization-challenge/data'
+        )
         exit(-1)
 
     # args
     parser = argparse.ArgumentParser()
-    parser.add_argument('--with_evaluator', dest='with_evaluator', action='store_true')
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=32)
+    parser.add_argument(
+        '--with_evaluator', dest='with_evaluator', action='store_true')
+    parser.add_argument(
+        '--batch_size', dest='batch_size', type=int, default=32)
     parser.add_argument('--epochs', dest='epochs', type=int, default=100)
     parser.set_defaults(with_evaluator=False)
     args = parser.parse_args()
@@ -442,7 +477,11 @@ if __name__ == '__main__':
 
     if task_spec is None:
         logging.info('Run in single node')
-        run_worker(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size, epochs=args.epochs)
+        run_worker(
+            task_spec,
+            CHECKPOINTS_PATH,
+            batch_size=args.batch_size,
+            epochs=args.epochs)
     else:
         if args.with_evaluator:
             # run with evaluator
@@ -450,7 +489,12 @@ if __name__ == '__main__':
             task_spec = task_spec.user_last_worker_as_evaluator()
 
         if task_spec.is_evaluator():
-            run_evaluator(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size)
+            run_evaluator(
+                task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size)
         else:
             task_spec.create_server()
-            run_worker(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size, epochs=args.epochs)
+            run_worker(
+                task_spec,
+                CHECKPOINTS_PATH,
+                batch_size=args.batch_size,
+                epochs=args.epochs)

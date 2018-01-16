@@ -30,7 +30,10 @@ X_train, y_train, X_val, y_val, X_test, y_test = \
 with tf.device(device_fn):
     # define placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+    y_ = tf.placeholder(
+        tf.int64, shape=[
+            None,
+        ], name='y_')
 
     # define the network
     network = tl.layers.InputLayer(x, name='input')
@@ -42,8 +45,8 @@ with tf.device(device_fn):
     # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
     # speed up computation, so we use identity here.
     # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-    network = tl.layers.DenseLayer(network, n_units=10,
-                                    act=tf.identity, name='output')
+    network = tl.layers.DenseLayer(
+        network, n_units=10, act=tf.identity, name='output')
 
     # define cost function and metric.
     y = network.outputs
@@ -54,8 +57,8 @@ with tf.device(device_fn):
 
     # define the optimizer
     train_params = network.all_params
-    train_op = tf.train.AdamOptimizer(learning_rate=0.0001
-                        ).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(
+        cost, var_list=train_params)
 
     with tl.distributed.DistributedSession(task_spec=task_spec) as sess:
         # print network information
@@ -72,13 +75,35 @@ with tf.device(device_fn):
         #tl.layers.initialize_global_variables(sess)
 
         # train the network
-        tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
-                    acc=acc, batch_size=500, n_epoch=500, print_freq=print_freq,
-                    X_val=X_val, y_val=y_val, eval_train=eval_train)
+        tl.utils.fit(
+            sess,
+            network,
+            train_op,
+            cost,
+            X_train,
+            y_train,
+            x,
+            y_,
+            acc=acc,
+            batch_size=500,
+            n_epoch=500,
+            print_freq=print_freq,
+            X_val=X_val,
+            y_val=y_val,
+            eval_train=eval_train)
 
         if task_spec.is_master():
             # evaluation
-            tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+            tl.utils.test(
+                sess,
+                network,
+                acc,
+                X_test,
+                y_test,
+                x,
+                y_,
+                batch_size=None,
+                cost=cost)
 
             # save the network to .npz file
-            tl.files.save_npz(network.all_params , name='model.npz')
+            tl.files.save_npz(network.all_params, name='model.npz')
