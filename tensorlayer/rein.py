@@ -1,8 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
 import numpy as np
 import tensorflow as tf
 from six.moves import xrange
@@ -73,17 +71,21 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
 
-    try: # TF 1.0+
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
+    try:  # TF 1.0+
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+            labels=actions, logits=logits, name=name)
     except:
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions)
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
+            logits=logits, targets=actions)
         # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
 
-    try: ## TF1.0+
+    try:  ## TF1.0+
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
-    except: ## TF0.12
-        loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))   # element-wise mul
+    except:  ## TF0.12
+        loss = tf.reduce_sum(tf.mul(cross_entropy,
+                                    rewards))  # element-wise mul
     return loss
+
 
 def log_weight(probs, weights, name='log_weight'):
     """Log weight.
@@ -97,7 +99,6 @@ def log_weight(probs, weights, name='log_weight'):
     with tf.variable_scope(name):
         exp_v = tf.reduce_mean(tf.log(probs) * weights)
         return exp_v
-
 
 
 def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
@@ -131,5 +132,7 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
         n_action = len(probs)
         action_list = np.arange(n_action)
     else:
-        assert len(action_list) == len(probs), "Number of actions should equal to number of probabilities."
+        assert len(action_list) == len(
+            probs
+        ), "Number of actions should equal to number of probabilities."
     return np.random.choice(action_list, p=probs)
