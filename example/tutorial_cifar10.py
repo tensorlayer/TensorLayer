@@ -1,6 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
 """ tl.prepro for data augmentation """
 
 import io
@@ -16,7 +15,8 @@ from tensorlayer.layers import *
 sess = tf.InteractiveSession()
 
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(
-                                    shape=(-1, 32, 32, 3), plotable=False)
+    shape=(-1, 32, 32, 3), plotable=False)
+
 
 def model(x, y_, reuse):
     W_init = tf.truncated_normal_initializer(stddev=5e-2)
@@ -25,39 +25,72 @@ def model(x, y_, reuse):
     with tf.variable_scope("model", reuse=reuse):
         tl.layers.set_name_reuse(reuse)
         net = InputLayer(x, name='input')
-        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu,
-                    padding='SAME', W_init=W_init, name='cnn1')
+        net = Conv2d(
+            net,
+            64, (5, 5), (1, 1),
+            act=tf.nn.relu,
+            padding='SAME',
+            W_init=W_init,
+            name='cnn1')
         # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 3, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5x3 patch
         #             W_init=W_init, name ='cnn1')           # output: (batch_size, 24, 24, 64)
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME',name='pool1')
+        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
         # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
         #             padding='SAME', pool = tf.nn.max_pool, name ='pool1',)# output: (batch_size, 12, 12, 64)
-        net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0,
-                    alpha=0.001 / 9.0, beta=0.75, name='norm1')
+        net = LocalResponseNormLayer(
+            net,
+            depth_radius=4,
+            bias=1.0,
+            alpha=0.001 / 9.0,
+            beta=0.75,
+            name='norm1')
         # net.outputs = tf.nn.lrn(net.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
         #            beta=0.75, name='norm1')
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu,
-                    padding='SAME', W_init=W_init, name='cnn2')
+        net = Conv2d(
+            net,
+            64, (5, 5), (1, 1),
+            act=tf.nn.relu,
+            padding='SAME',
+            W_init=W_init,
+            name='cnn2')
         # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 64, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5 patch
         #             W_init=W_init, name ='cnn2')           # output: (batch_size, 12, 12, 64)
-        net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0,
-                    alpha=0.001 / 9.0, beta=0.75, name='norm2')
+        net = LocalResponseNormLayer(
+            net,
+            depth_radius=4,
+            bias=1.0,
+            alpha=0.001 / 9.0,
+            beta=0.75,
+            name='norm2')
         # net.outputs = tf.nn.lrn(net.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
         #             beta=0.75, name='norm2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME',name='pool2')
+        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
         # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
         #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
-        net = FlattenLayer(net, name='flatten')                             # output: (batch_size, 2304)
-        net = DenseLayer(net, n_units=384, act=tf.nn.relu,
-                    W_init=W_init2, b_init=b_init2, name='d1relu')           # output: (batch_size, 384)
-        net = DenseLayer(net, n_units=192, act=tf.nn.relu,
-                    W_init=W_init2, b_init=b_init2, name='d2relu')           # output: (batch_size, 192)
-        net = DenseLayer(net, n_units=10, act=tf.identity,
-                    W_init=tf.truncated_normal_initializer(stddev=1/192.0),
-                    name='output')                                          # output: (batch_size, 10)
+        net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+        net = DenseLayer(
+            net,
+            n_units=384,
+            act=tf.nn.relu,
+            W_init=W_init2,
+            b_init=b_init2,
+            name='d1relu')  # output: (batch_size, 384)
+        net = DenseLayer(
+            net,
+            n_units=192,
+            act=tf.nn.relu,
+            W_init=W_init2,
+            b_init=b_init2,
+            name='d2relu')  # output: (batch_size, 192)
+        net = DenseLayer(
+            net,
+            n_units=10,
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
+            name='output')  # output: (batch_size, 10)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -82,34 +115,57 @@ def model_batch_norm(x, y_, reuse, is_train):
         tl.layers.set_name_reuse(reuse)
         net = InputLayer(x, name='input')
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME',
-                    W_init=W_init, b_init=None, name='cnn1')
+        net = Conv2d(
+            net,
+            64, (5, 5), (1, 1),
+            padding='SAME',
+            W_init=W_init,
+            b_init=None,
+            name='cnn1')
         # net = Conv2dLayer(net, act=tf.identity, shape=[5, 5, 3, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5x3 patch
         #             W_init=W_init, b_init=None, name='cnn1')              # output: (batch_size, 24, 24, 64)
         net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME',name='pool1')
+        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
         # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
         #             padding='SAME', pool=tf.nn.max_pool, name='pool1',)   # output: (batch_size, 12, 12, 64)
 
-        net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME',
-                    W_init=W_init, b_init=None, name='cnn2')
+        net = Conv2d(
+            net,
+            64, (5, 5), (1, 1),
+            padding='SAME',
+            W_init=W_init,
+            b_init=None,
+            name='cnn2')
         # net = Conv2dLayer(net, act=tf.identity, shape=[5, 5, 64, 64],
         #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5 patch
         #             W_init=W_init, b_init=None, name ='cnn2')             # output: (batch_size, 12, 12, 64)
         net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
-        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME',name='pool2')
+        net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
         # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
         #            padding='SAME', pool = tf.nn.max_pool, name ='pool2')  # output: (batch_size, 6, 6, 64)
 
-        net = FlattenLayer(net, name='flatten')                             # output: (batch_size, 2304)
-        net = DenseLayer(net, n_units=384, act=tf.nn.relu,
-                    W_init=W_init2, b_init=b_init2, name='d1relu')           # output: (batch_size, 384)
-        net = DenseLayer(net, n_units=192, act = tf.nn.relu,
-                    W_init=W_init2, b_init=b_init2, name='d2relu')           # output: (batch_size, 192)
-        net = DenseLayer(net, n_units=10, act = tf.identity,
-                    W_init=tf.truncated_normal_initializer(stddev=1/192.0),
-                    name='output')                                          # output: (batch_size, 10)
+        net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+        net = DenseLayer(
+            net,
+            n_units=384,
+            act=tf.nn.relu,
+            W_init=W_init2,
+            b_init=b_init2,
+            name='d1relu')  # output: (batch_size, 384)
+        net = DenseLayer(
+            net,
+            n_units=192,
+            act=tf.nn.relu,
+            W_init=W_init2,
+            b_init=b_init2,
+            name='d2relu')  # output: (batch_size, 192)
+        net = DenseLayer(
+            net,
+            n_units=10,
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
+            name='output')  # output: (batch_size, 10)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -123,6 +179,7 @@ def model_batch_norm(x, y_, reuse, is_train):
         acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         return net, cost, acc
+
 
 def distort_fn(x, is_train=False):
     """
@@ -150,12 +207,16 @@ def distort_fn(x, is_train=False):
         # x += np.random.uniform(-20, 20)
         # x /= tmp
     # normalize the image
-    x = (x - np.mean(x)) / max(np.std(x), 1e-5) # avoid values divided by 0
+    x = (x - np.mean(x)) / max(np.std(x), 1e-5)  # avoid values divided by 0
     # print('after norm', x.shape, np.min(x), np.max(x), np.mean(x))
     return x
 
+
 x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3], name='x')
-y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+y_ = tf.placeholder(
+    tf.int64, shape=[
+        None,
+    ], name='y_')
 
 ## using local response normalization
 # network, cost, _ = model(x, y_, False)
@@ -171,8 +232,10 @@ print_freq = 1
 batch_size = 128
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
-    epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
+    use_locking=False).minimize(
+        cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 
@@ -185,12 +248,15 @@ print('   batch_size: %d' % batch_size)
 for epoch in range(n_epoch):
     start_time = time.time()
     for X_train_a, y_train_a in tl.iterate.minibatches(
-                                X_train, y_train, batch_size, shuffle=True):
-        X_train_a = tl.prepro.threading_data(X_train_a, fn=distort_fn, is_train=True)  # data augmentation for training
+            X_train, y_train, batch_size, shuffle=True):
+        X_train_a = tl.prepro.threading_data(
+            X_train_a, fn=distort_fn,
+            is_train=True)  # data augmentation for training
         sess.run(train_op, feed_dict={x: X_train_a, y_: y_train_a})
 
     if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-        print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+        print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch,
+                                           time.time() - start_time))
         # train_loss, train_acc, n_batch = 0, 0, 0
         # for X_train_a, y_train_a in tl.iterate.minibatches(
         #                         X_train, y_train, batch_size, shuffle=True):
@@ -201,9 +267,16 @@ for epoch in range(n_epoch):
         # print("   train acc: %f" % (train_acc/ n_batch))
         test_loss, test_acc, n_batch = 0, 0, 0
         for X_test_a, y_test_a in tl.iterate.minibatches(
-                                    X_test, y_test, batch_size, shuffle=False):
-            X_test_a = tl.prepro.threading_data(X_test_a, fn=distort_fn, is_train=False)   # central crop
-            err, ac = sess.run([cost_test, acc], feed_dict={x: X_test_a, y_: y_test_a})
-            test_loss += err; test_acc += ac; n_batch += 1
-        print("   test loss: %f" % (test_loss/ n_batch))
-        print("   test acc: %f" % (test_acc/ n_batch))
+                X_test, y_test, batch_size, shuffle=False):
+            X_test_a = tl.prepro.threading_data(
+                X_test_a, fn=distort_fn, is_train=False)  # central crop
+            err, ac = sess.run(
+                [cost_test, acc], feed_dict={
+                    x: X_test_a,
+                    y_: y_test_a
+                })
+            test_loss += err
+            test_acc += ac
+            n_batch += 1
+        print("   test loss: %f" % (test_loss / n_batch))
+        print("   test acc: %f" % (test_acc / n_batch))

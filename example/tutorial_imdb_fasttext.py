@@ -57,8 +57,10 @@ BATCH_SIZE = 32
 # Path to which to save the trained model
 MODEL_FILE_PATH = 'model.npz'
 
+
 class FastTextClassifier(object):
     """Simple wrapper class for creating the graph of FastText classifier."""
+
     def __init__(self, vocab_size, embedding_size, n_labels):
         self.vocab_size = vocab_size
         self.embedding_size = embedding_size
@@ -66,20 +68,16 @@ class FastTextClassifier(object):
 
         self.inputs = tf.placeholder(
             tf.int32, shape=[None, None], name='inputs')
-        self.labels = tf.placeholder(
-            tf.int32, shape=[None], name='labels')
+        self.labels = tf.placeholder(tf.int32, shape=[None], name='labels')
 
         # Network structure
-        network = AverageEmbeddingInputlayer(
-            self.inputs, self.vocab_size, self.embedding_size)
+        network = AverageEmbeddingInputlayer(self.inputs, self.vocab_size,
+                                             self.embedding_size)
         self.network = DenseLayer(network, self.n_labels)
 
         # Training operation
         cost = tl.cost.cross_entropy(
-            self.network.outputs,
-            self.labels,
-            name='cost'
-        )
+            self.network.outputs, self.labels, name='cost')
         self.train_op = tf.train.AdamOptimizer().minimize(cost)
 
         # Predictions
@@ -103,11 +101,9 @@ class FastTextClassifier(object):
 
 def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
     """Augment unigram features with hashed n-gram features."""
+
     def get_ngrams(n):
-        return list(zip(*[
-            unigrams[i:]
-            for i in range(n)
-        ]))
+        return list(zip(*[unigrams[i:] for i in range(n)]))
 
     def hash_ngram(ngram):
         bytes_ = array.array('L', ngram).tobytes()
@@ -115,9 +111,7 @@ def augment_with_ngrams(unigrams, unigram_vocab_size, n_buckets, n=2):
         return unigram_vocab_size + hash_ % n_buckets
 
     return unigrams + [
-        hash_ngram(ngram)
-        for i in range(2, n + 1)
-        for ngram in get_ngrams(i)
+        hash_ngram(ngram) for i in range(2, n + 1) for ngram in get_ngrams(i)
     ]
 
 
@@ -155,17 +149,21 @@ def train_test_and_save_model():
             print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
             for X_batch, y_batch in tl.iterate.minibatches(
                     X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
-                sess.run(classifier.train_op, feed_dict={
-                    classifier.inputs: tl.prepro.pad_sequences(X_batch),
-                    classifier.labels: y_batch,
-                })
+                sess.run(
+                    classifier.train_op,
+                    feed_dict={
+                        classifier.inputs: tl.prepro.pad_sequences(X_batch),
+                        classifier.labels: y_batch,
+                    })
 
             print("     took %.5fs" % (time.time() - start_time))
 
-        test_accuracy = sess.run(classifier.accuracy, feed_dict={
-            classifier.inputs: tl.prepro.pad_sequences(X_test),
-            classifier.labels: y_test,
-        })
+        test_accuracy = sess.run(
+            classifier.accuracy,
+            feed_dict={
+                classifier.inputs: tl.prepro.pad_sequences(X_test),
+                classifier.labels: y_test,
+            })
         print('Test accuracy: %.5f' % test_accuracy)
 
         classifier.save(sess, MODEL_FILE_PATH)
