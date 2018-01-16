@@ -102,8 +102,7 @@ def fit(sess,
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'FileWriter'):
             if tensorboard_graph_vis:
                 train_writer = tf.summary.FileWriter('logs/train', sess.graph)
-                val_writer = tf.summary.FileWriter('logs/validation',
-                                                   sess.graph)
+                val_writer = tf.summary.FileWriter('logs/validation', sess.graph)
             else:
                 train_writer = tf.summary.FileWriter('logs/train')
                 val_writer = tf.summary.FileWriter('logs/validation')
@@ -131,8 +130,7 @@ def fit(sess,
         start_time = time.time()
         loss_ep = 0
         n_step = 0
-        for X_train_a, y_train_a in iterate.minibatches(
-                X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update(network.all_drop)  # enable noise layers
             loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
@@ -142,20 +140,16 @@ def fit(sess,
 
         if tensorboard and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
-                for X_train_a, y_train_a in iterate.minibatches(
-                        X_train, y_train, batch_size, shuffle=True):
-                    dp_dict = dict_to_one(
-                        network.all_drop)  # disable noise layers
+                for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+                    dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                     feed_dict = {x: X_train_a, y_: y_train_a}
                     feed_dict.update(dp_dict)
                     result = sess.run(merged, feed_dict=feed_dict)
                     train_writer.add_summary(result, tensorboard_train_index)
                     tensorboard_train_index += 1
                 if (X_val is not None) and (y_val is not None):
-                    for X_val_a, y_val_a in iterate.minibatches(
-                            X_val, y_val, batch_size, shuffle=True):
-                        dp_dict = dict_to_one(
-                            network.all_drop)  # disable noise layers
+                    for X_val_a, y_val_a in iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
+                        dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                         feed_dict = {x: X_val_a, y_: y_val_a}
                         feed_dict.update(dp_dict)
                         result = sess.run(merged, feed_dict=feed_dict)
@@ -164,19 +158,15 @@ def fit(sess,
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             if (X_val is not None) and (y_val is not None):
-                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch,
-                                                   time.time() - start_time))
+                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
                 if eval_train is True:
                     train_loss, train_acc, n_batch = 0, 0, 0
-                    for X_train_a, y_train_a in iterate.minibatches(
-                            X_train, y_train, batch_size, shuffle=True):
-                        dp_dict = dict_to_one(
-                            network.all_drop)  # disable noise layers
+                    for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+                        dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                         feed_dict = {x: X_train_a, y_: y_train_a}
                         feed_dict.update(dp_dict)
                         if acc is not None:
-                            err, ac = sess.run(
-                                [cost, acc], feed_dict=feed_dict)
+                            err, ac = sess.run([cost, acc], feed_dict=feed_dict)
                             train_acc += ac
                         else:
                             err = sess.run(cost, feed_dict=feed_dict)
@@ -186,10 +176,8 @@ def fit(sess,
                     if acc is not None:
                         print("   train acc: %f" % (train_acc / n_batch))
                 val_loss, val_acc, n_batch = 0, 0, 0
-                for X_val_a, y_val_a in iterate.minibatches(
-                        X_val, y_val, batch_size, shuffle=True):
-                    dp_dict = dict_to_one(
-                        network.all_drop)  # disable noise layers
+                for X_val_a, y_val_a in iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
+                    dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                     feed_dict = {x: X_val_a, y_: y_val_a}
                     feed_dict.update(dp_dict)
                     if acc is not None:
@@ -203,8 +191,7 @@ def fit(sess,
                 if acc is not None:
                     print("   val acc: %f" % (val_acc / n_batch))
             else:
-                print("Epoch %d of %d took %fs, loss %f" %
-                      (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
+                print("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
     print("Total training time: %fs" % (time.time() - start_time_begin))
 
 
@@ -251,8 +238,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         #                                           feed_dict=feed_dict)))
     else:
         test_loss, test_acc, n_batch = 0, 0, 0
-        for X_test_a, y_test_a in iterate.minibatches(
-                X_test, y_test, batch_size, shuffle=True):
+        for X_test_a, y_test_a in iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
             dp_dict = dict_to_one(network.all_drop)  # disable noise layers
             feed_dict = {x: X_test_a, y_: y_test_a}
             feed_dict.update(dp_dict)
@@ -357,16 +343,13 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     >>> c_mat, f1, acc, f1_macro = evaluation(y_test, y_predict, n_classes)
     """
     from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
-    c_mat = confusion_matrix(
-        y_test, y_predict, labels=[x for x in range(n_classes)])
-    f1 = f1_score(
-        y_test, y_predict, average=None, labels=[x for x in range(n_classes)])
+    c_mat = confusion_matrix(y_test, y_predict, labels=[x for x in range(n_classes)])
+    f1 = f1_score(y_test, y_predict, average=None, labels=[x for x in range(n_classes)])
     f1_macro = f1_score(y_test, y_predict, average='macro')
     acc = accuracy_score(y_test, y_predict)
     print('confusion matrix: \n', c_mat)
     print('f1-score:', f1)
-    print('f1-score(macro):', f1_macro
-          )  # same output with > f1_score(y_true, y_pred, average='macro')
+    print('f1-score(macro):', f1_macro)  # same output with > f1_score(y_true, y_pred, average='macro')
     print('accuracy-score:', acc)
     return c_mat, f1, acc, f1_macro
 
@@ -433,10 +416,8 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     c = Counter(y_train)
     if printable:
         print('the occurrence number of each stage: %s' % c.most_common())
-        print('the least stage is Label %s have %s instances' %
-              c.most_common()[-1])
-        print('the most stage is  Label %s have %s instances' %
-              c.most_common(1)[0])
+        print('the least stage is Label %s have %s instances' % c.most_common()[-1])
+        print('the most stage is  Label %s have %s instances' % c.most_common(1)[0])
     most_num = c.most_common(1)[0][1]
     if printable:
         print('most num is %d, all classes tend to be this num' % most_num)
@@ -484,8 +465,7 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     # print(len(X_train), len(y_train))
     c = Counter(y_train)
     if printable:
-        print('the occurrence number of each stage after oversampling: %s' %
-              c.most_common())
+        print('the occurrence number of each stage after oversampling: %s' % c.most_common())
     # ================ End of Classes balancing
     return X_train, y_train
 
