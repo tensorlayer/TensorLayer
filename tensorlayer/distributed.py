@@ -41,8 +41,7 @@ class TaskSpecDef(object):
     - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     """
 
-    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None,
-                 master=None):
+    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
         self.type = type
         self._index = int(index)
         self._cluster_spec = None
@@ -61,17 +60,14 @@ class TaskSpecDef(object):
             self.num_ps = len(self.ps_hosts)
             self.worker_hosts = worker_hosts if isinstance(worker_hosts, list) else worker_hosts.split(',')
             if master is not None and len(master) > 0:
-                self._cluster_spec = tf.train.ClusterSpec({'ps'    : self.ps_hosts,
-                                                           'worker': self.worker_hosts,
-                                                           'master': master})
+                self._cluster_spec = tf.train.ClusterSpec({'ps': self.ps_hosts, 'worker': self.worker_hosts, 'master': master})
                 # master is a worker too
                 self.num_workers = len(self.worker_hosts) + 1
                 if self.type == 'worker':
                     self.shard_index = self._index + 1
                 self._master = self.type == 'master'
             else:
-                self._cluster_spec = tf.train.ClusterSpec({'ps'    : self.ps_hosts,
-                                                           'worker': self.worker_hosts})
+                self._cluster_spec = tf.train.ClusterSpec({'ps': self.ps_hosts, 'worker': self.worker_hosts})
                 self.num_workers = len(self.worker_hosts)
                 if self.type == 'worker':
                     self.shard_index = self._index
@@ -97,16 +93,12 @@ class TaskSpecDef(object):
         """Returns the function with the specification to create the graph in this server"""
         current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
-        return tf.train.replica_device_setter(ps_device=ps_devices,
-                                              worker_device=current_device,
-                                              cluster=self._cluster_spec)
+        return tf.train.replica_device_setter(ps_device=ps_devices, worker_device=current_device, cluster=self._cluster_spec)
 
     def create_server(self):
         if self._server is None and self.ps_hosts and self.worker_hosts and not self.is_evaluator():
             # create server and join if it is a parameter server
-            self._server = tf.train.Server(self._cluster_spec,
-                                           job_name=self.type,
-                                           task_index=self._index)
+            self._server = tf.train.Server(self._cluster_spec, job_name=self.type, task_index=self._index)
             if self.is_ps():
                 self._server.join()
 
@@ -127,12 +119,7 @@ class TaskSpecDef(object):
          """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
-        return TaskSpecDef(type=self.type,
-                           index=self._index,
-                           trial=self.trial,
-                           ps_hosts=self.ps_hosts,
-                           worker_hosts=self.worker_hosts[:-1],
-                           master=self.master)
+        return TaskSpecDef(type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
 
 
 def TaskSpec():
@@ -150,20 +137,22 @@ def TaskSpec():
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
-        return TaskSpecDef(type=task_data['type'],
-                           index=task_data['index'],
-                           trial=task_data['trial'] if 'trial' in task_data else None,
-                           ps_hosts=cluster_data['ps'],
-                           worker_hosts=cluster_data['worker'],
-                           master=cluster_data['master'] if 'master' in cluster_data else None)
+        return TaskSpecDef(
+            type=task_data['type'],
+            index=task_data['index'],
+            trial=task_data['trial'] if 'trial' in task_data else None,
+            ps_hosts=cluster_data['ps'],
+            worker_hosts=cluster_data['worker'],
+            master=cluster_data['master'] if 'master' in cluster_data else None)
 
     # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
     if 'JOB_NAME' in os.environ:
-        return TaskSpecDef(type=os.environ['JOB_NAME'],
-                        index=os.environ['TASK_INDEX'],
-                        ps_hosts=os.environ.get('PS_HOSTS', None),
-                        worker_hosts=os.environ.get('WORKER_HOSTS', None),
-                        master=os.environ.get('MASTER_HOST', None))
+        return TaskSpecDef(
+            type=os.environ['JOB_NAME'],
+            index=os.environ['TASK_INDEX'],
+            ps_hosts=os.environ.get('PS_HOSTS', None),
+            worker_hosts=os.environ.get('WORKER_HOSTS', None),
+            master=os.environ.get('MASTER_HOST', None))
     return None
 
 
@@ -252,19 +241,19 @@ def DistributedSession(task_spec=None,
     """
     target = task_spec.target() if task_spec is not None else None
     is_chief = task_spec.is_master() if task_spec is not None else True
-    return tf.train.MonitoredTrainingSession(master=target,
-                                             is_chief=is_chief,
-                                             checkpoint_dir=checkpoint_dir,
-                                             scaffold=scaffold,
-                                             save_checkpoint_secs=save_checkpoint_secs,
-                                             save_summaries_steps=save_summaries_steps,
-                                             save_summaries_secs=save_summaries_secs,
-                                             log_step_count_steps=log_step_count_steps,
-                                             stop_grace_period_secs=stop_grace_period_secs,
-                                             config=config,
-                                             hooks=hooks,
-                                             chief_only_hooks=chief_only_hooks)
-
+    return tf.train.MonitoredTrainingSession(
+        master=target,
+        is_chief=is_chief,
+        checkpoint_dir=checkpoint_dir,
+        scaffold=scaffold,
+        save_checkpoint_secs=save_checkpoint_secs,
+        save_summaries_steps=save_summaries_steps,
+        save_summaries_secs=save_summaries_secs,
+        log_step_count_steps=log_step_count_steps,
+        stop_grace_period_secs=stop_grace_period_secs,
+        config=config,
+        hooks=hooks,
+        chief_only_hooks=chief_only_hooks)
 
 
 class StopAtTimeHook(session_run_hook.SessionRunHook):
