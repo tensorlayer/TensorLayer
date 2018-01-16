@@ -6,7 +6,6 @@ Experimental Database Management System.
 Latest Version
 """
 
-
 import inspect
 import math
 import pickle
@@ -23,15 +22,12 @@ from pymongo import MongoClient
 
 
 def AutoFill(func):
-    def func_wrapper(self,*args,**kwargs):
-        d=inspect.getcallargs(func,self,*args,**kwargs)
-        d['args'].update({"studyID":self.studyID})
-        return  func(**d)
+    def func_wrapper(self, *args, **kwargs):
+        d = inspect.getcallargs(func, self, *args, **kwargs)
+        d['args'].update({"studyID": self.studyID})
+        return func(**d)
+
     return func_wrapper
-
-
-
-
 
 
 class TensorDB(object):
@@ -68,32 +64,24 @@ class TensorDB(object):
     1 : You may like to install MongoChef or Mongo Management Studo APP for
        visualizing or testing your MongoDB.
     """
-    def __init__(
-        self,
-        ip = 'localhost',
-        port = 27017,
-        db_name = 'db_name',
-        user_name = None,
-        password = 'password',
-        studyID=None
-    ):
+
+    def __init__(self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None):
         ## connect mongodb
         client = MongoClient(ip, port)
         self.db = client[db_name]
         if user_name != None:
             self.db.authenticate(user_name, password)
 
-
         if studyID is None:
-            self.studyID=str(uuid.uuid1())
+            self.studyID = str(uuid.uuid1())
         else:
-            self.studyID=studyID
+            self.studyID = studyID
 
         ## define file system (Buckets)
         self.datafs = gridfs.GridFS(self.db, collection="datafs")
         self.modelfs = gridfs.GridFS(self.db, collection="modelfs")
         self.paramsfs = gridfs.GridFS(self.db, collection="paramsfs")
-        self.archfs=gridfs.GridFS(self.db,collection="ModelArchitecture")
+        self.archfs = gridfs.GridFS(self.db, collection="ModelArchitecture")
         ##
         print("[TensorDB] Connect SUCCESS {}:{} {} {} {}".format(ip, port, db_name, user_name, studyID))
 
@@ -102,16 +90,16 @@ class TensorDB(object):
         self.db_name = db_name
         self.user_name = user_name
 
-    def __autofill(self,args):
-        return args.update({'studyID':self.studyID})
+    def __autofill(self, args):
+        return args.update({'studyID': self.studyID})
 
-    def __serialization(self,ps):
+    def __serialization(self, ps):
         return pickle.dumps(ps, protocol=2)
 
-    def __deserialization(self,ps):
+    def __deserialization(self, ps):
         return pickle.loads(ps)
 
-    def save_params(self, params=[], args={}):#, file_name='parameters'):
+    def save_params(self, params=[], args={}):  #, file_name='parameters'):
         """ Save parameters into MongoDB Buckets, and save the file ID into Params Collections.
 
         Parameters
@@ -125,15 +113,15 @@ class TensorDB(object):
         """
         self.__autofill(args)
         s = time.time()
-        f_id = self.paramsfs.put(self.__serialization(params))#, file_name=file_name)
+        f_id = self.paramsfs.put(self.__serialization(params))  #, file_name=file_name)
         args.update({'f_id': f_id, 'time': datetime.utcnow()})
         self.db.Params.insert_one(args)
         # print("[TensorDB] Save params: {} SUCCESS, took: {}s".format(file_name, round(time.time()-s, 2)))
-        print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time()-s, 2)))
+        print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
         return f_id
 
     @AutoFill
-    def find_one_params(self, args={},sort=None):
+    def find_one_params(self, args={}, sort=None):
         """ Find one parameter from MongoDB Buckets.
 
         Parameters
@@ -148,7 +136,7 @@ class TensorDB(object):
 
         s = time.time()
         # print(args)
-        d = self.db.Params.find_one(filter=args,sort=sort)
+        d = self.db.Params.find_one(filter=args, sort=sort)
 
         if d is not None:
             f_id = d['f_id']
@@ -157,7 +145,7 @@ class TensorDB(object):
             return False, False
         try:
             params = self.__deserialization(self.paramsfs.get(f_id).read())
-            print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-s, 2)))
+            print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time() - s, 2)))
             return params, f_id
         except:
             return False, False
@@ -182,14 +170,14 @@ class TensorDB(object):
         if pc is not None:
             f_id_list = pc.distinct('f_id')
             params = []
-            for f_id in f_id_list: # you may have multiple Buckets files
+            for f_id in f_id_list:  # you may have multiple Buckets files
                 tmp = self.paramsfs.get(f_id).read()
                 params.append(self.__deserialization(tmp))
         else:
             print("[TensorDB] FAIL! Cannot find any: {}".format(args))
             return False
 
-        print("[TensorDB] Find all params SUCCESS, took: {}s".format(round(time.time()-s, 2)))
+        print("[TensorDB] Find all params SUCCESS, took: {}s".format(round(time.time() - s, 2)))
         return params
 
     @AutoFill
@@ -217,7 +205,7 @@ class TensorDB(object):
         string = ''
         for key, value in args.items():
             if key is not '_id':
-                string += str(key) + ": "+ str(value) + " / "
+                string += str(key) + ": " + str(value) + " / "
         return string
 
     ## =========================== LOG =================================== ##
@@ -267,7 +255,7 @@ class TensorDB(object):
         _result = self.db.ValidLog.insert_one(args)
         # _log = "".join(str(key) + ": " + str(value) for key, value in args.items())
         _log = self._print_dict(args)
-        print("[TensorDB] ValidLog: " +_log)
+        print("[TensorDB] ValidLog: " + _log)
         return _result
 
     @AutoFill
@@ -297,7 +285,7 @@ class TensorDB(object):
         _result = self.db.TestLog.insert_one(args)
         # _log = "".join(str(key) + str(value) for key, value in args.items())
         _log = self._print_dict(args)
-        print("[TensorDB] TestLog: " +_log)
+        print("[TensorDB] TestLog: " + _log)
         return _result
 
     @AutoFill
@@ -314,14 +302,14 @@ class TensorDB(object):
 
     ## =========================== Network Architecture ================== ##
     @AutoFill
-    def save_model_architecture(self,s,args={}):
+    def save_model_architecture(self, s, args={}):
         self.__autofill(args)
-        fid=self.archfs.put(s,filename="modelarchitecture")
-        args.update({"fid":fid})
+        fid = self.archfs.put(s, filename="modelarchitecture")
+        args.update({"fid": fid})
         self.db.march.insert_one(args)
 
     @AutoFill
-    def load_model_architecture(self,args={}):
+    def load_model_architecture(self, args={}):
 
         d = self.db.march.find_one(args)
         if d is not None:
@@ -331,7 +319,7 @@ class TensorDB(object):
             # "print find"
         else:
             print("[TensorDB] FAIL! Cannot find: {}".format(args))
-            print ("no idtem")
+            print("no idtem")
             return False, False
         try:
             archs = self.archfs.get(fid).read()
@@ -385,7 +373,6 @@ class TensorDB(object):
         dictionary : contains all meta data and script.
         """
 
-
         temp = self.db.Job.find_one(args)
 
         if temp is not None:
@@ -400,34 +387,34 @@ class TensorDB(object):
 
         return temp
 
-    def push_job(self,margs, wargs,dargs,epoch):
+    def push_job(self, margs, wargs, dargs, epoch):
 
-        ms,mid=self.load_model_architecture(margs)
-        weight,wid=self.find_one_params(wargs)
-        args={"weight":wid,"model":mid,"dargs":dargs,"epoch":epoch,"time":datetime.utcnow(),"Running":False}
+        ms, mid = self.load_model_architecture(margs)
+        weight, wid = self.find_one_params(wargs)
+        args = {"weight": wid, "model": mid, "dargs": dargs, "epoch": epoch, "time": datetime.utcnow(), "Running": False}
         self.__autofill(args)
         self.db.JOBS.insert_one(args)
 
     def peek_job(self):
-        args={'Running':False}
+        args = {'Running': False}
         self.__autofill(args)
-        m=self.db.JOBS.find_one(args)
+        m = self.db.JOBS.find_one(args)
         print(m)
         if m is None:
             return False
 
-        s=self.paramsfs.get(m['weight']).read()
-        w=self.__deserialization(s)
+        s = self.paramsfs.get(m['weight']).read()
+        w = self.__deserialization(s)
 
-        ach=self.archfs.get(m['model']).read()
+        ach = self.archfs.get(m['model']).read()
 
-        return m['_id'], ach,w,m["dargs"],m['epoch']
+        return m['_id'], ach, w, m["dargs"], m['epoch']
 
-    def run_job(self,jid):
-        self.db.JOBS.find_one_and_update({'_id':jid},{'$set': {'Running': True,"Since":datetime.utcnow()}})
+    def run_job(self, jid):
+        self.db.JOBS.find_one_and_update({'_id': jid}, {'$set': {'Running': True, "Since": datetime.utcnow()}})
 
-    def del_job(self,jid):
-        self.db.JOBS.find_one_and_update({'_id':jid},{'$set': {'Running': True,"Finished":datetime.utcnow()}})
+    def del_job(self, jid):
+        self.db.JOBS.find_one_and_update({'_id': jid}, {'$set': {'Running': True, "Finished": datetime.utcnow()}})
 
     def __str__(self):
         _s = "[TensorDB] Info:\n"
@@ -502,49 +489,50 @@ class TensorDB(object):
     #     return data
 
 
-
 class DBLogger:
     """ """
-    def __init__(self,db,model):
-        self.db=db
-        self.model=model
 
-    def on_train_begin(self,logs={}):
+    def __init__(self, db, model):
+        self.db = db
+        self.model = model
+
+    def on_train_begin(self, logs={}):
         print("start")
 
-    def on_train_end(self,logs={}):
+    def on_train_end(self, logs={}):
         print("end")
 
-    def on_epoch_begin(self,epoch,logs={}):
-        self.epoch=epoch
-        self.et=time.time()
+    def on_epoch_begin(self, epoch, logs={}):
+        self.epoch = epoch
+        self.et = time.time()
         return
 
     def on_epoch_end(self, epoch, logs={}):
-        self.et=time.time()-self.et
+        self.et = time.time() - self.et
         print("ending")
         print(epoch)
-        logs['epoch']=epoch
-        logs['time']=datetime.utcnow()
-        logs['stepTime']=self.et
-        logs['acc']=np.asscalar(logs['acc'])
+        logs['epoch'] = epoch
+        logs['time'] = datetime.utcnow()
+        logs['stepTime'] = self.et
+        logs['acc'] = np.asscalar(logs['acc'])
         print(logs)
 
-        w=self.model.Params
-        fid=self.db.save_params(w,logs)
-        logs.update({'params':fid})
+        w = self.model.Params
+        fid = self.db.save_params(w, logs)
+        logs.update({'params': fid})
         self.db.valid_log(logs)
-    def on_batch_begin(self, batch,logs={}):
-        self.t=time.time()
+
+    def on_batch_begin(self, batch, logs={}):
+        self.t = time.time()
         self.losses = []
-        self.batch=batch
+        self.batch = batch
 
     def on_batch_end(self, batch, logs={}):
-        self.t2=time.time()-self.t
-        logs['acc']=np.asscalar(logs['acc'])
+        self.t2 = time.time() - self.t
+        logs['acc'] = np.asscalar(logs['acc'])
         #logs['loss']=np.asscalar(logs['loss'])
-        logs['step_time']=self.t2
-        logs['time']=datetime.utcnow()
-        logs['epoch']=self.epoch
-        logs['batch']=self.batch
+        logs['step_time'] = self.t2
+        logs['time'] = datetime.utcnow()
+        logs['epoch'] = self.epoch
+        logs['batch'] = self.batch
         self.db.train_log(logs)

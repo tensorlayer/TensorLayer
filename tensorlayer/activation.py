@@ -18,8 +18,10 @@ def identity(x, name=None):
     """
     return x
 
+
 # Shortcut
 linear = identity
+
 
 def ramp(x=None, v_min=0, v_max=1, name=None):
     """The ramp activation function.
@@ -40,6 +42,7 @@ def ramp(x=None, v_min=0, v_max=1, name=None):
     A `Tensor` with the same type as `x`.
     """
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
+
 
 def leaky_relu(x=None, alpha=0.1, name="lrelu"):
     """The LeakyReLU, Shortcut is ``lrelu``.
@@ -65,11 +68,12 @@ def leaky_relu(x=None, alpha=0.1, name="lrelu"):
     - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
     """
     # with tf.name_scope(name) as scope:
-        # x = tf.nn.relu(x)
-        # m_x = tf.nn.relu(-x)
-        # x -= alpha * m_x
+    # x = tf.nn.relu(x)
+    # m_x = tf.nn.relu(-x)
+    # x -= alpha * m_x
     x = tf.maximum(x, alpha * x, name=name)
     return x
+
 
 #Shortcut
 lrelu = leaky_relu
@@ -88,8 +92,9 @@ def swish(x, name='swish'):
     A `Tensor` with the same type as `x`.
     """
     with tf.name_scope(name) as scope:
-        x =  tf.nn.sigmoid(x) * x
+        x = tf.nn.sigmoid(x) * x
     return x
+
 
 def pixel_wise_softmax(output, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
