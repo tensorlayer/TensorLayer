@@ -16,7 +16,6 @@ import tensorflow as tf
 from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
 
-
 # Iteration functions
 
 
@@ -135,6 +134,7 @@ def sample(a=[], temperature=1.0):
         # exit()
         message = "For large vocabulary_size, choice a higher temperature\
          to avoid log error. Hint : use ``sample_top``. "
+
         warnings.warn(message, Warning)
         # print(a)
         # print(b)
@@ -231,12 +231,7 @@ class Vocabulary(object):
     >>> is 97322
     """
 
-    def __init__(self,
-                 vocab_file,
-                 start_word="<S>",
-                 end_word="</S>",
-                 unk_word="<UNK>",
-                 pad_word="<PAD>"):
+    def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
         if not tf.gfile.Exists(vocab_file):
             tf.logging.fatal("Vocab file %s not found.", vocab_file)
         tf.logging.info("Initializing vocabulary from file: %s", vocab_file)
@@ -444,7 +439,7 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
     """
     with tf.gfile.GFile(filename, "r") as f:
-        try:    # python 3.4 or older
+        try:  # python 3.4 or older
             context_list = f.read().replace(*replace).split()
         except:  # python 3.5
             f.seek(0)
@@ -755,6 +750,7 @@ def save_vocab(count=[], name='vocab.txt'):
             f.write("%s %d\n" % (tf.compat.as_text(count[i][0]), count[i][1]))
     print("%d vocab saved to %s in %s" % (vocabulary_size, name, pwd))
 
+
 # Functions for translation
 
 
@@ -794,8 +790,11 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
     return [w for w in words if w]
 
 
-def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size,
-                      tokenizer=None, normalize_digits=True,
+def create_vocabulary(vocabulary_path,
+                      data_path,
+                      max_vocabulary_size,
+                      tokenizer=None,
+                      normalize_digits=True,
                       _DIGIT_RE=re.compile(br"\d"),
                       _START_VOCAB=[b"_PAD", b"_GO", b"_EOS", b"_UNK"]):
     """Create vocabulary file (if it does not exist yet) from data file.
@@ -894,9 +893,7 @@ def initialize_vocabulary(vocabulary_path):
         raise ValueError("Vocabulary file %s not found.", vocabulary_path)
 
 
-def sentence_to_token_ids(sentence, vocabulary,
-                          tokenizer=None, normalize_digits=True,
-                          UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
+def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
     """Convert a string to list of integers representing token-ids.
 
     For example, a sentence "I have a dog" may become tokenized into
@@ -929,9 +926,7 @@ def sentence_to_token_ids(sentence, vocabulary,
     return [vocabulary.get(re.sub(_DIGIT_RE, b"0", w), UNK_ID) for w in words]
 
 
-def data_to_token_ids(data_path, target_path, vocabulary_path,
-                      tokenizer=None, normalize_digits=True,
-                      UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
+def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
     """Tokenize data file and turn into token-ids using given vocabulary file.
 
     This function loads data line-by-line from data_path, calls the above
@@ -961,14 +956,10 @@ def data_to_token_ids(data_path, target_path, vocabulary_path,
                     counter += 1
                     if counter % 100000 == 0:
                         print("  tokenizing line %d" % counter)
-                    token_ids = sentence_to_token_ids(line, vocab, tokenizer,
-                                                      normalize_digits, UNK_ID=UNK_ID,
-                                                      _DIGIT_RE=_DIGIT_RE)
+                    token_ids = sentence_to_token_ids(line, vocab, tokenizer, normalize_digits, UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
     else:
         print("Target path %s exists" % target_path)
-
-
 
 
 def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
@@ -1001,9 +992,7 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
 
     # Get MOSES multi-bleu script
     try:
-        multi_bleu_path, _ = urllib.request.urlretrieve(
-            "https://raw.githubusercontent.com/moses-smt/mosesdecoder/"
-            "master/scripts/generic/multi-bleu.perl")
+        multi_bleu_path, _ = urllib.request.urlretrieve("https://raw.githubusercontent.com/moses-smt/mosesdecoder/" "master/scripts/generic/multi-bleu.perl")
         os.chmod(multi_bleu_path, 0o755)
     except:  # pylint: disable=W0702
         tf.logging.info("Unable to fetch multi-bleu.perl script, using local.")
@@ -1028,8 +1017,7 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
             bleu_cmd += ["-lc"]
         bleu_cmd += [reference_file.name]
         try:
-            bleu_out = subprocess.check_output(
-                bleu_cmd, stdin=read_pred, stderr=subprocess.STDOUT)
+            bleu_out = subprocess.check_output(bleu_cmd, stdin=read_pred, stderr=subprocess.STDOUT)
             bleu_out = bleu_out.decode("utf-8")
             bleu_score = re.search(r"BLEU = (.+?),", bleu_out).group(1)
             bleu_score = float(bleu_score)

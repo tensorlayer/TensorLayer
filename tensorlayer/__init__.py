@@ -3,7 +3,6 @@ Deep learning and Reinforcement learning library for Researchers and Engineers
 """
 from __future__ import absolute_import
 
-
 try:
     install_instr = "Please make sure you install a recent enough version of TensorFlow."
     import tensorflow
