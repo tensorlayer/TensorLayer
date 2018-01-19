@@ -101,7 +101,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
  - [TRPO](https://arxiv.org/abs/1502.05477) for continuous and discrete action space by [jjkke88](https://github.com/jjkke88/RL_toolbox).
 
 ## Special Examples
- - Distributed Training. [tutorial_mnist_distributed.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py) by [jorgemf](https://github.com/jorgemf).
+ - Distributed Training. [mnist](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py) and [imagenet](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_imagenet_inceptionV3_distributed.py) by [jorgemf](https://github.com/jorgemf).
  - Merge TF-Slim into TensorLayer. [tutorial\_inceptionV3_tfslim.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py).
  - Merge Keras into TensorLayer. [tutorial_keras.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py).
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see [tutorial_tfrecord*.py](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [tutorial\_cifar10_tfrecord.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py).
