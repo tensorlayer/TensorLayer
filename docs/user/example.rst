@@ -64,7 +64,7 @@ Reinforcement Learning
 Special Examples
 =================
 
- - Distributed Training. `tutorial_mnist_distributed.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_ by `jorgemf <https://github.com/jorgemf>`_.
+ - Distributed Training. `mnist <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_ and `imagenet <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_ by `jorgemf <https://github.com/jorgemf>`_.
  - Merge TF-Slim into TensorLayer. `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
  - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/zsdonghao/tensorlayer/tree/master/example>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
