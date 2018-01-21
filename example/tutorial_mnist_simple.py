@@ -6,7 +6,7 @@
 import tensorflow as tf
 import tensorlayer as tl
 
-sess = tf.InteractiveSession()
+sess = tl.auto.create_session()
 
 # prepare data
 X_train, y_train, X_val, y_val, X_test, y_test = \
@@ -44,7 +44,7 @@ train_op = tf.train.AdamOptimizer(learning_rate=0.0001
 tl.layers.initialize_global_variables(sess)
 
 # print network information
-network.print_params()
+network.print_params(session=sess)
 network.print_layers()
 
 # train the network
