@@ -10,6 +10,7 @@ except ImportError:
     raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
 
 from . import activation
+from . import auto
 from . import cost
 from . import files
 from . import iterate

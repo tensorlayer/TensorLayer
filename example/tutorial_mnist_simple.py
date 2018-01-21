@@ -6,7 +6,6 @@
 import tensorflow as tf
 import tensorlayer as tl
 
-sess = tf.InteractiveSession()
 
 # prepare data
 X_train, y_train, X_val, y_val, X_test, y_test = \
@@ -40,21 +39,21 @@ train_params = network.all_params
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001
                     ).minimize(cost, var_list=train_params)
 
-# initialize all variables in the session
-tl.layers.initialize_global_variables(sess)
+with tl.auto.Session() as sess:
+    # initialize all variables in the session
+    tl.layers.initialize_global_variables(sess)
 
-# print network information
-network.print_params()
-network.print_layers()
+    # print network information
+    network.print_params()
+    network.print_layers()
 
-# train the network
-tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
-            acc=acc, batch_size=500, n_epoch=500, print_freq=5,
-            X_val=X_val, y_val=y_val, eval_train=False)
+    # train the network
+    tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
+                acc=acc, batch_size=500, n_epoch=500, print_freq=5,
+                X_val=X_val, y_val=y_val, eval_train=False)
 
-# evaluation
-tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+    # evaluation
+    tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
-# save the network to .npz file
-tl.files.save_npz(network.all_params , name='model.npz')
-sess.close()
+    # save the network to .npz file
+    tl.files.save_npz(network.all_params , name='model.npz')
