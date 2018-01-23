@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+# example usage:
+#   ./experimental/local_trainer.py -w 2 -f example/tutorial_mnist_distributed.py
+
 import argparse
 import json
 import os
@@ -25,7 +28,7 @@ def run_workers(cluster_spec, enable_gpu, file):
     for task_index in range(0, len(cluster_spec['cluster']['worker'])):
         add_env = dict()
 
-        if enable_gpu == 1:
+        if enable_gpu:
             add_env['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
             gpu_id += 1
         else:
@@ -68,7 +71,7 @@ def validate_arguments(args):
         print('Value error: must have ore than one parameter servers.')
         exit(1)
 
-    if args.enable_gpu == 1:
+    if args.enable_gpu:
         num_gpus = len(get_available_gpus())
         if args.num_workers > num_gpus:
             print('Value error: there are %s available GPUs but you are requiring %s.' % (num_gpus, args.num_workers))
@@ -87,9 +90,9 @@ def validate_arguments(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
-    parser.add_argument('-w', '--workers', dest='num_workers', type=int, help='number of workers')
+    parser.add_argument('-w', '--workers', dest='num_workers', type=int, required=True, help='number of workers')
     parser.add_argument(
-        '-g', '--enable_gpu', dest='enable_gpu', type=int, default=0, help='1 to enable GPU (GPU and CPU cannot be enabled together to avoid stragglers)')
+        '-g', '--enable_gpu', dest='enable_gpu', action='store_true', help='1 to enable GPU (GPU and CPU cannot be enabled together to avoid stragglers)')
     parser.add_argument('-f', '--file', dest='file', help='model trainning file path')
     args = parser.parse_args()
 
