@@ -92,7 +92,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
     parser.add_argument('-w', '--workers', dest='num_workers', type=int, required=True, help='number of workers')
     parser.add_argument(
-        '-g', '--enable_gpu', dest='enable_gpu', action='store_true', help='1 to enable GPU (GPU and CPU cannot be enabled together to avoid stragglers)')
+        '-g', '--enable_gpu', dest='enable_gpu', action='store_true', help='enable GPU (GPU and CPU are NOT enabled together to avoid stragglers)')
     parser.add_argument('-f', '--file', dest='file', help='model trainning file path')
     args = parser.parse_args()
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
         processes.extend(run_workers(cluster_spec, args.enable_gpu, args.file))
         input('Press ENTER to exit the training ...\n')
     except KeyboardInterrupt:
-        print('Keyboard interrupt received, stoppin ...')
+        print('Keyboard interrupt received, stopping ...')
     finally:
         # clean up
         for p in processes:
