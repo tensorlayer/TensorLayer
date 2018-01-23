@@ -10,16 +10,12 @@ import signal
 import sys
 from tensorflow.python.client import device_lib
 
-
 PORT_BASE = 10000
 
 
 def create_tf_config_str(cluster_spec, task_type, task_index):
     full_spec = cluster_spec.copy()
-    full_spec['task'] = {
-        'type': task_type,
-        'index': task_index
-    }
+    full_spec['task'] = {'type': task_type, 'index': task_index}
     return json.dumps(full_spec)
 
 
@@ -71,7 +67,7 @@ def validate_arguments(args):
     if args.num_pss < 1:
         print('Value error: must have ore than one parameter servers.')
         exit(1)
-        
+
     if args.enable_gpu == 1:
         num_gpus = len(get_available_gpus())
         if args.num_workers > num_gpus:
@@ -88,17 +84,12 @@ def validate_arguments(args):
         exit(1)
 
 
-def signal_handler(signal, frame):
-    print('You pressed Ctrl+C!')
-    for p in child_process:
-        p.kill()
-    sys.exit(0)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
     parser.add_argument('-w', '--workers', dest='num_workers', type=int, help='number of workers')
-    parser.add_argument('-g', '--enable_gpu', dest='enable_gpu', type=int, default=0, help='set to 1 to enable GPU (GPU and CPU cannot be enabled together to avoid stragglers)')
+    parser.add_argument(
+        '-g', '--enable_gpu', dest='enable_gpu', type=int, default=0, help='1 to enable GPU (GPU and CPU cannot be enabled together to avoid stragglers)')
     parser.add_argument('-f', '--file', dest='file', help='model trainning file path')
     args = parser.parse_args()
 
@@ -117,7 +108,7 @@ if __name__ == "__main__":
         processes.extend(run_workers(cluster_spec, args.enable_gpu, args.file))
         input('Press ENTER to exit the training ...')
     except KeyboardInterrupt:
-        print('Keyboard interrupt received, stopping…')
+        print('Keyboard interrupt received, stoppin ...')
     finally:
         # clean up
         for p in processes:
