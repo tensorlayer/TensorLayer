@@ -5764,9 +5764,9 @@ class Seq2Seq(Layer):
     Notes
     --------
     - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
-    - input_seqs : ``['how', 'are', 'you', '<PAD_ID'>]``
-    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID'>]``
-    - target_seqs : ``['I', 'am', 'fine', '<END_ID', '<PAD_ID'>]``
+    - input_seqs : ``['how', 'are', 'you', '<PAD_ID>']``
+    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID>']``
+    - target_seqs : ``['I', 'am', 'fine', '<END_ID>', '<PAD_ID>']``
     - target_mask : ``[1, 1, 1, 1, 0]``
     - related functions : tl.prepro <pad_sequences, precess_sequences, sequences_add_start_id, sequences_get_mask>
 
