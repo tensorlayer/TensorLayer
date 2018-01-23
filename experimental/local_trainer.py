@@ -109,7 +109,7 @@ if __name__ == "__main__":
     try:
         processes.extend(run_parameter_servers(cluster_spec, args.file))
         processes.extend(run_workers(cluster_spec, args.enable_gpu, args.file))
-        input('Press ENTER to exit the training ...')
+        input('Press ENTER to exit the training ...\n')
     except KeyboardInterrupt:
         print('Keyboard interrupt received, stoppin ...')
     finally:
