@@ -76,7 +76,9 @@ def save_images(images, size, image_path=''):
     >>> images = np.random.rand(64, 100, 100, 3)
     >>> tl.visualize.save_images(images, [8, 8], 'temp.png')
     """
-
+    if len(images.shape) == 3: # Greyscale [batch, h, w] --> [batch, h, w, 1]
+        images = images[:,:,:,np.newaxis]
+        
     def merge(images, size):
         h, w = images.shape[1], images.shape[2]
         img = np.zeros((h * size[0], w * size[1], 3))
