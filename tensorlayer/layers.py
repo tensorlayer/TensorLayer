@@ -76,6 +76,14 @@ def clear_layers_name():
     >>>       sess = tf.InteractiveSession()
     >>>       # define and train a model here
     >>>       sess.close()
+
+    - Enable name layer reuse.
+    >>> network = tl.layers.InputLayer(x, name='input_layer')
+    >>> network = tl.layers.DenseLayer(network, n_units=800, name='relu1')
+    ...
+    >>> tl.layers.clear_layers_name()
+    >>> network2 = tl.layers.InputLayer(x, name='input_layer')
+    >>> network2 = tl.layers.DenseLayer(network2, n_units=800, name='relu1')
     """
     set_keep['_layers_name_list'] = []
 
