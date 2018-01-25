@@ -69,13 +69,13 @@ def clear_layers_name():
 
     Examples
     ---------
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=800, name='relu1')
-    ...
-    >>> tl.layers.clear_layers_name()
-    >>> network2 = tl.layers.InputLayer(x, name='input_layer')
-    >>> network2 = tl.layers.DenseLayer(network2, n_units=800, name='relu1')
-    ...
+    - Resetting the current graph and trying to redefining model.
+    >>> for .... (different model settings):
+    >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
+    >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
+    >>>       sess = tf.InteractiveSession()
+    >>>       # define and train a model here
+    >>>       sess.close()
     """
     set_keep['_layers_name_list'] = []
 
