@@ -6,39 +6,36 @@
 
 import argparse
 import json
-import os
-import subprocess
 import multiprocessing
+import os
 import signal
+import subprocess
 import sys
+
 from tensorflow.python.client import device_lib
 
 PORT_BASE = 10000
 
 
 def create_tf_config_str(cluster_spec, task_type, task_index):
-    full_spec = cluster_spec.copy()
-    full_spec['task'] = {'type': task_type, 'index': task_index}
-    return json.dumps(full_spec)
+    tf_config = {
+        'cluster': cluster_spec,
+        'task': {
+            'type': task_type,
+            'index': task_index
+        },
+    }
+    return json.dumps(tf_config)
 
 
 def run_workers(cluster_spec, enable_gpu, file):
     processes = []
-    gpu_id = 0  # Assume GPU device id starts from 0
-    for task_index in range(0, len(cluster_spec['cluster']['worker'])):
+    for task_index in range(len(cluster_spec['worker'])):
         add_env = dict()
-
-        if enable_gpu:
-            add_env['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
-            gpu_id += 1
-        else:
-            add_env['CUDA_VISIBLE_DEVICES'] = ''  # Worker uses CPU if GPU is not available
-
+        add_env['CUDA_VISIBLE_DEVICES'] = str(task_index) if enable_gpu else ''
         add_env['TF_CONFIG'] = create_tf_config_str(cluster_spec, 'worker', task_index)
-
         new_env = os.environ.copy()
         new_env.update(add_env)
-
         cmd = 'python3 ' + file
         process = subprocess.Popen(cmd, env=new_env, shell=True)
         processes.append(process)
@@ -47,15 +44,13 @@ def run_workers(cluster_spec, enable_gpu, file):
 
 def run_parameter_servers(cluster_spec, file):
     processes = []
-    for task_index in range(0, len(cluster_spec['cluster']['ps'])):
+    for task_index in range(len(cluster_spec['ps'])):
         add_env = dict()
         add_env['CUDA_VISIBLE_DEVICES'] = ''  # Parameter server does not need to see any GPU
         add_env['TF_CONFIG'] = create_tf_config_str(cluster_spec, 'ps', task_index)
-
-        cmd = 'python3 ' + file
-
         new_env = os.environ.copy()
         new_env.update(add_env)
+        cmd = 'python3 ' + file
         process = subprocess.Popen(cmd, env=new_env, shell=True)
         processes.append(process)
     return processes
@@ -99,10 +94,8 @@ if __name__ == "__main__":
     validate_arguments(args)
 
     cluster_spec = {
-        'cluster': {
-            'ps': ['localhost:' + str(PORT_BASE + i) for i in range(0, args.num_pss)],
-            'worker': ['localhost:' + str(PORT_BASE + args.num_pss + i) for i in range(0, args.num_workers)]
-        }
+        'ps': ['localhost:%d' % (PORT_BASE + i) for i in range(args.num_pss)],
+        'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(args.num_workers)]
     }
 
     processes = []
