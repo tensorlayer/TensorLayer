@@ -29,7 +29,6 @@ def create_tf_config_str(cluster_spec, task_type, task_index):
 
 
 def run_workers(cluster_spec, enable_gpu, file):
-    processes = []
     for task_index in range(len(cluster_spec['worker'])):
         add_env = dict()
         add_env['CUDA_VISIBLE_DEVICES'] = str(task_index) if enable_gpu else ''
@@ -37,13 +36,10 @@ def run_workers(cluster_spec, enable_gpu, file):
         new_env = os.environ.copy()
         new_env.update(add_env)
         cmd = 'python3 ' + file
-        process = subprocess.Popen(cmd, env=new_env, shell=True)
-        processes.append(process)
-    return processes
+        yield subprocess.Popen(cmd, env=new_env, shell=True)
 
 
 def run_parameter_servers(cluster_spec, file):
-    processes = []
     for task_index in range(len(cluster_spec['ps'])):
         add_env = dict()
         add_env['CUDA_VISIBLE_DEVICES'] = ''  # Parameter server does not need to see any GPU
@@ -51,14 +47,7 @@ def run_parameter_servers(cluster_spec, file):
         new_env = os.environ.copy()
         new_env.update(add_env)
         cmd = 'python3 ' + file
-        process = subprocess.Popen(cmd, env=new_env, shell=True)
-        processes.append(process)
-    return processes
-
-
-def get_available_gpus():
-    local_device_protos = device_lib.list_local_devices()
-    return [x.name for x in local_device_protos if x.device_type == 'GPU']
+        yield subprocess.Popen(cmd, env=new_env, shell=True)
 
 
 def validate_arguments(args):
@@ -67,7 +56,7 @@ def validate_arguments(args):
         exit(1)
 
     if args.enable_gpu:
-        num_gpus = len(get_available_gpus())
+        num_gpus = len([x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU'])
         if args.num_workers > num_gpus:
             print('Value error: there are %s available GPUs but you are requiring %s.' % (num_gpus, args.num_workers))
             exit(1)
@@ -77,7 +66,7 @@ def validate_arguments(args):
             print('Value error: there are %s available CPUs but you are requiring %s.' % (num_cpus, args.num_workers))
             exit(1)
 
-    if os.path.isfile(args.file) == False:
+    if not os.path.isfile(args.file):
         print('Value error: model trainning file does not exist')
         exit(1)
 
@@ -98,10 +87,8 @@ if __name__ == "__main__":
         'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(args.num_workers)]
     }
 
-    processes = []
     try:
-        processes.extend(run_parameter_servers(cluster_spec, args.file))
-        processes.extend(run_workers(cluster_spec, args.enable_gpu, args.file))
+        processes = list(run_parameter_servers(cluster_spec, args.file)) + list(run_workers(cluster_spec, args.enable_gpu, args.file))
         input('Press ENTER to exit the training ...\n')
     except KeyboardInterrupt:
         print('Keyboard interrupt received, stopping ...')
