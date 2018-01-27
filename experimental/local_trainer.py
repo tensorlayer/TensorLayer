@@ -17,37 +17,25 @@ from tensorflow.python.client import device_lib
 PORT_BASE = 10000
 
 
-def create_tf_config_str(cluster_spec, task_type, task_index):
-    tf_config = {
+def create_tf_config(cluster_spec, task_type, task_index):
+    return {
         'cluster': cluster_spec,
         'task': {
             'type': task_type,
             'index': task_index
         },
     }
-    return json.dumps(tf_config)
 
 
-def run_workers(cluster_spec, enable_gpu, file):
-    for task_index in range(len(cluster_spec['worker'])):
-        add_env = dict()
-        add_env['CUDA_VISIBLE_DEVICES'] = str(task_index) if enable_gpu else ''
-        add_env['TF_CONFIG'] = create_tf_config_str(cluster_spec, 'worker', task_index)
-        new_env = os.environ.copy()
-        new_env.update(add_env)
-        cmd = 'python3 ' + file
-        yield subprocess.Popen(cmd, env=new_env, shell=True)
-
-
-def run_parameter_servers(cluster_spec, file):
-    for task_index in range(len(cluster_spec['ps'])):
-        add_env = dict()
-        add_env['CUDA_VISIBLE_DEVICES'] = ''  # Parameter server does not need to see any GPU
-        add_env['TF_CONFIG'] = create_tf_config_str(cluster_spec, 'ps', task_index)
-        new_env = os.environ.copy()
-        new_env.update(add_env)
-        cmd = 'python3 ' + file
-        yield subprocess.Popen(cmd, env=new_env, shell=True)
+def create_tf_jobs(prog, cluster_spec, enable_gpu=False):
+    for job_type in cluster_spec:
+        for task_index in range(len(cluster_spec[job_type])):
+            new_env = os.environ.copy()
+            new_env.update({
+                'CUDA_VISIBLE_DEVICES': str(task_index) if job_type == 'worker' and enable_gpu else '',
+                'TF_CONFIG': json.dumps(create_tf_config(cluster_spec, job_type, task_index)),
+            })
+            yield subprocess.Popen('python3 %s' % prog, env=new_env, shell=True)
 
 
 def validate_arguments(args):
@@ -87,8 +75,8 @@ if __name__ == "__main__":
         'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(args.num_workers)]
     }
 
+    processes = list(create_tf_jobs(args.file, cluster_spec, args.enable_gpu))
     try:
-        processes = list(run_parameter_servers(cluster_spec, args.file)) + list(run_workers(cluster_spec, args.enable_gpu, args.file))
         input('Press ENTER to exit the training ...\n')
     except KeyboardInterrupt:
         print('Keyboard interrupt received, stopping ...')
