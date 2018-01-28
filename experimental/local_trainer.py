@@ -14,8 +14,6 @@ import sys
 
 from tensorflow.python.client import device_lib
 
-import psutil
-
 PORT_BASE = 10000
 
 
@@ -37,7 +35,7 @@ def create_tf_jobs(prog, cluster_spec, enable_gpu=False):
                 'CUDA_VISIBLE_DEVICES': str(task_index) if job_type == 'worker' and enable_gpu else '',
                 'TF_CONFIG': json.dumps(create_tf_config(cluster_spec, job_type, task_index)),
             })
-            yield subprocess.Popen('python3 %s' % prog, env=new_env, shell=True)
+            yield subprocess.Popen(['python3', prog], env=new_env)
 
 
 def validate_arguments(args):
@@ -59,13 +57,6 @@ def validate_arguments(args):
     if not os.path.isfile(args.file):
         print('Value error: model trainning file does not exist')
         exit(1)
-
-
-def stop_tree(pid):
-    parent = psutil.Process(pid)
-    for child in parent.children(recursive=True):
-        child.kill()
-    parent.kill()
 
 
 if __name__ == "__main__":
@@ -93,5 +84,5 @@ if __name__ == "__main__":
     finally:
         print('stopping all subprocesses ...')
         for p in processes:
-            stop_tree(p.pid)
+            p.kill()
         print('END')
