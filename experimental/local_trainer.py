@@ -14,6 +14,8 @@ import sys
 
 from tensorflow.python.client import device_lib
 
+import psutil
+
 PORT_BASE = 10000
 
 
@@ -59,6 +61,13 @@ def validate_arguments(args):
         exit(1)
 
 
+def stop_tree(pid):
+    parent = psutil.Process(pid)
+    for child in parent.children(recursive=True):
+        child.kill()
+    parent.kill()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
@@ -77,10 +86,12 @@ if __name__ == "__main__":
 
     processes = list(create_tf_jobs(args.file, cluster_spec, args.enable_gpu))
     try:
-        input('Press ENTER to exit the training ...\n')
-    except KeyboardInterrupt:
-        print('Keyboard interrupt received, stopping ...')
+        print('Press ENTER to exit the training ...')
+        sys.stdin.readline()
+    except KeyboardInterrupt:  # https://docs.python.org/3/library/exceptions.html#KeyboardInterrupt
+        print('Keyboard interrupt received')
     finally:
-        # clean up
+        print('stopping all subprocesses ...')
         for p in processes:
-            p.kill()
+            stop_tree(p.pid)
+        print('END')
