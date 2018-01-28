@@ -8,13 +8,15 @@ import argparse
 import json
 import multiprocessing
 import os
-import signal
+import re
 import subprocess
 import sys
 
-from tensorflow.python.client import device_lib
-
 PORT_BASE = 10000
+
+
+def get_gpus():
+    return [d for d in os.listdir('/dev') if re.match('^nvidia\d+$', d)]
 
 
 def create_tf_config(cluster_spec, task_type, task_index):
@@ -44,7 +46,7 @@ def validate_arguments(args):
         exit(1)
 
     if args.enable_gpu:
-        num_gpus = len([x.name for x in device_lib.list_local_devices() if x.device_type == 'GPU'])
+        num_gpus = len(get_gpus())
         if args.num_workers > num_gpus:
             print('Value error: there are %s available GPUs but you are requiring %s.' % (num_gpus, args.num_workers))
             exit(1)
