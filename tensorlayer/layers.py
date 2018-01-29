@@ -69,13 +69,21 @@ def clear_layers_name():
 
     Examples
     ---------
+    - Resetting the current graph and trying to redefining model.
+    >>> for .... (different model settings):
+    >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
+    >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
+    >>>       sess = tf.InteractiveSession()
+    >>>       # define and train a model here
+    >>>       sess.close()
+
+    - Enable name layer reuse.
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     >>> network = tl.layers.DenseLayer(network, n_units=800, name='relu1')
     ...
     >>> tl.layers.clear_layers_name()
     >>> network2 = tl.layers.InputLayer(x, name='input_layer')
     >>> network2 = tl.layers.DenseLayer(network2, n_units=800, name='relu1')
-    ...
     """
     set_keep['_layers_name_list'] = []
 
@@ -303,7 +311,8 @@ class Layer(object):
             name = scope_name + '/' + name
         if (name in set_keep['_layers_name_list']) and set_keep['name_reuse'] == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
-            \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)" % name)
+            \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)\
+            \nAdditional Informations: http://tensorlayer.readthedocs.io/en/latest/modules/layers.html?highlight=clear_layers_name#tensorlayer.layers.clear_layers_name" % name)
         else:
             self.name = name
             if name not in ['', None, False]:
@@ -5764,9 +5773,9 @@ class Seq2Seq(Layer):
     Notes
     --------
     - How to feed data: `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/pdf/1409.3215v3.pdf>`_
-    - input_seqs : ``['how', 'are', 'you', '<PAD_ID'>]``
-    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID'>]``
-    - target_seqs : ``['I', 'am', 'fine', '<END_ID', '<PAD_ID'>]``
+    - input_seqs : ``['how', 'are', 'you', '<PAD_ID>']``
+    - decode_seqs : ``['<START_ID>', 'I', 'am', 'fine', '<PAD_ID>']``
+    - target_seqs : ``['I', 'am', 'fine', '<END_ID>', '<PAD_ID>']``
     - target_mask : ``[1, 1, 1, 1, 0]``
     - related functions : tl.prepro <pad_sequences, precess_sequences, sequences_add_start_id, sequences_get_mask>
 
