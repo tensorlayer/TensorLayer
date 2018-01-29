@@ -2,7 +2,8 @@
 # encoding: utf-8
 
 # example usage:
-#   ./experimental/local_trainer.py -w 2 -f example/tutorial_mnist_distributed.py
+#   ./tensorlayer/experimental/local_trainer.py ./example/tutorial_mnist_distributed.py
+#   ./tensorlayer/experimental/local_trainer.py ./example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
 import argparse
 import json
@@ -36,7 +37,7 @@ def create_tf_config(cluster_spec, task_type, task_index):
     }
 
 
-def create_tf_jobs(prog, cluster_spec):
+def create_tf_jobs(cluster_spec, prog, args):
     gpu_assignment = dict((('worker', idx), gpu_idx) for (idx, gpu_idx) in enumerate(GPU_IDS))
     for job_type in cluster_spec:
         for task_index in range(len(cluster_spec[job_type])):
@@ -45,7 +46,7 @@ def create_tf_jobs(prog, cluster_spec):
                 'CUDA_VISIBLE_DEVICES': str(gpu_assignment.get((job_type, task_index), '')),
                 'TF_CONFIG': json.dumps(create_tf_config(cluster_spec, job_type, task_index)),
             })
-            yield subprocess.Popen(['python3', prog], env=new_env)
+            yield subprocess.Popen(['python3', prog] + args, env=new_env)
 
 
 def validate_arguments(args):
@@ -69,21 +70,15 @@ def validate_arguments(args):
         exit(1)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
-    parser.add_argument('-w', '--workers', dest='num_workers', type=int, default=len(GPU_IDS) if GPU_IDS else 1, help='number of workers')
-    parser.add_argument('-f', '--file', dest='file', help='model trainning file path')
-    args = parser.parse_args()
-
+def main(args):
     validate_arguments(args)
+    print('Using program %s with args %s' % (args.file, ' '.join(args.args)))
     print('Using %d workers, %d parameter servers, %d GPUs.' % (args.num_workers, args.num_pss, len(GPU_IDS)))
     cluster_spec = {
         'ps': ['localhost:%d' % (PORT_BASE + i) for i in range(args.num_pss)],
         'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(args.num_workers)]
     }
-
-    processes = list(create_tf_jobs(args.file, cluster_spec))
+    processes = list(create_tf_jobs(cluster_spec, args.file, args.args))
     try:
         print('Press ENTER to exit the training ...')
         sys.stdin.readline()
@@ -96,3 +91,17 @@ if __name__ == "__main__":
         for p in processes:
             p.wait()
         print('END')
+
+
+def build_arg_parser(parser):
+    parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
+    parser.add_argument('-w', '--workers', dest='num_workers', type=int, default=len(GPU_IDS) if GPU_IDS else 1, help='number of workers')
+    parser.add_argument('file', help='model trainning file path')
+    parser.add_argument('args', nargs='*', type=str, help='arguments to <file>')
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    build_arg_parser(parser)
+    args = parser.parse_args()
+    main(args)
