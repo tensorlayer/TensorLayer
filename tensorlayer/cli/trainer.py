@@ -2,8 +2,8 @@
 # encoding: utf-8
 
 # example usage:
-#   ./tensorlayer/experimental/local_trainer.py ./example/tutorial_mnist_distributed.py
-#   ./tensorlayer/experimental/local_trainer.py ./example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+#   ./tensorlayer/cli/trainer.py ./example/tutorial_mnist_distributed.py
+#   ./tensorlayer/cli/trainer.py ./example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
 import argparse
 import json
