@@ -2,7 +2,8 @@
 language: python
 python:
   - "2.7"
-  - "3.6"
+  - "3.5"
+  # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
 install:
   - pip install tensorflow
   - pip install .
