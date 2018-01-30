@@ -10,4 +10,4 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 export PYTHONPATH="${DIR}/src:${PYTHONPATH}"
 
-python -m tensorlayer.cli "$@"
+python3 -m tensorlayer.cli "$@"
