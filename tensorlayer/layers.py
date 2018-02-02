@@ -1043,24 +1043,35 @@ class DropoutLayer(Layer):
 
     Examples
     --------
-    - Define network
+    - Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     >>> network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
     >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
     >>> ...
-
-    - For training, enable dropout as follow.
+    >>> # For training, enable dropout as follow.
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
     >>> feed_dict.update( network.all_drop )     # enable noise layers
     >>> sess.run(train_op, feed_dict=feed_dict)
     >>> ...
-
-    - For testing, disable dropout as follow.
+    >>> # For testing, disable dropout as follow.
     >>> dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable noise layers
     >>> feed_dict = {x: X_val_a, y_: y_val_a}
     >>> feed_dict.update(dp_dict)
     >>> err, ac = sess.run([cost, acc], feed_dict=feed_dict)
     >>> ...
+
+    - Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_
+    >>> def mlp(x, is_train=True, reuse=False):
+    >>>     with tf.variable_scope("MLP", reuse=reuse):
+    >>>     tl.layers.set_name_reuse(reuse)
+    >>>     network = tl.layers.InputLayer(x, name='input')
+    >>>     network = tl.layers.DropoutLayer(network, keep=0.8, is_fix=True,
+    >>>                         is_train=is_train, name='drop1')
+    >>>     ...
+    >>>     return network
+    >>> # define inferences
+    >>> net_train = mlp(x, is_train=True, reuse=False)
+    >>> net_test = mlp(x, is_train=False, reuse=True)
 
     Notes
     -------
