@@ -1072,12 +1072,6 @@ class DropoutLayer(Layer):
     >>> # define inferences
     >>> net_train = mlp(x, is_train=True, reuse=False)
     >>> net_test = mlp(x, is_train=False, reuse=True)
-
-    Notes
-    -------
-    - A frequent question regarding :class:`DropoutLayer` is that why it donot have `is_train` like :class:`BatchNormLayer`.
-    In many simple cases, user may find it is better to use one inference instead of two inferences for training and testing seperately, :class:`DropoutLayer`
-    allows you to control the dropout rate via `feed_dict`. However, you can fix the keeping probability by setting `is_fix` to True.
     """
 
     def __init__(
