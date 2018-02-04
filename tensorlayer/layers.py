@@ -561,7 +561,7 @@ class EmbeddingInputlayer(Layer):
     The output is the embedded word vector.
 
     If you have a pre-train matrix, you can assign the matrix into it.
-    To train a word embedding matrix, you can used class:`Word2vecEmbeddingInputlayer`.
+    To train a word embedding matrix, you can used :class:`Word2vecEmbeddingInputlayer`.
 
     Note that, do not update this embedding matrix.
 
