@@ -42,9 +42,8 @@ TensorLayer is simple
 
 The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
 We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
-if you want to understand the details and be a machine learning expert, we suggest you to train the network by using
-TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more details.
-
+if you want to understand the details and be a machine learning expert, we suggest you to train the network by using the data iternation toolbox (``tl.iternate``) and
+the TensorFlow's native API like ``sess.run()``, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>_` , `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>_` for more details.
 
 .. code-block:: python
 
@@ -423,61 +422,24 @@ Convolutional Neural Network (CNN)
 
 Finally, the ``main_test_cnn_layer()`` script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
-layer. More CNN examples can be found in the tutorial scripts, like ``tutorial_cifar10_tfrecord.py``.
-
-At the begin, we add a :class:`Conv2dLayer
-<tensorlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
-max-pooling of factor 2 in both dimensions. And then apply a ``Conv2dLayer`` with
-64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
-the 4D output to 1D vector by using ``FlattenLayer``, and apply a dropout with 50%
-to last hidden layer. The ``?`` represents arbitrary batch_size.
-
-Note, ``tutorial_mnist.py`` introduces the simplified CNN API for beginner.
+layer. More CNN examples can be found in other examples, like ``tutorial_cifar10_tfrecord.py``.
 
 .. code-block:: python
 
-    network = tl.layers.InputLayer(x, name='input_layer')
-    network = tl.layers.Conv2dLayer(network,
-                            act = tf.nn.relu,
-                            shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                            strides=[1, 1, 1, 1],
-                            padding='SAME',
-                            name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.PoolLayer(network,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME',
-                            pool = tf.nn.max_pool,
-                            name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    network = tl.layers.Conv2dLayer(network,
-                            act = tf.nn.relu,
-                            shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-                            strides=[1, 1, 1, 1],
-                            padding='SAME',
-                            name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.layers.PoolLayer(network,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME',
-                            pool = tf.nn.max_pool,
-                            name ='pool_layer2',)   # output: (?, 7, 7, 64)
-    network = tl.layers.FlattenLayer(network, name='flatten_layer')
-                                                    # output: (?, 3136)
+    network = tl.layers.Conv2d(network, 32, (5, 5), (1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn1')
+    network = tl.layers.MaxPool2d(network, (2, 2), (2, 2),
+            padding='SAME', name='pool1')
+    network = tl.layers.Conv2d(network, 64, (5, 5), (1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn2')
+    network = tl.layers.MaxPool2d(network, (2, 2), (2, 2),
+            padding='SAME', name='pool2')
+
+    network = tl.layers.FlattenLayer(network, name='flatten')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')
-                                                    # output: (?, 3136)
-    network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
-                                                    # output: (?, 256)
+    network = tl.layers.DenseLayer(network, 256, act=tf.nn.relu, name='relu1')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-                                                    # output: (?, 256)
-    network = tl.layers.DenseLayer(network, n_units=10,
-                    act = tf.identity, name='output_layer')
-                                                    # output: (?, 10)
-
-
-.. note::
-    For experts: ``Conv2dLayer`` will create a convolutional layer using
-    ``tensorflow.nn.conv2d``, TensorFlow's default convolution.
-
+    network = tl.layers.DenseLayer(network, 10, act=tf.identity, name='output')
 
 
 Training the model
@@ -511,8 +473,8 @@ Continuing, we create a loss expression to be minimized in training:
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
 
-More cost or regularization can be applied here, take ``main_test_layers()`` for example,
-to apply max-norm on the weight matrices, we can add the following line:
+More cost or regularization can be applied here.
+For example, to apply max-norm on the weight matrices, we can add the following line.
 
 .. code-block:: python
 
@@ -521,8 +483,9 @@ to apply max-norm on the weight matrices, we can add the following line:
 
 Depending on the problem you are solving, you will need different loss functions,
 see :mod:`tensorlayer.cost` for more.
+Apart from using ``network.all_params`` to get the variables, we can also use ``tl.layers.get_variables_with_name`` to get the specific variables by string name.
 
-Having the model and the loss function defined, we create update expressions
+Having the model and the loss function here, we create update expression/operation
 for training the network. TensorLayer do not provide many optimizers, we used TensorFlow's
 optimizer instead:
 
@@ -542,8 +505,8 @@ For training the network, we fed data and the keeping probabilities to the ``fee
     sess.run(train_op, feed_dict=feed_dict)
 
 While, for validation and testing, we use slightly different way. All
-dropout, dropconnect, corrosion layers need to be disable.
-``tl.utils.dict_to_one`` set all ``network.all_drop`` to 1.
+Dropout, Dropconnect, Corrosion layers need to be disable.
+We use ``tl.utils.dict_to_one`` to set all ``network.all_drop`` to 1.
 
 .. code-block:: python
 
@@ -552,8 +515,7 @@ dropout, dropconnect, corrosion layers need to be disable.
     feed_dict.update(dp_dict)
     err, ac = sess.run([cost, acc], feed_dict=feed_dict)
 
-As an additional monitoring quantity, we create an expression for the
-classification accuracy:
+For evaluation, we create an expression for the classification accuracy:
 
 .. code-block:: python
 
