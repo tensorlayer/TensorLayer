@@ -526,7 +526,7 @@ For evaluation, we create an expression for the classification accuracy:
 What Next?
 ^^^^^^^^^^^
 
-We also have a more advanced image classification example in ``tutorial_cifar10_tfrecord.py``.
+We also have a more advanced image classification example in `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
 Please read the code and notes, figure out how to generate more training data and what
 is local response normalization. After that, try to implement
 `Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you may want
@@ -540,14 +540,14 @@ Run the Pong Game example
 =========================
 
 In the second part of the tutorial, we will run the Deep Reinforcement Learning
-example that is introduced by Karpathy in `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_.
+example which is introduced by Karpathy in `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_.
 
 .. code-block:: bash
 
   python tutorial_atari_pong.py
 
 Before running the tutorial code, you need to install `OpenAI gym environment <https://gym.openai.com/docs>`_
-which is a benchmark for Reinforcement Learning.
+which is a popular benchmark for Reinforcement Learning.
 If everything is set up correctly, you will get an output like the following:
 
 .. code-block:: text
@@ -556,10 +556,10 @@ If everything is set up correctly, you will get an output like the following:
     [TL] InputLayer input_layer (?, 6400)
     [TL] DenseLayer relu1: 200, relu
     [TL] DenseLayer output_layer: 3, identity
-    param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
-    param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-    param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
-    param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    param 0: (6400, 200) (mean: -0.000009  median: -0.000018 std: 0.017393)
+    param 1: (200,)      (mean: 0.000000   median: 0.000000  std: 0.000000)
+    param 2: (200, 3)    (mean: 0.002239   median: 0.003122  std: 0.096611)
+    param 3: (3,)        (mean: 0.000000   median: 0.000000  std: 0.000000)
     num of params: 1280803
     layer 0: Tensor("Relu:0", shape=(?, 200), dtype=float32)
     layer 1: Tensor("add_1:0", shape=(?, 3), dtype=float32)
@@ -593,11 +593,13 @@ If everything is set up correctly, you will get an output like the following:
   episode 1: game 5 took 0.17348s, reward: -1.000000
   episode 1: game 6 took 0.09415s, reward: -1.000000
 
-This example allow computer to learn how to play Pong game from the screen inputs,
-just like human behavior. After training for 15,000 episodes, the computer can
-win 20% of the games. The computer win 35% of the games at 20,000 episode,
-we can seen the computer learn faster and faster as it has more winning data to
-train. If you run it for 30,000 episode, it start to win.
+This example allow neural network to learn how to play Pong game from the screen inputs,
+just like human behavior.
+The neural network will play with a fake AI player, and lean to beat it.
+After training for 15,000 episodes, the neural network can
+win 20% of the games. The neural network win 35% of the games at 20,000 episode,
+we can seen the neural network learn faster and faster as it has more winning data to
+train. If you run it for 30,000 episode, it never loss.
 
 .. code-block:: python
 
@@ -727,7 +729,7 @@ using RMSProp on batches of 10 episodes.
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Continuing, we create a loss expression to be minimized in training:
+We create a loss expression to be minimized in training:
 
 .. code-block:: python
 
@@ -768,7 +770,7 @@ Also, the default parameters of the model are not tuned. You can try changing
 the learning rate, decay, or initializing the weights of your model in a
 different way.
 
-Finally, you can try the model on different tasks (games).
+Finally, you can try the model on different tasks (games) and try other reinforcement learning algorithm in `Example <http://tensorlayer.readthedocs.io/en/latest/user/example.html>`_.
 
 
 
