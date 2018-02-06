@@ -1461,6 +1461,7 @@ class DeConv2dLayer(Layer):
 
     Notes
     -----
+    - We highly recommend to use `DeConv2d` with TensorFlow version higher than 1.3.
     - shape = [h, w, the number of output channels of this layer, the number of output channel of previous layer]
     - output_shape = [batch_size, any, any, the number of output channels of this layer]
     - the number of output channel of a layer is its last dimension.
@@ -2388,7 +2389,7 @@ def Conv2d(
 
 
 def DeConv2d(net,
-             n_out_channel=32,
+             n_filter=32,
              filter_size=(3, 3),
              out_size=(30, 30),
              strides=(2, 2),
@@ -2405,39 +2406,64 @@ def DeConv2d(net,
     Parameters
     ----------
     net : TensorLayer layer.
-    n_out_channel : int, number of output channel.
+    n_filter : int, number of output channel.
     filter_size : tuple of (height, width) for filter size.
-    out_size :  tuple of (height, width) of output.
-    batch_size : int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     strides : tuple of (height, width) for strides.
+    out_size : (require if TF version < 1.3) tuple of (height, width) of output (require if TF version < 1.3).
+    batch_size : (require if TF version < 1.3) int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     act : None or activation function.
     others : see :class:`DeConv2dLayer`.
     """
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
         act = tf.identity
-    if batch_size is None:
-        #     batch_size = tf.shape(net.outputs)[0]
-        fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
-        if fixed_batch_size.value:
-            batch_size = fixed_batch_size.value
-        else:
-            from tensorflow.python.ops import array_ops
-            batch_size = array_ops.shape(net.outputs)[0]
-    net = DeConv2dLayer(
-        layer=net,
-        act=act,
-        shape=[filter_size[0], filter_size[1], n_out_channel, int(net.outputs.get_shape()[-1])],
-        output_shape=[batch_size, int(out_size[0]), int(out_size[1]), n_out_channel],
-        strides=[1, strides[0], strides[1], 1],
-        padding=padding,
-        W_init=W_init,
-        b_init=b_init,
-        W_init_args=W_init_args,
-        b_init_args=b_init_args,
-        name=name)
-    return net
 
+    if tf.__version__ > '1.3':
+        print("  [TL] DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (
+            name, str(n_filter), str(strides), padding, act.__name__))
+        inputs = net.outputs
+        scope_name = tf.get_variable_scope().name
+        if scope_name:
+            whole_name = scope_name + '/' + name
+        else:
+            whole_name = name
+        net_new = Layer(inputs, name=whole_name)
+        # with tf.name_scope(name):
+        with tf.variable_scope(name) as vs:
+            net_new.outputs = act(tf.contrib.layers.conv2d_transpose(inputs=inputs,
+                            num_outputs=n_filter,
+                            kernel_size=filter_size,
+                            stride=strides,
+                            padding=padding, scope=name))
+            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        net_new.all_layers = list(net.all_layers)
+        net_new.all_params = list(net.all_params)
+        net_new.all_drop = dict(net.all_drop)
+        net_new.all_layers.extend([net_new.outputs])
+        net_new.all_params.extend(new_variables)
+        return net_new
+    else:
+        if batch_size is None:
+            #     batch_size = tf.shape(net.outputs)[0]
+            fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
+            if fixed_batch_size.value:
+                batch_size = fixed_batch_size.value
+            else:
+                from tensorflow.python.ops import array_ops
+                batch_size = array_ops.shape(net.outputs)[0]
+        net = DeConv2dLayer(
+            layer=net,
+            act=act,
+            shape=[filter_size[0], filter_size[1], n_filter, int(net.outputs.get_shape()[-1])],
+            output_shape=[batch_size, int(out_size[0]), int(out_size[1]), n_filter],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            W_init=W_init,
+            b_init=b_init,
+            W_init_args=W_init_args,
+            b_init_args=b_init_args,
+            name=name)
+        return net
 
 def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
