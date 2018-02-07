@@ -54,15 +54,10 @@ def validate_arguments(args):
         print('Value error: must have ore than one parameter servers.')
         exit(1)
 
-    if GPU_IDS:
-        num_gpus = len(GPU_IDS)
-        if args.num_workers > num_gpus:
-            print('Value error: there are %s available GPUs but you are requiring %s.' % (num_gpus, args.num_workers))
-            exit(1)
-    else:
+    if not GPU_IDS:
         num_cpus = multiprocessing.cpu_count()
-        if args.num_workers > num_cpus:
-            print('Value error: there are %s available CPUs but you are requiring %s.' % (num_cpus, args.num_workers))
+        if args.num_cpus > num_cpus:
+            print('Value error: there are %s available CPUs but you are requiring %s.' % (num_cpus, args.num_cpus))
             exit(1)
 
     if not os.path.isfile(args.file):
@@ -72,11 +67,12 @@ def validate_arguments(args):
 
 def main(args):
     validate_arguments(args)
+    num_workers = len(GPU_IDS) if GPU_IDS else args.num_cpus
     print('Using program %s with args %s' % (args.file, ' '.join(args.args)))
-    print('Using %d workers, %d parameter servers, %d GPUs.' % (args.num_workers, args.num_pss, len(GPU_IDS)))
+    print('Using %d workers, %d parameter servers, %d GPUs.' % (num_workers, args.num_pss, len(GPU_IDS)))
     cluster_spec = {
         'ps': ['localhost:%d' % (PORT_BASE + i) for i in range(args.num_pss)],
-        'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(args.num_workers)]
+        'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(num_workers)]
     }
     processes = list(create_tf_jobs(cluster_spec, args.file, args.args))
     try:
@@ -95,7 +91,7 @@ def main(args):
 
 def build_arg_parser(parser):
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
-    parser.add_argument('-w', '--workers', dest='num_workers', type=int, default=len(GPU_IDS) if GPU_IDS else 1, help='number of workers')
+    parser.add_argument('-c', '--cpus', dest='num_cpus', type=int, default=1, help='number of CPU workers')
     parser.add_argument('file', help='model trainning file path')
     parser.add_argument('args', nargs='*', type=str, help='arguments to <file>')
 
