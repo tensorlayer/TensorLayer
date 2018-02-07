@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# example usage:
-#   ./tensorlayer/cli/train.py ./example/tutorial_mnist_distributed.py
-#   ./tensorlayer/cli/train.py ./example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+"""
+The tensorlayer.cli.train module provides the `tl train` subcommand.
+It can help users to run a `TF_CONFIG` aware program on a computer 
+with multiple GPU cards.
+
+Usage:
+
+.. code-block:: bash
+
+  tl train example/tutorial_mnist_distributed.py
+  tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+"""
 
 import argparse
 import json
