@@ -17,6 +17,7 @@ PORT_BASE = 10000
 
 
 def _get_gpu_ids():
+    # TODO: make it work in windows
     available_gpu_ids = [int(d.replace('nvidia', '')) for d in os.listdir('/dev') if re.match('^nvidia\d+$', d)]
     if 'CUDA_VISIBLE_DEVICES' in os.environ:
         visiable_gpu_ids = [int(x) for x in os.environ.get('CUDA_VISIBLE_DEVICES', '').split(',')]
