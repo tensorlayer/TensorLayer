@@ -9,6 +9,7 @@ import argparse
 import json
 import multiprocessing
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -17,12 +18,13 @@ PORT_BASE = 10000
 
 
 def _get_gpu_ids():
-    # TODO: make it work in windows
-    available_gpu_ids = [int(d.replace('nvidia', '')) for d in os.listdir('/dev') if re.match('^nvidia\d+$', d)]
     if 'CUDA_VISIBLE_DEVICES' in os.environ:
-        visiable_gpu_ids = [int(x) for x in os.environ.get('CUDA_VISIBLE_DEVICES', '').split(',')]
-        available_gpu_ids = list(set(available_gpu_ids) & set(visiable_gpu_ids))
-    return available_gpu_ids
+        return [int(x) for x in os.environ.get('CUDA_VISIBLE_DEVICES', '').split(',')]
+    if platform.system() in ['Darwin', 'Linux']:
+        return [int(d.replace('nvidia', '')) for d in os.listdir('/dev') if re.match('^nvidia\d+$', d)]
+    else:
+        print('Please set CUDA_VISIBLE_DEVICES (see http://acceleware.com/blog/cudavisibledevices-masking-gpus)')
+        return []
 
 
 GPU_IDS = _get_gpu_ids()
