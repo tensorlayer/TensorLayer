@@ -215,8 +215,9 @@ class Vocabulary(object):
     unk_id : int of unk id
     pad_id : int of padding id
 
-    Vocab_files
+    Examples
     -------------
+    >>> Vocab_files
     >>> Look as follow, includes `start_word` , `end_word` but no `unk_word` .
     >>> a 969108
     >>> <S> 586368
@@ -288,8 +289,8 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     """Converts a sentence string into a list of string words, add start_word and end_word,
     see ``create_vocab()`` and ``tutorial_tfrecord3.py``.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     sentence : a sentence in string.
     start_word : a string or None, if None, non start word will be appended.
     end_word : a string or None, if None, non end word will be appended.

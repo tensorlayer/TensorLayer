@@ -22,7 +22,7 @@ TaskSpecDef
 .. autofunction:: TaskSpecDef
 
 Create TaskSpecDef from environment variables
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: TaskSpec
 
@@ -151,11 +151,11 @@ to do some operations in the sessions. We added more to help with common operati
 
 
 Stop after maximum time
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: StopAtTimeHook
 
 Initialize network with checkpoint
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: LoadCheckpoint
