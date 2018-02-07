@@ -41,7 +41,7 @@ class TensorDB(object):
     user_name : string, set to None if it donnot need authentication.
     password : string.
 
-    Properties
+    Attributes
     ------------
     db : ``pymongo.MongoClient[db_name]``, xxxxxx
     datafs : ``gridfs.GridFS(self.db, collection="datafs")``, xxxxxxxxxx
@@ -53,15 +53,12 @@ class TensorDB(object):
     db.TestLog : Collection for
     studyID : string, unique ID, if None random generate one.
 
-    Dependencies
+    Notes
     -------------
     1 : MongoDB, as TensorDB is based on MongoDB, you need to install it in your
        local machine or remote machine.
     2 : pip install pymongo, for MongoDB python API.
-
-    Optional Tools
-    ----------------
-    1 : You may like to install MongoChef or Mongo Management Studo APP for
+    3 : You may like to install MongoChef or Mongo Management Studo APP for
        visualizing or testing your MongoDB.
     """
 

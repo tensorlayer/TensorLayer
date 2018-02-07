@@ -561,7 +561,7 @@ class EmbeddingInputlayer(Layer):
     The output is the embedded word vector.
 
     If you have a pre-train matrix, you can assign the matrix into it.
-    To train a word embedding matrix, you can used class:`Word2vecEmbeddingInputlayer`.
+    To train a word embedding matrix, you can used :class:`Word2vecEmbeddingInputlayer`.
 
     Note that, do not update this embedding matrix.
 
@@ -1043,30 +1043,35 @@ class DropoutLayer(Layer):
 
     Examples
     --------
-    - Define network
+    - Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_
     >>> network = tl.layers.InputLayer(x, name='input_layer')
     >>> network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
     >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
     >>> ...
-
-    - For training, enable dropout as follow.
+    >>> # For training, enable dropout as follow.
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
     >>> feed_dict.update( network.all_drop )     # enable noise layers
     >>> sess.run(train_op, feed_dict=feed_dict)
     >>> ...
-
-    - For testing, disable dropout as follow.
+    >>> # For testing, disable dropout as follow.
     >>> dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable noise layers
     >>> feed_dict = {x: X_val_a, y_: y_val_a}
     >>> feed_dict.update(dp_dict)
     >>> err, ac = sess.run([cost, acc], feed_dict=feed_dict)
     >>> ...
 
-    Notes
-    -------
-    - A frequent question regarding :class:`DropoutLayer` is that why it donot have `is_train` like :class:`BatchNormLayer`.
-    In many simple cases, user may find it is better to use one inference instead of two inferences for training and testing seperately, :class:`DropoutLayer`
-    allows you to control the dropout rate via `feed_dict`. However, you can fix the keeping probability by setting `is_fix` to True.
+    - Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_
+    >>> def mlp(x, is_train=True, reuse=False):
+    >>>     with tf.variable_scope("MLP", reuse=reuse):
+    >>>     tl.layers.set_name_reuse(reuse)
+    >>>     network = tl.layers.InputLayer(x, name='input')
+    >>>     network = tl.layers.DropoutLayer(network, keep=0.8, is_fix=True,
+    >>>                         is_train=is_train, name='drop1')
+    >>>     ...
+    >>>     return network
+    >>> # define inferences
+    >>> net_train = mlp(x, is_train=True, reuse=False)
+    >>> net_test = mlp(x, is_train=False, reuse=True)
     """
 
     def __init__(
@@ -1456,6 +1461,7 @@ class DeConv2dLayer(Layer):
 
     Notes
     -----
+    - We highly recommend to use `DeConv2d` with TensorFlow version higher than 1.3.
     - shape = [h, w, the number of output channels of this layer, the number of output channel of previous layer]
     - output_shape = [batch_size, any, any, the number of output channels of this layer]
     - the number of output channel of a layer is its last dimension.
@@ -2383,7 +2389,7 @@ def Conv2d(
 
 
 def DeConv2d(net,
-             n_out_channel=32,
+             n_filter=32,
              filter_size=(3, 3),
              out_size=(30, 30),
              strides=(2, 2),
@@ -2400,39 +2406,64 @@ def DeConv2d(net,
     Parameters
     ----------
     net : TensorLayer layer.
-    n_out_channel : int, number of output channel.
+    n_filter : int, number of output channel.
     filter_size : tuple of (height, width) for filter size.
-    out_size :  tuple of (height, width) of output.
-    batch_size : int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     strides : tuple of (height, width) for strides.
+    out_size : (require if TF version < 1.3) tuple of (height, width) of output (require if TF version < 1.3).
+    batch_size : (require if TF version < 1.3) int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
     act : None or activation function.
     others : see :class:`DeConv2dLayer`.
     """
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
         act = tf.identity
-    if batch_size is None:
-        #     batch_size = tf.shape(net.outputs)[0]
-        fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
-        if fixed_batch_size.value:
-            batch_size = fixed_batch_size.value
-        else:
-            from tensorflow.python.ops import array_ops
-            batch_size = array_ops.shape(net.outputs)[0]
-    net = DeConv2dLayer(
-        layer=net,
-        act=act,
-        shape=[filter_size[0], filter_size[1], n_out_channel, int(net.outputs.get_shape()[-1])],
-        output_shape=[batch_size, int(out_size[0]), int(out_size[1]), n_out_channel],
-        strides=[1, strides[0], strides[1], 1],
-        padding=padding,
-        W_init=W_init,
-        b_init=b_init,
-        W_init_args=W_init_args,
-        b_init_args=b_init_args,
-        name=name)
-    return net
 
+    if tf.__version__ > '1.3':
+        print("  [TL] DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (
+            name, str(n_filter), str(strides), padding, act.__name__))
+        inputs = net.outputs
+        scope_name = tf.get_variable_scope().name
+        if scope_name:
+            whole_name = scope_name + '/' + name
+        else:
+            whole_name = name
+        net_new = Layer(inputs, name=whole_name)
+        # with tf.name_scope(name):
+        with tf.variable_scope(name) as vs:
+            net_new.outputs = act(tf.contrib.layers.conv2d_transpose(inputs=inputs,
+                            num_outputs=n_filter,
+                            kernel_size=filter_size,
+                            stride=strides,
+                            padding=padding, scope=name))
+            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        net_new.all_layers = list(net.all_layers)
+        net_new.all_params = list(net.all_params)
+        net_new.all_drop = dict(net.all_drop)
+        net_new.all_layers.extend([net_new.outputs])
+        net_new.all_params.extend(new_variables)
+        return net_new
+    else:
+        if batch_size is None:
+            #     batch_size = tf.shape(net.outputs)[0]
+            fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
+            if fixed_batch_size.value:
+                batch_size = fixed_batch_size.value
+            else:
+                from tensorflow.python.ops import array_ops
+                batch_size = array_ops.shape(net.outputs)[0]
+        net = DeConv2dLayer(
+            layer=net,
+            act=act,
+            shape=[filter_size[0], filter_size[1], n_filter, int(net.outputs.get_shape()[-1])],
+            output_shape=[batch_size, int(out_size[0]), int(out_size[1]), n_filter],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            W_init=W_init,
+            b_init=b_init,
+            W_init_args=W_init_args,
+            b_init_args=b_init_args,
+            name=name)
+        return net
 
 def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
@@ -4980,7 +5011,7 @@ class ConvLSTMLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     --------------
     outputs : a tensor
         The output of this RNN.
@@ -5263,7 +5294,7 @@ class DynamicRNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     ------------
     outputs : a tensor
         The output of this RNN.
@@ -5623,38 +5654,24 @@ class BiDynamicRNNLayer(Layer):
                     #                     cell_instance_fn1(),
                     #                     input_keep_prob=in_keep_prob,
                     #                     output_keep_prob=out_keep_prob)
-                cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)  # out_keep_prob)
+                cell_creator = lambda is_last=True: \
+                    DropoutWrapper_fn(rnn_creator(),
+                                      input_keep_prob=in_keep_prob,
+                                      output_keep_prob=out_keep_prob if is_last else 1.0)  # out_keep_prob)
             else:
-                cell_creator = rnn_creator
-            self.fw_cell = cell_creator()
-            self.bw_cell = cell_creator()
-            # Apply multiple layers
-            if n_layer > 1:
-                try:
-                    MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
-                except:
-                    MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
+                cell_creator = lambda : rnn_creator()
 
-                # cell_instance_fn2=cell_instance_fn            # HanSheng
-                # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)])
-                self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
-                self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
-            if dropout:
-                self.fw_cell = DropoutWrapper_fn(self.fw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
-                self.bw_cell = DropoutWrapper_fn(self.bw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+            # if dropout:
+            #     self.fw_cell = DropoutWrapper_fn(self.fw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
+            #     self.bw_cell = DropoutWrapper_fn(self.bw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
 
             # self.fw_cell=cell_instance_fn()
             # self.bw_cell=cell_instance_fn()
             # Initial state of RNN
-            if fw_initial_state is None:
-                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=D_TYPE)  # dtype=tf.float32)
-            else:
-                self.fw_initial_state = fw_initial_state
-            if bw_initial_state is None:
-                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=D_TYPE)  # dtype=tf.float32)
-            else:
-                self.bw_initial_state = bw_initial_state
+
+            self.fw_initial_state = fw_initial_state
+            self.bw_initial_state = bw_initial_state
             # Computes sequence_length
             if sequence_length is None:
                 try:  ## TF1.0
@@ -5662,14 +5679,33 @@ class BiDynamicRNNLayer(Layer):
                 except:  ## TF0.12
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
-            outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
-                cell_fw=self.fw_cell,
-                cell_bw=self.bw_cell,
-                inputs=self.inputs,
-                sequence_length=sequence_length,
-                initial_state_fw=self.fw_initial_state,
-                initial_state_bw=self.bw_initial_state,
-                **dynamic_rnn_init_args)
+            if n_layer > 1:
+                self.fw_cell = [cell_creator(is_last= i == n_layer - 1) for i in range(n_layer)]
+                self.bw_cell = [cell_creator(is_last= i == n_layer - 1) for i in range(n_layer)]
+                from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+                outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
+                    cells_fw=self.fw_cell,
+                    cells_bw=self.bw_cell,
+                    inputs=self.inputs,
+                    sequence_length=sequence_length,
+                    initial_states_fw=self.fw_initial_state,
+                    initial_states_bw=self.bw_initial_state,
+                    dtype=D_TYPE,
+                    **dynamic_rnn_init_args)
+
+            else:
+                self.fw_cell = cell_creator()
+                self.bw_cell = cell_creator()
+                outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
+                    cell_fw=self.fw_cell,
+                    cell_bw=self.bw_cell,
+                    inputs=self.inputs,
+                    sequence_length=sequence_length,
+                    initial_state_fw=self.fw_initial_state,
+                    initial_state_bw=self.bw_initial_state,
+                    dtype=D_TYPE,
+                    **dynamic_rnn_init_args)
+
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             print("     n_params : %d" % (len(rnn_variables)))
@@ -6655,7 +6691,7 @@ class MultiplexerLayer(Layer):
         An optional name to attach to this layer.
 
 
-    Variables
+    Attributes
     -----------------------
     sel : a placeholder
         Input an int [0, inf], which input is the output

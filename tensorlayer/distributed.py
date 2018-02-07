@@ -28,7 +28,7 @@ class TaskSpecDef(object):
         or a list of hosts.
     master : A string with the master hosts
 
-    Note
+    Notes
     ----------
     master might not be included in TF_CONFIG and can be None. The shard_index is adjusted
     in any case to assign 0 to master and >= 1 to workers.

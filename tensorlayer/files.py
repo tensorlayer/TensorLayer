@@ -113,7 +113,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
     ----------
     - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
     - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
-    - `Code references <https://teratail.com/questions/28932>`_
+    - `<https://teratail.com/questions/28932>`_
     """
     path = os.path.join(path, 'cifar10')
     print("Load or Download cifar10 > {}".format(path))
