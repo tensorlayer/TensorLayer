@@ -49,7 +49,7 @@ Many work can be implemented by simply rewire different components.
 This enable us to develop many new application just by change the query without change any applicaition code.
 
 An pulling based Stream processing pipeline.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Also with a large dataset, we can assume that the data is unlimited.
 TensorDB provides a streaming interface, implemented in python as generators, it keeps return the new data during training.

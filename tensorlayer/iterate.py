@@ -174,7 +174,7 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     ... [[ 26.  27.  28.]
     ... [ 36.  37.  38.]]
 
-    Code References
+    See Also
     ---------------
     - ``tensorflow/models/rnn/ptb/reader.py``
     """
@@ -254,7 +254,7 @@ def ptb_iterator(raw_data, batch_size, num_steps):
     ... [[ 7  8  9]
     ...  [17 18 19]]
 
-    Code References
+    See Also
     ----------------
     - ``tensorflow/models/rnn/ptb/reader.py``
     """

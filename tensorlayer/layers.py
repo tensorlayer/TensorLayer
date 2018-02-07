@@ -5011,7 +5011,7 @@ class ConvLSTMLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     --------------
     outputs : a tensor
         The output of this RNN.
@@ -5294,7 +5294,7 @@ class DynamicRNNLayer(Layer):
     name : a string or None
         An optional name to attach to this layer.
 
-    Variables
+    Attributes
     ------------
     outputs : a tensor
         The output of this RNN.
@@ -6691,7 +6691,7 @@ class MultiplexerLayer(Layer):
         An optional name to attach to this layer.
 
 
-    Variables
+    Attributes
     -----------------------
     sel : a placeholder
         Input an int [0, inf], which input is the output
