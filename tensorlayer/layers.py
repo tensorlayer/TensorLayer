@@ -5435,9 +5435,6 @@ class DynamicRNNLayer(Layer):
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
                 self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
-        if dropout:
-            self.cell = DropoutWrapper_fn(self.cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
-
         # self.cell=cell_instance_fn() # HanSheng
 
         # Initialize initial_state
