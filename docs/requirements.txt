@@ -3,3 +3,5 @@ numpydoc
 scipy
 scikit-image
 matplotlib
+pymongo
+sphinx

@@ -2,16 +2,50 @@
 # encoding: utf-8
 
 """
+
+(Alpha release)
+
 The tensorlayer.cli.train module provides the `tl train` subcommand.
-It can help users to run a `TF_CONFIG` aware program on a computer 
-with multiple GPU cards.
+It helps the user to setup a `TF_CONFIG` environment to bootstrap a
+TF_CONFIG aware program for distributed training using multiple GPU 
+cards or CPUs on a computer.
+
+You need to first setup the CUDA_VISIBLE_DEVICES to tell `tl train`
+while GPUs to use in parallel. If the CUDA_VISIBLE_DEVICES is not given,
+`tl train` would try best to discover all available GPUs.
+
 
 Usage:
+
+tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
 
 .. code-block:: bash
 
   tl train example/tutorial_mnist_distributed.py
   tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+
+
+Parameters:
+
+`file`: python file path.
+`pss` : The number of parameter servers.
+`cpu_trainers`: The number of CPU trainers. Note that `pss + cpu_trainers <= cpu count`
+`--`: Any parameter after `--` would be passed to the python program.
+
+Notes:
+
+A parallel training program would require multiple parameter servers
+to help paralell trainers to exchange intermediate gradients.
+The best number of parameter servers is often propotional to the 
+size of your model as well as the number of CPUs available.
+You can control the number of parameter servers using the `pss` parameter.
+
+If you have a single computer with massive CPUs, you can use the `cpu_trainers`
+to enable CPU-only parallel training.
+The reason we are not supporting GPU-CPU co-training is because GPU and 
+CPU are running at different speeds. Using them together in training would
+incur severe straggler issues.
+
 """
 
 import argparse
@@ -68,8 +102,8 @@ def validate_arguments(args):
 
     if not GPU_IDS:
         num_cpus = multiprocessing.cpu_count()
-        if args.num_cpus > num_cpus:
-            print('Value error: there are %s available CPUs but you are requiring %s.' % (num_cpus, args.num_cpus))
+        if args.cpu_trainers > num_cpus:
+            print('Value error: there are %s available CPUs but you are requiring %s.' % (num_cpus, args.cpu_trainers))
             exit(1)
 
     if not os.path.isfile(args.file):
@@ -79,7 +113,7 @@ def validate_arguments(args):
 
 def main(args):
     validate_arguments(args)
-    num_workers = len(GPU_IDS) if GPU_IDS else args.num_cpus
+    num_workers = len(GPU_IDS) if GPU_IDS else args.cpu_trainers
     print('Using program %s with args %s' % (args.file, ' '.join(args.args)))
     print('Using %d workers, %d parameter servers, %d GPUs.' % (num_workers, args.num_pss, len(GPU_IDS)))
     cluster_spec = {
@@ -103,7 +137,7 @@ def main(args):
 
 def build_arg_parser(parser):
     parser.add_argument('-p', '--pss', dest='num_pss', type=int, default=1, help='number of parameter servers')
-    parser.add_argument('-c', '--cpus', dest='num_cpus', type=int, default=1, help='number of CPU workers')
+    parser.add_argument('-c', '--cpu_trainers', dest='cpu_trainers', type=int, default=1, help='number of CPU trainers')
     parser.add_argument('file', help='model trainning file path')
     parser.add_argument('args', nargs='*', type=str, help='arguments to <file>')
 
