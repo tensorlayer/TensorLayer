@@ -2,55 +2,67 @@
 # encoding: utf-8
 
 """
-
+tl train
+========
 (Alpha release)
 
-The tensorlayer.cli.train module provides the `tl train` subcommand.
+The tensorlayer.cli.train module provides the ``tl train`` subcommand.
 It helps the user bootstrap a TensorFlow/TensorLayer program for distributed training 
 using multiple GPU cards or CPUs on a computer.
 
-You need to first setup the CUDA_VISIBLE_DEVICES to tell `tl train`
+You need to first setup the CUDA_VISIBLE_DEVICES to tell ``tl train``
 which GPUs are available. If the CUDA_VISIBLE_DEVICES is not given,
-`tl train` would try best to discover all available GPUs.
+``tl train`` would try best to discover all available GPUs.
 
 In distribute training, each TensorFlow program needs a TF_CONFIG environment variable to describe
 the cluster. It also needs a master daemon to 
-monitor all trainers. `tl train` is responsible
+monitor all trainers. ``tl train`` is responsible
 for automatically managing these two tasks. 
 
-Usage:
+Usage
+-----
 
 tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
 
 .. code-block:: bash
   
-  # Examples:
   tl train example/tutorial_mnist_distributed.py
-  tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+
+  # example of using customized number of CPUs
   tl train -c 16 example/tutorial_imagenet_inceptionV3_distributed.py
 
+  # example of running training program with customized arguments
+  tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
-Parameters:
 
-`file`: python file path.
-`pss` : The number of parameter servers.
-`cpu_trainers`: The number of CPU trainers. Note that `pss + cpu_trainers <= cpu count`
-`--`: Any parameter after `--` would be passed to the python program.
+Parameters
+----------
 
-Notes:
+- ``file``: python file path.
+
+- ``NUM_PSS`` : The number of parameter servers.
+
+- ``CPU_TRAINERS``: The number of CPU trainers.
+
+  It is recommended that ``NUM_PSS + CPU_TRAINERS <= cpu count``
+
+- ``args``: Any parameter after ``--`` would be passed to the python program.
+
+
+Notes
+-----
 
 A parallel training program would require multiple parameter servers
 to help parallel trainers to exchange intermediate gradients.
 The best number of parameter servers is often proportional to the 
 size of your model as well as the number of CPUs available.
-You can control the number of parameter servers using the `pss` parameter.
+You can control the number of parameter servers using the ``-p`` parameter.
 
-If you have a single computer with massive CPUs, you can use the `cpu_trainers`
+If you have a single computer with massive CPUs, you can use the ``-c`` parameter
 to enable CPU-only parallel training.
 The reason we are not supporting GPU-CPU co-training is because GPU and 
 CPU are running at different speeds. Using them together in training would
-incur severe straggler issues.
-
+incur stragglers.
 """
 
 import argparse

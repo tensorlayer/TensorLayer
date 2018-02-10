@@ -58,7 +58,7 @@ method, this part of the documentation is for you.
 
 
 Command-line Reference
--------------
+----------------------
 
 TensorLayer provides a handy command-line tool `tl` to perform some common tasks.
 
