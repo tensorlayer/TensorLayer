@@ -56,6 +56,18 @@ method, this part of the documentation is for you.
   modules/distributed
   modules/db
 
+
+Command-line Reference
+----------------------
+
+TensorLayer provides a handy command-line tool `tl` to perform some common tasks.
+
+.. toctree::
+  :maxdepth: 2
+
+  modules/cli
+
+
 Indices and tables
 ==================
 
