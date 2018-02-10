@@ -117,7 +117,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
         dataset = dataset.shuffle(buffer_size=shuffle_size)
 
     def _parse_example_fn(line):
-        line_split = line.split(',')
+        line_split = line.decode().split(',')
         filename = line_split[0]
         labels_names = line_split[1:]
         # labels
