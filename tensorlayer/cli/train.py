@@ -6,23 +6,28 @@
 (Alpha release)
 
 The tensorlayer.cli.train module provides the `tl train` subcommand.
-It helps the user to setup a `TF_CONFIG` environment to bootstrap a
-TF_CONFIG aware program for distributed training using multiple GPU 
-cards or CPUs on a computer.
+It helps the user bootstrap a TensorFlow/TensorLayer program for distributed training 
+using multiple GPU cards or CPUs on a computer.
 
 You need to first setup the CUDA_VISIBLE_DEVICES to tell `tl train`
-while GPUs to use in parallel. If the CUDA_VISIBLE_DEVICES is not given,
+which GPUs are available. If the CUDA_VISIBLE_DEVICES is not given,
 `tl train` would try best to discover all available GPUs.
 
+In distribute training, each TensorFlow program needs a TF_CONFIG environment variable to describe
+the cluster. It also needs a master daemon to 
+monitor all trainers. `tl train` is responsible
+for automatically managing these two tasks. 
 
 Usage:
 
 tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
 
 .. code-block:: bash
-
+  
+  # Examples:
   tl train example/tutorial_mnist_distributed.py
   tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
+  tl train -c 16 example/tutorial_imagenet_inceptionV3_distributed.py
 
 
 Parameters:
@@ -35,8 +40,8 @@ Parameters:
 Notes:
 
 A parallel training program would require multiple parameter servers
-to help paralell trainers to exchange intermediate gradients.
-The best number of parameter servers is often propotional to the 
+to help parallel trainers to exchange intermediate gradients.
+The best number of parameter servers is often proportional to the 
 size of your model as well as the number of CPUs available.
 You can control the number of parameter servers using the `pss` parameter.
 
