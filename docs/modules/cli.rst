@@ -1,5 +1,5 @@
-CLI
-======
+CLI - Command Line Interface
+==============================
 
 .. automodule:: tensorlayer.cli
 
