@@ -4,15 +4,16 @@
 """
 tl train
 ========
-(Alpha release)
+
+(Alpha release - usage might change later)
 
 The tensorlayer.cli.train module provides the ``tl train`` subcommand.
 It helps the user bootstrap a TensorFlow/TensorLayer program for distributed training 
 using multiple GPU cards or CPUs on a computer.
 
-You need to first setup the CUDA_VISIBLE_DEVICES to tell ``tl train``
-which GPUs are available. If the CUDA_VISIBLE_DEVICES is not given,
-``tl train`` would try best to discover all available GPUs.
+You need to first setup the `CUDA_VISIBLE_DEVICES <http://acceleware.com/blog/cudavisibledevices-masking-gpus>`_ 
+to tell ``tl train`` which GPUs are available. If the CUDA_VISIBLE_DEVICES is not given,
+``tl train`` would try best to discover all available GPUs. 
 
 In distribute training, each TensorFlow program needs a TF_CONFIG environment variable to describe
 the cluster. It also needs a master daemon to 
@@ -26,12 +27,15 @@ tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
 
 .. code-block:: bash
   
+  # example of using GPU 0 and 1 for training mnist
+  CUDA_VISIBLE_DEVICES="0,1"
   tl train example/tutorial_mnist_distributed.py
 
-  # example of using customized number of CPUs
+  # example of using CPU trainers for inception v3
   tl train -c 16 example/tutorial_imagenet_inceptionV3_distributed.py
 
-  # example of running training program with customized arguments
+  # example of using GPU trainers for inception v3 with customized arguments
+  # as CUDA_VISIBLE_DEVICES is not given, tl would try to discover all available GPUs
   tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
 
