@@ -2411,8 +2411,13 @@ def DeConv2d(net,
     strides : tuple of (height, width) for strides.
     out_size : (require if TF version < 1.3) tuple of (height, width) of output (require if TF version < 1.3).
     batch_size : (require if TF version < 1.3) int or None, batch_size. If None, try to find the batch_size from the first dim of net.outputs (you should tell the batch_size when define the input placeholder).
+    padding : 'VALID' or 'SAME'.
     act : None or activation function.
-    others : see :class:`DeConv2dLayer`.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
+    name : A string
     """
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
@@ -2468,6 +2473,69 @@ def DeConv2d(net,
             b_init_args=b_init_args,
             name=name)
         return net
+
+
+class DeConv3d(Layer):
+    """
+    The :class:`DeConv3d` class is a 3D transpose convolution layer, see `tf.contrib.layers.conv3d_transpose <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/conv3d_transpose>`_.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    n_filter : Integer, the number of output filters.
+    filter_size : A list of length 3 holding the [kernel_depth, kernel_height, kernel_width] of the filters. Can be an int if both values are the same.
+    strides : A list of length 3: [stride_depth, stride_height, stride_width]. Can be an int if both strides are the same. Note that presently both strides must have the same value.
+    padding : 'VALID' or 'SAME'.
+    act : None or activation function.
+    W_init : weights initializer
+        The initializer for initializing the weight matrix.
+    b_init : biases initializer or None
+        The initializer for initializing the bias vector. If None, skip biases.
+    name : A string, an optional name to attach to this layer.
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            padding='SAME',
+            act=None,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            name='decnn2d'
+    ):
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+
+        if act is None:
+            act = tf.identity
+            
+        print("  [TL] DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (
+            name, str(n_filter), str(strides), padding, act.__name__))
+
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.contrib.layers.conv3d_transpose(
+                        num_outputs=n_filter,
+                        kernel_size=filter_size,
+                        stride=strides,
+                        padding=padding,
+                        activation_fn=act,
+                        weights_initializer=W_init,
+                        biases_initializer=b_init,
+                        scope=name,
+                    )
+            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        self.all_params.extend(new_variables)
+
+
 
 def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .

@@ -276,6 +276,7 @@ Layer list
    Conv1d
    Conv2d
    DeConv2d
+   DeConv3d
 
    MaxPool1d
    MeanPool1d
@@ -495,6 +496,10 @@ APIs may better for you.
 2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: DeConv2d
+
+3D Deconvolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DeConv3d
 
 1D Max pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
