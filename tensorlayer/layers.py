@@ -1662,7 +1662,7 @@ class DeConv3dLayer(Layer):
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is upSampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+    """The :class:`UpSampling2dLayer` class is up sampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
     -----------
@@ -1717,7 +1717,7 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is downSampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+    """The :class:`DownSampling2dLayer` class is down sampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
     -----------
