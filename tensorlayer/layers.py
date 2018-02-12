@@ -2505,7 +2505,7 @@ class DeConv3d(Layer):
             act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            name='decnn2d'
+            name='decnn3d'
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
