@@ -2499,8 +2499,8 @@ class DeConv3d(Layer):
             self,
             layer=None,
             n_filter=32,
-            filter_size=(3, 3),
-            strides=(2, 2),
+            filter_size=(3, 3, 3),
+            strides=(2, 2, 2),
             padding='SAME',
             act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -2512,7 +2512,7 @@ class DeConv3d(Layer):
 
         if act is None:
             act = tf.identity
-            
+
         print("  [TL] DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (
             name, str(n_filter), str(strides), padding, act.__name__))
 
