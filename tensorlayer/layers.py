@@ -2430,11 +2430,15 @@ def DeConv2d(net,
         net_new = Layer(inputs, name=whole_name)
         # with tf.name_scope(name):
         with tf.variable_scope(name) as vs:
-            net_new.outputs = act(tf.contrib.layers.conv2d_transpose(inputs=inputs,
+            net_new.outputs = tf.contrib.layers.conv2d_transpose(inputs=inputs,
                             num_outputs=n_filter,
                             kernel_size=filter_size,
                             stride=strides,
-                            padding=padding, scope=name))
+                            padding=padding,
+                            activation_fn=act,
+                            weights_initializer=W_init,
+                            biases_initializer=b_init,
+                            scope=name)
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
         net_new.all_layers = list(net.all_layers)
         net_new.all_params = list(net.all_params)
