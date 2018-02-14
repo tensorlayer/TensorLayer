@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -15,7 +14,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Stack Unstack
 class StackLayer(Layer):
     """
     The :class:`StackLayer` class is layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`_.
