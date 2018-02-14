@@ -437,9 +437,9 @@ class BiRNNLayer(Layer):
                 self.bw_initial_state = bw_initial_state
             # exit()
             # Feedforward to MultiRNNCell
-            try:  ## TF1.0
+            try:  # TF1.0
                 list_rnn_inputs = tf.unstack(self.inputs, axis=1)
-            except:  ## TF0.12
+            except:  # TF0.12
                 list_rnn_inputs = tf.unpack(self.inputs, axis=1)
 
             try:  # TF1.0
@@ -487,7 +487,6 @@ class BiRNNLayer(Layer):
         self.all_params.extend(rnn_variables)
 
 
-# ConvLSTM layer
 class ConvRNNCell(object):
     """Abstract object representing an Convolutional RNN Cell.
     """
@@ -855,10 +854,10 @@ def retrieve_seq_length_op(data):
     - Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
     """
     with tf.name_scope('GetLength'):
-        ## TF 1.0 change reduction_indices to axis
+        # TF 1.0 change reduction_indices to axis
         used = tf.sign(tf.reduce_max(tf.abs(data), 2))
         length = tf.reduce_sum(used, 1)
-        ## TF < 1.0
+        # TF < 1.0
         # used = tf.sign(tf.reduce_max(tf.abs(data), reduction_indices=2))
         # length = tf.reduce_sum(used, reduction_indices=1)
         length = tf.cast(length, tf.int32)
@@ -1102,9 +1101,9 @@ class DynamicRNNLayer(Layer):
 
         # Computes sequence_length
         if sequence_length is None:
-            try:  ## TF1.0
+            try:  # TF1.0
                 sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
-            except:  ## TF0.12
+            except:  # TF0.12
                 sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
         # Main - Computes outputs and last_states
@@ -1327,9 +1326,9 @@ class BiDynamicRNNLayer(Layer):
             self.bw_initial_state = bw_initial_state
             # Computes sequence_length
             if sequence_length is None:
-                try:  ## TF1.0
+                try:  # TF1.0
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
-                except:  ## TF0.12
+                except:  # TF0.12
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             if n_layer > 1:

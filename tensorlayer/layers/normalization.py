@@ -8,7 +8,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-# ## Normalization layer
 class LocalResponseNormLayer(Layer):
     """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
     The 4-D input tensor is treated as a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
@@ -100,7 +99,7 @@ class BatchNormLayer(Layer):
         with tf.variable_scope(name) as vs:
             axis = list(range(len(x_shape) - 1))
 
-            ## 1. beta, gamma
+            # 1. beta, gamma
             if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                 beta_init = beta_init()
             beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=D_TYPE, trainable=is_train)  #, restore=restore)
@@ -113,7 +112,7 @@ class BatchNormLayer(Layer):
                 trainable=is_train,
             )  #restore=restore)
 
-            ## 2.
+            # 2.
             if tf.__version__ > '0.12.1':
                 moving_mean_init = tf.zeros_initializer()
             else:
@@ -127,7 +126,7 @@ class BatchNormLayer(Layer):
                 trainable=False,
             )  #   restore=restore)
 
-            ## 3.
+            # 3.
             # These ops will only be preformed when training.
             mean, variance = tf.nn.moments(self.inputs, axis)
             try:  # TF12
@@ -384,7 +383,7 @@ class BatchNormLayer(Layer):
 #         with tf.variable_scope(name) as vs:
 #             axis = list(range(len(x_shape) - 1))
 #
-#             ## 1. beta, gamma
+#             # 1. beta, gamma
 #             beta = tf.get_variable('beta', shape=params_shape,
 #                                initializer=beta_init,
 #                                trainable=is_train)#, restore=restore)
@@ -393,7 +392,7 @@ class BatchNormLayer(Layer):
 #                                 initializer=gamma_init, trainable=is_train,
 #                                 )#restore=restore)
 #
-#             ## 2. moving variables during training (not update by gradient!)
+#             # 2. moving variables during training (not update by gradient!)
 #             moving_mean = tf.get_variable('moving_mean',
 #                                       params_shape,
 #                                       initializer=tf.zeros_initializer,
@@ -404,7 +403,7 @@ class BatchNormLayer(Layer):
 #                                           trainable=False,)#   restore=restore)
 #
 #             batch_mean, batch_var = tf.nn.moments(self.inputs, axis)
-#             ## 3.
+#             # 3.
 #             # These ops will only be preformed when training.
 #             def mean_var_with_update():
 #                 try:    # TF12
