@@ -313,7 +313,7 @@ class Layer(object):
                 set_keep['_layers_name_list'].append(name)
 
     def print_params(self, details=True, session=None):
-        ''' Print all info of parameters in the network'''
+        """Print all info of parameters in the network"""
         for i, p in enumerate(self.all_params):
             if details:
                 try:
@@ -329,13 +329,13 @@ class Layer(object):
         print("  num of params: %d" % self.count_params())
 
     def print_layers(self):
-        ''' Print all info of layers in the network '''
+        """Print all info of layers in the network"""
         for i, layer in enumerate(self.all_layers):
             # print("  layer %d: %s" % (i, str(layer)))
             print("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name))
 
     def count_params(self):
-        ''' Return the number of parameters in the network '''
+        """Return the number of parameters in the network"""
         n_params = 0
         for i, p in enumerate(self.all_params):
             n = 1
