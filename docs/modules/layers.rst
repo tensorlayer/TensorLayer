@@ -1,15 +1,15 @@
 API - Layers
-=========================
+============
 
-TensorLayer provides rich implementations of reference layers trailed for
-well-known benchmarks and domain-specific problems. In addition, we also
+TensorLayer provides rich layer implementations trailed for
+various benchmarks and domain-specific problems. In addition, we also
 support transparent access to native TensorFlow parameters.
 For example, we provide not only layers for local response normalization, but also 
 layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 
-Understanding Basic layer
+Understanding the Basic Layer
 -------------------------
 
 All TensorLayer layers have a number of properties in common:
@@ -25,8 +25,8 @@ All TensorLayer layers have a number of methods in common:
  - ``layer.print_layers()`` : print network layer information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
-The initialization of a network is done by the input layer, then we can stack layers
-as follow: a network is a ``Layer`` class.
+A network starts with the input layer and is followed by layers stacked in order. 
+A network is essentially a ``Layer`` class.
 The key properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
 The ``all_params`` is a list which store pointers to all network parameters in order. For example,
 the following script define a 3 layer network, then:
@@ -34,12 +34,11 @@ the following script define a 3 layer network, then:
 ``all_params`` = [W1, b1, W2, b2, W_out, b_out]
 
 To get specified variable information, you can use ``network.all_params[2:3]`` or ``get_variables_with_name()``.
-``all_layers`` is a list which stores the pointers to the outputs of all layers, for example,
-in the following network:
+``all_layers`` is a list which stores the pointers to the outputs of all layers, see the example as follow:
 
 ``all_layers`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
 
-where ``?`` reflects any batch size. You can print the layer and parameters information by
+where ``?`` reflects a given batch size. You can print the layer and parameters information by
 using ``network.print_layers()`` and ``network.print_params()``.
 To count the number of parameters in a network, run ``network.count_params()``.
 
@@ -99,14 +98,14 @@ In case for evaluating and testing, you can disable all dropout layers as follow
   print("   val acc: %f" % np.mean(y_val ==
                           sess.run(y_op, feed_dict=feed_dict)))
 
-For more details, please read the MNIST examples in the exanole folder.
+For more details, please read the MNIST examples in the example folder.
 
 
-Customized layer
------------------
+Customizing Layers
+----------------
 
-A Simple layer
-^^^^^^^^^^^^^^^
+A Simple Layer
+^^^^^^^^^^^^^^
 
 To implement a custom layer in TensorLayer, you will have to write a Python class
 that subclasses Layer and implement the ``outputs`` expression.
@@ -139,13 +138,13 @@ The following is an example implementation of a layer that multiplies its input 
           self.all_layers.extend( [self.outputs] )
 
 
-Your Dense layer
-^^^^^^^^^^^^^^^^^^^
+Your Dense Layer
+^^^^^^^^^^^^^^^^
 
-Before creating your own TensorLayer layer, let's have a look at Dense layer.
-It creates a weights matrix and biases vector if not exists, then implement
+Before creating your own TensorLayer layer, let's have a look at the Dense layer.
+It creates a weight matrix and a bias vector if not exists, and then implements
 the output expression.
-At the end, as a layer with parameter, we also need to append the parameters into ``all_params``.
+At the end, for a layer with parameters, we also append the parameters into ``all_params``.
 
 .. code-block:: python
 
