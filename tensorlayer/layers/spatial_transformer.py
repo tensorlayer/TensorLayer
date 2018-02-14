@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## Spatial Transformer Nets
+
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs):
     """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_
     , see :class:`SpatialTransformer2dAffineLayer` class.

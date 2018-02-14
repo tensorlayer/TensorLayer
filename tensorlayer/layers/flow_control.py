@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## Flow control layer
+
 class MultiplexerLayer(Layer):
     """
     The :class:`MultiplexerLayer` selects one of several input and forwards the selected input into the output,
@@ -103,7 +102,6 @@ class MultiplexerLayer(Layer):
         # self.all_drop = list_remove_repeat(self.all_drop)
 
 
-## We can Duplicate the network instead of DemultiplexerLayer
 # class DemultiplexerLayer(Layer):
 #     """
 #     The :class:`DemultiplexerLayer` takes a single input and select one of many output lines, which is connected to the input.

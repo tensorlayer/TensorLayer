@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## Shape layer
+
 class FlattenLayer(Layer):
     """
     The :class:`FlattenLayer` class is layer which reshape high-dimension
