@@ -335,9 +335,7 @@ Layer list
    StackLayer
    UnStackLayer
 
-   EstimatorLayer
    SlimNetsLayer
-   KerasLayer
 
    PReluLayer
 
@@ -747,11 +745,10 @@ Unstack layer
 ^^^^^^^^^^^^^^^
 .. autofunction:: UnStackLayer
 
-
-Estimator layer
-------------------
-.. autoclass:: EstimatorLayer
-
+..
+  Estimator layer
+  ------------------
+  .. autoclass:: EstimatorLayer
 
 
 Connect TF-Slim
@@ -762,12 +759,13 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`
 
 .. autoclass:: SlimNetsLayer
 
-Connect Keras
-------------------
+..
+  Connect Keras
+  ------------------
 
-Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
+  Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
 
-.. autoclass:: KerasLayer
+  .. autoclass:: KerasLayer
 
 
 Parametric activation layer
