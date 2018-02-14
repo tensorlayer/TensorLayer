@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -15,7 +14,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Merge layer
 class ConcatLayer(Layer):
     """
     The :class:`ConcatLayer` class is layer which concat (merge) two or more tensor by given axis..

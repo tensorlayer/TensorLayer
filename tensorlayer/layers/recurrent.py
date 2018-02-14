@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -15,7 +14,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Recurrent layer
 class RNNLayer(Layer):
     """
     The :class:`RNNLayer` class is a RNN layer, you can implement vanilla RNN,
@@ -1319,8 +1317,7 @@ class BiDynamicRNNLayer(Layer):
                                       input_keep_prob=in_keep_prob,
                                       output_keep_prob=out_keep_prob if is_last else 1.0)  # out_keep_prob)
             else:
-                cell_creator = lambda : rnn_creator()
-
+                cell_creator = lambda: rnn_creator()
 
             # if dropout:
             #     self.fw_cell = DropoutWrapper_fn(self.fw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
@@ -1340,8 +1337,8 @@ class BiDynamicRNNLayer(Layer):
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             if n_layer > 1:
-                self.fw_cell = [cell_creator(is_last= i == n_layer - 1) for i in range(n_layer)]
-                self.bw_cell = [cell_creator(is_last= i == n_layer - 1) for i in range(n_layer)]
+                self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+                self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
                 from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell,

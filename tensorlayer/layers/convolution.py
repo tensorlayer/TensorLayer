@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -13,9 +12,6 @@ from six.moves import xrange
 
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
-
-
-## Convolutional layer (Pro)
 
 
 class Conv1dLayer(Layer):
@@ -958,7 +954,6 @@ class SeparableConv2dLayer(Layer):  # Untested
         self.all_params.extend(variables)
 
 
-## Initializers for Convuolutional Layers
 def deconv2d_bilinear_upsampling_initializer(shape):
     """Returns initializer that can be passed to DeConv2dLayer to initalize the
     weights to correspond to channel wise bilinear upsampling.
@@ -1021,8 +1016,6 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
-
-## Convolutional layer (Simplified)
 def Conv1d(
         net,
         n_filter=32,
@@ -1187,8 +1180,7 @@ def DeConv2d(net,
         act = tf.identity
 
     if tf.__version__ > '1.3':
-        print("  [TL] DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (
-            name, str(n_filter), str(strides), padding, act.__name__))
+        print("  [TL] DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
         inputs = net.outputs
         scope_name = tf.get_variable_scope().name
         if scope_name:
@@ -1198,15 +1190,16 @@ def DeConv2d(net,
         net_new = Layer(inputs, name=whole_name)
         # with tf.name_scope(name):
         with tf.variable_scope(name) as vs:
-            net_new.outputs = tf.contrib.layers.conv2d_transpose(inputs=inputs,
-                            num_outputs=n_filter,
-                            kernel_size=filter_size,
-                            stride=strides,
-                            padding=padding,
-                            activation_fn=act,
-                            weights_initializer=W_init,
-                            biases_initializer=b_init,
-                            scope=name)
+            net_new.outputs = tf.contrib.layers.conv2d_transpose(
+                inputs=inputs,
+                num_outputs=n_filter,
+                kernel_size=filter_size,
+                stride=strides,
+                padding=padding,
+                activation_fn=act,
+                weights_initializer=W_init,
+                biases_initializer=b_init,
+                scope=name)
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
         net_new.all_layers = list(net.all_layers)
         net_new.all_params = list(net.all_params)
@@ -1258,38 +1251,35 @@ class DeConv3d(Layer):
     name : A string, an optional name to attach to this layer.
     """
 
-    def __init__(
-            self,
-            layer=None,
-            n_filter=32,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='SAME',
-            act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            name='decnn3d'
-    ):
+    def __init__(self,
+                 layer=None,
+                 n_filter=32,
+                 filter_size=(3, 3, 3),
+                 strides=(2, 2, 2),
+                 padding='SAME',
+                 act=None,
+                 W_init=tf.truncated_normal_initializer(stddev=0.02),
+                 b_init=tf.constant_initializer(value=0.0),
+                 name='decnn3d'):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
         if act is None:
             act = tf.identity
 
-        print("  [TL] DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (
-            name, str(n_filter), str(strides), padding, act.__name__))
+        print("  [TL] DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.conv3d_transpose(
-                        num_outputs=n_filter,
-                        kernel_size=filter_size,
-                        stride=strides,
-                        padding=padding,
-                        activation_fn=act,
-                        weights_initializer=W_init,
-                        biases_initializer=b_init,
-                        scope=name,
-                    )
+                num_outputs=n_filter,
+                kernel_size=filter_size,
+                stride=strides,
+                padding=padding,
+                activation_fn=act,
+                weights_initializer=W_init,
+                biases_initializer=b_init,
+                scope=name,
+            )
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers = list(layer.all_layers)
@@ -1297,6 +1287,7 @@ class DeConv3d(Layer):
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend([self.outputs])
         self.all_params.extend(new_variables)
+
 
 class DepthwiseConv2d(Layer):
     """Separable/Depthwise Convolutional 2D, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.

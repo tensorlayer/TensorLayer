@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -15,7 +14,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Padding layer
 class PadLayer(Layer):
     """
     The :class:`PadLayer` class is a Padding layer for any modes and dimensions.

@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -31,7 +30,6 @@ except:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
 
-## Variable Operation
 def flatten_reshape(variable, name=''):
     """Reshapes high-dimension input to a vector.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
@@ -287,7 +285,6 @@ def initialize_global_variables(sess=None):
     #     sess.run(tf.initialize_all_variables())
 
 
-## Basic layer
 class Layer(object):
     """
     The :class:`Layer` class represents a single layer of a neural network. It
@@ -312,7 +309,8 @@ class Layer(object):
         if (name in set_keep['_layers_name_list']) and set_keep['name_reuse'] == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)\
-            \nAdditional Informations: http://tensorlayer.readthedocs.io/en/latest/modules/layers.html?highlight=clear_layers_name#tensorlayer.layers.clear_layers_name" % name)
+            \nAdditional Informations: http://tensorlayer.readthedocs.io/en/latest/modules/layers.html?highlight=clear_layers_name#tensorlayer.layers.clear_layers_name"
+                            % name)
         else:
             self.name = name
             if name not in ['', None, False]:
@@ -363,7 +361,6 @@ class Layer(object):
         return "  Last layer is: %s" % self.__class__.__name__
 
 
-## Input layer
 class InputLayer(Layer):
     """
     The :class:`InputLayer` class is the starting layer of a neural network.
@@ -385,7 +382,6 @@ class InputLayer(Layer):
         self.all_drop = {}
 
 
-## OneHot layer
 class OneHotInputLayer(Layer):
     """
     The :class:`OneHotInputLayer` class is the starting layer of a neural network, see ``tf.one_hot``.
@@ -415,7 +411,6 @@ class OneHotInputLayer(Layer):
         self.all_drop = {}
 
 
-## Word Embedding Input layer
 class Word2vecEmbeddingInputlayer(Layer):
     """
     The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
@@ -742,7 +737,6 @@ class AverageEmbeddingInputlayer(Layer):
         self.all_drop = {}
 
 
-## Dense layer
 class DenseLayer(Layer):
     """
     The :class:`DenseLayer` class is a fully connected layer.
@@ -1020,7 +1014,6 @@ class ReconLayer(DenseLayer):
                             "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
 
 
-## Noise layer
 class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some

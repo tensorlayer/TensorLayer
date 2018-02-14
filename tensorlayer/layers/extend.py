@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -15,7 +14,6 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Extend
 class ExpandDimsLayer(Layer):
     """
     The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,

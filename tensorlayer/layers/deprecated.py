@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## Keras layer
+
 class KerasLayer(Layer):
     """
     The :class:`KerasLayer` class can be used to merge all Keras layers into
@@ -56,7 +55,6 @@ class KerasLayer(Layer):
         raise Exception("Deprecated : use LambdaLayer instead.")
 
 
-## Estimator layer
 class EstimatorLayer(Layer):
     """
     The :class:`EstimatorLayer` class accepts ``model_fn`` that described the model.
@@ -97,7 +95,7 @@ class EstimatorLayer(Layer):
         self.all_params.extend(variables)
         raise Exception("Deprecated : use LambdaLayer instead.")
 
-## Wrapper
+
 class EmbeddingAttentionSeq2seqWrapper(Layer):
     """Sequence-to-sequence model with attention and for multiple buckets (Deprecated after TF0.12).
 
@@ -406,7 +404,6 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
         return batch_encoder_inputs, batch_decoder_inputs, batch_weights
 
 
-## Developing or Untested
 # class MaxoutLayer(Layer):
 #     """
 #     Waiting for contribution
