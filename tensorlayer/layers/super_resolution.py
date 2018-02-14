@@ -13,13 +13,9 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-<<<<<<< HEAD
+
 ## Super resolution
 def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-=======
-
-def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
->>>>>>> 88c63eb1d914909b6cda8b5acf060686a325777a
     """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, see `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
