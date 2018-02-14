@@ -341,7 +341,6 @@ Layer list
 
    MultiplexerLayer
 
-   EmbeddingAttentionSeq2seqWrapper
 
    flatten_reshape
    clear_layers_name
@@ -778,14 +777,15 @@ Flow control layer
 
 .. autoclass:: MultiplexerLayer
 
-Wrapper
----------
+..
+  Wrapper
+  ---------
 
-Embedding + Attention + Seq2seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Embedding + Attention + Seq2seq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: EmbeddingAttentionSeq2seqWrapper
-  :members:
+  .. autoclass:: EmbeddingAttentionSeq2seqWrapper
+    :members:
 
 
 
