@@ -1,14 +1,14 @@
-.idea
-docs/_build
-tensorlayer/__pacache__
-tensorlayer/.DS_Store
-.DS_Store
-dist
-build/
-tensorlayer.egg-info
-data/.DS_Store
-*.pyc
-*.gz
-.spyproject/
-*~
 
+
+*.gz
+*.npz
+*.pyc
+*~
+.DS_Store
+.idea
+.spyproject/
+build/
+dist
+docs/_build
+tensorlayer.egg-info
+tensorlayer/__pacache__
