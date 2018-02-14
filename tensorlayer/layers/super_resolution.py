@@ -1,21 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import copy
-import inspect
-import random
-import time
-import warnings
-
-import numpy as np
-import tensorflow as tf
-from six.moves import xrange
-
-from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-## Super resolution
-def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, see `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
@@ -71,9 +59,9 @@ def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, na
     else:
         whole_name = name
 
-    def _PS(X, r, n_out_channel):
-        if n_out_channel >= 1:
-            assert int(X.get_shape()[-1]) == (r**2) * n_out_channel, _err_log
+    def _PS(X, r, n_out_channels):
+        if n_out_channels >= 1:
+            assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channels, _err_log
             '''
             bsize, a, b, c = X.get_shape().as_list()
             bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
@@ -89,15 +77,15 @@ def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, na
     inputs = net.outputs
 
     if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
+        assert int(inputs.get_shape()[-1]) / (scale ** 2) % 1 == 0, _err_log
+        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale ** 2))
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
     net_new = Layer(inputs, name=whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name) as vs:
-        net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
+        net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
 
     net_new.all_layers = list(net.all_layers)
     net_new.all_params = list(net.all_params)
@@ -105,9 +93,8 @@ def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, na
     net_new.all_layers.extend([net_new.outputs])
     return net_new
 
-SubpixelConv2d = create_subpixel_conv2d
 
-def create_subpixel_conv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
@@ -163,7 +150,7 @@ def create_subpixel_conv2d_old(net, scale=2, n_out_channel=None, act=tf.identity
 
     def _PS(X, r, n_out_channel):
         if n_out_channel > 1:
-            assert int(X.get_shape()[-1]) == (r**2) * n_out_channel, _err_log
+            assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
             X = tf.transpose(X, [0, 2, 1, 3])
             X = tf.depth_to_space(X, r)
             X = tf.transpose(X, [0, 2, 1, 3])
@@ -174,8 +161,8 @@ def create_subpixel_conv2d_old(net, scale=2, n_out_channel=None, act=tf.identity
     inputs = net.outputs
 
     if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
+        assert int(inputs.get_shape()[-1]) / (scale ** 2) % 1 == 0, _err_log
+        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale ** 2))
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
@@ -191,7 +178,7 @@ def create_subpixel_conv2d_old(net, scale=2, n_out_channel=None, act=tf.identity
     return net_new
 
 
-def create_subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
+def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     """One-dimensional subpixel upsampling layer.
     Calls a tensorflow function that directly implements this functionality.
     We assume input has dim (batch, width, r)
@@ -236,4 +223,7 @@ def create_subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'
     net_new.all_layers.extend([net_new.outputs])
     return net_new
 
-SubpixelConv1d = create_subpixel_conv1d
+
+# Alias
+SubpixelConv2d = subpixel_conv2d
+SubpixelConv1d = subpixel_conv1d
