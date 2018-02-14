@@ -15,7 +15,7 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 ## Super resolution
-def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+def create_subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, see `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
@@ -105,8 +105,9 @@ def SubpixelConv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subp
     net_new.all_layers.extend([net_new.outputs])
     return net_new
 
+SubpixelConv2d = create_subpixel_conv2d
 
-def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+def create_subpixel_conv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a sub-pixel 2d upsampling layer, usually be used
     for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
 
@@ -190,7 +191,7 @@ def SubpixelConv2d_old(net, scale=2, n_out_channel=None, act=tf.identity, name='
     return net_new
 
 
-def SubpixelConv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
+def create_subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     """One-dimensional subpixel upsampling layer.
     Calls a tensorflow function that directly implements this functionality.
     We assume input has dim (batch, width, r)
@@ -234,3 +235,5 @@ def SubpixelConv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     net_new.all_drop = dict(net.all_drop)
     net_new.all_layers.extend([net_new.outputs])
     return net_new
+
+SubpixelConv1d = create_subpixel_conv1d
