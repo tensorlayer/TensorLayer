@@ -1,7 +1,6 @@
-tensorflow
-numpydoc
-scipy
-scikit-image
 matplotlib
 pymongo
+scikit-image
+scipy
 sphinx
+tensorflow
