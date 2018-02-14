@@ -61,7 +61,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     def _PS(X, r, n_out_channels):
         if n_out_channels >= 1:
-            assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channels, _err_log
+            assert int(X.get_shape()[-1]) == (r**2) * n_out_channels, _err_log
             '''
             bsize, a, b, c = X.get_shape().as_list()
             bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
@@ -77,8 +77,8 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
     inputs = net.outputs
 
     if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale ** 2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale ** 2))
+        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
+        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
@@ -150,7 +150,7 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
 
     def _PS(X, r, n_out_channel):
         if n_out_channel > 1:
-            assert int(X.get_shape()[-1]) == (r ** 2) * n_out_channel, _err_log
+            assert int(X.get_shape()[-1]) == (r**2) * n_out_channel, _err_log
             X = tf.transpose(X, [0, 2, 1, 3])
             X = tf.depth_to_space(X, r)
             X = tf.transpose(X, [0, 2, 1, 3])
@@ -161,8 +161,8 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
     inputs = net.outputs
 
     if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale ** 2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale ** 2))
+        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
+        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
     print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
