@@ -66,7 +66,7 @@ class PoolLayer(Layer):
         self.all_layers.extend([self.outputs])
 
 
-def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def create_maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
 
     Parameters
@@ -90,8 +90,9 @@ def MaxPool1d(net, filter_size, strides, padding='valid', data_format='channels_
     net_new.all_layers.extend([outputs])
     return net_new
 
+MaxPool1d = create_maxpool1d
 
-def MeanPool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def create_meanpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
 
     Parameters
@@ -115,8 +116,9 @@ def MeanPool1d(net, filter_size, strides, padding='valid', data_format='channels
     net_new.all_layers.extend([outputs])
     return net_new
 
+MeanPool1d = create_meanpool1d
 
-def MaxPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
+def create_maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -132,8 +134,9 @@ def MaxPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpo
     net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.max_pool, name=name)
     return net
 
+MaxPool2d = create_maxpool2d
 
-def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='meanpool'):
+def create_meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='meanpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -149,8 +152,9 @@ def MeanPool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
     net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.avg_pool, name=name)
     return net
 
+MeanPool2d = create_meanpool2d
 
-def MaxPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def create_maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
 
     Parameters
@@ -170,8 +174,9 @@ def MaxPool3d(net, filter_size, strides, padding='valid', data_format='channels_
     net_new.all_layers.extend([outputs])
     return net_new
 
+MaxPool3d = create_maxpool3d
 
-def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def create_meanpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
 
     Parameters
@@ -190,3 +195,5 @@ def MeanPool3d(net, filter_size, strides, padding='valid', data_format='channels
     net_new.outputs = outputs
     net_new.all_layers.extend([outputs])
     return net_new
+
+MeanPool3d = create_meanpool3d

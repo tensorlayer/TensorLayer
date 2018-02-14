@@ -768,7 +768,7 @@ class DeformableConv2dLayer(Layer):
         self.all_params.extend([W, b])
 
 
-def AtrousConv1dLayer(
+def create_atrous_conv1d_layer(
         net,
         n_filter=32,
         filter_size=2,
@@ -815,6 +815,7 @@ def AtrousConv1dLayer(
     )
     return net
 
+AtrousConv1dLayer = create_atrous_conv1d_layer
 
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
@@ -1021,9 +1022,8 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
-
 ## Convolutional layer (Simplified)
-def Conv1d(
+def create_conv1d(
         net,
         n_filter=32,
         filter_size=5,
@@ -1087,8 +1087,9 @@ def Conv1d(
     )
     return net
 
+Conv1d = create_conv1d
 
-def Conv2d(
+def create_conv2d(
         net,
         n_filter=32,
         filter_size=(3, 3),
@@ -1150,8 +1151,9 @@ def Conv2d(
         name=name)
     return net
 
+Conv2d = create_conv2d
 
-def DeConv2d(net,
+def create_deconv2d(net,
              n_filter=32,
              filter_size=(3, 3),
              out_size=(30, 30),
@@ -1237,6 +1239,7 @@ def DeConv2d(net,
             name=name)
         return net
 
+DeConv2d = create_deconv2d
 
 class DeConv3d(Layer):
     """
