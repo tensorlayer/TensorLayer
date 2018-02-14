@@ -335,7 +335,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
             return None, outputs[0], outputs[1:]  # No gradient norm, loss, outputs.
 
     def get_batch(self, data, bucket_id, PAD_ID=0, GO_ID=1, EOS_ID=2, UNK_ID=3):
-        """ Get a random batch of data from the specified bucket, prepare for step.
+        """Get a random batch of data from the specified bucket, prepare for step.
 
     To feed data in step(..) it must be a list of batch-major vectors, while
     data here contains single length-major cases. So the main logic of this

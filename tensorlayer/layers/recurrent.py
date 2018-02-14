@@ -540,8 +540,7 @@ class BasicConvLSTMCell(ConvRNNCell):
     """
 
     def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, activation=tf.nn.tanh):
-        """Initialize the basic Conv LSTM cell.
-        """
+        """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:
         # logging.warn("%s: Using a concatenated state is slower and will soon be "
         #             "deprecated.  Use state_is_tuple=True.", self)
@@ -556,12 +555,12 @@ class BasicConvLSTMCell(ConvRNNCell):
 
     @property
     def state_size(self):
-        """ State size of the LSTMStateTuple. """
+        """State size of the LSTMStateTuple."""
         return (LSTMStateTuple(self._num_units, self._num_units) if self._state_is_tuple else 2 * self._num_units)
 
     @property
     def output_size(self):
-        """ Number of units in outputs. """
+        """Number of units in outputs."""
         return self._num_units
 
     def __call__(self, inputs, state, scope=None):
