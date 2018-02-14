@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## TimeDistributedLayer
+
 class TimeDistributedLayer(Layer):
     """
     The :class:`TimeDistributedLayer` class that applies a function to every timestep of the input tensor.

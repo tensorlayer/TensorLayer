@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import copy
@@ -14,7 +13,7 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
-## Object Detection
+
 class ROIPoolingLayer(Layer):
     """
     The :class:`ROIPoolingLayer` class is Region of interest pooling layer.
