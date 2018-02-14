@@ -1,7 +1,7 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 from .core import *
 
 
@@ -520,7 +520,6 @@ class DownSampling2dLayer(Layer):
         self.all_layers.extend([self.outputs])
 
 
-# ## 2D deformable convolutional layer
 def _to_bc_h_w(x, x_shape):
     """(b, h, w, c) -> (b*c, h, w)"""
     x = tf.transpose(x, [0, 3, 1, 2])
@@ -706,7 +705,7 @@ class DeformableConv2dLayer(Layer):
             offset = self.offset_layer.outputs
             assert offset.get_shape()[-1] == 2 * shape[0] * shape[1]
 
-            ## Grid initialisation
+            # Grid initialisation
             input_h = int(self.inputs.get_shape()[1])
             input_w = int(self.inputs.get_shape()[2])
             kernel_n = shape[0] * shape[1]

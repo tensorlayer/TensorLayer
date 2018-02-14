@@ -216,10 +216,10 @@ class SpatialTransformer2dAffineLayer(Layer):
         print("  [TL] SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" % (name, self.inputs.get_shape().as_list(), out_size))
 
         with tf.variable_scope(name) as vs:
-            ## 1. make the localisation network to [batch, 6] via Flatten and Dense.
+            # 1. make the localisation network to [batch, 6] via Flatten and Dense.
             if self.theta_layer.outputs.get_shape().ndims > 2:
                 self.theta_layer.outputs = flatten_reshape(self.theta_layer.outputs, 'flatten')
-            ## 2. To initialize the network to the identity transform init.
+            # 2. To initialize the network to the identity transform init.
             # 2.1 W
             n_in = int(self.theta_layer.outputs.get_shape()[-1])
             shape = (n_in, 6)
@@ -229,7 +229,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             b = tf.get_variable(name='b', initializer=identity, dtype=D_TYPE)
             # 2.3 transformation matrix
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)
-            ## 3. Spatial Transformer Sampling
+            # 3. Spatial Transformer Sampling
             # 3.1 transformation
             self.outputs = transformer(self.inputs, self.theta, out_size=out_size)
             # 3.2 automatically set batch_size and channels
@@ -247,19 +247,19 @@ class SpatialTransformer2dAffineLayer(Layer):
             self.outputs = tf.reshape(self.outputs, shape=[batch_size, out_size[0], out_size[1], n_channels])
             # print(self.outputs)
             # exit()
-            ## 4. Get all parameters
+            # 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        ## fixed
+        # fixed
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
 
-        ## theta_layer
+        # theta_layer
         self.all_layers.extend(theta_layer.all_layers)
         self.all_params.extend(theta_layer.all_params)
         self.all_drop.update(theta_layer.all_drop)
 
-        ## this layer
+        # this layer
         self.all_layers.extend([self.outputs])
         self.all_params.extend(variables)

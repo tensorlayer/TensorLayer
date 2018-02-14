@@ -68,7 +68,7 @@ class MultiplexerLayer(Layer):
         self.inputs = []
         for l in layer:
             self.inputs.append(l.outputs)
-        try:  ## TF1.0
+        try:  # TF1.0
             all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
         except:
             all_inputs = tf.pack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
