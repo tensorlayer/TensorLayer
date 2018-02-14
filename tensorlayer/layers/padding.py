@@ -1,0 +1,51 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
+import copy
+import inspect
+import random
+import time
+import warnings
+
+import numpy as np
+import tensorflow as tf
+from six.moves import xrange
+
+from . import cost, files, iterate, ops, utils, visualize
+from .core import *
+
+
+## Padding layer
+class PadLayer(Layer):
+    """
+    The :class:`PadLayer` class is a Padding layer for any modes and dimensions.
+    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`_ for usage.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    padding : a Tensor of type int32.
+    mode : one of "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive)
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            paddings=None,
+            mode='CONSTANT',
+            name='pad_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+        self.inputs = layer.outputs
+        print("  [TL] PadLayer   %s: paddings:%s mode:%s" % (self.name, list(paddings), mode))
+
+        self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])

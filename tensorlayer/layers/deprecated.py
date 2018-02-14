@@ -14,6 +14,89 @@ from six.moves import xrange
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
+## Keras layer
+class KerasLayer(Layer):
+    """
+    The :class:`KerasLayer` class can be used to merge all Keras layers into
+    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    keras_layer : a keras network function
+    keras_args : dictionary
+        The arguments for the keras model.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            keras_layer=None,
+            keras_args={},
+            name='keras_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert keras_layer is not None
+        self.inputs = layer.outputs
+        print("  [TL] KerasLayer %s: %s" % (self.name, keras_layer))
+        print("       This API will be removed, please use LambdaLayer instead.")
+        with tf.variable_scope(name) as vs:
+            self.outputs = keras_layer(self.inputs, **keras_args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        self.all_params.extend(variables)
+        raise Exception("Deprecated : use LambdaLayer instead.")
+
+
+## Estimator layer
+class EstimatorLayer(Layer):
+    """
+    The :class:`EstimatorLayer` class accepts ``model_fn`` that described the model.
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
+
+    Parameters
+    ----------
+    layer : a :class:`Layer` instance
+        The `Layer` class feeding into this layer.
+    model_fn : a function that described the model.
+    args : dictionary
+        The arguments for the model_fn.
+    name : a string or None
+        An optional name to attach to this layer.
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            model_fn=None,
+            args={},
+            name='estimator_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert model_fn is not None
+        self.inputs = layer.outputs
+        print("  [TL] EstimatorLayer %s: %s" % (self.name, model_fn))
+        print("       This API will be removed, please use LambdaLayer instead.")
+        with tf.variable_scope(name) as vs:
+            self.outputs = model_fn(self.inputs, **args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        self.all_params.extend(variables)
+        raise Exception("Deprecated : use LambdaLayer instead.")
+
 ## Wrapper
 class EmbeddingAttentionSeq2seqWrapper(Layer):
     """Sequence-to-sequence model with attention and for multiple buckets (Deprecated after TF0.12).
