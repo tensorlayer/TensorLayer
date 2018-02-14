@@ -1,13 +1,15 @@
 API - Layers
 =========================
 
-To make TensorLayer simple, we minimize the number of layer classes as much as
-we can. So we encourage you to use TensorFlow's function.
-For example, we provide layer for local response normalization, but user can still apply ``tf.nn.lrn`` on ``network.outputs``.
+TensorLayer provides rich implementations of reference layers trailed for
+well-known benchmarks and domain-specific problems. In addition, we also
+support transparent access to native TensorFlow parameters.
+For example, we provide not only layers for local response normalization, but also 
+layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
 
-Understand Basic layer
+Understanding Basic layer
 -------------------------
 
 All TensorLayer layers have a number of properties in common:
@@ -15,29 +17,29 @@ All TensorLayer layers have a number of properties in common:
  - ``layer.outputs`` : a Tensor, the outputs of current layer.
  - ``layer.all_params`` : a list of Tensor, all network variables in order.
  - ``layer.all_layers`` : a list of Tensor, all network outputs in order.
- - ``layer.all_drop`` : a dictionary of {placeholder : float}, all keeping probabilities of noise layer.
+ - ``layer.all_drop`` : a dictionary of {placeholder : float}, all keeping probabilities of noise layers.
 
 All TensorLayer layers have a number of methods in common:
 
- - ``layer.print_params()`` : print the network variables information in order (after ``tl.layers.initialize_global_variables(sess)``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
- - ``layer.print_layers()`` : print the network layers information in order.
+ - ``layer.print_params()`` : print network variable information in order (after ``tl.layers.initialize_global_variables(sess)``). alternatively, print all variables by ``tl.layers.print_all_variables()``.
+ - ``layer.print_layers()`` : print network layer information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
-The initialization of a network is done by input layer, then we can stacked layers
-as follow, a network is a ``Layer`` class.
-The most important properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
-The ``all_params`` is a list which store all pointers of all network parameters in order,
+The initialization of a network is done by the input layer, then we can stack layers
+as follow: a network is a ``Layer`` class.
+The key properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
+The ``all_params`` is a list which store pointers to all network parameters in order. For example,
 the following script define a 3 layer network, then:
 
 ``all_params`` = [W1, b1, W2, b2, W_out, b_out]
 
-To get specified variables, you can use ``network.all_params[2:3]`` or ``get_variables_with_name()``.
-As the ``all_layers`` is a list which store all pointers of the outputs of all layers,
+To get specified variable information, you can use ``network.all_params[2:3]`` or ``get_variables_with_name()``.
+``all_layers`` is a list which stores the pointers to the outputs of all layers, for example,
 in the following network:
 
 ``all_layers`` = [drop(?,784), relu(?,800), drop(?,800), relu(?,800), drop(?,800)], identity(?,10)]
 
-where ``?`` reflects any batch size. You can print the layer information and parameters information by
+where ``?`` reflects any batch size. You can print the layer and parameters information by
 using ``network.print_layers()`` and ``network.print_params()``.
 To count the number of parameters in a network, run ``network.count_params()``.
 
@@ -76,9 +78,9 @@ To count the number of parameters in a network, run ``network.count_params()``.
   network.print_layers()
 
 In addition, ``network.all_drop`` is a dictionary which stores the keeping probabilities of all
-noise layer. In the above network, they are the keeping probabilities of dropout layers.
+noise layers. In the above network, they represent the keeping probabilities of dropout layers.
 
-So for training, enable all dropout layers as follow.
+In case for training, you can enable all dropout layers as follow:
 
 .. code-block:: python
 
@@ -87,7 +89,7 @@ So for training, enable all dropout layers as follow.
   loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
   feed_dict.update( network.all_drop )
 
-For evaluating and testing, disable all dropout layers as follow.
+In case for evaluating and testing, you can disable all dropout layers as follow.
 
 .. code-block:: python
 
@@ -97,7 +99,7 @@ For evaluating and testing, disable all dropout layers as follow.
   print("   val acc: %f" % np.mean(y_val ==
                           sess.run(y_op, feed_dict=feed_dict)))
 
-For more details, please read the MNIST examples on Github.
+For more details, please read the MNIST examples in the exanole folder.
 
 
 Customized layer
