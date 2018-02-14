@@ -1017,12 +1017,8 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
-<<<<<<< HEAD
 ## Convolutional layer (Simplified)
 def create_conv1d(
-=======
-def Conv1d(
->>>>>>> 88c63eb1d914909b6cda8b5acf060686a325777a
         net,
         n_filter=32,
         filter_size=5,
