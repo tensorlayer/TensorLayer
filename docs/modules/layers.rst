@@ -501,30 +501,6 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DeConv3d
 
-1D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool1d
-
-1D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool1d
-
-2D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool2d
-
-2D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool2d
-
-3D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool3d
-
-3D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool3d
-
 2D Depthwise/Separable Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DepthwiseConv2d
@@ -557,20 +533,44 @@ Batch 2D Affine Transformation function
 .. autofunction:: batch_transformer
 
 
-Pooling layer
-----------------
+Pooling and Padding layers
+---------------------------
 
+Pooling (Pro)
+^^^^^^^^^^^^^^
 Pooling layer for any dimensions and any pooling functions.
-
 .. autoclass:: PoolLayer
 
-
-Padding
-----------------
-
+Padding (Pro)
+^^^^^^^^^^^^^^
 Padding layer for any modes.
 
 .. autoclass:: PadLayer
+
+1D Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MaxPool1d
+
+1D Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MeanPool1d
+
+2D Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MaxPool2d
+
+2D Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MeanPool2d
+
+3D Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MaxPool3d
+
+3D Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: MeanPool3d
+
 
 
 Normalization layer
