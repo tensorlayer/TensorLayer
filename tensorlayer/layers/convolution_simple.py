@@ -13,7 +13,7 @@ from six.moves import xrange
 
 from . import cost, files, iterate, ops, utils, visualize
 from .core import *
-from .conv_pro import *
+from .convolution_pro import *
 
 ## Convolutional layer (Simplified)
 def Conv1d(
