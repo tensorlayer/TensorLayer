@@ -54,7 +54,7 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
+        logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
         if act is None:
             act = tf.identity
         with tf.variable_scope(name) as vs:
@@ -158,7 +158,7 @@ class Conv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
+        logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
@@ -267,9 +267,9 @@ class DeConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
+        logging.info("DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
                                                                                            act.__name__))
-        # print("  DeConv2dLayer: Untested")
+        # logging.info("  DeConv2dLayer: Untested")
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init:
@@ -331,7 +331,7 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
+        logging.info("Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -394,7 +394,7 @@ class DeConv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
+        logging.info("DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
                                                                                            act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -452,7 +452,7 @@ class UpSampling2dLayer(Layer):
                 size = [int(size_h), int(size_w)]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  [TL] UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" % (name, is_scale, size, method, align_corners))
+        logging.info("UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" % (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
@@ -507,7 +507,7 @@ class DownSampling2dLayer(Layer):
                 size = [int(size_h), int(size_w)]
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        print("  [TL] DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
+        logging.info("DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
@@ -699,7 +699,7 @@ class DeformableConv2dLayer(Layer):
         self.inputs = layer.outputs
         self.offset_layer = offset_layer
 
-        print("  [TL] DeformableConv2dLayer %s: shape:%s, act:%s" % (self.name, str(shape), act.__name__))
+        logging.info("DeformableConv2dLayer %s: shape:%s, act:%s" % (self.name, str(shape), act.__name__))
 
         with tf.variable_scope(name) as vs:
             offset = self.offset_layer.outputs
@@ -836,7 +836,7 @@ class AtrousConv2dLayer(Layer):
         self.inputs = layer.outputs
         if act is None:
             act = tf.identity
-        print("  [TL] AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
+        logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
         with tf.variable_scope(name) as vs:
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
@@ -909,8 +909,8 @@ class SeparableConv2dLayer(Layer):  # Untested
 
         bias_initializer = bias_initializer()
 
-        print("  [TL] SeparableConv2dLayer %s: filters:%s kernel_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
-              (self.name, str(filters), str(kernel_size), str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
+        logging.info("SeparableConv2dLayer %s: filters:%s kernel_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
+                     (self.name, str(filters), str(kernel_size), str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.layers.separable_conv2d(
@@ -1116,7 +1116,7 @@ def conv2d(
         pre_channel = int(net.outputs.get_shape()[-1])
     except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
         pre_channel = 1
-        print("[warnings] unknow input channels, set to 1")
+        logging.info("[warnings] unknow input channels, set to 1")
     net = Conv2dLayer(
         net,
         act=act,
@@ -1169,7 +1169,7 @@ def deconv2d(net,
         act = tf.identity
 
     if tf.__version__ > '1.3':
-        print("  [TL] DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
+        logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
         inputs = net.outputs
         scope_name = tf.get_variable_scope().name
         if scope_name:
@@ -1256,7 +1256,7 @@ class DeConv3d(Layer):
         if act is None:
             act = tf.identity
 
-        print("  [TL] DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
+        logging.info("DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.conv3d_transpose(
@@ -1341,7 +1341,7 @@ class DepthwiseConv2d(Layer):
         if act is None:
             act = tf.identity
 
-        print("  [TL] DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
+        logging.info("DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         if act is None:
             act = tf.identity
@@ -1350,7 +1350,7 @@ class DepthwiseConv2d(Layer):
             pre_channel = int(layer.outputs.get_shape()[-1])
         except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
-            print("[warnings] unknow input channels, set to 1")
+            logging.info("[warnings] unknow input channels, set to 1")
 
         shape = [shape[0], shape[1], pre_channel, channel_multiplier]
 

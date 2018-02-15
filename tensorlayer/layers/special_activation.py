@@ -38,7 +38,7 @@ class PReluLayer(Layer):
             name="prelu_layer"):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
+        logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
         if channel_shared:
             w_shape = (1, )
         else:

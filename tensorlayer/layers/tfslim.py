@@ -43,7 +43,7 @@ class SlimNetsLayer(Layer):
         assert slim_layer is not None
         assert slim_args is not None
         self.inputs = layer.outputs
-        print("  [TL] SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
+        logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
@@ -53,7 +53,7 @@ class SlimNetsLayer(Layer):
 
         slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=name)
         if slim_variables == []:
-            print(
+            logging.info(
                 "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details"
                 % name)
 
