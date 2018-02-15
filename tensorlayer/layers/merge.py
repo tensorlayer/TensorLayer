@@ -29,10 +29,10 @@ class ConcatLayer(Layer):
     >>> net1 = tl.layers.DenseLayer(inputs, 800, act=tf.nn.relu, name='relu1_1')
     >>> net2 = tl.layers.DenseLayer(inputs, 300, act=tf.nn.relu, name='relu2_1')
     >>> net = tl.layers.ConcatLayer([net1, net2], 1, name ='concat_layer')
-    ...     [TL] InputLayer input_layer (?, 784)
-    ...     [TL] DenseLayer relu1_1: 800, relu
-    ...     [TL] DenseLayer relu2_1: 300, relu
-    ...     [TL] ConcatLayer concat_layer, 1100
+    ...   InputLayer input_layer (?, 784)
+    ...   DenseLayer relu1_1: 800, relu
+    ...   DenseLayer relu2_1: 300, relu
+    ...   ConcatLayer concat_layer, 1100
     >>> tl.layers.initialize_global_variables(sess)
     >>> net.print_params()
     ...     param 0: (784, 800) (mean: 0.000021, median: -0.000020 std: 0.035525)
@@ -60,7 +60,7 @@ class ConcatLayer(Layer):
         except:  # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
 
-        print("  [TL] ConcatLayer %s: axis: %d" % (self.name, concat_dim))
+        logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -110,10 +110,10 @@ class ElementwiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
 
-        print("  [TL] ElementwiseLayer %s: size:%s fn:%s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
+        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layer[0].outputs
-        # print(self.outputs._shape, type(self.outputs._shape))
+        # logging.info(self.outputs._shape, type(self.outputs._shape))
         for l in layer[1:]:
             assert str(self.outputs.get_shape()) == str(
                 l.outputs.get_shape()), "Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape()))

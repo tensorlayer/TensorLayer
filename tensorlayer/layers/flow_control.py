@@ -73,12 +73,12 @@ class MultiplexerLayer(Layer):
         except:
             all_inputs = tf.pack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
 
-        print("  [TL] MultiplexerLayer %s: n_inputs:%d" % (self.name, self.n_inputs))
+        logging.info("MultiplexerLayer %s: n_inputs:%d" % (self.name, self.n_inputs))
 
         self.sel = tf.placeholder(tf.int32)
         self.outputs = tf.gather(all_inputs, self.sel, name=name)  # [sel, :, : ...] # 1.2
 
-        # print(self.outputs, vars(self.outputs))
+        # logging.info(self.outputs, vars(self.outputs))
         #         # tf.reshape(self.outputs, shape=)
         # exit()
         # the same with ConcatLayer
