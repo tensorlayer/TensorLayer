@@ -51,7 +51,7 @@ class PoolLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" % (self.name, str(ksize), str(strides), padding, pool.__name__))
+        logging.info("PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" % (self.name, str(ksize), str(strides), padding, pool.__name__))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
 
@@ -77,7 +77,7 @@ def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_
     --------
     - A :class:`Layer` which the output tensor, of rank 3.
     """
-    print("  [TL] MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+    logging.info("MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(net)
@@ -102,7 +102,7 @@ def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels
     --------
     - A :class:`Layer` which the output tensor, of rank 3.
     """
-    print("  [TL] MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+    logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(net)
@@ -157,7 +157,7 @@ def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_
     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
     name : A string, the name of the layer.
     """
-    print("  [TL] MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+    logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(net)
@@ -178,7 +178,7 @@ def meanpool3d(net, filter_size, strides, padding='valid', data_format='channels
     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
     name : A string, the name of the layer.
     """
-    print("  [TL] MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+    logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(net)

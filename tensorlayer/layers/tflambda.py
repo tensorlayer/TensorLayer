@@ -45,7 +45,7 @@ class LambdaLayer(Layer):
         assert layer is not None
         assert fn is not None
         self.inputs = layer.outputs
-        print("  [TL] LambdaLayer  %s" % self.name)
+        logging.info("LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

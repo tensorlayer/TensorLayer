@@ -38,8 +38,8 @@ class KerasLayer(Layer):
         assert layer is not None
         assert keras_layer is not None
         self.inputs = layer.outputs
-        print("  [TL] KerasLayer %s: %s" % (self.name, keras_layer))
-        print("       This API will be removed, please use LambdaLayer instead.")
+        logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
+        logging.info("       This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = keras_layer(self.inputs, **keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -79,8 +79,8 @@ class EstimatorLayer(Layer):
         assert layer is not None
         assert model_fn is not None
         self.inputs = layer.outputs
-        print("  [TL] EstimatorLayer %s: %s" % (self.name, model_fn))
-        print("       This API will be removed, please use LambdaLayer instead.")
+        logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
+        logging.info("       This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = model_fn(self.inputs, **args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -297,8 +297,8 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
             raise ValueError("Decoder length must be equal to the one in bucket," " %d != %d." % (len(decoder_inputs), decoder_size))
         if len(target_weights) != decoder_size:
             raise ValueError("Weights length must be equal to the one in bucket," " %d != %d." % (len(target_weights), decoder_size))
-        # print('in model.step()')
-        # print('a',bucket_id, encoder_size, decoder_size)
+        # logging.info('in model.step()')
+        # logging.info('a',bucket_id, encoder_size, decoder_size)
 
         # Input feed: encoder inputs, decoder inputs, target_weights, as provided.
         input_feed = {}
@@ -307,14 +307,14 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
         for l in xrange(decoder_size):
             input_feed[self.decoder_inputs[l].name] = decoder_inputs[l]
             input_feed[self.target_weights[l].name] = target_weights[l]
-        # print(self.encoder_inputs[l].name)
-        # print(self.decoder_inputs[l].name)
-        # print(self.target_weights[l].name)
+        # logging.info(self.encoder_inputs[l].name)
+        # logging.info(self.decoder_inputs[l].name)
+        # logging.info(self.target_weights[l].name)
 
         # Since our targets are decoder inputs shifted by one, we need one more.
         last_target = self.decoder_inputs[decoder_size].name
         input_feed[last_target] = np.zeros([self.batch_size], dtype=np.int32)
-        # print('last_target', last_target)
+        # logging.info('last_target', last_target)
 
         # Output feed: depends on whether we do a backward step or not.
         if not forward_only:
@@ -419,8 +419,8 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
 #
-#         print("  [TL] MaxoutLayer %s: %d" % (self.name, self.n_units))
-#         print("    Waiting for contribution")
+#         logging.info("MaxoutLayer %s: %d" % (self.name, self.n_units))
+#         logging.info("    Waiting for contribution")
 #         with tf.variable_scope(name) as vs:
 #             pass
 #             # W = tf.Variable(init.xavier_init(n_inputs=n_in, n_outputs=n_units, uniform=True), name='W')
