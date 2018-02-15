@@ -70,7 +70,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
             """
             X = tf.depth_to_space(X, r)
         else:
-            print(_err_log)
+            logging.info(_err_log)
         return X
 
     inputs = net.outputs
@@ -79,7 +79,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
         assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
-    print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
+    logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
     net_new = Layer(inputs, name=whole_name)
     # with tf.name_scope(name):
@@ -154,7 +154,7 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
             X = tf.depth_to_space(X, r)
             X = tf.transpose(X, [0, 2, 1, 3])
         else:
-            print(_err_log)
+            logging.info(_err_log)
         return X
 
     inputs = net.outputs
@@ -163,7 +163,7 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
         assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
-    print("  [TL] SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
+    logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
     net_new = Layer(inputs, name=name)
     # with tf.name_scope(name):
@@ -209,7 +209,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
         X = tf.transpose(X, [2, 1, 0])
         return X
 
-    print("  [TL] SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
+    logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
     inputs = net.outputs
     net_new = Layer(inputs, name=name)

@@ -32,7 +32,7 @@ class ExpandDimsLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  [TL] ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
+        logging.info("ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
         with tf.variable_scope(name) as vs:
             try:  # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
@@ -69,7 +69,7 @@ class TileLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
-        print("  [TL] TileLayer  %s: multiples:%s" % (self.name, multiples))
+        logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.tile(self.inputs, multiples=multiples)
         self.all_layers = list(layer.all_layers)

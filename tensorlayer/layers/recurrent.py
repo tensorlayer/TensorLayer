@@ -180,7 +180,7 @@ class RNNLayer(Layer):
 
         self.inputs = layer.outputs
 
-        print("  [TL] RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " % (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims,
+        logging.info("RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " % (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims,
                                                                                                 self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
@@ -204,11 +204,11 @@ class RNNLayer(Layer):
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("       RNN batch_size (concurrent processes): %d" % batch_size)
+            logging.info("       RNN batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("       non specified batch_size, uses a tensor instead.")
+            logging.info("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
@@ -240,7 +240,7 @@ class RNNLayer(Layer):
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        print("     n_params : %d" % (len(rnn_variables)))
+        logging.info("     n_params : %d" % (len(rnn_variables)))
 
         if return_last:
             # 2D Tensor [batch_size, n_hidden]
@@ -267,7 +267,7 @@ class RNNLayer(Layer):
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        # print(type(self.outputs))
+        # logging.info(type(self.outputs))
         self.all_layers.extend([self.outputs])
         self.all_params.extend(rnn_variables)
 
@@ -370,7 +370,7 @@ class BiRNNLayer(Layer):
 
         self.inputs = layer.outputs
 
-        print("  [TL] BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden, n_steps,
+        logging.info("BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden, n_steps,
                                                                                                                         self.inputs.get_shape().ndims,
                                                                                                                         self.inputs.get_shape(),
                                                                                                                         cell_fn.__name__, dropout, n_layer))
@@ -379,11 +379,11 @@ class BiRNNLayer(Layer):
 
         if fixed_batch_size.value:
             self.batch_size = fixed_batch_size.value
-            print("       RNN batch_size (concurrent processes): %d" % self.batch_size)
+            logging.info("       RNN batch_size (concurrent processes): %d" % self.batch_size)
         else:
             from tensorflow.python.ops import array_ops
             self.batch_size = array_ops.shape(self.inputs)[0]
-            print("       non specified batch_size, uses a tensor instead.")
+            logging.info("       non specified batch_size, uses a tensor instead.")
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -478,7 +478,7 @@ class BiRNNLayer(Layer):
             # Retrieve just the RNN variables.
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        print("     n_params : %d" % (len(rnn_variables)))
+        logging.info("     n_params : %d" % (len(rnn_variables)))
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
@@ -705,8 +705,8 @@ class ConvLSTMLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
-              "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
+        logging.info("ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
+                     "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
         # self.inputs.get_shape().with_rank(2)
@@ -722,11 +722,11 @@ class ConvLSTMLayer(Layer):
 
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("     RNN batch_size (concurrent processes): %d" % batch_size)
+            logging.info("     RNN batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("     non specified batch_size, uses a tensor instead.")
+            logging.info("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         outputs = []
@@ -745,7 +745,7 @@ class ConvLSTMLayer(Layer):
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
-        print(" n_params : %d" % (len(rnn_variables)))
+        logging.info(" n_params : %d" % (len(rnn_variables)))
 
         if return_last:
             # 2D Tensor [batch_size, n_hidden]
@@ -1028,8 +1028,8 @@ class DynamicRNNLayer(Layer):
                 pass
         self.inputs = layer.outputs
 
-        print("  [TL] DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
-              (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
+        logging.info("DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
+                     (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -1041,11 +1041,11 @@ class DynamicRNNLayer(Layer):
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("       batch_size (concurrent processes): %d" % batch_size)
+            logging.info("       batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("       non specified batch_size, uses a tensor instead.")
+            logging.info("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         # Creats the cell function
@@ -1117,7 +1117,7 @@ class DynamicRNNLayer(Layer):
                 **dynamic_rnn_init_args)
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-            # print("     n_params : %d" % (len(rnn_variables)))
+            # logging.info("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
             if return_last:
                 # [batch_size, n_hidden]
@@ -1262,8 +1262,8 @@ class BiDynamicRNNLayer(Layer):
                 pass
         self.inputs = layer.outputs
 
-        print("  [TL] BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
-              (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
+        logging.info("BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
+                     (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
 
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
@@ -1275,11 +1275,11 @@ class BiDynamicRNNLayer(Layer):
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
-            print("       batch_size (concurrent processes): %d" % batch_size)
+            logging.info("       batch_size (concurrent processes): %d" % batch_size)
         else:
             from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
-            print("       non specified batch_size, uses a tensor instead.")
+            logging.info("       non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
 
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -1359,7 +1359,7 @@ class BiDynamicRNNLayer(Layer):
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-            print("     n_params : %d" % (len(rnn_variables)))
+            logging.info("     n_params : %d" % (len(rnn_variables)))
             # Manage the outputs
             try:  # TF1.0
                 outputs = tf.concat(outputs, 2)
@@ -1536,7 +1536,7 @@ class Seq2Seq(Layer):
             except:
                 pass
         # self.inputs = layer.outputs
-        print("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
+        logging.info("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
         with tf.variable_scope(name) as vs:  #, reuse=reuse):
             # tl.layers.set_name_reuse(reuse)
@@ -1623,7 +1623,7 @@ class PeekySeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  [TL] PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
+        logging.info("PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
 
 class AttentionSeq2Seq(Layer):
@@ -1654,4 +1654,4 @@ class AttentionSeq2Seq(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         # self.inputs = layer.outputs
-        print("  [TL] PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
+        logging.info("PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))

@@ -34,7 +34,7 @@ class LocalResponseNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" % (self.name, depth_radius, bias, alpha, beta))
+        logging.info("LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" % (self.name, depth_radius, bias, alpha, beta))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
@@ -89,7 +89,7 @@ class BatchNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" % (self.name, decay, epsilon, act.__name__, is_train))
+        logging.info("BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" % (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
 
@@ -133,11 +133,11 @@ class BatchNormLayer(Layer):
                 update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay, zero_debias=False)  # if zero_debias=True, has bias
                 update_moving_variance = moving_averages.assign_moving_average(
                     moving_variance, variance, decay, zero_debias=False)  # if zero_debias=True, has bias
-                # print("TF12 moving")
+                # logging.info("TF12 moving")
             except Exception as e:  # TF11
                 update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay)
                 update_moving_variance = moving_averages.assign_moving_average(moving_variance, variance, decay)
-                # print("TF11 moving")
+                # logging.info("TF11 moving")
 
             def mean_var_with_update():
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
@@ -151,9 +151,9 @@ class BatchNormLayer(Layer):
 
             variables = [beta, gamma, moving_mean, moving_variance]
 
-            # print(len(variables))
+            # logging.info(len(variables))
             # for idx, v in enumerate(variables):
-            #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
+            #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
             # exit()
 
         self.all_layers = list(layer.all_layers)
@@ -212,7 +212,7 @@ class BatchNormLayer(Layer):
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         from tensorflow.contrib.layers.python.layers import utils
 #         from tensorflow.contrib.framework.python.ops import variables
@@ -372,7 +372,7 @@ class BatchNormLayer(Layer):
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         x_shape = self.inputs.get_shape()
 #         params_shape = x_shape[-1:]
@@ -411,13 +411,13 @@ class BatchNormLayer(Layer):
 #                                     moving_mean, batch_mean, decay, zero_debias=False)     # if zero_debias=True, has bias
 #                     update_moving_variance = moving_averages.assign_moving_average(
 #                                     moving_variance, batch_var, decay, zero_debias=False) # if zero_debias=True, has bias
-#                     # print("TF12 moving")
+#                     # logging.info("TF12 moving")
 #                 except Exception as e:  # TF11
 #                     update_moving_mean = moving_averages.assign_moving_average(
 #                                     moving_mean, batch_mean, decay)
 #                     update_moving_variance = moving_averages.assign_moving_average(
 #                                     moving_variance, batch_var, decay)
-#                     # print("TF11 moving")
+#                     # logging.info("TF11 moving")
 #
 #             # def mean_var_with_update():
 #                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
@@ -442,9 +442,9 @@ class BatchNormLayer(Layer):
 #             self.outputs = act( normed )
 #
 #             variables = [beta, gamma, moving_mean, moving_variance]
-#             # print(len(variables))
+#             # logging.info(len(variables))
 #             # for idx, v in enumerate(variables):
-#             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
+#             #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
 #             # exit()
 #
 #         self.all_layers = list(layer.all_layers)
@@ -497,7 +497,7 @@ class BatchNormLayer(Layer):
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         input_shape = self.inputs.get_shape()
 #         # params_shape = input_shape[-1:]
@@ -583,9 +583,9 @@ class BatchNormLayer(Layer):
 #             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=scope.name)    # 2 params beta, gamma
 #                 # variables = [beta, gamma, moving_mean, moving_variance]
 #
-#             # print(len(variables))
+#             # logging.info(len(variables))
 #             # for idx, v in enumerate(variables):
-#             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+#             #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 #             # exit()
 #
 #         # Add attributes for easy access
@@ -645,7 +645,7 @@ class BatchNormLayer(Layer):
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         x_shape = self.inputs.get_shape()
 #         params_shape = x_shape[-1:]
@@ -677,9 +677,9 @@ class BatchNormLayer(Layer):
 #             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
 #                 # variables = [beta, gamma, moving_mean, moving_variance]
 #
-#             # print(len(variables))
+#             # logging.info(len(variables))
 #             # for idx, v in enumerate(variables):
-#             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+#             #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 #             # exit()
 #
 #         self.all_layers = list(layer.all_layers)
@@ -742,7 +742,7 @@ class BatchNormLayer(Layer):
 #         """
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, act: %s, is_train: %s" %
 #                             (self.name, decay, epsilon, act.__name__, is_train))
 #         x_shape = self.inputs.get_shape()
 #         params_shape = x_shape[-1:]
@@ -774,9 +774,9 @@ class BatchNormLayer(Layer):
 #             variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=vs.name)    # 2 params beta, gamma
 #                 # variables = [beta, gamma, moving_mean, moving_variance]
 #
-#             # print(len(variables))
+#             # logging.info(len(variables))
 #             # for idx, v in enumerate(variables):
-#             #     print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+#             #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 #             # exit()
 #
 #         self.all_layers = list(layer.all_layers)
@@ -821,7 +821,7 @@ class BatchNormLayer(Layer):
 #     ):
 #         Layer.__init__(self, name=name)
 #         self.inputs = layer.outputs
-#         print("  [TL] BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
+#         logging.info("BatchNormLayer %s: decay: %f, epsilon: %f, is_train: %s" %
 #                             (self.name, decay, epsilon, is_train))
 #         if is_train == None:
 #             raise Exception("is_train must be True or False")
@@ -853,7 +853,7 @@ class BatchNormLayer(Layer):
 #
 #             is_train = tf.reshape(is_train, [])
 #
-#             # print(is_train)
+#             # logging.info(is_train)
 #             # exit()
 #
 #             mean, var = tf.cond(
@@ -908,7 +908,7 @@ class InstanceNormLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
+        logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
 
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
@@ -956,7 +956,7 @@ class LayerNormLayer(Layer):
 
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] LayerNormLayer %s: act:%s" % (self.name, act.__name__))
+        logging.info("LayerNormLayer %s: act:%s" % (self.name, act.__name__))
         with tf.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.layer_norm(
                 self.inputs,

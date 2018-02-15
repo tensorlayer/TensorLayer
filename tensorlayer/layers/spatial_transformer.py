@@ -213,7 +213,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.theta_layer = theta_layer
-        print("  [TL] SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" % (name, self.inputs.get_shape().as_list(), out_size))
+        logging.info("SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" % (name, self.inputs.get_shape().as_list(), out_size))
 
         with tf.variable_scope(name) as vs:
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.
@@ -243,9 +243,9 @@ class SpatialTransformer2dAffineLayer(Layer):
                 batch_size = array_ops.shape(self.inputs)[0]
             size = self.inputs.get_shape().as_list()
             n_channels = self.inputs.get_shape().as_list()[-1]
-            # print(self.outputs)
+            # logging.info(self.outputs)
             self.outputs = tf.reshape(self.outputs, shape=[batch_size, out_size[0], out_size[1], n_channels])
-            # print(self.outputs)
+            # logging.info(self.outputs)
             # exit()
             # 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

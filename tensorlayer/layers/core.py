@@ -7,6 +7,7 @@ import tensorflow as tf
 from six.moves import xrange
 
 from .. import cost, files, iterate, ops, utils, visualize
+from .. import _logging as logging
 
 # __all__ = [
 #     "Layer",
@@ -156,15 +157,15 @@ def print_all_variables(train_only=False):
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
-        print("  [*] printing trainable variables")
+        logging.info("  [*] printing trainable variables")
     else:
         try:  # TF1.0+
             t_vars = tf.global_variables()
         except:  # TF0.12
             t_vars = tf.all_variables()
-        print("  [*] printing global variables")
+        logging.info("  [*] printing global variables")
     for idx, v in enumerate(t_vars):
-        print("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
+        logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
 def get_variables_with_name(name, train_only=True, printable=False):
@@ -174,7 +175,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
     ---------
     >>> dense_vars = tl.layers.get_variable_with_name('dense', True, True)
     """
-    print("  [*] geting variables with %s" % name)
+    logging.info("  [*] geting variables with %s" % name)
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
@@ -187,7 +188,7 @@ def get_variables_with_name(name, train_only=True, printable=False):
     d_vars = [var for var in t_vars if name in var.name]
     if printable:
         for idx, v in enumerate(d_vars):
-            print("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
     return d_vars
 
 
@@ -199,16 +200,16 @@ def get_layers_with_name(network=None, name="", printable=False):
     >>> layers = tl.layers.get_layers_with_name(network, "CNN", True)
     """
     assert network is not None
-    print("  [*] geting layers with %s" % name)
+    logging.info("  [*] geting layers with %s" % name)
 
     layers = []
     i = 0
     for layer in network.all_layers:
-        # print(type(layer.name))
+        # logging.info(type(layer.name))
         if name in layer.name:
             layers.append(layer)
             if printable:
-                print("  got {:3}: {:15}   {}".format(i, layer.name, str(layer.get_shape())))
+                logging.info("  got {:3}: {:15}   {}".format(i, layer.name, str(layer.get_shape())))
                 i = i + 1
     return layers
 
@@ -317,22 +318,22 @@ class Layer(object):
         for i, p in enumerate(self.all_params):
             if details:
                 try:
-                    # print("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
+                    # logging.info("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
                     val = p.eval(session=session)
-                    print("  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
+                    logging.info("  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
                         i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()))
                 except Exception as e:
-                    print(str(e))
+                    logging.info(str(e))
                     raise Exception("Hint: print params details after tl.layers.initialize_global_variables(sess) or use network.print_params(False).")
             else:
-                print("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
-        print("  num of params: %d" % self.count_params())
+                logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
+        logging.info("  num of params: %d" % self.count_params())
 
     def print_layers(self):
         """Print all info of layers in the network"""
         for i, layer in enumerate(self.all_layers):
-            # print("  layer %d: %s" % (i, str(layer)))
-            print("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name))
+            # logging.info("  layer %d: %s" % (i, str(layer)))
+            logging.info("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name))
 
     def count_params(self):
         """Return the number of parameters in the network"""
@@ -351,7 +352,7 @@ class Layer(object):
         return n_params
 
     def __str__(self):
-        # print("\nIt is a Layer class")
+        # logging.info("\nIt is a Layer class")
         # self.print_params(False)
         # self.print_layers()
         return "  Last layer is: %s" % self.__class__.__name__
@@ -371,7 +372,7 @@ class InputLayer(Layer):
 
     def __init__(self, inputs=None, name='input_layer'):
         Layer.__init__(self, inputs=inputs, name=name)
-        print("  [TL] InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
         self.all_layers = []
         self.all_params = []
@@ -400,7 +401,7 @@ class OneHotInputLayer(Layer):
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input_layer'):
         Layer.__init__(self, inputs=inputs, name=name)
         assert depth != None, "depth is not given"
-        print("  [TL]:Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        logging.info("  [TL]:Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
         self.all_layers = []
         self.all_params = []
@@ -509,7 +510,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
-        print("  [TL] Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -635,7 +636,7 @@ class EmbeddingInputlayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
-        print("  [TL] EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name) as vs:
             embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
@@ -687,7 +688,7 @@ class AverageEmbeddingInputlayer(Layer):
 
         self.inputs = inputs
 
-        print("  [TL] AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
+        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
                 name='embeddings',
@@ -797,7 +798,7 @@ class DenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  [TL] DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+        logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init is not None:
@@ -875,7 +876,7 @@ class ReconLayer(DenseLayer):
             act=tf.nn.softplus,
     ):
         DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
-        print("     [TL] %s is a ReconLayer" % self.name)
+        logging.info("   %s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -890,8 +891,8 @@ class ReconLayer(DenseLayer):
         # =====================================================================
         lambda_l2_w = 0.004
         learning_rate = 0.0001
-        print("     lambda_l2_w: %f" % lambda_l2_w)
-        print("     learning_rate: %f" % learning_rate)
+        logging.info("     lambda_l2_w: %f" % lambda_l2_w)
+        logging.info("     learning_rate: %f" % learning_rate)
 
         # Mean-square-error i.e. quadratic-cost
         mse = tf.reduce_sum(tf.squared_difference(y, x_recon), 1)
@@ -928,25 +929,25 @@ class ReconLayer(DenseLayer):
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
         # Total cost
         if act == tf.nn.softplus:
-            print('     use: mse, L2_w, L1_a')
+            logging.info('     use: mse, L2_w, L1_a')
             self.cost = mse + L1_a + L2_w
         elif act == tf.nn.sigmoid:
             # ----------------------------------------------------
             # Cross-entropy was used in Denoising AE
-            # print('     use: ce, L2_w, KLD')
+            # logging.info('     use: ce, L2_w, KLD')
             # self.cost = ce + L2_w + KLD
             # ----------------------------------------------------
             # Mean-squared-error was used in Vanilla AE
-            print('     use: mse, L2_w, KLD')
+            logging.info('     use: mse, L2_w, KLD')
             self.cost = mse + L2_w + KLD
             # ----------------------------------------------------
             # Add DropNeuro penalty (P_o) can remove neurons of AE
-            # print('     use: mse, L2_w, KLD, P_o')
+            # logging.info('     use: mse, L2_w, KLD, P_o')
             # self.cost = mse + L2_w + KLD + P_o
             # ----------------------------------------------------
             # Add DropNeuro penalty (P_i) can remove neurons of previous layer
             #   If previous layer is InputLayer, it means remove useless features
-            # print('     use: mse, L2_w, KLD, P_i')
+            # logging.info('     use: mse, L2_w, KLD, P_i')
             # self.cost = mse + L2_w + KLD + P_i
         else:
             raise Exception("Don't support the given reconstruct activation function")
@@ -963,13 +964,13 @@ class ReconLayer(DenseLayer):
         # get your own pre-train method.
         #
         # ====================================================
-        print("     [*] %s start pretrain" % self.name)
-        print("     batch_size: %d" % batch_size)
+        logging.info("     [*] %s start pretrain" % self.name)
+        logging.info("     batch_size: %d" % batch_size)
         if denoise_name:
-            print("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
+            logging.info("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
             dp_denoise = self.all_drop[set_keep[denoise_name]]
         else:
-            print("     no denoising layer")
+            logging.info("     no denoising layer")
 
         for epoch in range(n_epoch):
             start_time = time.time()
@@ -982,7 +983,7 @@ class ReconLayer(DenseLayer):
                 sess.run(self.train_op, feed_dict=feed_dict)
 
             if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-                print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+                logging.info("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
                 train_loss, n_batch = 0, 0
                 for X_train_a, _ in iterate.minibatches(X_train, X_train, batch_size, shuffle=True):
                     dp_dict = utils.dict_to_one(self.all_drop)
@@ -991,7 +992,7 @@ class ReconLayer(DenseLayer):
                     err = sess.run(self.cost, feed_dict=feed_dict)
                     train_loss += err
                     n_batch += 1
-                print("   train loss: %f" % (train_loss / n_batch))
+                logging.info("   train loss: %f" % (train_loss / n_batch))
                 val_loss, n_batch = 0, 0
                 for X_val_a, _ in iterate.minibatches(X_val, X_val, batch_size, shuffle=True):
                     dp_dict = utils.dict_to_one(self.all_drop)
@@ -1000,7 +1001,7 @@ class ReconLayer(DenseLayer):
                     err = sess.run(self.cost, feed_dict=feed_dict)
                     val_loss += err
                     n_batch += 1
-                print("   val loss: %f" % (val_loss / n_batch))
+                logging.info("   val loss: %f" % (val_loss / n_batch))
                 if save:
                     try:
                         visualize.W(self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
@@ -1074,14 +1075,14 @@ class DropoutLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         if is_train is False:
-            print("  [TL] skip DropoutLayer")
+            logging.info("skip DropoutLayer")
             self.outputs = layer.outputs
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  [TL] DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
+            logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
@@ -1098,11 +1099,11 @@ class DropoutLayer(Layer):
                 self.all_drop.update({set_keep[name]: keep})
             self.all_layers.extend([self.outputs])
 
-        # print(set_keep[name])
+        # logging.info(set_keep[name])
         #   Tensor("Placeholder_2:0", dtype=float32)
-        # print(denoising1)
+        # logging.info(denoising1)
         #   Tensor("Placeholder_2:0", dtype=float32)
-        # print(self.all_drop[denoising1])
+        # logging.info(self.all_drop[denoising1])
         #   0.8
         #
         # https://www.tensorflow.org/versions/r0.8/tutorials/mnist/tf/index.html
@@ -1146,14 +1147,14 @@ class GaussianNoiseLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         if is_train is False:
-            print("  [TL] skip GaussianNoiseLayer")
+            logging.info("skip GaussianNoiseLayer")
             self.outputs = layer.outputs
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = layer.outputs
-            print("  [TL] GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
+            logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
             with tf.variable_scope(name) as vs:
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
@@ -1223,7 +1224,7 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        print("  [TL] DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
+        logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args)

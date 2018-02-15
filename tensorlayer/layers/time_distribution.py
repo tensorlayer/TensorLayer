@@ -51,7 +51,7 @@ class TimeDistributedLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        print("  [TL] TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
+        logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
 
         if not args: args = dict()
         assert isinstance(args, dict), "'args' must be a dict."

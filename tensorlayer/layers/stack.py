@@ -35,7 +35,7 @@ class StackLayer(Layer):
 
         self.outputs = tf.stack(self.inputs, axis=axis, name=name)
 
-        print("  [TL] StackLayer %s: axis: %d" % (self.name, axis))
+        logging.info("StackLayer %s: axis: %d" % (self.name, axis))
 
         self.all_layers = list(layer[0].all_layers)
         self.all_params = list(layer[0].all_params)
@@ -78,7 +78,7 @@ def UnStackLayer(
     with tf.variable_scope(name) as vs:
         outputs = tf.unstack(inputs, num=num, axis=axis)
 
-    print("  [TL] UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (name, num, axis, len(outputs)))
+    logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (name, num, axis, len(outputs)))
 
     net_new = []
     scope_name = tf.get_variable_scope().name
