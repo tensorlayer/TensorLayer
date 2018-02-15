@@ -401,7 +401,7 @@ class OneHotInputLayer(Layer):
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input_layer'):
         Layer.__init__(self, inputs=inputs, name=name)
         assert depth != None, "depth is not given"
-        logging.info("  [TL]:Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        logging.info("Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
         self.all_layers = []
         self.all_params = []
