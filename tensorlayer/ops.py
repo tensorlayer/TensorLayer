@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -10,6 +9,7 @@ from sys import platform as _platform
 
 import tensorflow as tf
 import tensorlayer as tl
+from . import _logging as logging
 
 
 def exit_tf(sess=None, port=6006):
@@ -29,19 +29,19 @@ def exit_tf(sess=None, port=6006):
     # import time
     # time.sleep(2)
     if _platform == "linux" or _platform == "linux2":
-        print('linux: %s' % text)
+        logging.info('linux: %s' % text)
         os.system('nvidia-smi')
         os.system('fuser ' + port + '/tcp -k')  # kill tensorboard 6006
         os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill")  # kill all nvidia-smi python process
         _exit()
     elif _platform == "darwin":
-        print('OS X: %s' % text)
+        logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
     elif _platform == "win32":
-        print(text2 + "Windows")
+        logging.info(text2 + "Windows")
         # TODO
     else:
-        print(text2 + _platform)
+        logging.info(text2 + _platform)
 
 
 def open_tb(logdir='/tmp/tensorflow', port=6006):
@@ -58,21 +58,21 @@ def open_tb(logdir='/tmp/tensorflow', port=6006):
     text2 = " not yet supported by this function (tl.ops.open_tb)"
 
     if not tl.files.exists_or_mkdir(logdir, verbose=False):
-        print("[TL] Log reportory was created at %s" % logdir)
+        logging.info("[TL] Log reportory was created at %s" % logdir)
 
     if _platform == "linux" or _platform == "linux2":
-        print('linux %s' % text2)
+        logging.info('linux %s' % text2)
         # TODO
     elif _platform == "darwin":
-        print('OS X: %s' % text)
+        logging.info('OS X: %s' % text)
         subprocess.Popen(
             sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + logdir + " --port=" + str(port),
             shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
-        print('Windows%s' % text2)
+        logging.info('Windows%s' % text2)
         # TODO
     else:
-        print(_platform + text2)
+        logging.info(_platform + text2)
 
 
 def clear_all(printable=True):
@@ -84,7 +84,7 @@ def clear_all(printable=True):
     printable : boolean
         If True, print all deleted variables.
     """
-    print('clear all .....................................')
+    logging.info('clear all .....................................')
     gl = globals().copy()
     for var in gl:
         if var[0] == '_': continue
@@ -93,7 +93,7 @@ def clear_all(printable=True):
         if 'class' in str(globals()[var]): continue
 
         if printable:
-            print(" clear_all ------- %s" % str(globals()[var]))
+            logging.info(" clear_all ------- %s" % str(globals()[var]))
 
         del globals()[var]
 
@@ -106,7 +106,7 @@ def clear_all(printable=True):
 #     ----------
 #     printable : if True, print all deleted variables.
 #     """
-#     print('clear all .....................................')
+#     logging.info('clear all .....................................')
 #     for var in vars:
 #         if var[0] == '_': continue
 #         if 'func' in str(var): continue
@@ -114,7 +114,7 @@ def clear_all(printable=True):
 #         if 'class' in str(var): continue
 #
 #         if printable:
-#             print(" clear_all ------- %s" % str(var))
+#             logging.info(" clear_all ------- %s" % str(var))
 #
 #         del var
 
@@ -133,7 +133,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     ----------
     - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
     """
-    print("[TL]: GPU MEM Fraction %f" % gpu_fraction)
+    logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
     return sess
@@ -237,10 +237,10 @@ def get_site_packages_directory():
     import site
     try:
         loc = site.getsitepackages()
-        print("[TL] tl.ops : site-packages in ", loc)
+        logging.info("[TL] tl.ops : site-packages in %s " % loc)
         return loc
     except:
-        print("[TL] tl.ops : Cannot find package dir from virtual environment")
+        logging.info("[TL] tl.ops : Cannot find package dir from virtual environment")
         return False
 
 
@@ -250,13 +250,13 @@ def empty_trash():
     """
     text = "[TL] Empty the trash"
     if _platform == "linux" or _platform == "linux2":
-        print('linux: %s' % text)
+        logging.info('linux: %s' % text)
         os.system("rm -rf ~/.local/share/Trash/*")
     elif _platform == "darwin":
-        print('OS X: %s' % text)
+        logging.info('OS X: %s' % text)
         os.system("sudo rm -rf ~/.Trash/*")
     elif _platform == "win32":
-        print('Windows: %s' % text)
+        logging.info('Windows: %s' % text)
         try:
             os.system("rd /s c:\$Recycle.Bin")  # Windows 7 or Server 2008
         except:
@@ -266,7 +266,7 @@ def empty_trash():
         except:
             pass
     else:
-        print(_platform)
+        logging.info(_platform)
 
 
 #
