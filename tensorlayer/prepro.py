@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import numbers
@@ -91,7 +90,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     ## plot function info
     # for name, value in kwargs.items():
-    #     print('{0} = {1}'.format(name, value))
+    #     logging.info('{0} = {1}'.format(name, value))
     # exit()
     # define function for threading
     def apply_fn(results, i, data, kwargs):
@@ -224,7 +223,7 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
     if is_random:
         h_offset = int(np.random.uniform(0, h - hrg) - 1)
         w_offset = int(np.random.uniform(0, w - wrg) - 1)
-        # print(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
+        # logging.info(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
         return x[h_offset:hrg + h_offset, w_offset:wrg + w_offset]
     else:  # central crop
         h_offset = int(np.floor((h - hrg) / 2.))
@@ -235,7 +234,7 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
         # old implementation
         # h_offset = (h - hrg)/2
         # w_offset = (w - wrg)/2
-        # # print(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
+        # # logging.info(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
         # return x[h_offset: h-h_offset ,w_offset: w-w_offset]
         # central crop
 
@@ -755,7 +754,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
         x_, y_ = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
         indices = np.reshape(x_ + dx, (-1, 1)), np.reshape(y_ + dy, (-1, 1))
-        # print(data.shape)
+        # logging.info(data.shape)
         if is_3d:
             results.append(map_coordinates(data, indices, order=1).reshape((shape[0], shape[1], 1)))
         else:
@@ -795,12 +794,12 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            print(" random_zoom : not zoom in/out")
+            logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
         zx, zy = zoom_range
-    # print(zx, zy)
+    # logging.info(zx, zy)
     zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
 
     h, w = x.shape[row_index], x.shape[col_index]
@@ -825,7 +824,7 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            print(" random_zoom : not zoom in/out")
+            logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
@@ -940,7 +939,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
             gamma = 1
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
 
-        # print("using contrast and saturation")
+        # logging.info("using contrast and saturation")
         image = Image.fromarray(im_)  # array -> PIL
         contrast_adjust = ImageEnhance.Contrast(image)
         image = contrast_adjust.enhance(np.random.uniform(contrast[0], contrast[1]))  #0.3,0.9))
@@ -1221,11 +1220,11 @@ def get_zca_whitening_principal_components_img(X):
         Batch of image with dimension of [n_example, row, col, channel] (default).
     """
     flatX = np.reshape(X, (X.shape[0], X.shape[1] * X.shape[2] * X.shape[3]))
-    print("zca : computing sigma ..")
+    logging.info("zca : computing sigma ..")
     sigma = np.dot(flatX.T, flatX) / flatX.shape[0]
-    print("zca : computing U, S and V ..")
+    logging.info("zca : computing U, S and V ..")
     U, S, V = linalg.svd(sigma)
-    print("zca : computing principal components ..")
+    logging.info("zca : computing principal components ..")
     principal_components = np.dot(np.dot(U, np.diag(1. / np.sqrt(S + 10e-7))), U.T)
     return principal_components
 
@@ -1240,10 +1239,10 @@ def zca_whitening(x, principal_components):
     principal_components : matrix from ``get_zca_whitening_principal_components_img``.
     """
     flatx = np.reshape(x, (x.size))
-    # print(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    # logging.info(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
     # flatx = np.reshape(x, (x.shape))
     # flatx = np.reshape(x, (x.shape[0], ))
-    # print(flatx.shape)  # (160, 176, 1)
+    # logging.info(flatx.shape)  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -1354,11 +1353,11 @@ def drop(x, keep=0.5):
 # x = np.asarray([[1,2,3,4,5,6,7,8,9,10],[1,2,3,4,5,6,7,8,9,10]])
 # x = np.asarray([x,x,x,x,x,x])
 # x.shape = 10, 4, 3
-# # print(x)
+# # logging.info(x)
 # # exit()
-# print(x.shape)
+# logging.info(x.shape)
 # # exit()
-# print(drop(x, keep=1.))
+# logging.info(drop(x, keep=1.))
 # exit()
 
 
@@ -1514,7 +1513,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
         x += max(-np.min(x), 0)
         x_max = np.max(x)
         if x_max != 0:
-            # print(x_max)
+            # logging.info(x_max)
             # x /= x_max
             x = x / x_max
         x *= 255
@@ -1556,7 +1555,7 @@ def pt2map(list_points=[], size=(100, 100), val=1):
         return i_m
     for xx in list_points:
         for x in xx:
-            # print(x)
+            # logging.info(x)
             i_m[int(np.round(x[0]))][int(np.round(x[1]))] = val
     return i_m
 
@@ -1676,7 +1675,7 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
 
 
 # coord = obj_box_coord_rescale(coord=[30, 40, 50, 50], shape=[100, 100])
-# print(coord) #[[0.15, 0.4, 0.25, 0.5]]
+# logging.info(coord) #[[0.15, 0.4, 0.25, 0.5]]
 # exit()
 
 
@@ -1703,13 +1702,13 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
 
 
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50], [10, 10, 20, 20]], shape=[100, 100])
-# print(coords)
+# logging.info(coords)
 #     # ... [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[50, 100])
-# print(coords)
+# logging.info(coords)
 #     # ... [[0.3, 0.8, 0.5, 1.0]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[100, 200])
-# print(coords)
+# logging.info(coords)
 #     # ... [[0.15, 0.4, 0.25, 0.5]]
 # exit()
 
@@ -1735,7 +1734,7 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
 
 
 # coord = obj_box_coord_centroid_to_upleft_butright([30, 40, 20, 20])
-# print(coord)    [20, 30, 40, 50]
+# logging.info(coord)    [20, 30, 40, 50]
 # exit()
 
 
@@ -1870,16 +1869,16 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
 
 # im = np.zeros([80, 100])    # as an image with shape width=100, height=80
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3], [0.1, 0.5, 0.2, 0.3]], is_rescale=True, is_center=True, is_random=False)
-# print(coords)
+# logging.info(coords)
 # # ... [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3]], is_rescale=True, is_center=False, is_random=False)
-# print(coords)
+# logging.info(coords)
 # # [[0.5, 0.4, 0.3, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=True, is_random=False)
-# print(coords)
+# logging.info(coords)
 # # ... [[80, 40, 30, 30]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=False, is_random=False)
-# print(coords)
+# logging.info(coords)
 # # [[50, 40, 30, 30]]
 # exit()
 
@@ -1924,7 +1923,7 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
             # x' = x * (imw'/imw)
             x = int(coord[0] * (size[1] / imw))
             # y' = y * (imh'/imh)
-            # print('>>', coord[1], size[0], imh)
+            # logging.info('>>', coord[1], size[0], imh)
             y = int(coord[1] * (size[0] / imh))
             # w' = w * (imw'/imw)
             w = int(coord[2] * (size[1] / imw))
@@ -1938,16 +1937,16 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
 
 # im = np.zeros([80, 100, 3])    # as an image with shape width=100, height=80
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30], [10, 20, 20, 20]], size=[160, 200], is_rescale=False)
-# print(coords)
+# logging.info(coords)
 # # ... [[40, 80, 60, 60], [20, 40, 40, 40]]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[40, 100], is_rescale=False)
-# print(coords)
+# logging.info(coords)
 # # ... [20, 20, 30, 15]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[60, 150], is_rescale=False)
-# print(coords)
+# logging.info(coords)
 # # ... [30, 30, 45, 22]
 # im2, coords = obj_box_imresize(im, coords=[[0.2, 0.4, 0.3, 0.3]], size=[160, 200], is_rescale=True)
-# print(coords, im2.shape)
+# logging.info(coords, im2.shape)
 # # ... [0.2, 0.4, 0.3, 0.3] (160, 200, 3)
 # exit()
 
@@ -2040,11 +2039,11 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # print('xx', w, h)
+            # logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
-            # print('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
@@ -2161,11 +2160,11 @@ def obj_box_shift(im,
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # print('xx', w, h)
+            # logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
-            # print('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
@@ -2236,12 +2235,12 @@ def obj_box_zoom(im,
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            print(" random_zoom : not zoom in/out")
+            logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
         zx, zy = zoom_range
-    # print(zx, zy)
+    # logging.info(zx, zy)
     zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
 
     h, w = im.shape[row_index], im.shape[col_index]
@@ -2286,11 +2285,11 @@ def obj_box_zoom(im,
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # print('xx', w, h)
+            # logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
-            # print('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
@@ -2624,13 +2623,13 @@ def sequences_get_mask(sequences, pad_val=0):
 #     -----------
 #     - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
 #     """
-#     print("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
+#     logging.info("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
 #             t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
 #     exit()
-#     # print(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
+#     # logging.info(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
 #     try:
 #         batch_size = int(images._shape[0])
 #     except:
@@ -2701,13 +2700,13 @@ def sequences_get_mask(sequences, pad_val=0):
 #     ----------------
 #     - ``tensorflow.models.image.cifar10.cifar10_input``
 #     """
-#     print("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
+#     logging.info("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
 #             t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
 #             t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
 #     exit()
-#     # print(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
+#     # logging.info(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
 #     try:
 #         batch_size = int(images._shape[0])
 #     except:

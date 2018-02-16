@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -9,6 +8,7 @@ import numpy as np
 import scipy.misc
 
 from . import prepro
+from . import _logging as logging
 
 ## use this, if you got the following error:
 #  _tkinter.TclError: no display name and no $DISPLAY environment variable
@@ -40,10 +40,10 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     for idx in range(0, len(img_list), n_threads):
         b_imgs_list = img_list[idx:idx + n_threads]
         b_imgs = prepro.threading_data(b_imgs_list, fn=read_image, path=path)
-        # print(b_imgs.shape)
+        # logging.info(b_imgs.shape)
         imgs.extend(b_imgs)
         if printable:
-            print('read %d from %s' % (len(imgs), path))
+            logging.info('read %d from %s' % (len(imgs), path))
     return imgs
 
 
@@ -76,9 +76,9 @@ def save_images(images, size, image_path=''):
     >>> images = np.random.rand(64, 100, 100, 3)
     >>> tl.visualize.save_images(images, [8, 8], 'temp.png')
     """
-    if len(images.shape) == 3: # Greyscale [batch, h, w] --> [batch, h, w, 1]
-        images = images[:,:,:,np.newaxis]
-        
+    if len(images.shape) == 3:  # Greyscale [batch, h, w] --> [batch, h, w, 1]
+        images = images[:, :, :, np.newaxis]
+
     def merge(images, size):
         h, w = images.shape[1], images.shape[2]
         img = np.zeros((h * size[0], w * size[1], 3))
@@ -163,7 +163,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], clas
         # cv2.imwrite('_my.png', image)
         save_image(image, save_name)
     # if len(coords) == 0:
-    #     print("draw_boxes_and_labels_to_image: no bboxes exist, cannot draw !")
+    #     logging.info("draw_boxes_and_labels_to_image: no bboxes exist, cannot draw !")
     return image
 
 
@@ -211,7 +211,7 @@ def W(W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=23
             feature = W[:, count - 1] / np.sqrt((W[:, count - 1]**2).sum())
             # feature[feature<0.0001] = 0   # value threshold
             # if count == 1 or count == 2:
-            #     print(np.mean(feature))
+            #     logging.info(np.mean(feature))
             # if np.std(feature) < 0.03:      # condition threshold
             #     feature = np.zeros_like(feature)
             # if np.mean(feature) < -0.015:      # condition threshold
@@ -295,7 +295,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     >>> tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
     """
     import matplotlib.pyplot as plt
-    # print(CNN.shape)    # (5, 5, 3, 64)
+    # logging.info(CNN.shape)    # (5, 5, 3, 64)
     # exit()
     n_mask = CNN.shape[3]
     n_row = CNN.shape[0]
@@ -311,7 +311,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
             if count > n_mask:
                 break
             a = fig.add_subplot(col, row, count)
-            # print(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
+            # logging.info(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # exit()
             # plt.imshow(
             #         np.reshape(CNN[count-1,:,:,:], (n_row, n_col)),
@@ -356,7 +356,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
     >>> tl.visualize.images2d(X_train[0:100,:,:,:], second=10, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
     """
     import matplotlib.pyplot as plt
-    # print(images.shape)    # (50000, 32, 32, 3)
+    # logging.info(images.shape)    # (50000, 32, 32, 3)
     # exit()
     if dtype:
         images = np.asarray(images, dtype=dtype)
@@ -374,7 +374,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
             if count > n_mask:
                 break
             a = fig.add_subplot(col, row, count)
-            # print(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
+            # logging.info(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # plt.imshow(
             #         np.reshape(images[count-1,:,:,:], (n_row, n_col)),
             #         cmap='gray', interpolation="nearest")     # theano
@@ -453,4 +453,4 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         plot_with_labels(low_dim_embs, labels, second=second, saveable=saveable, \
                                                     name=name, fig_idx=fig_idx)
     except ImportError:
-        print("Please install sklearn and matplotlib to visualize embeddings.")
+        logging.info("Please install sklearn and matplotlib to visualize embeddings.")
