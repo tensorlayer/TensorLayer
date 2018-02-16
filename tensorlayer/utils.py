@@ -111,7 +111,7 @@ def fit(sess,
         if (tensorboard_weight_histograms):
             for param in network.all_params:
                 if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-                    logging.info('Param name ', param.name)
+                    logging.info('Param name %s' % param.name)
                     tf.summary.histogram(param.name, param)
 
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
@@ -347,10 +347,10 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     f1 = f1_score(y_test, y_predict, average=None, labels=[x for x in range(n_classes)])
     f1_macro = f1_score(y_test, y_predict, average='macro')
     acc = accuracy_score(y_test, y_predict)
-    logging.info('confusion matrix: \n', c_mat)
-    logging.info('f1-score:', f1)
-    logging.info('f1-score(macro):', f1_macro)  # same output with > f1_score(y_true, y_pred, average='macro')
-    logging.info('accuracy-score:', acc)
+    logging.info('confusion matrix: \n%s' % c_mat)
+    logging.info('f1-score        : %s' % f1)
+    logging.info('f1-score(macro) : %f' % f1_macro)  # same output with > f1_score(y_true, y_pred, average='macro')
+    logging.info('accuracy-score  : %f' % acc)
     return c_mat, f1, acc, f1_macro
 
 
@@ -444,15 +444,15 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
                 break
             X[key] = np.vstack((X[key], temp))
     if printable:
-        logging.info('first features of label 0 >', len(X[0][0]))
+        logging.info('first features of label 0 > %d' % len(X[0][0]))
         logging.info('the occurrence num of each stage after oversampling')
     for key in X:
-        logging.info(key, len(X[key]))
+        logging.info("%s %d" % (key, len(X[key])))
     if printable:
         logging.info('make each stage have same num of instances')
     for key in X:
         X[key] = X[key][0:most_num, :]
-        logging.info(key, len(X[key]))
+        logging.info("%s %d" % (key, len(X[key])))
 
     # convert dict to list
     if printable:
