@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import gzip
@@ -15,6 +14,7 @@ from six.moves import cPickle, urllib, zip
 from tensorflow.python.platform import gfile
 
 from . import nlp, utils, visualize
+from . import _logging as logging
 
 
 ## Load dataset functions
@@ -42,7 +42,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
     def load_mnist_images(path, filename):
         filepath = maybe_download_and_extract(filename, path, 'http://yann.lecun.com/exdb/mnist/')
 
-        print(filepath)
+        logging.info(filepath)
         # Read the inputs in Yann LeCun's binary format.
         with gzip.open(filepath, 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=16)
@@ -63,7 +63,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
         return data
 
     # Download and read the training and test set images and labels.
-    print("Load or Download MNIST > {}".format(path))
+    logging.info("Load or Download MNIST > {}".format(path))
     X_train = load_mnist_images(path, 'train-images-idx3-ubyte.gz')
     y_train = load_mnist_labels(path, 'train-labels-idx1-ubyte.gz')
     X_test = load_mnist_images(path, 't10k-images-idx3-ubyte.gz')
@@ -116,7 +116,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
     - `<https://teratail.com/questions/28932>`_
     """
     path = os.path.join(path, 'cifar10')
-    print("Load or Download cifar10 > {}".format(path))
+    logging.info("Load or Download cifar10 > {}".format(path))
 
     #Helper function to unpickle the data
     def unpickle(file):
@@ -163,11 +163,11 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
     y_train = np.array(y_train)
 
     if plotable == True:
-        print('\nCIFAR-10')
+        logging.info('\nCIFAR-10')
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
-        print('Shape of a training image: X_train[0]', X_train[0].shape)
+        logging.info('Shape of a training image: X_train[0]', X_train[0].shape)
 
         plt.ion()  # interactive mode
         count = 1
@@ -189,10 +189,10 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
         plt.draw()  # interactive mode
         plt.pause(3)  # interactive mode
 
-        print("X_train:", X_train.shape)
-        print("y_train:", y_train.shape)
-        print("X_test:", X_test.shape)
-        print("y_test:", y_test.shape)
+        logging.info("X_train:", X_train.shape)
+        logging.info("y_train:", y_train.shape)
+        logging.info("X_test:", X_test.shape)
+        logging.info("y_test:", y_test.shape)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
@@ -228,7 +228,7 @@ def load_ptb_dataset(path='data'):
     - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
     """
     path = os.path.join(path, 'ptb')
-    print("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
+    logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
     #Maybe dowload and uncompress tar, or load exsisting files
     filename = 'simple-examples.tgz'
@@ -247,10 +247,10 @@ def load_ptb_dataset(path='data'):
     test_data = nlp.words_to_word_ids(nlp.read_words(test_path), word_to_id)
     vocabulary = len(word_to_id)
 
-    # print(nlp.read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
-    # print(train_data)                 # ...  214,         5,    23,    1,       2]
-    # print(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
-    # print(vocabulary)                 # 10000
+    # logging.info(nlp.read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
+    # logging.info(train_data)                 # ...  214,         5,    23,    1,       2]
+    # logging.info(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
+    # logging.info(vocabulary)                 # 10000
     # exit()
     return train_data, valid_data, test_data, vocabulary
 
@@ -278,7 +278,7 @@ def load_matt_mahoney_text8_dataset(path='data'):
     >>> print('Data size', len(words))
     """
     path = os.path.join(path, 'mm_test8')
-    print("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
+    logging.info("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
 
     filename = 'text8.zip'
     url = 'http://mattmahoney.net/dc/'
@@ -389,7 +389,7 @@ def load_nietzsche_dataset(path='data'):
     >>> words = basic_clean_str(words)
     >>> words = words.split()
     """
-    print("Load or Download nietzsche dataset > {}".format(path))
+    logging.info("Load or Download nietzsche dataset > {}".format(path))
     path = os.path.join(path, 'nietzsche')
 
     filename = "nietzsche.txt"
@@ -427,7 +427,7 @@ def load_wmt_en_fr_dataset(path='data'):
 
     def gunzip_file(gz_path, new_path):
         """Unzips from gz_path into new_path."""
-        print("Unpacking %s to %s" % (gz_path, new_path))
+        logging.info("Unpacking %s to %s" % (gz_path, new_path))
         with gzip.open(gz_path, "rb") as gz_file:
             with open(new_path, "wb") as new_file:
                 for line in gz_file:
@@ -449,7 +449,7 @@ def load_wmt_en_fr_dataset(path='data'):
         dev_name = "newstest2013"
         dev_path = os.path.join(path, "newstest2013")
         if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
-            print("Extracting tgz file %s" % dev_file)
+            logging.info("Extracting tgz file %s" % dev_file)
             with tarfile.open(dev_file, "r:gz") as dev_tar:
                 fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
                 en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
@@ -459,7 +459,7 @@ def load_wmt_en_fr_dataset(path='data'):
                 dev_tar.extract(en_dev_file, path)
         return dev_path
 
-    print("Load or Download WMT English-to-French translation > {}".format(path))
+    logging.info("Load or Download WMT English-to-French translation > {}".format(path))
 
     train_path = get_wmt_enfr_train_set(path)
     dev_path = get_wmt_enfr_dev_set(path)
@@ -496,7 +496,7 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     url = 'http://press.liacs.nl/mirflickr/mirflickr25k/'
     ## download dataset
     if folder_exists(path + "/mirflickr") is False:
-        print("[*] Flickr25k is nonexistent in {}".format(path))
+        logging.info("[*] Flickr25k is nonexistent in {}".format(path))
         maybe_download_and_extract(filename, path, url, extract=True)
         del_file(path + '/' + filename)
     ## return images by the given tag.
@@ -504,21 +504,21 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     folder_imgs = path + "/mirflickr"
     path_imgs = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     path_imgs.sort(key=natural_keys)
-    # print(path_imgs[0:10])
+    # logging.info(path_imgs[0:10])
     # 2. tag path list
     folder_tags = path + "/mirflickr/meta/tags"
     path_tags = load_file_list(path=folder_tags, regx='\\.txt', printable=False)
     path_tags.sort(key=natural_keys)
-    # print(path_tags[0:10])
+    # logging.info(path_tags[0:10])
     # 3. select images
     if tag is None:
-        print("[Flickr25k] reading all images")
+        logging.info("[Flickr25k] reading all images")
     else:
-        print("[Flickr25k] reading images with tag: {}".format(tag))
+        logging.info("[Flickr25k] reading images with tag: {}".format(tag))
     images_list = []
     for idx in range(0, len(path_tags)):
         tags = read_file(folder_tags + '/' + path_tags[idx]).split('\n')
-        # print(idx+1, tags)
+        # logging.info(idx+1, tags)
         if tag is None or tag in tags:
             images_list.append(path_imgs[idx])
 
@@ -552,7 +552,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
     """
     path = os.path.join(path, 'flickr1M')
-    print("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
+    logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
         'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip', 'images7.zip', 'images8.zip', 'images9.zip'
     ]
@@ -561,22 +561,22 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     ## download dataset
     for image_zip in images_zip[0:size]:
         image_folder = image_zip.split(".")[0]
-        # print(path+"/"+image_folder)
+        # logging.info(path+"/"+image_folder)
         if folder_exists(path + "/" + image_folder) is False:
-            # print(image_zip)
-            print("[Flickr1M] {} is missing in {}".format(image_folder, path))
+            # logging.info(image_zip)
+            logging.info("[Flickr1M] {} is missing in {}".format(image_folder, path))
             maybe_download_and_extract(image_zip, path, url, extract=True)
             del_file(path + '/' + image_zip)
             os.system("mv {} {}".format(path + '/images', path + '/' + image_folder))
         else:
-            print("[Flickr1M] {} exists in {}".format(image_folder, path))
+            logging.info("[Flickr1M] {} exists in {}".format(image_folder, path))
     ## download tag
     if folder_exists(path + "/tags") is False:
-        print("[Flickr1M] tag files is nonexistent in {}".format(path))
+        logging.info("[Flickr1M] tag files is nonexistent in {}".format(path))
         maybe_download_and_extract(tag_zip, path, url, extract=True)
         del_file(path + '/' + tag_zip)
     else:
-        print("[Flickr1M] tags exists in {}".format(path))
+        logging.info("[Flickr1M] tags exists in {}".format(path))
 
     ## 1. image path list
     images_list = []
@@ -584,36 +584,36 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     for i in range(0, size):
         images_folder_list += load_folder_list(path=path + '/images%d' % i)
     images_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
-    # print(images_folder_list)
+    # logging.info(images_folder_list)
     # exit()
     for folder in images_folder_list[0:size * 10]:
         tmp = load_file_list(path=folder, regx='\\.jpg', printable=False)
         tmp.sort(key=lambda s: int(s.split('.')[-2]))  # ddd.jpg
-        # print(tmp[0::570])
+        # logging.info(tmp[0::570])
         images_list.extend([folder + '/' + x for x in tmp])
-    # print('IM', len(images_list), images_list[0::6000])
+    # logging.info('IM', len(images_list), images_list[0::6000])
     ## 2. tag path list
     tag_list = []
     tag_folder_list = load_folder_list(path + "/tags")
     tag_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
 
     for folder in tag_folder_list[0:size * 10]:
-        # print(folder)
+        # logging.info(folder)
         tmp = load_file_list(path=folder, regx='\\.txt', printable=False)
         tmp.sort(key=lambda s: int(s.split('.')[-2]))  # ddd.txt
         tmp = [folder + '/' + s for s in tmp]
         tag_list += tmp
-    # print('T', len(tag_list), tag_list[0::6000])
+    # logging.info('T', len(tag_list), tag_list[0::6000])
     # exit()
     ## 3. select images
-    print("[Flickr1M] searching tag: {}".format(tag))
+    logging.info("[Flickr1M] searching tag: {}".format(tag))
     select_images_list = []
     for idx in range(0, len(tag_list)):
         tags = read_file(tag_list[idx]).split('\n')
         if tag in tags:
             select_images_list.append(images_list[idx])
-            # print(idx, tags, tag_list[idx], images_list[idx])
-    print("[Flickr1M] reading images with tag: {}".format(tag))
+            # logging.info(idx, tags, tag_list[idx], images_list[idx])
+    logging.info("[Flickr1M] reading images with tag: {}".format(tag))
     images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
     return images
 
@@ -636,7 +636,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
     url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
 
     if folder_exists(os.path.join(path, filename)) is False:
-        print("[*] {} is nonexistent in {}".format(filename, path))
+        logging.info("[*] {} is nonexistent in {}".format(filename, path))
         maybe_download_and_extract(filename + '.zip', path, url, extract=True)
         del_file(os.path.join(path, filename + '.zip'))
 
@@ -708,7 +708,7 @@ def load_celebA_dataset(dirpath='data'):
     save_path = os.path.join(dirpath, filename)
     image_path = os.path.join(dirpath, data_dir)
     if os.path.exists(image_path):
-        print('[*] {} already exists'.format(save_path))
+        logging.info('[*] {} already exists'.format(save_path))
     else:
         exists_or_mkdir(dirpath)
         download_file_from_google_drive(drive_id, save_path)
@@ -827,19 +827,19 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
         tar_filename = "VOCtrainval_11-May-2012.tar"
         extracted_filename = "VOC2012"  #"VOCdevkit/VOC2012"
-        print("    [============= VOC 2012 =============]")
+        logging.info("    [============= VOC 2012 =============]")
     elif dataset == "2012test":
         extracted_filename = "VOC2012test"  #"VOCdevkit/VOC2012"
-        print("    [============= VOC 2012 Test Set =============]")
-        print("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
+        logging.info("    [============= VOC 2012 Test Set =============]")
+        logging.info("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
         import time
         time.sleep(3)
         if os.path.isdir(os.path.join(path, extracted_filename)) is False:
-            print("For VOC 2012 Test data - online registration required")
-            print(
+            logging.info("For VOC 2012 Test data - online registration required")
+            logging.info(
                 " Please download VOC2012test.tar from:  \n register: http://host.robots.ox.ac.uk:8080 \n voc2012 : http://host.robots.ox.ac.uk:8080/eval/challenges/voc2012/ \ndownload: http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar"
             )
-            print(" unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s" % path)
+            logging.info(" unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s" % path)
             exit()
         # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
         # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
@@ -848,14 +848,14 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtrainval_06-Nov-2007.tar"
         extracted_filename = "VOC2007"
-        print("    [============= VOC 2007 =============]")
+        logging.info("    [============= VOC 2007 =============]")
     elif dataset == "2007test":
         # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html#testdata
         # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
         tar_filename = "VOCtest_06-Nov-2007.tar"
         extracted_filename = "VOC2007test"
-        print("    [============= VOC 2007 Test Set =============]")
+        logging.info("    [============= VOC 2007 Test Set =============]")
     else:
         raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
 
@@ -863,7 +863,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     if dataset != "2012test":
         from sys import platform as _platform
         if folder_exists(os.path.join(path, extracted_filename)) is False:
-            print("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
+            logging.info("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
             maybe_download_and_extract(tar_filename, path, url, extract=True)
             del_file(os.path.join(path, tar_filename))
             if dataset == "2012":
@@ -895,33 +895,33 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     classes += classes_in_person  # use extra 3 classes for person
 
     classes_dict = utils.list_string_to_dict(classes)
-    print("[VOC] object classes {}".format(classes_dict))
+    logging.info("[VOC] object classes {}".format(classes_dict))
 
     ##======== 1. image path list
     # folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
     folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
-    print("[VOC] {} images found".format(len(imgs_file_list)))
+    logging.info("[VOC] {} images found".format(len(imgs_file_list)))
     imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.jpg --> 2007000027
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
-    # print('IM',imgs_file_list[0::3333], imgs_file_list[-1])
+    # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     if dataset != "2012test":
         ##======== 2. semantic segmentation maps path list
         # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
         folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
-        print("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
+        logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
         imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
-        # print('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
+        # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         ##======== 3. instance segmentation maps path list
         # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
         folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
-        print("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
+        logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
         imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
-        # print('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
+        # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
         imgs_semseg_file_list = []
         imgs_insseg_file_list = []
@@ -929,10 +929,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     # folder_ann = path+"/"+extracted_filename+"/Annotations/"
     folder_ann = os.path.join(path, extracted_filename, "Annotations")
     imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
-    print("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
+    logging.info("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
     imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
-    # print('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
+    # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
     if dataset == "2012test":  # remove unused images in JPEG folder
         imgs_file_list_new = []
@@ -943,7 +943,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     imgs_file_list_new.append(im)
                     break
         imgs_file_list = imgs_file_list_new
-        print("[VOC] keep %d images" % len(imgs_file_list_new))
+        logging.info("[VOC] keep %d images" % len(imgs_file_list_new))
 
     ##======== parse XML annotations
     def convert(size, box):
@@ -970,7 +970,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         h = int(size.find('height').text)
         n_objs = 0
 
-        # print(file_name, w, h, size)
+        # logging.info(file_name, w, h, size)
         # exit()
         for obj in root.iter('object'):
             if dataset != "2012test":
@@ -1004,12 +1004,12 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         in_file.close()
         return n_objs, out_file
 
-    print("[VOC] Parsing xml annotations files")
+    logging.info("[VOC] Parsing xml annotations files")
     n_objs_list = []
     objs_info_list = []  # Darknet Format list of string
     objs_info_dicts = {}
     for idx, ann_file in enumerate(imgs_ann_file_list):
-        # print(ann_file)
+        # logging.info(ann_file)
         n_objs, objs_info = convert_annotation(ann_file)
         n_objs_list.append(n_objs)
         objs_info_list.append(objs_info)
@@ -1063,18 +1063,18 @@ def save_npz(save_list=[], name='model.npz', sess=None):
             for k, value in enumerate(save_list):
                 save_list_var.append(value.eval())
         except:
-            print(" Fail to save model, Hint: pass the session into this function, save_npz(network.all_params, name='model.npz', sess=sess)")
+            logging.info(" Fail to save model, Hint: pass the session into this function, save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    print("[*] %s saved" % name)
+    logging.info("[*] %s saved" % name)
 
     ## save params into a dictionary
     # rename_dict = {}
     # for k, value in enumerate(save_dict):
     #     rename_dict.update({'param'+str(k) : value.eval()})
     # np.savez(name, **rename_dict)
-    # print('Model is saved to: %s' % name)
+    # logging.info('Model is saved to: %s' % name)
 
 
 def load_npz(path='', name='model.npz'):
@@ -1103,10 +1103,10 @@ def load_npz(path='', name='model.npz'):
     ## if save_npz save params into a dictionary
     # d = np.load( path+name )
     # params = []
-    # print('Load Model')
+    # logging.info('Load Model')
     # for key, val in sorted( d.items() ):
     #     params.append(val)
-    #     print('Loading %s, %s' % (key, str(val.shape)))
+    #     logging.info('Loading %s, %s' % (key, str(val.shape)))
     # return params
     ## if save_npz save params into a list
     d = np.load(path + name)
@@ -1114,7 +1114,7 @@ def load_npz(path='', name='model.npz'):
     #     params = val
     #     return params
     return d['params']
-    # print(d.items()[0][1]['params'])
+    # logging.info(d.items()[0][1]['params'])
     # exit()
     # return d.items()[0][1]['params']
 
@@ -1180,12 +1180,12 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     assert network is not None
     assert sess is not None
     if not os.path.exists(name):
-        print("[!] Load {} failed!".format(name))
+        logging.info("[!] Load {} failed!".format(name))
         return False
     else:
         params = load_npz(name=name)
         assign_params(sess, params, network)
-        print("[*] Load {} SUCCESS!".format(name))
+        logging.info("[*] Load {} SUCCESS!".format(name))
         return network
 
 
@@ -1211,7 +1211,7 @@ def save_npz_dict(save_list=[], name='model.npz', sess=None):
     save_var_dict = None
     del save_list_var
     del save_var_dict
-    print("[*] Model saved in npz_dict %s" % name)
+    logging.info("[*] Model saved in npz_dict %s" % name)
 
 
 def load_and_assign_npz_dict(name='model.npz', sess=None):
@@ -1225,7 +1225,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     """
     assert sess is not None
     if not os.path.exists(name):
-        print("[!] Load {} failed!".format(name))
+        logging.info("[!] Load {} failed!".format(name))
         return False
 
     params = np.load(name)
@@ -1243,12 +1243,12 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
                 raise KeyError
             else:
                 ops.append(varlist[0].assign(params[key]))
-                print("[*] params restored: %s" % key)
+                logging.info("[*] params restored: %s" % key)
         except KeyError:
-            print("[!] Warning: Tensor named %s not found in network." % key)
+            logging.info("[!] Warning: Tensor named %s not found in network." % key)
 
     sess.run(ops)
-    print("[*] Model restored from npz_dict %s" % name)
+    logging.info("[*] Model restored from npz_dict %s" % name)
 
 
 # def save_npz_dict(save_list=[], name='model.npz', sess=None):
@@ -1276,14 +1276,14 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 #             for k, value in enumerate(save_list):
 #                 save_list_var.append(value.eval())
 #         except:
-#             print(" Fail to save model, Hint: pass the session into this function, save_npz_dict(network.all_params, name='model.npz', sess=sess)")
+#             logging.info(" Fail to save model, Hint: pass the session into this function, save_npz_dict(network.all_params, name='model.npz', sess=sess)")
 #     save_var_dict = {str(idx):val for idx, val in enumerate(save_list_var)}
 #     np.savez(name, **save_var_dict)
 #     save_list_var = None
 #     save_var_dict = None
 #     del save_list_var
 #     del save_var_dict
-#     print("[*] %s saved" % name)
+#     logging.info("[*] %s saved" % name)
 #
 # def load_npz_dict(path='', name='model.npz'):
 #     """Load the parameters of a Model saved by tl.files.save_npz_dict().
@@ -1327,11 +1327,11 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list == []:
         var_list = tf.global_variables()
 
-    print("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
+    logging.info("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):
-            print("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
     saver = tf.train.Saver(var_list)
     saver.save(sess, ckpt_file, global_step=global_step)
@@ -1371,18 +1371,18 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     if var_list == []:
         var_list = tf.global_variables()
 
-    print("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
+    logging.info("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
 
     if printable:
         for idx, v in enumerate(var_list):
-            print("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
 
     try:
         saver = tf.train.Saver(var_list)
         saver.restore(sess, ckpt_file)
     except Exception as e:
-        print(e)
-        print("[*] load ckpt fail ...")
+        logging.info(e)
+        logging.info("[*] load ckpt fail ...")
 
 
 ## Load and save variables
@@ -1415,7 +1415,7 @@ def load_npy_to_any(path='', name='file.npy'):
         try:
             return npy
         except:
-            print("[!] Fail to load %s" % file_path)
+            logging.info("[!] Fail to load %s" % file_path)
             exit()
 
 
@@ -1475,8 +1475,8 @@ def load_file_list(path=None, regx='\.npz', printable=True):
             return_list.append(f)
     # return_list.sort()
     if printable:
-        print('Match file list = %s' % return_list)
-        print('Number of files = %d' % len(return_list))
+        logging.info('Match file list = %s' % return_list)
+        logging.info('Number of files = %d' % len(return_list))
     return return_list
 
 
@@ -1512,12 +1512,12 @@ def exists_or_mkdir(path, verbose=True):
     """
     if not os.path.exists(path):
         if verbose:
-            print("[*] creates %s ..." % path)
+            logging.info("[*] creates %s ..." % path)
         os.makedirs(path)
         return False
     else:
         if verbose:
-            print("[!] %s exists ..." % path)
+            logging.info("[!] %s exists ..." % path)
         return True
 
 
@@ -1568,29 +1568,29 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
             from urllib.request import urlretrieve
         filepath = os.path.join(working_directory, filename)
         urlretrieve(url_source + filename, filepath, reporthook=_dlProgress)
+        sys.stdout.write('\n')
 
     exists_or_mkdir(working_directory, verbose=False)
     filepath = os.path.join(working_directory, filename)
 
     if not os.path.exists(filepath):
         _download(filename, working_directory, url_source)
-        print()
         statinfo = os.stat(filepath)
-        print('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  #, 'bytes.')
+        logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  #, 'bytes.')
         if (not (expected_bytes is None) and (expected_bytes != statinfo.st_size)):
             raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
         if (extract):
             if tarfile.is_tarfile(filepath):
-                print('Trying to extract tar file')
+                logging.info('Trying to extract tar file')
                 tarfile.open(filepath, 'r').extractall(working_directory)
-                print('... Success!')
+                logging.info('... Success!')
             elif zipfile.is_zipfile(filepath):
-                print('Trying to extract zip file')
+                logging.info('Trying to extract zip file')
                 with zipfile.ZipFile(filepath) as zf:
                     zf.extractall(working_directory)
-                print('... Success!')
+                logging.info('... Success!')
             else:
-                print("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
+                logging.info("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
     return filepath
 
 
@@ -1638,5 +1638,5 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     file_list = load_file_list(path=path, regx=regx)
     for f in file_list:
         W = load_npz(path, f)[0]
-        print("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
+        logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
         visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
