@@ -167,7 +167,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
-        logging.info('Shape of a training image: X_train[0]', X_train[0].shape)
+        logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
 
         plt.ion()  # interactive mode
         count = 1
@@ -189,10 +189,10 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
         plt.draw()  # interactive mode
         plt.pause(3)  # interactive mode
 
-        logging.info("X_train:", X_train.shape)
-        logging.info("y_train:", y_train.shape)
-        logging.info("X_test:", X_test.shape)
-        logging.info("y_test:", y_test.shape)
+        logging.info("X_train: %s" % X_train.shape)
+        logging.info("y_train: %s" % y_train.shape)
+        logging.info("X_test:  %s" % X_test.shape)
+        logging.info("y_test:  %s" % y_test.shape)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
@@ -247,7 +247,7 @@ def load_ptb_dataset(path='data'):
     test_data = nlp.words_to_word_ids(nlp.read_words(test_path), word_to_id)
     vocabulary = len(word_to_id)
 
-    # logging.info(nlp.read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
+    # logging.info(nlp.read_words(train_path)) # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
     # logging.info(train_data)                 # ...  214,         5,    23,    1,       2]
     # logging.info(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
     # logging.info(vocabulary)                 # 10000
