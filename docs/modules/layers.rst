@@ -4,7 +4,7 @@ API - Layers
 TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also
 support transparent access to native TensorFlow parameters.
-For example, we provide not only layers for local response normalization, but also 
+For example, we provide not only layers for local response normalization, but also
 layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
@@ -25,7 +25,7 @@ All TensorLayer layers have a number of methods in common:
  - ``layer.print_layers()`` : print network layer information in order.
  - ``layer.count_params()`` : print the number of parameters in the network.
 
-A network starts with the input layer and is followed by layers stacked in order. 
+A network starts with the input layer and is followed by layers stacked in order.
 A network is essentially a ``Layer`` class.
 The key properties of a network are ``network.all_params``, ``network.all_layers`` and ``network.all_drop``.
 The ``all_params`` is a list which store pointers to all network parameters in order. For example,
@@ -537,6 +537,7 @@ Pooling and Padding layers
 Pooling (Pro)
 ^^^^^^^^^^^^^^
 Pooling layer for any dimensions and any pooling functions.
+
 .. autoclass:: PoolLayer
 
 Padding (Pro)
