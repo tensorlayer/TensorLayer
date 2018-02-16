@@ -126,7 +126,7 @@ TensorLayer is designed for beginning, intermediate and professional deep learni
 - *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. 
 A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
-- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., **connected with** [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-keras)).
+- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., **connected with** [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py)).
 - *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
 # Benchmark
