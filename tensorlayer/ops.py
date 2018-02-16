@@ -237,7 +237,7 @@ def get_site_packages_directory():
     import site
     try:
         loc = site.getsitepackages()
-        logging.info("[TL] tl.ops : site-packages in ", loc)
+        logging.info("[TL] tl.ops : site-packages in %s " % loc)
         return loc
     except:
         logging.info("[TL] tl.ops : Cannot find package dir from virtual environment")
