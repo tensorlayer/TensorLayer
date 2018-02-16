@@ -153,7 +153,7 @@ def sample_top(a=[], top_k=10):
     """
     idx = np.argpartition(a, -top_k)[-top_k:]
     probs = a[idx]
-    # logging.info("new", probs)
+    # logging.info("new %f" % probs)
     probs = probs / np.sum(probs)
     choice = np.random.choice(idx, p=probs)
     return choice
@@ -163,7 +163,7 @@ def sample_top(a=[], top_k=10):
     # idx = idx[:top_k]
     # # a = a[idx]
     # probs = a[idx]
-    # logging.info("prev", probs)
+    # logging.info("prev %f" % probs)
     # # probs = probs / np.sum(probs)
     # # choice = np.random.choice(idx, p=probs)
     # # return choice
@@ -234,8 +234,8 @@ class Vocabulary(object):
 
     def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
         if not tf.gfile.Exists(vocab_file):
-            tf.logging.fatal("Vocab file %s not found.", vocab_file)
-        tf.logging.info("Initializing vocabulary from file: %s", vocab_file)
+            tf.logging.fatal("Vocab file %s not found." % vocab_file)
+        tf.logging.info("Initializing vocabulary from file: %s" % vocab_file)
 
         with tf.gfile.GFile(vocab_file, mode="r") as f:
             reverse_vocab = list(f.readlines())
@@ -266,9 +266,9 @@ class Vocabulary(object):
         self.unk_id = vocab[unk_word]
         self.pad_id = vocab[pad_word]
         logging.info("      start_id: %d" % self.start_id)
-        logging.info("      end_id: %d" % self.end_id)
-        logging.info("      unk_id: %d" % self.unk_id)
-        logging.info("      pad_id: %d" % self.pad_id)
+        logging.info("      end_id  : %d" % self.end_id)
+        logging.info("      unk_id  : %d" % self.unk_id)
+        logging.info("      pad_id  : %d" % self.pad_id)
 
     def word_to_id(self, word):
         """Returns the integer word id of a word string."""
@@ -506,9 +506,9 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
                 questions_skipped += 1
             else:
                 questions.append(np.array(ids))
-    logging.info("Eval analogy file: ", eval_file)
-    logging.info("Questions: ", len(questions))
-    logging.info("Skipped: ", questions_skipped)
+    logging.info("Eval analogy file: %s" % eval_file)
+    logging.info("Questions: %d", len(questions))
+    logging.info("Skipped: %d", questions_skipped)
     analogy_questions = np.array(questions, dtype=np.int32)
     return analogy_questions
 
@@ -541,9 +541,9 @@ def build_vocab(data):
     """
     # data = _read_words(filename)
     counter = collections.Counter(data)
-    # logging.info('counter', counter)   # dictionary for the occurrence number of each word, e.g. 'banknote': 1, 'photography': 1, 'kia': 1
+    # logging.info('counter %s' % counter)   # dictionary for the occurrence number of each word, e.g. 'banknote': 1, 'photography': 1, 'kia': 1
     count_pairs = sorted(counter.items(), key=lambda x: (-x[1], x[0]))
-    # logging.info('count_pairs',count_pairs)  # convert dictionary to list of tuple, e.g. ('ssangyong', 1), ('swapo', 1), ('wachter', 1)
+    # logging.info('count_pairs %s' % count_pairs)  # convert dictionary to list of tuple, e.g. ('ssangyong', 1), ('swapo', 1), ('wachter', 1)
     words, _ = list(zip(*count_pairs))
     word_to_id = dict(zip(words, range(len(words))))
     # logging.info(words)    # list of words
