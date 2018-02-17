@@ -447,6 +447,7 @@ class OneHotInputLayer(Layer):
     name : str
         A unique layer name
     """
+
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
         Layer.__init__(self, inputs=inputs, name=name)
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
@@ -542,6 +543,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     ----------
     - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
     """
+
     def __init__(
             self,
             inputs=None,
@@ -671,6 +673,7 @@ class EmbeddingInputlayer(Layer):
     >>> print('vectors:', vectors.shape)
     ... (4, 200)
     """
+
     def __init__(
             self,
             inputs=None,
