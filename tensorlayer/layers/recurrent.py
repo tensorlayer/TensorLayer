@@ -17,8 +17,8 @@ class RNNLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
@@ -39,8 +39,8 @@ class RNNLayer(Layer):
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
         - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     --------------
@@ -278,8 +278,8 @@ class BiRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
@@ -306,8 +306,8 @@ class BiRNNLayer(Layer):
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
         - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     --------------
@@ -642,8 +642,8 @@ class ConvLSTMLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     cell_shape : tuple, the shape of each cell width*height
     filter_size : tuple, the size of filter width*height
     cell_fn : a Convolutional RNN cell as follow.
@@ -663,8 +663,8 @@ class ConvLSTMLayer(Layer):
         - When return_last = False
         - If True, return 4D Tensor [n_example, h, w, c], for stacking DenseLayer after it.
         - If False, return 5D Tensor [n_example/n_steps, h, w, c], for stacking multiple ConvLSTM after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     --------------
@@ -917,8 +917,8 @@ class DynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
@@ -946,8 +946,8 @@ class DynamicRNNLayer(Layer):
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
         - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), n_hidden], for stacking multiple RNN after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     ------------
@@ -1167,8 +1167,8 @@ class BiDynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
     cell_init_args : a dictionary
@@ -1199,8 +1199,8 @@ class BiDynamicRNNLayer(Layer):
         - When return_last = False
         - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer or computing cost after it.
         - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), 2 * n_hidden], for stacking multiple RNN after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     -----------------------
@@ -1415,9 +1415,9 @@ class Seq2Seq(Layer):
 
     Parameters
     ----------
-    net_encode_in : a :class:`Layer` instance
+    net_encode_in : :class:`Layer`
         Encode sequences, [batch_size, None, n_features].
-    net_decode_in : a :class:`Layer` instance
+    net_decode_in : :class:`Layer`
         Decode sequences, [batch_size, None, n_features].
     cell_fn : a TensorFlow's core RNN cell as follow (Note TF1.0+ and TF1.0- are different).
         - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
@@ -1441,8 +1441,8 @@ class Seq2Seq(Layer):
         - When return_last = False
         - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer or computing cost after it.
         - If False, return 3D Tensor [n_example/n_steps(max), n_steps(max), n_hidden], for stacking multiple RNN after it.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Attributes
     ------------

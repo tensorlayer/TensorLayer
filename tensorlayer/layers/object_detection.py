@@ -14,11 +14,13 @@ class ROIPoolingLayer(Layer):
 
     Parameters
     -----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer, the feature maps on which to perform the pooling operation
+    layer : :class:`Layer`
+        Previous layer
     rois : list of regions of interest in the format (feature map index, upper left, bottom right)
     pool_width : int, size of the pooling sections.
     pool_width : int, size of the pooling sections.
+    name : str
+        A unique layer name
 
     Notes
     -----------

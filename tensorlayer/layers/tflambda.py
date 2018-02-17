@@ -14,14 +14,14 @@ class LambdaLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     fn : a function
         The function that applies to the outputs of previous layer.
     fn_args : a dictionary
         The arguments for the function (option).
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
 
     Examples
     ---------

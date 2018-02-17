@@ -18,10 +18,10 @@ class FlattenLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        Previous layer
+    name : str
+        A unique layer name.
 
     Examples
     --------
@@ -64,12 +64,12 @@ class ReshapeLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     shape : a list
         The output shape.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     --------
@@ -109,12 +109,12 @@ class TransposeLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     perm: list, a permutation of the dimensions
         Similar with numpy.transpose.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
     """
 
     def __init__(

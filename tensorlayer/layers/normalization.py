@@ -20,7 +20,7 @@ class LocalResponseNormLayer(Layer):
     bias : An optional float. Defaults to 1. An offset (usually positive to avoid dividing by 0).
     alpha : An optional float. Defaults to 1. A scale factor, usually positive.
     beta : An optional float. Defaults to 0.5. An exponent.
-    name : A string or None, an optional name to attach to this layer.
+    name : str, A unique layer name.
     """
 
     def __init__(
@@ -52,8 +52,8 @@ class BatchNormLayer(Layer):
 
     Parameters
     -----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     decay : float, default is 0.9.
         A decay factor for ExponentialMovingAverage, use larger value for large dataset.
     epsilon : float
@@ -66,8 +66,8 @@ class BatchNormLayer(Layer):
     gamma_init : gamma initializer
         The initializer for initializing gamma
     dtype : tf.float32 (default) or tf.float16
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     References
     ----------
@@ -171,8 +171,8 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     center: If True, subtract `beta`. If False, `beta` is ignored.
@@ -188,8 +188,8 @@ class BatchNormLayer(Layer):
 #         The initializer for initializing beta
 #     gamma_init : gamma initializer
 #         The initializer for initializing gamma
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -337,8 +337,8 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
@@ -350,8 +350,8 @@ class BatchNormLayer(Layer):
 #         The initializer for initializing beta
 #     gamma_init : gamma initializer
 #         The initializer for initializing gamma
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -462,8 +462,8 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
@@ -475,8 +475,8 @@ class BatchNormLayer(Layer):
 #         The initializer for initializing beta
 #     gamma_init : gamma initializer
 #         The initializer for initializing gamma
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -610,8 +610,8 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
@@ -623,8 +623,8 @@ class BatchNormLayer(Layer):
 #         The initializer for initializing beta
 #     gamma_init : gamma initializer
 #         The initializer for initializing gamma
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -696,8 +696,8 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
@@ -709,8 +709,8 @@ class BatchNormLayer(Layer):
 #         The initializer for initializing beta
 #     gamma_init : gamma initializer
 #         The initializer for initializing gamma
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -793,16 +793,16 @@ class BatchNormLayer(Layer):
 #
 #     Parameters
 #     -----------
-#     layer : a :class:`Layer` instance
-#         The `Layer` class feeding into this layer.
+#     layer : :class:`Layer`
+#         Previous layer
 #     decay : float
 #         A decay factor for ExponentialMovingAverage.
 #     epsilon : float
 #         A small float number to avoid dividing by 0.
 #     is_train : boolean
 #         Whether train or inference.
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     References
 #     ----------
@@ -884,8 +884,8 @@ class InstanceNormLayer(Layer):
 
     Parameters
     -----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     act : activation function.
     epsilon : float
         A small float number.
@@ -893,8 +893,8 @@ class InstanceNormLayer(Layer):
         The initializer for initializing beta
     offset_init : gamma initializer
         The initializer for initializing gamma
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
     """
 
     def __init__(
@@ -931,8 +931,8 @@ class LayerNormLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     act : activation function
         The function that is applied to the layer activations.
     others : see  `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_

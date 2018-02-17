@@ -17,14 +17,14 @@ class SlimNetsLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
     slim_args : dictionary
         The arguments for the slim model.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
 
     Notes
     -----
