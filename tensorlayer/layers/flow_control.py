@@ -20,6 +20,11 @@ class MultiplexerLayer(Layer):
     name : str
         A unique layer name.
 
+    Attributes
+    ----------
+    sel : placeholder
+        The placeholder takes an integer for selecting which layer to output.
+
     Examples
     --------
     >>> x = tf.placeholder(tf.float32, shape=(None, 784), name='x')
@@ -43,7 +48,7 @@ class MultiplexerLayer(Layer):
     >>> net_1 = tl.layers.DenseLayer(net_1, n_units=800,
     ...                                act = tf.nn.relu, name='net1/relu3')
     >>> # multiplexer
-    >>> net_mux = tl.layers.MultiplexerLayer(layer = [net_0, net_1], name='mux_layer')
+    >>> net_mux = tl.layers.MultiplexerLayer(layer=[net_0, net_1], name='mux_layer')
     >>> network = tl.layers.ReshapeLayer(net_mux, shape=(-1, 800), name='reshape_layer') #
     >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
     >>> # output layer
