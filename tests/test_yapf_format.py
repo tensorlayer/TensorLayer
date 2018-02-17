@@ -2,6 +2,7 @@ import os
 import sys
 
 from yapf.yapflib.yapf_api import FormatCode
+import testing
 
 
 def _read_utf_8_file(filename):
@@ -12,17 +13,14 @@ def _read_utf_8_file(filename):
 
 
 def check_all_files():
-    for root, dirs, files in os.walk('tensorlayer'):
-        if root.find('third_party') != -1:
-            continue
-        for file in files:
-            filename = os.path.join(root, file)
-            code = _read_utf_8_file(filename)
-            # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
-            diff, changed = FormatCode(code, filename=filename, style_config='.style.yapf', print_diff=True)
-            if changed:
-                print(diff)
-                yield filename
+    for filename in testing.list_all_py_files():
+        print(filename)
+        code = _read_utf_8_file(filename)
+        # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
+        diff, changed = FormatCode(code, filename=filename, style_config='.style.yapf', print_diff=True)
+        if changed:
+            print(diff)
+            yield filename
 
 
 unformatted = list(check_all_files())
