@@ -38,8 +38,8 @@ tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
   tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
 
-Parameters
-----------
+Command-line Arguments
+----------------------
 
 - ``file``: python file path.
 
