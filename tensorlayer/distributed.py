@@ -111,7 +111,7 @@ class TaskSpecDef(object):
             return None
 
     def user_last_worker_as_evaluator(self):
-        """ Returns a new :class:`TaskSpecDef` where the last worker has been removed from
+        """Returns a new :class:`TaskSpecDef` where the last worker has been removed from
         the list of worker_hosts, so it is not used for training anymore. You can call
         is_evaluator to know whether this server is the evaluator one or not.
         In case there is only one server for training this method raises an exception, as

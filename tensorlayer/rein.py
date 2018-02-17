@@ -7,7 +7,7 @@ from six.moves import xrange
 
 
 def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
-    """ Take 1D float array of rewards and compute discounted rewards for an
+    """Take 1D float array of rewards and compute discounted rewards for an
     episode. When encount a non-zero value, consider as the end a of an episode.
 
     Parameters
@@ -45,7 +45,7 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
 
 
 def cross_entropy_reward_loss(logits, actions, rewards, name=None):
-    """ Calculate the loss for Policy Gradient Network.
+    """Calculate the loss for Policy Gradient Network.
 
     Parameters
     ----------

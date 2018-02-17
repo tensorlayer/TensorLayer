@@ -16,7 +16,7 @@ from . import _logging as logging
 
 
 def read_image(image, path=''):
-    """ Read one image.
+    """Read one image.
 
     Parameters
     -----------
@@ -27,7 +27,7 @@ def read_image(image, path=''):
 
 
 def read_images(img_list, path='', n_threads=10, printable=True):
-    """ Returns all images in list by given path and name of each image file.
+    """Returns all images in list by given path and name of each image file.
 
     Parameters
     -------------
@@ -97,7 +97,7 @@ def save_images(images, size, image_path=''):
 
 # for object detection
 def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], classes_list=[], is_center=True, is_rescale=True, save_name=None):
-    """ Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
+    """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
     -----------

@@ -665,7 +665,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
 
 
 def download_file_from_google_drive(id, destination):
-    """ Download file from Google Drive, see ``load_celebA_dataset`` for example.
+    """Download file from Google Drive, see ``load_celebA_dataset`` for example.
 
     Parameters
     --------------
@@ -960,7 +960,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         return (x, y, w, h)
 
     def convert_annotation(file_name):
-        """ Given VOC2012 XML Annotations, returns number of objects and info. """
+        """Given VOC2012 XML Annotations, returns number of objects and info."""
         in_file = open(file_name)
         out_file = ""
         tree = ET.parse(in_file)

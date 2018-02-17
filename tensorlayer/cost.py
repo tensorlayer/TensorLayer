@@ -77,7 +77,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
 
 def mean_squared_error(output, target, is_mean=False, name="mean_squared_error"):
-    """ Return the TensorFlow expression of mean-square-error (L2) of two batch of data.
+    """Return the TensorFlow expression of mean-square-error (L2) of two batch of data.
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ def normalized_mean_square_error(output, target):
 
 
 def absolute_difference_error(output, target, is_mean=False):
-    """ Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
+    """Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
 
     Parameters
     ----------
