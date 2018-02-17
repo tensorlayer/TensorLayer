@@ -211,7 +211,7 @@ def load_ptb_dataset(path='data'):
 
     Parameters
     ----------
-    path : : string
+    path : string
         The path that the data is downloaded to, defaults is ``data/ptb/``.
 
     Returns
@@ -263,13 +263,13 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
     Parameters
     ----------
-    path : : string
+    path : string
         The path that the data is downloaded to, defaults is ``data/mm_test8/``.
 
     Returns
     --------
     word_list : a list
-        a list of string (word).\n
+        a list of string (word).
         e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
 
     Examples
@@ -296,7 +296,7 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
 
     Parameters
     ----------
-    path : : string
+    path : string
         The path that the data is downloaded to, defaults is ``data/imdb/``.
 
     Examples
@@ -701,7 +701,7 @@ def download_file_from_google_drive(id, destination):
 
 
 def load_celebA_dataset(dirpath='data'):
-    """ Automatically download celebA dataset, and return a list of image path. """
+    """Automatically download celebA dataset, and return a list of image path."""
     import zipfile, os
     data_dir = 'celebA'
     filename, drive_id = "img_align_celeba.zip", "0B7EVK8r0v71pZjFTYXZWM3FlRnM"
@@ -726,7 +726,7 @@ def load_celebA_dataset(dirpath='data'):
 
 
 def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
-    """ Pascal VOC 2007/2012 Dataset has 20 objects : aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor and additional 3 classes : head, hand, foot for person.
+    """Pascal VOC 2007/2012 Dataset has 20 objects : aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor and additional 3 classes : head, hand, foot for person.
 
     Parameters
     -----------
@@ -1421,27 +1421,27 @@ def load_npy_to_any(path='', name='file.npy'):
 
 ## Folder functions
 def file_exists(filepath):
-    """ Check whether a file exists by given file path. """
+    """Check whether a file exists by given file path."""
     return os.path.isfile(filepath)
 
 
 def folder_exists(folderpath):
-    """ Check whether a folder exists by given folder path. """
+    """Check whether a folder exists by given folder path."""
     return os.path.isdir(folderpath)
 
 
 def del_file(filepath):
-    """ Delete a file by given file path. """
+    """Delete a file by given file path."""
     os.remove(filepath)
 
 
 def del_folder(folderpath):
-    """ Delete a folder by given folder path. """
+    """Delete a folder by given folder path."""
     os.rmdir(folderpath)
 
 
 def read_file(filepath):
-    """ Read a file and return a string.
+    """Read a file and return a string.
 
     Examples
     ---------
@@ -1452,7 +1452,7 @@ def read_file(filepath):
 
 
 def load_file_list(path=None, regx='\.npz', printable=True):
-    """Return a file list in a folder by given a path and regular expression.
+    r"""Return a file list in a folder by given a path and regular expression.
 
     Parameters
     ----------
@@ -1621,7 +1621,7 @@ def natural_keys(text):
 
 # Visualizing npz files
 def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
+    r"""Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
 
     Parameters
     ----------
