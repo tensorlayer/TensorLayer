@@ -5,7 +5,7 @@ python:
   - "3.5"
   # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
 install:
-  - pip install tensorflow
+  - pip install tensorflow yapf
   - pip install .
 script:
   # units test
