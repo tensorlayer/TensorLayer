@@ -201,9 +201,10 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
 
 
 def ptb_iterator(raw_data, batch_size, num_steps):
-    """
-    Generate a generator that iterates on a list of words, see PTB tutorial. Yields (Returns) the source contexts and
-    the target context by the given batch_size and num_steps (sequence_length).\n
+    """Generate a generator that iterates on a list of words, see PTB tutorial.
+    
+    Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length).
+
     see ``PTB tutorial``.
 
     e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,

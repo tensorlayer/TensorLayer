@@ -51,7 +51,7 @@ class RNNLayer(Layer):
 
     final_state : a tensor or StateTuple
         When state_is_tuple = False,
-        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
         You can get the final state after each iteration during training, then
         feed it to the initial state of next iteration.
@@ -318,7 +318,7 @@ class BiRNNLayer(Layer):
 
     fw(bw)_final_state : a tensor or StateTuple
         When state_is_tuple = False,
-        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
         You can get the final state after each iteration during training, then
         feed it to the initial state of next iteration.
@@ -957,7 +957,7 @@ class DynamicRNNLayer(Layer):
 
     final_state : a tensor or StateTuple
         When state_is_tuple = False,
-        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
         You can get the final state after each iteration during training, then
         feed it to the initial state of next iteration.
@@ -1191,8 +1191,8 @@ class BiDynamicRNNLayer(Layer):
     n_layer : an int, default is 1.
         The number of RNN layers.
     return_last : boolean
-        If True, return the last output, "Sequence input and single output"\n
-        If False, return all outputs, "Synced sequence input and output"\n
+        If True, return the last output, "Sequence input and single output"
+        If False, return all outputs, "Synced sequence input and output"
         In other word, if you want to apply one or more RNN(s) on this layer, set to False.
     return_seq_2d : boolean
         - When return_last = False
@@ -1210,7 +1210,7 @@ class BiDynamicRNNLayer(Layer):
 
     fw(bw)_final_state : a tensor or StateTuple
         When state_is_tuple = False,
-        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].\n
+        it is the final hidden and cell states, states.get_shape() = [?, 2 * n_hidden].
         When state_is_tuple = True, it stores two elements: (c, h), in that order.
         You can get the final state after each iteration during training, then
         feed it to the initial state of next iteration.
