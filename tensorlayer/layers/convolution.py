@@ -653,7 +653,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
 
 class DeformableConv2dLayer(Layer):
     """The :class:`DeformableConv2dLayer` class is a 2D
-    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_ .
+    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_.
 
     Parameters
     ----------
@@ -807,8 +807,6 @@ def atrous_conv1d(
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    use_cudnn_on_gpu: boolean
-        Use cudnn on GPU (Not used currently)
     data_format : str
         Default is 'NWC' as it is a 1D CNN.
     W_init : initializer
@@ -831,7 +829,7 @@ def atrous_conv1d(
         stride=stride,
         padding=padding,
         dilation_rate=dilation,
-        use_cudnn_on_gpu=use_cudnn_on_gpu,
+        # use_cudnn_on_gpu=use_cudnn_on_gpu,
         data_format=data_format,
         W_init=W_init,
         b_init=b_init,
@@ -1096,7 +1094,7 @@ def conv1d(
         dilation_rate=1,
         act=None,
         padding='SAME',
-        use_cudnn_on_gpu=None,
+        # use_cudnn_on_gpu=None,
         data_format="NWC",
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
@@ -1120,7 +1118,20 @@ def conv1d(
         Specifying the dilation rate to use for dilated convolution.
     act : activation function
         The function that is applied to the layer activations
-    others : see :class:`Conv1dLayer`.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    data_format : str
+        Default is 'NWC' as it is a 1D CNN.
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name
 
     Examples
     ---------
@@ -1148,7 +1159,7 @@ def conv1d(
         stride=stride,
         dilation_rate=dilation_rate,
         padding=padding,
-        use_cudnn_on_gpu=use_cudnn_on_gpu,
+        # use_cudnn_on_gpu=use_cudnn_on_gpu,
         data_format=data_format,
         W_init=W_init,
         b_init=b_init,
@@ -1264,21 +1275,25 @@ def deconv2d(net,
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    strides : tuple of int
-        The stride step (height, width).
     out_size : tuple of int
         Require if TF version < 1.3, (height, width) of output.
+    strides : tuple of int
+        The stride step (height, width).
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
     batch_size : int
         Require if TF version < 1.3, int or None.
         If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
-    padding : str
-        The padding algorithm type: "SAME" or "VALID".
     act : activation function
         The activation function of this layer.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
     name : str
         A unique layer name.
     """
@@ -1402,7 +1417,7 @@ class DeConv3d(Layer):
 
 
 class DepthwiseConv2d(Layer):
-    """Separable/Depthwise Convolutional 2D, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.
+    """Separable/Depthwise Convolutional 2D layer, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.
 
     Input:
         4-D Tensor (batch, height, width, in_channels).
