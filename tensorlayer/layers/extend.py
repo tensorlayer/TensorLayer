@@ -16,11 +16,11 @@ class ExpandDimsLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        The previous layer.
     axis : int
-        Specifies the dimension index at which to expand the shape of input
+        The dimension index at which to expand the shape of input.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(
@@ -53,11 +53,12 @@ class TileLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
-    multiples: a list of int
-        Must be one of the following types: int32, int64. 1-D. Length must be the same as the number of dimensions in input
+        The previous layer.
+    multiples: tensor
+        Must be one of the following types: int32, int64.
+        1-D Length must be the same as the number of dimensions in input.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(
