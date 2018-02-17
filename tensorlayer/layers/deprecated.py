@@ -20,9 +20,10 @@ class KerasLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer
-    keras_layer : a keras network function
+    keras_layer : function
+        A tensor in tensor out function for building model.
     keras_args : dictionary
-        The arguments for the keras model.
+        The arguments for the `keras_layer`.
     name : str
         A unique layer name.
     """
@@ -61,9 +62,10 @@ class EstimatorLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer
-    model_fn : a function that described the model.
+    model_fn : function
+        A tensor in tensor out function for building model.
     args : dictionary
-        The arguments for the model_fn.
+        The arguments for the `model_fn`.
     name : str
         A unique layer name.
     """
