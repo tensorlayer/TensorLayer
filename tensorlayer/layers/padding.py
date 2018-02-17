@@ -10,17 +10,17 @@ from .core import *
 
 class PadLayer(Layer):
     """
-    The :class:`PadLayer` class is a padding layer for any modes and dimensions.
+    The :class:`PadLayer` class is a padding layer for any mode and dimension.
     Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`_ for usage.
 
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
-    padding : Tensor 
-        The int32 values to pad
+        The previous layer.
+    paddings : Tensor
+        The int32 values to pad.
     mode : str
-        "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive)
+        "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive).
     name : str
         A unique layer name.
     """
