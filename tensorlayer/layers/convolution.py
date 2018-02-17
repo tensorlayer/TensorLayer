@@ -12,27 +12,27 @@ class Conv1dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer, [batch, in_width, in_channels]
+        Previous layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     shape : list of int
-        The shape of the filters, [filter_length, in_channels, out_channels]
+        The shape of the filters: [filter_length, in_channels, out_channels].
     stride : int
-        The number of entries by which the filter is moved right at each step
+        The number of entries by which the filter is moved right at a step.
     dilation_rate : int
-        Specifies the filter upsampling/input downsampling rate
+        Filter up-sampling/input down-sampling rate.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     data_format : str
-        As it is 1D conv, default is 'NWC'
+        Default is 'NWC' as it is a 1D CNN.
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
         A unique layer name
     """
@@ -85,33 +85,33 @@ class Conv2dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     act : activation function
-        The function that is applied to the layer activations.
+        The activation function of this layer.
     shape : list of int
-        The shape of the filters, [filter_height, filter_width, in_channels, out_channels].
+        The shape of the filters: [filter_height, filter_width, in_channels, out_channels].
     strides : list of int
-        The strides of the sliding window for each dimension of input.
-        It must be in the same order as the dimension specified with format.
+        The sliding window strides of corresponding input dimensions.
+        It must be in the same order as the ``shape`` parameter.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of the padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix.
+        The initializer for the the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The initializer for the the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     use_cudnn_on_gpu : bool
-        Default is None/False
+        Default is False.
     data_format : str
-        "NHWC" or "NCHW", default is "NHWC"
+        "NHWC" or "NCHW", default is "NHWC".
     name : str
-        A unique layer name
+        A unique layer name.
 
     Notes
-    ------
+    -----
     - shape = [h, w, the number of output channel of previous layer, the number of output channels]
     - the number of output channel of a layer is its last dimension.
 
@@ -189,37 +189,38 @@ class DeConv2dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     shape : list of int
-        shape of the filters, [height, width, output_channels, in_channels], filter's in_channels dimension must match that of value
+        Shape of the filters: [height, width, output_channels, in_channels].
+        The filter's in_channels dimension must match that of value.
     output_shape : list of int
-        Representing the output shape of the deconvolution
+        Output shape of the deconvolution.
     strides : list of int
-        The stride of the sliding window for each dimension of the input tensor (:function:`DeConv2d` does not need to set this with TF > 1.3)
+        The sliding window strides for corresponding input dimensions (:function:`DeConv2d` does not need to set this with TF > 1.3).
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of the padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for initializing the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases
+        The initializer for initializing the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for initializing the weight matrix.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for initializing the bias vector.
     name : str
         A unique layer name.
 
     Notes
     -----
-    - We highly recommend to use `DeConv2d` with TensorFlow version higher than 1.3.
-    - shape = [h, w, the number of output channels of this layer, the number of output channel of previous layer]
-    - output_shape = [batch_size, any, any, the number of output channels of this layer]
+    - We recommend to use `DeConv2d` with TensorFlow version higher than 1.3.
+    - shape = [h, w, the number of output channels of this layer, the number of output channel of the previous layer].
+    - output_shape = [batch_size, any, any, the number of output channels of this layer].
     - the number of output channel of a layer is its last dimension.
 
     Examples
-    ---------
+    --------
     - A part of the generator in DCGAN example
     >>> batch_size = 64
     >>> inputs = tf.placeholder(tf.float32, [batch_size, 100], name='z_noise')
@@ -298,25 +299,26 @@ class Conv3dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     shape : list of int
-        shape of the filters, [filter_depth, filter_height, filter_width, in_channels, out_channels].
+        Shape of the filters: [filter_depth, filter_height, filter_width, in_channels, out_channels].
     strides : list of int
-        The stride of the sliding window for each dimension of input. Must be in the same order as the dimension specified with format.
+        The sliding window strides for corresponding input dimensions.
+        Must be in the same order as the shape dimension.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer
-        The initializer for initializing the bias vector
+        The initializer for the bias vector.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(
@@ -358,25 +360,26 @@ class DeConv3dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     shape : list of int
-        The shape of the filters, [depth, height, width, output_channels, in_channels], filter's in_channels dimension must match that of value.
+        The shape of the filters: [depth, height, width, output_channels, in_channels].
+        The filter's in_channels dimension must match that of value.
     output_shape : list of int
-        Representing the output shape of the deconvolution
+        The output shape of the deconvolution.
     strides : list of int
-        The stride of the sliding window for each dimension of the input tensor
+        The sliding window strides for corresponding input dimensions.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer
-        The initializer for initializing the bias vector
+        The initializer for the bias vector.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
         A unique layer name.
     """
@@ -417,13 +420,13 @@ class UpSampling2dLayer(Layer):
     """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels]
+        Previous layer with 4-D Tensor of the shape [batch, height, width, channels] or 3-D Tensor of the shape [height, width, channels].
     size : tuple of int/float.
-        (height, width) scale factor or new size of height and width
+        (height, width) scale factor or new size of height and width.
     is_scale : boolean
-        If True (default), the `size` are scale factors, otherwise, the `size` are numbers of pixels of height and width
+        If True (default), the `size` is a scale factor; otherwise, the `size` is the numbers of pixels of height and width.
     method : int
         0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
         - ResizeMethod.BILINEAR, Bilinear interpolation.
@@ -431,9 +434,9 @@ class UpSampling2dLayer(Layer):
         - ResizeMethod.BICUBIC, Bicubic interpolation.
         - ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
-        If true, exactly align all 4 corners of the input and output. Defaults to false
+        If True, align the corners of the input and output. Default is False.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(
@@ -476,13 +479,13 @@ class DownSampling2dLayer(Layer):
     """The :class:`DownSampling2dLayer` class is down sampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer with 4-D Tensor of shape [batch, height, width, channels] or 3-D Tensor of shape [height, width, channels]
+        Previous layer with 4-D Tensor in the shape of [batch, height, width, channels] or 3-D Tensor in the shape of [height, width, channels].
     size : tuple of int/float.
-        (height, width) scale factor or new size of height and width
+        (height, width) scale factor or new size of height and width.
     is_scale : boolean
-        If True (default), the `size` are scale factors, otherwise, the `size` are numbers of pixels of height and width
+        If True (default), the `size` is the scale factor; otherwise, the `size` are numbers of pixels of height and width.
     method : int
         0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
         - ResizeMethod.BILINEAR, Bilinear interpolation.
@@ -490,7 +493,7 @@ class DownSampling2dLayer(Layer):
         - ResizeMethod.BICUBIC, Bicubic interpolation.
         - ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
-        If true, exactly align all 4 corners of the input and output. Defaults to false
+        If True, exactly align all 4 corners of the input and output. Default is False.
     name : str
         A unique layer name.
     """
@@ -653,32 +656,32 @@ class DeformableConv2dLayer(Layer):
     `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_ .
 
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     offset_layer : :class:`Layer`
         To predict the offset of convolutional operations. The shape of its output should be [batchsize, input height, input width, 2*(number of element in the convolutional kernel)]
         e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
     channel_multiplier : int
         The number of channels to expand to.
     filter_size : tuple of int
-        For filter size (height, width)
+        Filter size: (height, width).
     strides : tuple of int
-        For strides (height, width). Current implementation fix to (1, 1, 1, 1)
+        Strides (height, width). It is currently fixed to (1, 1, 1, 1).
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     shape : list of int
-        The shape of the filters, [filter_height, filter_width, in_channels, out_channels]
+        The shape of the filters: [filter_height, filter_width, in_channels, out_channels].
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
@@ -689,14 +692,13 @@ class DeformableConv2dLayer(Layer):
     >>> net = tl.layers.DeformableConv2dLayer(layer=net, act = act, offset_layer=offset_2, shape=[3, 3, 32, 64], name='deformable_conv_2d_layer2')
 
     References
-    -----------
+    ----------
     - The deformation operation was adapted from the implementation in `<https://github.com/felixlaumon/deform-conv>`_
 
     Notes
-    -----------
-    - The stride is fixed as (1, 1, 1, 1).
-    - The padding is fixed as 'SAME'.
-    - The current implementation is memory-inefficient, please use carefully.
+    -----
+    - The padding is fixed to 'SAME'.
+    - The current implementation is not optimized for memory usgae. Please use it carefully.
     """
 
     def __init__(self,
@@ -791,18 +793,33 @@ def atrous_conv1d(
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     n_filter : int
-        The number of filters
+        The number of filters.
     filter_size : int
-        The filter size
-    strides : tuple of int
-        For strides (height, width)
+        The filter size.
+    stride : tuple of int
+        The strides: (height, width).
     dilation : int
-        The filter dilation size
+        The filter dilation size.
     act : activation function
-        The function that is applied to the layer activations
-    others : see :class:`Conv1dLayer`.
+        The activation function of this layer.
+    padding : str
+        The type of padding algorithm: "SAME" or "VALID".
+    use_cudnn_on_gpu: boolean
+        Use cudnn on GPU (Not used currently)
+    data_format : str
+        Default is 'NWC' as it is a 1D CNN.
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
     """
     if act is None:
         act = tf.identity
@@ -828,27 +845,29 @@ class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
 
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer with output size of [batch, height, width, channels]
+        Previous layer with a 4D output tensor in the shape of [batch, height, width, channels].
     n_filter : int
-        The number of filter
+        The number of filters.
     filter_size : tuple of int
-        The filter size (height, width)
+        The filter size: (height, width).
     rate : int
-        A positive int32. The stride with which we sample input values across the height and width dimensions. Equivalently, the rate by which we upsample the filter values by inserting zeros across the height and width dimensions. In the literature, the same parameter is sometimes called input stride or dilation
+        The stride that we sample input values in the height and width dimensions.
+        This equals the rate that we up-sample the filter values by inserting zeros across the height and width dimensions.
+        In the literature, this parameter is sometimes mentioned as input stride or dilation.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix.
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
         A unique layer name.
     """
@@ -889,47 +908,57 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend([filters])
 
 
-class SeparableConv2dLayer(Layer):  # Untested
+class SeparableConv2dLayer(Layer):
     """The :class:`SeparableConv2dLayer` class is 2D convolution with separable filters, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`_.
 
+    This layer has not been fully tested yet.
+
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer with output size of [batch, height, width, channels]
+        Previous layer with a 4D output tensor in the shape of [batch, height, width, channels].
     n_filter : int
-        The number of filter
+        The number of filters.
     filter_size : tuple of int
-        The filter size (height, width)
+        The filter size (height, width).
     strides : tuple of int
-        For strides (height, width). Can be a single integer to specify the same value for all spatial dimensions. Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1
+        The strides (height, width).
+        This can be a single integer if you want to specify the same value for all spatial dimensions.
+        Specifying any stride value != 1 is incompatible with specifying any dilation_rate value != 1.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID"
     data_format : str
-        One of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shapedata_format = 'NWHC' (batch, width, height, channels) while channels_first corresponds to inputs with shape [batch, channels, width, height]
-    dilation_rate : int or tuple/list of 2 int
-        Specifying the dilation rate to use for dilated convolution. Can be a single integer to specify the same value for all spatial dimensions. Currently, specifying any dilation_rate value != 1 is incompatible with specifying any stride value != 1
+        One of channels_last (Default) or channels_first.
+        The order must match the input dimensions.
+        channels_last corresponds to inputs with shapedata_format = 'NWHC' (batch, width, height, channels) while
+        channels_first corresponds to inputs with shape [batch, channels, width, height].
+    dilation_rate : int or tuple of ints
+        The dilation rate of the convolution.
+        It can be a single integer if you want to specify the same value for all spatial dimensions.
+        Currently, specifying any dilation_rate value != 1 is incompatible with specifying any stride value != 1.
     depth_multiplier : int
-        The number of depthwise convolution output channels for each input channel. The total number of depthwise convolution output channels will be equal to num_filters_in * depth_multiplier
+        The number of depthwise convolution output channels for each input channel.
+        The total number of depthwise convolution output channels will be equal to num_filters_in * depth_multiplier.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     use_bias : boolean
         Whether the layer uses a bias
     depthwise_initializer : initializer
-        An initializer for the depthwise convolution kernel
+        The initializer for the depthwise convolution kernel.
     pointwise_initializer : initializer
-        An initializer for the pointwise convolution kernel
+        The initializer for the pointwise convolution kernel.
     bias_initializer : initializer
-        An initializer for the bias vector. If None, no bias will be applied
+        The initializer for the bias vector. If None, skip bias.
     depthwise_regularizer : regularizer
-        Optional regularizer for the depthwise convolution kernel
+        Optional regularizer for the depthwise convolution kernel.
     pointwise_regularizer : regularizer
-        Optional regularizer for the pointwise convolution kernel
+        Optional regularizer for the pointwise convolution kernel.
     bias_regularizer : regularizer
-        Optional regularizer for the bias vector
+        Optional regularizer for the bias vector.
     activity_regularizer : regularizer
-        Regularizer function for the output
+        Regularizer function for the output.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(self,
@@ -995,22 +1024,23 @@ class SeparableConv2dLayer(Layer):  # Untested
 
 
 def deconv2d_bilinear_upsampling_initializer(shape):
-    """Returns initializer that can be passed to DeConv2dLayer to initalize the
-    weights to correspond to channel wise bilinear upsampling.
-    Used in some segmantic segmentation approches such as [FCN](https://arxiv.org/abs/1605.06211)
+    """Returns the initializer that can be passed to DeConv2dLayer for initializ ingthe
+    weights in correspondence to channel-wise bilinear up-sampling.
+    Used in segmentation approaches such as [FCN](https://arxiv.org/abs/1605.06211)
 
     Parameters
     ----------
     shape : list of int
-        The shape of the filters, [height, width, output_channels, in_channels], must match that passed to DeConv2dLayer
+        The shape of the filters, [height, width, output_channels, in_channels].
+        It must match the shape passed to DeConv2dLayer.
 
     Returns
-    ----------
+    -------
     tf.constant_initializer
         with weights set to correspond to per channel bilinear upsampling when passed as W_int in DeConv2dLayer
 
     Examples
-    ----------
+    --------
     - Upsampling by a factor of 2, ie e.g 100->200
     >>> rescale_factor = 2
     >>> filter_size = (2 * rescale_factor - rescale_factor % 2) #Corresponding bilinear filter size
@@ -1148,16 +1178,32 @@ def conv2d(
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     n_filter : int
-        The number of filters
+        The number of filters.
     filter_size : tuple of int
-        The filter size (height, width)
-    stride : tuple of int
-        The stride step (height, width)
+        The filter size (height, width).
+    strides : list of int
+        The sliding window strides of corresponding input dimensions.
+        It must be in the same order as the ``shape`` parameter.
     act : activation function
-        The function that is applied to the layer activations
-    others : see :class:`Conv2dLayer`.
+        The activation function of this layer.
+    padding : str
+        The type of the padding algorithm: "SAME" or "VALID".
+    W_init : initializer
+        The initializer for the the weight matrix.
+    b_init : initializer or None
+        The initializer for the the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    use_cudnn_on_gpu : bool
+        Default is False.
+    data_format : str
+        "NHWC" or "NCHW", default is "NHWC".
+    name : str
+        A unique layer name.
 
     Examples
     --------
@@ -1214,27 +1260,28 @@ def deconv2d(net,
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     n_filter : int
-        The number of filters
+        The number of filters.
     filter_size : tuple of int
-        The filter size (height, width)
+        The filter size (height, width).
     stride : tuple of int
-        The stride step (height, width)
+        The stride step (height, width).
     out_size : tuple of int
-        Require if TF version < 1.3, (height, width) of output
+        Require if TF version < 1.3, (height, width) of output.
     batch_size : int
-        Require if TF version < 1.3, int or None. If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder)
+        Require if TF version < 1.3, int or None.
+        If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases
+        The initializer for the bias vector. If None, skip biases.
     name : str
-        A unique layer name
+        A unique layer name.
     """
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if act is None:
@@ -1298,23 +1345,23 @@ class DeConv3d(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     n_filter : int
-        The number of filters
+        The number of filters.
     filter_size : tuple of int
-        The filter size (depth, height, width)
+        The filter size (depth, height, width).
     stride : tuple of int
-        The stride step (depth, height, width)
+        The stride step (depth, height, width).
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     W_init : initializer
-        The initializer for initializing the weight matrix.
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip bias.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(self,
@@ -1366,27 +1413,27 @@ class DepthwiseConv2d(Layer):
     Parameters
     ------------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     channel_multiplier : int
-        The number of channels to expand to
+        The number of channels to expand to.
     filter_size : tuple of int
-        The filter size (height, width)
+        The filter size (height, width).
     stride : tuple of int
-        The stride step (height, width)
+        The stride step (height, width).
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     padding : str
-        The type of padding algorithm to use "SAME" or "VALID"
+        The type of padding algorithm: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases
+        The initializer for the bias vector. If None, skip bias.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     ---------
