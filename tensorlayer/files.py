@@ -256,7 +256,7 @@ def load_ptb_dataset(path='data'):
 
 
 def load_matt_mahoney_text8_dataset(path='data'):
-    """Download a text file from Matt Mahoney's website
+    r"""Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
     Extract the first file enclosed in a zip file as a list of words.
     This dataset can be used for Word Embedding.
@@ -1452,7 +1452,7 @@ def read_file(filepath):
 
 
 def load_file_list(path=None, regx='\.npz', printable=True):
-    """Return a file list in a folder by given a path and regular expression.
+    r"""Return a file list in a folder by given a path and regular expression.
 
     Parameters
     ----------
@@ -1621,7 +1621,7 @@ def natural_keys(text):
 
 # Visualizing npz files
 def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
+    r"""Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
 
     Parameters
     ----------
