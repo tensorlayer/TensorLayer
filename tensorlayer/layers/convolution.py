@@ -428,11 +428,11 @@ class UpSampling2dLayer(Layer):
     is_scale : boolean
         If True (default), the `size` is a scale factor; otherwise, the `size` is the numbers of pixels of height and width.
     method : int
-        0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
-        - ResizeMethod.BILINEAR, Bilinear interpolation.
-        - ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
-        - ResizeMethod.BICUBIC, Bicubic interpolation.
-        - ResizeMethod.AREA, Area interpolation.
+        The resize method selected through the index. Defaults index is 0 which is ResizeMethod.BILINEAR.
+            - Index 0 is ResizeMethod.BILINEAR, Bilinear interpolation.
+            - Index 1 is ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
+            - Index 2 is ResizeMethod.BICUBIC, Bicubic interpolation.
+            - Index 3 ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
         If True, align the corners of the input and output. Default is False.
     name : str
@@ -487,11 +487,11 @@ class DownSampling2dLayer(Layer):
     is_scale : boolean
         If True (default), the `size` is the scale factor; otherwise, the `size` are numbers of pixels of height and width.
     method : int
-        0, 1, 2, 3. ResizeMethod. Defaults to ResizeMethod.BILINEAR.
-        - ResizeMethod.BILINEAR, Bilinear interpolation.
-        - ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
-        - ResizeMethod.BICUBIC, Bicubic interpolation.
-        - ResizeMethod.AREA, Area interpolation.
+        The resize method selected through the index. Defaults index is 0 which is ResizeMethod.BILINEAR.
+            - Index 0 is ResizeMethod.BILINEAR, Bilinear interpolation.
+            - Index 1 is ResizeMethod.NEAREST_NEIGHBOR, Nearest neighbor interpolation.
+            - Index 2 is ResizeMethod.BICUBIC, Bicubic interpolation.
+            - Index 3 ResizeMethod.AREA, Area interpolation.
     align_corners : boolean
         If True, exactly align all 4 corners of the input and output. Default is False.
     name : str
@@ -663,12 +663,6 @@ class DeformableConv2dLayer(Layer):
         To predict the offset of convolution operations.
         The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
         e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
-    channel_multiplier : int
-        The number of channels to expand to.
-    filter_size : tuple of int
-        Filter size: (height, width).
-    strides : tuple of int
-        Strides (height, width). It is currently fixed to (1, 1, 1, 1).
     act : activation function
         The activation function of this layer.
     shape : tuple of int
@@ -774,14 +768,13 @@ class DeformableConv2dLayer(Layer):
 
 
 def atrous_conv1d(
-        net,
+        layer=None,
         n_filter=32,
         filter_size=2,
         stride=1,
         dilation=1,
         act=None,
         padding='SAME',
-        use_cudnn_on_gpu=None,
         data_format='NWC',
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
@@ -822,14 +815,13 @@ def atrous_conv1d(
     """
     if act is None:
         act = tf.identity
-    net = Conv1dLayer(
-        layer=net,
+    return Conv1dLayer(
+        layer=layer,
         act=act,
-        shape=(filter_size, int(net.outputs.get_shape()[-1]), n_filter),
+        shape=(filter_size, int(layer.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         padding=padding,
         dilation_rate=dilation,
-        # use_cudnn_on_gpu=use_cudnn_on_gpu,
         data_format=data_format,
         W_init=W_init,
         b_init=b_init,
@@ -837,7 +829,6 @@ def atrous_conv1d(
         b_init_args=b_init_args,
         name=name,
     )
-    return net
 
 
 class AtrousConv2dLayer(Layer):
@@ -846,14 +837,14 @@ class AtrousConv2dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer with a 4D output tensor in the shape of [batch, height, width, channels].
+        Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     n_filter : int
         The number of filters.
     filter_size : tuple of int
         The filter size: (height, width).
     rate : int
         The stride that we sample input values in the height and width dimensions.
-        This equals the rate that we up-sample the filter values by inserting zeros across the height and width dimensions.
+        This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
         In the literature, this parameter is sometimes mentioned as input stride or dilation.
     act : activation function
         The activation function of this layer.
@@ -1087,7 +1078,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
 
 
 def conv1d(
-        net,
+        layer=None,
         n_filter=32,
         filter_size=5,
         stride=1,
@@ -1153,13 +1144,12 @@ def conv1d(
     if act is None:
         act = tf.identity
     net = Conv1dLayer(
-        layer=net,
+        layer=layer,
         act=act,
-        shape=(filter_size, int(net.outputs.get_shape()[-1]), n_filter),
+        shape=(filter_size, int(layer.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         dilation_rate=dilation_rate,
         padding=padding,
-        # use_cudnn_on_gpu=use_cudnn_on_gpu,
         data_format=data_format,
         W_init=W_init,
         b_init=b_init,
@@ -1171,7 +1161,7 @@ def conv1d(
 
 
 def conv2d(
-        net,
+        layer=None,
         n_filter=32,
         filter_size=(3, 3),
         strides=(1, 1),
@@ -1232,12 +1222,12 @@ def conv2d(
         act = tf.identity
 
     try:
-        pre_channel = int(net.outputs.get_shape()[-1])
+        pre_channel = int(layer.outputs.get_shape()[-1])
     except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
         pre_channel = 1
         logging.info("[warnings] unknow input channels, set to 1")
-    net = Conv2dLayer(
-        net,
+    return Conv2dLayer(
+        layer,
         act=act,
         shape=(filter_size[0], filter_size[1], pre_channel, n_filter),  # 32 features for each 5x5 patch
         strides=(1, strides[0], strides[1], 1),
@@ -1249,10 +1239,9 @@ def conv2d(
         use_cudnn_on_gpu=use_cudnn_on_gpu,
         data_format=data_format,
         name=name)
-    return net
 
 
-def deconv2d(net,
+def deconv2d(layer=None,
              n_filter=32,
              filter_size=(3, 3),
              out_size=(30, 30),
@@ -1303,7 +1292,7 @@ def deconv2d(net,
 
     if tf.__version__ > '1.3':
         logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
-        inputs = net.outputs
+        inputs = layer.outputs
         scope_name = tf.get_variable_scope().name
         if scope_name:
             whole_name = scope_name + '/' + name
@@ -1323,25 +1312,25 @@ def deconv2d(net,
                 biases_initializer=b_init,
                 scope=name)
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        net_new.all_layers = list(net.all_layers)
-        net_new.all_params = list(net.all_params)
-        net_new.all_drop = dict(net.all_drop)
+        net_new.all_layers = list(layer.all_layers)
+        net_new.all_params = list(layer.all_params)
+        net_new.all_drop = dict(layer.all_drop)
         net_new.all_layers.extend([net_new.outputs])
         net_new.all_params.extend(new_variables)
         return net_new
     else:
         if batch_size is None:
             #     batch_size = tf.shape(net.outputs)[0]
-            fixed_batch_size = net.outputs.get_shape().with_rank_at_least(1)[0]
+            fixed_batch_size = layer.outputs.get_shape().with_rank_at_least(1)[0]
             if fixed_batch_size.value:
                 batch_size = fixed_batch_size.value
             else:
                 from tensorflow.python.ops import array_ops
-                batch_size = array_ops.shape(net.outputs)[0]
-        net = DeConv2dLayer(
-            layer=net,
+                batch_size = array_ops.shape(layer.outputs)[0]
+        return DeConv2dLayer(
+            layer=layer,
             act=act,
-            shape=(filter_size[0], filter_size[1], n_filter, int(net.outputs.get_shape()[-1])),
+            shape=(filter_size[0], filter_size[1], n_filter, int(layer.outputs.get_shape()[-1])),
             output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
             strides=(1, strides[0], strides[1], 1),
             padding=padding,
@@ -1350,7 +1339,6 @@ def deconv2d(net,
             W_init_args=W_init_args,
             b_init_args=b_init_args,
             name=name)
-        return net
 
 
 class DeConv3d(Layer):
