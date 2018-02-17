@@ -490,18 +490,15 @@ class BiRNNLayer(Layer):
 
 
 class ConvRNNCell(object):
-    """Abstract object representing an Convolutional RNN Cell.
-    """
+    """Abstract object representing an Convolutional RNN Cell."""
 
     def __call__(self, inputs, state, scope=None):
-        """Run this RNN cell on inputs, starting from the given state.
-        """
+        """Run this RNN cell on inputs, starting from the given state."""
         raise NotImplementedError("Abstract method")
 
     @property
     def state_size(self):
-        """size(s) of state(s) used by this cell.
-        """
+        """size(s) of state(s) used by this cell."""
         raise NotImplementedError("Abstract method")
 
     @property

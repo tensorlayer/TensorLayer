@@ -5,7 +5,7 @@ python:
   - "3.5"
   # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
 install:
-  - pip install tensorflow yapf
+  - pip install tensorflow yapf pydocstyle
   - pip install .
 script:
   # units test
@@ -15,4 +15,5 @@ script:
 
   # smoke tests
   - python tests/test_yapf_format.py
+  - python tests/test_pydocstyle.py
   - python tests/test_mnist_simple.py
