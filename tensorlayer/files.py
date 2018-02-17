@@ -796,15 +796,15 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
     def _recursive_parse_xml_to_dict(xml):
         """Recursively parses XML contents to python dict.
-      We assume that `object` tags are the only ones that can appear
-      multiple times at the same level of a tree.
+        We assume that `object` tags are the only ones that can appear
+        multiple times at the same level of a tree.
 
-      Args:
-        xml: xml tree obtained by parsing XML file contents using lxml.etree
+        Args:
+            xml: xml tree obtained by parsing XML file contents using lxml.etree
 
-      Returns:
-        Python dictionary holding XML contents.
-      """
+        Returns:
+            Python dictionary holding XML contents.
+        """
         if not xml:
             # if xml is not None:
             return {xml.tag: xml.text}

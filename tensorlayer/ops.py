@@ -245,9 +245,7 @@ def get_site_packages_directory():
 
 
 def empty_trash():
-    """Empty trash folder.
-
-    """
+    """Empty trash folder."""
     text = "[TL] Empty the trash"
     if _platform == "linux" or _platform == "linux2":
         logging.info('linux: %s' % text)

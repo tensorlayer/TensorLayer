@@ -112,11 +112,11 @@ class TaskSpecDef(object):
 
     def user_last_worker_as_evaluator(self):
         """ Returns a new :class:`TaskSpecDef` where the last worker has been removed from
-         the list of worker_hosts, so it is not used for training anymore. You can call
-         is_evaluator to know whether this server is the evaluator one or not.
-         In case there is only one server for training this method raises an exception, as
-         you cannot use any server for evaluation.
-         """
+        the list of worker_hosts, so it is not used for training anymore. You can call
+        is_evaluator to know whether this server is the evaluator one or not.
+        In case there is only one server for training this method raises an exception, as
+        you cannot use any server for evaluation.
+        """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
         return TaskSpecDef(type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
@@ -172,7 +172,6 @@ def DistributedSession(task_spec=None,
 
     Examples
     --------
-
     A simple example for distributed training where all the workers use the same dataset:
 
     >>> task_spec = TaskSpec()
