@@ -102,11 +102,11 @@ def sample(a=[], temperature=1.0):
     a : a list
         List of probabilities.
     temperature : float or None
-        The higher the more uniform.\n
-        When a = [0.1, 0.2, 0.7],\n
-            temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]\n
-            temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]\n
-            temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]\n
+        The higher the more uniform.
+        When a = [0.1, 0.2, 0.7],
+            - temperature = 0.7, the distribution will be sharpen [ 0.05048273  0.13588945  0.81362782]
+            - temperature = 1.0, the distribution will be the same [0.1    0.2    0.7]
+            - temperature = 1.5, the distribution will be filtered [ 0.16008435  0.25411807  0.58579758]
         If None, it will be ``np.argmax(a)``
 
     Notes
@@ -420,7 +420,7 @@ def simple_read_words(filename="nietzsche.txt"):
 
 
 def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
-    """ File to list format context. Note that, this script can not handle punctuations.
+    r"""File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
@@ -450,7 +450,7 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
 
 
 def read_analogies_file(eval_file='questions-words.txt', word2id={}):
-    """Reads through an analogy question file, return its id format.
+    r"""Reads through an analogy question file, return its id format.
 
     Parameters
     ----------
@@ -591,8 +591,8 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     data : a list of integer
         The context in a list of ids
     count : a list of tuple and list
-        count[0] is a list : the number of rare words\n
-        count[1:] are tuples : the number of occurrence of each word\n
+            - count[0] is a list : the number of rare words
+            - count[1:] are tuples : the number of occurrence of each word
         e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     dictionary : a dictionary
         word_to_id, mapping words to unique IDs.
@@ -635,7 +635,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
 
 
 def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
-    """Given a context (words) in list format and the vocabulary,
+    r"""Given a context (words) in list format and the vocabulary,
     Returns a list of IDs to represent the context.
 
     Parameters
@@ -718,7 +718,7 @@ def word_ids_to_words(data, id_to_word):
 
 
 def save_vocab(count=[], name='vocab.txt'):
-    """Save the vocabulary to a file so the model can be reloaded.
+    r"""Save the vocabulary to a file so the model can be reloaded.
 
     Parameters
     ----------
@@ -847,7 +847,7 @@ def create_vocabulary(vocabulary_path,
 
 
 def initialize_vocabulary(vocabulary_path):
-    """Initialize vocabulary from file, return the word_to_id (dictionary)
+    r"""Initialize vocabulary from file, return the word_to_id (dictionary)
     and id_to_word (list).
 
     We assume the vocabulary is stored one-item-per-line, so a file:\n
@@ -903,8 +903,8 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
 
     Parameters
     -----------
-    sentence :  tensorflow.python.platform.gfile.GFile Object
-          The sentence in bytes format to convert to token-ids.\n
+    sentence : tensorflow.python.platform.gfile.GFile Object
+          The sentence in bytes format to convert to token-ids.
           see basic_tokenizer(), data_to_token_ids()
     vocabulary : a dictionary mapping tokens to integers.
     tokenizer : a function to use to tokenize each sentence;

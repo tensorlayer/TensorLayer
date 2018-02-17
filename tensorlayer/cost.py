@@ -30,7 +30,7 @@ def cross_entropy(output, target, name=None):
 
     References
     -----------
-    - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.\n
+    - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     """
     # try: # old
@@ -413,8 +413,10 @@ def cosine_similarity(v1, v2):
 
 ## Regularization Functions
 def li_regularizer(scale, scope=None):
-    """Li regularization removes the neurons of previous layer, `i` represents `inputs`.\n
-    Returns a function that can be used to apply group li regularization to weights.\n
+    """Li regularization removes the neurons of previous layer.
+
+    `i` represents `inputs`.
+    Returns a function that can be used to apply group li regularization to weights.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
@@ -461,8 +463,10 @@ def li_regularizer(scale, scope=None):
 
 
 def lo_regularizer(scale, scope=None):
-    """Lo regularization removes the neurons of current layer, `o` represents `outputs`\n
-    Returns a function that can be used to apply group lo regularization to weights.\n
+    """Lo regularization removes the neurons of current layer.
+
+    `o` represents `outputs`
+    Returns a function that can be used to apply group lo regularization to weights.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
@@ -509,9 +513,9 @@ def lo_regularizer(scale, scope=None):
 
 
 def maxnorm_regularizer(scale=1.0, scope=None):
-    """Max-norm regularization returns a function that can be used
-    to apply max-norm regularization to weights.
-    About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.\n
+    """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
+
+    About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
@@ -558,8 +562,9 @@ def maxnorm_regularizer(scale=1.0, scope=None):
 
 
 def maxnorm_o_regularizer(scale, scope):
-    """Max-norm output regularization removes the neurons of current layer.\n
-    Returns a function that can be used to apply max-norm regularization to each column of weight matrix.\n
+    """Max-norm output regularization removes the neurons of current layer.
+
+    Returns a function that can be used to apply max-norm regularization to each column of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
@@ -606,8 +611,9 @@ def maxnorm_o_regularizer(scale, scope):
 
 
 def maxnorm_i_regularizer(scale, scope=None):
-    """Max-norm input regularization removes the neurons of previous layer.\n
-    Returns a function that can be used to apply max-norm regularization to each row of weight matrix.\n
+    """Max-norm input regularization removes the neurons of previous layer.
+
+    Returns a function that can be used to apply max-norm regularization to each row of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
