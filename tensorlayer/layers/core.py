@@ -28,15 +28,15 @@ except:  # For TF11 and before
 
 
 def flatten_reshape(variable, name='flatten'):
-    """Reshapes high-dimension input to a vector.
+    """Reshapes a high-dimension vector input.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
-    variable : tensorflow variable or tensor
-        The variable or tensor to be flatten
+    variable : TensorFlow variable or tensor
+        The variable or tensor to be flatten.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
@@ -60,12 +60,11 @@ def flatten_reshape(variable, name='flatten'):
 
 
 def clear_layers_name():
-    """Clear all layer names in set_keep['_layers_name_list'],
-    enable layer name reuse.
+    """Clear all layer names in set_keep['_layers_name_list'] if layer names are reused.
 
     Examples
     ---------
-    - Resetting the current graph and trying to redefining model.
+    - Reset the current graph and try to refine model.
     >>> for .... (different model settings):
     >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
     >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
@@ -73,7 +72,7 @@ def clear_layers_name():
     >>>       # define and train a model here
     >>>       sess.close()
 
-    - Enable name layer reuse.
+    - Enable reusing layer names.
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.DenseLayer(net, n_units=800, name='relu1')
     ...
@@ -91,12 +90,12 @@ def set_name_reuse(enable=True):
     parameters have same name scope.
 
     Parameters
-    ------------
+    ----------
     enable : boolean
         Enable or disable name/layer reuse, None means False
 
     Examples
-    ------------
+    --------
     >>> def embed_seq(input_seqs, is_train, reuse):
     >>>    with tf.variable_scope("model", reuse=reuse):
     >>>         tl.layers.set_name_reuse(reuse)
@@ -128,11 +127,11 @@ def initialize_rnn_state(state, feed_dict=None):
     The inputs are LSTMStateTuple or State of RNNCells and an optional feed_dict.
 
     Parameters
-    -----------
+    ----------
     state : RNN state.
         The TensorFlow's RNN state.
     feed_dict : None or dictionary
-        For initializing the state values; if None, returns the zero state.
+        Initial RNN state; if None, returns null state.
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
@@ -175,21 +174,21 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     """Get a list of TensorFlow variables by a given name scope.
 
     Parameters
-    -----------
+    ----------
     name : str
-        Get the variables contain this name
+        Get the variables that contain this name.
     train_only : boolean
-        If Ture, only get the trainable variables
+        If Ture, only get the trainable variables.
     printable : boolean
-        If True, print all informations of the variables it get
+        If True, print the information of all variables.
 
     Returns
-    --------
+    -------
     list
         A list of TensorFlow variables
 
     Examples
-    ---------
+    --------
     >>> dense_vars = tl.layers.get_variable_with_name('dense', True, True)
     """
     if name is None:
@@ -217,11 +216,11 @@ def get_layers_with_name(net=None, name="", printable=False):
     Parameters
     -----------
     net : :class:`Layer` class
-        Get a list of layers from this network
+        Get a list of layers of this network.
     name : str
-        Get the layers' output contain this name
+        Get the layers' output that contain this name.
     printable : boolean
-        If True, print all informations of the layers' output it get
+        If True, print information of all the layers' output
 
     Returns
     --------
@@ -312,14 +311,15 @@ def merge_networks(layers=[]):
 
 
 def initialize_global_variables(sess=None):
-    """ initialize global variables of TensorFlow.
+    """ initialize the global variables of TensorFlow.
 
-    Excute ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
+    Run ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
     ``sess.run(tf.initialize_all_variables())`` for TF 0.11.
 
     Parameters
     ----------
     sess : Session
+        The TensorFlow session object.
     """
     assert sess is not None
     # try:    # TF12+
