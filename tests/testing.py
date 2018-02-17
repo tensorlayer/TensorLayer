@@ -10,8 +10,14 @@ def _list_py_files(root):
                 yield os.path.join(root, file)
 
 
+_excludes = [
+    'tensorlayer/db.py',
+]
+
+
 def list_all_py_files():
     dirs = ['tensorlayer', 'tests']
     for d in dirs:
         for filename in _list_py_files(d):
-            yield filename
+            if not filename in _excludes:
+                yield filename
