@@ -1553,7 +1553,6 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
                                             url_source = 'http://sceneparsing.csail.mit.edu/data/',
                                             extract=True)
     """
-
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
@@ -1594,7 +1593,6 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     return filepath
 
 
-## Sort
 def natural_keys(text):
     """Sort list of string with number in human order.
 
@@ -1612,7 +1610,6 @@ def natural_keys(text):
     http://nedbatchelder.com/blog/200712/human_sorting.html
     (See Toothy's implementation in the comments)
     """
-
     def atoi(text):
         return int(text) if text.isdigit() else text
 

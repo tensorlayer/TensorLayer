@@ -573,7 +573,6 @@ def tf_batch_map_coordinates(inputs, coords):
     -------
     tf.Tensor. shape = (b*c, h, w, n)
     """
-
     input_shape = inputs.get_shape()
     coords_shape = coords.get_shape()
     batch_channel = tf.shape(inputs)[0]
@@ -616,7 +615,6 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
     -------
     tf.Tensor. shape = (b, h, w, c)
     """
-
     input_shape = inputs.get_shape()
     batch_size = tf.shape(inputs)[0]
     kernel_n = int(int(offsets.get_shape()[3]) / 2)

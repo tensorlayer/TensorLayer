@@ -131,7 +131,6 @@ def TaskSpec():
     - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`_
     """
-
     # TF_CONFIG is used in ML-engine
     if 'TF_CONFIG' in os.environ:
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))

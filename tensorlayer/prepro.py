@@ -87,7 +87,6 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
     - `run with limited queue <http://effbot.org/librarybook/queue.htm>`_
     """
-
     ## plot function info
     # for name, value in kwargs.items():
     #     logging.info('{0} = {1}'.format(name, value))
@@ -1830,7 +1829,6 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
     >>> print(coords)
     ... [[50, 40, 30, 30]]
     """
-
     def _flip(im, coords):
         im = flip_axis(im, axis=1, is_random=False)
         coords_new = list()
