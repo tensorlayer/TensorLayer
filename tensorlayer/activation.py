@@ -30,7 +30,7 @@ def ramp(x=None, v_min=0, v_max=1, name=None):
     v_min : float
         cap input to v_min as a lower bound.
     v_max : float
-        cap input to v_max as a lower bound.
+        cap input to v_max as a upper bound.
     name : str
         The function name (optional).
 
