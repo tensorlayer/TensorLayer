@@ -19,7 +19,7 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs)
         shape [num_batch, height, width, num_channels].
     theta: float
         The output of the localisation network should be [num_batch, 6], value range should be [0, 1] (via tanh).
-    out_size: tuple of two ints
+    out_size: tuple of int
         The size of the output of the network (height, width)
 
     References
@@ -185,17 +185,17 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
 
 
 class SpatialTransformer2dAffineLayer(Layer):
-    """The :class:`SpatialTransformer2dAffineLayer` class is a
-    `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`_ for
+    """The :class:`SpatialTransformer2dAffineLayer` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`_ for
     `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_.
 
     Parameters
     -----------
     layer : :class:`Layer`
-        Previous layer
-    theta_layer : a layer class for the localisation network.
-        In this layer, we will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
-    out_size : tuple of two ints.
+        Previous layer.
+    theta_layer : :class:`Layer`
+        The localisation network.
+        - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+    out_size : tuple of int
         The size of the output of the network (height, width), the feature maps will be resized by this.
     name : str
         A unique layer name.

@@ -15,23 +15,34 @@ class LambdaLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     fn : a function
         The function that applies to the outputs of previous layer.
     fn_args : a dictionary
         The arguments for the function (option).
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     ---------
+    - Non-parametric case
     >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = LambdaLayer(net, lambda x: 2*x, name='lambda_layer')
-    >>> y = net.outputs
-    >>> sess = tf.InteractiveSession()
-    >>> out = sess.run(y, feed_dict={x : [[1],[2]]})
-    ... [[2],[4]]
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = LambdaLayer(net, lambda x: 2*x, name='lambda')
+
+    - Parametric case, merge other wrappers into TensorLayer
+    >>> from keras.layers import *
+    >>> from tensorlayer.layers import *
+    >>> def keras_block(x):
+    >>>     x = Dropout(0.8)(x)
+    >>>     x = Dense(800, activation='relu')(x)
+    >>>     x = Dropout(0.5)(x)
+    >>>     x = Dense(800, activation='relu')(x)
+    >>>     x = Dropout(0.5)(x)
+    >>>     logits = Dense(10, activation='linear')(x)
+    >>>     return logits
+    >>> net = InputLayer(x, name='input')
+    >>> net = LambdaLayer(net, fn=keras_block, name='keras')
     """
 
     def __init__(

@@ -15,12 +15,13 @@ class PReluLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
-    channel_shared : `bool`. Single weight is shared by all channels
-    a_init : alpha initializer, default zero constant.
-        The initializer for initializing the alphas.
+        Previous layer。
+    channel_shared : boolean
+        If True, single weight is shared by all channels.
+    a_init : initializer
+        The initializer for initializing the alpha(s).
     a_init_args : dictionary
-        The arguments for the weights initializer.
+        The arguments for initializing the alpha(s).
     name : str
         A unique layer name.
 

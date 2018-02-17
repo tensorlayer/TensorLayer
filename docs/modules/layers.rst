@@ -307,6 +307,8 @@ Layer list
    advanced_indexing_op
    retrieve_seq_length_op
    retrieve_seq_length_op2
+   retrieve_seq_length_op3
+   target_mask_op
    DynamicRNNLayer
    BiDynamicRNNLayer
 
@@ -649,6 +651,14 @@ Compute Sequence length 1
 Compute Sequence length 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: retrieve_seq_length_op2
+
+Compute Sequence length 3
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: retrieve_seq_length_op3
+
+Get Mask
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: target_mask_op
 
 
 Dynamic RNN layer
