@@ -3,6 +3,8 @@ import os
 from pydocstyle.checker import check
 from pydocstyle.checker import violations
 
+import testing
+
 registry = violations.ErrorRegistry
 
 _disabled_checks = [
@@ -17,14 +19,10 @@ _disabled_checks = [
 
 
 def check_all_files():
-    for root, dirs, files in os.walk('tensorlayer'):
-        if root.find('third_party') != -1:
-            continue
-        for file in files:
-            filename = os.path.join(root, file)
-            for err in check([filename]):
-                if not err.code in _disabled_checks:
-                    yield err
+    for filename in testing.list_all_py_files():
+        for err in check([filename]):
+            if not err.code in _disabled_checks:
+                yield err
 
 
 def lookup_error_params(code):
