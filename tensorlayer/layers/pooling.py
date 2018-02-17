@@ -61,7 +61,7 @@ class PoolLayer(Layer):
         self.all_layers.extend([self.outputs])
 
 
-def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def maxpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
 
     Parameters
@@ -88,7 +88,7 @@ def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_
     return net_new
 
 
-def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def meanpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):  #Untested
     """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
 
     Parameters
@@ -115,7 +115,7 @@ def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels
     return net_new
 
 
-def maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
+def maxpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -133,7 +133,7 @@ def maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpo
     return net
 
 
-def meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='meanpool'):
+def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
@@ -151,7 +151,7 @@ def meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
     return net
 
 
-def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):  #Untested
     """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
 
     Parameters
@@ -174,7 +174,7 @@ def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_
     return net_new
 
 
-def meanpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
+def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):  #Untested
     """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
 
     Parameters

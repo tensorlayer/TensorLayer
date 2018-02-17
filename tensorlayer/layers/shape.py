@@ -19,27 +19,15 @@ class FlattenLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     name : str
         A unique layer name.
 
     Examples
     --------
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.Conv2dLayer(net,
-    ...                    act = tf.nn.relu,
-    ...                    shape = [5, 5, 32, 64],
-    ...                    strides=[1, 1, 1, 1],
-    ...                    padding='SAME',
-    ...                    name ='cnn_layer')
-    >>> net = tl.layers.Pool2dLayer(net,
-    ...                    ksize=[1, 2, 2, 1],
-    ...                    strides=[1, 2, 2, 1],
-    ...                    padding='SAME',
-    ...                    pool = tf.nn.max_pool,
-    ...                    name ='pool_layer',)
-    >>> net = tl.layers.FlattenLayer(net, name='flatten_layer')
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.FlattenLayer(net, name='flatten')
     """
 
     def __init__(
@@ -66,15 +54,21 @@ class ReshapeLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer
-    shape : a list
-        The output shape.
+    shape : tuple of int
+        The output shape, see ``tf.reshape``.
     name : str
         A unique layer name.
 
     Examples
     --------
-    - The core of this layer is ``tf.reshape``.
-    - Use TensorFlow only :
+    - Use TensorLayer
+    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.ReshapeLayer(net, (-1, 28*28), name='reshape')
+    >>> print(net.outputs)
+    ... (?, 784)
+
+    - Use native TensorFlow API ``tf.reshape``
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()
@@ -105,14 +99,14 @@ class ReshapeLayer(Layer):
 
 class TransposeLayer(Layer):
     """
-    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+    The :class:`TransposeLayer` class transposes the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
 
     Parameters
     ----------
     layer : :class:`Layer`
         Previous layer
-    perm: list, a permutation of the dimensions
-        Similar with numpy.transpose.
+    perm: list of int
+        The permutation of the dimensions, similar with ``numpy.transpose``.
     name : str
         A unique layer name.
     """

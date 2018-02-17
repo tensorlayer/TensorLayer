@@ -14,9 +14,9 @@ class StackLayer(Layer):
 
     Parameters
     ----------
-    layer : list of :class:`Layer` 
-        Previous layer
-    axis : an int
+    layer : list of :class:`Layer`
+        Previous layer.
+    axis : int
         Dimension along which to concatenate.
     name : str
         A unique layer name.
@@ -55,24 +55,24 @@ def UnStackLayer(
         num=None,
         axis=0,
         name='unstack',
-):
+    ):
     """
-    The :class:`UnStackLayer` is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`_.
+    It is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`_.
 
     Parameters
     ----------
     layer : list of :class:`Layer`
-        Previous layer
-    num : an int
+        Previous layer.
+    num : int or None
         The length of the dimension axis. Automatically inferred if None (the default).
-    axis : an int
-        Dimension along which to concatenate.
+    axis : int
+        Dimension along which axis to concatenate.
     name : str
         A unique layer name.
 
     Returns
     --------
-    The list of layer objects unstacked from the input.
+    - The list of layer objects unstacked from the input.
     """
     inputs = layer.outputs
     with tf.variable_scope(name) as vs:

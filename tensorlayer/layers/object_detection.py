@@ -10,15 +10,18 @@ from .core import *
 
 class ROIPoolingLayer(Layer):
     """
-    The :class:`ROIPoolingLayer` class is Region of interest pooling layer.
+    The :class:`ROIPoolingLayer` class is Region of Interest pooling layer.
 
     Parameters
     -----------
     layer : :class:`Layer`
         Previous layer
-    rois : list of regions of interest in the format (feature map index, upper left, bottom right)
-    pool_width : int, size of the pooling sections.
-    pool_width : int, size of the pooling sections.
+    rois : list of int
+        Regions of interest in the format of (feature map index, upper left, bottom right)
+    pool_width : int
+        The size of the pooling sections.
+    pool_width : int
+        The size of the pooling sections.
     name : str
         A unique layer name
 

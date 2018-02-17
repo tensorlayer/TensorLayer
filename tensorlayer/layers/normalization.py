@@ -15,12 +15,18 @@ class LocalResponseNormLayer(Layer):
 
     Parameters
     -----------
-    layer : a layer class. Must be one of the following types: float32, half. 4-D.
-    depth_radius : An optional int. Defaults to 5. 0-D. Half-width of the 1-D normalization window.
-    bias : An optional float. Defaults to 1. An offset (usually positive to avoid dividing by 0).
-    alpha : An optional float. Defaults to 1. A scale factor, usually positive.
-    beta : An optional float. Defaults to 0.5. An exponent.
-    name : str, A unique layer name.
+    layer : :class:`Layer`
+        Previous layer with output of 4D.
+    depth_radius : int
+        An optional integer. Defaults to 5. 0-D. Half-width of the 1-D normalization window.
+    bias : float
+        An optional float. Defaults to 1. An offset (usually positive to avoid dividing by 0).
+    alpha : float
+        An optional float. Defaults to 1. A scale factor, usually positive.
+    beta : float
+        An optional float. Defaults to 0.5. An exponent.
+    name : str
+        A unique layer name.
     """
 
     def __init__(
@@ -46,26 +52,26 @@ class LocalResponseNormLayer(Layer):
 
 class BatchNormLayer(Layer):
     """
-    The :class:`BatchNormLayer` class is a normalization layer, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
-
-    Batch normalization on fully-connected or convolutional maps.
+    The :class:`BatchNormLayer` class is a batch normalization layer for both fully-connected and convolutional outputs, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
     Parameters
     -----------
     layer : :class:`Layer`
         Previous layer
-    decay : float, default is 0.9.
-        A decay factor for ExponentialMovingAverage, use larger value for large dataset.
+    decay : float
+        A decay factor for `ExponentialMovingAverage`, use larger value for large dataset, default is 0.9.
     epsilon : float
         A small float number to avoid dividing by 0.
-    act : activation function.
+    act : activation function
+        The activation function of this layer.
     is_train : boolean
-        Whether train or inference.
-    beta_init : beta initializer
+        Training or inferencing.
+    beta_init : initializer
         The initializer for initializing beta
-    gamma_init : gamma initializer
+    gamma_init : initializer
         The initializer for initializing gamma
-    dtype : tf.float32 (default) or tf.float16
+    dtype : TensorFlow dtype
+        tf.float32 (default) or tf.float16
     name : str
         A unique layer name.
 
@@ -171,11 +177,12 @@ class InstanceNormLayer(Layer):
     layer : :class:`Layer`
         Previous layer
     act : activation function.
+        The activation function of this layer.
     epsilon : float
         A small float number.
-    scale_init : beta initializer
+    scale_init : initializer
         The initializer for initializing beta
-    offset_init : gamma initializer
+    offset_init : initializer
         The initializer for initializing gamma
     name : str
         A unique layer name
@@ -218,7 +225,7 @@ class LayerNormLayer(Layer):
     layer : :class:`Layer`
         Previous layer
     act : activation function
-        The function that is applied to the layer activations.
+        The activation function of this layer.
     others : see  `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_
     """
 

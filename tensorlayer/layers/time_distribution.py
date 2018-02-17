@@ -11,25 +11,25 @@ from .core import *
 class TimeDistributedLayer(Layer):
     """
     The :class:`TimeDistributedLayer` class that applies a function to every timestep of the input tensor.
-    For example, if using :class:`DenseLayer` as the ``layer_class``, inputs [batch_size , length, dim]
-    outputs [batch_size , length, new_dim].
+    For example, if use :class:`DenseLayer` as the `layer_class`, we input [batch_size, length, dim] and
+    output [batch_size , length, new_dim].
 
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer with output size of [batch_size, length, dim]
+        Previous layer with output size of [batch_size, length, dim].
     layer_class : a :class:`Layer` class
     args : dictionary
-        The arguments for the ``layer_class``.
+        The arguments for the `layer_class`.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
     >>> batch_size = 32
     >>> timestep = 20
     >>> input_dim = 100
-    >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep,  input_dim], name="encode_seqs")
+    >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
     >>> net = InputLayer(x, name='input')
     >>> net = TimeDistributedLayer(net, layer_class=DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')
     ... [TL] InputLayer  input: (32, 20, 100)

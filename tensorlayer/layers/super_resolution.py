@@ -3,18 +3,21 @@ from .core import *
 
 
 def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-    """It is a sub-pixel 2d upsampling layer, usually be used
-    for Super-Resolution applications, see `example code <https://github.com/zsdonghao/SRGAN/>`_.
+    """It is a 2D sub-pixel up-sampling layer, usually be used
+    for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`_ for example.
 
     Parameters
     ------------
     net : :class:`Layer`
-        Previous layer
-    scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
-    n_out_channel : int or None, the number of output channels.
-        Note that, the number of input channels == (scale x scale) x The number of output channels.
-        If None, automatically set n_out_channel == the number of input channels / (scale x scale).
-    act : activation function.
+        Previous layer,
+    scale : int
+        The upscaling ratio, a wrong setting will lead to dimension size error.
+    n_out_channel : int or None
+        The number of output channels.
+        - If None, automatically set n_out_channel == the number of input channels / (scale x scale).
+        - The number of input channels == (scale x scale) x The number of output channels.
+    act : activation function
+        The activation function of this layer.
     name : str
         A unique layer name.
 
@@ -95,18 +98,20 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
 
 def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-    """It is a sub-pixel 2d upsampling layer, usually be used
-    for Super-Resolution applications, `example code <https://github.com/zsdonghao/SRGAN/>`_.
+    """It is a sub-pixel 2d up-sampling layer, usually be used for Super-Resolution applications.
 
     Parameters
     ------------
     net : :class:`Layer`
-        Previous layer
-    scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
-    n_out_channel : int or None, the number of output channels.
-        Note that, the number of input channels == (scale x scale) x The number of output channels.
-        If None, automatically set n_out_channel == the number of input channels / (scale x scale).
-    act : activation function.
+        Previous layer,
+    scale : int
+        The upscaling ratio, a wrong setting will lead to dimension size error.
+    n_out_channel : int or None
+        The number of output channels.
+        - If None, automatically set n_out_channel == the number of input channels / (scale x scale).
+        - The number of input channels == (scale x scale) x The number of output channels.
+    act : activation function
+        The activation function of this layer.
     name : str
         A unique layer name.
 
@@ -180,17 +185,19 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
 
 
 def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
-    """One-dimensional subpixel upsampling layer.
-    Calls a tensorflow function that directly implements this functionality.
+    """It is a 1D sub-pixel up-sampling layer.
+    Calls a TensorFlow function that directly implements this functionality.
     We assume input has dim (batch, width, r)
 
     Parameters
     ------------
     net : :class:`Layer`
-        Previous layer
-    scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
-    act : activation function.
-    name : string.
+        Previous layer with output shape of (batch, width, r).
+    scale : int
+        The upscaling ratio, a wrong setting will lead to Dimension size error.
+    act : activation function
+        The activation function of this layer.
+    name : str
         A unique layer name.
 
     Examples

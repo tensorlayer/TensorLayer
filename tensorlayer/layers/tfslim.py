@@ -14,22 +14,20 @@ class SlimNetsLayer(Layer):
     TensorLayer. Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`_,
     see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
 
-
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
     slim_args : dictionary
         The arguments for the slim model.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Notes
     -----
-    The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this
-    network is not in order ! Fortunately, the ``all_params`` are in order.
+    - The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
     """
 
     def __init__(
