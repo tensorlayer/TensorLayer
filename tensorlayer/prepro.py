@@ -1714,7 +1714,7 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
 
 
 def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
-    """ Convert one coordinate [x_center, y_center, w, h] to [x1, y1, x2, y2] in up-left and botton-right format.
+    """Convert one coordinate [x_center, y_center, w, h] to [x1, y1, x2, y2] in up-left and botton-right format.
 
     Examples
     ---------
@@ -1752,7 +1752,7 @@ def obj_box_coord_upleft_butright_to_centroid(coord):
 
 
 def obj_box_coord_centroid_to_upleft(coord):
-    """ Convert one coordinate [x_center, y_center, w, h] to [x, y, w, h].
+    """Convert one coordinate [x_center, y_center, w, h] to [x, y, w, h].
     It is the reverse process of ``obj_box_coord_upleft_to_centroid``.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
@@ -1763,7 +1763,7 @@ def obj_box_coord_centroid_to_upleft(coord):
 
 
 def obj_box_coord_upleft_to_centroid(coord):
-    """ Convert one coordinate [x, y, w, h] to [x_center, y_center, w, h].
+    """Convert one coordinate [x, y, w, h] to [x_center, y_center, w, h].
     It is the reverse process of ``obj_box_coord_centroid_to_upleft``.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
@@ -1773,10 +1773,8 @@ def obj_box_coord_upleft_to_centroid(coord):
     return [x_center, y_center, w, h]
 
 
-##
 def parse_darknet_ann_str_to_list(annotation):
-    """ Input string format of class, x, y, w, h, return list of list format.
-    """
+    """Input string format of class, x, y, w, h, return list of list format."""
     annotation = annotation.split("\n")
     ann = []
     for a in annotation:
@@ -1792,8 +1790,7 @@ def parse_darknet_ann_str_to_list(annotation):
 
 
 def parse_darknet_ann_list_to_cls_box(annotation):
-    """ Input list of [[class, x, y, w, h], ...], return two list of [class ...] and [[x, y, w, h], ...].
-    """
+    """Input list of [[class, x, y, w, h], ...], return two list of [class ...] and [[x, y, w, h], ...]."""
     class_list = []
     bbox_list = []
     for i in range(len(annotation)):

@@ -54,7 +54,6 @@ Command-line Arguments
 
 Notes
 -----
-
 A parallel training program would require multiple parameter servers
 to help parallel trainers to exchange intermediate gradients.
 The best number of parameter servers is often proportional to the 

@@ -549,7 +549,7 @@ def _to_b_h_w_n_c(x, x_shape):
 
 
 def tf_repeat(a, repeats):
-    """TensorFlow version of np.repeat for 1D"""
+    """Tensorflow version of np.repeat for 1D"""
     # https://github.com/tensorflow/tensorflow/issues/8521
     assert len(a.get_shape()) == 1
 

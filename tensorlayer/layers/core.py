@@ -311,7 +311,7 @@ def merge_networks(layers=[]):
 
 
 def initialize_global_variables(sess=None):
-    """ initialize the global variables of TensorFlow.
+    """Initialize the global variables of TensorFlow.
 
     Run ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
     ``sess.run(tf.initialize_all_variables())`` for TF 0.11.

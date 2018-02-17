@@ -130,7 +130,7 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     forward_only : if set, we do not construct the backward pass in the model.
     name : str
         A unique layer name
-  """
+    """
 
     def __init__(self,
                  source_vocab_size,
@@ -270,25 +270,25 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     def step(self, session, encoder_inputs, decoder_inputs, target_weights, bucket_id, forward_only):
         """Run a step of the model feeding the given inputs.
 
-    Parameters
-    ----------
-    session : tensorflow session to use.
-    encoder_inputs : list of numpy int vectors to feed as encoder inputs.
-    decoder_inputs : list of numpy int vectors to feed as decoder inputs.
-    target_weights : list of numpy float vectors to feed as target weights.
-    bucket_id : which bucket of the model to use.
-    forward_only : whether to do the backward step or only forward.
+        Parameters
+        ----------
+        session : tensorflow session to use.
+        encoder_inputs : list of numpy int vectors to feed as encoder inputs.
+        decoder_inputs : list of numpy int vectors to feed as decoder inputs.
+        target_weights : list of numpy float vectors to feed as target weights.
+        bucket_id : which bucket of the model to use.
+        forward_only : whether to do the backward step or only forward.
 
-    Returns
-    --------
-    A triple consisting of gradient norm (or None if we did not do backward),
-    average perplexity, and the outputs.
+        Returns
+        --------
+        A triple consisting of gradient norm (or None if we did not do backward),
+        average perplexity, and the outputs.
 
-    Raises
-    --------
-    ValueError : if length of encoder_inputs, decoder_inputs, or
-        target_weights disagrees with bucket size for the specified bucket_id.
-    """
+        Raises
+        --------
+        ValueError : if length of encoder_inputs, decoder_inputs, or
+            target_weights disagrees with bucket size for the specified bucket_id.
+        """
         # Check if the sizes match.
         encoder_size, decoder_size = self.buckets[bucket_id]
         if len(encoder_inputs) != encoder_size:
@@ -337,29 +337,29 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     def get_batch(self, data, bucket_id, PAD_ID=0, GO_ID=1, EOS_ID=2, UNK_ID=3):
         """Get a random batch of data from the specified bucket, prepare for step.
 
-    To feed data in step(..) it must be a list of batch-major vectors, while
-    data here contains single length-major cases. So the main logic of this
-    function is to re-index data cases to be in the proper format for feeding.
+        To feed data in step(..) it must be a list of batch-major vectors, while
+        data here contains single length-major cases. So the main logic of this
+        function is to re-index data cases to be in the proper format for feeding.
 
-    Parameters
-    ----------
-    data : a tuple of size len(self.buckets) in which each element contains
-        lists of pairs of input and output data that we use to create a batch.
-    bucket_id : integer, which bucket to get the batch for.
-    PAD_ID : int
-        Index of Padding in vocabulary
-    GO_ID : int
-        Index of GO in vocabulary
-    EOS_ID : int
-        Index of End of sentence in vocabulary
-    UNK_ID : int
-        Index of Unknown word in vocabulary
+        Parameters
+        ----------
+        data : a tuple of size len(self.buckets) in which each element contains
+            lists of pairs of input and output data that we use to create a batch.
+        bucket_id : integer, which bucket to get the batch for.
+        PAD_ID : int
+            Index of Padding in vocabulary
+        GO_ID : int
+            Index of GO in vocabulary
+        EOS_ID : int
+            Index of End of sentence in vocabulary
+        UNK_ID : int
+            Index of Unknown word in vocabulary
 
-    Returns
-    -------
-    The triple (encoder_inputs, decoder_inputs, target_weights) for
-    the constructed batch that has the proper format to call step(...) later.
-    """
+        Returns
+        -------
+        The triple (encoder_inputs, decoder_inputs, target_weights) for
+        the constructed batch that has the proper format to call step(...) later.
+        """
         encoder_size, decoder_size = self.buckets[bucket_id]
         encoder_inputs, decoder_inputs = [], []
 
