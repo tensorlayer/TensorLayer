@@ -16,7 +16,7 @@ class Conv1dLayer(Layer):
     act : activation function
         The activation function of this layer.
     shape : tuple of int
-        The shape of the filters: [filter_length, in_channels, out_channels].
+        The shape of the filters: (filter_length, in_channels, out_channels).
     stride : int
         The number of entries by which the filter is moved right at a step.
     dilation_rate : int
@@ -41,7 +41,7 @@ class Conv1dLayer(Layer):
             self,
             layer=None,
             act=tf.identity,
-            shape=[5, 1, 5],
+            shape=(5, 1, 5),
             stride=1,
             dilation_rate=1,
             padding='SAME',
@@ -89,7 +89,7 @@ class Conv2dLayer(Layer):
     act : activation function
         The activation function of this layer.
     shape : tuple of int
-        The shape of the filters: [filter_height, filter_width, in_channels, out_channels].
+        The shape of the filters: (filter_height, filter_width, in_channels, out_channels).
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
@@ -117,12 +117,12 @@ class Conv2dLayer(Layer):
 
     Examples
     --------
-    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.Conv2dLayer(net,
     ...                   act = tf.nn.relu,
-    ...                   shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-    ...                   strides=[1, 1, 1, 1],
+    ...                   shape = (5, 5, 1, 32),  # 32 features for each 5x5 patch
+    ...                   strides = (1, 1, 1, 1),
     ...                   padding='SAME',
     ...                   W_init=tf.truncated_normal_initializer(stddev=5e-2),
     ...                   W_init_args={},
@@ -130,8 +130,8 @@ class Conv2dLayer(Layer):
     ...                   b_init_args = {},
     ...                   name ='cnn_layer1')     # output: (?, 28, 28, 32)
     >>> net = tl.layers.PoolLayer(net,
-    ...                   ksize=[1, 2, 2, 1],
-    ...                   strides=[1, 2, 2, 1],
+    ...                   ksize=(1, 2, 2, 1),
+    ...                   strides=(1, 2, 2, 1),
     ...                   padding='SAME',
     ...                   pool = tf.nn.max_pool,
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
@@ -148,8 +148,8 @@ class Conv2dLayer(Layer):
             self,
             layer=None,
             act=tf.identity,
-            shape=[5, 5, 1, 100],
-            strides=[1, 1, 1, 1],
+            shape=(5, 5, 1, 100),
+            strides=(1, 1, 1, 1),
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -193,7 +193,7 @@ class DeConv2dLayer(Layer):
     act : activation function
         The activation function of this layer.
     shape : tuple of int
-        Shape of the filters: [height, width, output_channels, in_channels].
+        Shape of the filters: (height, width, output_channels, in_channels).
         The filter's in_channels dimension must match that of value.
     output_shape : tuple of int
         Output shape of the deconvolution,
@@ -202,9 +202,9 @@ class DeConv2dLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
-        The initializer for initializing the weight matrix.
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for initializing the weight matrix.
     b_init_args : dictionary
@@ -230,14 +230,14 @@ class DeConv2dLayer(Layer):
     ...                            act = tf.identity, name='g/h0/lin')
     >>> print(net_h0.outputs._shape)
     ... (64, 8192)
-    >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape = [-1, 4, 4, 512], name='g/h0/reshape')
+    >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
     >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, is_train=is_train, name='g/h0/batch_norm')
     >>> print(net_h0.outputs._shape)
     ... (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
-    ...                            shape = [5, 5, 256, 512],
-    ...                            output_shape = [batch_size, 8, 8, 256],
-    ...                            strides=[1, 2, 2, 1],
+    ...                            shape=(5, 5, 256, 512),
+    ...                            output_shape=(batch_size, 8, 8, 256),
+    ...                            strides=(1, 2, 2, 1),
     ...                            act=tf.identity, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
     >>> print(net_h1.outputs._shape)
@@ -246,12 +246,12 @@ class DeConv2dLayer(Layer):
     - U-Net
     >>> ....
     >>> conv10 = tl.layers.Conv2dLayer(conv9, act=tf.nn.relu,
-    ...        shape=[3,3,1024,1024], strides=[1,1,1,1], padding='SAME',
+    ...        shape=(3,3,1024,1024), strides=(1,1,1,1), padding='SAME',
     ...        W_init=w_init, b_init=b_init, name='conv10')
     >>> print(conv10.outputs)
     ... (batch_size, 32, 32, 1024)
     >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
-    ...         shape=[3,3,512,1024], strides=[1,2,2,1], output_shape=[batch_size,64,64,512],
+    ...         shape=(3,3,512,1024), strides=(1,2,2,1), output_shape=(batch_size,64,64,512),
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
     """
 
@@ -259,9 +259,9 @@ class DeConv2dLayer(Layer):
             self,
             layer=None,
             act=tf.identity,
-            shape=[3, 3, 128, 256],
-            output_shape=[1, 256, 256, 128],
-            strides=[1, 2, 2, 1],
+            shape=(3, 3, 128, 256),
+            output_shape=(1, 256, 256, 128),
+            strides=(1, 2, 2, 1),
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -303,7 +303,7 @@ class Conv3dLayer(Layer):
     act : activation function
         The activation function of this layer.
     shape : tuple of int
-        Shape of the filters: [filter_depth, filter_height, filter_width, in_channels, out_channels].
+        Shape of the filters: (filter_depth, filter_height, filter_width, in_channels, out_channels).
     strides : tuple of int
         The sliding window strides for corresponding input dimensions.
         Must be in the same order as the shape dimension.
@@ -325,8 +325,8 @@ class Conv3dLayer(Layer):
             self,
             layer=None,
             act=tf.identity,
-            shape=[2, 2, 2, 64, 128],
-            strides=[1, 2, 2, 2, 1],
+            shape=(2, 2, 2, 64, 128),
+            strides=(1, 2, 2, 2, 1),
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -364,7 +364,7 @@ class DeConv3dLayer(Layer):
     act : activation function
         The activation function of this layer.
     shape : tuple of int
-        The shape of the filters: [depth, height, width, output_channels, in_channels].
+        The shape of the filters: (depth, height, width, output_channels, in_channels).
         The filter's in_channels dimension must match that of value.
     output_shape : tuple of int
         The output shape of the deconvolution.
@@ -388,9 +388,9 @@ class DeConv3dLayer(Layer):
             self,
             layer=None,
             act=tf.identity,
-            shape=[2, 2, 2, 128, 256],
-            output_shape=[1, 12, 32, 32, 128],
-            strides=[1, 2, 2, 2, 1],
+            shape=(2, 2, 2, 128, 256),
+            output_shape=(1, 12, 32, 32, 128),
+            strides=(1, 2, 2, 2, 1),
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -422,7 +422,7 @@ class UpSampling2dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer with 4-D Tensor of the shape [batch, height, width, channels] or 3-D Tensor of the shape [height, width, channels].
+        Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
     size : tuple of int/float.
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -442,7 +442,7 @@ class UpSampling2dLayer(Layer):
     def __init__(
             self,
             layer=None,
-            size=[],
+            size=(),
             is_scale=True,
             method=0,
             align_corners=False,
@@ -481,7 +481,7 @@ class DownSampling2dLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer with 4-D Tensor in the shape of [batch, height, width, channels] or 3-D Tensor in the shape of [height, width, channels].
+        Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
     size : tuple of int/float.
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
@@ -501,7 +501,7 @@ class DownSampling2dLayer(Layer):
     def __init__(
             self,
             layer=None,
-            size=[],
+            size=(),
             is_scale=True,
             method=0,
             align_corners=False,
@@ -660,7 +660,8 @@ class DeformableConv2dLayer(Layer):
     layer : :class:`Layer`
         Previous layer.
     offset_layer : :class:`Layer`
-        To predict the offset of convolutional operations. The shape of its output should be [batchsize, input height, input width, 2*(number of element in the convolutional kernel)]
+        To predict the offset of convolution operations.
+        The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
         e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
     channel_multiplier : int
         The number of channels to expand to.
@@ -686,10 +687,10 @@ class DeformableConv2dLayer(Layer):
     Examples
     --------
     >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> offset_1 = tl.layers.Conv2dLayer(layer=net, act=act, shape=[3, 3, 3, 18], strides=[1, 1, 1, 1],padding='SAME', name='offset_layer1')
-    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act=act, offset_layer=offset_1,  shape=[3, 3, 3, 32],  name='deformable_conv_2d_layer1')
-    >>> offset_2 = tl.layers.Conv2dLayer(layer=net, act=act, shape=[3, 3, 32, 18], strides=[1, 1, 1, 1], padding='SAME', name='offset_layer2')
-    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act = act, offset_layer=offset_2, shape=[3, 3, 32, 64], name='deformable_conv_2d_layer2')
+    >>> offset_1 = tl.layers.Conv2dLayer(layer=net, act=act, shape=(3, 3, 3, 18), strides=(1, 1, 1, 1),padding='SAME', name='offset_layer1')
+    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act=act, offset_layer=offset_1, shape=(3, 3, 3, 32),  name='deformable_conv_2d_layer1')
+    >>> offset_2 = tl.layers.Conv2dLayer(layer=net, act=act, shape=(3, 3, 32, 18), strides=(1, 1, 1, 1), padding='SAME', name='offset_layer2')
+    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act = act, offset_layer=offset_2, shape=(3, 3, 32, 64), name='deformable_conv_2d_layer2')
 
     References
     ----------
@@ -705,7 +706,7 @@ class DeformableConv2dLayer(Layer):
                  layer=None,
                  act=tf.identity,
                  offset_layer=None,
-                 shape=[3, 3, 1, 100],
+                 shape=(3, 3, 1, 100),
                  name='deformable_conv_2d_layer',
                  W_init=tf.truncated_normal_initializer(stddev=0.02),
                  b_init=tf.constant_initializer(value=0.0),
@@ -826,7 +827,7 @@ def atrous_conv1d(
     net = Conv1dLayer(
         layer=net,
         act=act,
-        shape=[filter_size, int(net.outputs.get_shape()[-1]), n_filter],
+        shape=(filter_size, int(net.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         padding=padding,
         dilation_rate=dilation,
@@ -1046,14 +1047,14 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     >>> filter_size = (2 * rescale_factor - rescale_factor % 2) #Corresponding bilinear filter size
     >>> num_in_channels = 3
     >>> num_out_channels = 3
-    >>> deconv_filter_shape = [filter_size, filter_size, num_out_channels, num_in_channels]
-    >>> x = tf.placeholder(tf.float32, [1, imsize, imsize, num_channels])
+    >>> deconv_filter_shape = (filter_size, filter_size, num_out_channels, num_in_channels)
+    >>> x = tf.placeholder(tf.float32, (1, imsize, imsize, num_channels))
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> bilinear_init = deconv2d_bilinear_upsampling_initializer(shape=filter_shape)
     >>> net = tl.layers.DeConv2dLayer(net,
-    ...                    shape = filter_shape,
-    ...                    output_shape = [1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels],
-    ...                    strides=[1, rescale_factor, rescale_factor, 1],
+    ...                    shape=filter_shape,
+    ...                    output_shape=(1, imsize*rescale_factor, imsize*rescale_factor, num_out_channels),
+    ...                    strides=(1, rescale_factor, rescale_factor, 1),
     ...                    W_init=bilinear_init,
     ...                    padding='SAME',
     ...                    act=tf.identity, name='g/h1/decon2d')
@@ -1123,10 +1124,10 @@ def conv1d(
 
     Examples
     ---------
-    >>> x = tf.placeholder(tf.float32, [batch_size, width])
-    >>> y_ = tf.placeholder(tf.int64, shape=[batch_size,])
+    >>> x = tf.placeholder(tf.float32, (batch_size, width))
+    >>> y_ = tf.placeholder(tf.int64, shape=(batch_size,))
     >>> n = InputLayer(x, name='in')
-    >>> n = ReshapeLayer(n, [-1, width, 1], name='rs')
+    >>> n = ReshapeLayer(n, (-1, width, 1), name='rs')
     >>> n = Conv1d(n, 64, 3, 1, act=tf.nn.relu, name='c1')
     >>> n = MaxPool1d(n, 2, 2, padding='valid', name='m1')
     >>> n = Conv1d(n, 128, 3, 1, act=tf.nn.relu, name='c2')
@@ -1143,7 +1144,7 @@ def conv1d(
     net = Conv1dLayer(
         layer=net,
         act=act,
-        shape=[filter_size, int(net.outputs.get_shape()[-1]), n_filter],
+        shape=(filter_size, int(net.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         dilation_rate=dilation_rate,
         padding=padding,
@@ -1227,8 +1228,8 @@ def conv2d(
     net = Conv2dLayer(
         net,
         act=act,
-        shape=[filter_size[0], filter_size[1], pre_channel, n_filter],  # 32 features for each 5x5 patch
-        strides=[1, strides[0], strides[1], 1],
+        shape=(filter_size[0], filter_size[1], pre_channel, n_filter),  # 32 features for each 5x5 patch
+        strides=(1, strides[0], strides[1], 1),
         padding=padding,
         W_init=W_init,
         W_init_args=W_init_args,
@@ -1263,7 +1264,7 @@ def deconv2d(net,
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    stride : tuple of int
+    strides : tuple of int
         The stride step (height, width).
     out_size : tuple of int
         Require if TF version < 1.3, (height, width) of output.
@@ -1325,9 +1326,9 @@ def deconv2d(net,
         net = DeConv2dLayer(
             layer=net,
             act=act,
-            shape=[filter_size[0], filter_size[1], n_filter, int(net.outputs.get_shape()[-1])],
-            output_shape=[batch_size, int(out_size[0]), int(out_size[1]), n_filter],
-            strides=[1, strides[0], strides[1], 1],
+            shape=(filter_size[0], filter_size[1], n_filter, int(net.outputs.get_shape()[-1])),
+            output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
+            strides=(1, strides[0], strides[1], 1),
             padding=padding,
             W_init=W_init,
             b_init=b_init,
@@ -1404,9 +1405,9 @@ class DepthwiseConv2d(Layer):
     """Separable/Depthwise Convolutional 2D, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.
 
     Input:
-        4-D Tensor [batch, height, width, in_channels].
+        4-D Tensor (batch, height, width, in_channels).
     Output:
-        4-D Tensor [batch, new height, new width, in_channels * channel_multiplier].
+        4-D Tensor (batch, new height, new width, in_channels * channel_multiplier).
 
     Parameters
     ------------
@@ -1435,7 +1436,7 @@ class DepthwiseConv2d(Layer):
 
     Examples
     ---------
-    >>> t_im = tf.placeholder("float32", [None, 256, 256, 3])
+    >>> t_im = tf.placeholder("float32", (None, 256, 256, 3))
     >>> net = InputLayer(t_im, name='in')
     >>> net = DepthwiseConv2d(net, 32, (3, 3), (1, 1, 1, 1), tf.nn.relu, padding="SAME", name='dep')
     >>> print(net.outputs.get_shape())
