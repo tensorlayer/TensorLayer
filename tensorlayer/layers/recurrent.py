@@ -346,8 +346,10 @@ class BiRNNLayer(Layer):
             self,
             layer=None,
             cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'use_peepholes': True,
-                            'state_is_tuple': True},
+            cell_init_args={
+                'use_peepholes': True,
+                'state_is_tuple': True
+            },
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
