@@ -70,7 +70,6 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     >>> loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
     """
-
     try:  # TF 1.0+
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
     except:

@@ -36,7 +36,6 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs)
     >>> identity = identity.flatten()
     >>> theta = tf.Variable(initial_value=identity)
     """
-
     def _repeat(x, n_repeats):
         with tf.variable_scope('_repeat'):
             rep = tf.transpose(tf.expand_dims(tf.ones(shape=tf.stack([

@@ -180,8 +180,7 @@ class SimpleVocabulary(object):
     """
 
     def __init__(self, vocab, unk_id):
-        """Initializes the vocabulary."""
-
+        """Initialize the vocabulary."""
         self._vocab = vocab
         self._unk_id = unk_id
 
@@ -916,7 +915,6 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
     --------
     A list of integers, the token-ids for the sentence.
     """
-
     if tokenizer:
         words = tokenizer(sentence)
     else:
@@ -987,7 +985,6 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
     ----------
     - `Google/seq2seq/metric/bleu <https://github.com/google/seq2seq>`_
     """
-
     if np.size(hypotheses) == 0:
         return np.float32(0.0)
 

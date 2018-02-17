@@ -488,7 +488,6 @@ class ConvRNNCell(object):
           tensor of shape '[batch_size x shape[0] x shape[1] x num_features]
           filled with zeros
         """
-
         shape = self.shape
         num_features = self.num_features
         zeros = tf.zeros([batch_size, shape[0], shape[1], num_features * 2])
@@ -590,7 +589,6 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
     -------
     - ValueError : if some of the arguments has unspecified or wrong shape.
     """
-
     # Calculate the total size of arguments on dimension 1.
     total_arg_size_depth = 0
     shapes = [a.get_shape().as_list() for a in args]

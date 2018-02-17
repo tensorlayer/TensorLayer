@@ -212,7 +212,6 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     -----------
     - `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
     """
-
     def _PS(I, r):
         X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
         X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
