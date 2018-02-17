@@ -204,7 +204,7 @@ def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', d
     Parameters
     ------------
     net : :class:`Layer`
-        Previous layer which the output must be rank 5
+        The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
