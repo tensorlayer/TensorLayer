@@ -14,12 +14,12 @@ class StackLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
+    layer : list of :class:`Layer` 
+        Previous layer
     axis : an int
         Dimension along which to concatenate.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
     """
 
     def __init__(
@@ -61,14 +61,14 @@ def UnStackLayer(
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
+    layer : list of :class:`Layer`
+        Previous layer
     num : an int
         The length of the dimension axis. Automatically inferred if None (the default).
     axis : an int
         Dimension along which to concatenate.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Returns
     --------

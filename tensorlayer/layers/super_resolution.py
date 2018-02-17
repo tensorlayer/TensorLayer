@@ -8,14 +8,15 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     Parameters
     ------------
-    net : TensorLayer layer.
+    net : :class:`Layer`
+        Previous layer
     scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
     n_out_channel : int or None, the number of output channels.
         Note that, the number of input channels == (scale x scale) x The number of output channels.
         If None, automatically set n_out_channel == the number of input channels / (scale x scale).
     act : activation function.
-    name : string.
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     ---------
@@ -99,14 +100,15 @@ def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity
 
     Parameters
     ------------
-    net : TensorLayer layer.
+    net : :class:`Layer`
+        Previous layer
     scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
     n_out_channel : int or None, the number of output channels.
         Note that, the number of input channels == (scale x scale) x The number of output channels.
         If None, automatically set n_out_channel == the number of input channels / (scale x scale).
     act : activation function.
-    name : string.
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     ---------
@@ -184,11 +186,12 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
     Parameters
     ------------
-    net : TensorLayer layer.
+    net : :class:`Layer`
+        Previous layer
     scale : int, upscaling ratio, a wrong setting will lead to Dimension size error.
     act : activation function.
     name : string.
-        An optional name to attach to this layer.
+        A unique layer name.
 
     Examples
     ----------

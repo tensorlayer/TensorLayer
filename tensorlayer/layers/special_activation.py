@@ -14,14 +14,15 @@ class PReluLayer(Layer):
 
     Parameters
     ----------
-    x : A `Tensor` with type `float`, `double`, `int32`, `int64`, `uint8`,
-        `int16`, or `int8`.
+    layer : :class:`Layer`
+        Previous layer
     channel_shared : `bool`. Single weight is shared by all channels
     a_init : alpha initializer, default zero constant.
         The initializer for initializing the alphas.
     a_init_args : dictionary
         The arguments for the weights initializer.
-    name : A name for this activation op (optional).
+    name : str
+        A unique layer name.
 
     References
     -----------

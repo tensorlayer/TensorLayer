@@ -18,8 +18,8 @@ class PoolLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        The `Layer` class feeding into this layer
     ksize : a list of ints that has length >= 4.
         The size of the window for each dimension of the input tensor.
     strides : a list of ints that has length >= 4.
@@ -32,8 +32,8 @@ class PoolLayer(Layer):
         - class ``tf.nn.avg_pool``
         - class ``tf.nn.max_pool3d``
         - class ``tf.nn.avg_pool3d``
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     --------
@@ -66,12 +66,14 @@ def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 3
     filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
     strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
     data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
+    name : str
+        A unique layer name.
 
     Returns
     --------
@@ -91,12 +93,14 @@ def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 3
     filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
     strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
     data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
+    name : str
+        A unique layer name.
 
     Returns
     --------
@@ -116,7 +120,8 @@ def maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpo
 
     Parameters
     -----------
-    net : TensorLayer layer.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 4
     filter_size : tuple of (height, width) for filter size.
     strides : tuple of (height, width). Default is the same with filter_size.
     others : see :class:`PoolLayer`.
@@ -133,7 +138,8 @@ def meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
 
     Parameters
     -----------
-    net : TensorLayer layer.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 4
     filter_size : tuple of (height, width) for filter size.
     strides : tuple of (height, width). Default is the same with filter_size.
     others : see :class:`PoolLayer`.
@@ -150,12 +156,14 @@ def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 5
     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
+    name : str
+        A unique layer name.
     """
     logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -171,12 +179,14 @@ def meanpool3d(net, filter_size, strides, padding='valid', data_format='channels
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
+    net : :class:`Layer`
+        Previous layer which the output must be rank 5
     filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
     strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
     padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
     data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
+    name : str
+        A unique layer name.
     """
     logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)

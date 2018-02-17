@@ -15,12 +15,12 @@ class PadLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     padding : a Tensor of type int32.
     mode : one of "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive)
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
     """
 
     def __init__(

@@ -15,10 +15,10 @@ class MultiplexerLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : a list of :class:`Layer`
+        Previous layer
+    name : str
+        A unique layer name
 
 
     Attributes
@@ -102,12 +102,12 @@ class MultiplexerLayer(Layer):
 #
 #     Parameters
 #     ----------
-#     layer : a list of :class:`Layer` instances
-#         The `Layer` class feeding into this layer.
+#     layer : a list of :class:`Layer`
+#         Previous layer
 #     n_outputs : an int
 #         The number of output
-#     name : a string or None
-#         An optional name to attach to this layer.
+#     name : str
+#         A unique layer name.
 #
 #     Field (Class Variables)
 #     -----------------------

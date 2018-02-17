@@ -16,13 +16,13 @@ class TimeDistributedLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer, [batch_size , length, dim]
+    layer : :class:`Layer`
+        Previous layer with output size of [batch_size, length, dim]
     layer_class : a :class:`Layer` class
     args : dictionary
         The arguments for the ``layer_class``.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
 
     Examples
     --------

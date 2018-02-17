@@ -18,13 +18,13 @@ class KerasLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     keras_layer : a keras network function
     keras_args : dictionary
         The arguments for the keras model.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
     """
 
     def __init__(
@@ -59,13 +59,13 @@ class EstimatorLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer
     model_fn : a function that described the model.
     args : dictionary
         The arguments for the model_fn.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
     """
 
     def __init__(
@@ -128,8 +128,8 @@ class EmbeddingAttentionSeq2seqWrapper(Layer):
     use_lstm : if true, we use LSTM cells instead of GRU cells.
     num_samples : number of samples for sampled softmax.
     forward_only : if set, we do not construct the backward pass in the model.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
   """
 
     def __init__(self,

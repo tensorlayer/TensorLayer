@@ -221,9 +221,9 @@ def main_test_denoise_AE(model='relu'):
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='denoising1')    # if drop some inputs, it is denoise AE
         network = tl.layers.DenseLayer(network, n_units=196,
-                                    act = tf.nn.relu, name='relu1')
+                                    act=tf.nn.relu, name='relu1')
         recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784,
-                                    act = tf.nn.softplus, name='recon_layer1')
+                                    act=tf.nn.softplus, name='recon_layer1')
     elif model == 'sigmoid':
         # sigmoid - set keep to 1.0, if you want a vanilla Autoencoder
         network = tl.layers.InputLayer(x, name='input')

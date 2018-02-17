@@ -14,12 +14,12 @@ class ConcatLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
+    layer : list of :class:`Layer`
+        Previous layer
     concat_dim : int
         Dimension along which to concatenate.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     ----------
@@ -82,13 +82,13 @@ class ElementwiseLayer(Layer):
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
+    layer : list of :class:`Layer`
+        Previous layer
     combine_fn : a TensorFlow elemwise-merge function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`_ .
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name
 
     Examples
     --------
