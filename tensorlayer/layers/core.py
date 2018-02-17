@@ -496,19 +496,19 @@ class Word2vecEmbeddingInputlayer(Layer):
         A unique layer name
 
     Attributes
-    --------------
+    ----------
     nce_cost : tensor
-        The NCE loss
+        The NCE loss.
     outputs : tensor
-        The outputs of embedding layer
+        The embedding layer outputs.
     normalized_embeddings : tensor
-        Normalized embedding matrix
+        Normalized embedding matrix.
 
     Examples
     --------
     - With TensorLayer : see ``tensorlayer/example/tutorial_word2vec_basic.py``
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
     ...         inputs = train_inputs,
     ...         train_labels = train_labels,
@@ -524,8 +524,8 @@ class Word2vecEmbeddingInputlayer(Layer):
     >>> normalized_embeddings = emb_net.normalized_embeddings
 
     - Without TensorLayer : see ``tensorflow/examples/tutorials/word2vec/word2vec_basic.py``
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> embeddings = tf.Variable(
     ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
     >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
@@ -601,7 +601,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 class EmbeddingInputlayer(Layer):
     """
     The :class:`EmbeddingInputlayer` class is a fully connected layer,
-    for Word Embedding. Words are input as integer index.
+    for Word Embedding. Word content are accessed using integer indexes.
     The output is the embedded word vector.
 
     If you have a pre-train matrix, you can assign the matrix into it.
@@ -612,22 +612,23 @@ class EmbeddingInputlayer(Layer):
     Parameters
     ----------
     inputs : placeholder
-        The input of a network. For word inputs, please use integer index format, 2D tensor : [batch_size, num_steps(num_words)]
+        The input of a network. For word inputs.
+        Please use integer index format, 2D tensor : (batch_size, num_steps(num_words)).
     vocabulary_size : int
-        The size of vocabulary, number of words
+        The size of vocabulary, number of words.
     embedding_size : int
-        The number of embedding dimensions
+        The number of embedding dimensions.
     E_init : initializer
-        The initializer for initializing the embedding matrix
+        The initializer for the embedding matrix.
     E_init_args : dictionary
-        The arguments for embedding initializer
+        The arguments for embedding matrix initializer.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Attributes
-    ------------
+    ----------
     outputs : tensor
-        The outputs of embedding layer, which is a 3D tensor [batch_size, num_steps(num_words), embedding_size]
+        The embedding layer output is a 3D tensor in the shape: (batch_size, num_steps(num_words), embedding_size).
 
     Examples
     --------
@@ -644,8 +645,8 @@ class EmbeddingInputlayer(Layer):
     >>> del all_var, data, count
     ...
     >>> load_params = tl.files.load_npz(name=model_file_name+'.npz')
-    >>> x = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> x = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> y_ = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> emb_net = tl.layers.EmbeddingInputlayer(
     ...                inputs = x,
     ...                vocabulary_size = vocabulary_size,
@@ -699,27 +700,29 @@ class EmbeddingInputlayer(Layer):
 
 
 class AverageEmbeddingInputlayer(Layer):
-    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs, can be used as the input layer for models like DAN[1] and FastText[2].
+    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs.
+    This is often used as the input layer for models like DAN[1] and FastText[2].
 
     Parameters
-    ------------
+    ----------
     inputs : placeholder or tensor
-        The input of a network. For word inputs, please use integer index format, 2D tensor : [batch_size, num_steps(num_words)]
+        The network input.
+        For word inputs, please use integer index format, 2D tensor: (batch_size, num_steps(num_words)).
     vocabulary_size : int
-        The size of vocabulary
+        The size of vocabulary.
     embedding_size : int
-        The dimension of embedding vectors
+        The dimension of the embedding vectors.
     pad_value : int
-        The scalar padding value used in inputs, 0 as default
+        The scalar padding value used in inputs, 0 as default.
     embeddings_initializer : initializer
-        The initializer of the embedding matrix
+        The initializer of the embedding matrix.
     embeddings_kwargs : None or dictionary
-        The arguments to get embedding matrix variable
+        The arguments to get embedding matrix variable.
     name : str
-        A unique layer name
+        A unique layer name.
 
     References
-    ------------
+    ----------
     - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
     - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
     """
@@ -797,21 +800,21 @@ class DenseLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     n_units : int
-        The number of units of the layer.
+        The number of units of this layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     W_init : initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for initializing weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing bias vector
+        The arguments for the bias vector initializer.
     name : a str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
@@ -827,7 +830,7 @@ class DenseLayer(Layer):
 
     Notes
     -----
-    If the input to this layer has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
+    If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
     """
 
     def __init__(
@@ -874,22 +877,23 @@ class DenseLayer(Layer):
 
 class ReconLayer(DenseLayer):
     """
-    The :class:`ReconLayer` class is a reconstruction layer for :class:`DenseLayer` for AutoEncoder, which is used to pre-train the previous :class:`DenseLayer`
+    The :class:`ReconLayer` class is a reconstruction layer for :class:`DenseLayer` for AutoEncoder.
+    It is used to pre-train the previous :class:`DenseLayer`
 
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     x_recon : placeholder or tensor
-        The target for reconstruction
+        The target for reconstruction.
     n_units : int
-        The number of units of the layer, should be equal to `x_recon`
+        The number of units of the layer. It should equal ``x_recon``.
     act : activation function
-        The activation function that is applied to the reconstruction layer.
-        Normally, for sigmoid layer, the reconstruction activation is sigmoid;
-        for rectifying layer, the reconstruction activation is softplus.
+        The activation function of this layer.
+        Normally, for sigmoid layer, the reconstruction activation is ``sigmoid``;
+        for rectifying layer, the reconstruction activation is ``softplus``.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
@@ -904,17 +908,15 @@ class ReconLayer(DenseLayer):
 
     Methods
     -------
-    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
         Start to pre-train the parameters of previous DenseLayer.
 
     Notes
     -----
-    The input layer should be `DenseLayer` or a layer has only one axes.
+    The input layer should be `DenseLayer` or a layer that has only one axes.
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
-
     - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
-
     - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
     """
 
@@ -1065,22 +1067,24 @@ class ReconLayer(DenseLayer):
 class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some
-    activations to zero by the given keeping probability.
+    activations to zero according to a keeping probability.
 
     Parameters
     ----------
     layer : :class:`Layer`
         Previous layer.
     keep : float
-        The keeping probability, the lower more activations will be set to zero
+        The keeping probability.
+        The lower the probability it is, the more activations are set to zero.
     is_fix : boolean
-        Default False, if True, the keeping probability is fixed and cannot be changed via `feed_dict`
+        Fixing probability or nor. Default is False.
+        If True, the keeping probability is fixed and cannot be changed via `feed_dict`.
     is_train : boolean
-        If False, skip this layer, default is True
+        Trainable or not. If False, skip this layer. Default is True.
     seed : int or None
-        The seed for random dropout
+        The seed for random dropout.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
@@ -1176,17 +1180,17 @@ class GaussianNoiseLayer(Layer):
     Parameters
     ------------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     mean : float
-        The mean, default is 0
+        The mean. Default is 0.
     stddev : float
-        The standard deviation, default is 1
+        The standard deviation. Default is 1.
     is_train : boolean
-        If False, skip this layer, default is True
+        Is trainable layer. If False, skip this layer. default is True.
     seed : int or None
-        The seed for random noise
+        The seed for random noise.
     name : str
-        A unique layer name
+        A unique layer name.
     """
 
     def __init__(
@@ -1220,29 +1224,30 @@ class GaussianNoiseLayer(Layer):
 class DropconnectDenseLayer(Layer):
     """
     The :class:`DropconnectDenseLayer` class is :class:`DenseLayer` with DropConnect
-    behaviour which randomly remove connections between this layer and previous
-    layer by a given keeping probability.
+    behaviour which randomly removes connections between this layer and the previous
+    layer according to a keeping probability.
 
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        Previous layer.
     keep : float
-        The keeping probability, the lower more connections will be set to zero
+        The keeping probability.
+        The lower the probability it is, the more activations are set to zero.
     n_units : int
-        The number of units of the layer
+        The number of units of this layer.
     act : activation function
-        The function that is applied to the layer activations
+        The activation function of this layer.
     W_init : weights initializer
-        The initializer for initializing the weight matrix
+        The initializer for the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias vector
+        The initializer for the bias vector.
     W_init_args : dictionary
-        The arguments for initializing the weight matrix
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for initializing the bias vector
+        The arguments for the bias vector initializer.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Examples
     --------
