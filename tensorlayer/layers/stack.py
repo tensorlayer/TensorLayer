@@ -50,12 +50,7 @@ class StackLayer(Layer):
         self.all_params = list_remove_repeat(self.all_params)
 
 
-def UnStackLayer(
-        layer=None,
-        num=None,
-        axis=0,
-        name='unstack',
-    ):
+def UnStackLayer(layer=None, num=None, axis=0, name='unstack'):
     """
     It is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`_.
 
