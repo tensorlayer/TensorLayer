@@ -15,7 +15,7 @@ class Conv1dLayer(Layer):
         Previous layer.
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         The shape of the filters: [filter_length, in_channels, out_channels].
     stride : int
         The number of entries by which the filter is moved right at a step.
@@ -88,9 +88,9 @@ class Conv2dLayer(Layer):
         Previous layer.
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         The shape of the filters: [filter_height, filter_width, in_channels, out_channels].
-    strides : list of int
+    strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
     padding : str
@@ -192,12 +192,12 @@ class DeConv2dLayer(Layer):
         Previous layer.
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         Shape of the filters: [height, width, output_channels, in_channels].
         The filter's in_channels dimension must match that of value.
-    output_shape : list of int
-        Output shape of the deconvolution.
-    strides : list of int
+    output_shape : tuple of int
+        Output shape of the deconvolution,
+    strides : tuple of int
         The sliding window strides for corresponding input dimensions (:function:`DeConv2d` does not need to set this with TF > 1.3).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
@@ -302,9 +302,9 @@ class Conv3dLayer(Layer):
         Previous layer.
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         Shape of the filters: [filter_depth, filter_height, filter_width, in_channels, out_channels].
-    strides : list of int
+    strides : tuple of int
         The sliding window strides for corresponding input dimensions.
         Must be in the same order as the shape dimension.
     padding : str
@@ -363,12 +363,12 @@ class DeConv3dLayer(Layer):
         Previous layer.
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         The shape of the filters: [depth, height, width, output_channels, in_channels].
         The filter's in_channels dimension must match that of value.
-    output_shape : list of int
+    output_shape : tuple of int
         The output shape of the deconvolution.
-    strides : list of int
+    strides : tuple of int
         The sliding window strides for corresponding input dimensions.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
@@ -476,7 +476,7 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down sampling 2d layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
 
     Parameters
     ----------
@@ -652,7 +652,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
 
 
 class DeformableConv2dLayer(Layer):
-    """The :class:`DeformableConv2dLayer` class is a
+    """The :class:`DeformableConv2dLayer` class is a 2D
     `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_ .
 
     Parameters
@@ -670,7 +670,7 @@ class DeformableConv2dLayer(Layer):
         Strides (height, width). It is currently fixed to (1, 1, 1, 1).
     act : activation function
         The activation function of this layer.
-    shape : list of int
+    shape : tuple of int
         The shape of the filters: [filter_height, filter_width, in_channels, out_channels].
     W_init : initializer
         The initializer for the weight matrix.
@@ -788,7 +788,7 @@ def atrous_conv1d(
         b_init_args={},
         name='conv1d',
 ):
-    """Wrapper for :class:`AtrousConv1dLayer`, if you feel :class:`Conv1dLayer` is difficult, this function may help.
+    """Simplified version of :class:`AtrousConv1dLayer`.
 
     Parameters
     ----------
@@ -842,7 +842,7 @@ def atrous_conv1d(
 
 
 class AtrousConv2dLayer(Layer):
-    """The :class:`AtrousConv2dLayer` class is Atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
+    """The :class:`AtrousConv2dLayer` class is 2D atrous convolution (a.k.a. convolution with holes or dilated convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
 
     Parameters
     ----------
@@ -1030,7 +1030,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
 
     Parameters
     ----------
-    shape : list of int
+    shape : tuple of int
         The shape of the filters, [height, width, output_channels, in_channels].
         It must match the shape passed to DeConv2dLayer.
 
@@ -1103,7 +1103,7 @@ def conv1d(
         b_init_args={},
         name='conv1d',
 ):
-    """Simplified version of  :class:`Conv1dLayer`.
+    """Simplified version of :class:`Conv1dLayer`.
 
     Parameters
     ----------
@@ -1183,7 +1183,7 @@ def conv2d(
         The number of filters.
     filter_size : tuple of int
         The filter size (height, width).
-    strides : list of int
+    strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
     act : activation function
@@ -1207,15 +1207,13 @@ def conv2d(
 
     Examples
     --------
-    >>> w_init = tf.truncated_normal_initializer(stddev=0.01)
-    >>> b_init = tf.constant_initializer(value=0.0)
-    >>> inputs = InputLayer(x, name='inputs')
-    >>> conv1 = Conv2d(inputs, 64, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv1_1')
-    >>> conv1 = Conv2d(conv1, 64, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv1_2')
-    >>> pool1 = MaxPool2d(conv1, (2, 2), padding='SAME', name='pool1')
-    >>> conv2 = Conv2d(pool1, 128, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv2_1')
-    >>> conv2 = Conv2d(conv2, 128, (3, 3), act=tf.nn.relu, padding='SAME', W_init=w_init, b_init=b_init, name='conv2_2')
-    >>> pool2 = MaxPool2d(conv2, (2, 2), padding='SAME', name='pool2')
+    >>> net = InputLayer(x, name='inputs')
+    >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_1')
+    >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_2')
+    >>> net = MaxPool2d(net, (2, 2), name='pool1')
+    >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_1')
+    >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_2')
+    >>> net = MaxPool2d(net, (2, 2), name='pool2')
     """
     assert len(strides) == 2, "len(strides) should be 2, Conv2d and Conv2dLayer are different."
     if act is None:
