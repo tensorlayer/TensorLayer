@@ -41,8 +41,7 @@ def cross_entropy(output, target, name=None):
 
 
 def sigmoid_cross_entropy(output, target, name=None):
-    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
-    """
+    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``."""
     # try: # TF 1.0
     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
     # except:
@@ -414,24 +413,24 @@ def cosine_similarity(v1, v2):
 
 ## Regularization Functions
 def li_regularizer(scale, scope=None):
-    """li regularization removes the neurons of previous layer, `i` represents `inputs`.\n
-  Returns a function that can be used to apply group li regularization to weights.\n
-  The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    """Li regularization removes the neurons of previous layer, `i` represents `inputs`.\n
+    Returns a function that can be used to apply group li regularization to weights.\n
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-  Parameters
-  ----------
-  scale : float
-    A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-  scope: An optional scope name for TF12+.
+    Parameters
+    ----------
+    scale : float
+        A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+    scope: An optional scope name for TF12+.
 
-  Returns
-  --------
-  A function with signature `li(weights, name=None)` that apply Li regularization.
+    Returns
+    --------
+    A function with signature `li(weights, name=None)` that apply Li regularization.
 
-  Raises
-  ------
-  ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
-  """
+    Raises
+    ------
+    ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
+    """
     import numbers
     from tensorflow.python.framework import ops
     from tensorflow.python.ops import standard_ops
@@ -462,24 +461,24 @@ def li_regularizer(scale, scope=None):
 
 
 def lo_regularizer(scale, scope=None):
-    """lo regularization removes the neurons of current layer, `o` represents `outputs`\n
-  Returns a function that can be used to apply group lo regularization to weights.\n
-  The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    """Lo regularization removes the neurons of current layer, `o` represents `outputs`\n
+    Returns a function that can be used to apply group lo regularization to weights.\n
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-  Parameters
-  ----------
-  scale : float
-    A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-  scope: An optional scope name for TF12+.
+    Parameters
+    ----------
+    scale : float
+        A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+    scope: An optional scope name for TF12+.
 
-  Returns
-  -------
-  A function with signature `lo(weights, name=None)` that apply Lo regularization.
+    Returns
+    -------
+    A function with signature `lo(weights, name=None)` that apply Lo regularization.
 
-  Raises
-  ------
-  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
-  """
+    Raises
+    ------
+    ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+    """
     import numbers
     from tensorflow.python.framework import ops
     from tensorflow.python.ops import standard_ops
@@ -511,24 +510,24 @@ def lo_regularizer(scale, scope=None):
 
 def maxnorm_regularizer(scale=1.0, scope=None):
     """Max-norm regularization returns a function that can be used
-  to apply max-norm regularization to weights.
-  About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.\n
-  The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    to apply max-norm regularization to weights.
+    About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.\n
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-  Parameters
-  ----------
-  scale : float
-    A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-  scope: An optional scope name.
+    Parameters
+    ----------
+    scale : float
+        A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+    scope: An optional scope name.
 
-  Returns
-  ---------
-  A function with signature `mn(weights, name=None)` that apply Lo regularization.
+    Returns
+    ---------
+    A function with signature `mn(weights, name=None)` that apply Lo regularization.
 
-  Raises
-  --------
-  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
-  """
+    Raises
+    --------
+    ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+    """
     import numbers
     from tensorflow.python.framework import ops
     from tensorflow.python.ops import standard_ops
@@ -560,23 +559,23 @@ def maxnorm_regularizer(scale=1.0, scope=None):
 
 def maxnorm_o_regularizer(scale, scope):
     """Max-norm output regularization removes the neurons of current layer.\n
-  Returns a function that can be used to apply max-norm regularization to each column of weight matrix.\n
-  The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    Returns a function that can be used to apply max-norm regularization to each column of weight matrix.\n
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-  Parameters
-  ----------
-  scale : float
-    A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-  scope: An optional scope name.
+    Parameters
+    ----------
+    scale : float
+        A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+    scope: An optional scope name.
 
-  Returns
-  ---------
-  A function with signature `mn_o(weights, name=None)` that apply Lo regularization.
+    Returns
+    ---------
+    A function with signature `mn_o(weights, name=None)` that apply Lo regularization.
 
-  Raises
-  ---------
-  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
-  """
+    Raises
+    ---------
+    ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+    """
     import numbers
     from tensorflow.python.framework import ops
     from tensorflow.python.ops import standard_ops
@@ -608,23 +607,23 @@ def maxnorm_o_regularizer(scale, scope):
 
 def maxnorm_i_regularizer(scale, scope=None):
     """Max-norm input regularization removes the neurons of previous layer.\n
-  Returns a function that can be used to apply max-norm regularization to each row of weight matrix.\n
-  The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    Returns a function that can be used to apply max-norm regularization to each row of weight matrix.\n
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
-  Parameters
-  ----------
-  scale : float
-    A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-  scope: An optional scope name.
+    Parameters
+    ----------
+    scale : float
+        A scalar multiplier `Tensor`. 0.0 disables the regularizer.
+    scope: An optional scope name.
 
-  Returns
-  ---------
-  A function with signature `mn_i(weights, name=None)` that apply Lo regularization.
+    Returns
+    ---------
+    A function with signature `mn_i(weights, name=None)` that apply Lo regularization.
 
-  Raises
-  ---------
-  ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
-  """
+    Raises
+    ---------
+    ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+    """
     import numbers
     from tensorflow.python.framework import ops
     from tensorflow.python.ops import standard_ops
