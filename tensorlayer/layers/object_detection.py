@@ -10,30 +10,29 @@ from .core import *
 
 class ROIPoolingLayer(Layer):
     """
-    The :class:`ROIPoolingLayer` class is Region of Interest pooling layer.
+    The region of interest pooling layer.
 
     Parameters
     -----------
     layer : :class:`Layer`
-        Previous layer
-    rois : list of int
-        Regions of interest in the format of (feature map index, upper left, bottom right)
+        The previous layer.
+    rois : tuple of int
+        Regions of interest in the format of (feature map index, upper left, bottom right).
     pool_width : int
         The size of the pooling sections.
     pool_width : int
         The size of the pooling sections.
     name : str
-        A unique layer name
+        A unique layer name.
 
     Notes
     -----------
-    - This implementation is from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ .
+    - This implementation is imported from `Deepsense-AI <https://github.com/deepsense-ai/roi-pooling>`_ .
     - Please install it by the instruction `HERE <https://github.com/zsdonghao/tensorlayer/blob/master/tensorlayer/third_party/roi_pooling/README.md>`_.
     """
 
     def __init__(
             self,
-            #inputs = None,
             layer=None,
             rois=None,
             pool_height=2,
