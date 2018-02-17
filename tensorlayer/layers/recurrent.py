@@ -47,20 +47,20 @@ class RNNLayer(Layer):
 
     Attributes
     --------------
-    outputs : tensor
+    outputs : Tensor
         The output of this layer.
 
-    final_state : tensor or StateTuple
+    final_state : Tensor or StateTuple
         The finial state of this layer.
         - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
         - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
         - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
 
-    initial_state : tensor or StateTuple
+    initial_state : Tensor or StateTuple
         The initial state of this layer.
         - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
 
-    batch_size : int or tensor
+    batch_size : int or Tensor
         It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
 
     Examples
@@ -1427,7 +1427,7 @@ class Seq2Seq(Layer):
     n_hidden : int
         The number of hidden units in the layer.
     initializer : initializer
-        The initializer for initializing the parameters.
+        The initializer for the parameters.
     encode_sequence_length : tensor
         For encoder sequence length, see :class:`DynamicRNNLayer` .
     decode_sequence_length : tensor
@@ -1595,65 +1595,3 @@ class Seq2Seq(Layer):
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
-
-
-class PeekySeq2Seq(Layer):
-    """
-    Waiting for contribution.
-    The :class:`PeekySeq2Seq` class, see `Model <https://camo.githubusercontent.com/7f690d451036938a51e62feb77149c8bb4be6675/687474703a2f2f6936342e74696e797069632e636f6d2f333032617168692e706e67>`_
-    and `Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation <https://arxiv.org/abs/1406.1078>`_ .
-    """
-
-    def __init__(
-            self,
-            net_encode_in=None,
-            net_decode_in=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'state_is_tuple': True},
-            n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            in_sequence_length=None,
-            out_sequence_length=None,
-            initial_state=None,
-            dropout=None,
-            n_layer=1,
-            # return_last = False,
-            return_seq_2d=False,
-            name='peeky_seq2seq',
-    ):
-        Layer.__init__(self, name=name)
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
-        # self.inputs = layer.outputs
-        logging.info("PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
-
-
-class AttentionSeq2Seq(Layer):
-    """
-    Waiting for contribution.
-    The :class:`AttentionSeq2Seq` class, see `Model <https://camo.githubusercontent.com/0e2e4e5fb2dd47846c2fe027737a5df5e711df1b/687474703a2f2f6936342e74696e797069632e636f6d2f6132727733642e706e67>`_
-    and `Neural Machine Translation by Jointly Learning to Align and Translate <https://arxiv.org/pdf/1409.0473v6.pdf>`_ .
-    """
-
-    def __init__(
-            self,
-            net_encode_in=None,
-            net_decode_in=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'state_is_tuple': True},
-            n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            in_sequence_length=None,
-            out_sequence_length=None,
-            initial_state=None,
-            dropout=None,
-            n_layer=1,
-            # return_last = False,
-            return_seq_2d=False,
-            name='attention_seq2seq',
-    ):
-        Layer.__init__(self, name=name)
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
-        # self.inputs = layer.outputs
-        logging.info("PeekySeq2seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
