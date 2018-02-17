@@ -9,22 +9,23 @@ from .core import *
 
 
 class LocalResponseNormLayer(Layer):
-    """The :class:`LocalResponseNormLayer` class is for Local Response Normalization, see ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
+    """The :class:`LocalResponseNormLayer` layer is for Local Response Normalization.
+    See ``tf.nn.local_response_normalization`` or ``tf.nn.lrn`` for new TF version.
     The 4-D input tensor is a 3-D array of 1-D vectors (along the last dimension), and each vector is normalized independently.
     Within a given vector, each component is divided by the weighted square-sum of inputs within depth_radius.
 
     Parameters
     -----------
     layer : :class:`Layer`
-        Previous layer with output of 4D.
+        The previous layer with a 4D output shape.
     depth_radius : int
-        An optional integer. Defaults to 5. 0-D. Half-width of the 1-D normalization window.
+        Depth radius. 0-D. Half-width of the 1-D normalization window.
     bias : float
-        An optional float. Defaults to 1. An offset (usually positive to avoid dividing by 0).
+        An offset which is usually positive and shall avoid dividing by 0.
     alpha : float
-        An optional float. Defaults to 1. A scale factor, usually positive.
+        A scale factor which is usually positive.
     beta : float
-        An optional float. Defaults to 0.5. An exponent.
+        An exponent.
     name : str
         A unique layer name.
     """
@@ -52,26 +53,28 @@ class LocalResponseNormLayer(Layer):
 
 class BatchNormLayer(Layer):
     """
-    The :class:`BatchNormLayer` class is a batch normalization layer for both fully-connected and convolutional outputs, see ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
+    The :class:`BatchNormLayer` is a batch normalization layer for both fully-connected and convolution outputs.
+    See ``tf.nn.batch_normalization`` and ``tf.nn.moments``.
 
     Parameters
-    -----------
+    ----------
     layer : :class:`Layer`
-        Previous layer
+        The previous layer.
     decay : float
-        A decay factor for `ExponentialMovingAverage`, use larger value for large dataset, default is 0.9.
+        A decay factor for `ExponentialMovingAverage`.
+        Suggest to use a large value for large dataset.
     epsilon : float
-        A small float number to avoid dividing by 0.
+        Eplison.
     act : activation function
         The activation function of this layer.
     is_train : boolean
-        Training or inferencing.
+        Is being used for training or inference.
     beta_init : initializer
-        The initializer for initializing beta
+        The initializer for initializing beta.
     gamma_init : initializer
-        The initializer for initializing gamma
+        The initializer for initializing gamma.
     dtype : TensorFlow dtype
-        tf.float32 (default) or tf.float16
+        tf.float32 (default) or tf.float16.
     name : str
         A unique layer name.
 
@@ -89,8 +92,7 @@ class BatchNormLayer(Layer):
             act=tf.identity,
             is_train=False,
             beta_init=tf.zeros_initializer,
-            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),  # tf.ones_initializer,
-            # dtype = tf.float32,
+            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             name='batchnorm_layer',
     ):
         Layer.__init__(self, name=name)
@@ -175,15 +177,11 @@ class InstanceNormLayer(Layer):
     Parameters
     -----------
     layer : :class:`Layer`
-        Previous layer
+        The previous layer.
     act : activation function.
         The activation function of this layer.
     epsilon : float
-        A small float number.
-    scale_init : initializer
-        The initializer for initializing beta
-    offset_init : initializer
-        The initializer for initializing gamma
+        Eplison.
     name : str
         A unique layer name
     """
@@ -193,8 +191,6 @@ class InstanceNormLayer(Layer):
             layer=None,
             act=tf.identity,
             epsilon=1e-5,
-            scale_init=tf.truncated_normal_initializer(mean=1.0, stddev=0.02),
-            offset_init=tf.constant_initializer(0.0),
             name='instan_norm',
     ):
         Layer.__init__(self, name=name)
@@ -223,10 +219,11 @@ class LayerNormLayer(Layer):
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer
+        The previous layer.
     act : activation function
         The activation function of this layer.
-    others : see  `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_
+    others : _
+        `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_.
     """
 
     def __init__(self,
