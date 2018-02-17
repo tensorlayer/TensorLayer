@@ -961,7 +961,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
 
 # hue
 def rgb_to_hsv(rgb):
-    """ Input RGB image [0~255] return HSV image [0~1].
+    """Input RGB image [0~255] return HSV image [0~1].
 
     Parameters
     -------------
@@ -992,7 +992,7 @@ def rgb_to_hsv(rgb):
 
 
 def hsv_to_rgb(hsv):
-    """ Input HSV image [0~1] return RGB image [0~255].
+    """Input HSV image [0~1] return RGB image [0~255].
 
     Parameters
     -------------
@@ -1019,7 +1019,7 @@ def hsv_to_rgb(hsv):
 
 
 def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
-    """ Adjust hue of an RGB image. This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
+    """Adjust hue of an RGB image. This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
     For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_ and `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
 
     Parameters
@@ -1528,7 +1528,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
 
 
 def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low'):
-    """ Find iso-valued contours in a 2D array for a given level value, returns list of (n, 2)-ndarrays
+    """Find iso-valued contours in a 2D array for a given level value, returns list of (n, 2)-ndarrays
     see `skimage.measure.find_contours <http://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.find_contours>`_ .
 
     Parameters
@@ -1542,7 +1542,7 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
 
 
 def pt2map(list_points=[], size=(100, 100), val=1):
-    """ Inputs a list of points, return a 2D image.
+    """Inputs a list of points, return a 2D image.
 
     Parameters
     --------------
@@ -1561,7 +1561,7 @@ def pt2map(list_points=[], size=(100, 100), val=1):
 
 
 def binary_dilation(x, radius=3):
-    """ Return fast binary morphological dilation of an image.
+    """Return fast binary morphological dilation of an image.
     see `skimage.morphology.binary_dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_dilation>`_.
 
     Parameters
@@ -1576,7 +1576,7 @@ def binary_dilation(x, radius=3):
 
 
 def dilation(x, radius=3):
-    """ Return greyscale morphological dilation of an image,
+    """Return greyscale morphological dilation of an image,
     see `skimage.morphology.dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.dilation>`_.
 
     Parameters
@@ -1591,7 +1591,7 @@ def dilation(x, radius=3):
 
 
 def binary_erosion(x, radius=3):
-    """ Return binary morphological erosion of an image,
+    """Return binary morphological erosion of an image,
     see `skimage.morphology.binary_erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_erosion>`_.
 
     Parameters
@@ -1606,7 +1606,7 @@ def binary_erosion(x, radius=3):
 
 
 def erosion(x, radius=3):
-    """ Return greyscale morphological erosion of an image,
+    """Return greyscale morphological erosion of an image,
     see `skimage.morphology.erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.erosion>`_.
 
     Parameters
@@ -1680,7 +1680,7 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
 
 
 def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
-    """ Convert one coordinate [x, y, w (or x2), h (or y2)] in ratio format to image coordinate format.
+    """Convert one coordinate [x, y, w (or x2), h (or y2)] in ratio format to image coordinate format.
     It is the reverse process of ``obj_box_coord_rescale``.
 
     Parameters
@@ -1739,7 +1739,7 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
 
 
 def obj_box_coord_upleft_butright_to_centroid(coord):
-    """ Convert one coordinate [x1, y1, x2, y2] to [x_center, y_center, w, h].
+    """Convert one coordinate [x1, y1, x2, y2] to [x_center, y_center, w, h].
     It is the reverse process of ``obj_box_coord_centroid_to_upleft_butright``.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x1, y1, x2, y2]"
@@ -1994,7 +1994,7 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
     #   |___________________________|
 
     def _get_coord(coord):
-        """ Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
+        """Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
         before getting the new coordinates.
         Boxes outsides the cropped image will be removed.
         """
@@ -2057,7 +2057,7 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
-            """ for scaled coord, upscaled before process and scale back in the end. """
+            # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
             coord = _get_coord(coord)
             if coord is not None:
@@ -2088,7 +2088,7 @@ def obj_box_shift(im,
                   is_random=False,
                   thresh_wh=0.02,
                   thresh_wh2=12.):
-    """ Shift an image randomly or non-randomly, and compute the new bounding box coordinates.
+    """Shift an image randomly or non-randomly, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
     Parameters
@@ -2121,7 +2121,7 @@ def obj_box_shift(im,
 
     # modified from obj_box_crop
     def _get_coord(coord):
-        """ Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
+        """Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
         before getting the new coordinates.
         Boxes outsides the cropped image will be removed.
         """
@@ -2178,7 +2178,7 @@ def obj_box_shift(im,
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
-            """ for scaled coord, upscaled before process and scale back in the end. """
+            # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
             coord = _get_coord(coord)
             if coord is not None:
@@ -2246,7 +2246,7 @@ def obj_box_zoom(im,
 
     # modified from obj_box_crop
     def _get_coord(coord):
-        """ Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
+        """Input pixel-unit [x, y, w, h] format, then make sure [x, y] it is the up-left coordinates,
         before getting the new coordinates.
         Boxes outsides the cropped image will be removed.
         """
