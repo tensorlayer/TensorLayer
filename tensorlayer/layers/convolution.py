@@ -22,7 +22,7 @@ class Conv1dLayer(Layer):
     dilation_rate : int
         Filter up-sampling/input down-sampling rate.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     data_format : str
         Default is 'NWC' as it is a 1D CNN.
     W_init : initializer
@@ -94,7 +94,7 @@ class Conv2dLayer(Layer):
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
     padding : str
-        The type of the padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -200,7 +200,7 @@ class DeConv2dLayer(Layer):
     strides : list of int
         The sliding window strides for corresponding input dimensions (:function:`DeConv2d` does not need to set this with TF > 1.3).
     padding : str
-        The type of the padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for initializing the weight matrix.
     b_init : initializer or None
@@ -308,7 +308,7 @@ class Conv3dLayer(Layer):
         The sliding window strides for corresponding input dimensions.
         Must be in the same order as the shape dimension.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer
@@ -371,7 +371,7 @@ class DeConv3dLayer(Layer):
     strides : list of int
         The sliding window strides for corresponding input dimensions.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer
@@ -805,7 +805,7 @@ def atrous_conv1d(
     act : activation function
         The activation function of this layer.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     use_cudnn_on_gpu: boolean
         Use cudnn on GPU (Not used currently)
     data_format : str
@@ -859,7 +859,7 @@ class AtrousConv2dLayer(Layer):
     act : activation function
         The activation function of this layer.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -1189,7 +1189,7 @@ def conv2d(
     act : activation function
         The activation function of this layer.
     padding : str
-        The type of the padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -1273,7 +1273,7 @@ def deconv2d(net,
         Require if TF version < 1.3, int or None.
         If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     act : activation function
         The activation function of this layer.
     W_init : initializer
@@ -1353,7 +1353,7 @@ class DeConv3d(Layer):
     stride : tuple of int
         The stride step (depth, height, width).
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     act : activation function
         The activation function of this layer.
     W_init : initializer
@@ -1423,7 +1423,7 @@ class DepthwiseConv2d(Layer):
     act : activation function
         The activation function of this layer.
     padding : str
-        The type of padding algorithm: "SAME" or "VALID".
+        The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
