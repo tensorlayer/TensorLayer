@@ -10,26 +10,20 @@ from .core import *
 
 class MultiplexerLayer(Layer):
     """
-    The :class:`MultiplexerLayer` selects one of several input and forwards the selected input into the output,
+    The :class:`MultiplexerLayer` selects inputs to be forwarded to output.
     see `tutorial_mnist_multiplexer.py`.
 
     Parameters
     ----------
-    layer : a list of :class:`Layer`
-        Previous layer
+    layers : a list of :class:`Layer`
+        The input layers.
     name : str
-        A unique layer name
-
-
-    Attributes
-    -----------------------
-    sel : a placeholder
-        Input an int [0, inf], which input is the output
+        A unique layer name.
 
     Examples
     --------
-    >>> x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    >>> y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+    >>> x = tf.placeholder(tf.float32, shape=(None, 784), name='x')
+    >>> y_ = tf.placeholder(tf.int64, shape=(None, ), name='y_')
     >>> # define the network
     >>> net_in = tl.layers.InputLayer(x, name='input_layer')
     >>> net_in = tl.layers.DropoutLayer(net_in, keep=0.8, name='drop1')
@@ -50,7 +44,7 @@ class MultiplexerLayer(Layer):
     ...                                act = tf.nn.relu, name='net1/relu3')
     >>> # multiplexer
     >>> net_mux = tl.layers.MultiplexerLayer(layer = [net_0, net_1], name='mux_layer')
-    >>> network = tl.layers.ReshapeLayer(net_mux, shape=[-1, 800], name='reshape_layer') #
+    >>> network = tl.layers.ReshapeLayer(net_mux, shape=(-1, 800), name='reshape_layer') #
     >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
     >>> # output layer
     >>> network = tl.layers.DenseLayer(network, n_units=10,
@@ -61,12 +55,12 @@ class MultiplexerLayer(Layer):
     - See ``tf.pack() for TF0.12 or tf.stack() for TF1.0`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`_
     """
 
-    def __init__(self, layer=[], name='mux_layer'):
+    def __init__(self, layers=[], name='mux_layer'):
         Layer.__init__(self, name=name)
-        self.n_inputs = len(layer)
+        self.n_inputs = len(layers)
 
         self.inputs = []
-        for l in layer:
+        for l in layers:
             self.inputs.append(l.outputs)
         try:  # TF1.0
             all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
@@ -82,46 +76,15 @@ class MultiplexerLayer(Layer):
         #         # tf.reshape(self.outputs, shape=)
         # exit()
         # the same with ConcatLayer
-        self.all_layers = list(layer[0].all_layers)
-        self.all_params = list(layer[0].all_params)
-        self.all_drop = dict(layer[0].all_drop)
+        self.all_layers = list(layers[0].all_layers)
+        self.all_params = list(layers[0].all_params)
+        self.all_drop = dict(layers[0].all_drop)
 
-        for i in range(1, len(layer)):
-            self.all_layers.extend(list(layer[i].all_layers))
-            self.all_params.extend(list(layer[i].all_params))
-            self.all_drop.update(dict(layer[i].all_drop))
+        for i in range(1, len(layers)):
+            self.all_layers.extend(list(layers[i].all_layers))
+            self.all_params.extend(list(layers[i].all_params))
+            self.all_drop.update(dict(layers[i].all_drop))
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
         # self.all_drop = list_remove_repeat(self.all_drop)
-
-
-# class DemultiplexerLayer(Layer):
-#     """
-#     The :class:`DemultiplexerLayer` takes a single input and select one of many output lines, which is connected to the input.
-#
-#     Parameters
-#     ----------
-#     layer : a list of :class:`Layer`
-#         Previous layer
-#     n_outputs : an int
-#         The number of output
-#     name : str
-#         A unique layer name.
-#
-#     Field (Class Variables)
-#     -----------------------
-#     sel : a placeholder
-#         Input int [0, inf], the
-#     outputs : a list of Tensor
-#         A list of outputs
-#
-#     Examples
-#     --------
-#     >>>
-#     """
-#     def __init__(self,
-#            layer = None,
-#            name='demux_layer'):
-#         Layer.__init__(self, name=name)
-#         self.outputs = []
