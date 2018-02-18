@@ -32,9 +32,9 @@ else:
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
 
 
-## Threading
 def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     """Return a batch of result by given data.
+
     Usually be used for data augmentation.
 
     Parameters
@@ -50,11 +50,13 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     Examples
     --------
-    - Process images.
+    Process images.
+
     >>> images, _, _, _ = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3))
     >>> images = tl.prepro.threading_data(images[0:32], tl.prepro.zoom, zoom_range=[0.5, 1])
 
-    - Customized image preprocessing function.
+    Customized image preprocessing function.
+
     >>> def distort_img(x):
     ...     x = tl.prepro.flip_axis(x, axis=0, is_random=True)
     ...     x = tl.prepro.flip_axis(x, axis=1, is_random=True)
@@ -62,7 +64,8 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     ...     return x
     >>> images = tl.prepro.threading_data(images, distort_img)
 
-    - Process images and masks together.
+    Process images and masks together.
+
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], tl.prepro.zoom_multi, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
@@ -71,7 +74,8 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     >>> tl.vis.save_image(X_, 'images.png')
     >>> tl.vis.save_image(Y_, 'masks.png')
 
-    - Process images and masks together, using ``thread_count`` threads.
+    Process images and masks together, using ``thread_count`` threads.
+
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data(X, tl.prepro.zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
@@ -80,7 +84,8 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     >>> tl.vis.save_image(X_, 'after.png')
     >>> tl.vis.save_image(Y_, 'before.png')
 
-    - Customized function for processing images and masks together.
+    Customized function for processing images and masks together.
+
     >>> def distort_img(data):
     ...     x, y = data
     ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
@@ -881,7 +886,6 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index
 # image = tf.image.random_contrast(image, lower=0.5, upper=1.5)
 
 
-# brightness
 def brightness(x, gamma=1, gain=1, is_random=False):
     """Change the brightness of a single image, randomly or non-randomly.
 
@@ -931,7 +935,6 @@ def brightness_multi(x, gamma=1, gain=1, is_random=False):
     return np.asarray(results)
 
 
-# illumination
 def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     """Perform illumination augmentation for a single image, randomly or non-randomly.
 
@@ -956,10 +959,12 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
 
     Examples
     ---------
-    - Random
+    Random
+
     >>> x = tl.prepro.illumination(x, gamma=(0.5, 5.0), contrast=(0.3, 1.0), saturation=(0.7, 1.0), is_random=True)
 
-    - Non-random
+    Non-random
+
     >>> x = tl.prepro.illumination(x, 0.5, 0.6, 0.8, is_random=False)
 
     """
@@ -1001,7 +1006,6 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     return np.asarray(im_)
 
 
-# hue
 def rgb_to_hsv(rgb):
     """Input RGB image [0~255] return HSV image [0~1].
 
@@ -1065,7 +1069,9 @@ def hsv_to_rgb(hsv):
 
 
 def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
-    """Adjust hue of an RGB image. This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
+    """Adjust hue of an RGB image.
+
+    This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
     For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_ and `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
 
     Parameters
@@ -1084,10 +1090,12 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
 
     Examples
     ---------
-    - Random, add a random value between -0.2 and 0.2 as the offset to every hue values.
+    Random, add a random value between -0.2 and 0.2 as the offset to every hue values.
+
     >>> im_hue = tl.prepro.adjust_hue(image, hout=0.2, is_offset=True, is_random=False)
 
-    - Non-random, make all hue to green.
+    Non-random, make all hue to green.
+
     >>> im_green = tl.prepro.adjust_hue(image, hout=0.66, is_offset=False, is_random=False)
 
     References
@@ -1124,10 +1132,10 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
 #     pass
 
 
-# resize
 def imresize(x, size=[100, 100], interp='bicubic', mode=None):
-    """Resize an image by given output size and method. Warning, this function
-    will rescale the value to [0, 255].
+    """Resize an image by given output size and method.
+
+    Warning, this function will rescale the value to [0, 255].
 
     Parameters
     -----------
@@ -1171,10 +1179,12 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
 
     Examples
     ----------
-    - Random
+    Random
+
     >>> im = pixel_value_scale(im, 0.1, [0, 255], is_random=True)
 
-    - Non-random
+    Non-random
+
     >>> im = pixel_value_scale(im, 0.9, [0, 255], is_random=False)
 
     """
@@ -1489,7 +1499,9 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
 
 
 def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
-    """Projective transform by given coordinates, usually 4 coordinates. see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_.
+    """Projective transform by given coordinates, usually 4 coordinates.
+
+    see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_.
 
     Parameters
     -----------
@@ -1523,7 +1535,8 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
 
     Examples
     --------
-    - Assume X is an image from CIFAR-10, i.e. shape == (32, 32, 3)
+    Assume X is an image from CIFAR-10, i.e. shape == (32, 32, 3)
+
     >>> src = [[0,0],[0,32],[32,0],[32,32]]     # [w, h]
     >>> dst = [[10,10],[0,32],[32,0],[32,32]]
     >>> x = tl.prepro.projective_transform_by_points(X, src, dst)
@@ -2628,7 +2641,8 @@ def sequences_add_start_id(sequences, start_id=0, remove_last=False):
     >>> sentences_ids = sequences_add_start_id(sentences_ids, start_id=2, remove_last=True)
     ... [[2, 4, 3, 5, 3, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2]]
 
-    - For Seq2seq
+    For Seq2seq
+
     >>> input = [a, b, c]
     >>> target = [x, y, z]
     >>> decode_seq = [start_id, a, b] <-- sequences_add_start_id(input, start_id, True)
