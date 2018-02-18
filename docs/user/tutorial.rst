@@ -611,8 +611,6 @@ you run the code again, you can set ``resume`` to ``True``, the code will load t
 existing model and train the model basic on it.
 
 
-.. _fig_0601:
-
 .. image:: my_figs/pong_game.jpeg
     :scale: 30 %
     :align: center
@@ -792,8 +790,6 @@ plane, words that are similar end up clustering nearby each other.
 
 
 If everything is set up correctly, you will get an output in the end.
-
-.. _fig_0601:
 
 .. image:: my_figs/tsne.png
   :scale: 100 %
@@ -1004,8 +1000,6 @@ help you to `Understand LSTM Network`_ `[chinese] <http://dataunion.org/9331.htm
 which can solve The Problem of Long-Term
 Dependencies. We will not describe more about the theory of RNN, so please read through these blogs
 before you go on.
-
-.. _fig_0601:
 
 .. image:: my_figs/karpathy_rnn.jpeg
 
