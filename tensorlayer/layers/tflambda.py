@@ -5,6 +5,7 @@ import tensorflow as tf
 from six.moves import xrange
 
 from . import cost, files, iterate, ops, utils, visualize
+from tensorflow.python.util.deprecation import deprecated
 from .core import *
 
 
@@ -63,6 +64,153 @@ class LambdaLayer(Layer):
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        self.all_params.extend(variables)
+
+
+class SlimNetsLayer(Layer):
+    """
+    The :class:`SlimNetsLayer` class can be used to merge all TF-Slim nets into
+    TensorLayer. Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`__,
+    see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
+
+    Parameters
+    ----------
+    layer : :class:`Layer`
+        Previous layer.
+    slim_layer : a slim network function
+        The network you want to stack onto, end with ``return net, end_points``.
+    slim_args : dictionary
+        The arguments for the slim model.
+    name : str
+        A unique layer name.
+
+    Notes
+    -----
+    - The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
+
+    """
+
+    def __init__(
+            self,
+            layer,
+            slim_layer,
+            slim_args={},
+            name='tfslim_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert slim_layer is not None
+        assert slim_args is not None
+        self.inputs = layer.outputs
+        logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
+
+        # with tf.variable_scope(name) as vs:
+        #     net, end_points = slim_layer(self.inputs, **slim_args)
+        #     slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        net, end_points = slim_layer(self.inputs, **slim_args)
+
+        slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=name)
+        if slim_variables == []:
+            logging.info(
+                "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details"
+                % name)
+
+        self.outputs = net
+
+        slim_layers = []
+        for v in end_points.values():
+            # tf.contrib.layers.summaries.summarize_activation(v)
+            slim_layers.append(v)
+
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        self.all_layers.extend(slim_layers)
+        self.all_params.extend(slim_variables)
+
+
+@deprecated("This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+class KerasLayer(Layer):
+    """A layer to import Keras layers into TensorLayer.
+
+    Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+
+    Parameters
+    ----------
+    layer : :class:`Layer`
+        Previous layer
+    keras_layer : function
+        A tensor in tensor out function for building model.
+    keras_args : dictionary
+        The arguments for the `keras_layer`.
+    name : str
+        A unique layer name.
+
+    """
+
+    def __init__(
+            self,
+            layer,
+            keras_layer,
+            keras_args={},
+            name='keras_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert keras_layer is not None
+        self.inputs = layer.outputs
+        logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
+        logging.info("This API will be removed, please use LambdaLayer instead.")
+        with tf.variable_scope(name) as vs:
+            self.outputs = keras_layer(self.inputs, **keras_args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        self.all_params.extend(variables)
+
+
+@deprecated("This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+class EstimatorLayer(Layer):
+    """A layer that accepts a user-defined model.
+
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+
+    Parameters
+    ----------
+    layer : :class:`Layer`
+        Previous layer
+    model_fn : function
+        A tensor in tensor out function for building model.
+    args : dictionary
+        The arguments for the `model_fn`.
+    name : str
+        A unique layer name.
+
+    """
+
+    def __init__(
+            self,
+            layer,
+            model_fn,
+            args={},
+            name='estimator_layer',
+    ):
+        Layer.__init__(self, name=name)
+        assert layer is not None
+        assert model_fn is not None
+        self.inputs = layer.outputs
+        logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
+        logging.info("This API will be removed, please use LambdaLayer instead.")
+        with tf.variable_scope(name) as vs:
+            self.outputs = model_fn(self.inputs, **args)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
