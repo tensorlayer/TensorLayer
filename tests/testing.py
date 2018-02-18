@@ -16,8 +16,8 @@ _excludes = [
 
 
 def list_all_py_files():
-    dirs = ['tensorlayer', 'tests']
+    dirs = ['tensorlayer', 'tests', 'example']
     for d in dirs:
         for filename in _list_py_files(d):
-            if not filename in _excludes:
+            if filename not in _excludes:
                 yield filename
