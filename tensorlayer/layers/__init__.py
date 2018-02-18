@@ -18,7 +18,7 @@ from .pooling import *
 from .padding import *
 from .recurrent import *
 from .shape import *
-from .tl_lambda import *
+from .importer import *
 from .merge import *
 from .extend import *
 from .stack import *
