@@ -6,14 +6,14 @@ import tensorflow as tf
 
 
 def cross_entropy(output, target, name=None):
-    """It is a softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy of two distributions, implement
+    """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions, it implements
     softmax internally. See ``tf.nn.sparse_softmax_cross_entropy_with_logits``.
 
     Parameters
     ----------
-    output : Tensorflow variable
+    output : Tensor
         A batch of distribution with shape: [batch_size, num of classes].
-    target : Tensorflow variable
+    target : Tensor
         A batch of index with shape: [batch_size, ].
     name : string
         Name of this loss.
@@ -36,7 +36,7 @@ def cross_entropy(output, target, name=None):
 
 
 def sigmoid_cross_entropy(output, target, name=None):
-    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
+    """Sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
 
     Parameters
     ----------
@@ -55,11 +55,7 @@ def sigmoid_cross_entropy(output, target, name=None):
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
-    """It is a binary cross entropy operation.
-
-    # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
-    #
-    #     loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
+    """Binary cross entropy operation.
 
     Parameters
     ----------
@@ -74,7 +70,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
     References
     -----------
-    - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`__
+    - `ericjang-DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`__
 
     """
     #     from tensorflow.python.framework import ops
@@ -83,6 +79,10 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     #         target = ops.convert_to_tensor(targets, name="target")
     with tf.name_scope(name):
         return tf.reduce_mean(tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1))
+
+    # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
+    #
+    #     loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
 
 
 def mean_squared_error(output, target, is_mean=False, name="mean_squared_error"):
@@ -96,8 +96,8 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
         The target distribution, format the same with `output`.
     is_mean : boolean
         Whether compute the mean or sum for each example.
-        - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
-        - If False, use ``tf.reduce_sum`` (default).
+            - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
+            - If False, use ``tf.reduce_sum`` (default).
 
     References
     ------------
@@ -161,8 +161,8 @@ def absolute_difference_error(output, target, is_mean=False):
         The target distribution, format the same with `output`.
     is_mean : boolean
         Whether compute the mean or sum for each example.
-        - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
-        - If False, use ``tf.reduce_sum`` (default).
+            - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
+            - If False, use ``tf.reduce_sum`` (default).
 
     """
     with tf.name_scope("mean_squared_error_loss"):
@@ -203,10 +203,8 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
         All dimensions are reduced, default ``[1,2,3]``.
     smooth : float
         This small value will be added to the numerator and denominator.
-        If both output and target are empty, it makes sure dice is 1.
-        If either output or target are empty (all pixels are background), dice = ```smooth/(small_value + smooth)``,
-        then if smooth is very small, dice close to 0 (even the image values lower than the threshold),
-        so in this case, higher smooth can have a higher dice.
+            - If both output and target are empty, it makes sure dice is 1.
+            - If either output or target are empty (all pixels are background), dice = ```smooth/(small_value + smooth)``, then if smooth is very small, dice close to 0 (even the image values lower than the threshold), so in this case, higher smooth can have a higher dice.
 
     Examples
     ---------
@@ -359,8 +357,8 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
         The target sequence, 2D tensor `[batch_size, n_steps]`, if the number of step is dynamic, please use ``tl.cost.cross_entropy_seq_with_mask`` instead.
     batch_size : None or int.
         Whether to divide the cost by batch size.
-        - If integer, the return cost will be divided by `batch_size`.
-        - If None (default), the return cost will not be divided by anything.
+            - If integer, the return cost will be divided by `batch_size`.
+            - If None (default), the return cost will not be divided by anything.
 
     Examples
     --------
@@ -401,8 +399,8 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
         The mask to compute loss, it has the same size with `target_seqs`, normally 0 or 1.
     return_details : boolean
         Whether to return detailed losses.
-        - If False (default), only returns the loss.
-        - If True, returns the loss, losses, weights and targets (see source code).
+            - If False (default), only returns the loss.
+            - If True, returns the loss, losses, weights and targets (see source code).
 
     Examples
     --------
@@ -581,7 +579,7 @@ def lo_regularizer(scale, scope=None):
 def maxnorm_regularizer(scale=1.0, scope=None):
     """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
 
-    More about max-norm, see `<https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`__.
+    More about max-norm, see `wiki-max norm <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters

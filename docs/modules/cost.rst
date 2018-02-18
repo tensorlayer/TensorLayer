@@ -30,7 +30,8 @@ then you can apply L2 regularization on the weights matrix of first two layer as
 .. code-block:: python
 
   cost = tl.cost.cross_entropy(y, y_)
-  cost = cost + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[0]) + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[2])
+  cost = cost + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[0])
+          + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[2])
 
 Besides, TensorLayer provides a easy way to get all variables by a given name, so you can also
 apply L2 regularization on some weights as follow.
@@ -41,6 +42,7 @@ apply L2 regularization on some weights as follow.
   for w in tl.layers.get_variables_with_name('W_conv2d', train_only=True, printable=False):
       l2 += tf.contrib.layers.l2_regularizer(1e-4)(w)
   cost = tl.cost.cross_entropy(y, y_) + l2
+
 
 
 
@@ -75,12 +77,11 @@ Then max-norm regularization on W1 and W2 can be performed as follow.
 
 .. code-block:: python
 
-  y = network.outputs
-  # Alternatively, you can use tl.cost.cross_entropy(y, y_) instead.
-  cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-  cost = cross_entropy
-  cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) +
-            tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
+  max_norm = 0
+  for w in tl.layers.get_variables_with_name('W', train_only=True, printable=False):
+      max_norm += tl.cost.maxnorm_regularizer(1)(w)
+  cost = tl.cost.cross_entropy(y, y_) + max_norm
+
 
 In addition, all TensorFlow's regularizers like
 ``tf.contrib.layers.l2_regularizer`` can be used with TensorLayer.
