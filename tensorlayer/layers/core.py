@@ -38,6 +38,11 @@ def flatten_reshape(variable, name='flatten'):
     name : str
         A unique layer name.
 
+    Returns
+    -------
+    Tensor
+        Flatten Tensor
+
     Examples
     --------
     >>> W_conv2 = weight_variable([5, 5, 100, 32])   # 64 features for each 5x5 patch
@@ -130,8 +135,13 @@ def initialize_rnn_state(state, feed_dict=None):
     ----------
     state : RNN state.
         The TensorFlow's RNN state.
-    feed_dict : None or dictionary
+    feed_dict : dictionary
         Initial RNN state; if None, returns null state.
+
+    Returns
+    -------
+    RNN state
+        The TensorFlow's RNN state.
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
@@ -210,13 +220,13 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     return d_vars
 
 
-def get_layers_with_name(net=None, name="", printable=False):
+def get_layers_with_name(net, name="", printable=False):
     """Get a list of layers' output in a network by a given name scope.
 
     Parameters
     -----------
-    net : :class:`Layer` class
-        Get a list of layers of this network.
+    net : :class:`Layer`
+        The last layer of the network.
     name : str
         Get the layers' output that contain this name.
     printable : boolean
@@ -231,7 +241,6 @@ def get_layers_with_name(net=None, name="", printable=False):
     ---------
     >>> layers = tl.layers.get_layers_with_name(net, "CNN", True)
     """
-    assert net is not None
     logging.info("  [*] geting layers with %s" % name)
 
     layers = []
@@ -246,21 +255,22 @@ def get_layers_with_name(net=None, name="", printable=False):
     return layers
 
 
-def list_remove_repeat(x=None):
+def list_remove_repeat(x):
     """Remove the repeated items in a list, and return the processed list.
     You may need it to create merged layer like Concat, Elementwise and etc.
 
     Parameters
     ----------
     x : list
+        Input
 
     Returns
-    ---------
+    -------
     list
         A list that after removing it's repeated items
 
     Examples
-    ---------
+    -------
     >>> l = [2, 3, 4, 2, 3]
     >>> l = list_remove_repeat(l)
     ... [2, 3, 4]
@@ -310,7 +320,7 @@ def merge_networks(layers=[]):
     return layer
 
 
-def initialize_global_variables(sess=None):
+def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
     Run ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
@@ -497,11 +507,11 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Attributes
     ----------
-    nce_cost : tensor
+    nce_cost : Tensor
         The NCE loss.
-    outputs : tensor
+    outputs : Tensor
         The embedding layer outputs.
-    normalized_embeddings : tensor
+    normalized_embeddings : Tensor
         Normalized embedding matrix.
 
     Examples
@@ -835,7 +845,7 @@ class DenseLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             n_units=100,
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
@@ -922,7 +932,7 @@ class ReconLayer(DenseLayer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             x_recon=None,
             n_units=784,
             act=tf.nn.softplus,
@@ -1121,7 +1131,7 @@ class DropoutLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             keep=0.5,
             is_fix=False,
             is_train=True,
@@ -1195,7 +1205,7 @@ class GaussianNoiseLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             mean=0.0,
             stddev=1.0,
             is_train=True,
@@ -1266,7 +1276,7 @@ class DropconnectDenseLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             keep=0.5,
             n_units=100,
             act=tf.identity,

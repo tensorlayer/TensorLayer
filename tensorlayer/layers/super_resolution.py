@@ -11,7 +11,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
     net : :class:`Layer`
         Previous layer,
     scale : int
-        The upscaling ratio, a wrong setting will lead to dimension size error.
+        The up-scaling ratio, a wrong setting will lead to dimension size error.
     n_out_channel : int or None
         The number of output channels.
         - If None, automatically set n_out_channel == the number of input channels / (scale x scale).
@@ -20,6 +20,11 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
         The activation function of this layer.
     name : str
         A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A 2D sub-pixel up-sampling layer
 
     Examples
     ---------
@@ -97,93 +102,6 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
     return net_new
 
 
-def subpixel_conv2d_deprecated(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-    """It is a sub-pixel 2d up-sampling layer, usually be used for Super-Resolution applications.
-
-    Parameters
-    ------------
-    net : :class:`Layer`
-        Previous layer,
-    scale : int
-        The upscaling ratio, a wrong setting will lead to dimension size error.
-    n_out_channel : int or None
-        The number of output channels.
-        - If None, automatically set n_out_channel == the number of input channels / (scale x scale).
-        - The number of input channels == (scale x scale) x The number of output channels.
-    act : activation function
-        The activation function of this layer.
-    name : str
-        A unique layer name.
-
-    Examples
-    ---------
-    >>> # examples here just want to tell you how to set the n_out_channel.
-    >>> x = np.random.rand(2, 16, 16, 4)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4), name="X")
-    >>> net = InputLayer(X, name='input')
-    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=1, name='subpixel_conv2d')
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 4) (2, 32, 32, 1)
-    >>>
-    >>> x = np.random.rand(2, 16, 16, 4*10)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4*10), name="X")
-    >>> net = InputLayer(X, name='input2')
-    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=10, name='subpixel_conv2d2')
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 40) (2, 32, 32, 10)
-    >>>
-    >>> x = np.random.rand(2, 16, 16, 25*10)
-    >>> X = tf.placeholder("float32", shape=(2, 16, 16, 25*10), name="X")
-    >>> net = InputLayer(X, name='input3')
-    >>> net = SubpixelConv2d(net, scale=5, n_out_channel=None, name='subpixel_conv2d3')
-    >>> y = sess.run(net.outputs, feed_dict={X: x})
-    >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 250) (2, 80, 80, 10)
-
-    References
-    ------------
-    - `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network <https://arxiv.org/pdf/1609.05158.pdf>`_
-    """
-    # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
-
-    _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
-
-    scope_name = tf.get_variable_scope().name
-    if scope_name:
-        name = scope_name + '/' + name
-
-    def _PS(X, r, n_out_channel):
-        if n_out_channel > 1:
-            assert int(X.get_shape()[-1]) == (r**2) * n_out_channel, _err_log
-            X = tf.transpose(X, [0, 2, 1, 3])
-            X = tf.depth_to_space(X, r)
-            X = tf.transpose(X, [0, 2, 1, 3])
-        else:
-            logging.info(_err_log)
-        return X
-
-    inputs = net.outputs
-
-    if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
-
-    logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
-
-    net_new = Layer(inputs, name=name)
-    # with tf.name_scope(name):
-    with tf.variable_scope(name) as vs:
-        net_new.outputs = act(_PS(inputs, r=scale, n_out_channel=n_out_channel))
-
-    net_new.all_layers = list(net.all_layers)
-    net_new.all_params = list(net.all_params)
-    net_new.all_drop = dict(net.all_drop)
-    net_new.all_layers.extend([net_new.outputs])
-    return net_new
-
-
 def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     """It is a 1D sub-pixel up-sampling layer.
     Calls a TensorFlow function that directly implements this functionality.
@@ -194,11 +112,16 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     net : :class:`Layer`
         Previous layer with output shape of (batch, width, r).
     scale : int
-        The upscaling ratio, a wrong setting will lead to Dimension size error.
+        The up-scaling ratio, a wrong setting will lead to Dimension size error.
     act : activation function
         The activation function of this layer.
     name : str
         A unique layer name.
+
+        Returns
+    -------
+    :class:`Layer`
+        A 1D sub-pixel up-sampling layer
 
     Examples
     ----------

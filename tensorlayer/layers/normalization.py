@@ -32,7 +32,7 @@ class LocalResponseNormLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             depth_radius=None,
             bias=None,
             alpha=None,
@@ -42,7 +42,7 @@ class LocalResponseNormLayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         logging.info("LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" % (self.name, depth_radius, bias, alpha, beta))
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
         self.all_layers = list(layer.all_layers)
@@ -86,7 +86,7 @@ class BatchNormLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             decay=0.9,
             epsilon=0.00001,
             act=tf.identity,
@@ -110,7 +110,7 @@ class BatchNormLayer(Layer):
             # 1. beta, gamma
             if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                 beta_init = beta_init()
-            beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=D_TYPE, trainable=is_train)  #, restore=restore)
+            beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=D_TYPE, trainable=is_train)
 
             gamma = tf.get_variable(
                 'gamma',
@@ -118,21 +118,21 @@ class BatchNormLayer(Layer):
                 initializer=gamma_init,
                 dtype=D_TYPE,
                 trainable=is_train,
-            )  #restore=restore)
+            )
 
             # 2.
             if tf.__version__ > '0.12.1':
                 moving_mean_init = tf.zeros_initializer()
             else:
                 moving_mean_init = tf.zeros_initializer
-            moving_mean = tf.get_variable('moving_mean', params_shape, initializer=moving_mean_init, dtype=D_TYPE, trainable=False)  #   restore=restore)
+            moving_mean = tf.get_variable('moving_mean', params_shape, initializer=moving_mean_init, dtype=D_TYPE, trainable=False)
             moving_variance = tf.get_variable(
                 'moving_variance',
                 params_shape,
                 initializer=tf.constant_initializer(1.),
                 dtype=D_TYPE,
                 trainable=False,
-            )  #   restore=restore)
+            )
 
             # 3.
             # These ops will only be preformed when training.
@@ -188,7 +188,7 @@ class InstanceNormLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             act=tf.identity,
             epsilon=1e-5,
             name='instan_norm',
@@ -227,7 +227,7 @@ class LayerNormLayer(Layer):
     """
 
     def __init__(self,
-                 layer=None,
+                 layer,
                  center=True,
                  scale=True,
                  act=tf.identity,

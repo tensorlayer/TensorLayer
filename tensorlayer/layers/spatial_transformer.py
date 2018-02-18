@@ -8,19 +8,26 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs):
+def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_
     , see :class:`SpatialTransformer2dAffineLayer` class.
 
     Parameters
     ----------
-    U : float
+    U : list of float
         The output of a convolutional net should have the
         shape [num_batch, height, width, num_channels].
     theta: float
         The output of the localisation network should be [num_batch, 6], value range should be [0, 1] (via tanh).
     out_size: tuple of int
         The size of the output of the network (height, width)
+    name: str
+        Optional function name
+
+    Returns
+    -------
+    Tensor
+        The transformed tensor.
 
     References
     ----------
@@ -168,13 +175,18 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
 
     Parameters
     ----------
-    U : float
+    U : list of float
         tensor of inputs [batch, height, width, num_channels]
-    thetas : float
+    thetas : list of float
         a set of transformations for each input [batch, num_transforms, 6]
-    out_size : int
+    out_size : list of int
         the size of the output [out_height, out_width]
-    Returns: float
+    name : str
+        optional function name
+
+    Returns
+    ------
+    float
         Tensor of size [batch * num_transforms, out_height, out_width, num_channels]
     """
     with tf.variable_scope(name):

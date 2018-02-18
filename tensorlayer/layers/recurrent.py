@@ -46,7 +46,7 @@ class RNNLayer(Layer):
         A unique layer name.
 
     Attributes
-    --------------
+    ----------
     outputs : Tensor
         The output of this layer.
 
@@ -129,8 +129,8 @@ class RNNLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            cell_fn=None,  #tf.nn.rnn_cell.BasicRNNCell,
+            layer,
+            cell_fn,
             cell_init_args={},
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -317,8 +317,8 @@ class BiRNNLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            layer,
+            cell_fn,
             cell_init_args={
                 'use_peepholes': True,
                 'state_is_tuple': True
@@ -510,12 +510,13 @@ class BasicConvLSTMCell(ConvRNNCell):
     input_size : int
         Deprecated and unused.
     state_is_tuple : boolen
-        If True, accepted and returned states are 2-tuples of the `c_state` and `m_state`. If False, they are concatenated along the column axis.  The latter behavior will soon be deprecated.
+        If True, accepted and returned states are 2-tuples of the `c_state` and `m_state`.
+        If False, they are concatenated along the column axis. The latter behavior will soon be deprecated.
     act : activation function
         The activation function of this layer, tanh as default.
     """
 
-    def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, activation=tf.nn.tanh):
+    def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, act=tf.nn.tanh):
         """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:
         # logging.warn("%s: Using a concatenated state is slower and will soon be "
@@ -527,7 +528,7 @@ class BasicConvLSTMCell(ConvRNNCell):
         self.num_features = num_features
         self._forget_bias = forget_bias
         self._state_is_tuple = state_is_tuple
-        self._activation = activation
+        self._activation = act
 
     @property
     def state_size(self):
@@ -675,7 +676,7 @@ class ConvLSTMLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             cell_shape=None,
             feature_map=1,
             filter_size=(3, 3),
@@ -996,8 +997,8 @@ class DynamicRNNLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            layer,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args={'state_is_tuple': True},
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1151,7 +1152,6 @@ class DynamicRNNLayer(Layer):
         self.all_params.extend(rnn_variables)
 
 
-# Bidirectional Dynamic RNN
 class BiDynamicRNNLayer(Layer):
     """
     The :class:`BiDynamicRNNLayer` class is a RNN layer, you can implement vanilla RNN,
@@ -1235,8 +1235,8 @@ class BiDynamicRNNLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            layer,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args={'state_is_tuple': True},
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1512,9 +1512,9 @@ class Seq2Seq(Layer):
 
     def __init__(
             self,
-            net_encode_in=None,
-            net_decode_in=None,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            net_encode_in,
+            net_decode_in,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args={'state_is_tuple': True},
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),

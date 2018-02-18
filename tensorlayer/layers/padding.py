@@ -27,8 +27,8 @@ class PadLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            paddings=None,
+            layer,
+            paddings,
             mode='CONSTANT',
             name='pad_layer',
     ):

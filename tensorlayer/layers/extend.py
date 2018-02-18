@@ -25,8 +25,8 @@ class ExpandDimsLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            axis=None,
+            layer,
+            axis,
             name='expand_dims',
     ):
         Layer.__init__(self, name=name)

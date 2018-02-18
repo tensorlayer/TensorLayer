@@ -32,7 +32,7 @@ class PReluLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
             a_init_args={},

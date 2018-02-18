@@ -47,8 +47,8 @@ class LambdaLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            fn=None,
+            layer,
+            fn,
             fn_args={},
             name='lambda_layer',
     ):

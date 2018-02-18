@@ -47,7 +47,7 @@ class ConcatLayer(Layer):
 
     def __init__(
             self,
-            layers=[],
+            layers,
             concat_dim=1,
             name='concat_layer',
     ):
@@ -105,7 +105,7 @@ class ElementwiseLayer(Layer):
 
     def __init__(
             self,
-            layers=[],
+            layers,
             combine_fn=tf.minimum,
             name='elementwise_layer',
     ):

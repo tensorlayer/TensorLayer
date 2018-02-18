@@ -32,8 +32,8 @@ class SlimNetsLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            slim_layer=None,
+            layer,
+            slim_layer,
             slim_args={},
             name='tfslim_layer',
     ):
