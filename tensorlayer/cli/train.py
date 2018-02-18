@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 """
 tl train
 ========
@@ -39,8 +38,8 @@ tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
   tl train example/tutorial_imagenet_inceptionV3_distributed.py -- --batch_size 16
 
 
-Parameters
-----------
+Command-line Arguments
+----------------------
 
 - ``file``: python file path.
 
@@ -55,7 +54,6 @@ Parameters
 
 Notes
 -----
-
 A parallel training program would require multiple parameter servers
 to help parallel trainers to exchange intermediate gradients.
 The best number of parameter servers is often proportional to the 
@@ -67,6 +65,7 @@ to enable CPU-only parallel training.
 The reason we are not supporting GPU-CPU co-training is because GPU and 
 CPU are running at different speeds. Using them together in training would
 incur stragglers.
+
 """
 
 import argparse

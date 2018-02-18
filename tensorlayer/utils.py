@@ -34,8 +34,8 @@ def fit(sess,
 
     Parameters
     ----------
-    sess : TensorFlow session
-        sess = tf.InteractiveSession()
+    sess : Session
+        TensorFlow Session
     network : a TensorLayer layer
         the network will be trained
     train_op : a TensorFlow optimizer
@@ -90,6 +90,7 @@ def fit(sess,
     If tensorboard=True, the global_variables_initializer will be run inside the fit function
     in order to initalize the automatically generated summary nodes used for tensorboard visualization,
     thus tf.global_variables_initializer().run() before the fit() call will be undefined.
+
     """
     assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
 
@@ -225,6 +226,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
     --------
     >>> see tutorial_mnist_simple.py
     >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
+
     """
     logging.info('Start testing the network ...')
     if batch_size is None:
@@ -280,6 +282,7 @@ def predict(sess, network, X, x, y_op, batch_size=None):
     >>> y = network.outputs
     >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
     >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
+
     """
     if batch_size is None:
         dp_dict = dict_to_one(network.all_drop)  # disable noise layers
@@ -341,6 +344,7 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     Examples
     --------
     >>> c_mat, f1, acc, f1_macro = evaluation(y_test, y_predict, n_classes)
+
     """
     from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
     c_mat = confusion_matrix(y_test, y_predict, labels=[x for x in range(n_classes)])
@@ -369,6 +373,7 @@ def dict_to_one(dp_dict={}):
     >>> dp_dict = dict_to_one( network.all_drop )
     >>> dp_dict = dict_to_one( network.all_drop )
     >>> feed_dict.update(dp_dict)
+
     """
     return {x: 1 for x in dp_dict}
 
@@ -385,6 +390,7 @@ def flatten_list(list_of_list=[[], []]):
     --------
     >>> tl.utils.flatten_list([[1, 2, 3],[4, 5],[6]])
     ... [1, 2, 3, 4, 5, 6]
+
     """
     return sum(list_of_list, [])
 
@@ -401,13 +407,16 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
 
     Examples
     --------
-    - One X
+    One X
+
     >>> X_train, y_train = class_balancing_oversample(X_train, y_train, printable=True)
 
-    - Two X
+    Two X
+
     >>> X, y = tl.utils.class_balancing_oversample(X_train=np.hstack((X1, X2)), y_train=y, printable=False)
     >>> X1 = X[:, 0:5]
     >>> X2 = X[:, 5:]
+
     """
     # ======== Classes balancing
     if printable:
@@ -478,6 +487,7 @@ def get_random_int(min=0, max=10, number=5, seed=None):
     ---------
     >>> r = get_random_int(min=0, max=10, number=5)
     ... [10, 2, 3, 3, 7]
+
     """
     rnd = random.Random()
     if seed:

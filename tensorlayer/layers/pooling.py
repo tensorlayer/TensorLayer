@@ -12,39 +12,39 @@ from .core import *
 
 class PoolLayer(Layer):
     """
-    The :class:`PoolLayer` class is a Pooling layer, you can choose
-    ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D or
+    The :class:`PoolLayer` class is a Pooling layer.
+    You can choose ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D or
     ``tf.nn.max_pool3d`` and ``tf.nn.avg_pool3d`` for 3D.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    ksize : a list of ints that has length >= 4.
+    layer : :class:`Layer`
+        The previous layer.
+    ksize : tuple of int
         The size of the window for each dimension of the input tensor.
-    strides : a list of ints that has length >= 4.
+        Note that: len(ksize) >= 4.
+    strides : tuple of int
         The stride of the sliding window for each dimension of the input tensor.
-    padding : a string from: "SAME", "VALID".
-        The type of padding algorithm to use.
-    pool : a pooling function
-        - see `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
-        - class ``tf.nn.max_pool``
-        - class ``tf.nn.avg_pool``
-        - class ``tf.nn.max_pool3d``
-        - class ``tf.nn.avg_pool3d``
-    name : a string or None
-        An optional name to attach to this layer.
+        Note that: len(strides) >= 4.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    pool : pooling function
+        One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d``, and ``f.nn.avg_pool3d``.
+        See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`__
+    name : str
+        A unique layer name.
 
     Examples
     --------
     - see :class:`Conv2dLayer`.
+
     """
 
     def __init__(
             self,
             layer=None,
-            ksize=[1, 2, 2, 1],
-            strides=[1, 2, 2, 1],
+            ksize=(1, 2, 2, 1),
+            strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
             name='pool_layer',
@@ -61,21 +61,32 @@ class PoolLayer(Layer):
         self.all_layers.extend([self.outputs])
 
 
-def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
-    """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
+def maxpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):
+    """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`__ .
 
     Parameters
-    ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
-    filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
-    strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
+    ----------
+    net : :class:`Layer`
+        The previous layer with a output rank as 3.
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
 
     Returns
-    --------
-    - A :class:`Layer` which the output tensor, of rank 3.
+    -------
+    :class:`Layer`
+        A max pooling 1-D layer with a output rank as 3.
+
     """
     logging.info("MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -86,21 +97,32 @@ def maxpool1d(net, filter_size, strides, padding='valid', data_format='channels_
     return net_new
 
 
-def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
-    """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
+def meanpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):
+    """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`__ .
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 3.
-    filter_size (pool_size) : An integer or tuple/list of a single integer, representing the size of the pooling window.
-    strides : An integer or tuple/list of a single integer, specifying the strides of the pooling operation.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string, one of channels_last (default) or channels_first. The ordering of the dimensions in the inputs. channels_last corresponds to inputs with shape (batch, length, channels) while channels_first corresponds to inputs with shape (batch, channels, length).
-    name : A string, the name of the layer.
+    net : :class:`Layer`
+        The previous layer with a output rank as 3.
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
 
     Returns
-    --------
-    - A :class:`Layer` which the output tensor, of rank 3.
+    -------
+    :class:`Layer`
+        A mean pooling 1-D layer with a output rank as 3.
+
     """
     logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -111,15 +133,27 @@ def meanpool1d(net, filter_size, strides, padding='valid', data_format='channels
     return net_new
 
 
-def maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpool'):
+def maxpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
     -----------
-    net : TensorLayer layer.
-    filter_size : tuple of (height, width) for filter size.
-    strides : tuple of (height, width). Default is the same with filter_size.
-    others : see :class:`PoolLayer`.
+    net : :class:`Layer`
+        The previous layer with a output rank as 4.
+    filter_size : tuple of int
+        (height, width) for filter size.
+    strides : tuple of int
+        (height, width) for strides.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A max pooling 2-D layer with a output rank as 4.
+
     """
     if strides is None:
         strides = filter_size
@@ -128,15 +162,27 @@ def maxpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='maxpo
     return net
 
 
-def meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='meanpool'):
+def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool'):
     """Wrapper for :class:`PoolLayer`.
 
     Parameters
     -----------
-    net : TensorLayer layer.
-    filter_size : tuple of (height, width) for filter size.
-    strides : tuple of (height, width). Default is the same with filter_size.
-    others : see :class:`PoolLayer`.
+    net : :class:`Layer`
+        The previous layer with a output rank as 4.
+    filter_size : tuple of int
+        (height, width) for filter size.
+    strides : tuple of int
+        (height, width) for strides.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A mean pooling 2-D layer with a output rank as 4.
+
     """
     if strides is None:
         strides = filter_size
@@ -145,17 +191,32 @@ def meanpool2d(net, filter_size=(2, 2), strides=None, padding='SAME', name='mean
     return net
 
 
-def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
-    """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
+def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+    """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
-    filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
-    strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
+    net : :class:`Layer`
+        The previous layer with a output rank as 5.
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A max pooling 3-D layer with a output rank as 5.
+
     """
     logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -166,17 +227,32 @@ def maxpool3d(net, filter_size, strides, padding='valid', data_format='channels_
     return net_new
 
 
-def meanpool3d(net, filter_size, strides, padding='valid', data_format='channels_last', name=None):  #Untested
-    """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
+def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+    """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 
     Parameters
     ------------
-    net : TensorLayer layer, the tensor over which to pool. Must have rank 5.
-    filter_size (pool_size) : An integer or tuple/list of 3 integers: (pool_depth, pool_height, pool_width) specifying the size of the pooling window. Can be a single integer to specify the same value for all spatial dimensions.
-    strides : An integer or tuple/list of 3 integers, specifying the strides of the pooling operation. Can be a single integer to specify the same value for all spatial dimensions.
-    padding : A string. The padding method, either 'valid' or 'same'. Case-insensitive.
-    data_format : A string. The ordering of the dimensions in the inputs. channels_last (default) and channels_first are supported. channels_last corresponds to inputs with shape (batch, depth, height, width, channels) while channels_first corresponds to inputs with shape (batch, channels, depth, height, width).
-    name : A string, the name of the layer.
+    net : :class:`Layer`
+        The previous layer with a output rank as 5.
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A mean pooling 3-D layer with a output rank as 5.
+
     """
     logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)

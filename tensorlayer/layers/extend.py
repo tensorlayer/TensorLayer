@@ -11,22 +11,23 @@ from .core import *
 class ExpandDimsLayer(Layer):
     """
     The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
-    see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/array_ops/shapes_and_shaping#expand_dims>`_ .
+    see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/array_ops/shapes_and_shaping#expand_dims>`__ .
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    axis : int, 0-D (scalar).
-        Specifies the dimension index at which to expand the shape of input.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        The previous layer.
+    axis : int
+        The dimension index at which to expand the shape of input.
+    name : str
+        A unique layer name.
+
     """
 
     def __init__(
             self,
-            layer=None,
-            axis=None,
+            layer,
+            axis,
             name='expand_dims',
     ):
         Layer.__init__(self, name=name)
@@ -48,16 +49,18 @@ class ExpandDimsLayer(Layer):
 class TileLayer(Layer):
     """
     The :class:`TileLayer` class constructs a tensor by tiling a given tensor,
-    see `tf.tile() <https://www.tensorflow.org/api_docs/python/array_ops/slicing_and_joining#tile>`_ .
+    see `tf.tile() <https://www.tensorflow.org/api_docs/python/array_ops/slicing_and_joining#tile>`__ .
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    multiples: a list of int
-        Must be one of the following types: int32, int64. 1-D. Length must be the same as the number of dimensions in input
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        The previous layer.
+    multiples: tensor
+        Must be one of the following types: int32, int64.
+        1-D Length must be the same as the number of dimensions in input.
+    name : str
+        A unique layer name.
+
     """
 
     def __init__(

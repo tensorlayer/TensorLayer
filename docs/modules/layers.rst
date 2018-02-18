@@ -1,16 +1,11 @@
 API - Layers
 ============
 
-TensorLayer provides rich layer implementations trailed for
-various benchmarks and domain-specific problems. In addition, we also
-support transparent access to native TensorFlow parameters.
-For example, we provide not only layers for local response normalization, but also
-layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
-More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
+.. automodule:: tensorlayer.layers
 
 
 Understanding the Basic Layer
--------------------------
+-----------------------------
 
 All TensorLayer layers have a number of properties in common:
 
@@ -102,7 +97,7 @@ For more details, please read the MNIST examples in the example folder.
 
 
 Customizing Layers
-----------------
+------------------
 
 A Simple Layer
 ^^^^^^^^^^^^^^
@@ -235,9 +230,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
 
 
 Layer list
-------------
-
-.. automodule:: tensorlayer.layers
+----------
 
 .. autosummary::
 
@@ -314,12 +307,12 @@ Layer list
    advanced_indexing_op
    retrieve_seq_length_op
    retrieve_seq_length_op2
+   retrieve_seq_length_op3
+   target_mask_op
    DynamicRNNLayer
    BiDynamicRNNLayer
 
    Seq2Seq
-   PeekySeq2Seq
-   AttentionSeq2Seq
 
    FlattenLayer
    ReshapeLayer
@@ -354,7 +347,7 @@ Name Scope and Sharing Parameters
 ---------------------------------
 
 These functions help you to reuse parameters for different inference (graph), and get a
-list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`_.
+list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`__.
 
 Get variables with name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -657,6 +650,14 @@ Compute Sequence length 2
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: retrieve_seq_length_op2
 
+Compute Sequence length 3
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: retrieve_seq_length_op3
+
+Get Mask
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: target_mask_op
+
 
 Dynamic RNN layer
 ----------------------
@@ -678,13 +679,14 @@ Simple Seq2Seq
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: Seq2Seq
 
-PeekySeq2Seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: PeekySeq2Seq
+..
+  PeekySeq2Seq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autoclass:: PeekySeq2Seq
 
-AttentionSeq2Seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AttentionSeq2Seq
+  AttentionSeq2Seq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autoclass:: AttentionSeq2Seq
 
 
 
@@ -756,7 +758,7 @@ Connect TF-Slim
 ------------------
 
 Yes ! TF-Slim models can be connected into TensorLayer, all Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
+see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`__.
 
 .. autoclass:: SlimNetsLayer
 

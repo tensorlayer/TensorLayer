@@ -10,23 +10,26 @@ from .core import *
 
 class PadLayer(Layer):
     """
-    The :class:`PadLayer` class is a Padding layer for any modes and dimensions.
-    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`_ for usage.
+    The :class:`PadLayer` class is a padding layer for any mode and dimension.
+    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`__ for usage.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    padding : a Tensor of type int32.
-    mode : one of "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive)
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        The previous layer.
+    paddings : Tensor
+        The int32 values to pad.
+    mode : str
+        "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive).
+    name : str
+        A unique layer name.
+
     """
 
     def __init__(
             self,
-            layer=None,
-            paddings=None,
+            layer,
+            paddings,
             mode='CONSTANT',
             name='pad_layer',
     ):

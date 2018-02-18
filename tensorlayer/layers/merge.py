@@ -9,17 +9,16 @@ from .core import *
 
 
 class ConcatLayer(Layer):
-    """
-    The :class:`ConcatLayer` class is layer which concat (merge) two or more tensor by given axis..
+    """A layer that concats multiple tensors according to given axis..
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
+    layers : list of :class:`Layer`
+        List of layers to concatenate.
     concat_dim : int
-        Dimension along which to concatenate.
-    name : a string or None
-        An optional name to attach to this layer.
+        The dimension to concatenate.
+    name : str
+        A unique layer name.
 
     Examples
     ----------
@@ -43,17 +42,18 @@ class ConcatLayer(Layer):
     >>> net.print_layers()
     ...     layer 0: ("Relu:0", shape=(?, 800), dtype=float32)
     ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
+
     """
 
     def __init__(
             self,
-            layer=[],
+            layers,
             concat_dim=1,
             name='concat_layer',
     ):
         Layer.__init__(self, name=name)
         self.inputs = []
-        for l in layer:
+        for l in layers:
             self.inputs.append(l.outputs)
         try:  # TF1.0
             self.outputs = tf.concat(self.inputs, concat_dim, name=name)
@@ -62,14 +62,14 @@ class ConcatLayer(Layer):
 
         logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
-        self.all_layers = list(layer[0].all_layers)
-        self.all_params = list(layer[0].all_params)
-        self.all_drop = dict(layer[0].all_drop)
+        self.all_layers = list(layers[0].all_layers)
+        self.all_params = list(layers[0].all_params)
+        self.all_drop = dict(layers[0].all_drop)
 
-        for i in range(1, len(layer)):
-            self.all_layers.extend(list(layer[i].all_layers))
-            self.all_params.extend(list(layer[i].all_params))
-            self.all_drop.update(dict(layer[i].all_drop))
+        for i in range(1, len(layers)):
+            self.all_layers.extend(list(layers[i].all_layers))
+            self.all_params.extend(list(layers[i].all_params))
+            self.all_drop.update(dict(layers[i].all_drop))
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
@@ -77,22 +77,23 @@ class ConcatLayer(Layer):
 
 
 class ElementwiseLayer(Layer):
-    """
-    The :class:`ElementwiseLayer` class combines multiple :class:`Layer` which have the same output shapes by a given elemwise-wise operation.
+    """A layer that combines multiple :class:`Layer` that have the same output shapes
+    according to an element-wise operation.
 
     Parameters
     ----------
-    layer : a list of :class:`Layer` instances
-        The `Layer` class feeding into this layer.
-    combine_fn : a TensorFlow elemwise-merge function
+    layers : list of :class:`Layer`
+        The list of layers to combine.
+    combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
-        See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`_ .
-    name : a string or None
-        An optional name to attach to this layer.
+        See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
+    name : str
+        A unique layer name.
 
     Examples
     --------
-    - AND Logic
+    AND Logic
+
     >>> net_0 = tl.layers.DenseLayer(net_0, n_units=500,
     ...                        act = tf.nn.relu, name='net_0')
     >>> net_1 = tl.layers.DenseLayer(net_1, n_units=500,
@@ -100,33 +101,34 @@ class ElementwiseLayer(Layer):
     >>> net_com = tl.layers.ElementwiseLayer(layer = [net_0, net_1],
     ...                         combine_fn = tf.minimum,
     ...                         name = 'combine_layer')
+
     """
 
     def __init__(
             self,
-            layer=[],
+            layers,
             combine_fn=tf.minimum,
             name='elementwise_layer',
     ):
         Layer.__init__(self, name=name)
 
-        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layer[0].outputs.get_shape(), combine_fn.__name__))
+        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__))
 
-        self.outputs = layer[0].outputs
+        self.outputs = layers[0].outputs
         # logging.info(self.outputs._shape, type(self.outputs._shape))
-        for l in layer[1:]:
+        for l in layers[1:]:
             assert str(self.outputs.get_shape()) == str(
                 l.outputs.get_shape()), "Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape()))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
-        self.all_layers = list(layer[0].all_layers)
-        self.all_params = list(layer[0].all_params)
-        self.all_drop = dict(layer[0].all_drop)
+        self.all_layers = list(layers[0].all_layers)
+        self.all_params = list(layers[0].all_params)
+        self.all_drop = dict(layers[0].all_drop)
 
-        for i in range(1, len(layer)):
-            self.all_layers.extend(list(layer[i].all_layers))
-            self.all_params.extend(list(layer[i].all_params))
-            self.all_drop.update(dict(layer[i].all_drop))
+        for i in range(1, len(layers)):
+            self.all_layers.extend(list(layers[i].all_layers))
+            self.all_params.extend(list(layers[i].all_params))
+            self.all_drop.update(dict(layers[i].all_drop))
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)

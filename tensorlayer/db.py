@@ -35,11 +35,16 @@ class TensorDB(object):
 
     Parameters
     -------------
-    ip : string, localhost or IP address.
-    port : int, port number.
-    db_name : string, database name.
-    user_name : string, set to None if it donnot need authentication.
-    password : string.
+    ip : str
+        Localhost or IP address.
+    port : int
+        Port number.
+    db_name : str
+        Database name.
+    user_name : str
+        User name. Set to None if it donnot need authentication.
+    password : str
+        Password
 
     Attributes
     ------------
@@ -55,11 +60,9 @@ class TensorDB(object):
 
     Notes
     -------------
-    1 : MongoDB, as TensorDB is based on MongoDB, you need to install it in your
-       local machine or remote machine.
-    2 : pip install pymongo, for MongoDB python API.
-    3 : You may like to install MongoChef or Mongo Management Studo APP for
-       visualizing or testing your MongoDB.
+    - MongoDB, as TensorDB is based on MongoDB, you need to install it in your local machine or remote machine.
+    - pip install pymongo, for MongoDB python API.
+    - You may like to install MongoChef or Mongo Management Studo APP for visualizing or testing your MongoDB.
     """
 
     def __init__(self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None):
@@ -123,7 +126,8 @@ class TensorDB(object):
 
         Parameters
         ----------
-        args : dictionary, find items.
+        args : dictionary
+            For finding items.
 
         Returns
         --------
