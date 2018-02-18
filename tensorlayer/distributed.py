@@ -129,7 +129,8 @@ class TaskSpecDef(object):
         """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
-        return TaskSpecDef(task_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
+        return TaskSpecDef(
+            task_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
 
 
 def create_task_spec_def():
@@ -166,16 +167,16 @@ def create_task_spec_def():
 
 
 def create_distributed_session(task_spec=None,
-                       checkpoint_dir=None,
-                       scaffold=None,
-                       hooks=None,
-                       chief_only_hooks=None,
-                       save_checkpoint_secs=600,
-                       save_summaries_steps=object(),
-                       save_summaries_secs=object(),
-                       config=None,
-                       stop_grace_period_secs=120,
-                       log_step_count_steps=100):
+                               checkpoint_dir=None,
+                               scaffold=None,
+                               hooks=None,
+                               chief_only_hooks=None,
+                               save_checkpoint_secs=600,
+                               save_summaries_steps=object(),
+                               save_summaries_secs=object(),
+                               config=None,
+                               stop_grace_period_secs=120,
+                               log_step_count_steps=100):
     """Creates a distributed session.
 
     It calls `MonitoredTrainingSession` to create a :class:`MonitoredSession` for distributed training.
