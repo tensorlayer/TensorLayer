@@ -60,11 +60,9 @@ class TensorDB(object):
 
     Notes
     -------------
-    1 : MongoDB, as TensorDB is based on MongoDB, you need to install it in your
-       local machine or remote machine.
-    2 : pip install pymongo, for MongoDB python API.
-    3 : You may like to install MongoChef or Mongo Management Studo APP for
-       visualizing or testing your MongoDB.
+    - MongoDB, as TensorDB is based on MongoDB, you need to install it in your local machine or remote machine.
+    - pip install pymongo, for MongoDB python API.
+    - You may like to install MongoChef or Mongo Management Studo APP for visualizing or testing your MongoDB.
     """
 
     def __init__(self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None):
