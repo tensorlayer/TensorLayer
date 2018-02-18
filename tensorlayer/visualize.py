@@ -7,8 +7,8 @@ import numpy as np
 # save/read image(s)
 import scipy.misc
 
-from . import prepro
 from . import _logging as logging
+from . import prepro
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
 # matplotlib.use('Agg')
