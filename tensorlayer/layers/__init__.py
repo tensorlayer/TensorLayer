@@ -22,7 +22,5 @@ from .tflambda import *
 from .merge import *
 from .extend import *
 from .stack import *
-from .tfslim import *
 from .special_activation import *
 from .flow_control import *
-from .deprecated import *
