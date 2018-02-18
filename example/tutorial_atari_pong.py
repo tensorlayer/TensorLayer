@@ -1,7 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-
 """ Monte-Carlo Policy Network π(a|s)  (REINFORCE)
 
 To understand Reinforcement Learning, we let computer to learn how to play
@@ -30,7 +28,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
-# hyperparameters
+# hyper-parameters
 image_size = 80
 D = image_size * image_size
 H = 200
@@ -38,19 +36,21 @@ batch_size = 10
 learning_rate = 1e-4
 gamma = 0.99
 decay_rate = 0.99
-render = False          # display the game environment
+render = False  # display the game environment
 # resume = True         # load existing policy network
 model_file_name = "model_pong"
 np.set_printoptions(threshold=np.nan)
 
+
 def prepro(I):
     """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
     I = I[35:195]
-    I = I[::2,::2,0]
+    I = I[::2, ::2, 0]
     I[I == 144] = 0
     I[I == 109] = 0
     I[I != 0] = 1
     return I.astype(np.float).ravel()
+
 
 env = gym.make("Pong-v0")
 observation = env.reset()
@@ -79,7 +79,7 @@ with tf.Session() as sess:
     # if resume:
     #     load_params = tl.files.load_npz(name=model_file_name+'.npz')
     #     tl.files.assign_params(sess, load_params, network)
-    tl.files.load_and_assign_npz(sess, model_file_name+'.npz', network)
+    tl.files.load_and_assign_npz(sess, model_file_name + '.npz', network)
     network.print_params()
     network.print_layers()
 
@@ -93,20 +93,18 @@ with tf.Session() as sess:
         x = x.reshape(1, D)
         prev_x = cur_x
 
-        prob = sess.run(
-            sampling_prob,
-            feed_dict={t_states: x})
-        
+        prob = sess.run(sampling_prob, feed_dict={t_states: x})
+
         # action. 1: STOP  2: UP  3: DOWN
         # action = np.random.choice([1,2,3], p=prob.flatten())
-        action = tl.rein.choice_action_by_probs(prob.flatten(), [1,2,3])
+        action = tl.rein.choice_action_by_probs(prob.flatten(), [1, 2, 3])
 
         observation, reward, done, _ = env.step(action)
         reward_sum += reward
-        xs.append(x)            # all observations in an episode
-        ys.append(action - 1)   # all fake labels in an episode (action begins from 1, so minus 1)
-        rs.append(reward)       # all rewards in an episode
-        
+        xs.append(x)  # all observations in an episode
+        ys.append(action - 1)  # all fake labels in an episode (action begins from 1, so minus 1)
+        rs.append(reward)  # all rewards in an episode
+
         if done:
             episode_number += 1
             game_number = 0
@@ -122,26 +120,19 @@ with tf.Session() as sess:
 
                 xs, ys, rs = [], [], []
 
-                sess.run(
-                    train_op,
-                    feed_dict={
-                        t_states: epx,
-                        t_actions: epy,
-                        t_discount_rewards: disR})
+                sess.run(train_op, feed_dict={t_states: epx, t_actions: epy, t_discount_rewards: disR})
 
             if episode_number % (batch_size * 100) == 0:
-                tl.files.save_npz(network.all_params, name=model_file_name+'.npz')
+                tl.files.save_npz(network.all_params, name=model_file_name + '.npz')
 
             running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
             print('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
             reward_sum = 0
-            observation = env.reset() # reset env
+            observation = env.reset()  # reset env
             prev_x = None
 
         if reward != 0:
-            print(('episode %d: game %d took %.5fs, reward: %f' %
-                        (episode_number, game_number,
-                        time.time()-start_time, reward)),
-                        ('' if reward == -1 else ' !!!!!!!!'))
+            print(('episode %d: game %d took %.5fs, reward: %f' % (episode_number, game_number, time.time() - start_time, reward)),
+                  ('' if reward == -1 else ' !!!!!!!!'))
             start_time = time.time()
             game_number += 1
