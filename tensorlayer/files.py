@@ -42,11 +42,11 @@ import zipfile
 
 import numpy as np
 import tensorflow as tf
-from six.moves import cPickle, urllib, zip
+from six.moves import cPickle, zip
 from tensorflow.python.platform import gfile
 
-from . import nlp, utils, visualize
 from . import _logging as logging
+from . import nlp, utils, visualize
 
 
 ## Load dataset functions
