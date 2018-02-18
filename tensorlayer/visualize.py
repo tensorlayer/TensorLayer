@@ -45,7 +45,7 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     n_threads : int
         number of threads to read image.
     printable : boolean
-        print infomation when reading images.
+        print information when reading images.
 
     Returns
     -------
