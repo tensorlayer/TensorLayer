@@ -13,6 +13,7 @@ import numpy as np
 import tensorflow as tf
 from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
+
 from . import _logging as logging
 
 

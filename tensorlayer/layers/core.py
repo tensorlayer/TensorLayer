@@ -6,8 +6,8 @@ import numpy as np
 import tensorflow as tf
 from six.moves import xrange
 
-from .. import cost, files, iterate, ops, utils, visualize
 from .. import _logging as logging
+from .. import cost, files, iterate, ops, utils, visualize
 
 # __all__ = [
 #     "Layer",
