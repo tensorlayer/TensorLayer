@@ -20,14 +20,14 @@ def read_image(image, path=''):
     Parameters
     -----------
     image : str
-        file name.
+        The image file name.
     path : str
-        path.
+        The image folder path.
 
     Returns
     -------
-    numpy array
-        Image
+    numpy.array
+        The image.
 
     """
     return scipy.misc.imread(os.path.join(path, image))
@@ -39,18 +39,18 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     Parameters
     -------------
     img_list : list of str
-        the image file names.
+        The image file names.
     path : str
-        image folder path.
+        The image folder path.
     n_threads : int
-        number of threads to read image.
+        The number of threads to read image.
     printable : boolean
-        print information when reading images.
+        Whether to print information when reading images.
 
     Returns
     -------
-    list of numpy array
-        The read images
+    list of numpy.array
+        The images.
 
     """
     imgs = []
@@ -96,8 +96,8 @@ def save_images(images, size, image_path=''):
 
     Returns
     -------
-    numpy array
-        The single image
+    numpy.array
+        The image.
 
     Examples
     ---------
@@ -129,31 +129,33 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], clas
 
     Parameters
     -----------
-    image : numpy array
-        RGB image in numpy.array, [height, width, channel].
+    image : numpy.array
+        The RGB image [height, width, channel].
     classes : list of int
-        a list of class ID (int).
+        A list of class ID (int).
     coords : list of int
-        a list of list for coordinates.
+        A list of list for coordinates.
             - Should be [x, y, x2, y2] (up-left and botton-right format)
             - If [x_center, y_center, w, h] (set is_center to True).
     scores : list of float
-        a list of score (float). (Optional)
+        A list of score (float). (Optional)
     classes_list : list of str
         for converting ID to string on image.
     is_center : boolean
-        If coords is [x_center, y_center, w, h], set it to True for converting [x_center, y_center, w, h] to [x, y, x2, y2] (up-left and botton-right).
-        If coords is [x1, x2, y1, y2], set it to False.
+        Whether the coordinates is [x_center, y_center, w, h]
+            - If coordinates are [x_center, y_center, w, h], set it to True for converting it to [x, y, x2, y2] (up-left and botton-right) internally.
+            - If coordinates are [x1, x2, y1, y2], set it to False.
     is_rescale : boolean
-        If True, the input coordinates are the portion of width and high, this API will scale the coordinates to pixel unit internally.
-        If False, feed the coordinates with pixel unit format.
+        Whether to rescale the coordinates from pixel-unit format to ratio format.
+            - If True, the input coordinates are the portion of width and high, this API will scale the coordinates to pixel unit internally.
+            - If False, feed the coordinates with pixel unit format.
     save_name : None or str
         The name of image file (i.e. image.png), if None, not to save image.
 
     Returns
     -------
-    numpy array
-        The saved image
+    numpy.array
+        The saved image.
 
     References
     -----------
@@ -212,14 +214,14 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
     Parameters
     ----------
     I : numpy.array
-        The image
+        The image.
     second : int
         The display second(s) for the image(s), if saveable is False.
     saveable : boolean
         Save or plot the figure.
     name : str
         A name to save the image, if saveable is True.
-    cmap : None or string
+    cmap : None or str
         'gray' for greyscale, None for default, etc.
     fig_idx : int
         matplotlib figure index.
@@ -265,7 +267,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     name : str
         A name to save the image, if saveable is True.
     fig_idx : int
-        matplotlib figure index.
+        The matplotlib figure index.
 
     Examples
     --------
@@ -380,8 +382,8 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
 
     Parameters
     ----------
-    embeddings : matrix
-        The images.
+    embeddings : numpy.array
+        The embedding matrix.
     reverse_dictionary : dictionary
         id_to_word, mapping id to unique word.
     plot_only : int
