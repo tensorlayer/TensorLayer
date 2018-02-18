@@ -7,7 +7,7 @@ from .core import *
 
 class Conv1dLayer(Layer):
     """
-    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`_.
+    The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`__.
 
     Parameters
     ----------
@@ -81,7 +81,7 @@ class Conv1dLayer(Layer):
 
 class Conv2dLayer(Layer):
     """
-    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`_.
+    The :class:`Conv2dLayer` class is a 2D CNN layer, see `tf.nn.conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d>`__.
 
     Parameters
     ----------
@@ -187,7 +187,7 @@ class Conv2dLayer(Layer):
 class DeConv2dLayer(Layer):
     """A de-convolution 2D layer.
 
-    See `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_.
+    See `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`__.
 
     Parameters
     ----------
@@ -300,7 +300,7 @@ class DeConv2dLayer(Layer):
 
 class Conv3dLayer(Layer):
     """
-    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`_.
+    The :class:`Conv3dLayer` class is a 3D CNN layer, see `tf.nn.conv3d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d>`__.
 
     Parameters
     ----------
@@ -362,7 +362,7 @@ class Conv3dLayer(Layer):
 
 
 class DeConv3dLayer(Layer):
-    """The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`_.
+    """The :class:`DeConv3dLayer` class is deconvolutional 3D layer, see `tf.nn.conv3d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv3d_transpose>`__.
 
     Parameters
     ----------
@@ -425,7 +425,7 @@ class DeConv3dLayer(Layer):
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
     ----------
@@ -485,7 +485,7 @@ class UpSampling2dLayer(Layer):
 
 
 class DownSampling2dLayer(Layer):
-    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`_.
+    """The :class:`DownSampling2dLayer` class is down-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
 
     Parameters
     ----------
@@ -670,7 +670,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
 
 class DeformableConv2dLayer(Layer):
     """The :class:`DeformableConv2dLayer` class is a 2D
-    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`_.
+    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
 
     Parameters
     ----------
@@ -705,7 +705,7 @@ class DeformableConv2dLayer(Layer):
 
     References
     ----------
-    - The deformation operation was adapted from the implementation in `<https://github.com/felixlaumon/deform-conv>`_
+    - The deformation operation was adapted from the implementation in `<https://github.com/felixlaumon/deform-conv>`__
 
     Notes
     -----
@@ -855,7 +855,7 @@ def atrous_conv1d(
 
 class AtrousConv2dLayer(Layer):
     """The :class:`AtrousConv2dLayer` class is 2D atrous convolution (a.k.a. convolution with holes or dilated
-    convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`_.
+    convolution) 2D layer, see `tf.nn.atrous_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d>`__.
 
     Parameters
     ----------
@@ -921,7 +921,7 @@ class AtrousConv2dLayer(Layer):
 
 
 class SeparableConv2dLayer(Layer):
-    """The :class:`SeparableConv2dLayer` class is 2D convolution with separable filters, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`_.
+    """The :class:`SeparableConv2dLayer` class is 2D convolution with separable filters, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`__.
 
     This layer has not been fully tested yet.
 
@@ -1373,7 +1373,7 @@ def deconv2d(layer,
 
 
 class DeConv3d(Layer):
-    """Simplified version of The :class:`DeConv3dLayer`, see `tf.contrib.layers.conv3d_transpose <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/conv3d_transpose>`_.
+    """Simplified version of The :class:`DeConv3dLayer`, see `tf.contrib.layers.conv3d_transpose <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/conv3d_transpose>`__.
 
     Parameters
     ----------
@@ -1433,7 +1433,7 @@ class DeConv3d(Layer):
 
 
 class DepthwiseConv2d(Layer):
-    """Separable/Depthwise Convolutional 2D layer, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`_.
+    """Separable/Depthwise Convolutional 2D layer, see `tf.nn.depthwise_conv2d <https://www.tensorflow.org/versions/master/api_docs/python/tf/nn/depthwise_conv2d>`__.
 
     Input:
         4-D Tensor (batch, height, width, in_channels).
@@ -1475,8 +1475,8 @@ class DepthwiseConv2d(Layer):
 
     References
     -----------
-    - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`_
-    - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`_
+    - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`__
+    - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`__
 
     """
 

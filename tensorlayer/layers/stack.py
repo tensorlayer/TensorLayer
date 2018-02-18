@@ -10,7 +10,7 @@ from .core import *
 
 class StackLayer(Layer):
     """
-    The :class:`StackLayer` class is layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`_.
+    The :class:`StackLayer` class is layer for stacking a list of rank-R tensors into one rank-(R+1) tensor, see `tf.stack() <https://www.tensorflow.org/api_docs/python/tf/stack>`__.
 
     Parameters
     ----------
@@ -53,7 +53,7 @@ class StackLayer(Layer):
 
 def unstack_layer(layer, num=None, axis=0, name='unstack'):
     """
-    It is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`_.
+    It is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
     Parameters
     ----------

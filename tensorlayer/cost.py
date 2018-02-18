@@ -29,8 +29,8 @@ def cross_entropy(output, target, name=None):
 
     References
     -----------
-    - About cross-entropy: `<https://en.wikipedia.org/wiki/Cross_entropy>`_.
-    - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`_.
+    - About cross-entropy: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
+    - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
 
     """
     # try: # old
@@ -79,7 +79,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
 
     References
     -----------
-    - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`_
+    - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`__
 
     """
     #     from tensorflow.python.framework import ops
@@ -106,7 +106,7 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
 
     References
     ------------
-    - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`_
+    - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`__
 
     """
     with tf.name_scope(name):
@@ -220,7 +220,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
 
     References
     -----------
-    - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+    - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`__
 
     """
     inse = tf.reduce_sum(output * target, axis=axis)
@@ -263,7 +263,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
 
     References
     -----------
-    - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+    - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`__
 
     """
     output = tf.cast(output > threshold, dtype=tf.float32)
@@ -354,7 +354,7 @@ def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
 
 def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
-    softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_.
+    softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
 
     Parameters
     ----------
@@ -369,7 +369,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
 
     Examples
     --------
-    >>> see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_ for more details
+    >>> see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.for more details
     >>> input_data = tf.placeholder(tf.int32, [batch_size, n_steps])
     >>> targets = tf.placeholder(tf.int32, [batch_size, n_steps])
     >>> # build the network
@@ -472,7 +472,7 @@ def cosine_similarity(v1, v2):
 
     References
     ----------
-    - `<https://en.wikipedia.org/wiki/Cosine_similarity>`_.
+    - `<https://en.wikipedia.org/wiki/Cosine_similarity>`__.
 
     """
     # try: ## TF1.0
@@ -486,7 +486,7 @@ def cosine_similarity(v1, v2):
 def li_regularizer(scale, scope=None):
     """Li regularization removes the neurons of previous layer. The `i` represents `inputs`.
     Returns a function that can be used to apply group li regularization to weights.
-    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters
     ----------
@@ -536,7 +536,7 @@ def li_regularizer(scale, scope=None):
 def lo_regularizer(scale, scope=None):
     """Lo regularization removes the neurons of current layer. The `o` represents `outputs`
     Returns a function that can be used to apply group lo regularization to weights.
-    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters
     ----------
@@ -586,8 +586,8 @@ def lo_regularizer(scale, scope=None):
 def maxnorm_regularizer(scale=1.0, scope=None):
     """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
 
-    More about max-norm, see `<https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
-    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    More about max-norm, see `<https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`__.
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters
     ----------
@@ -637,7 +637,7 @@ def maxnorm_regularizer(scale=1.0, scope=None):
 def maxnorm_o_regularizer(scale, scope):
     """Max-norm output regularization removes the neurons of current layer.
     Returns a function that can be used to apply max-norm regularization to each column of weight matrix.
-    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters
     ----------
@@ -687,7 +687,7 @@ def maxnorm_o_regularizer(scale, scope):
 def maxnorm_i_regularizer(scale, scope=None):
     """Max-norm input regularization removes the neurons of previous layer.
     Returns a function that can be used to apply max-norm regularization to each row of weight matrix.
-    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
+    The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
 
     Parameters
     ----------

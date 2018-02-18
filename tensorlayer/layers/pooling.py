@@ -30,7 +30,7 @@ class PoolLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     pool : pooling function
         One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d``, and ``f.nn.avg_pool3d``.
-        See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`_
+        See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`__
     name : str
         A unique layer name.
 
@@ -62,7 +62,7 @@ class PoolLayer(Layer):
 
 
 def maxpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):
-    """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`_ .
+    """Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`__ .
 
     Parameters
     ----------
@@ -98,7 +98,7 @@ def maxpool1d(net, filter_size=3, strides=2, padding='valid', data_format='chann
 
 
 def meanpool1d(net, filter_size=3, strides=2, padding='valid', data_format='channels_last', name=None):
-    """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`_ .
+    """Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`__ .
 
     Parameters
     ------------
@@ -192,7 +192,7 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
 
 
 def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
-    """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`_ .
+    """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
     Parameters
     ------------
@@ -228,7 +228,7 @@ def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', da
 
 
 def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
-    """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`_
+    """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 
     Parameters
     ------------

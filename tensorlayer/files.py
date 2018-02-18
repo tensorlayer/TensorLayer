@@ -146,9 +146,9 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
 
     References
     ----------
-    - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
-    - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
-    - `<https://teratail.com/questions/28932>`_
+    - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`__
+    - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`__
+    - `<https://teratail.com/questions/28932>`__
 
     """
     path = os.path.join(path, 'cifar10')
@@ -266,7 +266,7 @@ def load_ptb_dataset(path='data'):
     References
     ---------------
     - ``tensorflow.models.rnn.ptb import reader``
-    - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
+    - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`__
 
     Notes
     ------
@@ -372,7 +372,7 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
 
     References
     -----------
-    - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
+    - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`__
 
     """
     path = os.path.join(path, 'imdb')
@@ -537,14 +537,14 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     """Load Flickr25K dataset.
 
     Returns a list of images by a given tag from Flick25k dataset,
-    it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
+    it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`__
     at the first time you use it.
 
     Parameters
     ------------
     tag : str or None
         What images to return.
-        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
+        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
         - If you want to get all images, set to ``None``.
 
     path : str
@@ -605,14 +605,14 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     """Load Flick1M dataset.
 
     Returns a list of images by a given tag from Flickr1M dataset,
-    it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`_
+    it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`__
     at the first time you use it.
 
     Parameters
     ------------
     tag : str or None
         What images to return.
-        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
+        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
         - If you want to get all images, set to ``None``.
 
     size : int
@@ -703,12 +703,12 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
 
 
 def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
-    """Load images from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+    """Load images from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`__.
 
     Parameters
     ------------
     filename : str
-        The dataset you want, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`_.
+        The dataset you want, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`__.
     path : str
         The path that the data is downloaded to, defaults is `data/cyclegan`
 
@@ -862,7 +862,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         Darknet format for the annotation of all images in ``imgs_file_list`` in order. ``[class_id x_centre y_centre width height]`` in ratio format.
     objs_info_dicts : dictionary
         The annotation of all images in ``imgs_file_list``, ``{imgs_file_list : dictionary for annotation}``,
-        format from `TensorFlow/Models/object-detection <https://github.com/tensorflow/models/blob/master/object_detection/create_pascal_tf_record.py>`_.
+        format from `TensorFlow/Models/object-detection <https://github.com/tensorflow/models/blob/master/object_detection/create_pascal_tf_record.py>`__.
 
     Examples
     ----------
@@ -892,8 +892,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
     References
     -------------
-    - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`_.
-    - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`_.
+    - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`__.
+    - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`__.
 
     """
     path = os.path.join(path, 'VOC')
@@ -1164,7 +1164,7 @@ def save_npz(save_list=[], name='model.npz', sess=None):
 
     References
     ----------
-    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
     ## save params into a list
@@ -1211,7 +1211,7 @@ def load_npz(path='', name='model.npz'):
 
     References
     ----------
-    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
     ## if save_npz save params into a dictionary
@@ -1256,7 +1256,7 @@ def assign_params(sess, params, network):
 
     References
     ----------
-    - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
+    - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`__
 
     """
     ops = []
@@ -1750,7 +1750,7 @@ def natural_keys(text):
 
     References
     ----------
-    - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`_
+    - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`__
 
     """
 
