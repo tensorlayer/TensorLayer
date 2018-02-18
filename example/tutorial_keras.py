@@ -17,7 +17,11 @@ sess = tf.InteractiveSession()
 
 batch_size = 128
 x = tf.placeholder(tf.float32, shape=[None, 784])
-y_ = tf.placeholder(tf.int64, shape=[None,])
+y_ = tf.placeholder(
+    tf.int64, shape=[
+        None,
+    ])
+
 
 def keras_block(x):
     x = Dropout(0.8)(x)
@@ -28,8 +32,9 @@ def keras_block(x):
     logits = Dense(10, activation='linear')(x)
     return logits
 
+
 network = InputLayer(x, name='input')
-network = LambdaLayer(network, fn=keras_block, name='keras')       
+network = LambdaLayer(network, fn=keras_block, name='keras')
 
 y = network.outputs
 network.print_params(False)
@@ -43,34 +48,31 @@ n_epoch = 200
 learning_rate = 0.0001
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999,
-    epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 
 for epoch in range(n_epoch):
     start_time = time.time()
     ## Training
-    for X_train_a, y_train_a in tl.iterate.minibatches(
-                                X_train, y_train, batch_size, shuffle=True):
-        _, _ = sess.run([cost, train_op], feed_dict={x: X_train_a, y_: y_train_a,
-                                K.learning_phase(): 1})
+    for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        _, _ = sess.run([cost, train_op], feed_dict={x: X_train_a, y_: y_train_a, K.learning_phase(): 1})
 
     print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
     ## Evaluation
     train_loss, train_acc, n_batch = 0, 0, 0
-    for X_train_a, y_train_a in tl.iterate.minibatches(
-                            X_train, y_train, batch_size, shuffle=False):
-        err, ac = sess.run([cost, acc], feed_dict={x: X_train_a, y_: y_train_a,
-                                K.learning_phase(): 0})
-        train_loss += err; train_acc += ac; n_batch += 1
-    print("   train loss: %f" % (train_loss/ n_batch))
-    print("   train acc: %f" % (train_acc/ n_batch))
+    for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=False):
+        err, ac = sess.run([cost, acc], feed_dict={x: X_train_a, y_: y_train_a, K.learning_phase(): 0})
+        train_loss += err
+        train_acc += ac
+        n_batch += 1
+    print("   train loss: %f" % (train_loss / n_batch))
+    print("   train acc: %f" % (train_acc / n_batch))
     val_loss, val_acc, n_batch = 0, 0, 0
-    for X_val_a, y_val_a in tl.iterate.minibatches(
-                                X_val, y_val, batch_size, shuffle=False):
-        err, ac = sess.run([cost, acc], feed_dict={x: X_val_a, y_: y_val_a,
-                                K.learning_phase(): 0})
-        val_loss += err; val_acc += ac; n_batch += 1
-    print("   val loss: %f" % (val_loss/ n_batch))
-    print("   val acc: %f" % (val_acc/ n_batch))
+    for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=False):
+        err, ac = sess.run([cost, acc], feed_dict={x: X_val_a, y_: y_val_a, K.learning_phase(): 0})
+        val_loss += err
+        val_acc += ac
+        n_batch += 1
+    print("   val loss: %f" % (val_loss / n_batch))
+    print("   val acc: %f" % (val_acc / n_batch))
