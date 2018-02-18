@@ -9,6 +9,7 @@ from sys import platform as _platform
 
 import tensorflow as tf
 import tensorlayer as tl
+
 from . import _logging as logging
 
 

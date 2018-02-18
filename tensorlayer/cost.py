@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import numbers
 
 import tensorflow as tf
-from tensorflow.python.framework import ops
-from tensorflow.python.ops import standard_ops
-
-## Cost Functions
 
 
 def cross_entropy(output, target, name=None):
