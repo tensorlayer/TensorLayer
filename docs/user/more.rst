@@ -138,7 +138,7 @@ There are many functions need to be contributed such as
 Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
 Please push on `GitHub`_, every bit helps and will be credited.
 If you are interested in working with us, please
-`contact us <hao.dong11@imperial.ac.uk>`_.
+`contact us <hao.dong11@imperial.ac.uk>`__.
 
 
 Data Science Institute, Imperial College London
@@ -157,11 +157,11 @@ The Data Science Institute is housed in purpose built facilities in the heart of
  - To enable the translation of data science innovation by close collaboration with industry and supporting commercialization.
 
 If you are interested in working with us, please check our
-`vacancies <https://www.imperial.ac.uk/data-science/get-involved/vacancies/>`_
+`vacancies <https://www.imperial.ac.uk/data-science/get-involved/vacancies/>`__
 and other ways to
-`get involved <https://www.imperial.ac.uk/data-science/get-involved/>`_
+`get involved <https://www.imperial.ac.uk/data-science/get-involved/>`__
 , or feel free to
-`contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`_.
+`contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`__.
 
 
 
