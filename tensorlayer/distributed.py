@@ -39,6 +39,7 @@ class TaskSpecDef(object):
     References
     ----------
     - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+
     """
 
     def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
@@ -116,6 +117,7 @@ class TaskSpecDef(object):
         is_evaluator to know whether this server is the evaluator one or not.
         In case there is only one server for training this method raises an exception, as
         you cannot use any server for evaluation.
+
         """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
@@ -130,6 +132,7 @@ def TaskSpec():
     ----------
     - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
     - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`_
+
     """
     # TF_CONFIG is used in ML-engine
     if 'TF_CONFIG' in os.environ:
@@ -236,6 +239,7 @@ def DistributedSession(task_spec=None,
     References
     ----------
     - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession>`_
+
     """
     target = task_spec.target() if task_spec is not None else None
     is_chief = task_spec.is_master() if task_spec is not None else True
@@ -260,6 +264,7 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
     Parameters
     ----------
     time_running: Maximum time running in seconds
+
     """
 
     def __init__(self, time_running):
@@ -285,6 +290,7 @@ class LoadCheckpoint(session_run_hook.SessionRunHook):
     >>> with tf.SingularMonitoredSession(hooks=[checkpoint_hook]) as session:
     >>>      while not session.should_stop():
     >>>           session.run(tensors)
+
     """
 
     def __init__(self, saver, checkpoint):

@@ -37,6 +37,7 @@ class PoolLayer(Layer):
     Examples
     --------
     - see :class:`Conv2dLayer`.
+
     """
 
     def __init__(
@@ -85,6 +86,7 @@ def maxpool1d(net, filter_size=3, strides=2, padding='valid', data_format='chann
     -------
     :class:`Layer`
         A max pooling 1-D layer with a output rank as 3.
+
     """
     logging.info("MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -120,6 +122,7 @@ def meanpool1d(net, filter_size=3, strides=2, padding='valid', data_format='chan
     -------
     :class:`Layer`
         A mean pooling 1-D layer with a output rank as 3.
+
     """
     logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling1d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -150,6 +153,7 @@ def maxpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='max
     -------
     :class:`Layer`
         A max pooling 2-D layer with a output rank as 4.
+
     """
     if strides is None:
         strides = filter_size
@@ -178,6 +182,7 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
     -------
     :class:`Layer`
         A mean pooling 2-D layer with a output rank as 4.
+
     """
     if strides is None:
         strides = filter_size
@@ -211,6 +216,7 @@ def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', da
     -------
     :class:`Layer`
         A max pooling 3-D layer with a output rank as 5.
+
     """
     logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
@@ -246,6 +252,7 @@ def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', d
     -------
     :class:`Layer`
         A mean pooling 3-D layer with a output rank as 5.
+
     """
     logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
     outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)

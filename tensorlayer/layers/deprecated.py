@@ -26,6 +26,7 @@ class KerasLayer(Layer):
         The arguments for the `keras_layer`.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -67,6 +68,7 @@ class EstimatorLayer(Layer):
         The arguments for the `model_fn`.
     name : str
         A unique layer name.
+
     """
 
     def __init__(

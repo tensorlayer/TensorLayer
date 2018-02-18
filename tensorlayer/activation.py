@@ -17,6 +17,7 @@ def identity(x):
     -------
     Tensor
         A ``Tensor`` in the same type as ``x``.
+
     """
     return x
 
@@ -39,6 +40,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
     -------
     Tensor
         A ``Tensor`` in the same type as ``x``.
+
     """
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
@@ -70,6 +72,7 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
     References
     ------------
     - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
+
     """
     # with tf.name_scope(name) as scope:
     # x = tf.nn.relu(x)
@@ -94,6 +97,7 @@ def swish(x, name='swish'):
     -------
     Tensor
         A ``Tensor`` in the same type as ``x``.
+
     """
     with tf.name_scope(name):
         x = tf.nn.sigmoid(x) * x
@@ -126,6 +130,7 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     References
     ----------
     - `tf.reverse <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#reverse>`_
+
     """
     with tf.name_scope(name):
         return tf.nn.softmax(x)

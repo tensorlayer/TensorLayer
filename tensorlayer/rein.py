@@ -33,6 +33,7 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
     >>> print(discount_rewards)
     ... [ 1.52110755  1.69011939  1.87791049  2.08656716  1.20729685  1.34144104
     ... 1.49048996  1.65610003  0.72899997  0.81        0.89999998  1.        ]
+
     """
     discounted_r = np.zeros_like(rewards, dtype=np.float32)
     running_add = 0
@@ -69,6 +70,7 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     >>> discount_rewards_batch_pl = tf.placeholder(tf.float32, shape=[None])
     >>> loss = tl.rein.cross_entropy_reward_loss(probs, actions_batch_pl, discount_rewards_batch_pl)
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
+
     """
     try:  # TF 1.0+
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
@@ -92,6 +94,7 @@ def log_weight(probs, weights, name='log_weight'):
         If it is a network output, usually we should scale it to [0, 1] via softmax.
     weights : tensor
         The weights.
+
     """
     with tf.variable_scope(name):
         exp_v = tf.reduce_mean(tf.log(probs) * weights)
@@ -125,6 +128,7 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
     ... a
     ... b
     ... b
+
     """
     if action_list is None:
         n_action = len(probs)

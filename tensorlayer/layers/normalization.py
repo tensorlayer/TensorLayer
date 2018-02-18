@@ -28,6 +28,7 @@ class LocalResponseNormLayer(Layer):
         An exponent.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -82,6 +83,7 @@ class BatchNormLayer(Layer):
     ----------
     - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
     - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+
     """
 
     def __init__(
@@ -184,6 +186,7 @@ class InstanceNormLayer(Layer):
         Eplison.
     name : str
         A unique layer name
+
     """
 
     def __init__(
@@ -224,6 +227,7 @@ class LayerNormLayer(Layer):
         The activation function of this layer.
     others : _
         `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_.
+
     """
 
     def __init__(self,

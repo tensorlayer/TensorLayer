@@ -21,6 +21,7 @@ class ExpandDimsLayer(Layer):
         The dimension index at which to expand the shape of input.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -59,6 +60,7 @@ class TileLayer(Layer):
         1-D Length must be the same as the number of dimensions in input.
     name : str
         A unique layer name.
+
     """
 
     def __init__(

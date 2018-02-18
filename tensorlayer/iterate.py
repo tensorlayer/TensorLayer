@@ -41,6 +41,7 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     -------
     - If you have two inputs, e.g. X1 (1000, 100) and X2 (1000, 80), you can ``np.hstack((X1, X2))
     into (1000, 180) and feed into ``inputs``, then you can split a batch of X1 and X2.
+
     """
     assert len(inputs) == len(targets)
     if shuffle:
@@ -110,6 +111,7 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ... ['d' 'd']
     ... ['d' 'd']
     ... ['e' 'e']] [3 4]
+
     """
     assert len(inputs) == len(targets)
     n_loads = (batch_size * stride) + (seq_length - stride)
@@ -181,6 +183,7 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     ... [ 16.  17.  18.]]
     ... [[ 26.  27.  28.]
     ... [ 36.  37.  38.]]
+
     """
     assert len(inputs) == len(targets)
     data_len = len(inputs)
@@ -257,6 +260,7 @@ def ptb_iterator(raw_data, batch_size, num_steps):
     See Also
     ----------------
     - ``tensorflow/models/rnn/ptb/reader.py``
+
     """
     raw_data = np.array(raw_data, dtype=np.int32)
 

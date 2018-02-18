@@ -57,6 +57,7 @@ def flatten_reshape(variable, name='flatten'):
     ...         [batch_size, mask_row * mask_col * n_mask]
     >>> h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
     ...
+
     """
     dim = 1
     for d in variable.get_shape()[1:].as_list():
@@ -84,6 +85,7 @@ def clear_layers_name():
     >>> tl.layers.clear_layers_name()
     >>> net2 = tl.layers.InputLayer(x, name='input_layer')
     >>> net2 = tl.layers.DenseLayer(net2, n_units=800, name='relu1')
+
     """
     set_keep['_layers_name_list'] = []
 
@@ -123,6 +125,7 @@ def set_name_reuse(enable=True):
     >>> net_test = embed_seq(t_caption, is_train=False, reuse=True)
 
     - see ``tutorial_ptb_lstm.py`` for example.
+
     """
     set_keep['name_reuse'] = enable
 
@@ -142,6 +145,7 @@ def initialize_rnn_state(state, feed_dict=None):
     -------
     RNN state
         The TensorFlow's RNN state.
+
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
@@ -165,6 +169,7 @@ def print_all_variables(train_only=False):
     ----------
     train_only : boolean
         If True, print the trainable variables; if False, print all variables.
+
     """
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
@@ -200,6 +205,7 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     Examples
     --------
     >>> dense_vars = tl.layers.get_variable_with_name('dense', True, True)
+
     """
     if name is None:
         raise Exception("please input a name")
@@ -240,6 +246,7 @@ def get_layers_with_name(net, name="", printable=False):
     Examples
     ---------
     >>> layers = tl.layers.get_layers_with_name(net, "CNN", True)
+
     """
     logging.info("  [*] geting layers with %s" % name)
 
@@ -274,6 +281,7 @@ def list_remove_repeat(x):
     >>> l = [2, 3, 4, 2, 3]
     >>> l = list_remove_repeat(l)
     ... [2, 3, 4]
+
     """
     y = []
     [y.append(i) for i in x if not i in y]
@@ -299,6 +307,7 @@ def merge_networks(layers=[]):
     >>> n1 = ...
     >>> n2 = ...
     >>> n1 = tl.layers.merge_networks([n1, n2])
+
     """
     layer = layers[0]
 
@@ -330,6 +339,7 @@ def initialize_global_variables(sess):
     ----------
     sess : Session
         The TensorFlow session object.
+
     """
     assert sess is not None
     # try:    # TF12+
@@ -352,6 +362,7 @@ class Layer(object):
         The `Layer` class feeding into this layer
     name : str or None
         A unique layer name
+
     """
 
     def __init__(self, inputs=None, name='layer'):
@@ -424,6 +435,7 @@ class InputLayer(Layer):
         The input of a network
     name : str
         A unique layer name
+
     """
 
     def __init__(self, inputs=None, name='input'):
@@ -456,6 +468,7 @@ class OneHotInputLayer(Layer):
         The data type, None for tf.float32
     name : str
         A unique layer name
+
     """
 
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
@@ -552,6 +565,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     References
     ----------
     - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+
     """
 
     def __init__(
@@ -683,6 +697,7 @@ class EmbeddingInputlayer(Layer):
     >>> vectors = sess.run(emb_net.outputs, feed_dict={x : word_ids})
     >>> print('vectors:', vectors.shape)
     ... (4, 200)
+
     """
 
     def __init__(
@@ -735,6 +750,7 @@ class AverageEmbeddingInputlayer(Layer):
     ----------
     - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
     - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
+
     """
 
     def __init__(
@@ -841,6 +857,7 @@ class DenseLayer(Layer):
     Notes
     -----
     If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
+
     """
 
     def __init__(
@@ -928,6 +945,7 @@ class ReconLayer(DenseLayer):
     By default, the cost is implemented as follow:
     - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
     - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
+
     """
 
     def __init__(
@@ -1127,6 +1145,7 @@ class DropoutLayer(Layer):
     >>> # define inferences
     >>> net_train = mlp(x, is_train=True, reuse=False)
     >>> net_test = mlp(x, is_train=False, reuse=True)
+
     """
 
     def __init__(
@@ -1201,6 +1220,7 @@ class GaussianNoiseLayer(Layer):
         The seed for random noise.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -1272,6 +1292,7 @@ class DropconnectDenseLayer(Layer):
     References
     ----------
     - `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`_
+
     """
 
     def __init__(

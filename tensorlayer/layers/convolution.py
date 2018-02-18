@@ -35,6 +35,7 @@ class Conv1dLayer(Layer):
         The arguments for the bias vector initializer.
     name : str
         A unique layer name
+
     """
 
     def __init__(
@@ -142,6 +143,7 @@ class Conv2dLayer(Layer):
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
     ...                       strides=[1, 1, 1, 1],
     ...                       padding='SAME') + b )
+
     """
 
     def __init__(
@@ -253,6 +255,7 @@ class DeConv2dLayer(Layer):
     >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
     ...         shape=(3,3,512,1024), strides=(1,2,2,1), output_shape=(batch_size,64,64,512),
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')
+
     """
 
     def __init__(
@@ -319,6 +322,7 @@ class Conv3dLayer(Layer):
         The arguments for the bias vector initializer.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -382,6 +386,7 @@ class DeConv3dLayer(Layer):
         The arguments for the bias vector initializer.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -437,6 +442,7 @@ class UpSampling2dLayer(Layer):
         If True, align the corners of the input and output. Default is False.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -496,6 +502,7 @@ class DownSampling2dLayer(Layer):
         If True, exactly align all 4 corners of the input and output. Default is False.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -575,6 +582,7 @@ def tf_batch_map_coordinates(inputs, coords):
     -------
     ``tf.Tensor``
         A Tensor with the shape as (b*c, h, w, n)
+
     """
     input_shape = inputs.get_shape()
     coords_shape = coords.get_shape()
@@ -621,6 +629,7 @@ def tf_batch_map_offsets(inputs, offsets, grid_offset):
     -------
     ``tf.Tensor``
         A Tensor with the shape as (b, h, w, c)
+
     """
     input_shape = inputs.get_shape()
     batch_size = tf.shape(inputs)[0]
@@ -699,6 +708,7 @@ class DeformableConv2dLayer(Layer):
     -----
     - The padding is fixed to 'SAME'.
     - The current implementation is not optimized for memory usgae. Please use it carefully.
+
     """
 
     def __init__(self,
@@ -822,6 +832,7 @@ def atrous_conv1d(
     -------
     :class:`Layer`
         A :class:`AtrousConv1dLayer` object
+
     """
     return Conv1dLayer(
         layer=layer,
@@ -869,6 +880,7 @@ class AtrousConv2dLayer(Layer):
         The arguments for the bias vector initializer.
     name : str
         A unique layer name.
+
     """
 
     def __init__(self,
@@ -956,6 +968,7 @@ class SeparableConv2dLayer(Layer):
         Regularizer function for the output.
     name : str
         A unique layer name.
+
     """
 
     def __init__(self,
@@ -1052,6 +1065,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     ...                    W_init=bilinear_init,
     ...                    padding='SAME',
     ...                    act=tf.identity, name='g/h1/decon2d')
+
     """
     if shape[0] != shape[1]:
         raise Exception('deconv2d_bilinear_upsampling_initializer only supports symmetrical filter sizes')
@@ -1150,6 +1164,7 @@ def conv1d(
     >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
     >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
     >>> n = DenseLayer(n, 2, tf.identity, name='o')
+
     """
     return Conv1dLayer(
         layer=layer,
@@ -1228,6 +1243,7 @@ def conv2d(
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_1')
     >>> net = Conv2d(net, 128, (3, 3), act=tf.nn.relu, name='conv2_2')
     >>> net = MaxPool2d(net, (2, 2), name='pool2')
+
     """
     assert len(strides) == 2, "len(strides) should be 2, Conv2d and Conv2dLayer are different."
     try:
@@ -1299,6 +1315,7 @@ def deconv2d(layer,
     -------
     :class:`Layer`
         A :class:`DeConv2dLayer` object.
+
     """
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if tf.__version__ > '1.3':
@@ -1375,6 +1392,7 @@ class DeConv3d(Layer):
         The initializer for the bias vector. If None, skip bias.
     name : str
         A unique layer name.
+
     """
 
     def __init__(self,
@@ -1456,6 +1474,7 @@ class DepthwiseConv2d(Layer):
     -----------
     - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`_
     - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`_
+
     """
 
     def __init__(

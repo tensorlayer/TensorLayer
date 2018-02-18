@@ -61,6 +61,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     ... [3]
     ... [4]
     ... [6]]
+
     """
     # global data_index   # you can put data_index outside the function, then
     #       modify the global data_index in the function without return it.
@@ -107,6 +108,7 @@ def sample(a=[], temperature=1.0):
     ------
     - No matter what is the temperature and input list, the sum of all probabilities will be one. Even if input list = [1, 100, 200], the sum of all probabilities will still be one.
     - For large vocabulary size, choice a higher temperature or ``tl.nlp.sample_top`` to avoid error.
+
     """
     b = np.copy(a)
     try:
@@ -143,6 +145,7 @@ def sample_top(a=[], top_k=10):
         List of probabilities.
     top_k : int
         Number of candidates to be considered.
+
     """
     idx = np.argpartition(a, -top_k)[-top_k:]
     probs = a[idx]
@@ -172,6 +175,7 @@ class SimpleVocabulary(object):
         A dictionary for converting word to ID.
     unk_id : int
         The ID for 'unknown' word.
+
     """
 
     def __init__(self, vocab, unk_id):
@@ -231,6 +235,7 @@ class Vocabulary(object):
     >>> with 152984
     >>> and 139109
     >>> is 97322
+
     """
 
     def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
@@ -316,6 +321,7 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     - You have to install the following package.
     - `Installing NLTK <http://www.nltk.org/install.html>`_
     - `Installing NLTK data <http://www.nltk.org/data.html>`_
+
     """
     try:
         import nltk
@@ -378,6 +384,7 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     ...     end_id: 3
     ...     unk_id: 9
     ...     pad_id: 0
+
     """
     from collections import Counter
     logging.info("Creating vocabulary.")
@@ -421,6 +428,7 @@ def simple_read_words(filename="nietzsche.txt"):
     --------
     words : str
         The context in a string.
+
     """
     with open(filename, "r") as f:
         words = f.read()
@@ -428,7 +436,7 @@ def simple_read_words(filename="nietzsche.txt"):
 
 
 def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
-    """File to list format context. Note that, this script can not handle punctuations.
+    r"""File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
@@ -446,6 +454,7 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
     References
     ---------------
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+
     """
     with tf.gfile.GFile(filename, "r") as f:
         try:  # python 3.4 or older
@@ -488,10 +497,8 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
 
     - Get the tokenized analogy question data
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
-    >>> data, count, dictionary, reverse_dictionary = \
-    ...        tl.nlp.build_words_dataset(words, vocabulary_size, True)
-    >>> analogy_questions = tl.nlp.read_analogies_file( \
-    ...        eval_file='questions-words.txt', word2id=dictionary)
+    >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
+    >>> analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
     >>> print(analogy_questions)
     ... [[ 3068  1248  7161  1581]
     ... [ 3068  1248 28683  5642]
@@ -500,6 +507,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     ... [ 1216  4309 19982 25506]
     ... [ 1216  4309  3194  8650]
     ... [ 1216  4309   140   312]]
+
     """
     questions = []
     questions_skipped = 0
@@ -546,6 +554,7 @@ def build_vocab(data):
     >>> data_path = os.getcwd() + '/simple-examples/data'
     >>> train_path = os.path.join(data_path, "ptb.train.txt")
     >>> word_to_id = build_vocab(read_txt_words(train_path))
+
     """
     # data = _read_words(filename)
     counter = collections.Counter(data)
@@ -572,6 +581,7 @@ def build_reverse_dictionary(word_to_id):
     --------
     reverse_dictionary : dictionary
         FOr converting ID to word.
+
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
     return reverse_dictionary
@@ -615,6 +625,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     References
     -----------------
     - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+
     """
     import collections
     count = [[unk_key, -1]]
@@ -642,7 +653,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
 
 
 def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
-    """ Convert a list of string (words) to IDs.
+    """Convert a list of string (words) to IDs.
 
     Parameters
     ----------
@@ -662,8 +673,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000
-    >>> data, count, dictionary, reverse_dictionary = \
-    ...         tl.nlp.build_words_dataset(words, vocabulary_size, True)
+    >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
     >>> context = [b'hello', b'how', b'are', b'you']
     >>> ids = tl.nlp.words_to_word_ids(words, dictionary)
     >>> context = tl.nlp.word_ids_to_words(ids, reverse_dictionary)
@@ -675,6 +685,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
     References
     ---------------
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+
     """
     # if isinstance(data[0], six.string_types):
     #     logging.info(type(data[0]))
@@ -703,7 +714,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
 
 
 def word_ids_to_words(data, id_to_word):
-    """ Convert a list of integer to strings (words).
+    """Convert a list of integer to strings (words).
 
     Parameters
     ----------
@@ -720,6 +731,7 @@ def word_ids_to_words(data, id_to_word):
     Examples
     ---------
     >>> see ``tl.nlp.words_to_word_ids``
+
     """
     return [id_to_word[i] for i in data]
 
@@ -730,16 +742,15 @@ def save_vocab(count=[], name='vocab.txt'):
     Parameters
     ----------
     count : a list of tuple and list
-        count[0] is a list : the number of rare words\n
-        count[1:] are tuples : the number of occurrence of each word\n
+        count[0] is a list : the number of rare words,
+        count[1:] are tuples : the number of occurrence of each word,
         e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
 
     Examples
     ---------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> vocabulary_size = 50000
-    >>> data, count, dictionary, reverse_dictionary = \
-    ...     tl.nlp.build_words_dataset(words, vocabulary_size, True)
+    >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
     >>> tl.nlp.save_vocab(count, name='vocab_text8.txt')
     >>> vocab_text8.txt
     ... UNK 418391
@@ -750,6 +761,7 @@ def save_vocab(count=[], name='vocab.txt'):
     ... in 372201
     ... a 325873
     ... to 316376
+
     """
     pwd = os.getcwd()
     vocabulary_size = len(count)
@@ -790,6 +802,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
     References
     ----------
     - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
+
     """
     words = []
     sentence = tf.compat.as_bytes(sentence)
@@ -829,6 +842,7 @@ def create_vocabulary(vocabulary_path,
     References
     ----------
     - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
+
     """
     if not gfile.Exists(vocabulary_path):
         logging.info("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
@@ -889,6 +903,7 @@ def initialize_vocabulary(vocabulary_path):
     Raises
     -------
     ValueError : if the provided vocabulary_path does not exist.
+
     """
     if gfile.Exists(vocabulary_path):
         rev_vocab = []
@@ -922,6 +937,7 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
     Returns
     --------
     - A list of integers, the token-ids for the sentence.
+
     """
     if tokenizer:
         words = tokenizer(sentence)
@@ -956,6 +972,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, n
     References
     ----------
     - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
+
     """
     if not gfile.Exists(target_path):
         logging.info("Tokenizing data in %s" % data_path)
@@ -973,7 +990,7 @@ def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, n
         logging.info("Target path %s exists" % target_path)
 
 
-def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
+def moses_multi_bleu(hypotheses, references, lowercase=False):
     """Calculate the bleu score for hypotheses and references
     using the MOSES ulti-bleu.perl script.
 
@@ -999,6 +1016,7 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):  # tl.nlp
     References
     ----------
     - `Google/seq2seq/metric/bleu <https://github.com/google/seq2seq>`_
+
     """
     if np.size(hypotheses) == 0:
         return np.float32(0.0)

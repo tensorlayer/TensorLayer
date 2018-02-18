@@ -28,6 +28,7 @@ class FlattenLayer(Layer):
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.FlattenLayer(net, name='flatten')
+
     """
 
     def __init__(
@@ -79,6 +80,7 @@ class ReshapeLayer(Layer):
     ... [[ 4.  4.  4.]
     ... [ 5.  5.  5.]
     ... [ 6.  6.  6.]]]
+
     """
 
     def __init__(
@@ -109,6 +111,7 @@ class TransposeLayer(Layer):
         The permutation of the dimensions, similar with ``numpy.transpose``.
     name : str
         A unique layer name.
+
     """
 
     def __init__(

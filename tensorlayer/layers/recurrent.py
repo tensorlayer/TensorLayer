@@ -125,6 +125,7 @@ class RNNLayer(Layer):
     - `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_
     - `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
     - see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
+
     """
 
     def __init__(
@@ -313,6 +314,7 @@ class BiRNNLayer(Layer):
     References
     ----------
     - `Source <https://github.com/akaraspt/deepsleep/blob/master/deepsleep/model.py>`_
+
     """
 
     def __init__(
@@ -487,6 +489,7 @@ class ConvRNNCell(object):
         Returns:
           tensor of shape '[batch_size x shape[0] x shape[1] x num_features]
           filled with zeros
+
         """
         shape = self.shape
         num_features = self.num_features
@@ -514,6 +517,7 @@ class BasicConvLSTMCell(ConvRNNCell):
         If False, they are concatenated along the column axis. The latter behavior will soon be deprecated.
     act : activation function
         The activation function of this layer, tanh as default.
+
     """
 
     def __init__(self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, act=tf.nn.tanh):
@@ -589,6 +593,7 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
     Raises
     -------
     - ValueError : if some of the arguments has unspecified or wrong shape.
+
     """
     # Calculate the total size of arguments on dimension 1.
     total_arg_size_depth = 0
@@ -672,6 +677,7 @@ class ConvLSTMLayer(Layer):
 
     batch_size : int or tensor
         Is int, if able to compute the batch_size, otherwise, tensor for ``?``.
+
     """
 
     def __init__(
@@ -791,6 +797,7 @@ def advanced_indexing_op(input, index):
     References
     -----------
     - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
+
     """
     batch_size = tf.shape(input)[0]
     # max_length = int(input.get_shape()[1])    # for fixed length rnn, length is given
@@ -836,6 +843,7 @@ def retrieve_seq_length_op(data):
     References
     ------------
     - Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
+
     """
     with tf.name_scope('GetLength'):
         # TF 1.0 change reduction_indices to axis
@@ -867,6 +875,7 @@ def retrieve_seq_length_op2(data):
     >>> tl.layers.initialize_global_variables(sess)
     >>> print(o.eval())
     ... [2 3 4]
+
     """
     return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
 
@@ -993,6 +1002,7 @@ class DynamicRNNLayer(Layer):
     - `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`_
     - `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_
     - ``tutorial_dynamic_rnn.py``
+
     """
 
     def __init__(
@@ -1231,6 +1241,7 @@ class BiDynamicRNNLayer(Layer):
     ----------
     - `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_
     - `bidirectional_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/bidirectional_rnn.ipynb>`_
+
     """
 
     def __init__(
@@ -1508,6 +1519,7 @@ class Seq2Seq(Layer):
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
+
     """
 
     def __init__(

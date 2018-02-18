@@ -43,6 +43,7 @@ class ConcatLayer(Layer):
     >>> net.print_layers()
     ...     layer 0: ("Relu:0", shape=(?, 800), dtype=float32)
     ...     layer 1: Tensor("Relu_1:0", shape=(?, 300), dtype=float32)
+
     """
 
     def __init__(
@@ -101,6 +102,7 @@ class ElementwiseLayer(Layer):
     >>> net_com = tl.layers.ElementwiseLayer(layer = [net_0, net_1],
     ...                         combine_fn = tf.minimum,
     ...                         name = 'combine_layer')
+
     """
 
     def __init__(

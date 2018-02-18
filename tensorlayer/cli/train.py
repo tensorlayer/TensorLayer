@@ -65,6 +65,7 @@ to enable CPU-only parallel training.
 The reason we are not supporting GPU-CPU co-training is because GPU and 
 CPU are running at different speeds. Using them together in training would
 incur stragglers.
+
 """
 
 import argparse
