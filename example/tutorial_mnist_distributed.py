@@ -14,7 +14,6 @@
 import tensorflow as tf
 import tensorlayer as tl
 
-
 # load environment for distributed training
 task_spec = tl.distributed.TaskSpec()
 task_spec.create_server()
