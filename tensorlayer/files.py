@@ -546,6 +546,7 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
         What images to return.
         - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
         - If you want to get all images, set to ``None``.
+
     path : str
         The path that the data is downloaded to, defaults is ``data/flickr25k/``.
     n_threads : int
@@ -555,10 +556,12 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
 
     Examples
     -----------
-    - Get images with tag of sky
+    Get images with tag of sky
+
     >>> images = tl.files.load_flickr25k_dataset(tag='sky')
 
-    - Get all images
+    Get all images
+
     >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
 
     """
@@ -611,6 +614,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
         What images to return.
         - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`_.
         - If you want to get all images, set to ``None``.
+
     size : int
         integer between 1 to 10. 1 means 100k images ... 5 means 500k images, 10 means all 1 million images. Default is 10.
     path : str
@@ -622,10 +626,12 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
 
     Examples
     ----------
-    - Use 200k images
+    Use 200k images
+
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra', size=2)
 
-    - Use 1 Million images
+    Use 1 Million images
+
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
 
     """
@@ -819,7 +825,11 @@ def load_celebA_dataset(path='data'):
 
 
 def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
-    """Pascal VOC 2007/2012 Dataset has 20 objects : aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor and additional 3 classes : head, hand, foot for person.
+    """Pascal VOC 2007/2012 Dataset.
+
+    It has 20 objects:
+    aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor
+    and additional 3 classes : head, hand, foot for person.
 
     Parameters
     -----------
@@ -829,6 +839,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         The VOC dataset version, `2012`, `2007`, `2007test` or `2012test`. We usually train model on `2007+2012` and test it on `2007test`.
     contain_classes_in_person : boolean
         Whether include head, hand and foot annotation, default is False.
+
     Returns
     ---------
     imgs_file_list : list of str
@@ -846,7 +857,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     classes_dict : dictionary
         Class label to integer.
     n_objs_list : list of int
-        Number of objects in all images in ``imgs_file_list` in order.
+        Number of objects in all images in ``imgs_file_list`` in order.
     objs_info_list : list of str
         Darknet format for the annotation of all images in ``imgs_file_list`` in order. ``[class_id x_centre y_centre width height]`` in ratio format.
     objs_info_dicts : dictionary
@@ -883,7 +894,6 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     -------------
     - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`_.
     - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`_.
-    - `TensorFlow/Models/object-detection <https://github.com/zsdonghao/object-detection/blob/master/g3doc/preparing_inputs.md>`_.
 
     """
     path = os.path.join(path, 'VOC')
@@ -1135,14 +1145,17 @@ def save_npz(save_list=[], name='model.npz', sess=None):
 
     Examples
     --------
-    - Save model to npz
+    Save model to npz
+
     >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
 
-    - Load model from npz (Method 1)
+    Load model from npz (Method 1)
+
     >>> load_params = tl.files.load_npz(name='model.npz')
     >>> tl.files.assign_params(sess, load_params, network)
 
-    - Load model from npz (Method 2)
+    Load model from npz (Method 2)
+
     >>> tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 
     Notes
@@ -1427,9 +1440,9 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     printable : boolean
         Whether to print all parameters information.
 
-    Examples
-    ---------
-    - see ``tl.files.load_ckpt()``.
+    See Also
+    --------
+    load_ckpt
 
     """
     assert sess is not None
@@ -1467,16 +1480,20 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     Examples
     ----------
-    - Save all global parameters.
+    Save all global parameters.
+
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', save_dir='model', printable=True)
 
-    - Save specific parameters.
+    Save specific parameters.
+
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
 
-    - Load latest ckpt.
+    Load latest ckpt.
+
     >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
 
-    - Load specific ckpt.
+    Load specific ckpt.
+
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
 
     """
@@ -1759,7 +1776,8 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
 
     Examples
     ---------
-    - Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+    Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+
     >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
 
     """
