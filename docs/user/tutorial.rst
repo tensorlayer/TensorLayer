@@ -1,8 +1,8 @@
 .. _tutorial:
 
-========
-Tutorial
-========
+=========
+Tutorials
+=========
 
 For deep learning, this tutorial will walk you through building handwritten
 digits classifiers using the MNIST dataset, arguably the "Hello World" of neural
