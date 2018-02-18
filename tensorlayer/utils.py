@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import math
 import random
 import time
 
@@ -7,8 +6,8 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
-from . import iterate
 from . import _logging as logging
+from . import iterate
 
 
 def fit(sess,
