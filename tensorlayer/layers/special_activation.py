@@ -14,23 +14,26 @@ class PReluLayer(Layer):
 
     Parameters
     ----------
-    x : A `Tensor` with type `float`, `double`, `int32`, `int64`, `uint8`,
-        `int16`, or `int8`.
-    channel_shared : `bool`. Single weight is shared by all channels
-    a_init : alpha initializer, default zero constant.
-        The initializer for initializing the alphas.
+    layer : :class:`Layer`
+        Previous layer。
+    channel_shared : boolean
+        If True, single weight is shared by all channels.
+    a_init : initializer
+        The initializer for initializing the alpha(s).
     a_init_args : dictionary
-        The arguments for the weights initializer.
-    name : A name for this activation op (optional).
+        The arguments for initializing the alpha(s).
+    name : str
+        A unique layer name.
 
     References
     -----------
-    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/pdf/1502.01852v1.pdf>`_
+    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/pdf/1502.01852v1.pdf>`__
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
             a_init_args={},

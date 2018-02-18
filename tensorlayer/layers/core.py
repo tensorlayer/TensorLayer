@@ -27,15 +27,21 @@ except:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
 
-def flatten_reshape(variable, name=''):
-    """Reshapes high-dimension input to a vector.
+def flatten_reshape(variable, name='flatten'):
+    """Reshapes a high-dimension vector input.
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
-    variable : a tensorflow variable
-    name : a string or None
-        An optional name to attach to this layer.
+    variable : TensorFlow variable or tensor
+        The variable or tensor to be flatten.
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    Tensor
+        Flatten Tensor
 
     Examples
     --------
@@ -51,6 +57,7 @@ def flatten_reshape(variable, name=''):
     ...         [batch_size, mask_row * mask_col * n_mask]
     >>> h_pool2_flat_drop = tf.nn.dropout(h_pool2_flat, keep_prob)
     ...
+
     """
     dim = 1
     for d in variable.get_shape()[1:].as_list():
@@ -59,12 +66,12 @@ def flatten_reshape(variable, name=''):
 
 
 def clear_layers_name():
-    """Clear all layer names in set_keep['_layers_name_list'],
-    enable layer name reuse.
+    """Clear all layer names in set_keep['_layers_name_list'] if layer names are reused.
 
     Examples
     ---------
-    - Resetting the current graph and trying to redefining model.
+    Reset the current graph and try to refine model.
+
     >>> for .... (different model settings):
     >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
     >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
@@ -72,13 +79,15 @@ def clear_layers_name():
     >>>       # define and train a model here
     >>>       sess.close()
 
-    - Enable name layer reuse.
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=800, name='relu1')
+    Enable reusing layer names.
+
+    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.DenseLayer(net, n_units=800, name='relu1')
     ...
     >>> tl.layers.clear_layers_name()
-    >>> network2 = tl.layers.InputLayer(x, name='input_layer')
-    >>> network2 = tl.layers.DenseLayer(network2, n_units=800, name='relu1')
+    >>> net2 = tl.layers.InputLayer(x, name='input_layer')
+    >>> net2 = tl.layers.DenseLayer(net2, n_units=800, name='relu1')
+
     """
     set_keep['_layers_name_list'] = []
 
@@ -90,20 +99,21 @@ def set_name_reuse(enable=True):
     parameters have same name scope.
 
     Parameters
-    ------------
-    enable : boolean, enable name reuse. (None means False).
+    ----------
+    enable : boolean
+        Enable or disable name/layer reuse, None means False
 
     Examples
-    ------------
+    --------
     >>> def embed_seq(input_seqs, is_train, reuse):
     >>>    with tf.variable_scope("model", reuse=reuse):
     >>>         tl.layers.set_name_reuse(reuse)
-    >>>         network = tl.layers.EmbeddingInputlayer(
+    >>>         net = tl.layers.EmbeddingInputlayer(
     ...                     inputs = input_seqs,
     ...                     vocabulary_size = vocab_size,
     ...                     embedding_size = embedding_size,
     ...                     name = 'e_embedding')
-    >>>        network = tl.layers.DynamicRNNLayer(network,
+    >>>         net = tl.layers.DynamicRNNLayer(net,
     ...                     cell_fn = tf.contrib.rnn.BasicLSTMCell,
     ...                     n_hidden = embedding_size,
     ...                     dropout = (0.7 if is_train else None),
@@ -111,12 +121,13 @@ def set_name_reuse(enable=True):
     ...                     sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
     ...                     return_last = True,
     ...                     name = 'e_dynamicrnn')
-    >>>    return network
+    >>>    return net
     >>>
     >>> net_train = embed_seq(t_caption, is_train=True, reuse=False)
     >>> net_test = embed_seq(t_caption, is_train=False, reuse=True)
 
     - see ``tutorial_ptb_lstm.py`` for example.
+
     """
     set_keep['name_reuse'] = enable
 
@@ -126,10 +137,17 @@ def initialize_rnn_state(state, feed_dict=None):
     The inputs are LSTMStateTuple or State of RNNCells and an optional feed_dict.
 
     Parameters
-    -----------
-    state : a RNN state.
-    feed_dict : None or a dictionary for initializing the state values (optional).
-        If None, returns the zero state.
+    ----------
+    state : RNN state.
+        The TensorFlow's RNN state.
+    feed_dict : dictionary
+        Initial RNN state; if None, returns null state.
+
+    Returns
+    -------
+    RNN state
+        The TensorFlow's RNN state.
+
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
@@ -152,7 +170,8 @@ def print_all_variables(train_only=False):
     Parameters
     ----------
     train_only : boolean
-        If True, only print the trainable variables, otherwise, print all variables.
+        If True, print the trainable variables; if False, print all variables.
+
     """
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
@@ -168,13 +187,30 @@ def print_all_variables(train_only=False):
         logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
-def get_variables_with_name(name, train_only=True, printable=False):
-    """Get variable list by a given name scope.
+def get_variables_with_name(name=None, train_only=True, printable=False):
+    """Get a list of TensorFlow variables by a given name scope.
+
+    Parameters
+    ----------
+    name : str
+        Get the variables that contain this name.
+    train_only : boolean
+        If Ture, only get the trainable variables.
+    printable : boolean
+        If True, print the information of all variables.
+
+    Returns
+    -------
+    list
+        A list of TensorFlow variables
 
     Examples
-    ---------
+    --------
     >>> dense_vars = tl.layers.get_variable_with_name('dense', True, True)
+
     """
+    if name is None:
+        raise Exception("please input a name")
     logging.info("  [*] geting variables with %s" % name)
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
@@ -192,19 +228,33 @@ def get_variables_with_name(name, train_only=True, printable=False):
     return d_vars
 
 
-def get_layers_with_name(network=None, name="", printable=False):
-    """Get layer list in a network by a given name scope.
+def get_layers_with_name(net, name="", printable=False):
+    """Get a list of layers' output in a network by a given name scope.
+
+    Parameters
+    -----------
+    net : :class:`Layer`
+        The last layer of the network.
+    name : str
+        Get the layers' output that contain this name.
+    printable : boolean
+        If True, print information of all the layers' output
+
+    Returns
+    --------
+    list
+        a list of layers' output (TensorFlow tensor)
 
     Examples
     ---------
-    >>> layers = tl.layers.get_layers_with_name(network, "CNN", True)
+    >>> layers = tl.layers.get_layers_with_name(net, "CNN", True)
+
     """
-    assert network is not None
     logging.info("  [*] geting layers with %s" % name)
 
     layers = []
     i = 0
-    for layer in network.all_layers:
+    for layer in net.all_layers:
         # logging.info(type(layer.name))
         if name in layer.name:
             layers.append(layer)
@@ -214,38 +264,52 @@ def get_layers_with_name(network=None, name="", printable=False):
     return layers
 
 
-def list_remove_repeat(l=None):
+def list_remove_repeat(x):
     """Remove the repeated items in a list, and return the processed list.
     You may need it to create merged layer like Concat, Elementwise and etc.
 
     Parameters
     ----------
-    l : a list
+    x : list
+        Input
+
+    Returns
+    -------
+    list
+        A list that after removing it's repeated items
 
     Examples
-    ---------
+    -------
     >>> l = [2, 3, 4, 2, 3]
     >>> l = list_remove_repeat(l)
     ... [2, 3, 4]
+
     """
-    l2 = []
-    [l2.append(i) for i in l if not i in l2]
-    return l2
+    y = []
+    [y.append(i) for i in x if not i in y]
+    return y
 
 
 def merge_networks(layers=[]):
     """Merge all parameters, layers and dropout probabilities to a :class:`Layer`.
+    The output of return network is the first network in the list.
 
     Parameters
     ----------
-    layer : list of :class:`Layer` instance
+    layers : list of :class:`Layer`
         Merge all parameters, layers and dropout probabilities to the first layer in the list.
+
+    Returns
+    --------
+    :class:`Layer`
+        The network after merging all parameters, layers and dropout probabilities to the first network in the list.
 
     Examples
     ---------
     >>> n1 = ...
     >>> n2 = ...
-    >>> n1 = merge_networks([n1, n2])
+    >>> n1 = tl.layers.merge_networks([n1, n2])
+
     """
     layer = layers[0]
 
@@ -267,13 +331,17 @@ def merge_networks(layers=[]):
     return layer
 
 
-def initialize_global_variables(sess=None):
-    """Excute ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
+def initialize_global_variables(sess):
+    """Initialize the global variables of TensorFlow.
+
+    Run ``sess.run(tf.global_variables_initializer())`` for TF 0.12+ or
     ``sess.run(tf.initialize_all_variables())`` for TF 0.11.
 
     Parameters
     ----------
-    sess : a Session
+    sess : Session
+        The TensorFlow session object.
+
     """
     assert sess is not None
     # try:    # TF12+
@@ -284,7 +352,7 @@ def initialize_global_variables(sess=None):
 
 class Layer(object):
     """
-    The :class:`Layer` class represents a single layer of a neural network. It
+    The basic :class:`Layer` class represents a single layer of a neural network. It
     should be subclassed when implementing new types of layers.
     Because each layer can keep track of the layer(s) feeding into it, a
     network's output :class:`Layer` instance can double as a handle to the full
@@ -292,10 +360,11 @@ class Layer(object):
 
     Parameters
     ----------
-    inputs : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    name : a string or None
-        An optional name to attach to this layer.
+    inputs : :class:`Layer` instance
+        The `Layer` class feeding into this layer
+    name : str or None
+        A unique layer name
+
     """
 
     def __init__(self, inputs=None, name='layer'):
@@ -364,13 +433,14 @@ class InputLayer(Layer):
 
     Parameters
     ----------
-    inputs : a placeholder or tensor
-        The input tensor data.
-    name : a string or None
-        An optional name to attach to this layer.
+    inputs : placeholder or tensor
+        The input of a network
+    name : str
+        A unique layer name
+
     """
 
-    def __init__(self, inputs=None, name='input_layer'):
+    def __init__(self, inputs=None, name='input'):
         Layer.__init__(self, inputs=inputs, name=name)
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
@@ -385,23 +455,30 @@ class OneHotInputLayer(Layer):
 
     Parameters
     ----------
-    inputs : a placeholder or tensor
-        The input tensor data.
-    name : a string or None
-        An optional name to attach to this layer.
-    depth : If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension axis (default: the new axis is appended at the end).
-    on_value : If on_value is not provided, it will default to the value 1 with type dtype.
-        default, None
-    off_value : If off_value is not provided, it will default to the value 0 with type dtype.
-        default, None
-    axis : default, None
-    dtype : default, None
+    inputs : placeholder or tensor
+        The input of a network
+    depth : None or int
+        If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension `axis` (default: the new axis is appended at the end)
+    on_value : None or number
+        If None, it will default to the value 1 with type dtype
+    off_value : None or number
+        If None, it will default to the value 0 with type dtype
+        None for default
+    axis : None or int
+        The axis
+    dtype : None or TensorFlow dtype
+        The data type, None for tf.float32
+    name : str
+        A unique layer name
+
     """
 
-    def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input_layer'):
+    def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
         Layer.__init__(self, inputs=inputs, name=name)
-        assert depth != None, "depth is not given"
-        logging.info("Instantiate OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        # assert depth != None, "depth is not given"
+        if depth is None:
+            logging.info("  [*] depth == None the number of output units is undefined")
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
         self.all_layers = []
         self.all_params = []
@@ -410,53 +487,72 @@ class OneHotInputLayer(Layer):
 
 class Word2vecEmbeddingInputlayer(Layer):
     """
-    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer,
-    for Word Embedding. Words are input as integer index.
+    The :class:`Word2vecEmbeddingInputlayer` class is a fully connected layer.
+    For Word Embedding, words are input as integer index.
     The output is the embedded word vector.
 
     Parameters
     ----------
-    inputs : placeholder
-        For word inputs. integer index format.
+    inputs : placeholder or tensor
+        The input of a network. For word inputs, please use integer index format, 2D tensor : [batch_size, num_steps(num_words)]
     train_labels : placeholder
-        For word labels. integer index format.
+        For word labels. integer index format
     vocabulary_size : int
-        The size of vocabulary, number of words.
+        The size of vocabulary, number of words
     embedding_size : int
-        The number of embedding dimensions.
+        The number of embedding dimensions
     num_sampled : int
-        The Number of negative examples for NCE loss.
-    nce_loss_args : a dictionary
+        The mumber of negative examples for NCE loss
+    nce_loss_args : dictionary
         The arguments for tf.nn.nce_loss()
-    E_init : embedding initializer
-        The initializer for initializing the embedding matrix.
-    E_init_args : a dictionary
+    E_init : initializer
+        The initializer for initializing the embedding matrix
+    E_init_args : dictionary
         The arguments for embedding initializer
-    nce_W_init : NCE decoder biases initializer
-        The initializer for initializing the nce decoder weight matrix.
-    nce_W_init_args : a dictionary
-        The arguments for initializing the nce decoder weight matrix.
-    nce_b_init : NCE decoder biases initializer
-        The initializer for tf.get_variable() of the nce decoder bias vector.
-    nce_b_init_args : a dictionary
-        The arguments for tf.get_variable() of the nce decoder bias vector.
-    name : a string or None
-        An optional name to attach to this layer.
+    nce_W_init : initializer
+        The initializer for initializing the nce decoder weight matrix
+    nce_W_init_args : dictionary
+        The arguments for initializing the nce decoder weight matrix
+    nce_b_init : initializer
+        The initializer for initializing of the nce decoder bias vector
+    nce_b_init_args : dictionary
+        The arguments for initializing the nce decoder bias vector
+    name : str
+        A unique layer name
 
     Attributes
-    --------------
-    nce_cost : a tensor
+    ----------
+    nce_cost : Tensor
         The NCE loss.
-    outputs : a tensor
-        The outputs of embedding layer.
-    normalized_embeddings : tensor
-        Normalized embedding matrix
+    outputs : Tensor
+        The embedding layer outputs.
+    normalized_embeddings : Tensor
+        Normalized embedding matrix.
 
     Examples
     --------
-    - Without TensorLayer : see tensorflow/examples/tutorials/word2vec/word2vec_basic.py
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    With TensorLayer : see ``tensorlayer/example/tutorial_word2vec_basic.py``
+
+    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
+    >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
+    ...         inputs = train_inputs,
+    ...         train_labels = train_labels,
+    ...         vocabulary_size = vocabulary_size,
+    ...         embedding_size = embedding_size,
+    ...         num_sampled = num_sampled,
+    ...         name ='word2vec',
+    ...    )
+    >>> cost = emb_net.nce_cost
+    >>> train_params = emb_net.all_params
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(
+    ...                                             cost, var_list=train_params)
+    >>> normalized_embeddings = emb_net.normalized_embeddings
+
+    Without TensorLayer : see ``tensorflow/examples/tutorials/word2vec/word2vec_basic.py``
+
+    >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> embeddings = tf.Variable(
     ...     tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
     >>> embed = tf.nn.embedding_lookup(embeddings, train_inputs)
@@ -470,26 +566,10 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...               num_sampled=num_sampled, num_classes=vocabulary_size,
     ...               num_true=1))
 
-    - With TensorLayer : see tutorial_word2vec_basic.py
-    >>> train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> train_labels = tf.placeholder(tf.int32, shape=[batch_size, 1])
-    >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
-    ...         inputs = train_inputs,
-    ...         train_labels = train_labels,
-    ...         vocabulary_size = vocabulary_size,
-    ...         embedding_size = embedding_size,
-    ...         num_sampled = num_sampled,
-    ...        name ='word2vec_layer',
-    ...    )
-    >>> cost = emb_net.nce_cost
-    >>> train_params = emb_net.all_params
-    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(
-    ...                                             cost, var_list=train_params)
-    >>> normalized_embeddings = emb_net.normalized_embeddings
-
     References
     ----------
-    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
+
     """
 
     def __init__(
@@ -506,7 +586,7 @@ class Word2vecEmbeddingInputlayer(Layer):
             nce_W_init_args={},
             nce_b_init=tf.constant_initializer(value=0.0),
             nce_b_init_args={},
-            name='word2vec_layer',
+            name='word2vec',
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
@@ -549,7 +629,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 class EmbeddingInputlayer(Layer):
     """
     The :class:`EmbeddingInputlayer` class is a fully connected layer,
-    for Word Embedding. Words are input as integer index.
+    for Word Embedding. Word content are accessed using integer indexes.
     The output is the embedded word vector.
 
     If you have a pre-train matrix, you can assign the matrix into it.
@@ -560,24 +640,23 @@ class EmbeddingInputlayer(Layer):
     Parameters
     ----------
     inputs : placeholder
-        For word inputs. integer index format.
-        a 2D tensor : [batch_size, num_steps(num_words)]
+        The input of a network. For word inputs.
+        Please use integer index format, 2D tensor : (batch_size, num_steps(num_words)).
     vocabulary_size : int
         The size of vocabulary, number of words.
     embedding_size : int
         The number of embedding dimensions.
-    E_init : embedding initializer
-        The initializer for initializing the embedding matrix.
-    E_init_args : a dictionary
-        The arguments for embedding initializer
-    name : a string or None
-        An optional name to attach to this layer.
+    E_init : initializer
+        The initializer for the embedding matrix.
+    E_init_args : dictionary
+        The arguments for embedding matrix initializer.
+    name : str
+        A unique layer name.
 
     Attributes
-    ------------
-    outputs : a tensor
-        The outputs of embedding layer.
-        the outputs 3D tensor : [batch_size, num_steps(num_words), embedding_size]
+    ----------
+    outputs : tensor
+        The embedding layer output is a 3D tensor in the shape: (batch_size, num_steps(num_words), embedding_size).
 
     Examples
     --------
@@ -594,8 +673,8 @@ class EmbeddingInputlayer(Layer):
     >>> del all_var, data, count
     ...
     >>> load_params = tl.files.load_npz(name=model_file_name+'.npz')
-    >>> x = tf.placeholder(tf.int32, shape=[batch_size])
-    >>> y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
+    >>> x = tf.placeholder(tf.int32, shape=(batch_size))
+    >>> y_ = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> emb_net = tl.layers.EmbeddingInputlayer(
     ...                inputs = x,
     ...                vocabulary_size = vocabulary_size,
@@ -650,22 +729,32 @@ class EmbeddingInputlayer(Layer):
 
 
 class AverageEmbeddingInputlayer(Layer):
-    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs, can be used as the input layer for models like DAN[1] and FastText[2].
+    """The :class:`AverageEmbeddingInputlayer` averages over embeddings of inputs.
+    This is often used as the input layer for models like DAN[1] and FastText[2].
 
     Parameters
-    ------------
-    inputs : input placeholder or tensor
-    vocabulary_size : an integer, the size of vocabulary
-    embedding_size : an integer, the dimension of embedding vectors
-    pad_value : an integer, the scalar pad value used in inputs
-    name : a string, the name of the layer
-    embeddings_initializer : the initializer of the embedding matrix
-    embeddings_kwargs : kwargs to get embedding matrix variable
+    ----------
+    inputs : placeholder or tensor
+        The network input.
+        For word inputs, please use integer index format, 2D tensor: (batch_size, num_steps(num_words)).
+    vocabulary_size : int
+        The size of vocabulary.
+    embedding_size : int
+        The dimension of the embedding vectors.
+    pad_value : int
+        The scalar padding value used in inputs, 0 as default.
+    embeddings_initializer : initializer
+        The initializer of the embedding matrix.
+    embeddings_kwargs : None or dictionary
+        The arguments to get embedding matrix variable.
+    name : str
+        A unique layer name.
 
     References
-    ------------
+    ----------
     - [1] Iyyer, M., Manjunatha, V., Boyd-Graber, J., & Daum’e III, H. (2015). Deep Unordered Composition Rivals Syntactic Methods for Text Classification. In Association for Computational Linguistics.
-    - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`_
+    - [2] Joulin, A., Grave, E., Bojanowski, P., & Mikolov, T. (2016). `Bag of Tricks for Efficient Text Classification. <http://arxiv.org/abs/1607.01759>`__
+
     """
 
     def __init__(
@@ -674,9 +763,9 @@ class AverageEmbeddingInputlayer(Layer):
             vocabulary_size,
             embedding_size,
             pad_value=0,
-            name='average_embedding_layer',
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
             embeddings_kwargs=None,
+            name='average_embedding',
     ):
         super().__init__(name=name)
 
@@ -735,40 +824,36 @@ class AverageEmbeddingInputlayer(Layer):
 
 
 class DenseLayer(Layer):
-    """
-    The :class:`DenseLayer` class is a fully connected layer.
+    """The :class:`DenseLayer` class is a fully connected layer.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer.
     n_units : int
-        The number of units of the layer.
+        The number of units of this layer.
     act : activation function
-        The function that is applied to the layer activations.
-    W_init : weights initializer
-        The initializer for initializing the weight matrix.
-    b_init : biases initializer or None
-        The initializer for initializing the bias vector. If None, skip biases.
+        The activation function of this layer.
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for the weights tf.get_variable.
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for the biases tf.get_variable.
-    name : a string or None
-        An optional name to attach to this layer.
+        The arguments for the bias vector initializer.
+    name : a str
+        A unique layer name.
 
     Examples
     --------
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(
-    ...                 network,
-    ...                 n_units=800,
-    ...                 act = tf.nn.relu,
-    ...                 W_init=tf.truncated_normal_initializer(stddev=0.1),
-    ...                 name ='relu_layer'
-    ...                 )
+    With TensorLayer
 
-    >>> Without TensorLayer, you can do as follow.
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.DenseLayer(net, 800, act=tf.nn.relu, name='relu')
+
+    Without native TensorLayer APIs, you can do as follow.
+
     >>> W = tf.Variable(
     ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
@@ -776,20 +861,20 @@ class DenseLayer(Layer):
 
     Notes
     -----
-    If the input to this layer has more than two axes, it need to flatten the
-    input by using :class:`FlattenLayer` in this case.
+    If the layer input has more than two axes, it needs to be flatten by using :class:`FlattenLayer`.
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             n_units=100,
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args={},
             b_init_args={},
-            name='dense_layer',
+            name='dense',
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
@@ -824,30 +909,30 @@ class DenseLayer(Layer):
 
 class ReconLayer(DenseLayer):
     """
-    The :class:`ReconLayer` class is a reconstruction layer `DenseLayer` which
-    use to pre-train a `DenseLayer`.
+    The :class:`ReconLayer` class is a reconstruction layer for :class:`DenseLayer` for AutoEncoder.
+    It is used to pre-train the previous :class:`DenseLayer`
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    x_recon : tensorflow variable
-        The variables used for reconstruction.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        Previous layer.
+    x_recon : placeholder or tensor
+        The target for reconstruction.
     n_units : int
-        The number of units of the layer, should be equal to x_recon
+        The number of units of the layer. It should equal ``x_recon``.
     act : activation function
-        The activation function that is applied to the reconstruction layer.
-        Normally, for sigmoid layer, the reconstruction activation is sigmoid;
-        for rectifying layer, the reconstruction activation is softplus.
+        The activation function of this layer.
+        Normally, for sigmoid layer, the reconstruction activation is ``sigmoid``;
+        for rectifying layer, the reconstruction activation is ``softplus``.
+    name : str
+        A unique layer name.
 
     Examples
     --------
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DenseLayer(network, n_units=196,
+    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.DenseLayer(net, n_units=196,
     ...                                 act=tf.nn.sigmoid, name='sigmoid1')
-    >>> recon_layer1 = tl.layers.ReconLayer(network, x_recon=x, n_units=784,
+    >>> recon_layer1 = tl.layers.ReconLayer(net, x_recon=x, n_units=784,
     ...                                 act=tf.nn.sigmoid, name='recon_layer1')
     >>> recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
     ...                         denoise_name=None, n_epoch=1200, batch_size=128,
@@ -855,28 +940,29 @@ class ReconLayer(DenseLayer):
 
     Methods
     -------
-    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
+    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
         Start to pre-train the parameters of previous DenseLayer.
 
     Notes
     -----
-    The input layer should be `DenseLayer` or a layer has only one axes.
+    The input layer should be `DenseLayer` or a layer that has only one axes.
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
-    - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`_
-    - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`_
+    - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`__
+    - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`__
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             x_recon=None,
-            name='recon_layer',
             n_units=784,
             act=tf.nn.softplus,
+            name='recon',
     ):
         DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
-        logging.info("   %s is a ReconLayer" % self.name)
+        logging.info("%s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -1014,59 +1100,64 @@ class ReconLayer(DenseLayer):
 class DropoutLayer(Layer):
     """
     The :class:`DropoutLayer` class is a noise layer which randomly set some
-    values to zero by a given keeping probability.
+    activations to zero according to a keeping probability.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer.
     keep : float
-        The keeping probability, the lower more values will be set to zero.
+        The keeping probability.
+        The lower the probability it is, the more activations are set to zero.
     is_fix : boolean
-        Default False, if True, the keeping probability is fixed and cannot be changed via feed_dict.
+        Fixing probability or nor. Default is False.
+        If True, the keeping probability is fixed and cannot be changed via `feed_dict`.
     is_train : boolean
-        If False, skip this layer, default is True.
+        Trainable or not. If False, skip this layer. Default is True.
     seed : int or None
-        An integer or None to create random seed.
-    name : a string or None
-        An optional name to attach to this layer.
+        The seed for random dropout.
+    name : str
+        A unique layer name.
 
     Examples
     --------
-    - Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-    >>> network = tl.layers.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
+    Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`__
+
+    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
+    >>> net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
     >>> ...
     >>> # For training, enable dropout as follow.
     >>> feed_dict = {x: X_train_a, y_: y_train_a}
-    >>> feed_dict.update( network.all_drop )     # enable noise layers
+    >>> feed_dict.update( net.all_drop )     # enable noise layers
     >>> sess.run(train_op, feed_dict=feed_dict)
     >>> ...
     >>> # For testing, disable dropout as follow.
-    >>> dp_dict = tl.utils.dict_to_one( network.all_drop ) # disable noise layers
+    >>> dp_dict = tl.utils.dict_to_one( net.all_drop ) # disable noise layers
     >>> feed_dict = {x: X_val_a, y_: y_val_a}
     >>> feed_dict.update(dp_dict)
     >>> err, ac = sess.run([cost, acc], feed_dict=feed_dict)
     >>> ...
 
-    - Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_
+    Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`__
+
     >>> def mlp(x, is_train=True, reuse=False):
     >>>     with tf.variable_scope("MLP", reuse=reuse):
     >>>     tl.layers.set_name_reuse(reuse)
-    >>>     network = tl.layers.InputLayer(x, name='input')
-    >>>     network = tl.layers.DropoutLayer(network, keep=0.8, is_fix=True,
+    >>>     net = tl.layers.InputLayer(x, name='input')
+    >>>     net = tl.layers.DropoutLayer(net, keep=0.8, is_fix=True,
     >>>                         is_train=is_train, name='drop1')
     >>>     ...
-    >>>     return network
+    >>>     return net
     >>> # define inferences
     >>> net_train = mlp(x, is_train=True, reuse=False)
     >>> net_test = mlp(x, is_train=False, reuse=True)
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             keep=0.5,
             is_fix=False,
             is_train=True,
@@ -1120,25 +1211,28 @@ class DropoutLayer(Layer):
 class GaussianNoiseLayer(Layer):
     """
     The :class:`GaussianNoiseLayer` class is noise layer that adding noise with
-    normal distribution to the activation.
+    gaussian distribution to the activation.
 
     Parameters
     ------------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer.
     mean : float
+        The mean. Default is 0.
     stddev : float
+        The standard deviation. Default is 1.
     is_train : boolean
-        If False, skip this layer, default is True.
+        Is trainable layer. If False, skip this layer. default is True.
     seed : int or None
-        An integer or None to create random seed.
-    name : a string or None
-        An optional name to attach to this layer.
+        The seed for random noise.
+    name : str
+        A unique layer name.
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             mean=0.0,
             stddev=1.0,
             is_train=True,
@@ -1166,49 +1260,51 @@ class GaussianNoiseLayer(Layer):
 
 class DropconnectDenseLayer(Layer):
     """
-    The :class:`DropconnectDenseLayer` class is ``DenseLayer`` with DropConnect
-    behaviour which randomly remove connection between this layer to previous
-    layer by a given keeping probability.
+    The :class:`DropconnectDenseLayer` class is :class:`DenseLayer` with DropConnect
+    behaviour which randomly removes connections between this layer and the previous
+    layer according to a keeping probability.
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
+    layer : :class:`Layer`
+        Previous layer.
     keep : float
-        The keeping probability, the lower more values will be set to zero.
+        The keeping probability.
+        The lower the probability it is, the more activations are set to zero.
     n_units : int
-        The number of units of the layer.
+        The number of units of this layer.
     act : activation function
-        The function that is applied to the layer activations.
+        The activation function of this layer.
     W_init : weights initializer
-        The initializer for initializing the weight matrix.
+        The initializer for the weight matrix.
     b_init : biases initializer
-        The initializer for initializing the bias vector.
+        The initializer for the bias vector.
     W_init_args : dictionary
-        The arguments for the weights tf.get_variable().
+        The arguments for the weight matrix initializer.
     b_init_args : dictionary
-        The arguments for the biases tf.get_variable().
-    name : a string or None
-        An optional name to attach to this layer.
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
 
     Examples
     --------
-    >>> network = tl.layers.InputLayer(x, name='input_layer')
-    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.8,
-    ...         n_units=800, act = tf.nn.relu, name='dropconnect_relu1')
-    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5,
-    ...         n_units=800, act = tf.nn.relu, name='dropconnect_relu2')
-    >>> network = tl.layers.DropconnectDenseLayer(network, keep = 0.5,
-    ...         n_units=10, act = tl.activation.identity, name='output_layer')
+    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.8,
+    ...         n_units=800, act=tf.nn.relu, name='relu1')
+    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
+    ...         n_units=800, act=tf.nn.relu, name='relu2')
+    >>> net = tl.layers.DropconnectDenseLayer(net, keep=0.5,
+    ...         n_units=10, name='output')
 
     References
     ----------
-    - `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`_
+    - `Wan, L. (2013). Regularization of neural networks using dropconnect <http://machinelearning.wustl.edu/mlpapers/papers/icml2013_wan13>`__
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             keep=0.5,
             n_units=100,
             act=tf.identity,

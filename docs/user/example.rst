@@ -1,7 +1,7 @@
 .. _example:
 
 ============
-Example
+Examples
 ============
 
 
@@ -23,11 +23,11 @@ Computer Vision
  - InceptionV3 (ImageNet). Classification task, see `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`_.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/research/slim>`_ can be connected to TensorLayer via SlimNetsLayer.
- - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`_.
- - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`_.
+ - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_ by `zsdonghao <https://github.com/zsdonghao/Spatial-Transformer-Nets>`__.
+ - `U-Net for brain tumor segmentation <https://github.com/zsdonghao/u-net-brain-tumor>`_ by `zsdonghao <https://github.com/zsdonghao/u-net-brain-tumor>`__.
  - Variational Autoencoder (VAE) for (CelebA) by `yzwxx <https://github.com/yzwxx/vae-celebA>`_.
  - Variational Autoencoder (VAE) for (MNIST) by `BUPTLdy <https://github.com/BUPTLdy/tl-vae>`_.
- - Image Captioning - Reimplementation of Google's `im2txt <https://github.com/tensorflow/models/tree/master/research/im2txt>`_ by `zsdonghao <https://github.com/zsdonghao/Image-Captioning>`_.
+ - Image Captioning - Reimplementation of Google's `im2txt <https://github.com/tensorflow/models/tree/master/research/im2txt>`_ by `zsdonghao <https://github.com/zsdonghao/Image-Captioning>`__.
 
 Natural Language Processing
 ==============================
@@ -38,16 +38,16 @@ Natural Language Processing
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py>`_.
  - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`_.
  - `Chatbot in 200 lines of code <https://github.com/zsdonghao/seq2seq-chatbot>`_ for `Seq2Seq <http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq>`_.
- - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py>`_ by `tomtung <https://github.com/tomtung>`_.
+ - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py>`_ by `tomtung <https://github.com/tomtung>`__.
 
 Adversarial Learning
 ========================
- - DCGAN (CelebA). Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`_ by `zsdonghao <https://github.com/zsdonghao/dcgan>`_.
- - `Generative Adversarial Text to Image Synthesis <https://github.com/zsdonghao/text-to-image>`_ by `zsdonghao <https://github.com/zsdonghao/text-to-image>`_.
- - `Unsupervised Image to Image Translation with Generative Adversarial Networks <https://github.com/zsdonghao/Unsup-Im2Im>`_ by `zsdonghao <https://github.com/zsdonghao/Unsup-Im2Im>`_.
+ - DCGAN (CelebA). Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`_ by `zsdonghao <https://github.com/zsdonghao/dcgan>`__.
+ - `Generative Adversarial Text to Image Synthesis <https://github.com/zsdonghao/text-to-image>`_ by `zsdonghao <https://github.com/zsdonghao/text-to-image>`__.
+ - `Unsupervised Image to Image Translation with Generative Adversarial Networks <https://github.com/zsdonghao/Unsup-Im2Im>`_ by `zsdonghao <https://github.com/zsdonghao/Unsup-Im2Im>`__.
  - `Improved CycleGAN <https://github.com/luoxier/CycleGAN_Tensorlayer>`_ with resize-convolution by `luoxier <https://github.com/luoxier/CycleGAN_Tensorlayer>`_.
- - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`_ by `zsdonghao <https://github.com/zsdonghao/SRGAN>`_.
- - `DAGAN: Fast Compressed Sensing MRI Reconstruction <https://github.com/nebulaV/DAGAN>`_ by `nebulaV <https://github.com/nebulaV/DAGAN>`_.
+ - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`_ by `zsdonghao <https://github.com/zsdonghao/SRGAN>`__.
+ - `DAGAN: Fast Compressed Sensing MRI Reconstruction <https://github.com/nebulaV/DAGAN>`_ by `nebulaV <https://github.com/nebulaV/DAGAN>`__.
 
 Reinforcement Learning
 ==============================
@@ -64,13 +64,13 @@ Reinforcement Learning
 Special Examples
 =================
 
- - Distributed Training. `mnist <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_ and `imagenet <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_ by `jorgemf <https://github.com/jorgemf>`_.
+ - Distributed Training. `mnist <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_ and `imagenet <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_ by `jorgemf <https://github.com/jorgemf>`__.
  - Merge TF-Slim into TensorLayer. `tutorial_inceptionV3_tfslim.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_.
  - Merge Keras into TensorLayer. `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/zsdonghao/tensorlayer/tree/master/example>`_ and `tutorial_cifar10_tfrecord.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
  - Data augmentation with TensorLayer, see `tutorial_image_preprocess.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`_.
  - TensorDB by `fangde <https://github.com/fangde>`_ see `here <https://github.com/akaraspt/tl_paper>`_.
- - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`_.
+ - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`__.
  - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_float16.py>`_.
 
 ..

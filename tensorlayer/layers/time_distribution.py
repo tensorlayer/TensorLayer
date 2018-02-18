@@ -11,25 +11,26 @@ from .core import *
 class TimeDistributedLayer(Layer):
     """
     The :class:`TimeDistributedLayer` class that applies a function to every timestep of the input tensor.
-    For example, if using :class:`DenseLayer` as the ``layer_class``, inputs [batch_size , length, dim]
-    outputs [batch_size , length, new_dim].
+    For example, if use :class:`DenseLayer` as the `layer_class`, we input (batch_size, length, dim) and
+    output (batch_size , length, new_dim).
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer, [batch_size , length, dim]
+    layer : :class:`Layer`
+        Previous layer with output size of (batch_size, length, dim).
     layer_class : a :class:`Layer` class
+        The layer class name.
     args : dictionary
         The arguments for the ``layer_class``.
-    name : a string or None
-        An optional name to attach to this layer.
+    name : str
+        A unique layer name.
 
     Examples
     --------
     >>> batch_size = 32
     >>> timestep = 20
     >>> input_dim = 100
-    >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep,  input_dim], name="encode_seqs")
+    >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
     >>> net = InputLayer(x, name='input')
     >>> net = TimeDistributedLayer(net, layer_class=DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')
     ... [TL] InputLayer  input: (32, 20, 100)
@@ -40,11 +41,12 @@ class TimeDistributedLayer(Layer):
     ... param   0: (100, 50)          time_dense/dense/W:0
     ... param   1: (50,)              time_dense/dense/b:0
     ... num of params: 5050
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             layer_class=None,
             args={},
             name='time_distributed',

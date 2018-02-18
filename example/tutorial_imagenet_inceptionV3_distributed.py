@@ -447,7 +447,7 @@ if __name__ == '__main__':
         if args.with_evaluator:
             # run with evaluator
             logging.info('Last worker is the evaluator')
-            task_spec = task_spec.user_last_worker_as_evaluator()
+            task_spec = task_spec.use_last_worker_as_evaluator()
 
         if task_spec.is_evaluator():
             run_evaluator(task_spec, CHECKPOINTS_PATH, batch_size=args.batch_size)

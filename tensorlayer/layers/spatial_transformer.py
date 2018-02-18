@@ -8,33 +8,42 @@ from . import cost, files, iterate, ops, utils, visualize
 from .core import *
 
 
-def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs):
-    """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_
+def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
+    """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__
     , see :class:`SpatialTransformer2dAffineLayer` class.
 
     Parameters
     ----------
-    U : float
+    U : list of float
         The output of a convolutional net should have the
         shape [num_batch, height, width, num_channels].
     theta: float
         The output of the localisation network should be [num_batch, 6], value range should be [0, 1] (via tanh).
-    out_size: tuple of two ints
+    out_size: tuple of int
         The size of the output of the network (height, width)
+    name: str
+        Optional function name
+
+    Returns
+    -------
+    Tensor
+        The transformed tensor.
 
     References
     ----------
-    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_
-    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`_
+    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`__
+    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
 
     Notes
     -----
-    - To initialize the network to the identity transform init.
+    To initialize the network to the identity transform init.
+
     >>> ``theta`` to
     >>> identity = np.array([[1., 0., 0.],
     ...                      [0., 1., 0.]])
     >>> identity = identity.flatten()
     >>> theta = tf.Variable(initial_value=identity)
+
     """
 
     def _repeat(x, n_repeats):
@@ -164,18 +173,24 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine', **kwargs)
 
 
 def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine'):
-    """Batch Spatial Transformer function for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_.
+    """Batch Spatial Transformer function for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__.
 
     Parameters
     ----------
-    U : float
+    U : list of float
         tensor of inputs [batch, height, width, num_channels]
-    thetas : float
+    thetas : list of float
         a set of transformations for each input [batch, num_transforms, 6]
-    out_size : int
+    out_size : list of int
         the size of the output [out_height, out_width]
-    Returns: float
+    name : str
+        optional function name
+
+    Returns
+    ------
+    float
         Tensor of size [batch * num_transforms, out_height, out_width, num_channels]
+
     """
     with tf.variable_scope(name):
         num_batch, num_transforms = map(int, thetas.get_shape().as_list()[:2])
@@ -185,22 +200,26 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
 
 
 class SpatialTransformer2dAffineLayer(Layer):
-    """The :class:`SpatialTransformer2dAffineLayer` class is a
-    `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`_ for
-    `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_.
+    """The :class:`SpatialTransformer2dAffineLayer` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`__ for
+    `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__.
 
     Parameters
     -----------
-    layer : a layer class with 4-D Tensor of shape [batch, height, width, channels]
-    theta_layer : a layer class for the localisation network.
-        In this layer, we will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
-    out_size : tuple of two ints.
+    layer : :class:`Layer`
+        Previous layer.
+    theta_layer : :class:`Layer`
+        The localisation network.
+        - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
+    out_size : tuple of int
         The size of the output of the network (height, width), the feature maps will be resized by this.
+    name : str
+        A unique layer name.
 
     References
     -----------
-    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_
-    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`_
+    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`__
+    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
+
     """
 
     def __init__(

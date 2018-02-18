@@ -9,42 +9,30 @@ from .core import *
 
 
 class FlattenLayer(Layer):
-    """
-    The :class:`FlattenLayer` class is layer which reshape high-dimension
-    input to a vector. Then we can apply DenseLayer, RNNLayer, ConcatLayer and
-    etc on the top of it.
+    """A layer that reshapes high-dimension input to a vector.
+
+    Then we often apply DenseLayer, RNNLayer, ConcatLayer and etc on the top of a flatten layer.
 
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        Previous layer.
+    name : str
+        A unique layer name.
 
     Examples
     --------
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.Conv2dLayer(net,
-    ...                    act = tf.nn.relu,
-    ...                    shape = [5, 5, 32, 64],
-    ...                    strides=[1, 1, 1, 1],
-    ...                    padding='SAME',
-    ...                    name ='cnn_layer')
-    >>> net = tl.layers.Pool2dLayer(net,
-    ...                    ksize=[1, 2, 2, 1],
-    ...                    strides=[1, 2, 2, 1],
-    ...                    padding='SAME',
-    ...                    pool = tf.nn.max_pool,
-    ...                    name ='pool_layer',)
-    >>> net = tl.layers.FlattenLayer(net, name='flatten_layer')
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.FlattenLayer(net, name='flatten')
+
     """
 
     def __init__(
             self,
-            layer=None,
+            layer,
             name='flatten_layer',
     ):
         Layer.__init__(self, name=name)
@@ -64,17 +52,25 @@ class ReshapeLayer(Layer):
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    shape : a list
-        The output shape.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        Previous layer
+    shape : tuple of int
+        The output shape, see ``tf.reshape``.
+    name : str
+        A unique layer name.
 
     Examples
     --------
-    - The core of this layer is ``tf.reshape``.
-    - Use TensorFlow only :
+    Use TensorLayer
+
+    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.ReshapeLayer(net, (-1, 28*28), name='reshape')
+    >>> print(net.outputs)
+    ... (?, 784)
+
+    Use native TensorFlow API ``tf.reshape``
+
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()
@@ -85,12 +81,13 @@ class ReshapeLayer(Layer):
     ... [[ 4.  4.  4.]
     ... [ 5.  5.  5.]
     ... [ 6.  6.  6.]]]
+
     """
 
     def __init__(
             self,
-            layer=None,
-            shape=[],
+            layer,
+            shape,
             name='reshape_layer',
     ):
         Layer.__init__(self, name=name)
@@ -105,22 +102,23 @@ class ReshapeLayer(Layer):
 
 class TransposeLayer(Layer):
     """
-    The :class:`TransposeLayer` class transpose the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+    The :class:`TransposeLayer` class transposes the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
 
     Parameters
     ----------
-    layer : a :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    perm: list, a permutation of the dimensions
-        Similar with numpy.transpose.
-    name : a string or None
-        An optional name to attach to this layer.
+    layer : :class:`Layer`
+        Previous layer
+    perm: list of int
+        The permutation of the dimensions, similar with ``numpy.transpose``.
+    name : str
+        A unique layer name.
+
     """
 
     def __init__(
             self,
-            layer=None,
-            perm=None,
+            layer,
+            perm,
             name='transpose',
     ):
         Layer.__init__(self, name=name)

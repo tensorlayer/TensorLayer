@@ -17,10 +17,11 @@ def exit_tf(sess=None, port=6006):
 
     Parameters
     ----------
-    sess : a session instance of TensorFlow
-        TensorFlow session
-    tb_port : an integer
-        TensorBoard port you want to close, 6006 as default.
+    sess : Session
+        TensorFlow Session.
+    tb_port : int
+        TensorBoard port you want to close, `6006` as default.
+
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
@@ -49,10 +50,11 @@ def open_tb(logdir='/tmp/tensorflow', port=6006):
 
     Parameters
     ----------
-    logdir : a string
+    logdir : str
         Directory where your tensorboard logs are saved
-    port : an integer
+    port : int
         TensorBoard port you want to open, 6006 is tensorboard default
+
     """
     text = "[TL] Open tensorboard, go to localhost:" + str(port) + " to access"
     text2 = " not yet supported by this function (tl.ops.open_tb)"
@@ -83,6 +85,7 @@ def clear_all(printable=True):
     ----------
     printable : boolean
         If True, print all deleted variables.
+
     """
     logging.info('clear all .....................................')
     gl = globals().copy()
@@ -124,14 +127,15 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 
     Parameters
     ----------
-    sess : a session instance of TensorFlow
-        TensorFlow session
-    gpu_fraction : a float
+    sess : Session
+        TensorFlow Session.
+    gpu_fraction : float
         Fraction of GPU memory, (0 ~ 1]
 
     References
     ----------
-    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
+    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`__
+
     """
     logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
@@ -139,32 +143,33 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     return sess
 
 
-def setlinebuf():
-    """Set buffer mode to _IOLBF for stdout.
-    When running in container, or other environments where stdout is redirected,
-    the default buffer behavior will seriously delay the message written by `print`.
-
-    TODO: this method should be called automatically by default.
-
-    References
-    -----------
-    - `<https://docs.python.org/2/library/functions.html#open>`_
-    - `<https://docs.python.org/3/library/functions.html#open>`_
-    - `man setlinebuf <https://linux.die.net/man/3/setlinebuf>`_
-    """
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
+# def setlinebuf():
+#     """Set buffer mode to _IOLBF for stdout.
+#     When running in container, or other environments where stdout is redirected,
+#     the default buffer behavior will seriously delay the message written by `print`.
+#
+#     TODO: this method should be called automatically by default.
+#
+#     References
+#     -----------
+#     - `<https://docs.python.org/2/library/functions.html#open>`__
+#     - `<https://docs.python.org/3/library/functions.html#open>`__
+#     - `man setlinebuf <https://linux.die.net/man/3/setlinebuf>`__
+#     """
+#     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
 
 
 def disable_print():
-    """Disable console output, ``suppress_stdout`` is recommended.
+    """Disable console output, ``tl.ops.suppress_stdout`` is recommended.
 
     Examples
     ---------
     >>> print("You can see me")
     >>> tl.ops.disable_print()
-    >>> print(" You can't see me")
+    >>> print("You can't see me")
     >>> tl.ops.enable_print()
     >>> print("You can see me")
+
     """
     # sys.stdout = os.devnull   # this one kill the process
     sys.stdout = None
@@ -172,11 +177,10 @@ def disable_print():
 
 
 def enable_print():
-    """Enable console output, ``suppress_stdout`` is recommended.
+    """Enable console output.
 
-    Examples
-    --------
-    - see tl.ops.disable_print()
+    see ``tl.ops.disable_print()``
+
     """
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
@@ -216,7 +220,8 @@ def suppress_stdout():
 
     References
     -----------
-    - `stackoverflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`_
+    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`__
+
     """
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
@@ -233,6 +238,7 @@ def get_site_packages_directory():
     Examples
     ---------
     >>> loc = tl.ops.get_site_packages_directory()
+
     """
     import site
     try:
@@ -245,9 +251,7 @@ def get_site_packages_directory():
 
 
 def empty_trash():
-    """Empty trash folder.
-
-    """
+    """Empty trash folder."""
     text = "[TL] Empty the trash"
     if _platform == "linux" or _platform == "linux2":
         logging.info('linux: %s' % text)
@@ -267,6 +271,3 @@ def empty_trash():
             pass
     else:
         logging.info(_platform)
-
-
-#
