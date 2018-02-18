@@ -1614,6 +1614,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     ...                                             url_source='http://sceneparsing.csail.mit.edu/data/',
     ...                                             extract=True)
     """
+
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
@@ -1669,6 +1670,7 @@ def natural_keys(text):
     ----------
     - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`_
     """
+
     # - alist.sort(key=natural_keys) sorts in human order
     # http://nedbatchelder.com/blog/200712/human_sorting.html
     # (See Toothy's implementation in the comments)
