@@ -319,8 +319,10 @@ class BiRNNLayer(Layer):
             self,
             layer,
             cell_fn,
-            cell_init_args={'use_peepholes': True,
-                            'state_is_tuple': True},
+            cell_init_args={
+                'use_peepholes': True,
+                'state_is_tuple': True
+            },
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
