@@ -16,11 +16,11 @@ from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
 from . import _logging as logging
 
-# Iteration functions
-
 
 def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_index=0):
-    """Generate a training batch for the Skip-Gram model, see `Word2Vec example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_word2vec_basic.py>`_.
+    """Generate a training batch for the Skip-Gram model.
+
+    See `Word2Vec example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_word2vec_basic.py>`_.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
         Index of the context location. This code use `data_index` to instead of yield like ``tl.iterate``.
 
     Returns
-    --------
+    -------
     batch : list of data
         Inputs.
     labels : list of data
@@ -46,8 +46,9 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
 
     Examples
     --------
-    - Setting num_skips=2, skip_window=1, use the right and left words.
-     In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
+    Setting num_skips=2, skip_window=1, use the right and left words.
+    In the same way, num_skips=4, skip_window=2 means use the nearby 4 words.
+
     >>> data = [1,2,3,4,5,6,7,8,9,10,11]
     >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     >>> print(batch)
@@ -89,7 +90,6 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     return batch, labels, data_index
 
 
-# Sampling functions
 def sample(a=[], temperature=1.0):
     """Sample an index from a probability array.
 
@@ -192,8 +192,8 @@ class SimpleVocabulary(object):
 
 
 class Vocabulary(object):
-    """Create Vocabulary class from a given vocabulary and its id-word, word-id convert,
-    see create_vocab() and ``tutorial_tfrecord3.py``.
+    """Create Vocabulary class from a given vocabulary and its id-word, word-id convert.
+    See create_vocab() and ``tutorial_tfrecord3.py``.
 
     Parameters
     -----------
@@ -223,7 +223,8 @@ class Vocabulary(object):
 
     Examples
     -------------
-    - The vocab file looks like follow, includes `start_word` , `end_word` ...
+    The vocab file looks like follow, includes `start_word` , `end_word` ...
+
     >>> a 969108
     >>> <S> 586368
     >>> </S> 586368
@@ -307,7 +308,7 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     Returns
     ---------
     process_sentence : list of str
-        A list of strings that seperated into words.
+        A list of strings that separated into words.
 
     Examples
     -----------
@@ -356,12 +357,13 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
 
     Returns
     --------
-    object : :class:`SimpleVocabulary`
+    :class:`SimpleVocabulary`
         The simple vocabulary object, see :class:`Vocabulary` for more.
 
     Examples
     --------
-    - Preprocess sentences
+    Pre-process sentences
+
     >>> captions = ["one two , three", "four five five"]
     >>> processed_capts = []
     >>> for c in captions:
@@ -370,14 +372,16 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     >>> print(processed_capts)
     ...[['<S>', 'one', 'two', ',', 'three', '</S>'], ['<S>', 'four', 'five', 'five', '</S>']]
 
-    - Create vocabulary
+    Create vocabulary
+
     >>> tl.nlp.create_vocab(processed_capts, word_counts_output_file='vocab.txt', min_word_count=1)
     ... Creating vocabulary.
     ...   Total words: 8
     ...   Words in vocabulary: 8
     ...   Wrote vocabulary file: vocab.txt
 
-    - Get vocabulary object
+    Get vocabulary object
+
     >>> vocab = tl.nlp.Vocabulary('vocab.txt', start_word="<S>", end_word="</S>", unk_word="<UNK>")
     ... INFO:tensorflow:Initializing vocabulary from file: vocab.txt
     ... [TL] Vocabulary from vocab.txt : <S> </S> <UNK>
@@ -485,7 +489,8 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
 
     Examples
     ---------
-    - The file should be in this format
+    The file should be in this format
+
     >>> : capital-common-countries
     >>> Athens Greece Baghdad Iraq
     >>> Athens Greece Bangkok Thailand
@@ -497,7 +502,8 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     >>> Athens Greece Hanoi Vietnam
     >>> Athens Greece Havana Cuba
 
-    - Get the tokenized analogy question data
+    Get the tokenized analogy question data
+
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
     >>> analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
@@ -1013,7 +1019,8 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):
 
     Returns
     --------
-    - The BLEU score as a float32 value.
+    float
+        The BLEU score
 
     References
     ----------
