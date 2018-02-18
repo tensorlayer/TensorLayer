@@ -5,7 +5,8 @@ python:
   - "3.5"
   # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
 install:
-  - pip install tensorflow yapf pydocstyle
+  - pip install tensorflow
+  - pip install -r tests/requirements.txt
   - pip install .
 script:
   # units test
