@@ -1,4 +1,36 @@
 # -*- coding: utf-8 -*-
+"""
+A collections of helper functions to work with dataset.
+
+Load benchmark dataset, save and restore model, save and load variables.
+TensorFlow provides ``.ckpt`` file format to save and restore the models, while
+we suggest to use standard python file format ``.npz`` to save models for the
+sake of cross-platform.
+
+.. code-block:: python
+
+  ## save model as .ckpt
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "model.ckpt")
+  # restore model from .ckpt
+  saver = tf.train.Saver()
+  saver.restore(sess, "model.ckpt")
+
+  ## save model as .npz
+  tl.files.save_npz(network.all_params , name='model.npz')
+  # restore model from .npz (method 1)
+  load_params = tl.files.load_npz(name='model.npz')
+  tl.files.assign_params(sess, load_params, network)
+  # restore model from .npz (method 2)
+  tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
+
+  ## you can assign the pre-trained parameters as follow
+  # 1st parameter
+  tl.files.assign_params(sess, [load_params[0]], network)
+  # the first three parameters
+  tl.files.assign_params(sess, load_params[:3], network)
+
+"""
 
 import gzip
 import os
@@ -712,7 +744,9 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
 
 
 def download_file_from_google_drive(id, destination):
-    """Download file from Google Drive, see ``tl.files.load_celebA_dataset`` for example.
+    """Download file from Google Drive.
+
+    See ``tl.files.load_celebA_dataset`` for example.
 
     Parameters
     --------------
@@ -856,6 +890,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
     def _recursive_parse_xml_to_dict(xml):
         """Recursively parses XML contents to python dict.
+
         We assume that `object` tags are the only ones that can appear
         multiple times at the same level of a tree.
 
@@ -1255,6 +1290,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
 ## Load and save network dict npz
 def save_npz_dict(save_list=[], name='model.npz', sess=None):
     """Input parameters and the file name, save parameters as a dictionary into .npz file.
+
     Use ``tl.files.load_and_assign_npz_dict()`` to restore.
 
     Parameters
