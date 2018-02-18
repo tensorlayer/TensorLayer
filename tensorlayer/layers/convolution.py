@@ -787,7 +787,8 @@ class DeformableConv2dLayer(Layer):
         self.all_layers.extend([self.outputs])
         self.all_params.extend([W, b])
 
-class _DeformableConv2d(DeformableConv2dLayer): # TODO
+
+class _DeformableConv2d(DeformableConv2dLayer):  # TODO
     """Simplified version of :class:`DeformableConv2dLayer`, see
     `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
 
@@ -816,18 +817,20 @@ class _DeformableConv2d(DeformableConv2dLayer): # TODO
     name : str
         A unique layer name.
     """
-    def __init__(self,
-                 layer,
-                 act=tf.identity,
-                 offset_layer=None,
-                 # shape=(3, 3, 1, 100),
-                 n_filter=32,
-                 filter_size=(3, 3),
-                 name='deformable_conv_2d_layer',
-                 W_init=tf.truncated_normal_initializer(stddev=0.02),
-                 b_init=tf.constant_initializer(value=0.0),
-                 W_init_args={},
-                 b_init_args={}):
+
+    def __init__(
+            self,
+            layer,
+            act=tf.identity,
+            offset_layer=None,
+            # shape=(3, 3, 1, 100),
+            n_filter=32,
+            filter_size=(3, 3),
+            name='deformable_conv_2d_layer',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args={},
+            b_init_args={}):
 
         try:
             pre_channel = int(layer.outputs.get_shape()[-1])
@@ -836,15 +839,8 @@ class _DeformableConv2d(DeformableConv2dLayer): # TODO
             logging.info("[warnings] unknow input channels, set to 1")
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
 
-        DeformableConv2dLayer.__init__(self,
-                 act=act,
-                 offset_layer=offset_layer,
-                 shape=shape,
-                 name=name,
-                 W_init=W_init,
-                 b_init=b_init,
-                 W_init_args=W_init_args,
-                 b_init_args=b_init_args)
+        DeformableConv2dLayer.__init__(
+            self, act=act, offset_layer=offset_layer, shape=shape, name=name, W_init=W_init, b_init=b_init, W_init_args=W_init_args, b_init_args=b_init_args)
 
 
 def atrous_conv1d(
@@ -982,7 +978,7 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend([filters])
 
 
-class _SeparableConv2dLayer(Layer): # TODO
+class _SeparableConv2dLayer(Layer):  # TODO
     """The :class:`SeparableConv2dLayer` class is 2D convolution with separable filters, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`__.
 
     This layer has not been fully tested yet.
