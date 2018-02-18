@@ -39,39 +39,48 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     Parameters
     -----------
-    data : numpy array, file names and etc, see Examples below.
-    thread_count : the number of threads to use
-    fn : the function for data processing.
-    more args : the args for fn, see Examples below.
+    data : numpy.array or others
+        The data to be processed.
+    thread_count : int
+        The number of threads to use.
+    fn : function
+        The function for data processing.
+    more args : the args for `fn`
+        Ssee Examples below.
 
     Examples
     --------
-    - Single array
-    >>> X --> [batch_size, row, col, 1] greyscale
-    >>> results = threading_data(X, zoom, zoom_range=[0.5, 1], is_random=True)
-    ... results --> [batch_size, row, col, channel]
-    >>> tl.visualize.images2d(images=np.asarray(results), second=0.01, saveable=True, name='after', dtype=None)
-    >>> tl.visualize.images2d(images=np.asarray(X), second=0.01, saveable=True, name='before', dtype=None)
+    - Process images.
+    >>> images, _, _, _ = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3))
+    >>> images = tl.prepro.threading_data(images[0:32], tl.prepro.zoom, zoom_range=[0.5, 1])
 
-    - List of array (e.g. functions with ``multi``)
-    >>> X, Y --> [batch_size, row, col, 1]  greyscale
-    >>> data = threading_data([_ for _ in zip(X, Y)], zoom_multi, zoom_range=[0.5, 1], is_random=True)
+    - Customized image preprocessing function.
+    >>> def distort_img(x):
+    ...     x = tl.prepro.flip_axis(x, axis=0, is_random=True)
+    ...     x = tl.prepro.flip_axis(x, axis=1, is_random=True)
+    ...     x = tl.prepro.crop(x, 100, 100, is_random=True)
+    ...     return x
+    >>> images = tl.prepro.threading_data(images, distort_img)
+
+    - Process images and masks together.
+    >>> X, Y --> [batch_size, row, col, 1]
+    >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], tl.prepro.zoom_multi, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
     ... X_, Y_ --> [batch_size, row, col, 1]
-    >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
-    >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
+    >>> tl.vis.save_image(X_, 'images.png')
+    >>> tl.vis.save_image(Y_, 'masks.png')
 
-    - Single array split across ``thread_count`` threads (e.g. functions with ``multi``)
-    >>> X, Y --> [batch_size, row, col, 1]  greyscale
-    >>> data = threading_data(X, zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
+    - Process images and masks together, using ``thread_count`` threads.
+    >>> X, Y --> [batch_size, row, col, 1]
+    >>> data = tl.prepro.threading_data(X, tl.prepro.zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
     ... data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
     ... X_, Y_ --> [batch_size, row, col, 1]
-    >>> tl.visualize.images2d(images=np.asarray(X_), second=0.01, saveable=True, name='after', dtype=None)
-    >>> tl.visualize.images2d(images=np.asarray(Y_), second=0.01, saveable=True, name='before', dtype=None)
+    >>> tl.vis.save_image(X_, 'after.png')
+    >>> tl.vis.save_image(Y_, 'before.png')
 
-    - Customized function for image segmentation
+    - Customized function for processing images and masks together.
     >>> def distort_img(data):
     ...     x, y = data
     ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
@@ -79,7 +88,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     ...     x, y = crop_multi([x, y], 100, 100, is_random=True)
     ...     return x, y
     >>> X, Y --> [batch_size, row, col, channel]
-    >>> data = threading_data([_ for _ in zip(X, Y)], distort_img)
+    >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], distort_img)
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
 
     References
@@ -87,6 +96,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
     - `run with limited queue <http://effbot.org/librarybook/queue.htm>`_
     """
+
     ## plot function info
     # for name, value in kwargs.items():
     #     logging.info('{0} = {1}'.format(name, value))
@@ -132,30 +142,28 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     rg : int or float
         Degree to rotate, usually 0 ~ 180.
-    is_random : boolean, default False
-        If True, randomly rotate.
-    row_index, col_index, channel_index : int
+    is_random : boolean
+        If True, randomly rotate. Default is False
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
-        Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-    order : int, optional
-        The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-
+    cval : float
+        Value used for points outside the boundaries of the input if mode=`constant`. Default is 0.0
+    order : int
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     Examples
     ---------
-    >>> x --> [row, col, 1] greyscale
-    >>> x = rotation(x, rg=40, is_random=False)
-    >>> tl.visualize.frame(x[:,:,0], second=0.01, saveable=True, name='temp',cmap='gray')
+    >>> x --> [row, col, 1]
+    >>> x = tl.prepro.rotation(x, rg=40, is_random=False)
+    >>> tl.vis.save_image(x, 'im.png')
     """
     if is_random:
         theta = np.pi / 180 * np.random.uniform(-rg, rg)
@@ -175,16 +183,15 @@ def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``rotation``.
+    others : args
+        See ``tl.prepro.rotation``.
 
     Examples
     --------
     >>> x, y --> [row, col, 1]  greyscale
-    >>> x, y = rotation_multi([x, y], rg=90, is_random=False)
-    >>> tl.visualize.frame(x[:,:,0], second=0.01, saveable=True, name='x',cmap='gray')
-    >>> tl.visualize.frame(y[:,:,0], second=0.01, saveable=True, name='y',cmap='gray')
+    >>> x, y = tl.prepro.rotation_multi([x, y], rg=90, is_random=False)
     """
     if is_random:
         theta = np.pi / 180 * np.random.uniform(-rg, rg)
@@ -206,15 +213,15 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
 
     Parameters
     ----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     wrg : int
         Size of width.
     hrg : int
         Size of height.
-    is_random : boolean, default False
-        If True, randomly crop, else central crop.
-    row_index, col_index, channel_index : int
+    is_random : boolean,
+        If True, randomly crop, else central crop. Default is False.
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     """
     h, w = x.shape[row_index], x.shape[col_index]
@@ -243,9 +250,10 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_i
 
     Parameters
     ----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``crop``.
+    others : args
+        See ``tl.prepro.crop``.
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -272,14 +280,15 @@ def flip_axis(x, axis=1, is_random=False):
 
     Parameters
     ----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     axis : int
+        Which axis to flip.
         - 0, flip up and down
         - 1, flip left and right
         - 2, flip channel
-    is_random : boolean, default False
-        If True, randomly flip.
+    is_random : boolean
+        If True, randomly flip. Default is False.
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -302,9 +311,10 @@ def flip_axis_multi(x, axis, is_random=False):
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``flip_axis``.
+    others : args
+        See ``tl.prepro.flip_axis``.
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -342,25 +352,23 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     wrg : float
         Percentage of shift in axis x, usually -0.25 ~ 0.25.
     hrg : float
         Percentage of shift in axis y, usually -0.25 ~ 0.25.
-    is_random : boolean, default False
-        If True, randomly shift.
-    row_index, col_index, channel_index : int
+    is_random : boolean
+        If True, randomly shift. Default is False.
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
+    cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int, optional
+    order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     """
     h, w = x.shape[row_index], x.shape[col_index]
@@ -382,9 +390,10 @@ def shift_multi(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, 
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``shift``.
+    others : args
+        See ``tl.prepro.shift``.
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     if is_random:
@@ -407,24 +416,22 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     intensity : float
         Percentage of shear, usually -0.5 ~ 0.5 (is_random==True), 0 ~ 0.5 (is_random==False),
         you can have a quick try by shear(X, 1).
-    is_random : boolean, default False
-        If True, randomly shear.
-    row_index, col_index, channel_index : int
+    is_random : boolean
+        If True, randomly shear. Default is False.
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
+    cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int, optional
+    order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     References
@@ -449,9 +456,10 @@ def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, cha
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``tl.prepro.shear``.
+    others : args
+        See ``tl.prepro.shear``.
     """
     if is_random:
         shear = np.random.uniform(-intensity, intensity)
@@ -472,23 +480,21 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     shear : tuple of two floats
         Percentage of shear for height and width direction (0, 1).
-    is_random : boolean, default False
-        If True, randomly shear.
-    row_index, col_index, channel_index : int
+    is_random : boolean,
+        If True, randomly shear. Default is False.
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
+    cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int, optional
+    order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     References
@@ -514,9 +520,10 @@ def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1,
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``tl.prepro.shear2``.
+    others : args
+        See ``tl.prepro.shear2``.
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
     if is_random:
@@ -551,39 +558,40 @@ def swirl(x,
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    center : (row, column) tuple or (2,) ndarray, optional
-        Center coordinate of transformation.
-    strength : float, optional
+    center : tuple or 2 int or None
+        Center coordinate of transformation (optional).
+    strength : float
         The amount of swirling applied.
-    radius : float, optional
+    radius : float
         The extent of the swirl in pixels. The effect dies out rapidly beyond radius.
-    rotation : float, (degree) optional
+    rotation : float
         Additional rotation applied to the image, usually [0, 360], relates to center.
-    output_shape : tuple (rows, cols), optional
-        Shape of the output image generated. By default the shape of the input image is preserved.
+    output_shape : tuple of 2 int or None
+        Shape of the output image generated (height, width). By default the shape of the input image is preserved.
     order : int, optional
         The order of the spline interpolation, default is 1. The order has to be in the range 0-5. See skimage.transform.warp for detail.
-    mode : {‘constant’, ‘edge’, ‘symmetric’, ‘reflect’, ‘wrap’}, optional
-        Points outside the boundaries of the input are filled according to the given mode, with ‘constant’ used as the default. Modes match the behaviour of numpy.pad.
-    cval : float, optional
-        Used in conjunction with mode ‘constant’, the value outside the image boundaries.
-    clip : bool, optional
+    mode : str
+        One of `constant` (default), `edge`, `symmetric` `reflect` and `wrap`.
+        Points outside the boundaries of the input are filled according to the given mode, with `constant` used as the default. Modes match the behaviour of numpy.pad.
+    cval : float
+        Used in conjunction with mode `constant`, the value outside the image boundaries.
+    clip : boolean
         Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
-    preserve_range : bool, optional
+    preserve_range : boolean
         Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
-    is_random : boolean, default False
-        If True, random swirl.
-            - random center = [(0 ~ x.shape[0]), (0 ~ x.shape[1])]
-            - random strength = [0, strength]
-            - random radius = [1e-10, radius]
-            - random rotation = [-rotation, rotation]
+    is_random : boolean,
+        If True, random swirl. Default is False.
+        - random center = [(0 ~ x.shape[0]), (0 ~ x.shape[1])]
+        - random strength = [0, strength]
+        - random radius = [1e-10, radius]
+        - random rotation = [-rotation, rotation]
 
     Examples
     ---------
     >>> x --> [row, col, 1] greyscale
-    >>> x = swirl(x, strength=4, radius=100)
+    >>> x = tl.prepro.swirl(x, strength=4, radius=100)
     """
     assert radius != 0, Exception("Invalid radius value")
     rotation = np.pi / 180 * rotation
@@ -632,9 +640,10 @@ def swirl_multi(x,
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``swirl``.
+    others : args
+        See ``tl.prepro.swirl``.
     """
     assert radius != 0, Exception("Invalid radius value")
     rotation = np.pi / 180 * rotation
@@ -673,21 +682,26 @@ def swirl_multi(x,
 
 
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_ .
+    """Elastic transformation for image as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_ .
 
     Parameters
     -----------
-    x : numpy array, a greyscale image.
-    alpha : scalar factor.
-    sigma : scalar or sequence of scalars, the smaller the sigma, the more transformation.
-        Standard deviation for Gaussian kernel. The standard deviations of the Gaussian filter are given for each axis as a sequence, or as a single number, in which case it is equal for all axes.
-    mode : default constant, see `scipy.ndimage.filters.gaussian_filter <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.filters.gaussian_filter.html>`_.
-    cval : float, optional. Used in conjunction with mode ‘constant’, the value outside the image boundaries.
-    is_random : boolean, default False
+    x : numpy.array
+        A greyscale image.
+    alpha : float
+        Alpha value for elastic transformation.
+    sigma : float or sequence of float
+        The smaller the sigma, the more transformation. Standard deviation for Gaussian kernel. The standard deviations of the Gaussian filter are given for each axis as a sequence, or as a single number, in which case it is equal for all axes.
+    mode : str
+        See `scipy.ndimage.filters.gaussian_filter <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.filters.gaussian_filter.html>`_, Default is `constant`.
+    cval : float,
+        Used in conjunction with `mode` of `constant`, the value outside the image boundaries.
+    is_random : boolean
+        Default is False.
 
     Examples
     ---------
-    >>> x = elastic_transform(x, alpha = x.shape[1] * 3, sigma = x.shape[1] * 0.07)
+    >>> x = tl.prepro.elastic_transform(x, alpha=x.shape[1]*3, sigma=x.shape[1]*0.07)
 
     References
     ------------
@@ -721,12 +735,14 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
 
 
 def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic deformation of images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_.
+    """Elastic transformation for images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_.
 
     Parameters
     -----------
-    x : list of numpy array
-    others : see ``elastic_transform``.
+    x : list of numpy.array
+        List of greyscale images.
+    others : args
+        See ``tl.prepro.elastic_transform``.
     """
     if is_random is False:
         random_state = np.random.RandomState(None)
@@ -767,25 +783,23 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     zoom_range : list or tuple
+        Zoom range for height and width.
         - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-        - If is_random=True, it is (min zoom out, max zoom out) for x and y with different random zoom in/out factor.
-        e.g (0.5, 1) zoom in 1~2 times.
-    is_random : boolean, default False
-        If True, randomly zoom.
-    row_index, col_index, channel_index : int
+        - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
+    is_random : boolean
+        If True, randomly zoom. Default is False.
+    row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’.
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
+    cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
-    order : int, optional
-        The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-
+    order : int
+        The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
     """
     if len(zoom_range) != 2:
@@ -813,9 +827,10 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``zoom``.
+    others : args
+        See ``tl.prepro.zoom``.
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -853,16 +868,16 @@ def brightness(x, gamma=1, gain=1, is_random=False):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    gamma : float, small than 1 means brighter.
-        Non negative real number. Default value is 1, smaller means brighter.
-
-        - If is_random is True, gamma in a range of (1-gamma, 1+gamma).
+    gamma : float
+        Non negative real number. Default value is 1.
+        - Small than 1 means brighter.
+        - If `is_random` is True, gamma in a range of (1-gamma, 1+gamma).
     gain : float
         The constant multiplier. Default value is 1.
-    is_random : boolean, default False
-        - If True, randomly change brightness.
+    is_random : boolean
+        - If True, randomly change brightness. Default is False.
 
     References
     -----------
@@ -881,9 +896,10 @@ def brightness_multi(x, gamma=1, gain=1, is_random=False):
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpyarray
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``brightness``.
+    others : args
+        See ``tl.prepro.brightness``.
     """
     if is_random:
         gamma = np.random.uniform(1 - gamma, 1 + gamma)
@@ -900,25 +916,30 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
 
     Parameters
     -----------
-    x : numpy array
-        an image with dimension of [row, col, channel] (default).
-    gamma : change brightness (the same with ``tl.prepro.brightness``)
+    x : numpy.array
+        An image with dimension of [row, col, channel] (default).
+    gamma : float
+        Change brightness (the same with ``tl.prepro.brightness``)
         - if is_random=False, one float number, small than one means brighter, greater than one means darker.
         - if is_random=True, tuple of two float numbers, (min, max).
-    contrast : change contrast
+    contrast : float
+        Change contrast.
         - if is_random=False, one float number, small than one means blur.
         - if is_random=True, tuple of two float numbers, (min, max).
-    saturation : change saturation
+    saturation : float
+        Change saturation.
         - if is_random=False, one float number, small than one means unsaturation.
         - if is_random=True, tuple of two float numbers, (min, max).
-    is_random : whether the parameters are randomly set.
+    is_random : boolean
+        Whether the parameters are randomly set.
 
     Examples
     ---------
     - Random
-    >>> x = illumination(x, gamma=(0.5, 5.0), contrast=(0.3, 1.0), saturation=(0.7, 1.0), is_random=True)
+    >>> x = tl.prepro.illumination(x, gamma=(0.5, 5.0), contrast=(0.3, 1.0), saturation=(0.7, 1.0), is_random=True)
+
     - Non-random
-    >>> x = illumination(x, 0.5, 0.6, 0.8, is_random=False)
+    >>> x = tl.prepro.illumination(x, 0.5, 0.6, 0.8, is_random=False)
     """
     from PIL import Image, ImageEnhance
 
@@ -963,8 +984,9 @@ def rgb_to_hsv(rgb):
     """Input RGB image [0~255] return HSV image [0~1].
 
     Parameters
-    -------------
-    rgb : should be a numpy arrays with values between 0 and 255.
+    ------------
+    rgb : numpy.array
+        An image with values between 0 and 255.
     """
     # Translated from source of colorsys.rgb_to_hsv
     # r,g,b should be a numpy arrays with values between 0 and 255
@@ -995,7 +1017,8 @@ def hsv_to_rgb(hsv):
 
     Parameters
     -------------
-    hsv : should be a numpy arrays with values between 0.0 and 1.0
+    hsv : numpy.array
+        An image with values between 0.0 and 1.0
     """
     # Translated from source of colorsys.hsv_to_rgb
     # h,s should be a numpy arrays with values between 0.0 and 1.0
@@ -1023,14 +1046,17 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
 
     Parameters
     -----------
-    im : should be a numpy arrays with values between 0 and 255.
-    hout : float.
+    im : numpy.array
+        An image with values between 0 and 255.
+    hout : float
         - If is_offset is False, set all hue values to this value. 0 is red; 0.33 is green; 0.66 is blue.
         - If is_offset is True, add this value as the offset to the hue channel.
-    is_offset : boolean, default True.
-    is_clip : boolean, default True.
-        - If True, set negative hue values to 0.
-    is_random : boolean, default False.
+    is_offset : boolean
+        Whether `hout` is added on HSV as offset or not. Default is True.
+    is_clip : boolean
+        If HSV value smaller than 0, set to 0. Default is True.
+    is_random : boolean
+        Whether change HSV randomly. Default is False.
 
     Examples
     ---------
@@ -1080,21 +1106,14 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    size : int, float or tuple (h, w)
-        - int, Percentage of current size.
-        - float, Fraction of current size.
-        - tuple, Size of the output image.
-    interp : str, optional
-        Interpolation to use for re-sizing (‘nearest’, ‘lanczos’, ‘bilinear’, ‘bicubic’ or ‘cubic’).
-    mode : str, optional
-        The PIL image mode (‘P’, ‘L’, etc.) to convert arr before resizing.
-
-    Returns
-    --------
-    imresize : ndarray
-    The resized array of image.
+    size : list of 2 int
+        For height and width.
+    interp : str
+        Interpolation method for re-sizing (`nearest`, `lanczos`, `bilinear`, `bicubic` (default) or `cubic`).
+    mode : str
+        The PIL image mode (`P`, `L`, etc.) to convert arr before resizing.
 
     References
     ------------
@@ -1117,8 +1136,10 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
 
     Parameters
     -----------
-    im : numpy array for one image.
-    val : float.
+    im : numpy.array
+        An image.
+    val : float
+        Degree of value change.
         - If is_random=False, multiply this value with all pixels.
         - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
 
@@ -1148,13 +1169,16 @@ def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_nor
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    rescale : rescaling factor.
-            If None or 0, no rescaling is applied, otherwise we multiply the data by the value provided (before applying any other transformation)
-    samplewise_center : set each sample mean to 0.
-    samplewise_std_normalization : divide each input by its std.
-    epsilon : small position value for dividing standard deviation.
+    rescale : float
+        Rescaling factor. If None or 0, no rescaling is applied, otherwise we multiply the data by the value provided (before applying any other transformation)
+    samplewise_center : boolean
+        If True, set each sample mean to 0.
+    samplewise_std_normalization : boolean
+        If True, divide each input by its std.
+    epsilon : float
+        A small position value for dividing standard deviation.
 
     Examples
     --------
@@ -1165,7 +1189,6 @@ def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_nor
     Notes
     ------
     When samplewise_center and samplewise_std_normalization are True.
-
     - For greyscale image, every pixels are subtracted and divided by the mean and std of whole image.
     - For RGB image, every pixels are subtracted and divided by the mean and std of this pixel i.e. the mean and std of a pixel is 0 and 1.
     """
@@ -1196,11 +1219,14 @@ def featurewise_norm(x, mean=None, std=None, epsilon=1e-7):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    mean : value for subtraction.
-    std : value for division.
-    epsilon : small position value for dividing standard deviation.
+    mean : float
+        Value for subtraction.
+    std : float
+        Value for division.
+    epsilon : float
+        A small position value for dividing standard deviation.
     """
     if mean:
         x = x - mean
@@ -1215,8 +1241,8 @@ def get_zca_whitening_principal_components_img(X):
 
     Parameters
     -----------
-    x : numpy array
-        Batch of image with dimension of [n_example, row, col, channel] (default).
+    x : numpy.array
+        Batch of images with dimension of [n_example, row, col, channel] (default).
     """
     flatX = np.reshape(X, (X.shape[0], X.shape[1] * X.shape[2] * X.shape[3]))
     logging.info("zca : computing sigma ..")
@@ -1233,9 +1259,10 @@ def zca_whitening(x, principal_components):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    principal_components : matrix from ``get_zca_whitening_principal_components_img``.
+    principal_components : matrix
+        Matrix from ``get_zca_whitening_principal_components_img``.
     """
     flatx = np.reshape(x, (x.size))
     # logging.info(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
@@ -1265,14 +1292,14 @@ def channel_shift(x, intensity, is_random=False, channel_index=2):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     intensity : float
         Intensity of shifting.
-    is_random : boolean, default False
-        If True, randomly shift.
+    is_random : boolean
+        If True, randomly shift. Default is False.
     channel_index : int
-        Index of channel, default 2.
+        Index of channel. Default is 2.
     """
     if is_random:
         factor = np.random.uniform(-intensity, intensity)
@@ -1299,9 +1326,10 @@ def channel_shift_multi(x, intensity, is_random=False, channel_index=2):
 
     Parameters
     -----------
-    x : list of numpy array
+    x : list of numpy.array
         List of images with dimension of [n_images, row, col, channel] (default).
-    others : see ``channel_shift``.
+    others : args
+        See ``tl.prepro.channel_shift``.
     """
     if is_random:
         factor = np.random.uniform(-intensity, intensity)
@@ -1325,10 +1353,10 @@ def drop(x, keep=0.5):
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] or [row, col].
-    keep : float (0, 1)
-        The keeping probability, the lower more values will be set to zero.
+    keep : float
+        The keeping probability (0, 1), the lower more values will be set to zero.
     """
     if len(x.shape) == 3:
         if x.shape[-1] == 3:  # color
@@ -1366,14 +1394,14 @@ def transform_matrix_offset_center(matrix, x, y):
 
     Parameters
     ----------
-    matrix : numpy array
-        Transform matrix
-    x, y : int
+    matrix : numpy.array
+        Transform matrix.
+    x and y : 2 int
         Size of image.
 
     Examples
     --------
-    - See ``rotation``, ``shear``, ``zoom``.
+    - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
     """
     o_x = float(x) / 2 + 0.5
     o_y = float(y) / 2 + 0.5
@@ -1388,33 +1416,30 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
 
     Parameters
     ----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    transform_matrix : numpy array
+    transform_matrix : numpy.array
         Transform matrix (offset center), can be generated by ``transform_matrix_offset_center``
     channel_index : int
         Index of channel, default 2.
-    fill_mode : string
-        Method to fill missing pixel, default ‘nearest’, more options ‘constant’, ‘reflect’ or ‘wrap’
-
+    fill_mode : str
+        Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
-    cval : scalar, optional
+    cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
-    order : int, optional
+    order : int
         The order of interpolation. The order has to be in the range 0-5:
-
         - 0 Nearest-neighbor
         - 1 Bi-linear (default)
         - 2 Bi-quadratic
         - 3 Bi-cubic
         - 4 Bi-quartic
         - 5 Bi-quintic
-
         - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
 
     Examples
     --------
-    - See ``rotation``, ``shift``, ``shear``, ``zoom``.
+    - See ``tl.prepro.rotation``, ``tl.prepro.shift``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
     """
     x = np.rollaxis(x, channel_index, 0)
     final_affine_matrix = transform_matrix[:2, :2]
@@ -1432,40 +1457,40 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
 
     Parameters
     -----------
-    x : numpy array
+    x : numpy.array
         An image with dimension of [row, col, channel] (default).
     src : list or numpy
         The original coordinates, usually 4 coordinates of (width, height).
     dst : list or numpy
         The coordinates after transformation, the number of coordinates is the same with src.
-    map_args : dict, optional
-        Keyword arguments passed to inverse_map.
-    output_shape : tuple (rows, cols), optional
+    map_args : dictionary
+        Keyword arguments passed to inverse map.
+    output_shape : tuple of 2 int
         Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
-    order : int, optional
+    order : int
         The order of interpolation. The order has to be in the range 0-5:
-
         - 0 Nearest-neighbor
         - 1 Bi-linear (default)
         - 2 Bi-quadratic
         - 3 Bi-cubic
         - 4 Bi-quartic
         - 5 Bi-quintic
-    mode : {‘constant’, ‘edge’, ‘symmetric’, ‘reflect’, ‘wrap’}, optional
+    mode : str
+        One of `constant` (default), `edge`, `symmetric`, `reflect` or `wrap`.
         Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
-    cval : float, optional
-        Used in conjunction with mode ‘constant’, the value outside the image boundaries.
-    clip : bool, optional
+    cval : float
+        Used in conjunction with mode `constant`, the value outside the image boundaries.
+    clip : boolean
         Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
-    preserve_range : bool, optional
+    preserve_range : boolean
         Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
 
     Examples
     --------
-    >>> Assume X is an image from CIFAR 10, i.e. shape == (32, 32, 3)
+    - Assume X is an image from CIFAR-10, i.e. shape == (32, 32, 3)
     >>> src = [[0,0],[0,32],[32,0],[32,32]]     # [w, h]
     >>> dst = [[10,10],[0,32],[32,0],[32,32]]
-    >>> x = projective_transform_by_points(X, src, dst)
+    >>> x = tl.prepro.projective_transform_by_points(X, src, dst)
 
     References
     -----------
@@ -1491,12 +1516,12 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
 
     Parameters
     ----------
-    x : numpy array
-        A image with dimension of 3 and channels of 1 or 3.
-    dim_ordering : list or tuple of 3 int
+    x : numpy.array
+        An image with dimension of 3 and channels of 1 or 3.
+    dim_ordering : tuple of 3 int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
-    scale : boolean, default is True
-        If True, converts image to [0, 255] from any range of value like [-1, 2].
+    scale : boolean
+        If True, converts image to [0, 255] from any range of value like [-1, 2]. Default is True.
 
     References
     -----------
@@ -1532,10 +1557,14 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
 
     Parameters
     ------------
-    x : 2D ndarray of double. Input data in which to find contours.
-    level : float. Value along which to find contours in the array.
-    fully_connected : str, {‘low’, ‘high’}.  Indicates whether array elements below the given level value are to be considered fully-connected (and hence elements above the value will only be face connected), or vice-versa. (See notes below for details.)
-    positive_orientation : either ‘low’ or ‘high’. Indicates whether the output contours will produce positively-oriented polygons around islands of low- or high-valued elements. If ‘low’ then contours will wind counter-clockwise around elements below the iso-value. Alternately, this means that low-valued elements are always on the left of the contour.
+    x : 2D ndarray of double.
+        Input data in which to find contours.
+    level : float
+        Value along which to find contours in the array.
+    fully_connected : str
+        Either `low` or `high`. Indicates whether array elements below the given level value are to be considered fully-connected (and hence elements above the value will only be face connected), or vice-versa. (See notes below for details.)
+    positive_orientation : str
+        Either `low` or `high`. Indicates whether the output contours will produce positively-oriented polygons around islands of low- or high-valued elements. If `low` then contours will wind counter-clockwise around elements below the iso-value. Alternately, this means that low-valued elements are always on the left of the contour.
     """
     return skimage.measure.find_contours(x, level, fully_connected='low', positive_orientation='low')
 
@@ -1545,9 +1574,12 @@ def pt2map(list_points=[], size=(100, 100), val=1):
 
     Parameters
     --------------
-    list_points : list of [x, y].
-    size : tuple of (w, h) for output size.
-    val : float or int for the contour value.
+    list_points : list of 2 int
+        [x, y] for point coordinates.
+    size : tuple of 2 int
+        (w, h) for output size.
+    val : float or int
+        For the contour value.
     """
     i_m = np.zeros(size)
     if list_points == []:
@@ -1565,8 +1597,10 @@ def binary_dilation(x, radius=3):
 
     Parameters
     -----------
-    x : 2D array image.
-    radius : int for the radius of mask.
+    x : 2D array
+        An image.
+    radius : int
+        For the radius of mask.
     """
     from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
@@ -1580,8 +1614,10 @@ def dilation(x, radius=3):
 
     Parameters
     -----------
-    x : 2D array image.
-    radius : int for the radius of mask.
+    x : 2D array
+        An image.
+    radius : int
+        For the radius of mask.
     """
     from skimage.morphology import disk, dilation
     mask = disk(radius)
@@ -1595,8 +1631,10 @@ def binary_erosion(x, radius=3):
 
     Parameters
     -----------
-    x : 2D array image.
-    radius : int for the radius of mask.
+    x : 2D array
+        An image.
+    radius : int
+        For the radius of mask.
     """
     from skimage.morphology import disk, dilation, binary_erosion
     mask = disk(radius)
@@ -1610,8 +1648,10 @@ def erosion(x, radius=3):
 
     Parameters
     -----------
-    x : 2D array image.
-    radius : int for the radius of mask.
+    x : 2D array
+        An image.
+    radius : int
+        For the radius of mask.
     """
     from skimage.morphology import disk, dilation, erosion
     mask = disk(radius)
@@ -1627,8 +1667,10 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
 
     Parameters
     ------------
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    shape : list of 2 integers for [height, width] of the image.
+    coords : list of list for 4 int
+        For coordinates of more than one images .e.g.[[x, y, w, h], [x, y, w, h], ...].
+    shape : list of 2 int
+        For [height, width].
 
     Examples
     ---------
@@ -1662,8 +1704,10 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
 
     Parameters
     ------------
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    shape : list of 2 integers for [height, width] of the image.
+    coords : list of 4 int
+        One coordinates of one image e.g. [x, y, w, h].
+    shape : list of 2 int
+        For [height, width].
 
     Examples
     ---------
@@ -1678,14 +1722,16 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
 # exit()
 
 
-def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
+def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
     """Convert one coordinate [x, y, w (or x2), h (or y2)] in ratio format to image coordinate format.
     It is the reverse process of ``obj_box_coord_rescale``.
 
     Parameters
     -----------
-    coord : list of float, [x, y, w (or x2), h (or y2)] in ratio format, i.e value range [0~1].
-    shape : tuple of (height, width, channel (optional))
+    coord : list of 4 float
+        One coordinate of one image [x, y, w (or x2), h (or y2)] in ratio format, i.e value range [0~1].
+    shape : tuple of 2
+        For [height, width].
 
     Examples
     ---------
@@ -1715,6 +1761,13 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100, 3)):
 def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
     """Convert one coordinate [x_center, y_center, w, h] to [x1, y1, x2, y2] in up-left and botton-right format.
 
+    Parameters
+    ------------
+    coord : list of 4 int/float
+        One coordinate.
+    to_int : boolean
+        Whether to convert output as integer.
+
     Examples
     ---------
     >>> coord = obj_box_coord_centroid_to_upleft_butright([30, 40, 20, 20])
@@ -1740,6 +1793,11 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
 def obj_box_coord_upleft_butright_to_centroid(coord):
     """Convert one coordinate [x1, y1, x2, y2] to [x_center, y_center, w, h].
     It is the reverse process of ``obj_box_coord_centroid_to_upleft_butright``.
+
+    Parameters
+    ------------
+    coord : list of 4 int/float
+        One coordinate.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x1, y1, x2, y2]"
     x1, y1, x2, y2 = coord
@@ -1753,6 +1811,11 @@ def obj_box_coord_upleft_butright_to_centroid(coord):
 def obj_box_coord_centroid_to_upleft(coord):
     """Convert one coordinate [x_center, y_center, w, h] to [x, y, w, h].
     It is the reverse process of ``obj_box_coord_upleft_to_centroid``.
+
+    Parameters
+    ------------
+    coord : list of 4 int/float
+        One coordinate.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
     x_center, y_center, w, h = coord
@@ -1764,6 +1827,11 @@ def obj_box_coord_centroid_to_upleft(coord):
 def obj_box_coord_upleft_to_centroid(coord):
     """Convert one coordinate [x, y, w, h] to [x_center, y_center, w, h].
     It is the reverse process of ``obj_box_coord_centroid_to_upleft``.
+
+    Parameters
+    ------------
+    coord : list of 4 int/float
+        One coordinate.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
     x, y, w, h = coord
@@ -1772,11 +1840,17 @@ def obj_box_coord_upleft_to_centroid(coord):
     return [x_center, y_center, w, h]
 
 
-def parse_darknet_ann_str_to_list(annotation):
-    """Input string format of class, x, y, w, h, return list of list format."""
-    annotation = annotation.split("\n")
+def parse_darknet_ann_str_to_list(annotations):
+    """Input string format of class, x, y, w, h, return list of list format.
+
+    Parameters
+    -----------
+    annotations : str
+        The annotations in darkent format "class, x, y, w, h ...." seperated by "\\n".
+    """
+    annotations = annotations.split("\n")
     ann = []
-    for a in annotation:
+    for a in annotations:
         a = a.split()
         if len(a) == 5:
             for i in range(len(a)):
@@ -1788,13 +1862,13 @@ def parse_darknet_ann_str_to_list(annotation):
     return ann
 
 
-def parse_darknet_ann_list_to_cls_box(annotation):
+def parse_darknet_ann_list_to_cls_box(annotations):
     """Input list of [[class, x, y, w, h], ...], return two list of [class ...] and [[x, y, w, h], ...]."""
     class_list = []
     bbox_list = []
-    for i in range(len(annotation)):
-        class_list.append(annotation[i][0])
-        bbox_list.append(annotation[i][1:])
+    for i in range(len(annotations)):
+        class_list.append(annotations[i][0])
+        bbox_list.append(annotations[i][1:])
     return class_list, bbox_list
 
 
@@ -1803,15 +1877,16 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
 
     Parameters
     ----------
-    im : numpy array
+    im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    is_rescale : boolean, default False
-        Set to True, if the input coordinates are rescaled to [0, 1].
-    is_center : boolean, default False
-        Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
-    is_random : boolean, default False
-        If True, randomly flip.
+    coords : list of list of 4 int/float
+        Coordinates [[x, y, w, h], [x, y, w, h], ...].
+    is_rescale : boolean
+        Set to True, if the input coordinates are rescaled to [0, 1]. Default is False.
+    is_center : boolean
+        Set to True, if the x and y of coordinates are the centroid (i.e. darknet format). Default is False.
+    is_random : boolean
+        If True, randomly flip. Default is False.
 
     Examples
     --------
@@ -1829,6 +1904,7 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
     >>> print(coords)
     ... [[50, 40, 30, 30]]
     """
+
     def _flip(im, coords):
         im = flip_axis(im, axis=1, is_random=False)
         coords_new = list()
@@ -1883,12 +1959,14 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
 
     Parameters
     -------------
-    im : numpy array
+    im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    size, interp, mode : see ``tl.prepro.imresize`` for details.
-    is_rescale : boolean, default False
-        Set to True, if the input coordinates are rescaled to [0, 1], then return the original coordinates.
+    coords : list of list of 4 int/float
+        Coordinates [[x, y, w, h], [x, y, w, h], ...]
+    size interp and mode : args
+        See ``tl.prepro.imresize``.
+    is_rescale : boolean
+        Set to True, if the input coordinates are rescaled to [0, 1], then return the original coordinates. Default is False.
 
     Examples
     --------
@@ -1952,15 +2030,18 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
 
     Parameters
     -----------
-    im : numpy array
+    im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of class ID (int).
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    wrg, hrg, is_random : see ``tl.prepro.crop`` for details.
-    is_rescale : boolean, default False
-        Set to True, if the input coordinates are rescaled to [0, 1].
+    classes : list of int
+        Class IDs.
+    coords : list of list of 4 int/float
+        Coordinates [[x, y, w, h], [x, y, w, h], ...]
+    wrg hrg and is_random : args
+        See ``tl.prepro.crop``.
+    is_rescale : boolean
+        Set to True, if the input coordinates are rescaled to [0, 1]. Default is False.
     is_center : boolean, default False
-        Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
+        Set to True, if the x and y of coordinates are the centroid (i.e. darknet format). Default is False.
     thresh_wh : float
         Threshold, remove the box if its ratio of width(height) to image size less than the threshold.
     thresh_wh2 : float
@@ -2091,15 +2172,17 @@ def obj_box_shift(im,
 
     Parameters
     -----------
-    im : numpy array
+    im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of class ID (int).
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    wrg, hrg, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.shift``.
-    is_rescale : boolean, default False
-        Set to True, if the input coordinates are rescaled to [0, 1].
-    is_center : boolean, default False
-        Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
+    classes : list of int
+        Class IDs.
+    coords : list of list of 4 int/float
+        Coordinates [[x, y, w, h], [x, y, w, h], ...]
+    wrg, hrg row_index col_index channel_index is_random fill_mode cval and order : see ``tl.prepro.shift``.
+    is_rescale : boolean
+        Set to True, if the input coordinates are rescaled to [0, 1]. Default is False.
+    is_center : boolean
+        Set to True, if the x and y of coordinates are the centroid (i.e. darknet format). Default is False.
     thresh_wh : float
         Threshold, remove the box if its ratio of width(height) to image size less than the threshold.
     thresh_wh2 : float
@@ -2211,15 +2294,17 @@ def obj_box_zoom(im,
 
     Parameters
     -----------
-    im : numpy array
+    im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of class ID (int).
-    coords : list of list for coordinates [[x, y, w, h], [x, y, w, h], ...]
-    zoom_range, row_index, col_index, channel_index, is_random, fill_mode, cval, order : see ``tl.prepro.zoom``.
-    is_rescale : boolean, default False
-        Set to True, if the input coordinates are rescaled to [0, 1].
-    is_center : boolean, default False
-        Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format)
+    classes : list of int
+        Class IDs.
+    coords : list of list of 4 int/float
+        Coordinates [[x, y, w, h], [x, y, w, h], ...].
+    zoom_range row_index col_index channel_index is_random fill_mode cval and order : see ``tl.prepro.zoom``.
+    is_rescale : boolean
+        Set to True, if the input coordinates are rescaled to [0, 1]. Default is False.
+    is_center : boolean
+        Set to True, if the x and y of coordinates are the centroid. (i.e. darknet format). Default is False.
     thresh_wh : float
         Threshold, remove the box if its ratio of width(height) to image size less than the threshold.
     thresh_wh2 : float
@@ -2328,17 +2413,23 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
 
     Parameters
     ----------
-    sequences : list of lists where each element is a sequence
-    maxlen : int, maximum length
-    dtype : type to cast the resulting sequence.
-    padding : 'pre' or 'post', pad either before or after each sequence.
-    truncating : 'pre' or 'post', remove values from sequences larger than
-        maxlen either in the beginning or in the end of the sequence
-    value : float, value to pad the sequences to the desired value.
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    maxlen : int
+        Maximum length.
+    dtype : numpy.dtype or str
+        Data type to cast the resulting sequence.
+    padding : str
+        Either 'pre' or 'post', pad either before or after each sequence.
+    truncating : str
+        Either 'pre' or 'post', remove values from sequences larger than maxlen either in the beginning or in the end of the sequence
+    value : float
+        Value to pad the sequences to the desired value.
 
     Returns
     ----------
-    x : numpy array with dimensions (number_of_sequences, maxlen)
+    x : numpy.array
+        With dimensions (number_of_sequences, maxlen)
 
     Examples
     ----------
@@ -2393,8 +2484,10 @@ def remove_pad_sequences(sequences, pad_id=0):
 
     Parameters
     -----------
-    sequences : list of list.
-    pad_id : int.
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    pad_id : int
+        The pad ID.
 
     Examples
     ----------
@@ -2421,14 +2514,16 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
 
     Parameters
     -----------
-    sequences : numpy array or list of list with token IDs.
-        e.g. [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
-    end_id : int, the special token for END.
-    pad_val : int, replace the end_id and the ids after end_id to this value.
-    is_shorten : boolean, default True.
-        Shorten the sequences.
-    remain_end_id : boolean, default False.
-        Keep an end_id in the end.
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    end_id : int
+        The special token for END.
+    pad_val : int
+        Replace the `end_id` and the IDs after `end_id` to this value.
+    is_shorten : boolean
+        Shorten the sequences. Default is True.
+    remain_end_id : boolean
+        Keep an `end_id` in the end. Default is False.
 
     Examples
     ---------
@@ -2461,6 +2556,15 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
 def sequences_add_start_id(sequences, start_id=0, remove_last=False):
     """Add special start token(id) in the beginning of each sequence.
 
+    Parameters
+    ------------
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    start_id : int
+        The start ID.
+    remove_last : boolean
+        Remove the last value of each sequences. Usually be used for removing the end ID.
+
     Examples
     ---------
     >>> sentences_ids = [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
@@ -2488,8 +2592,10 @@ def sequences_add_end_id(sequences, end_id=888):
 
     Parameters
     -----------
-    sequences : list of list.
-    end_id : int.
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    end_id : int
+        The end ID.
 
     Examples
     ---------
@@ -2508,9 +2614,12 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
 
     Parameters
     -----------
-    sequences : list of list.
-    end_id : int.
-    pad_id : int.
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    end_id : int
+        The end ID.
+    pad_id : int
+        The pad ID.
 
     Examples
     ---------
@@ -2543,6 +2652,13 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
 
 def sequences_get_mask(sequences, pad_val=0):
     """Return mask for sequences.
+
+    Parameters
+    -----------
+    sequences : list of list of int
+        All sequences where each row is a sequence.
+    pad_val : int
+        The pad value.
 
     Examples
     ---------
@@ -2607,8 +2723,8 @@ def sequences_get_mask(sequences, pad_val=0):
 #     >>> sess.run(tf.initialize_all_variables())
 #     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
 #     >>> distorted_images, idx = sess.run(distorted_images_op, feed_dict=feed_dict)
-#     >>> tl.visualize.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
-#     >>> tl.visualize.images2d(distorted_images[1:10,:,:,:], second=10, saveable=False, name='distorted_images', dtype=None, fig_idx=23012)
+#     >>> tl.vis.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
+#     >>> tl.vis.images2d(distorted_images[1:10,:,:,:], second=10, saveable=False, name='distorted_images', dtype=None, fig_idx=23012)
 #
 #     Notes
 #     ------
@@ -2684,8 +2800,8 @@ def sequences_get_mask(sequences, pad_val=0):
 #     >>> sess.run(tf.initialize_all_variables())
 #     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
 #     >>> central_images, idx = sess.run(central_images_op, feed_dict=feed_dict)
-#     >>> tl.visualize.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
-#     >>> tl.visualize.images2d(central_images[1:10,:,:,:], second=10, saveable=False, name='central_images', dtype=None, fig_idx=23012)
+#     >>> tl.vis.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
+#     >>> tl.vis.images2d(central_images[1:10,:,:,:], second=10, saveable=False, name='central_images', dtype=None, fig_idx=23012)
 #
 #     Notes
 #     ------

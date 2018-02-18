@@ -969,6 +969,7 @@ class DynamicRNNLayer(Layer):
 
     Examples
     --------
+    - Synced sequence input and output, for loss function see ``tl.cost.cross_entropy_seq_with_mask``.
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
     >>> net = tl.layers.EmbeddingInputlayer(
     ...             inputs = input_seqs,
@@ -978,7 +979,7 @@ class DynamicRNNLayer(Layer):
     >>> net = tl.layers.DynamicRNNLayer(net,
     ...             cell_fn = tf.contrib.rnn.BasicLSTMCell, # for TF0.2 use tf.nn.rnn_cell.BasicLSTMCell,
     ...             n_hidden = embedding_size,
-    ...             dropout = 0.7,
+    ...             dropout = (0.7 if is_train else None),
     ...             sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
     ...             return_seq_2d = True,                   # stack denselayer or compute cost after it
     ...             name = 'dynamicrnn')

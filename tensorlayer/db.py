@@ -35,11 +35,16 @@ class TensorDB(object):
 
     Parameters
     -------------
-    ip : string, localhost or IP address.
-    port : int, port number.
-    db_name : string, database name.
-    user_name : string, set to None if it donnot need authentication.
-    password : string.
+    ip : str
+        Localhost or IP address.
+    port : int
+        Port number.
+    db_name : str
+        Database name.
+    user_name : str
+        User name. Set to None if it donnot need authentication.
+    password : str
+        Password
 
     Attributes
     ------------
@@ -123,7 +128,8 @@ class TensorDB(object):
 
         Parameters
         ----------
-        args : dictionary, find items.
+        args : dictionary
+            For finding items.
 
         Returns
         --------
