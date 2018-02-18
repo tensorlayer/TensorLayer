@@ -140,7 +140,7 @@ class Conv2dLayer(Layer):
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
 
     Without TensorLayer, you can implement 2d convolution as follow.
-    
+
     >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
     >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
@@ -837,14 +837,14 @@ class _DeformableConv2d(DeformableConv2dLayer): # TODO
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
 
         DeformableConv2dLayer.__init__(self,
-                 act=act
-                 offset_layer=None,
-                 shape=(3, 3, 1, 100),
-                 name='deformable_conv_2d_layer',
-                 W_init=tf.truncated_normal_initializer(stddev=0.02),
-                 b_init=tf.constant_initializer(value=0.0),
-                 W_init_args={},
-                 b_init_args={})
+                 act=act,
+                 offset_layer=offset_layer,
+                 shape=shape,
+                 name=name,
+                 W_init=W_init,
+                 b_init=b_init,
+                 W_init_args=W_init_args,
+                 b_init_args=b_init_args)
 
 
 def atrous_conv1d(
