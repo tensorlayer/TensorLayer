@@ -9,6 +9,13 @@ import tensorlayer as tl
 from . import _logging as logging
 from . import iterate
 
+import os
+import subprocess
+import sys
+from contextlib import contextmanager
+from sys import exit as _exit
+from sys import platform as _platform
+
 
 def fit(sess,
         network,
@@ -29,7 +36,7 @@ def fit(sess,
         tensorboard_epoch_freq=5,
         tensorboard_weight_histograms=True,
         tensorboard_graph_vis=True):
-    """Traing a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
+    """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     Parameters
     ----------
@@ -501,3 +508,137 @@ def list_string_to_dict(string):
     for idx, c in enumerate(string):
         dictionary.update({c: idx})
     return dictionary
+
+
+def exit_tensorflow(sess=None, port=6006):
+    """Close TensorFlow session, TensorBoard and Nvidia-process if available.
+
+    Parameters
+    ----------
+    sess : Session
+        TensorFlow Session.
+    tb_port : int
+        TensorBoard port you want to close, `6006` as default.
+
+    """
+    text = "[TL] Close tensorboard and nvidia-process if available"
+    text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
+    if sess != None:
+        sess.close()
+    # import time
+    # time.sleep(2)
+    if _platform == "linux" or _platform == "linux2":
+        logging.info('linux: %s' % text)
+        os.system('nvidia-smi')
+        os.system('fuser ' + port + '/tcp -k')  # kill tensorboard 6006
+        os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill")  # kill all nvidia-smi python process
+        _exit()
+    elif _platform == "darwin":
+        logging.info('OS X: %s' % text)
+        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
+                         shell=True)  # kill tensorboard
+    elif _platform == "win32":
+        logging.info(text2 + "Windows")
+        # TODO
+    else:
+        logging.info(text2 + _platform)
+
+
+def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
+    """Open Tensorboard.
+
+    Parameters
+    ----------
+    log_dir : str
+        Directory where your tensorboard logs are saved
+    port : int
+        TensorBoard port you want to open, 6006 is tensorboard default
+
+    """
+    text = "[TL] Open tensorboard, go to localhost:" + str(port) + " to access"
+    text2 = " not yet supported by this function (tl.ops.open_tb)"
+
+    if not tl.files.exists_or_mkdir(log_dir, verbose=False):
+        logging.info("[TL] Log reportory was created at %s" % log_dir)
+
+    if _platform == "linux" or _platform == "linux2":
+        logging.info('linux %s' % text2)
+        # TODO
+    elif _platform == "darwin":
+        logging.info('OS X: %s' % text)
+        subprocess.Popen(
+            sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port),
+            shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
+    elif _platform == "win32":
+        logging.info('Windows%s' % text2)
+        # TODO
+    else:
+        logging.info(_platform + text2)
+
+
+def clear_all_placeholder_variables(printable=True):
+    """Clears all the placeholder variables of keep prob,
+    including keeping probabilities of all dropout, denoising, dropconnect etc.
+
+    Parameters
+    ----------
+    printable : boolean
+        If True, print all deleted variables.
+
+    """
+    logging.info('clear all .....................................')
+    gl = globals().copy()
+    for var in gl:
+        if var[0] == '_': continue
+        if 'func' in str(globals()[var]): continue
+        if 'module' in str(globals()[var]): continue
+        if 'class' in str(globals()[var]): continue
+
+        if printable:
+            logging.info(" clear_all ------- %s" % str(globals()[var]))
+
+        del globals()[var]
+
+
+def set_gpu_fraction(gpu_fraction=0.3):
+    """Set the GPU memory fraction for the application.
+
+    Parameters
+    ----------
+    gpu_fraction : float
+        Fraction of GPU memory, (0 ~ 1]
+
+    References
+    ----------
+    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`__
+
+    """
+    logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
+    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+    return sess
+
+
+@contextmanager
+def suppress_stdout():
+    """Temporarily disable console output.
+
+    Examples
+    ---------
+    >>> print("You can see me")
+    >>> with tl.utils.suppress_stdout():
+    >>>     print("You can't see me")
+    >>> print("You can see me")
+
+    References
+    -----------
+    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`__
+
+    """
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout

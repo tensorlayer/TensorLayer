@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from .. import ops
 from .core import *
 
 
@@ -62,7 +61,7 @@ class TimeDistributedLayer(Layer):
         timestep = input_shape[1]
         x = tf.unstack(self.inputs, axis=1)
 
-        with ops.suppress_stdout():
+        with utils.suppress_stdout():
             for i in range(0, timestep):
                 with tf.variable_scope(name, reuse=(set_keep['name_reuse'] if i == 0 else True)) as vs:
                     set_name_reuse((set_keep['name_reuse'] if i == 0 else True))

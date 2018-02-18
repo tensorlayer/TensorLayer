@@ -51,12 +51,8 @@ method, this part of the documentation is for you.
   modules/rein
   modules/files
   modules/visualize
-  modules/ops
   modules/activation
   modules/distributed
-
-..
-  modules/db
 
 
 Command-line Reference
