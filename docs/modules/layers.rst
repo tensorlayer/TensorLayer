@@ -97,7 +97,7 @@ For more details, please read the MNIST examples in the example folder.
 
 
 Customizing Layers
-----------------
+------------------
 
 A Simple Layer
 ^^^^^^^^^^^^^^

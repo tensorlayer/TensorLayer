@@ -185,8 +185,9 @@ class Conv2dLayer(Layer):
 
 
 class DeConv2dLayer(Layer):
-    """
-    The :class:`DeConv2dLayer` class is deconvolutional 2D layer, see `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_.
+    """A de-convolution 2D layer.
+
+    See `tf.nn.conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#conv2d_transpose>`_.
 
     Parameters
     ----------
@@ -196,11 +197,11 @@ class DeConv2dLayer(Layer):
         The activation function of this layer.
     shape : tuple of int
         Shape of the filters: (height, width, output_channels, in_channels).
-        The filter's in_channels dimension must match that of value.
+        The filter's ``in_channels`` dimension must match that of value.
     output_shape : tuple of int
         Output shape of the deconvolution,
     strides : tuple of int
-        The sliding window strides for corresponding input dimensions (:function:`DeConv2d` does not need to set this with TF > 1.3).
+        The sliding window strides for corresponding input dimensions.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
@@ -223,7 +224,8 @@ class DeConv2dLayer(Layer):
 
     Examples
     --------
-    - A part of the generator in DCGAN example
+    A part of the generator in DCGAN example
+
     >>> batch_size = 64
     >>> inputs = tf.placeholder(tf.float32, [batch_size, 100], name='z_noise')
     >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
@@ -245,7 +247,8 @@ class DeConv2dLayer(Layer):
     >>> print(net_h1.outputs._shape)
     ... (64, 8, 8, 256)
 
-    - U-Net
+    U-Net
+
     >>> ....
     >>> conv10 = tl.layers.Conv2dLayer(conv9, act=tf.nn.relu,
     ...        shape=(3,3,1024,1024), strides=(1,1,1,1), padding='SAME',

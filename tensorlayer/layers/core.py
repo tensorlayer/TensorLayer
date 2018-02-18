@@ -70,7 +70,8 @@ def clear_layers_name():
 
     Examples
     ---------
-    - Reset the current graph and try to refine model.
+    Reset the current graph and try to refine model.
+
     >>> for .... (different model settings):
     >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
     >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
@@ -78,7 +79,8 @@ def clear_layers_name():
     >>>       # define and train a model here
     >>>       sess.close()
 
-    - Enable reusing layer names.
+    Enable reusing layer names.
+
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.DenseLayer(net, n_units=800, name='relu1')
     ...

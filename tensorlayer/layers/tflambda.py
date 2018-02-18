@@ -9,8 +9,7 @@ from .core import *
 
 
 class LambdaLayer(Layer):
-    """
-    The :class:`LambdaLayer` class is a layer which is able to use the provided function.
+    """A Lambda layer that can take a user-defined function.
 
     Parameters
     ----------
@@ -25,12 +24,14 @@ class LambdaLayer(Layer):
 
     Examples
     ---------
-    - Non-parametric case
+    Non-parametric case
+
     >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = LambdaLayer(net, lambda x: 2*x, name='lambda')
 
-    - Parametric case, merge other wrappers into TensorLayer
+    Parametric case, merge other wrappers into TensorLayer
+
     >>> from keras.layers import *
     >>> from tensorlayer.layers import *
     >>> def keras_block(x):

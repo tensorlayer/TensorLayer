@@ -9,10 +9,9 @@ from .core import *
 
 
 class FlattenLayer(Layer):
-    """
-    The :class:`FlattenLayer` class is layer which reshape high-dimension
-    input to a vector. Then we can apply DenseLayer, RNNLayer, ConcatLayer and
-    etc on the top of it.
+    """A layer that reshapes high-dimension input to a vector.
+
+    Then we often apply DenseLayer, RNNLayer, ConcatLayer and etc on the top of a flatten layer.
 
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
@@ -62,14 +61,16 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
-    - Use TensorLayer
+    Use TensorLayer
+
     >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.ReshapeLayer(net, (-1, 28*28), name='reshape')
     >>> print(net.outputs)
     ... (?, 784)
 
-    - Use native TensorFlow API ``tf.reshape``
+    Use native TensorFlow API ``tf.reshape``
+
     >>> x = tf.placeholder(tf.float32, shape=[None, 3])
     >>> y = tf.reshape(x, shape=[-1, 3, 3])
     >>> sess = tf.InteractiveSession()
