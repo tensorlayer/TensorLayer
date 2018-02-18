@@ -132,8 +132,6 @@ def normalized_mean_square_error(output, target):
 
     Parameters
     ----------
-    Parameters
-    ----------
     output : Tensor
         2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
     target : Tensor
