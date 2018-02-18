@@ -18,11 +18,9 @@ from .pooling import *
 from .padding import *
 from .recurrent import *
 from .shape import *
-from .tflambda import *
+from .importer import *
 from .merge import *
 from .extend import *
 from .stack import *
-from .tfslim import *
 from .special_activation import *
 from .flow_control import *
-from .deprecated import *
