@@ -98,8 +98,8 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     References
     ----------
-    - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`_
-    - `run with limited queue <http://effbot.org/librarybook/queue.htm>`_
+    - `python queue <https://pymotw.com/2/Queue/index.html#module-Queue>`__
+    - `run with limited queue <http://effbot.org/librarybook/queue.htm>`__
 
     """
 
@@ -158,12 +158,12 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode=`constant`. Default is 0.0
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Examples
     ---------
@@ -376,12 +376,12 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     """
     h, w = x.shape[row_index], x.shape[col_index]
@@ -441,16 +441,16 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     References
     -----------
-    - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`_
+    - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`__
 
     """
     if is_random:
@@ -506,16 +506,16 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     References
     -----------
-    - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`_
+    - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`__
 
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
@@ -571,8 +571,8 @@ def swirl(x,
           clip=True,
           preserve_range=False,
           is_random=False):
-    """Swirl an image randomly or non-randomly, see `scikit-image swirl API <http://scikit-image.org/docs/dev/api/skimage.transform.html#skimage.transform.swirl>`_
-    and `example <http://scikit-image.org/docs/dev/auto_examples/plot_swirl.html>`_.
+    """Swirl an image randomly or non-randomly, see `scikit-image swirl API <http://scikit-image.org/docs/dev/api/skimage.transform.html#skimage.transform.swirl>`__
+    and `example <http://scikit-image.org/docs/dev/auto_examples/plot_swirl.html>`__.
 
     Parameters
     -----------
@@ -702,7 +702,7 @@ def swirl_multi(x,
 
 
 def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic transformation for image as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_ .
+    """Elastic transformation for image as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`__.
 
     Parameters
     -----------
@@ -713,7 +713,7 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
     sigma : float or sequence of float
         The smaller the sigma, the more transformation. Standard deviation for Gaussian kernel. The standard deviations of the Gaussian filter are given for each axis as a sequence, or as a single number, in which case it is equal for all axes.
     mode : str
-        See `scipy.ndimage.filters.gaussian_filter <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.filters.gaussian_filter.html>`_, Default is `constant`.
+        See `scipy.ndimage.filters.gaussian_filter <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.filters.gaussian_filter.html>`__. Default is `constant`.
     cval : float,
         Used in conjunction with `mode` of `constant`, the value outside the image boundaries.
     is_random : boolean
@@ -725,8 +725,8 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
 
     References
     ------------
-    - `Github <https://gist.github.com/chsasank/4d8f68caf01f041a6453e67fb30f8f5a>`_.
-    - `Kaggle <https://www.kaggle.com/pscion/ultrasound-nerve-segmentation/elastic-transform-for-data-augmentation-0878921a>`_
+    - `Github <https://gist.github.com/chsasank/4d8f68caf01f041a6453e67fb30f8f5a>`__.
+    - `Kaggle <https://www.kaggle.com/pscion/ultrasound-nerve-segmentation/elastic-transform-for-data-augmentation-0878921a>`__
 
     """
     if is_random is False:
@@ -756,7 +756,7 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
 
 
 def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=False):
-    """Elastic transformation for images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`_.
+    """Elastic transformation for images as described in `[Simard2003] <http://deeplearning.cs.cmu.edu/pdfs/Simard.pdf>`__.
 
     Parameters
     -----------
@@ -817,12 +817,12 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     """
     if len(zoom_range) != 2:
@@ -904,8 +904,8 @@ def brightness(x, gamma=1, gain=1, is_random=False):
 
     References
     -----------
-    - `skimage.exposure.adjust_gamma <http://scikit-image.org/docs/dev/api/skimage.exposure.html>`_
-    - `chinese blog <http://www.cnblogs.com/denny402/p/5124402.html>`_
+    - `skimage.exposure.adjust_gamma <http://scikit-image.org/docs/dev/api/skimage.exposure.html>`__
+    - `chinese blog <http://www.cnblogs.com/denny402/p/5124402.html>`__
 
     """
     if is_random:
@@ -1072,7 +1072,7 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
     """Adjust hue of an RGB image.
 
     This is a convenience method that converts an RGB image to float representation, converts it to HSV, add an offset to the hue channel, converts back to RGB and then back to the original data type.
-    For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_ and `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
+    For TF, see `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`__.and `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`__.
 
     Parameters
     -----------
@@ -1100,9 +1100,9 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
 
     References
     -----------
-    - `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`_.
-    - `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`_.
-    - `StackOverflow: Changing image hue with python PIL <https://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil>`_.
+    - `tf.image.random_hue <https://www.tensorflow.org/api_docs/python/tf/image/random_hue>`__.
+    - `tf.image.adjust_hue <https://www.tensorflow.org/api_docs/python/tf/image/adjust_hue>`__.
+    - `StackOverflow: Changing image hue with python PIL <https://stackoverflow.com/questions/7274221/changing-image-hue-with-python-pil>`__.
 
     """
     hsv = rgb_to_hsv(im)
@@ -1150,7 +1150,7 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
 
     References
     ------------
-    - `scipy.misc.imresize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.misc.imresize.html>`_
+    - `scipy.misc.imresize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.misc.imresize.html>`__
 
     """
     if x.shape[-1] == 1:
@@ -1329,7 +1329,7 @@ def zca_whitening(x, principal_components):
 
 # channel shift
 def channel_shift(x, intensity, is_random=False, channel_index=2):
-    """Shift the channels of an image, randomly or non-randomly, see `numpy.rollaxis <https://docs.scipy.org/doc/numpy/reference/generated/numpy.rollaxis.html>`_.
+    """Shift the channels of an image, randomly or non-randomly, see `numpy.rollaxis <https://docs.scipy.org/doc/numpy/reference/generated/numpy.rollaxis.html>`__.
 
     Parameters
     -----------
@@ -1363,7 +1363,7 @@ def channel_shift(x, intensity, is_random=False, channel_index=2):
 
 
 def channel_shift_multi(x, intensity, is_random=False, channel_index=2):
-    """Shift the channels of images with the same arguments, randomly or non-randomly, see `numpy.rollaxis <https://docs.scipy.org/doc/numpy/reference/generated/numpy.rollaxis.html>`_ .
+    """Shift the channels of images with the same arguments, randomly or non-randomly, see `numpy.rollaxis <https://docs.scipy.org/doc/numpy/reference/generated/numpy.rollaxis.html>`__.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
     Parameters
@@ -1469,7 +1469,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
         Index of channel, default 2.
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
     order : int
@@ -1480,7 +1480,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
         - 3 Bi-cubic
         - 4 Bi-quartic
         - 5 Bi-quintic
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`_
+        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
     Examples
     --------
@@ -1501,7 +1501,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
 def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
     """Projective transform by given coordinates, usually 4 coordinates.
 
-    see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_.
+    see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__.
 
     Parameters
     -----------
@@ -1543,8 +1543,8 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
 
     References
     -----------
-    - `scikit-image : geometric transformations <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`_
-    - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`_
+    - `scikit-image : geometric transformations <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__
+    - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`__
 
     """
     if type(src) is list:  # convert to numpy
@@ -1575,7 +1575,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
 
     References
     -----------
-    - `PIL Image.fromarray <http://pillow.readthedocs.io/en/3.1.x/reference/Image.html?highlight=fromarray>`_
+    - `PIL Image.fromarray <http://pillow.readthedocs.io/en/3.1.x/reference/Image.html?highlight=fromarray>`__
 
     """
     from PIL import Image
@@ -1604,7 +1604,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
 
 def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low'):
     """Find iso-valued contours in a 2D array for a given level value, returns list of (n, 2)-ndarrays
-    see `skimage.measure.find_contours <http://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.find_contours>`_ .
+    see `skimage.measure.find_contours <http://scikit-image.org/docs/dev/api/skimage.measure.html#skimage.measure.find_contours>`__.
 
     Parameters
     ------------
@@ -1646,7 +1646,7 @@ def pt2map(list_points=[], size=(100, 100), val=1):
 
 def binary_dilation(x, radius=3):
     """Return fast binary morphological dilation of an image.
-    see `skimage.morphology.binary_dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_dilation>`_.
+    see `skimage.morphology.binary_dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_dilation>`__.
 
     Parameters
     -----------
@@ -1664,7 +1664,7 @@ def binary_dilation(x, radius=3):
 
 def dilation(x, radius=3):
     """Return greyscale morphological dilation of an image,
-    see `skimage.morphology.dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.dilation>`_.
+    see `skimage.morphology.dilation <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.dilation>`__.
 
     Parameters
     -----------
@@ -1682,7 +1682,7 @@ def dilation(x, radius=3):
 
 def binary_erosion(x, radius=3):
     """Return binary morphological erosion of an image,
-    see `skimage.morphology.binary_erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_erosion>`_.
+    see `skimage.morphology.binary_erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.binary_erosion>`__.
 
     Parameters
     -----------
@@ -1700,7 +1700,7 @@ def binary_erosion(x, radius=3):
 
 def erosion(x, radius=3):
     """Return greyscale morphological erosion of an image,
-    see `skimage.morphology.erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.erosion>`_.
+    see `skimage.morphology.erosion <http://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.erosion>`__.
 
     Parameters
     -----------
@@ -2805,7 +2805,7 @@ def sequences_get_mask(sequences, pad_val=0):
 #
 #     References
 #     -----------
-#     - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`_
+#     - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`__
 #     """
 #     logging.info("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
 #             t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \

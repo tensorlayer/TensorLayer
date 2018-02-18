@@ -102,7 +102,7 @@ class ReshapeLayer(Layer):
 
 class TransposeLayer(Layer):
     """
-    The :class:`TransposeLayer` class transposes the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`_ .
+    The :class:`TransposeLayer` class transposes the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
 
     Parameters
     ----------

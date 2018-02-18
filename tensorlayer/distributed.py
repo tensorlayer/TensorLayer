@@ -46,7 +46,7 @@ class TaskSpecDef(object):
 
     References
     ----------
-    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
+    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`__
 
     """
 
@@ -138,8 +138,8 @@ def create_task_spec_def():
 
     References
     ----------
-    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`_
-    - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`_
+    - `ML-engine trainer considerations <https://cloud.google.com/ml-engine/docs/trainer-considerations#use_tf_config>`__
+    - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`__
 
     """
     if 'TF_CONFIG' in os.environ:
@@ -255,7 +255,7 @@ def create_distributed_session(task_spec=None,
 
     References
     ----------
-    - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession>`_
+    - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession>`__
 
     """
     target = task_spec.target() if task_spec is not None else None

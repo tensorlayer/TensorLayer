@@ -9,7 +9,7 @@ from .core import *
 
 
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
-    """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_
+    """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__
     , see :class:`SpatialTransformer2dAffineLayer` class.
 
     Parameters
@@ -31,8 +31,8 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
 
     References
     ----------
-    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_
-    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`_
+    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`__
+    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
 
     Notes
     -----
@@ -173,7 +173,7 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
 
 
 def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine'):
-    """Batch Spatial Transformer function for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_.
+    """Batch Spatial Transformer function for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__.
 
     Parameters
     ----------
@@ -200,8 +200,8 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
 
 
 class SpatialTransformer2dAffineLayer(Layer):
-    """The :class:`SpatialTransformer2dAffineLayer` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`_ for
-    `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`_.
+    """The :class:`SpatialTransformer2dAffineLayer` class is a 2D `Spatial Transformer Layer <https://arxiv.org/abs/1506.02025>`__ for
+    `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__.
 
     Parameters
     -----------
@@ -217,8 +217,8 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     References
     -----------
-    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_
-    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`_
+    - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`__
+    - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`__
 
     """
 

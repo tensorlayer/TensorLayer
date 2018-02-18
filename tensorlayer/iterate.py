@@ -210,7 +210,7 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
 
 
 def ptb_iterator(raw_data, batch_size, num_steps):
-    """Generate a generator that iterates on a list of words, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_.
+    """Generate a generator that iterates on a list of words, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
     Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length)
     e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3, raw_data = [i for i in range(100)]
 

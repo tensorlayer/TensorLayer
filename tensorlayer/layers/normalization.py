@@ -81,8 +81,8 @@ class BatchNormLayer(Layer):
 
     References
     ----------
-    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`_
-    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`_
+    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`__
+    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`__
 
     """
 
@@ -217,7 +217,7 @@ class InstanceNormLayer(Layer):
 
 class LayerNormLayer(Layer):
     """
-    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_.
+    The :class:`LayerNormLayer` class is for layer normalization, see `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
 
     Parameters
     ----------
@@ -226,7 +226,7 @@ class LayerNormLayer(Layer):
     act : activation function
         The activation function of this layer.
     others : _
-        `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`_.
+        `tf.contrib.layers.layer_norm <https://www.tensorflow.org/api_docs/python/tf/contrib/layers/layer_norm>`__.
 
     """
 

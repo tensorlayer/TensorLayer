@@ -11,7 +11,7 @@ from .core import *
 class PadLayer(Layer):
     """
     The :class:`PadLayer` class is a padding layer for any mode and dimension.
-    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`_ for usage.
+    Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`__ for usage.
 
     Parameters
     ----------

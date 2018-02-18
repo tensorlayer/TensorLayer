@@ -134,7 +134,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 
     References
     ----------
-    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
+    - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`__
 
     """
     logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
@@ -152,9 +152,9 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
 #
 #     References
 #     -----------
-#     - `<https://docs.python.org/2/library/functions.html#open>`_
-#     - `<https://docs.python.org/3/library/functions.html#open>`_
-#     - `man setlinebuf <https://linux.die.net/man/3/setlinebuf>`_
+#     - `<https://docs.python.org/2/library/functions.html#open>`__
+#     - `<https://docs.python.org/3/library/functions.html#open>`__
+#     - `man setlinebuf <https://linux.die.net/man/3/setlinebuf>`__
 #     """
 #     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
 
@@ -220,7 +220,7 @@ def suppress_stdout():
 
     References
     -----------
-    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`_
+    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`__
 
     """
     with open(os.devnull, "w") as devnull:

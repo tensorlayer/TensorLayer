@@ -13,7 +13,7 @@ from .core import *
 class KerasLayer(Layer):
     """
     The :class:`KerasLayer` class can be used to merge all Keras layers into
-    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    TensorLayer. Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
     This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
 
     Parameters
@@ -55,7 +55,7 @@ class KerasLayer(Layer):
 class EstimatorLayer(Layer):
     """
     The :class:`EstimatorLayer` class accepts ``model_fn`` that described the model.
-    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_.
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
     This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.
 
     Parameters

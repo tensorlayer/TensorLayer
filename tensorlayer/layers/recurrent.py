@@ -21,7 +21,7 @@ class RNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
         - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell function.
@@ -65,7 +65,7 @@ class RNNLayer(Layer):
 
     Examples
     --------
-    For language modeling, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_
+    For language modeling, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
 
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
     >>> net = tl.layers.EmbeddingInputlayer(
@@ -123,9 +123,9 @@ class RNNLayer(Layer):
 
     References
     ----------
-    - `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`_
-    - `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`_
-    - `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`_
+    - `Neural Network RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/rnn_cell/>`__
+    - `tensorflow/python/ops/rnn.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn.py>`__
+    - `tensorflow/python/ops/rnn_cell.py <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/rnn_cell.py>`__
     - see TensorFlow tutorial ``ptb_word_lm.py``, TensorLayer tutorials ``tutorial_ptb_lstm*.py`` and ``tutorial_generate_text.py``
 
     """
@@ -257,7 +257,7 @@ class BiRNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell.
-        See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_.
+        See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
         Note TF1.0+ and TF1.0- are different.
     cell_init_args : dictionary
         The arguments for the cell function.
@@ -622,7 +622,7 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
 class ConvLSTMLayer(Layer):
     """A fixed length Convolutional LSTM layer.
 
-    See this `paper <https://arxiv.org/abs/1506.04214>`_ .
+    See this `paper <https://arxiv.org/abs/1506.04214>`__ .
 
     Parameters
     ----------
@@ -793,7 +793,7 @@ def advanced_indexing_op(input, index):
 
     References
     -----------
-    - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
+    - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__.
 
     """
     batch_size = tf.shape(input)[0]
@@ -839,7 +839,7 @@ def retrieve_seq_length_op(data):
 
     References
     ------------
-    Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_.
+    Borrow from `TFlearn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__.
 
     """
     with tf.name_scope('GetLength'):
@@ -914,7 +914,7 @@ class DynamicRNNLayer(Layer):
         Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
         - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell function.
@@ -927,7 +927,7 @@ class DynamicRNNLayer(Layer):
         - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
         - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
         - You can also input an numpy array.
-        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_.
+        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
     initial_state : None or RNN State
         If None, `initial_state` is zero state.
     dropout : tuple of float or int
@@ -995,10 +995,10 @@ class DynamicRNNLayer(Layer):
 
     References
     ----------
-    - `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_
-    - `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`_
-    - `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`_
-    - `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`_
+    - `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__
+    - `dynamic_rnn.ipynb <https://github.com/dennybritz/tf-rnn/blob/master/dynamic_rnn.ipynb>`__
+    - `tf.nn.dynamic_rnn <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/g3doc/api_docs/python/functions_and_classes/shard8/tf.nn.dynamic_rnn.md>`__
+    - `tflearn rnn <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__
     - ``tutorial_dynamic_rnn.py``
 
     """
@@ -1171,7 +1171,7 @@ class BiDynamicRNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_.
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
         - Note TF1.0+ and TF1.0- are different.
     cell_init_args : dictionary
         The arguments for the cell initializer.
@@ -1184,7 +1184,7 @@ class BiDynamicRNNLayer(Layer):
         - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
         - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
         - You can also input an numpy array.
-        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`_.
+        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
     fw_initial_state : None or forward RNN State
         If None, `initial_state` is zero state.
     bw_initial_state : None or backward RNN State
@@ -1428,7 +1428,7 @@ class Seq2Seq(Layer):
         Decode sequences, [batch_size, None, n_features].
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`_
+        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
         - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell initializer.

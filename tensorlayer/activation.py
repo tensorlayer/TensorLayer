@@ -71,7 +71,7 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
     References
     ------------
-    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`_
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
 
     """
     # with tf.name_scope(name) as scope:
@@ -84,7 +84,7 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
 def swish(x, name='swish'):
     """The Swish function.
-     See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`_.
+     See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
 
     Parameters
     ----------
@@ -129,7 +129,7 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 
     References
     ----------
-    - `tf.reverse <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#reverse>`_
+    - `tf.reverse <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#reverse>`__
 
     """
     with tf.name_scope(name):

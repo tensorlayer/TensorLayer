@@ -4,7 +4,7 @@ from .core import *
 
 def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a 2D sub-pixel up-sampling layer, usually be used
-    for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`_ for example.
+    for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`__ for example.
 
     Parameters
     ------------
@@ -55,7 +55,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     References
     ------------
-    - `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network <https://arxiv.org/pdf/1609.05158.pdf>`_
+    - `Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network <https://arxiv.org/pdf/1609.05158.pdf>`__
 
     """
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
@@ -136,7 +136,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
     References
     -----------
-    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
+    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
 
     """
 

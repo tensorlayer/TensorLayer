@@ -20,7 +20,7 @@ from . import _logging as logging
 def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_index=0):
     """Generate a training batch for the Skip-Gram model.
 
-    See `Word2Vec example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_word2vec_basic.py>`_.
+    See `Word2Vec example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_word2vec_basic.py>`__.
 
     Parameters
     ----------
@@ -320,8 +320,8 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     Notes
     -------
     - You have to install the following package.
-    - `Installing NLTK <http://www.nltk.org/install.html>`_
-    - `Installing NLTK data <http://www.nltk.org/data.html>`_
+    - `Installing NLTK <http://www.nltk.org/install.html>`__
+    - `Installing NLTK data <http://www.nltk.org/data.html>`__
 
     """
     try:
@@ -459,7 +459,7 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
 
     References
     ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     """
     with tf.gfile.GFile(filename, "r") as f:
@@ -555,7 +555,7 @@ def build_vocab(data):
 
     References
     ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     Examples
     --------
@@ -632,7 +632,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
 
     References
     -----------------
-    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
 
     """
     import collections
@@ -692,7 +692,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
 
     References
     ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     """
     # if isinstance(data[0], six.string_types):
@@ -1024,7 +1024,7 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):
 
     References
     ----------
-    - `Google/seq2seq/metric/bleu <https://github.com/google/seq2seq>`_
+    - `Google/seq2seq/metric/bleu <https://github.com/google/seq2seq>`__
 
     """
     if np.size(hypotheses) == 0:

@@ -158,7 +158,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], clas
     References
     -----------
     - OpenCV rectangle and putText.
-    - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`_.
+    - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`__.
 
     """
     assert len(coords) == len(classes), "number of coordinates and classes are equal"
