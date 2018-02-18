@@ -51,7 +51,7 @@ An pulling based Stream processing pipeline.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 For large training dataset, TendsorDB provides a stream interface, which in theory  supports unlimited large dataset.
- A stream interface, implemented as a python generators,  keeps on generation the new data during training.
+A stream interface, implemented as a python generators,  keeps on generation the new data during training.
 When using the stream interface, the idea of epoch does not apply anymore, instead, we specify the batchize and image a epoch will have a fixed large number of steps.
 
 Many techniques are introduced behind the stream interface for performance optimization.
