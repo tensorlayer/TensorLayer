@@ -12,7 +12,6 @@ from . import cost
 from . import files
 from . import iterate
 from . import layers
-from . import ops
 from . import utils
 from . import visualize
 from . import prepro

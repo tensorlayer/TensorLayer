@@ -69,6 +69,15 @@ After you get the variable list, you can define your optimizer like that so as t
   train_op = tf.train.AdamOptimizer(0.001).minimize(cost, var_list= train_params)
 
 
+Logging
+-------
+
+TensorLayer adopts the `Python logging module <https://docs.python.org/3/library/logging.html>`__
+to log running information.
+The logging module would print logs to the console in default. 
+If you want to configure the logging module,
+you shall follow its `manual <https://docs.python.org/3/library/logging.html>`__.
+
 Visualization
 --------------
 
