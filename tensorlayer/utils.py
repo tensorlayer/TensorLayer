@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
+import os
 import random
+import subprocess
+import sys
 import time
+from contextlib import contextmanager
+from sys import exit as _exit
+from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
@@ -8,13 +14,6 @@ import tensorlayer as tl
 
 from . import _logging as logging
 from . import iterate
-
-import os
-import subprocess
-import sys
-from contextlib import contextmanager
-from sys import exit as _exit
-from sys import platform as _platform
 
 
 def fit(sess,
@@ -535,8 +534,7 @@ def exit_tensorflow(sess=None, port=6006):
         _exit()
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
-        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
-                         shell=True)  # kill tensorboard
+        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
     elif _platform == "win32":
         logging.info(text2 + "Windows")
         # TODO
