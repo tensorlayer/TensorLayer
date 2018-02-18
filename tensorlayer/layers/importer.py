@@ -10,7 +10,7 @@ from .core import *
 
 
 class LambdaLayer(Layer):
-    """A Lambda layer that can take a user-defined function.
+    """A layer that takes a user-defined function using TensorFlow Lambda.
 
     Parameters
     ----------
@@ -72,9 +72,9 @@ class LambdaLayer(Layer):
 
 
 class SlimNetsLayer(Layer):
-    """
-    The :class:`SlimNetsLayer` class can be used to merge all TF-Slim nets into
-    TensorLayer. Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`__,
+    """A layer that merges TF-Slim models into TensorLayer.
+
+    Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`__,
     see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
 
     Parameters
@@ -134,7 +134,7 @@ class SlimNetsLayer(Layer):
         self.all_params.extend(slim_variables)
 
 
-@deprecated("2018-02-15", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+@deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
 
@@ -176,7 +176,7 @@ class KerasLayer(Layer):
         self.all_params.extend(variables)
 
 
-@deprecated("2018-02-15", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+@deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
 
