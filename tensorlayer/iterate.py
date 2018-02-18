@@ -56,7 +56,20 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 
 def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     """Generate a generator that return a batch of sequence inputs and targets.
-    If ``batch_size = 100, seq_length = 5``, one return will have ``500`` rows (examples).
+    If ``batch_size=100, seq_length=5``, one return will have ``500`` rows (examples).
+
+    Parameters
+    ----------
+    inputs : numpy.array
+        (X) The input features, every row is a example.
+    targets : numpy.array
+        (y) The labels of inputs, every element is a example.
+    batch_size : int
+        The batch size.
+    seq_length : int
+        The sequence length.
+    stride : int
+        The stride step, default is 1.
 
     Examples
     --------
@@ -115,9 +128,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
 
 def seq_minibatches2(inputs, targets, batch_size, num_steps):
     """Generate a generator that iterates on two list of words. Yields (Returns) the source contexts and
-    the target context by the given batch_size and num_steps (sequence_length),
-    see ``PTB tutorial``. In TensorFlow's tutorial, this generates the batch_size pointers into the raw
-    PTB data, and allows minibatch iteration along these pointers.
+    the target context by the given batch_size and num_steps (sequence_length).
+    In TensorFlow's tutorial, this generates the `batch_size` pointers into the raw PTB data, and allows minibatch iteration along these pointers.
 
     - Hint, if the input data are images, you can modify the code as follow.
 
@@ -130,18 +142,14 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
 
     Parameters
     ----------
-    inputs : a list
-            the context in list format; note that context usually be
-            represented by splitting by space, and then convert to unique
-            word IDs.
-    targets : a list
-            the context in list format; note that context usually be
-            represented by splitting by space, and then convert to unique
-            word IDs.
+    inputs : list of data
+        The context in list format; note that context usually be represented by splitting by space, and then convert to unique word IDs.
+    targets : list of data
+        The context in list format; note that context usually be represented by splitting by space, and then convert to unique word IDs.
     batch_size : int
-            the batch size.
+        The batch size.
     num_steps : int
-            the number of unrolls. i.e. sequence_length
+        The number of unrolls. i.e. sequence length
 
     Yields
     ------
@@ -173,10 +181,6 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     ... [ 16.  17.  18.]]
     ... [[ 26.  27.  28.]
     ... [ 36.  37.  38.]]
-
-    See Also
-    ---------------
-    - ``tensorflow/models/rnn/ptb/reader.py``
     """
     assert len(inputs) == len(targets)
     data_len = len(inputs)
@@ -201,16 +205,11 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
 
 
 def ptb_iterator(raw_data, batch_size, num_steps):
-    """Generate a generator that iterates on a list of words, see PTB tutorial.
-    
-    Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length).
+    """Generate a generator that iterates on a list of words, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_.
+    Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length)
+    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3, raw_data = [i for i in range(100)]
 
-    see ``PTB tutorial``.
-
-    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3,
-    raw_data = [i for i in range(100)]
-
-    In TensorFlow's tutorial, this generates batch_size pointers into the raw
+    In TensorFlow's tutorial, this generates `batch_size` pointers into the raw
     PTB data, and allows minibatch iteration along these pointers.
 
     Parameters

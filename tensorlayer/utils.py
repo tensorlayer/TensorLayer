@@ -34,8 +34,8 @@ def fit(sess,
 
     Parameters
     ----------
-    sess : TensorFlow session
-        sess = tf.InteractiveSession()
+    sess : Session
+        TensorFlow Session
     network : a TensorLayer layer
         the network will be trained
     train_op : a TensorFlow optimizer

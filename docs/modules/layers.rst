@@ -313,8 +313,6 @@ Layer list
    BiDynamicRNNLayer
 
    Seq2Seq
-   PeekySeq2Seq
-   AttentionSeq2Seq
 
    FlattenLayer
    ReshapeLayer
@@ -681,13 +679,14 @@ Simple Seq2Seq
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: Seq2Seq
 
-PeekySeq2Seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: PeekySeq2Seq
+..
+  PeekySeq2Seq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autoclass:: PeekySeq2Seq
 
-AttentionSeq2Seq
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AttentionSeq2Seq
+  AttentionSeq2Seq
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  .. autoclass:: AttentionSeq2Seq
 
 
 

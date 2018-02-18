@@ -12,13 +12,14 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
 
     Parameters
     ----------
-    rewards : numpy list
-        a list of rewards
+    rewards : list
+        List of rewards
     gamma : float
-        discounted factor
+        Discounted factor
     mode : int
-        if mode == 0, reset the discount process when encount a non-zero reward (Ping-pong game).
-        if mode == 1, would not reset the discount process.
+        Mode for computing the discount rewards.
+        - If mode == 0, reset the discount process when encount a non-zero reward (Ping-pong game).
+        - If mode == 1, would not reset the discount process.
 
     Examples
     ----------
@@ -50,11 +51,10 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     Parameters
     ----------
     logits : tensor
-        The network outputs without softmax. This function implements softmax
-        inside.
-    actions : tensor/ placeholder
+        The network outputs without softmax. This function implements softmax inside.
+    actions : tensor or placeholder
         The agent actions.
-    rewards : tensor/ placeholder
+    rewards : tensor or placeholder
         The rewards.
 
     Examples
@@ -91,6 +91,7 @@ def log_weight(probs, weights, name='log_weight'):
     probs : tensor
         If it is a network output, usually we should scale it to [0, 1] via softmax.
     weights : tensor
+        The weights.
     """
     with tf.variable_scope(name):
         exp_v = tf.reduce_mean(tf.log(probs) * weights)
@@ -102,10 +103,11 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
 
     Parameters
     ------------
-    probs : a list of float.
+    probs : list of float.
         The probability distribution of all actions.
-    action_list : None or a list of action in integer, string or others.
-        If None, returns an integer range between 0 and len(probs)-1.
+    action_list : None or a list of int or others
+        A list of action in integer, string or others.
+        - If None, returns an integer range between 0 and len(probs)-1.
 
     Examples
     ----------

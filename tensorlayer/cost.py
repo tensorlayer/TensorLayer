@@ -18,7 +18,7 @@ def cross_entropy(output, target, name=None):
     Parameters
     ----------
     output : Tensorflow variable
-        A distribution with shape: [batch_size, n_feature].
+        A batch of distribution with shape: [batch_size, num of classes].
     target : Tensorflow variable
         A batch of index with shape: [batch_size, ].
     name : string
@@ -41,7 +41,17 @@ def cross_entropy(output, target, name=None):
 
 
 def sigmoid_cross_entropy(output, target, name=None):
-    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``."""
+    """It is a sigmoid cross-entropy operation, see ``tf.nn.sigmoid_cross_entropy_with_logits``.
+
+    Parameters
+    ----------
+    output : Tensor
+        A batch of distribution with shape: [batch_size, num of classes].
+    target : Tensor
+        A batch of index with shape: [batch_size, ].
+    name : string
+        Name of this loss.
+    """
     # try: # TF 1.0
     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
     # except:
@@ -49,20 +59,22 @@ def sigmoid_cross_entropy(output, target, name=None):
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
-    """Computes binary cross entropy given `output`.
+    """It is a binary cross entropy operation.
 
-    For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
-
-        loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
+    # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
+    #
+    #     loss(x, z) = - sum_i (x[i] * log(z[i]) + (1 - x[i]) * log(1 - z[i]))
 
     Parameters
     ----------
-    output : tensor of type `float32` or `float64`.
-    target : tensor of the same type and shape as `output`.
+    output : Tensor
+        Tensor with type of `float32` or `float64`.
+    target : Tensor
+        The target distribution, format the same with `output`.
     epsilon : float
-        A small value to avoid output is zero.
-    name : string
-        An optional name to attach to this layer.
+        A small value to avoid output to be zero.
+    name : str
+        An optional name to attach to this function.
 
     References
     -----------
@@ -81,9 +93,14 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
 
     Parameters
     ----------
-    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
-    target : 2D, 3D or 4D tensor.
-    is_mean : boolean, if True, use ``tf.reduce_mean`` to compute the loss of one data, otherwise, use ``tf.reduce_sum`` (default).
+    output : Tensor
+        2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
+    target : Tensor
+        The target distribution, format the same with `output`.
+    is_mean : boolean
+        Whether compute the mean or sum for each example.
+        - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
+        - If False, use ``tf.reduce_sum`` (default).
 
     References
     ------------
@@ -115,8 +132,12 @@ def normalized_mean_square_error(output, target):
 
     Parameters
     ----------
-    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
-    target : 2D, 3D or 4D tensor.
+    Parameters
+    ----------
+    output : Tensor
+        2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
+    target : Tensor
+        The target distribution, format the same with `output`.
     """
     with tf.name_scope("mean_squared_error_loss"):
         if output.get_shape().ndims == 2:  # [batch_size, n_feature]
@@ -137,9 +158,14 @@ def absolute_difference_error(output, target, is_mean=False):
 
     Parameters
     ----------
-    output : 2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, w, h] or [batch_size, w, h, c].
-    target : 2D, 3D or 4D tensor.
-    is_mean : boolean, if True, use ``tf.reduce_mean`` to compute the loss of one data, otherwise, use ``tf.reduce_sum`` (default).
+    output : Tensor
+        2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
+    target : Tensor
+        The target distribution, format the same with `output`.
+    is_mean : boolean
+        Whether compute the mean or sum for each example.
+        - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
+        - If False, use ``tf.reduce_sum`` (default).
     """
     with tf.name_scope("mean_squared_error_loss"):
         if output.get_shape().ndims == 2:  # [batch_size, n_feature]
@@ -169,13 +195,13 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
 
     Parameters
     -----------
-    output : tensor
+    output : Tensor
         A distribution with shape: [batch_size, ....], (any dimensions).
-    target : tensor
-        A distribution with shape: [batch_size, ....], (any dimensions).
-    loss_type : string
+    target : Tensor
+        The target distribution, format the same with `output`.
+    loss_type : str
         ``jaccard`` or ``sorensen``, default is ``jaccard``.
-    axis : list of integer
+    axis : list of int
         All dimensions are reduced, default ``[1,2,3]``.
     smooth : float
         This small value will be added to the numerator and denominator.
@@ -223,7 +249,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
     output : tensor
         A distribution with shape: [batch_size, ....], (any dimensions).
     target : tensor
-        A distribution with shape: [batch_size, ....], (any dimensions).
+        The target distribution, format the same with `output`.
     threshold : float
         The threshold value to be true.
     axis : list of integer
@@ -254,14 +280,14 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
 def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
     """Non-differentiable Intersection over Union (IoU) for comparing the
     similarity of two batch of data, usually be used for evaluating binary image segmentation.
-    The coefficient between 0 to 1, 1 means totally match.
+    The coefficient between 0 to 1, and 1 means totally match.
 
     Parameters
     -----------
     output : tensor
-        A distribution with shape: [batch_size, ....], (any dimensions).
+        A batch of distribution with shape: [batch_size, ....], (any dimensions).
     target : tensor
-        A distribution with shape: [batch_size, ....], (any dimensions).
+        The target distribution, format the same with `output`.
     threshold : float
         The threshold value to be true.
     axis : list of integer
@@ -322,22 +348,27 @@ def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
 
 def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, num_steps=None):
     """Returns the expression of cross-entropy of two sequences, implement
-    softmax internally. Normally be used for Fixed Length RNN outputs.
+    softmax internally. Normally be used for fixed length RNN outputs, see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_.
 
     Parameters
     ----------
-    logits : Tensorflow variable
-        2D tensor, ``network.outputs``, [batch_size*n_steps (n_examples), number of output units]
-    target_seqs : Tensorflow variable
-        target : 2D tensor [batch_size, n_steps], if the number of step is dynamic, please use ``cross_entropy_seq_with_mask`` instead.
+    logits : Tensor
+        2D tensor with shape of `[batch_size * n_steps, n_classes]`.
+    target_seqs : Tensor
+        The target sequence, 2D tensor `[batch_size, n_steps]`, if the number of step is dynamic, please use ``tl.cost.cross_entropy_seq_with_mask`` instead.
     batch_size : None or int.
-        If not None, the return cost will be divided by batch_size.
+        Whether to divide the cost by batch size.
+        - If integer, the return cost will be divided by `batch_size`.
+        - If None (default), the return cost will not be divided by anything.
 
     Examples
     --------
-    >>> see PTB tutorial for more details
-    >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> targets = tf.placeholder(tf.int32, [batch_size, num_steps])
+    >>> see `PTB example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`_ for more details
+    >>> input_data = tf.placeholder(tf.int32, [batch_size, n_steps])
+    >>> targets = tf.placeholder(tf.int32, [batch_size, n_steps])
+    >>> # build the network
+    >>> print(net.outputs)
+    ... (batch_size * n_steps, n_classes)
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
     """
     # try: # TF 1.0
@@ -355,23 +386,48 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
 
 def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=False, name=None):
     """Returns the expression of cross-entropy of two sequences, implement
-    softmax internally. Normally be used for Dynamic RNN outputs.
+    softmax internally. Normally be used for Dynamic RNN with Synced sequence input and output.
 
     Parameters
     -----------
-    logits : network identity outputs
-        2D tensor, ``network.outputs``, [batch_size, number of output units].
-    target_seqs : int of tensor, like word ID.
-        [batch_size, ?]
-    input_mask : the mask to compute loss
-        The same size with target_seqs, normally 0 and 1.
+    logits : Tensor
+        2D tensor with shape of [batch_size * ?, n_classes], `?` means dynamic IDs for each example.
+        - Can be get from `DynamicRNNLayer` by setting ``return_seq_2d`` to `True`.
+    target_seqs : Tensor
+        int of tensor, like word ID. [batch_size, ?], `?` means dynamic IDs for each example.
+    input_mask : Tensor
+        The mask to compute loss, it has the same size with `target_seqs`, normally 0 or 1.
     return_details : boolean
+        Whether to return detailed losses.
         - If False (default), only returns the loss.
-        - If True, returns the loss, losses, weights and targets (reshape to one vetcor).
+        - If True, returns the loss, losses, weights and targets (see source code).
 
     Examples
     --------
-    - see Image Captioning Example.
+    >>> batch_size = 64
+    >>> vocab_size = 10000
+    >>> embedding_size = 256
+    >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
+    >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target")
+    >>> input_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="mask")
+    >>> net = tl.layers.EmbeddingInputlayer(
+    ...         inputs = input_seqs,
+    ...         vocabulary_size = vocab_size,
+    ...         embedding_size = embedding_size,
+    ...         name = 'seq_embedding')
+    >>> net = tl.layers.DynamicRNNLayer(net,
+    ...         cell_fn = tf.contrib.rnn.BasicLSTMCell,
+    ...         n_hidden = embedding_size,
+    ...         dropout = (0.7 if is_train else None),
+    ...         sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
+    ...         return_seq_2d = True,
+    ...         name = 'dynamicrnn')
+    >>> print(net.outputs)
+    ... (?, 256)
+    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
+    >>> print(net.outputs)
+    ... (?, 10000)
+    >>> loss = tl.cost.cross_entropy_seq_with_mask(net.outputs, target_seqs, input_mask)
     """
     targets = tf.reshape(target_seqs, [-1])  # to one vector
     weights = tf.to_float(tf.reshape(input_mask, [-1]))  # to one vector like targets
@@ -398,7 +454,8 @@ def cosine_similarity(v1, v2):
 
     Parameters
     -----------
-    v1, v2 : tensor of [batch_size, n_feature], with the same number of features.
+    v1, v2 : tensor
+        Tensor with the same shape [batch_size, n_feature].
 
     Returns
     -----------
@@ -413,9 +470,7 @@ def cosine_similarity(v1, v2):
 
 ## Regularization Functions
 def li_regularizer(scale, scope=None):
-    """Li regularization removes the neurons of previous layer.
-
-    `i` represents `inputs`.
+    """Li regularization removes the neurons of previous layer. The `i` represents `inputs`.
     Returns a function that can be used to apply group li regularization to weights.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
@@ -423,7 +478,8 @@ def li_regularizer(scale, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: An optional scope name for TF12+.
+    scope: str
+        An optional scope name for this function.
 
     Returns
     --------
@@ -463,9 +519,7 @@ def li_regularizer(scale, scope=None):
 
 
 def lo_regularizer(scale, scope=None):
-    """Lo regularization removes the neurons of current layer.
-
-    `o` represents `outputs`
+    """Lo regularization removes the neurons of current layer. The `o` represents `outputs`
     Returns a function that can be used to apply group lo regularization to weights.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
@@ -473,7 +527,8 @@ def lo_regularizer(scale, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: An optional scope name for TF12+.
+    scope: str
+        An optional scope name for this function.
 
     Returns
     -------
@@ -514,15 +569,15 @@ def lo_regularizer(scale, scope=None):
 
 def maxnorm_regularizer(scale=1.0, scope=None):
     """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
-
-    About max-norm: `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
+    More about max-norm, see `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: An optional scope name.
+    scope: str
+        An optional scope name for this function.
 
     Returns
     ---------
@@ -563,7 +618,6 @@ def maxnorm_regularizer(scale=1.0, scope=None):
 
 def maxnorm_o_regularizer(scale, scope):
     """Max-norm output regularization removes the neurons of current layer.
-
     Returns a function that can be used to apply max-norm regularization to each column of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
@@ -571,7 +625,8 @@ def maxnorm_o_regularizer(scale, scope):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: An optional scope name.
+    scope: str
+        An optional scope name for this function.
 
     Returns
     ---------
@@ -612,7 +667,6 @@ def maxnorm_o_regularizer(scale, scope):
 
 def maxnorm_i_regularizer(scale, scope=None):
     """Max-norm input regularization removes the neurons of previous layer.
-
     Returns a function that can be used to apply max-norm regularization to each row of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
@@ -620,7 +674,8 @@ def maxnorm_i_regularizer(scale, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: An optional scope name.
+    scope: str
+        An optional scope name for this function.
 
     Returns
     ---------
