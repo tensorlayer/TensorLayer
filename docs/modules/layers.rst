@@ -347,7 +347,7 @@ Name Scope and Sharing Parameters
 ---------------------------------
 
 These functions help you to reuse parameters for different inference (graph), and get a
-list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`_.
+list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`__.
 
 Get variables with name
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -758,7 +758,7 @@ Connect TF-Slim
 ------------------
 
 Yes ! TF-Slim models can be connected into TensorLayer, all Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`_ .
+see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`__.
 
 .. autoclass:: SlimNetsLayer
 
