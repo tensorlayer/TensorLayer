@@ -41,6 +41,7 @@ class TimeDistributedLayer(Layer):
     ... param   0: (100, 50)          time_dense/dense/W:0
     ... param   1: (50,)              time_dense/dense/b:0
     ... num of params: 5050
+
     """
 
     def __init__(

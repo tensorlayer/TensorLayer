@@ -21,6 +21,7 @@ def exit_tf(sess=None, port=6006):
         TensorFlow Session.
     tb_port : int
         TensorBoard port you want to close, `6006` as default.
+
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
@@ -53,6 +54,7 @@ def open_tb(logdir='/tmp/tensorflow', port=6006):
         Directory where your tensorboard logs are saved
     port : int
         TensorBoard port you want to open, 6006 is tensorboard default
+
     """
     text = "[TL] Open tensorboard, go to localhost:" + str(port) + " to access"
     text2 = " not yet supported by this function (tl.ops.open_tb)"
@@ -83,6 +85,7 @@ def clear_all(printable=True):
     ----------
     printable : boolean
         If True, print all deleted variables.
+
     """
     logging.info('clear all .....................................')
     gl = globals().copy()
@@ -132,6 +135,7 @@ def set_gpu_fraction(sess=None, gpu_fraction=0.3):
     References
     ----------
     - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`_
+
     """
     logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
@@ -165,6 +169,7 @@ def disable_print():
     >>> print("You can't see me")
     >>> tl.ops.enable_print()
     >>> print("You can see me")
+
     """
     # sys.stdout = os.devnull   # this one kill the process
     sys.stdout = None
@@ -172,7 +177,10 @@ def disable_print():
 
 
 def enable_print():
-    """Enable console output, see ``tl.ops.disable_print()``
+    """Enable console output.
+
+    see ``tl.ops.disable_print()``
+
     """
     sys.stdout = sys.__stdout__
     sys.stderr = sys.__stderr__
@@ -213,6 +221,7 @@ def suppress_stdout():
     References
     -----------
     - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`_
+
     """
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
@@ -229,6 +238,7 @@ def get_site_packages_directory():
     Examples
     ---------
     >>> loc = tl.ops.get_site_packages_directory()
+
     """
     import site
     try:
@@ -261,6 +271,3 @@ def empty_trash():
             pass
     else:
         logging.info(_platform)
-
-
-#

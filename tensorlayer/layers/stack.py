@@ -20,6 +20,7 @@ class StackLayer(Layer):
         Dimension along which to concatenate.
     name : str
         A unique layer name.
+
     """
 
     def __init__(
@@ -69,6 +70,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
     -------
     list of :class:`Layer`
         The list of layer objects unstacked from the input.
+
     """
     inputs = layer.outputs
     with tf.variable_scope(name) as vs:

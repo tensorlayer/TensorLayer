@@ -23,6 +23,7 @@ class PadLayer(Layer):
         "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive).
     name : str
         A unique layer name.
+
     """
 
     def __init__(

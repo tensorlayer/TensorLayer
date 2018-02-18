@@ -42,8 +42,8 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     ...                      [0., 1., 0.]])
     >>> identity = identity.flatten()
     >>> theta = tf.Variable(initial_value=identity)
-    """
 
+    """
     def _repeat(x, n_repeats):
         with tf.variable_scope('_repeat'):
             rep = tf.transpose(tf.expand_dims(tf.ones(shape=tf.stack([
@@ -188,6 +188,7 @@ def batch_transformer(U, thetas, out_size, name='BatchSpatialTransformer2dAffine
     ------
     float
         Tensor of size [batch * num_transforms, out_height, out_width, num_channels]
+
     """
     with tf.variable_scope(name):
         num_batch, num_transforms = map(int, thetas.get_shape().as_list()[:2])
@@ -216,6 +217,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     -----------
     - `Spatial Transformer Networks <https://arxiv.org/abs/1506.02025>`_
     - `TensorFlow/Models <https://github.com/tensorflow/models/tree/master/transformer>`_
+
     """
 
     def __init__(

@@ -22,6 +22,7 @@ def read_image(image, path=''):
     -----------
     images : string, file name.
     path : string, path.
+
     """
     return scipy.misc.imread(os.path.join(path, image))
 
@@ -35,6 +36,7 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     path : string, image folder path.
     n_threads : int, number of thread to read image.
     printable : bool, print infomation when reading images, default is True.
+
     """
     imgs = []
     for idx in range(0, len(img_list), n_threads):
@@ -54,6 +56,7 @@ def save_image(image, image_path=''):
     -----------
     images : numpy array [w, h, c]
     image_path : string.
+
     """
     try:  # RGB
         scipy.misc.imsave(image_path, image)
@@ -75,6 +78,7 @@ def save_images(images, size, image_path=''):
     ---------
     >>> images = np.random.rand(64, 100, 100, 3)
     >>> tl.visualize.save_images(images, [8, 8], 'temp.png')
+
     """
     if len(images.shape) == 3:  # Greyscale [batch, h, w] --> [batch, h, w, 1]
         images = images[:, :, :, np.newaxis]
@@ -121,6 +125,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], clas
     -----------
     - OpenCV rectangle and putText.
     - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`_.
+
     """
     assert len(coords) == len(classes), "number of coordinates and classes are equal"
     if len(scores) > 0:
@@ -189,6 +194,7 @@ def W(W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=23
     Examples
     --------
     >>> tl.visualize.W(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
+
     """
     import matplotlib.pyplot as plt
     if saveable is False:
@@ -253,6 +259,7 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
     >>> env = gym.make("Pong-v0")
     >>> observation = env.reset()
     >>> tl.visualize.frame(observation)
+
     """
     import matplotlib.pyplot as plt
     if saveable is False:
@@ -293,6 +300,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     Examples
     --------
     >>> tl.visualize.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_mnist', fig_idx=2012)
+
     """
     import matplotlib.pyplot as plt
     # logging.info(CNN.shape)    # (5, 5, 3, 64)
@@ -354,6 +362,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
     --------
     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
     >>> tl.visualize.images2d(X_train[0:100,:,:,:], second=10, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
+
     """
     import matplotlib.pyplot as plt
     # logging.info(images.shape)    # (50000, 32, 32, 3)
@@ -422,6 +431,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
     >>> final_embeddings = normalized_embeddings.eval()
     >>> tl.visualize.tsne_embedding(final_embeddings, labels, reverse_dictionary,
     ...                   plot_only=500, second=5, saveable=False, name='tsne')
+
     """
     import matplotlib.pyplot as plt
 

@@ -34,6 +34,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
     --------
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
+
     """
     path = os.path.join(path, 'mnist')
 
@@ -116,6 +117,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
     - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
     - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
     - `<https://teratail.com/questions/28932>`_
+
     """
     path = os.path.join(path, 'cifar10')
     logging.info("Load or Download cifar10 > {}".format(path))
@@ -237,6 +239,7 @@ def load_ptb_dataset(path='data'):
     Notes
     ------
     - If you want to get the raw data, see the source code.
+
     """
     path = os.path.join(path, 'ptb')
     logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
@@ -288,6 +291,7 @@ def load_matt_mahoney_text8_dataset(path='data'):
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> print('Data size', len(words))
+
     """
     path = os.path.join(path, 'mm_test8')
     logging.info("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
@@ -337,6 +341,7 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
     References
     -----------
     - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
+
     """
     path = os.path.join(path, 'imdb')
 
@@ -415,6 +420,7 @@ def load_nietzsche_dataset(path='data'):
     >>> words = tl.files.load_nietzsche_dataset()
     >>> words = basic_clean_str(words)
     >>> words = words.split()
+
     """
     logging.info("Load or Download nietzsche dataset > {}".format(path))
     path = os.path.join(path, 'nietzsche')
@@ -446,6 +452,7 @@ def load_wmt_en_fr_dataset(path='data'):
     Notes
     -----
     Usually, it will take a long time to download this dataset.
+
     """
     path = os.path.join(path, 'wmt_en_fr')
     # URLs for WMT data.
@@ -521,6 +528,7 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
 
     - Get all images
     >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
+
     """
     path = os.path.join(path, 'flickr25k')
 
@@ -587,6 +595,7 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
 
     - Use 1 Million images
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
+
     """
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
@@ -668,6 +677,7 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
     Examples
     ---------
     >>> im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
+
     """
     path = os.path.join(path, 'cyclegan')
     url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
@@ -710,6 +720,7 @@ def download_file_from_google_drive(id, destination):
         The driver ID.
     destination : str
         The destination for save file.
+
     """
     from tqdm import tqdm
     import requests
@@ -748,6 +759,7 @@ def load_celebA_dataset(path='data'):
     -----------
     path : str
         The path that the data is downloaded to, defaults is ``data/celebA/``.
+
     """
     import zipfile, os
     data_dir = 'celebA'
@@ -838,6 +850,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`_.
     - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`_.
     - `TensorFlow/Models/object-detection <https://github.com/zsdonghao/object-detection/blob/master/g3doc/preparing_inputs.md>`_.
+
     """
     path = os.path.join(path, 'VOC')
 
@@ -851,6 +864,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
         Returns:
             Python dictionary holding XML contents.
+
         """
         if not xml:
             # if xml is not None:
@@ -1103,6 +1117,7 @@ def save_npz(save_list=[], name='model.npz', sess=None):
     References
     ----------
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+
     """
     ## save params into a list
     save_list_var = []
@@ -1149,6 +1164,7 @@ def load_npz(path='', name='model.npz'):
     References
     ----------
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+
     """
     ## if save_npz save params into a dictionary
     # d = np.load( path+name )
@@ -1193,6 +1209,7 @@ def assign_params(sess, params, network):
     References
     ----------
     - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
+
     """
     ops = []
     for idx, param in enumerate(params):
@@ -1221,6 +1238,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     Examples
     --------
     - See ``tl.files.save_npz``
+
     """
     assert network is not None
     assert sess is not None
@@ -1247,6 +1265,7 @@ def save_npz_dict(save_list=[], name='model.npz', sess=None):
         The name of the `.npz` file.
     sess : Session
         TensorFlow Session.
+
     """
     assert sess is not None
     save_list_names = [tensor.name for tensor in save_list]
@@ -1269,6 +1288,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         The name of the `.npz` file.
     sess : Session
         TensorFlow Session.
+
     """
     assert sess is not None
     if not os.path.exists(name):
@@ -1374,6 +1394,7 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     Examples
     ---------
     - see ``tl.files.load_ckpt()``.
+
     """
     assert sess is not None
     ckpt_file = os.path.join(save_dir, mode_name)
@@ -1421,6 +1442,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     - Load specific ckpt.
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
+
     """
     assert sess is not None
 
@@ -1456,6 +1478,7 @@ def save_any_to_npy(save_dict={}, name='file.npy'):
     >>> data = tl.files.load_npy_to_any(name='test.npy')
     >>> print(data)
     ... {'data': ['a','b']}
+
     """
     np.save(name, save_dict)
 
@@ -1466,6 +1489,7 @@ def load_npy_to_any(path='', name='file.npy'):
     Examples
     ---------
     - see tl.files.save_any_to_npy()
+
     """
     file_path = os.path.join(path, name)
     try:
@@ -1507,13 +1531,14 @@ def read_file(filepath):
     Examples
     ---------
     >>> data = tl.files.read_file('data.txt')
+
     """
     with open(filepath, 'r') as afile:
         return afile.read()
 
 
 def load_file_list(path=None, regx='\.npz', printable=True):
-    """Return a file list in a folder by given a path and regular expression.
+    r"""Return a file list in a folder by given a path and regular expression.
 
     Parameters
     ----------
@@ -1527,6 +1552,7 @@ def load_file_list(path=None, regx='\.npz', printable=True):
     Examples
     ----------
     >>> file_list = tl.files.load_file_list(path=None, regx='w1pre_[0-9]+\.(npz)')
+
     """
     if path is None:
         path = os.getcwd()
@@ -1549,6 +1575,7 @@ def load_folder_list(path=""):
     ----------
     path : str
         A folder path.
+
     """
     return [os.path.join(path, o) for o in os.listdir(path) if os.path.isdir(os.path.join(path, o))]
 
@@ -1571,6 +1598,7 @@ def exists_or_mkdir(path, verbose=True):
     Examples
     --------
     >>> tl.files.exists_or_mkdir("checkpoints/train")
+
     """
     if not os.path.exists(path):
         if verbose:
@@ -1613,8 +1641,8 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     ...                                             working_directory='data/',
     ...                                             url_source='http://sceneparsing.csail.mit.edu/data/',
     ...                                             extract=True)
-    """
 
+    """
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
@@ -1669,8 +1697,8 @@ def natural_keys(text):
     References
     ----------
     - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`_
-    """
 
+    """
     # - alist.sort(key=natural_keys) sorts in human order
     # http://nedbatchelder.com/blog/200712/human_sorting.html
     # (See Toothy's implementation in the comments)
@@ -1682,7 +1710,7 @@ def natural_keys(text):
 
 # Visualizing npz files
 def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    """Convert the first weight matrix of `.npz` file to `.pdf` by using `tl.visualize.W()`.
+    r"""Convert the first weight matrix of `.npz` file to `.pdf` by using `tl.visualize.W()`.
 
     Parameters
     ----------
@@ -1695,6 +1723,7 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     ---------
     - Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
     >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
+
     """
     file_list = load_file_list(path=path, regx=regx)
     for f in file_list:

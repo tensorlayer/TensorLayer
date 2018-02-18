@@ -32,6 +32,7 @@ def cross_entropy(output, target, name=None):
     -----------
     - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.
     - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
+
     """
     # try: # old
     #     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
@@ -51,6 +52,7 @@ def sigmoid_cross_entropy(output, target, name=None):
         A batch of index with shape: [batch_size, ].
     name : string
         Name of this loss.
+
     """
     # try: # TF 1.0
     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
@@ -79,6 +81,7 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     References
     -----------
     - `DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`_
+
     """
     #     from tensorflow.python.framework import ops
     #     with ops.op_scope([output, target], name, "bce_loss") as name:
@@ -105,6 +108,7 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
     References
     ------------
     - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`_
+
     """
     with tf.name_scope(name):
         if output.get_shape().ndims == 2:  # [batch_size, n_feature]
@@ -136,6 +140,7 @@ def normalized_mean_square_error(output, target):
         2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
     target : Tensor
         The target distribution, format the same with `output`.
+
     """
     with tf.name_scope("mean_squared_error_loss"):
         if output.get_shape().ndims == 2:  # [batch_size, n_feature]
@@ -164,6 +169,7 @@ def absolute_difference_error(output, target, is_mean=False):
         Whether compute the mean or sum for each example.
         - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
         - If False, use ``tf.reduce_sum`` (default).
+
     """
     with tf.name_scope("mean_squared_error_loss"):
         if output.get_shape().ndims == 2:  # [batch_size, n_feature]
@@ -216,6 +222,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
     References
     -----------
     - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+
     """
     inse = tf.reduce_sum(output * target, axis=axis)
     if loss_type == 'jaccard':
@@ -258,6 +265,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
     References
     -----------
     - `Wiki-Dice <https://en.wikipedia.org/wiki/Sørensen–Dice_coefficient>`_
+
     """
     output = tf.cast(output > threshold, dtype=tf.float32)
     target = tf.cast(target > threshold, dtype=tf.float32)
@@ -296,6 +304,7 @@ def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
     Notes
     ------
     - IoU cannot be used as training loss, people usually use dice coefficient for training, IoU and hard-dice for evaluating.
+
     """
     pre = tf.cast(output > threshold, dtype=tf.float32)
     truth = tf.cast(target > threshold, dtype=tf.float32)
@@ -368,6 +377,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
     >>> print(net.outputs)
     ... (batch_size * n_steps, n_classes)
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
+
     """
     # try: # TF 1.0
     sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
@@ -426,6 +436,7 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     >>> print(net.outputs)
     ... (?, 10000)
     >>> loss = tl.cost.cross_entropy_seq_with_mask(net.outputs, target_seqs, input_mask)
+
     """
     targets = tf.reshape(target_seqs, [-1])  # to one vector
     weights = tf.to_float(tf.reshape(input_mask, [-1]))  # to one vector like targets
@@ -458,6 +469,7 @@ def cosine_similarity(v1, v2):
     Returns
     -----------
     a tensor of [batch_size, ]
+
     """
     # try: ## TF1.0
     cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
@@ -486,6 +498,7 @@ def li_regularizer(scale, scope=None):
     Raises
     ------
     ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
+
     """
     import numbers
     from tensorflow.python.framework import ops
@@ -535,6 +548,7 @@ def lo_regularizer(scale, scope=None):
     Raises
     ------
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+
     """
     import numbers
     from tensorflow.python.framework import ops
@@ -584,6 +598,7 @@ def maxnorm_regularizer(scale=1.0, scope=None):
     Raises
     --------
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+
     """
     import numbers
     from tensorflow.python.framework import ops
@@ -633,6 +648,7 @@ def maxnorm_o_regularizer(scale, scope):
     Raises
     ---------
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+
     """
     import numbers
     from tensorflow.python.framework import ops
@@ -682,6 +698,7 @@ def maxnorm_i_regularizer(scale, scope=None):
     Raises
     ---------
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
+
     """
     import numbers
     from tensorflow.python.framework import ops

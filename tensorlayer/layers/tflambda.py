@@ -43,6 +43,7 @@ class LambdaLayer(Layer):
     >>>     return logits
     >>> net = InputLayer(x, name='input')
     >>> net = LambdaLayer(net, fn=keras_block, name='keras')
+
     """
 
     def __init__(
