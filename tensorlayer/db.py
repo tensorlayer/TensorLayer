@@ -7,17 +7,14 @@ Latest Version
 """
 
 import inspect
-import math
 import pickle
 import time
 import uuid
 from datetime import datetime
 
-import gridfs
 import numpy as np
-import pymongo
-import tensorflow as tf
-import tensorlayer as tl
+
+import gridfs
 from pymongo import MongoClient
 
 
