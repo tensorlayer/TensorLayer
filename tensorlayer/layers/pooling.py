@@ -8,8 +8,8 @@ from .core import *
 class PoolLayer(Layer):
     """
     The :class:`PoolLayer` class is a Pooling layer.
-    You can choose ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D or
-    ``tf.nn.max_pool3d`` and ``tf.nn.avg_pool3d`` for 3D.
+    You can choose ``tf.nn.max_pool`` and ``tf.nn.avg_pool`` for 2D input or
+    ``tf.nn.max_pool3d`` and ``tf.nn.avg_pool3d`` for 3D input.
 
     Parameters
     ----------
@@ -24,7 +24,7 @@ class PoolLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     pool : pooling function
-        One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d``, and ``f.nn.avg_pool3d``.
+        One of ``tf.nn.max_pool``, ``tf.nn.avg_pool``, ``tf.nn.max_pool3d`` and ``f.nn.avg_pool3d``.
         See `TensorFlow pooling APIs <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#pooling>`__
     name : str
         A unique layer name.

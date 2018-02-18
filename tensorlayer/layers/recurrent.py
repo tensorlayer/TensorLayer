@@ -16,8 +16,8 @@ class RNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
-        - Note TF1.0+ and TF1.0- are different
+            - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
+            - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell function.
     n_hidden : int
@@ -30,13 +30,13 @@ class RNNLayer(Layer):
         If None, `initial_state` is zero state.
     return_last : boolean
         Whether return last output or all outputs in each step.
-        - If True, return the last output, "Sequence input and single output"
-        - If False, return all outputs, "Synced sequence input and output"
-        - In other word, if you want to stack more RNNs on this layer, set to False.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-        - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
 
@@ -47,13 +47,13 @@ class RNNLayer(Layer):
 
     final_state : Tensor or StateTuple
         The finial state of this layer.
-        - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
-        - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
-        - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
+            - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
+            - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
+            - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
 
     initial_state : Tensor or StateTuple
         The initial state of this layer.
-        - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
+            - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
 
     batch_size : int or Tensor
         It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
@@ -252,8 +252,8 @@ class BiRNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell.
-        See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
-        Note TF1.0+ and TF1.0- are different.
+            - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
+            - Note TF1.0+ and TF1.0- are different.
     cell_init_args : dictionary
         The arguments for the cell function.
     n_hidden : int
@@ -273,13 +273,13 @@ class BiRNNLayer(Layer):
         The number of RNN layers, default is 1.
     return_last : boolean
         Whether return last output or all outputs in each step.
-        If True, return the last output, "Sequence input and single output"
-        If False, return all outputs, "Synced sequence input and output"
-        In other word, if you want to stack more RNNs on this layer, set to False.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
 
@@ -289,12 +289,12 @@ class BiRNNLayer(Layer):
         The output of this layer.
     fw(bw)_final_state : tensor or StateTuple
         The finial state of this layer.
-        When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
-        When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
-        In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
+            - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
+            - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
+            - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
     fw(bw)_initial_state : tensor or StateTuple
         The initial state of this layer.
-        In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
+            - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
     batch_size : int or tensor
         It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
 
@@ -639,30 +639,28 @@ class ConvLSTMLayer(Layer):
         If None, `initial_state` is zero state.
     return_last : boolean
         Whether return last output or all outputs in each step.
-        If True, return the last output, "Sequence input and single output".
-        If False, return all outputs, "Synced sequence input and output".
-        In other word, if you want to stack more RNNs on this layer, set to False.
+            - If True, return the last output, "Sequence input and single output".
+            - If False, return all outputs, "Synced sequence input and output".
+            - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-        If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
 
     Attributes
     ----------
-    outputs : a tensor
+    outputs : tensor
         The output of this RNN. return_last = False, outputs = all cell_output, which is the hidden state.
         cell_output.get_shape() = (?, h, w, c])
 
-    final_state : a tensor or StateTuple
-        When state_is_tuple = False,
-        it is the final hidden and cell states,
-        When state_is_tuple = True,
-        You can get the final state after each iteration during training, then
-        feed it to the initial state of next iteration.
+    final_state : tensor or StateTuple
+        The finial state of this layer.
+            - When state_is_tuple = False, it is the final hidden and cell states,
+            - When state_is_tuple = True, You can get the final state after each iteration during training, then feed it to the initial state of next iteration.
 
-    initial_state : a tensor or StateTuple
+    initial_state : tensor or StateTuple
         It is the initial state of this ConvLSTM layer, you can use it to initialize
         your state at the beginning of each epoch or iteration according to your
         training procedure.
@@ -873,7 +871,9 @@ def retrieve_seq_length_op2(data):
 
 
 def retrieve_seq_length_op3(data, pad_val=0):  # HangSheng: return tensor for sequence length, if input is tf.string
-    """Return tensor for sequence length, if input is ``tf.string``."""
+    """Return tensor for sequence length, if input is ``tf.string``.
+
+    """
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.reduce_sum(tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32), 1)
@@ -886,7 +886,9 @@ def retrieve_seq_length_op3(data, pad_val=0):  # HangSheng: return tensor for se
 
 
 def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if input is tf.string
-    """Return tensor for mask, if input is ``tf.string``."""
+    """Return tensor for mask, if input is ``tf.string``.
+
+    """
     data_shape_size = data.get_shape().ndims
     if data_shape_size == 3:
         return tf.cast(tf.reduce_any(tf.not_equal(data, pad_val), axis=2), dtype=tf.int32)
@@ -909,8 +911,8 @@ class DynamicRNNLayer(Layer):
         Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
-        - Note TF1.0+ and TF1.0- are different
+            - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
+            - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell function.
     n_hidden : int
@@ -919,26 +921,26 @@ class DynamicRNNLayer(Layer):
         The initializer for initializing the parameters.
     sequence_length : tensor, array or None
         The sequence length of each row of input data, see ``Advanced Ops for Dynamic RNN``.
-        - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
-        - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
-        - You can also input an numpy array.
-        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
+            - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
+            - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
+            - You can also input an numpy array.
+            - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
     initial_state : None or RNN State
         If None, `initial_state` is zero state.
     dropout : tuple of float or int
         The input and output keep probability (input_keep_prob, output_keep_prob).
-        - If one int, input and output keep probability are the same.
+            - If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
     return_last : boolean
         Whether return last output or all outputs in each step.
-        - If True, return the last output, "Sequence input and single output"
-        - If False, return all outputs, "Synced sequence input and output"
-        - In other word, if you want to stack more RNNs on this layer, set to False.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
-        - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.dynamic_rnn``.
     name : str
@@ -951,13 +953,13 @@ class DynamicRNNLayer(Layer):
 
     final_state : tensor or StateTuple
         The finial state of this layer.
-        - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
-        - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
-        - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
+            - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
+            - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
+            - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
 
     initial_state : tensor or StateTuple
         The initial state of this layer.
-        - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
+            - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
 
     batch_size : int or tensor
         It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
@@ -1166,8 +1168,8 @@ class BiDynamicRNNLayer(Layer):
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
-        - Note TF1.0+ and TF1.0- are different.
+            - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
+            - Note TF1.0+ and TF1.0- are different.
     cell_init_args : dictionary
         The arguments for the cell initializer.
     n_hidden : int
@@ -1176,28 +1178,28 @@ class BiDynamicRNNLayer(Layer):
         The initializer for initializing the parameters.
     sequence_length : tensor, array or None
         The sequence length of each row of input data, see ``Advanced Ops for Dynamic RNN``.
-        - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
-        - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
-        - You can also input an numpy array.
-        - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
+            - If None, it uses ``retrieve_seq_length_op`` to compute the sequence length, i.e. when the features of padding (on right hand side) are all zeros.
+            - If using word embedding, you may need to compute the sequence length from the ID array (the integer features before word embedding) by using ``retrieve_seq_length_op2`` or ``retrieve_seq_length_op``.
+            - You can also input an numpy array.
+            - More details about TensorFlow dynamic RNN in `Wild-ML Blog <http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/>`__.
     fw_initial_state : None or forward RNN State
         If None, `initial_state` is zero state.
     bw_initial_state : None or backward RNN State
         If None, `initial_state` is zero state.
     dropout : tuple of float or int
         The input and output keep probability (input_keep_prob, output_keep_prob).
-        - If one int, input and output keep probability are the same.
+            - If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
     return_last : boolean
         Whether return last output or all outputs in each step.
-        - If True, return the last output, "Sequence input and single output"
-        - If False, return all outputs, "Synced sequence input and output"
-        - In other word, if you want to stack more RNNs on this layer, set to False.
+            - If True, return the last output, "Sequence input and single output"
+            - If False, return all outputs, "Synced sequence input and output"
+            - In other word, if you want to stack more RNNs on this layer, set to False.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
-        - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
     dynamic_rnn_init_args : dictionary
         The arguments for ``tf.nn.bidirectional_dynamic_rnn``.
     name : str
@@ -1210,13 +1212,13 @@ class BiDynamicRNNLayer(Layer):
 
     fw(bw)_final_state : tensor or StateTuple
         The finial state of this layer.
-        - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
-        - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
-        - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
+            - When `state_is_tuple` is `False`, it is the final hidden and cell states, `states.get_shape() = [?, 2 * n_hidden]`.
+            - When `state_is_tuple` is `True`, it stores two elements: `(c, h)`.
+            - In practice, you can get the final state after each iteration during training, then feed it to the initial state of next iteration.
 
     fw(bw)_initial_state : tensor or StateTuple
         The initial state of this layer.
-        - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
+            - In practice, you can set your state at the begining of each epoch or iteration according to your training procedure.
 
     batch_size : int or tensor
         It is an integer, if it is able to compute the `batch_size`; otherwise, tensor for dynamic batch size.
@@ -1423,8 +1425,8 @@ class Seq2Seq(Layer):
         Decode sequences, [batch_size, None, n_features].
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
-        - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
-        - Note TF1.0+ and TF1.0- are different
+            - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
+            - Note TF1.0+ and TF1.0- are different
     cell_init_args : dictionary
         The arguments for the cell initializer.
     n_hidden : int
@@ -1441,13 +1443,13 @@ class Seq2Seq(Layer):
         If None, `initial_state_decode` is the final state of the RNN encoder, it can be set by placeholder or other RNN.
     dropout : tuple of float or int
         The input and output keep probability (input_keep_prob, output_keep_prob).
-        - If one int, input and output keep probability are the same.
+            - If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
     return_seq_2d : boolean
         Only consider this argument when `return_last` is `False`
-        - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
-        - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
+            - If True, return 2D Tensor [n_example, 2 * n_hidden], for stacking DenseLayer after it.
+            - If False, return 3D Tensor [n_example/n_steps, n_steps, 2 * n_hidden], for stacking multiple RNN after it.
     name : str
         A unique layer name.
 

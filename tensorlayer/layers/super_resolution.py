@@ -137,7 +137,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
     References
     -----------
-    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
+    - `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
 
     """
 
