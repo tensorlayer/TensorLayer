@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import numbers
 
 import tensorflow as tf
 from tensorflow.python.framework import ops

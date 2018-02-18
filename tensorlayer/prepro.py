@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import numbers
-import os
-import random
-import re
 import sys
 import threading
 import time
-from multiprocessing import Pool
 
 import numpy as np
 import scipy

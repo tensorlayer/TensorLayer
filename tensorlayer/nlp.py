@@ -8,7 +8,6 @@ import re
 import subprocess
 import tempfile
 import warnings
-from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
