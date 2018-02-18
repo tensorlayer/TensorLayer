@@ -8,7 +8,6 @@ import numpy as np
 import scipy
 import scipy.ndimage as ndi
 import skimage
-import tensorflow as tf
 import tensorlayer as tl
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
