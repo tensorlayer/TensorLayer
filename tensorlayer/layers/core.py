@@ -529,7 +529,8 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     Examples
     --------
-    - With TensorLayer : see ``tensorlayer/example/tutorial_word2vec_basic.py``
+    With TensorLayer : see ``tensorlayer/example/tutorial_word2vec_basic.py``
+
     >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
     >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> emb_net = tl.layers.Word2vecEmbeddingInputlayer(
@@ -546,7 +547,8 @@ class Word2vecEmbeddingInputlayer(Layer):
     ...                                             cost, var_list=train_params)
     >>> normalized_embeddings = emb_net.normalized_embeddings
 
-    - Without TensorLayer : see ``tensorflow/examples/tutorials/word2vec/word2vec_basic.py``
+    Without TensorLayer : see ``tensorflow/examples/tutorials/word2vec/word2vec_basic.py``
+
     >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
     >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> embeddings = tf.Variable(
@@ -564,7 +566,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     References
     ----------
-    - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
+    `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`_
 
     """
 
@@ -820,8 +822,7 @@ class AverageEmbeddingInputlayer(Layer):
 
 
 class DenseLayer(Layer):
-    """
-    The :class:`DenseLayer` class is a fully connected layer.
+    """The :class:`DenseLayer` class is a fully connected layer.
 
     Parameters
     ----------
@@ -844,11 +845,13 @@ class DenseLayer(Layer):
 
     Examples
     --------
-    - With TensorLayer
+    With TensorLayer
+
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.DenseLayer(net, 800, act=tf.nn.relu, name='relu')
 
-    - Without native TensorLayer APIs, you can do as follow.
+    Without native TensorLayer APIs, you can do as follow.
+
     >>> W = tf.Variable(
     ...     tf.random_uniform([n_in, n_units], -1.0, 1.0), name='W')
     >>> b = tf.Variable(tf.zeros(shape=[n_units]), name='b')
@@ -1116,7 +1119,8 @@ class DropoutLayer(Layer):
 
     Examples
     --------
-    - Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_
+    Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_
+
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
     >>> net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
@@ -1133,7 +1137,8 @@ class DropoutLayer(Layer):
     >>> err, ac = sess.run([cost, acc], feed_dict=feed_dict)
     >>> ...
 
-    - Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_
+    Method 2: Without using ``all_drop`` see `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>`_
+
     >>> def mlp(x, is_train=True, reuse=False):
     >>>     with tf.variable_scope("MLP", reuse=reuse):
     >>>     tl.layers.set_name_reuse(reuse)

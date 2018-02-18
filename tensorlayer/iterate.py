@@ -38,8 +38,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 
 
     Notes
-    -------
-    - If you have two inputs, e.g. X1 (1000, 100) and X2 (1000, 80), you can ``np.hstack((X1, X2))
+    -----
+    If you have two inputs, e.g. X1 (1000, 100) and X2 (1000, 80), you can ``np.hstack((X1, X2))
     into (1000, 180) and feed into ``inputs``, then you can split a batch of X1 and X2.
 
     """
@@ -74,7 +74,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
 
     Examples
     --------
-    - Synced sequence input and output.
+    Synced sequence input and output.
+
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
     >>> y = np.asarray([0, 1, 2, 3, 4, 5])
     >>> for batch in tl.iterate.seq_minibatches(inputs=X, targets=y, batch_size=2, seq_length=2, stride=1):
@@ -92,7 +93,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ...
     ...
 
-    - Many to One
+    Many to One
+
     >>> return_last = True
     >>> num_steps = 2
     >>> X = np.asarray([['a','a'], ['b','b'], ['c','c'], ['d','d'], ['e','e'], ['f','f']])
