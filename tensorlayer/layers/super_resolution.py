@@ -71,7 +71,6 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
     def _PS(X, r, n_out_channels):
         if n_out_channels >= 1:
             assert int(X.get_shape()[-1]) == (r**2) * n_out_channels, _err_log
-
             """
             bsize, a, b, c = X.get_shape().as_list()
             bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
@@ -139,6 +138,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     - `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
 
     """
+
     def _PS(I, r):
         X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
         X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)

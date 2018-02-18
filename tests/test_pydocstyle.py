@@ -8,13 +8,7 @@ import testing
 registry = violations.ErrorRegistry
 
 _disabled_checks = [
-    # 'D413',  # Missing blank line after last section
-    # 'D205',  # 1 blank line required between summary line and description
-    # 'D400',  # First line should end with a period
-    # 'D107',  # Missing docstring in __init__
-    # 'D401',  # First line should be in imperative mood
-    # 'D210',  # No whitespaces allowed surrounding docstring text
-    # 'D100',  # Missing docstring in public module
+    'D202',  #  No blank lines allowed after function docstring
 ]
 
 
