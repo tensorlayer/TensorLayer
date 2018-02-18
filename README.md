@@ -231,7 +231,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 -->
 
 
-# Contributions
+# Community
 
 TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/graphs/contributors). 
 This project is in an active development stage and has received numerous contributions from an open community. 
@@ -245,6 +245,12 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 
 - 🇬🇧 If you have question, drop us an email: tensorlayer@gmail.com.
 - 🇨🇳 我们有官方的[中文文档](http://tensorlayercn.readthedocs.io/zh/latest), 另外我们建立了多种交流渠道, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+
+
+# Contributions
+
+[Contributing guideline](./CONTRIBUTING.md)
+
 
 # Citation
 If you find it is useful, please cite our paper in your project and paper.
