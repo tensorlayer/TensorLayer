@@ -106,6 +106,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
 def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     """It is a 1D sub-pixel up-sampling layer.
+
     Calls a TensorFlow function that directly implements this functionality.
     We assume input has dim (batch, width, r)
 
@@ -120,7 +121,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     name : str
         A unique layer name.
 
-        Returns
+    Returns
     -------
     :class:`Layer`
         A 1D sub-pixel up-sampling layer
@@ -135,7 +136,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
     References
     -----------
-    - `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
+    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`_.
 
     """
 

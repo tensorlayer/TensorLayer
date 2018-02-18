@@ -9,8 +9,7 @@ from .core import *
 
 
 class ConcatLayer(Layer):
-    """
-    The :class:`ConcatLayer` class concat (merge) multiple tensors according to given axis..
+    """A layer that concats multiple tensors according to given axis..
 
     Parameters
     ----------
@@ -78,8 +77,7 @@ class ConcatLayer(Layer):
 
 
 class ElementwiseLayer(Layer):
-    """
-    The :class:`ElementwiseLayer` combines multiple :class:`Layer` that have the same output shapes
+    """A layer that combines multiple :class:`Layer` that have the same output shapes
     according to an element-wise operation.
 
     Parameters
@@ -94,7 +92,8 @@ class ElementwiseLayer(Layer):
 
     Examples
     --------
-    - AND Logic
+    AND Logic
+
     >>> net_0 = tl.layers.DenseLayer(net_0, n_units=500,
     ...                        act = tf.nn.relu, name='net_0')
     >>> net_1 = tl.layers.DenseLayer(net_1, n_units=500,
