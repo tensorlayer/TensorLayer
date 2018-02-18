@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import logging
@@ -30,8 +29,8 @@ def cross_entropy(output, target, name=None):
 
     References
     -----------
-    - About cross-entropy: `wiki <https://en.wikipedia.org/wiki/Cross_entropy>`_.
-    - The code is borrowed from: `here <https://en.wikipedia.org/wiki/Cross_entropy>`_.
+    - About cross-entropy: `<https://en.wikipedia.org/wiki/Cross_entropy>`_.
+    - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`_.
 
     """
     # try: # old
@@ -459,16 +458,21 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
 
 
 def cosine_similarity(v1, v2):
-    """Cosine similarity [-1, 1], `wiki <https://en.wikipedia.org/wiki/Cosine_similarity>`_.
+    """Cosine similarity [-1, 1].
 
     Parameters
-    -----------
-    v1, v2 : tensor
+    ----------
+    v1, v2 : Tensor
         Tensor with the same shape [batch_size, n_feature].
 
     Returns
-    -----------
-    a tensor of [batch_size, ]
+    -------
+    Tensor
+        a tensor of shape [batch_size].
+
+    References
+    ----------
+    - `<https://en.wikipedia.org/wiki/Cosine_similarity>`_.
 
     """
     # try: ## TF1.0
@@ -581,7 +585,8 @@ def lo_regularizer(scale, scope=None):
 
 def maxnorm_regularizer(scale=1.0, scope=None):
     """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
-    More about max-norm, see `wiki <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
+
+    More about max-norm, see `<https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`_.
 
     Parameters
