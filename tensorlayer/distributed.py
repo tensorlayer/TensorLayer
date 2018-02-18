@@ -14,14 +14,14 @@ class TaskSpecDef(object):
 
     It contains the job name, index of the task,
     the parameter servers and the worker servers. If you want to use the last worker
-    for continuous evaluation you can call the method `user_last_worker_as_evaluator`
+    for continuous evaluation you can call the method `use_last_worker_as_evaluator`
     which returns a new :class:`TaskSpecDef` object without the last worker in the
     cluster specification.
 
     Parameters
     ----------
-    node_type : str
-        Node type. One of `master`, `worker` or `ps`.
+    task_type : str
+        Task type. One of `master`, `worker` or `ps`.
     index : int
         The zero-based index of the task. Distributed training jobs will have a single
         master task, one or more parameter servers, and one or more workers.
@@ -50,8 +50,8 @@ class TaskSpecDef(object):
 
     """
 
-    def __init__(self, node_type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
-        self.type = node_type
+    def __init__(self, task_type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
+        self.type = task_type
         self._index = int(index)
         self._cluster_spec = None
         self.num_workers = 1
@@ -119,7 +119,7 @@ class TaskSpecDef(object):
         else:
             return None
 
-    def set_last_worker_as_evaluator(self):
+    def use_last_worker_as_evaluator(self):
         """Returns a new :class:`TaskSpecDef` where the last worker has been removed from
         the list of worker_hosts, so it is not used for training anymore. You can call
         is_evaluator to know whether this server is the evaluator one or not.
@@ -129,7 +129,7 @@ class TaskSpecDef(object):
         """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
-        return TaskSpecDef(node_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
+        return TaskSpecDef(task_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
 
 
 def create_task_spec_def():
@@ -147,7 +147,7 @@ def create_task_spec_def():
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
         return TaskSpecDef(
-            node_type=task_data['type'],
+            task_type=task_data['type'],
             index=task_data['index'],
             trial=task_data['trial'] if 'trial' in task_data else None,
             ps_hosts=cluster_data['ps'],
@@ -156,7 +156,7 @@ def create_task_spec_def():
     elif 'JOB_NAME' in os.environ:
         # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
         return TaskSpecDef(
-            node_type=os.environ['JOB_NAME'],
+            task_type=os.environ['JOB_NAME'],
             index=os.environ['TASK_INDEX'],
             ps_hosts=os.environ.get('PS_HOSTS', None),
             worker_hosts=os.environ.get('WORKER_HOSTS', None),
