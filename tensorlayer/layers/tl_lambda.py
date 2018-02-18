@@ -134,7 +134,7 @@ class SlimNetsLayer(Layer):
         self.all_params.extend(slim_variables)
 
 
-@deprecated("This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+@deprecated("2018-02-15", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
 
@@ -176,7 +176,7 @@ class KerasLayer(Layer):
         self.all_params.extend(variables)
 
 
-@deprecated("This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
+@deprecated("2018-02-15", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
 

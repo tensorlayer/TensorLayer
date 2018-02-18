@@ -9,10 +9,9 @@ from .core import *
 
 
 class FlattenLayer(Layer):
-    """A layer that reshapes high-dimension input to a vector.
+    """A layer that reshapes high-dimension input into a vector.
 
     Then we often apply DenseLayer, RNNLayer, ConcatLayer and etc on the top of a flatten layer.
-
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
 
     Parameters
@@ -47,8 +46,7 @@ class FlattenLayer(Layer):
 
 
 class ReshapeLayer(Layer):
-    """
-    The :class:`ReshapeLayer` class is layer which reshape the tensor.
+    """A layer that reshapes a given tensor.
 
     Parameters
     ----------
@@ -101,8 +99,9 @@ class ReshapeLayer(Layer):
 
 
 class TransposeLayer(Layer):
-    """
-    The :class:`TransposeLayer` class transposes the dimension of a teneor, see `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
+    """A layer that transposes the dimension of a tensor.
+
+    See `tf.transpose() <https://www.tensorflow.org/api_docs/python/tf/transpose>`__ .
 
     Parameters
     ----------
