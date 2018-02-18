@@ -209,7 +209,7 @@ def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', da
 
     Returns
     -------
-    :class:`Layer
+    :class:`Layer`
         A max pooling 3-D layer with a output rank as 5.
     """
     logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))

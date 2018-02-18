@@ -11,16 +11,17 @@ from .core import *
 class TimeDistributedLayer(Layer):
     """
     The :class:`TimeDistributedLayer` class that applies a function to every timestep of the input tensor.
-    For example, if use :class:`DenseLayer` as the `layer_class`, we input [batch_size, length, dim] and
-    output [batch_size , length, new_dim].
+    For example, if use :class:`DenseLayer` as the `layer_class`, we input (batch_size, length, dim) and
+    output (batch_size , length, new_dim).
 
     Parameters
     ----------
     layer : :class:`Layer`
-        Previous layer with output size of [batch_size, length, dim].
+        Previous layer with output size of (batch_size, length, dim).
     layer_class : a :class:`Layer` class
+        The layer class name.
     args : dictionary
-        The arguments for the `layer_class`.
+        The arguments for the ``layer_class``.
     name : str
         A unique layer name.
 
@@ -44,7 +45,7 @@ class TimeDistributedLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             layer_class=None,
             args={},
             name='time_distributed',

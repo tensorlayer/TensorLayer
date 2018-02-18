@@ -32,7 +32,7 @@ class FlattenLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            layer,
             name='flatten_layer',
     ):
         Layer.__init__(self, name=name)
@@ -62,7 +62,7 @@ class ReshapeLayer(Layer):
     Examples
     --------
     - Use TensorLayer
-    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.ReshapeLayer(net, (-1, 28*28), name='reshape')
     >>> print(net.outputs)
@@ -83,8 +83,8 @@ class ReshapeLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            shape=[],
+            layer,
+            shape,
             name='reshape_layer',
     ):
         Layer.__init__(self, name=name)
@@ -113,8 +113,8 @@ class TransposeLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            perm=None,
+            layer,
+            perm,
             name='transpose',
     ):
         Layer.__init__(self, name=name)

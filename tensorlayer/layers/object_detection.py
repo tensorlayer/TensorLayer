@@ -33,8 +33,8 @@ class ROIPoolingLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
-            rois=None,
+            layer,
+            rois,
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',
@@ -46,7 +46,7 @@ class ROIPoolingLayer(Layer):
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
         except Exception as e:
             logging.info(e)
-            logging.info("\nHINT: \n1. https://github.com/deepsense-ai/roi-pooling  \n2. tensorlayer/third_party/roi_pooling\n")
+            logging.info("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 
         self.all_layers = list(layer.all_layers)

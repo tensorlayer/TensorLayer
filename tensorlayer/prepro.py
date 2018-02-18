@@ -1659,9 +1659,6 @@ def erosion(x, radius=3):
     return x
 
 
-## Object Detection
-
-
 def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     """Scale down a list of coordinates from pixel unit to the ratio of image size i.e. in the range of [0, 1].
 
@@ -1670,7 +1667,7 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     coords : list of list for 4 int
         For coordinates of more than one images .e.g.[[x, y, w, h], [x, y, w, h], ...].
     shape : list of 2 int
-        For [height, width].
+        【height, width].
 
     Examples
     ---------
@@ -1715,11 +1712,6 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
     ... [[0.3, 0.4, 0.5, 0.5]]
     """
     return obj_box_coords_rescale(coords=[coord], shape=shape)[0]
-
-
-# coord = obj_box_coord_rescale(coord=[30, 40, 50, 50], shape=[100, 100])
-# logging.info(coord) #[[0.15, 0.4, 0.25, 0.5]]
-# exit()
 
 
 def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
