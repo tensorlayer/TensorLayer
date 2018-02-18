@@ -10,7 +10,9 @@ from tensorflow.python.training import session_run_hook
 
 
 class TaskSpecDef(object):
-    """Specification for the distributed task with the job name, index of the task,
+    """Specification for a distributed task.
+
+    It contains the job name, index of the task,
     the parameter servers and the worker servers. If you want to use the last worker
     for continuous evaluation you can call the method `user_last_worker_as_evaluator`
     which returns a new :class:`TaskSpecDef` object without the last worker in the
@@ -18,15 +20,21 @@ class TaskSpecDef(object):
 
     Parameters
     ----------
-    type : A string with the job name, it will be `master`, `worker` or `ps`.
-    index : The zero-based index of the task. Distributed training jobs will have a single
+    node_type : str
+        Node type. One of `master`, `worker` or `ps`.
+    index : int
+        The zero-based index of the task. Distributed training jobs will have a single
         master task, one or more parameter servers, and one or more workers.
-    trial : The identifier of the trial being run.
-    ps_hosts : A string with a coma separate list of hosts for the parameter servers
+    trial : int
+        The identifier of the trial being run.
+    ps_hosts : str OR list of str
+        A string with a coma separate list of hosts for the parameter servers
         or a list of hosts.
-    worker_hosts : A string with a coma separate list of hosts for the worker servers
+    worker_hosts : str OR list of str
+        A string with a coma separate list of hosts for the worker servers
         or a list of hosts.
-    master : A string with the master hosts
+    master : str
+        A string with the master hosts
 
     Notes
     ----------
@@ -42,8 +50,8 @@ class TaskSpecDef(object):
 
     """
 
-    def __init__(self, type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
-        self.type = type
+    def __init__(self, node_type='master', index=0, trial=None, ps_hosts=None, worker_hosts=None, master=None):
+        self.type = node_type
         self._index = int(index)
         self._cluster_spec = None
         self.num_workers = 1
@@ -111,7 +119,7 @@ class TaskSpecDef(object):
         else:
             return None
 
-    def user_last_worker_as_evaluator(self):
+    def set_last_worker_as_evaluator(self):
         """Returns a new :class:`TaskSpecDef` where the last worker has been removed from
         the list of worker_hosts, so it is not used for training anymore. You can call
         is_evaluator to know whether this server is the evaluator one or not.
@@ -121,12 +129,11 @@ class TaskSpecDef(object):
         """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
-        return TaskSpecDef(type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
+        return TaskSpecDef(node_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
 
 
-def TaskSpec():
-    """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed
-    training.
+def create_task_spec_def():
+    """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed training.
 
     References
     ----------
@@ -134,31 +141,31 @@ def TaskSpec():
     - `TensorPort Distributed Computing <https://www.tensorport.com/documentation/code-details/>`_
 
     """
-    # TF_CONFIG is used in ML-engine
     if 'TF_CONFIG' in os.environ:
+        # TF_CONFIG is used in ML-engine
         env = json.loads(os.environ.get('TF_CONFIG', '{}'))
         task_data = env.get('task', None) or {'type': 'master', 'index': 0}
         cluster_data = env.get('cluster', None) or {'ps': None, 'worker': None, 'master': None}
         return TaskSpecDef(
-            type=task_data['type'],
+            node_type=task_data['type'],
             index=task_data['index'],
             trial=task_data['trial'] if 'trial' in task_data else None,
             ps_hosts=cluster_data['ps'],
             worker_hosts=cluster_data['worker'],
             master=cluster_data['master'] if 'master' in cluster_data else None)
-
-    # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
-    if 'JOB_NAME' in os.environ:
+    elif 'JOB_NAME' in os.environ:
+        # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
         return TaskSpecDef(
-            type=os.environ['JOB_NAME'],
+            node_type=os.environ['JOB_NAME'],
             index=os.environ['TASK_INDEX'],
             ps_hosts=os.environ.get('PS_HOSTS', None),
             worker_hosts=os.environ.get('WORKER_HOSTS', None),
             master=os.environ.get('MASTER_HOST', None))
-    return None
+    else:
+        raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
-def DistributedSession(task_spec=None,
+def create_distributed_session(task_spec=None,
                        checkpoint_dir=None,
                        scaffold=None,
                        hooks=None,
@@ -169,8 +176,46 @@ def DistributedSession(task_spec=None,
                        config=None,
                        stop_grace_period_secs=120,
                        log_step_count_steps=100):
-    """Creates a distributed session. It calls `MonitoredTrainingSession` to create a
-    :class:`MonitoredSession` for distributed training.
+    """Creates a distributed session.
+
+    It calls `MonitoredTrainingSession` to create a :class:`MonitoredSession` for distributed training.
+
+    Parameters
+    ----------
+    task_spec : :class:`TaskSpecDef`.
+        The task spec definition from create_task_spec_def()
+    checkpoint_dir : str.
+        Optional path to a directory where to restore variables.
+    scaffold : ``Scaffold``
+        A `Scaffold` used for gathering or building supportive ops.
+        If not specified, a default one is created. It's used to finalize the graph.
+    hooks : list of ``SessionRunHook`` objects.
+        Optional
+    chief_only_hooks : list of ``SessionRunHook`` objects.
+        Activate these hooks if `is_chief==True`, ignore otherwise.
+    save_checkpoint_secs : int
+        The frequency, in seconds, that a checkpoint is saved
+        using a default checkpoint saver. If `save_checkpoint_secs` is set to
+        `None`, then the default checkpoint saver isn't used.
+    save_summaries_steps : int
+        The frequency, in number of global steps, that the
+        summaries are written to disk using a default summary saver. If both
+        `save_summaries_steps` and `save_summaries_secs` are set to `None`, then
+        the default summary saver isn't used. Default 100.
+    save_summaries_secs : int
+        The frequency, in secs, that the summaries are written
+        to disk using a default summary saver.  If both `save_summaries_steps` and
+        `save_summaries_secs` are set to `None`, then the default summary saver
+        isn't used. Default not enabled.
+    config : ``tf.ConfigProto``
+        an instance of `tf.ConfigProto` proto used to configure the session.
+        It's the `config` argument of constructor of `tf.Session`.
+    stop_grace_period_secs : int
+        Number of seconds given to threads to stop after
+        `close()` has been called.
+    log_step_count_steps : int
+        The frequency, in number of global steps, that the
+        global step/sec is logged.
 
     Examples
     --------
@@ -207,35 +252,6 @@ def DistributedSession(task_spec=None,
     >>>      while not session.should_stop():
     >>>           session.run(tensors)
 
-
-    Parameters
-    ----------
-    task_spec : TaskSpecDef. The task spec definition from TaskSpec()
-    checkpoint_dir : A string.  Optional path to a directory where to restore
-      variables.
-    scaffold : A `Scaffold` used for gathering or building supportive ops. If
-      not specified, a default one is created. It's used to finalize the graph.
-    hooks : Optional list of `SessionRunHook` objects.
-    chief_only_hooks : list of `SessionRunHook` objects. Activate these hooks if
-      `is_chief==True`, ignore otherwise.
-    save_checkpoint_secs : The frequency, in seconds, that a checkpoint is saved
-      using a default checkpoint saver. If `save_checkpoint_secs` is set to
-      `None`, then the default checkpoint saver isn't used.
-    save_summaries_steps : The frequency, in number of global steps, that the
-      summaries are written to disk using a default summary saver. If both
-      `save_summaries_steps` and `save_summaries_secs` are set to `None`, then
-      the default summary saver isn't used. Default 100.
-    save_summaries_secs : The frequency, in secs, that the summaries are written
-      to disk using a default summary saver.  If both `save_summaries_steps` and
-      `save_summaries_secs` are set to `None`, then the default summary saver
-      isn't used. Default not enabled.
-    config : an instance of `tf.ConfigProto` proto used to configure the session.
-      It's the `config` argument of constructor of `tf.Session`.
-    stop_grace_period_secs : Number of seconds given to threads to stop after
-      `close()` has been called.
-    log_step_count_steps : The frequency, in number of global steps, that the
-      global step/sec is logged.
-
     References
     ----------
     - `MonitoredTrainingSession <https://www.tensorflow.org/api_docs/python/tf/train/MonitoredTrainingSession>`_
@@ -263,12 +279,14 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
 
     Parameters
     ----------
-    time_running: Maximum time running in seconds
+    time_running: int
+        Maximum time running in seconds
 
     """
 
     def __init__(self, time_running):
         self._time_running = time_running
+        self._end_time = 0
 
     def begin(self):
         self._end_time = time.time() + self._time_running
@@ -302,3 +320,8 @@ class LoadCheckpoint(session_run_hook.SessionRunHook):
         if not self._loaded:
             self._loaded = True
             self._saver.restore(self._checkpoint)
+
+
+# Alias
+TaskSpec = create_task_spec_def
+DistributedSession = create_distributed_session
