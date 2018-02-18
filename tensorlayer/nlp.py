@@ -338,7 +338,9 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
 
 
 def create_vocab(sentences, word_counts_output_file, min_word_count=1):
-    """Creates the vocabulary of word to word_id, see create_vocab() and ``tutorial_tfrecord3.py``.
+    """Creates the vocabulary of word to word_id.
+
+    See ``tutorial_tfrecord3.py``.
 
     The vocabulary is saved to disk in a text file of word counts. The id of each
     word in the file is its corresponding 0-based line number.
