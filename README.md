@@ -18,7 +18,7 @@
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=latest)](http://tensorlayer.readthedocs.io/en/latest/?badge=latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 
-TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software Award by the [ACM Multimedia Community](http://www.acmmm.org/2017/mm-2017-awardees/).
+TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software Award by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
 - Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
@@ -227,7 +227,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 -->
 
 
-# Community
+# Who are using TensorLayer
 
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
@@ -238,13 +238,13 @@ as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate
 - 🇨🇳 我们同时有华人社群, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
-# Contributions
+# Contribution Guideline
 
 [Contributing guideline](./CONTRIBUTING.md)
 
 
 # Citation
-If you find it is useful, please cite our paper：
+If you find this project useful, we would be grateful if you cite the TensorLayer paper：
 
 ```
 @article{haoTL2017,
