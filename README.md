@@ -24,7 +24,7 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 
 # News
 * [18 Jan] [《深度学习：一起玩转TensorLayer》](http://www.broadview.com.cn/book/5059) (Deep Learning using TensorLayer)
-* [17 Dec] Experimentally release APIs for distributed training (by [TensorPort](https://tensorport.com)). See [tiny example](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py).
+* [17 Dec] Release experimental APIs for distributed training (by [TensorPort](https://tensorport.com)). See [tiny example](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py).
 * [17 Nov] Release data augmentation APIs for object detection, see [tl.prepro](http://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#object-detection).
 * [17 Nov] Support [Convolutional LSTM](https://arxiv.org/abs/1506.04214), see [ConvLSTMLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#conv-lstm-layer).
 * [17 Nov] Support [Deformable Convolution](https://arxiv.org/abs/1703.06211), see [DeformableConv2dLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-deformable-conv).
@@ -41,13 +41,15 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 
 # Installation
 
-TensorLayer has package pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. The simplest way to install TensorLayer in your python program is: 
+TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. 
+The simplest way to install TensorLayer is: 
 
 ```bash
 [for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Recommended)
 [for stable version] pip install tensorlayer
 ```
 
+Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. 
 
 
 # Examples and Tutorials
@@ -121,18 +123,21 @@ TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](h
 -->
 
 
-# Library Features
+# Features
 
-As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address *real-world problems* by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging *production environments*. TensorLayer is developed with the following goals:
+## Design Philosophy
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. 
-A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library is easy for beginners by offering rich neural network 
+examples and tutorials. Later, its APIs can be extended to address *real-world problems* by allowing users to carefully manipulating TensorFlow. In the end, it is able to serve in challenging *production environments*. TensorLayer is a novel library that aims to satisfy development requirements throughout these phases. It has three key features:
+
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. It also
+provides users with massive examples and tutorials to help bootstrap.
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
-- *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
+- *Performance* : TensorLayer provides **zero-cost** abstraction. It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
-## Low Runtime Overhead
+## Negligible Overhead
 
-TensorLayer has negligible overhead. We show this by benchmarking classic deep learning
+TensorLayer has negligible performance overhead. We benchmark classic deep learning
 models using TensorLayer and native TensorFlow implementations
 on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 
@@ -141,14 +146,18 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 | TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
 | TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
-## Comparing TensorLayer with Keras and TFLearn
+## Compared with Keras and TFLearn
 
-A frequent question regarding TensorLayer is what is the different with other libraries like Keras and Tflearn. 
-These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
-but in turn mask the underlying engine from users. Though good for bootstrap, 
-it becomes hard to leverage the advanced features of TensorFlow, which is quite necessary in tackling real-world problems. 
+Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
+These libraries are comfortable to start with. They provide high-level abstractions; 
+but in turn mask the underlying engine features from users. Though good for bootstrap, 
+it becomes hard to manipulate the low-level powerful features of TensorFlow, which we find quite necessary 
+in tackling many real-world problems. 
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
-Users often find it easy to start with the examples and tutorials of TensorLayer, then dive into the TensorFlow low-level APIs only if need through the transparent API design.
+Users often find it easy to start with the examples and tutorials of TensorLayer, and 
+then dive into the TensorFlow low-level APIs only if need through the transparent API design.
+TensorLayer does not intend to create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into
+a TensorLayer environment.
 
 
 # Documentation
@@ -229,7 +238,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 # Academic and Industry Users
 
-TensorLayer is in an active development stage and has received numerous contributions from an open community. 
+TensorLayer is in an active development stage and has an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.

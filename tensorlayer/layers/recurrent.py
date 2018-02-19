@@ -135,7 +135,6 @@ class RNNLayer(Layer):
             n_steps=5,
             initial_state=None,
             return_last=False,
-            # is_reshape = True,
             return_seq_2d=False,
             name='rnn_layer',
     ):
@@ -474,11 +473,10 @@ class ConvRNNCell(object):
         """Integer or TensorShape: size of outputs produced by this cell."""
         raise NotImplementedError("Abstract method")
 
-    def zero_state(self, batch_size, dtype):
+    def zero_state(self, batch_size):
         """Return zero-filled state tensor(s).
         Args:
           batch_size: int, float, or unit Tensor representing the batch size.
-          dtype: the data type to use for the state.
         Returns:
           tensor of shape '[batch_size x shape[0] x shape[1] x num_features]
           filled with zeros
@@ -900,7 +898,6 @@ def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if inp
         raise ValueError("target_mask_op: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
 
 
-# Dynamic RNN
 class DynamicRNNLayer(Layer):
     """
     The :class:`DynamicRNNLayer` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
@@ -1531,7 +1528,6 @@ class Seq2Seq(Layer):
             initial_state_decode=None,
             dropout=None,
             n_layer=1,
-            # return_last = False,
             return_seq_2d=False,
             name='seq2seq',
     ):
@@ -1554,6 +1550,7 @@ class Seq2Seq(Layer):
                 cell_fn=cell_fn,
                 cell_init_args=cell_init_args,
                 n_hidden=n_hidden,
+                initializer=initializer,
                 initial_state=initial_state_encode,
                 dropout=dropout,
                 n_layer=n_layer,
@@ -1568,6 +1565,7 @@ class Seq2Seq(Layer):
                 cell_fn=cell_fn,
                 cell_init_args=cell_init_args,
                 n_hidden=n_hidden,
+                initializer=initializer,
                 initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
                 dropout=dropout,
                 n_layer=n_layer,
