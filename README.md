@@ -130,7 +130,7 @@ A user often find it easy to bootstrap with TensorLayer, and then dive into low-
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
 - *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
-# Low Runtime Overhead
+## Low Runtime Overhead
 
 TensorLayer has negligible overhead. We show this by benchmarking classic deep learning
 models using TensorLayer and native TensorFlow implementations
@@ -141,7 +141,7 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 | TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
 | TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
-# Comparing TensorLayer with Keras and TFLearn
+## Comparing TensorLayer with Keras and TFLearn
 
 A frequent question regarding TensorLayer is what is the different with other libraries like Keras and Tflearn. 
 These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
@@ -227,20 +227,20 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 -->
 
 
-# Who are using TensorLayer
+# TensorLayer Users
 
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
-- 🇬🇧 If you have question, we suggest to create an issue to directly discuss with us.
-- 🇨🇳 我们同时有华人社群, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+- 🇬🇧 If you any question, we suggest to create an issue to discuss with us.
+- 🇨🇳 我们有中文讨论社区: 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
 # Contribution Guideline
 
-[Contributing guideline](./CONTRIBUTING.md)
+[Guideline in 5 lines](./CONTRIBUTING.md)
 
 
 # Citation
