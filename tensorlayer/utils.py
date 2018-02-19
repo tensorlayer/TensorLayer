@@ -10,6 +10,7 @@ from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.util.deprecation import deprecated
 import tensorlayer as tl
 
 from . import _logging as logging
@@ -627,3 +628,26 @@ def set_gpu_fraction(gpu_fraction=0.3):
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
     return sess
+
+
+@deprecated('2018-03-01', 'This will be removed soon as we have changed to logging')
+@contextmanager
+def suppress_stdout():
+    """Temporarily disable console output.
+    Examples
+    ---------
+    >>> print("You can see me")
+    >>> with tl.ops.suppress_stdout():
+    >>>     print("You can't see me")
+    >>> print("You can see me")
+    References
+    -----------
+    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`__
+    """
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
