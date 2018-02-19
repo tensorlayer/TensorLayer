@@ -18,7 +18,7 @@
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=latest)](http://tensorlayer.readthedocs.io/en/latest/?badge=latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 
-TensorLayer is a deep learning and reinforcement learning library based on [TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help both **researchers** and **engineers** build practical machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library built on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and helper functions to facilitate **researchers** and **engineers** in building complex AI applications.  
 
 - **Useful links:** [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
@@ -118,16 +118,13 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 [QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
-# Design Principles
+# Design
 
-As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address **real-world problems** by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging **production environments**.
-
-TensorLayer is designed for beginning, intermediate and professional deep learning users with following goals:
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address **real-world problems** by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging **production environments**. TensorLayer is developed with the following goals:
 
 - *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. 
 A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
-- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., **connected with** [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py)).
 - *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
 # Benchmark
@@ -233,18 +230,13 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 # Community
 
-TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/graphs/contributors). 
-This project is in an active development stage and has received numerous contributions from an open community. 
+TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
-<!--
-TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
- -->
-
-- 🇬🇧 If you have question, drop us an email: tensorlayer@gmail.com.
-- 🇨🇳 我们有官方的[中文文档](http://tensorlayercn.readthedocs.io/zh/latest), 另外我们建立了多种交流渠道, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+- 🇬🇧 If you have question, we suggest to create an issue to directly discuss with us.
+- 🇨🇳 我们同时有华人社群, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
 # Contributions
@@ -253,7 +245,7 @@ TensorLayer started as an internal repository at Imperial College London, helpin
 
 
 # Citation
-If you find it is useful, please cite our paper in your project and paper.
+If you find it is useful, please cite our paper：
 
 ```
 @article{haoTL2017,
