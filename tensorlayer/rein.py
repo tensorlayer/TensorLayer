@@ -123,12 +123,11 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
     probs : list of float.
         The probability distribution of all actions.
     action_list : None or a list of int or others
-        A list of action in integer, string or others.
-            - If None, returns an integer range between 0 and len(probs)-1.
+        A list of action in integer, string or others. If None, returns an integer range between 0 and len(probs)-1.
 
     Returns
     --------
-    float/int/str
+    float int or str
         The chosen action.
 
     Examples

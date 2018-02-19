@@ -474,8 +474,7 @@ class OneHotInputLayer(Layer):
         The value to represnt `ON`.
             - If None, it will default to the value 1.
     off_value : None or number
-        The value to represnt `OFF`.
-            - If None, it will default to the value 0.
+        The value to represnt `OFF`. If None, it will default to the value 0.
     axis : None or int
         The axis.
     dtype : None or TensorFlow dtype

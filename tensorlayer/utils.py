@@ -230,8 +230,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         The batch size for testing, when dataset is large, we should use minibatche for testing;
         if dataset is small, we can set it to None.
     cost : TensorFlow expression or None
-        Metric for cost or others.
-            - If None, would not print the information.
+        Metric for cost or others. If None, would not print the information.
 
     Examples
     --------
