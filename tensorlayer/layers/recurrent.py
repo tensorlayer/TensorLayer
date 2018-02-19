@@ -135,7 +135,6 @@ class RNNLayer(Layer):
             n_steps=5,
             initial_state=None,
             return_last=False,
-            # is_reshape = True,
             return_seq_2d=False,
             name='rnn_layer',
     ):
@@ -474,11 +473,10 @@ class ConvRNNCell(object):
         """Integer or TensorShape: size of outputs produced by this cell."""
         raise NotImplementedError("Abstract method")
 
-    def zero_state(self, batch_size, dtype):
+    def zero_state(self, batch_size):
         """Return zero-filled state tensor(s).
         Args:
           batch_size: int, float, or unit Tensor representing the batch size.
-          dtype: the data type to use for the state.
         Returns:
           tensor of shape '[batch_size x shape[0] x shape[1] x num_features]
           filled with zeros
@@ -900,7 +898,6 @@ def target_mask_op(data, pad_val=0):  # HangSheng: return tensor for mask,if inp
         raise ValueError("target_mask_op: handling data_shape_size %s hasn't been implemented!" % (data_shape_size))
 
 
-# Dynamic RNN
 class DynamicRNNLayer(Layer):
     """
     The :class:`DynamicRNNLayer` class is a dynamic recurrent layer, see ``tf.nn.dynamic_rnn``.
@@ -1431,8 +1428,6 @@ class Seq2Seq(Layer):
         The arguments for the cell initializer.
     n_hidden : int
         The number of hidden units in the layer.
-    initializer : initializer
-        The initializer for the parameters.
     encode_sequence_length : tensor
         For encoder sequence length, see :class:`DynamicRNNLayer` .
     decode_sequence_length : tensor
@@ -1524,14 +1519,12 @@ class Seq2Seq(Layer):
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args={'state_is_tuple': True},
             n_hidden=256,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
             encode_sequence_length=None,
             decode_sequence_length=None,
             initial_state_encode=None,
             initial_state_decode=None,
             dropout=None,
             n_layer=1,
-            # return_last = False,
             return_seq_2d=False,
             name='seq2seq',
     ):

@@ -436,3 +436,66 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
                                                     name=name, fig_idx=fig_idx)
     except ImportError:
         logging.info("Please install sklearn and matplotlib to visualize embeddings.")
+
+
+def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512):
+    """Visualize every columns of the weight matrix to a group of Greyscale img.
+
+    Parameters
+    ----------
+    W : numpy.array
+        The weight matrix
+    second : int
+        The display second(s) for the image(s), if saveable is False.
+    saveable : boolean
+        Save or plot the figure.
+    shape : a list with 2 int
+        The shape of feature image, MNIST is [28, 80].
+    name : a string
+        A name to save the image, if saveable is True.
+    fig_idx : int
+        matplotlib figure index.
+
+    Examples
+    --------
+    >>> tl.visualize.draw_weights(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
+
+    """
+    import matplotlib.pyplot as plt
+    if saveable is False:
+        plt.ion()
+    fig = plt.figure(fig_idx)  # show all feature images
+    size = W.shape[0]
+    n_units = W.shape[1]
+
+    num_r = int(np.sqrt(n_units))  # 每行显示的个数   若25个hidden unit -> 每行显示5个
+    num_c = int(np.ceil(n_units / num_r))
+    count = int(1)
+    for row in range(1, num_r + 1):
+        for col in range(1, num_c + 1):
+            if count > n_units:
+                break
+            a = fig.add_subplot(num_r, num_c, count)
+            # ------------------------------------------------------------
+            # plt.imshow(np.reshape(W[:,count-1],(28,28)), cmap='gray')
+            # ------------------------------------------------------------
+            feature = W[:, count - 1] / np.sqrt((W[:, count - 1]**2).sum())
+            # feature[feature<0.0001] = 0   # value threshold
+            # if count == 1 or count == 2:
+            #     print(np.mean(feature))
+            # if np.std(feature) < 0.03:      # condition threshold
+            #     feature = np.zeros_like(feature)
+            # if np.mean(feature) < -0.015:      # condition threshold
+            #     feature = np.zeros_like(feature)
+            plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray', interpolation="nearest")  #, vmin=np.min(feature), vmax=np.max(feature))
+            # plt.title(name)
+            # ------------------------------------------------------------
+            # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")
+            plt.gca().xaxis.set_major_locator(plt.NullLocator())  # distable tick
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
+            count = count + 1
+    if saveable:
+        plt.savefig(name + '.pdf', format='pdf')
+    else:
+        plt.draw()
+        plt.pause(second)
