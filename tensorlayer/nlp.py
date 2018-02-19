@@ -442,24 +442,25 @@ def simple_read_words(filename="nietzsche.txt"):
 
 
 def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
-    """File to list format context. Note that, this script can not handle punctuations.
+    """Read list format context from a file.
+
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
-    -----------
+    ----------
     filename : str
-        A file path (like .txt file)
+        a file path.
     replace : list of str
-        Replace original string by target string, e.g. `[original string, target string]`. To disable replace use `['', '']`.
+        replace original string by target string.
 
     Returns
-    --------
+    -------
     list of str
-        The context in a list, split by space by default, and use ``<eos>`` to represent ``\n``, e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
+        The context in a list (split using space).
 
-    References
-    ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
+    See Also
+    --------
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     """
     with tf.gfile.GFile(filename, "r") as f:
@@ -477,7 +478,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
 
     Parameters
     ----------
-    eval_data : str
+    eval_file : str
         The file name.
     word2id : dictionary
         a dictionary that maps word to ID.
@@ -485,7 +486,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     Returns
     --------
     numpy.array
-        A `[n_examples, 4]` numpy array containing the analogy question's word IDs.
+        A ``[n_examples, 4]`` numpy array containing the analogy question's word IDs.
 
     Examples
     ---------
