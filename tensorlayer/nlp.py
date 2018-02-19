@@ -172,7 +172,7 @@ class SimpleVocabulary(object):
     Parameters
     ------------
     vocab : dictionary
-        A dictionary for converting word to ID.
+        A dictionary that maps word to ID.
     unk_id : int
         The ID for 'unknown' word.
 
@@ -209,9 +209,9 @@ class Vocabulary(object):
     Attributes
     ------------
     vocab : dictionary
-        A dictionary for converting word to ID.
+        A dictionary that maps word to ID.
     reverse_vocab : list of int
-        A list for converting ID to word.
+        A list that maps ID to word.
     start_id : int
         For start ID.
     end_id : int
@@ -480,7 +480,7 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     eval_data : str
         The file name.
     word2id : dictionary
-        For converting word to ID.
+        a dictionary that maps word to ID.
 
     Returns
     --------
@@ -551,7 +551,7 @@ def build_vocab(data):
     Returns
     --------
     dictionary
-        For converting word to unique ID. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
+        that maps word to unique ID. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
 
     References
     ---------------
@@ -577,13 +577,13 @@ def build_vocab(data):
 
 
 def build_reverse_dictionary(word_to_id):
-    """Given a dictionary for converting word to integer id.
-    Returns a reverse dictionary for converting a id to word.
+    """Given a dictionary that maps word to integer id.
+    Returns a reverse dictionary that maps a id to word.
 
     Parameters
     ----------
     word_to_id : dictionary
-        For converting word to ID.
+        that maps word to ID.
 
     Returns
     --------
@@ -620,9 +620,9 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
             - count[1:] are tuples : the number of occurrence of each word
             - e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     dictionary : dictionary
-        It is `word_to_id` for converting word to ID.
+        It is `word_to_id` that maps word to ID.
     reverse_dictionary : a dictionary
-        It is `id_to_word`, for converting ID to word.
+        It is `id_to_word` that maps ID to word.
 
     Examples
     --------
@@ -668,7 +668,7 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
     data : list of string or byte
         The context in list format
     word_to_id : a dictionary
-        For converting word to ID.
+        that maps word to ID.
     unk_key : str
         Represent the unknown words.
 
@@ -729,7 +729,7 @@ def word_ids_to_words(data, id_to_word):
     data : list of int
         The context in list format.
     id_to_word : dictionary
-        For converting ID to word.
+        a dictionary that maps ID to word.
 
     Returns
     --------
@@ -892,9 +892,9 @@ def initialize_vocabulary(vocabulary_path):
     Returns
     --------
     vocab : dictionary
-        For converting word to ID.
+        a dictionary that maps word to ID.
     rev_vocab : list of int
-        For converting ID to word.
+        a list that maps ID to word.
 
     Examples
     ---------
