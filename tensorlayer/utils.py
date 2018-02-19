@@ -651,3 +651,7 @@ def suppress_stdout():
             yield
         finally:
             sys.stdout = old_stdout
+
+
+# Alias
+tl.ops.suppress_stdout = tl.utils.suppress_stdout
