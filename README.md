@@ -18,38 +18,39 @@
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=latest)](http://tensorlayer.readthedocs.io/en/latest/?badge=latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 
-TensorLayer is a deep learning and reinforcement learning library based on [TensorFlow](https://www.tensorflow.org). It provides rich data processing, model training and serving modules to help both **researchers** and **engineers** build practical machine learning workflows.  
+TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software Award by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
-- **Useful links:** [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [Tricks](https://github.com/wagamamaz/tensorlayer-tricks), [Slack](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
+- Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
 # News
 * [18 Jan] [《深度学习：一起玩转TensorLayer》](http://www.broadview.com.cn/book/5059) (Deep Learning using TensorLayer)
-* [17 Dec] Officially support **Distributed Training** contributed by [TensorPort](https://tensorport.com), see [tiny example](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py).
-* [17 Nov] Release many APIs for data augmentation for object detection, see [tl.prepro](http://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#object-detection).
+* [17 Dec] Experimentally release APIs for distributed training (by [TensorPort](https://tensorport.com)). See [tiny example](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py).
+* [17 Nov] Release data augmentation APIs for object detection, see [tl.prepro](http://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#object-detection).
 * [17 Nov] Support [Convolutional LSTM](https://arxiv.org/abs/1506.04214), see [ConvLSTMLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#conv-lstm-layer).
 * [17 Nov] Support [Deformable Convolution](https://arxiv.org/abs/1703.06211), see [DeformableConv2dLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-deformable-conv).
-* [17 Nov] Download [VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) in one line, see [load\_voc_dataset](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#voc-2007-2012).
-* [17 Oct] We won the **Best Open Source Software Award** [@ACM MM](http://www.acmmm.org/2017/mm-2017-awardees/) 2017, here is the slide for the presentation [[click]](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/TensorLayer%20ACM%20MM.pdf).
 * [17 Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
+<!--
+* [17 Nov] Download [VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) in one line, see [load\_voc_dataset](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#voc-2007-2012).
 * [17 Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
 * [17 Jun] Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
 * [17 Jun] Release [Sub-pixel Convolution 2D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
 * [17 May] You can now use TensorLayer with [TFSlim](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py) and [Keras](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py) together!
+-->
 
 
 
 # Installation
 
-TensorLayer has install prerequisites including TensorFlow, numpy, matplotlib and nltk(optional). For GPU support, CUDA and cuDNN are required. Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. The simplest way to install TensorLayer in your python program is: 
+TensorLayer has package pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. The simplest way to install TensorLayer in your python program is: 
 
 ```bash
-[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Highly Recommended)
+[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Recommended)
 [for stable version] pip install tensorlayer
 ```
 
 
 
-# Examples
+# Examples and Tutorials
 
 Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/tree/master/example) and [Github topic](https://github.com/search?q=topic%3Atensorlayer&type=Repositories).
 
@@ -101,7 +102,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
  - [DAGGER](https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf) for ([Gym Torcs](https://github.com/ugo-nama-kun/gym_torcs)) by [zsdonghao](https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs).
  - [TRPO](https://arxiv.org/abs/1502.05477) for continuous and discrete action space by [jjkke88](https://github.com/jjkke88/RL_toolbox).
 
-## Special Examples
+## Miscellaneous
  - Distributed Training. [mnist](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py) and [imagenet](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_imagenet_inceptionV3_distributed.py) by [jorgemf](https://github.com/jorgemf).
  - Merge TF-Slim into TensorLayer. [tutorial\_inceptionV3_tfslim.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py).
  - Merge Keras into TensorLayer. [tutorial_keras.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py).
@@ -112,47 +113,42 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 - Float 16 half-precision model, see [tutorial\_mnist_float16.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_float16.py)
 
 ## Notes
-* TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
+TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
+<!-- 
 * If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
-[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md). 
+-->
 
 
-# Design Principles
+# Library Features
 
-As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address **real-world problems** by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging **production environments**.
-
-TensorLayer is designed for beginning, intermediate and professional deep learning users with following goals:
+As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library shall be easy for beginners by providing rich neural network reference implementations. Later, it can be extended to address *real-world problems* by controlling training backends to exhibit low-level cognitive behaviours. In the end, it shall be able to serve in challenging *production environments*. TensorLayer is developed with the following goals:
 
 - *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. 
 A user often find it easy to bootstrap with TensorLayer, and then dive into low-level implementation only if need. 
 - *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
-- *Composability* : If possible, deep learning modules are composed, not built. TensorLayer can glue existing pieces together (e.g., **connected with** [TF-Slim](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#connect-tf-slim) and [Keras](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py)).
 - *Performance* : TensorLayer provides **zero-cost** abstraction (see Benchmark below). It can run on distributed and heterogeneous TensorFlow platforms with full power.
 
-# Benchmark
+## Low Runtime Overhead
 
-A common concern towards TensorLayer
-is performance overhead. We investigate this by running classic
+TensorLayer has negligible overhead. We show this by benchmarking classic deep learning
 models using TensorLayer and native TensorFlow implementations
-on a Titan X Pascal GPU. The following are the training throughputs of respective tasks:
+on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 
 |             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
 |-------------	|---------------	|---------------	|---------------	|
 | TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
 | TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
-# Frequent Questions
+## Comparing TensorLayer with Keras and TFLearn
 
-A frequent question regarding TensorLayer is what is the different with other libraries like Keras, TFSlim and Tflearn. 
+A frequent question regarding TensorLayer is what is the different with other libraries like Keras and Tflearn. 
 These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
 but in turn mask the underlying engine from users. Though good for bootstrap, 
-it becomes hard to tune and modify from the bottom, which is quite necessary in tackling many real-world problems. 
-
-Without compromise in simplicity, TensorLayer advocates a more flexible and composable paradigm: 
-neural network libraries shall be used interchangeably with the native engine. 
-This allows users to enjoy the ease of pre-built modules without losing visibility to the deep. 
-This non-intrusive nature also makes it viable to consolidate with other TF's wrappers. 
+it becomes hard to leverage the advanced features of TensorFlow, which is quite necessary in tackling real-world problems. 
+Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
+Users often find it easy to start with the examples and tutorials of TensorLayer, then dive into the TensorFlow low-level APIs only if need through the transparent API design.
 
 
 # Documentation
@@ -231,29 +227,24 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 -->
 
 
-# Community
+# Academic and Industry Users
 
-TensorLayer is maintained by numerous Github contributors [here](https://github.com/zsdonghao/tensorlayer/graphs/contributors). 
-This project is in an active development stage and has received numerous contributions from an open community. 
+TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
-<!--
-TensorLayer started as an internal repository at Imperial College London, helping researchers to test their new methods. It now encourages researchers from all over the world to controbute their methods so as to promote the development of machine learning. You can either contact us to discuss your ideas, or fork our repository and make a pull request.
- -->
-
-- 🇬🇧 If you have question, drop us an email: tensorlayer@gmail.com.
-- 🇨🇳 我们有官方的[中文文档](http://tensorlayercn.readthedocs.io/zh/latest), 另外我们建立了多种交流渠道, 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
+- 🇬🇧 If you any question, we suggest to create an issue to discuss with us.
+- 🇨🇳 我们有中文讨论社区: 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
-# Contributions
+# Contribution Guideline
 
-[Contributing guideline](./CONTRIBUTING.md)
+[Guideline in 5 lines](./CONTRIBUTING.md)
 
 
 # Citation
-If you find it is useful, please cite our paper in your project and paper.
+If you find this project useful, we would be grateful if you cite the TensorLayer paper：
 
 ```
 @article{haoTL2017,
