@@ -108,7 +108,7 @@ Images
 
 - These functions only apply on a single image, use ``threading_data`` to apply multiple threading see ``tutorial_image_preprocess.py``.
 - All functions have argument ``is_random``.
-- All functions end with `multi` , usually be used for image segmentation i.e. the input and output image should be matched.
+- All functions end with ``*_multi`` process all images together, usually be used for image segmentation i.e. the input and output image should be matched.
 
 Rotation
 ^^^^^^^^^

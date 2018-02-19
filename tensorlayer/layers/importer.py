@@ -11,9 +11,9 @@ class LambdaLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer.
-    fn : a function
+    fn : function
         The function that applies to the outputs of previous layer.
-    fn_args : a dictionary
+    fn_args : dictionary
         The arguments for the function (option).
     name : str
         A unique layer name.

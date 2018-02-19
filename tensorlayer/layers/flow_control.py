@@ -50,10 +50,6 @@ class MultiplexerLayer(Layer):
     >>> network = tl.layers.DenseLayer(network, n_units=10,
     ...                                act = tf.identity, name='output_layer')
 
-    References
-    ------------
-    - See ``tf.pack() for TF0.12 or tf.stack() for TF1.0`` and ``tf.gather()`` at `TensorFlow - Slicing and Joining <https://www.tensorflow.org/versions/master/api_docs/python/array_ops.html#slicing-and-joining>`__
-
     """
 
     def __init__(self, layers, name='mux_layer'):

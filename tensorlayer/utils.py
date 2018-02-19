@@ -4,7 +4,6 @@ import random
 import subprocess
 import sys
 import time
-from contextlib import contextmanager
 from sys import exit as _exit
 from sys import platform as _platform
 
@@ -37,51 +36,56 @@ def fit(sess,
         tensorboard_graph_vis=True):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
+    - MNIST example click `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
+    - In order to control the training details, the authors HIGHLY recommend ``tl.iterate`` see two MNIST examples `1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_, `2 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_.
+
     Parameters
     ----------
     sess : Session
-        TensorFlow Session
-    network : a TensorLayer layer
-        the network will be trained
-    train_op : a TensorFlow optimizer
-        like tf.train.AdamOptimizer
-    X_train : numpy array
-        the input of training data
-    y_train : numpy array
-        the target of training data
+        TensorFlow Session.
+    network : TensorLayer layer
+        the network to be trained.
+    train_op : TensorFlow optimizer
+        The optimizer for training e.g. tf.train.AdamOptimizer.
+    X_train : numpy.array
+        The input of training data
+    y_train : numpy.array
+        The target of training data
     x : placeholder
-        for inputs
+        For inputs.
     y_ : placeholder
-        for targets
-    acc : the TensorFlow expression of accuracy (or other metric) or None
-        if None, would not display the metric
+        For targets.
+    acc : TensorFlow expression or None
+        Metric for accuracy or others. If None, would not print the information.
     batch_size : int
-        batch size for training and evaluating
+        The batch size for training and evaluating.
     n_epoch : int
-        the number of training epochs
+        The number of training epochs.
     print_freq : int
-        display the training information every ``print_freq`` epochs
-    X_val : numpy array or None
-        the input of validation data
-    y_val : numpy array or None
-        the target of validation data
+        Print the training information every ``print_freq`` epochs.
+    X_val : numpy.array or None
+        The input of validation data. If None, would not perform validation.
+    y_val : numpy.array or None
+        The target of validation data. If None, would not perform validation.
     eval_train : boolean
-        if X_val and y_val are not None, it refects whether to evaluate the training data
+        Whether to evaluate the model during training.
+        If X_val and y_val are not None, it reflects whether to evaluate the model on training data.
     tensorboard : boolean
-        if True summary data will be stored to the log/ direcory for visualization with tensorboard.
+        If True, summary data will be stored to the log/ directory for visualization with tensorboard.
         See also detailed tensorboard_X settings for specific configurations of features. (default False)
-        Also runs tl.layers.initialize_global_variables(sess) internally in fit() to setup the summary nodes, see Note:
+        Also runs `tl.layers.initialize_global_variables(sess)` internally in fit() to setup the summary nodes.
     tensorboard_epoch_freq : int
-        how many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5)
+        How many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5).
     tensorboard_weight_histograms : boolean
-        if True updates tensorboard data in the logs/ directory for visulaization
-        of the weight histograms every tensorboard_epoch_freq epoch (default True)
+        If True updates tensorboard data in the logs/ directory for visualization
+        of the weight histograms every tensorboard_epoch_freq epoch (default True).
     tensorboard_graph_vis : boolean
-        if True stores the graph in the tensorboard summaries saved to log/ (default True)
+        If True stores the graph in the tensorboard summaries saved to log/ (default True).
 
     Examples
     --------
-    >>> see tutorial_mnist_simple.py
+    See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
+
     >>> tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
     ...            acc=acc, batch_size=500, n_epoch=200, print_freq=5,
     ...            X_val=X_val, y_val=y_val, eval_train=False)
@@ -92,9 +96,9 @@ def fit(sess,
 
     Notes
     --------
-    If tensorboard=True, the global_variables_initializer will be run inside the fit function
-    in order to initalize the automatically generated summary nodes used for tensorboard visualization,
-    thus tf.global_variables_initializer().run() before the fit() call will be undefined.
+    If tensorboard=True, the `global_variables_initializer` will be run inside the fit function
+    in order to initialize the automatically generated summary nodes used for tensorboard visualization,
+    thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
 
     """
     assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
@@ -207,29 +211,31 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
 
     Parameters
     ----------
-    sess : TensorFlow session
-        sess = tf.InteractiveSession()
-    network : a TensorLayer layer
-        the network will be trained
-    acc : the TensorFlow expression of accuracy (or other metric) or None
-        if None, would not display the metric
-    X_test : numpy array
-        the input of test data
+    sess : Session
+        TensorFlow session.
+    network : TensorLayer layer
+        The network.
+    acc : TensorFlow expression or None
+        Metric for accuracy or others.
+            - If None, would not print the information.
+    X_test : numpy.array
+        The input of testing data.
     y_test : numpy array
-        the target of test data
+        The target of testing data
     x : placeholder
-        for inputs
+        For inputs.
     y_ : placeholder
-        for targets
+        For targets.
     batch_size : int or None
-        batch size for testing, when dataset is large, we should use minibatche for testing.
-        when dataset is small, we can set it to None.
-    cost : the TensorFlow expression of cost or None
-        if None, would not display the cost
+        The batch size for testing, when dataset is large, we should use minibatche for testing;
+        if dataset is small, we can set it to None.
+    cost : TensorFlow expression or None
+        Metric for cost or others. If None, would not print the information.
 
     Examples
     --------
-    >>> see tutorial_mnist_simple.py
+    See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
+
     >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
     """
@@ -267,23 +273,24 @@ def predict(sess, network, X, x, y_op, batch_size=None):
 
     Parameters
     ----------
-    sess : TensorFlow session
-        sess = tf.InteractiveSession()
-    network : a TensorLayer layer
-        the network will be trained
-    X : numpy array
-        the input
+    sess : Session
+        TensorFlow Session.
+    network : TensorLayer layer
+        The network.
+    X : numpy.array
+        The inputs.
     x : placeholder
-        for inputs
+        For inputs.
     y_op : placeholder
-        the argmax expression of softmax outputs
+        The argmax expression of softmax outputs.
     batch_size : int or None
-        batch size for prediction, when dataset is large, we should use minibatche for prediction.
-        when dataset is small, we can set it to None.
+        The batch size for prediction, when dataset is large, we should use minibatche for prediction;
+        if dataset is small, we can set it to None.
 
     Examples
     --------
-    >>> see tutorial_mnist_simple.py
+    See `tutorial_mnist_simple.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_
+
     >>> y = network.outputs
     >>> y_op = tf.argmax(tf.nn.softmax(y), 1)
     >>> print(tl.utils.predict(sess, network, X_test, x, y_op))
@@ -339,16 +346,16 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
 
     Parameters
     ----------
-    y_test : numpy.array or list
-        target results
-    y_predict : numpy.array or list
-        predicted results
+    y_test : list
+        The target results
+    y_predict : list
+        The predicted results
     n_classes : int
-        number of classes
+        The number of classes
 
     Examples
     --------
-    >>> c_mat, f1, acc, f1_macro = evaluation(y_test, y_predict, n_classes)
+    >>> c_mat, f1, acc, f1_macro = tl.utils.evaluation(y_test, y_predict, n_classes)
 
     """
     from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
@@ -371,7 +378,7 @@ def dict_to_one(dp_dict={}):
     Parameters
     ----------
     dp_dict : dictionary
-        keeping probabilities
+        The dictionary contains key and number, e.g. keeping probabilities.
 
     Examples
     --------
@@ -406,9 +413,9 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     Parameters
     ----------
     X_train : numpy.array
-        Features, each row is an example
+        The inputs.
     y_train : numpy.array
-        Labels
+        The targets.
 
     Examples
     --------

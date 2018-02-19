@@ -99,10 +99,10 @@ def sample(a=[], temperature=1.0):
         List of probabilities.
     temperature : float or None
         The higher the more uniform. When a = [0.1, 0.2, 0.7],
-        - temperature = 0.7, the distribution will be sharpen [0.05048273,  0.13588945,  0.81362782]
-        - temperature = 1.0, the distribution will be the same [0.1,    0.2,    0.7]
-        - temperature = 1.5, the distribution will be filtered [0.16008435,  0.25411807,  0.58579758]
-        - If None, it will be ``np.argmax(a)``
+            - temperature = 0.7, the distribution will be sharpen [0.05048273,  0.13588945,  0.81362782]
+            - temperature = 1.0, the distribution will be the same [0.1,    0.2,    0.7]
+            - temperature = 1.5, the distribution will be filtered [0.16008435,  0.25411807,  0.58579758]
+            - If None, it will be ``np.argmax(a)``
 
     Notes
     ------
@@ -172,7 +172,7 @@ class SimpleVocabulary(object):
     Parameters
     ------------
     vocab : dictionary
-        A dictionary for converting word to ID.
+        A dictionary that maps word to ID.
     unk_id : int
         The ID for 'unknown' word.
 
@@ -209,9 +209,9 @@ class Vocabulary(object):
     Attributes
     ------------
     vocab : dictionary
-        A dictionary for converting word to ID.
+        A dictionary that maps word to ID.
     reverse_vocab : list of int
-        A list for converting ID to word.
+        A list that maps ID to word.
     start_id : int
         For start ID.
     end_id : int
@@ -307,7 +307,7 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
 
     Returns
     ---------
-    process_sentence : list of str
+    list of str
         A list of strings that separated into words.
 
     Examples
@@ -432,7 +432,7 @@ def simple_read_words(filename="nietzsche.txt"):
 
     Returns
     --------
-    words : str
+    str
         The context in a string.
 
     """
@@ -442,7 +442,7 @@ def simple_read_words(filename="nietzsche.txt"):
 
 
 def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
-    r"""File to list format context. Note that, this script can not handle punctuations.
+    """File to list format context. Note that, this script can not handle punctuations.
     For customized read_words method, see ``tutorial_generate_text.py``.
 
     Parameters
@@ -454,12 +454,12 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
 
     Returns
     --------
-    context_list : list of str
-        The context in a list, split by space by default, and use ``<eos>`` to represent ``\\n``, e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
+    list of str
+        The context in a list, split by space by default, and use ``<eos>`` to represent ``\n``, e.g. ``[... 'how', 'useful', 'it', "'s" ... ]``.
 
     References
     ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
 
     """
     with tf.gfile.GFile(filename, "r") as f:
@@ -480,11 +480,11 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     eval_data : str
         The file name.
     word2id : dictionary
-        For converting word to ID.
+        a dictionary that maps word to ID.
 
     Returns
     --------
-    analogy_questions : numpy.array
+    numpy.array
         A `[n_examples, 4]` numpy array containing the analogy question's word IDs.
 
     Examples
@@ -550,12 +550,12 @@ def build_vocab(data):
 
     Returns
     --------
-    word_to_id : dictionary
-        For converting word to unique ID. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
+    dictionary
+        that maps word to unique ID. e.g. {'campbell': 2587, 'atlantic': 2247, 'aoun': 6746 .... }
 
     References
     ---------------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
+    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`_
 
     Examples
     --------
@@ -577,18 +577,18 @@ def build_vocab(data):
 
 
 def build_reverse_dictionary(word_to_id):
-    """Given a dictionary for converting word to integer id.
-    Returns a reverse dictionary for converting a id to word.
+    """Given a dictionary that maps word to integer id.
+    Returns a reverse dictionary that maps a id to word.
 
     Parameters
     ----------
     word_to_id : dictionary
-        For converting word to ID.
+        that maps word to ID.
 
     Returns
     --------
-    reverse_dictionary : dictionary
-        FOr converting ID to word.
+    dictionary
+        A dictionary that maps IDs to words.
 
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
@@ -616,13 +616,13 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
         The context in a list of ID.
     count : list of tuple and list
         Pair words and IDs.
-        - count[0] is a list : the number of rare words
-        - count[1:] are tuples : the number of occurrence of each word
-        - e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
+            - count[0] is a list : the number of rare words
+            - count[1:] are tuples : the number of occurrence of each word
+            - e.g. [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
     dictionary : dictionary
-        It is `word_to_id` for converting word to ID.
+        It is `word_to_id` that maps word to ID.
     reverse_dictionary : a dictionary
-        It is `id_to_word`, for converting ID to word.
+        It is `id_to_word` that maps ID to word.
 
     Examples
     --------
@@ -668,13 +668,13 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
     data : list of string or byte
         The context in list format
     word_to_id : a dictionary
-        For converting word to ID.
+        that maps word to ID.
     unk_key : str
         Represent the unknown words.
 
     Returns
     --------
-    word_ids : list of int
+    list of int
         A list of IDs to represent the context.
 
     Examples
@@ -729,11 +729,11 @@ def word_ids_to_words(data, id_to_word):
     data : list of int
         The context in list format.
     id_to_word : dictionary
-        For converting ID to word.
+        a dictionary that maps ID to word.
 
     Returns
     --------
-    words : list of str
+    list of str
         A list of string or byte to represent the context.
 
     Examples
@@ -892,9 +892,9 @@ def initialize_vocabulary(vocabulary_path):
     Returns
     --------
     vocab : dictionary
-        For converting word to ID.
+        a dictionary that maps word to ID.
     rev_vocab : list of int
-        For converting ID to word.
+        a list that maps ID to word.
 
     Examples
     ---------
@@ -944,7 +944,8 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
 
     Returns
     --------
-    - A list of integers, the token-ids for the sentence.
+    list of int
+        The token-ids for the sentence.
 
     """
     if tokenizer:

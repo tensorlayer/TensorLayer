@@ -18,8 +18,13 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
         Discounted factor
     mode : int
         Mode for computing the discount rewards.
-        - If mode == 0, reset the discount process when encount a non-zero reward (Ping-pong game).
-        - If mode == 1, would not reset the discount process.
+            - If mode == 0, reset the discount process when encount a non-zero reward (Ping-pong game).
+            - If mode == 1, would not reset the discount process.
+
+    Returns
+    --------
+    list of float
+        The discounted rewards.
 
     Examples
     ----------
@@ -58,6 +63,11 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     rewards : tensor or placeholder
         The rewards.
 
+    Returns
+    --------
+    Tensor
+        The TensorFlow loss function.
+
     Examples
     ----------
     >>> states_batch_pl = tf.placeholder(tf.float32, shape=[None, D])
@@ -95,6 +105,10 @@ def log_weight(probs, weights, name='log_weight'):
     weights : tensor
         The weights.
 
+    Returns
+    --------
+    Tensor
+        The Tensor after appling the log weighted expression.
     """
     with tf.variable_scope(name):
         exp_v = tf.reduce_mean(tf.log(probs) * weights)
@@ -109,8 +123,12 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
     probs : list of float.
         The probability distribution of all actions.
     action_list : None or a list of int or others
-        A list of action in integer, string or others.
-        - If None, returns an integer range between 0 and len(probs)-1.
+        A list of action in integer, string or others. If None, returns an integer range between 0 and len(probs)-1.
+
+    Returns
+    --------
+    float int or str
+        The chosen action.
 
     Examples
     ----------
