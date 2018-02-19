@@ -263,7 +263,6 @@ Layer list
    PadLayer
    UpSampling2dLayer
    DownSampling2dLayer
-   DeformableConv2dLayer
    AtrousConv1dLayer
    AtrousConv2dLayer
 
@@ -280,6 +279,7 @@ Layer list
    MeanPool3d
 
    DepthwiseConv2d
+   DeformableConv2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -456,10 +456,6 @@ Convolutional layer (Pro)
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DownSampling2dLayer
 
-2D Deformable Conv
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DeformableConv2dLayer
-
 1D Atrous convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: AtrousConv1dLayer
@@ -495,6 +491,11 @@ APIs may better for you.
 2D Depthwise/Separable Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DepthwiseConv2d
+
+2D Deformable Conv
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DeformableConv2d
+
 
 Super-Resolution layer
 ------------------------
