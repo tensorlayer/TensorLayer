@@ -1382,6 +1382,8 @@ def deconv2d(layer,
         A :class:`DeConv2dLayer` object.
 
     """
+    if act is None:
+        act = tf.identity
     assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
     if tf.__version__ > '1.3':
         logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
