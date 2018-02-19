@@ -882,9 +882,9 @@ class DenseLayer(Layer):
 
 
 class ReconLayer(DenseLayer):
-    """
-    The :class:`ReconLayer` class is a reconstruction layer for :class:`DenseLayer` for AutoEncoder.
-    It is used to pre-train the previous :class:`DenseLayer`
+    """A reconstruction layer for :class:`DenseLayer` to implement AutoEncoder.
+
+    It is often used to pre-train the previous :class:`DenseLayer`
 
     Parameters
     ----------
@@ -922,8 +922,8 @@ class ReconLayer(DenseLayer):
     The input layer should be `DenseLayer` or a layer that has only one axes.
     You may need to modify this part to define your own cost function.
     By default, the cost is implemented as follow:
-        - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`__
-        - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`__
+    - For sigmoid layer, the implementation can be `UFLDL <http://deeplearning.stanford.edu/wiki/index.php/UFLDL_Tutorial>`__
+    - For rectifying layer, the implementation can be `Glorot (2011). Deep Sparse Rectifier Neural Networks <http://doi.org/10.1.1.208.6449>`__
 
     """
 

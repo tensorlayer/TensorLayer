@@ -4,13 +4,11 @@ import random
 import subprocess
 import sys
 import time
-from contextlib import contextmanager
 from sys import exit as _exit
 from sys import platform as _platform
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.util.deprecation import deprecated
 import tensorlayer as tl
 
 from . import _logging as logging
@@ -58,8 +56,7 @@ def fit(sess,
     y_ : placeholder
         For targets.
     acc : TensorFlow expression or None
-        Metric for accuracy or others.
-            - If None, would not print the information.
+        Metric for accuracy or others. If None, would not print the information.
     batch_size : int
         The batch size for training and evaluating.
     n_epoch : int
@@ -67,22 +64,20 @@ def fit(sess,
     print_freq : int
         Print the training information every ``print_freq`` epochs.
     X_val : numpy.array or None
-        The input of validation data.
-            - If None, would not perform validation.
+        The input of validation data. If None, would not perform validation.
     y_val : numpy.array or None
-        The target of validation data.
-            - If None, would not perform validation.
+        The target of validation data. If None, would not perform validation.
     eval_train : boolean
         Whether to evaluate the model during training.
-            - If X_val and y_val are not None, it refects whether to evaluate the model on training data.
+        If X_val and y_val are not None, it reflects whether to evaluate the model on training data.
     tensorboard : boolean
-        If True, summary data will be stored to the log/ direcory for visualization with tensorboard.
+        If True, summary data will be stored to the log/ directory for visualization with tensorboard.
         See also detailed tensorboard_X settings for specific configurations of features. (default False)
         Also runs `tl.layers.initialize_global_variables(sess)` internally in fit() to setup the summary nodes.
     tensorboard_epoch_freq : int
         How many epochs between storing tensorboard checkpoint for visualization to log/ directory (default 5).
     tensorboard_weight_histograms : boolean
-        If True updates tensorboard data in the logs/ directory for visulaization
+        If True updates tensorboard data in the logs/ directory for visualization
         of the weight histograms every tensorboard_epoch_freq epoch (default True).
     tensorboard_graph_vis : boolean
         If True stores the graph in the tensorboard summaries saved to log/ (default True).
@@ -101,8 +96,8 @@ def fit(sess,
 
     Notes
     --------
-    - If tensorboard=True, the `global_variables_initializer` will be run inside the fit function
-    in order to initalize the automatically generated summary nodes used for tensorboard visualization,
+    If tensorboard=True, the `global_variables_initializer` will be run inside the fit function
+    in order to initialize the automatically generated summary nodes used for tensorboard visualization,
     thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
 
     """
@@ -628,30 +623,3 @@ def set_gpu_fraction(gpu_fraction=0.3):
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
     return sess
-
-
-@deprecated('2018-03-01', 'This will be removed soon as we have changed to logging')
-@contextmanager
-def suppress_stdout():
-    """Temporarily disable console output.
-    Examples
-    ---------
-    >>> print("You can see me")
-    >>> with tl.ops.suppress_stdout():
-    >>>     print("You can't see me")
-    >>> print("You can see me")
-    References
-    -----------
-    - `Stack Overflow <http://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python>`__
-    """
-    with open(os.devnull, "w") as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
-
-
-# Alias
-tl.ops.suppress_stdout = tl.utils.suppress_stdout
