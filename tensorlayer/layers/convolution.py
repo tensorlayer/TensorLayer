@@ -569,6 +569,17 @@ def _to_b_h_w_n_c(x, x_shape):
     x = tf.transpose(x, [0, 2, 3, 4, 1])
     return x
 
+def tf_flatten(a):
+    """Flatten tensor"""
+    return tf.reshape(a, [-1])
+
+def _get_vals_by_coords(inputs, coords, idx, out_shape):
+    indices = tf.stack([
+    idx, tf_flatten(coords[:, :, :, :, 0]), tf_flatten(coords[:, :, :, :, 1])
+    ], axis=-1)
+    vals = tf.gather_nd(inputs, indices)
+    vals = tf.reshape(vals, out_shape)
+    return vals
 
 def _tf_repeat(a, repeats):
     """Tensorflow version of np.repeat for 1D"""
@@ -577,8 +588,7 @@ def _tf_repeat(a, repeats):
 
     a = tf.expand_dims(a, -1)
     a = tf.tile(a, [1, repeats])
-    # a = tf_flatten(a)
-    a = flatten_reshape(a)
+    a = tf_flatten(a)
     return a
 
 
