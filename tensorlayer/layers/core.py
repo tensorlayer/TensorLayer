@@ -69,7 +69,7 @@ def clear_layers_name():
 
     Examples
     ---------
-    Reset the current graph and try to refine model.
+    Clean the current graph and try to re-define model.
 
     >>> for .... (different model settings):
     >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
@@ -912,7 +912,7 @@ class ReconLayer(DenseLayer):
 
     Methods
     -------
-    pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
+    pretrain(sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
         Start to pre-train the parameters of the previous DenseLayer.
 
     Notes
