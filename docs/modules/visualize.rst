@@ -17,7 +17,7 @@ to visualize the model, activations etc. Here we provide more functions for data
    frame
    images2d
    tsne_embedding
-
+   draw_weights
 
 Save and read images
 ----------------------
@@ -65,3 +65,7 @@ Images by matplotlib
 Visualize embeddings
 --------------------
 .. autofunction:: tsne_embedding
+
+Visualize weights
+--------------------
+.. autofunction:: draw_weights

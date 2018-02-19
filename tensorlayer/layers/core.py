@@ -1063,7 +1063,8 @@ class ReconLayer(DenseLayer):
                 logging.info("   val loss: %f" % (val_loss / n_batch))
                 if save:
                     try:
-                        visualize.W(self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
+                        visualize.draw_weights(
+                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except:
                         raise Exception(

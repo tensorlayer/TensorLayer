@@ -513,7 +513,7 @@ def li_regularizer(scale, scope=None):
             logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
-    def li(weights, name=None):
+    def li(weights):
         """Applies li regularization to weights."""
         with tf.name_scope('li_regularizer') as scope:
             my_scale = ops.convert_to_tensor(scale, dtype=weights.dtype.base_dtype, name='scale')
@@ -526,7 +526,7 @@ def li_regularizer(scale, scope=None):
     return li
 
 
-def lo_regularizer(scale, scope=None):
+def lo_regularizer(scale):
     """Lo regularization removes the neurons of current layer. The `o` represents `outputs`
     Returns a function that can be used to apply group lo regularization to weights.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
@@ -535,8 +535,6 @@ def lo_regularizer(scale, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: str
-        An optional scope name for this function.
 
     Returns
     -------
@@ -576,7 +574,7 @@ def lo_regularizer(scale, scope=None):
     return lo
 
 
-def maxnorm_regularizer(scale=1.0, scope=None):
+def maxnorm_regularizer(scale=1.0):
     """Max-norm regularization returns a function that can be used to apply max-norm regularization to weights.
 
     More about max-norm, see `wiki-max norm <https://en.wikipedia.org/wiki/Matrix_norm#Max_norm>`_.
@@ -586,8 +584,6 @@ def maxnorm_regularizer(scale=1.0, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: str
-        An optional scope name for this function.
 
     Returns
     ---------
@@ -627,7 +623,7 @@ def maxnorm_regularizer(scale=1.0, scope=None):
     return mn
 
 
-def maxnorm_o_regularizer(scale, scope):
+def maxnorm_o_regularizer(scale):
     """Max-norm output regularization removes the neurons of current layer.
     Returns a function that can be used to apply max-norm regularization to each column of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
@@ -636,8 +632,6 @@ def maxnorm_o_regularizer(scale, scope):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: str
-        An optional scope name for this function.
 
     Returns
     ---------
@@ -677,7 +671,7 @@ def maxnorm_o_regularizer(scale, scope):
     return mn_o
 
 
-def maxnorm_i_regularizer(scale, scope=None):
+def maxnorm_i_regularizer(scale):
     """Max-norm input regularization removes the neurons of previous layer.
     Returns a function that can be used to apply max-norm regularization to each row of weight matrix.
     The implementation follows `TensorFlow contrib <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/regularizers.py>`__.
@@ -686,8 +680,6 @@ def maxnorm_i_regularizer(scale, scope=None):
     ----------
     scale : float
         A scalar multiplier `Tensor`. 0.0 disables the regularizer.
-    scope: str
-        An optional scope name for this function.
 
     Returns
     ---------
@@ -725,6 +717,3 @@ def maxnorm_i_regularizer(scale, scope=None):
             return standard_ops_fn(my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
 
     return mn_i
-
-
-#
