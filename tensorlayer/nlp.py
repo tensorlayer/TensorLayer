@@ -588,7 +588,7 @@ def build_reverse_dictionary(word_to_id):
     Returns
     --------
     dictionary
-        For converting ID to word.
+        A dictionary that maps IDs to words.
 
     """
     reverse_dictionary = dict(zip(word_to_id.values(), word_to_id.keys()))
