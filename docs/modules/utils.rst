@@ -14,6 +14,10 @@ API - Utility
    dict_to_one
    list_string_to_dict
    flatten_list
+   exit_tensorflow
+   open_tensorboard
+   clear_all_placeholder_variables
+   set_gpu_fraction
 
 Training, testing and predicting
 ----------------------------------
