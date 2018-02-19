@@ -227,7 +227,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 -->
 
 
-# TensorLayer Users
+# Academic and Industry Users
 
 TensorLayer is in an active development stage and has received numerous contributions from an open community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
