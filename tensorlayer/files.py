@@ -316,7 +316,7 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
     Returns
     --------
-    word_list : list of str
+    list of str
         The raw text data e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
 
     Examples
@@ -439,12 +439,15 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
 def load_nietzsche_dataset(path='data'):
     """Load Nietzsche dataset.
 
-    Returns a string.
-
     Parameters
     ----------
     path : str
         The path that the data is downloaded to, defaults is ``data/nietzsche/``.
+
+    Returns
+    --------
+    str
+        The content.
 
     Examples
     --------
@@ -544,8 +547,8 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     ------------
     tag : str or None
         What images to return.
-        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
-        - If you want to get all images, set to ``None``.
+            - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
+            - If you want to get all images, set to ``None``.
 
     path : str
         The path that the data is downloaded to, defaults is ``data/flickr25k/``.
@@ -612,8 +615,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     ------------
     tag : str or None
         What images to return.
-        - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
-        - If you want to get all images, set to ``None``.
+            - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
+            - If you want to get all images, set to ``None``.
 
     size : int
         integer between 1 to 10. 1 means 100k images ... 5 means 500k images, 10 means all 1 million images. Default is 10.
@@ -1202,7 +1205,7 @@ def load_npz(path='', name='model.npz'):
 
     Returns
     --------
-    params : list of array
+    list of array
         A list of parameters in order.
 
     Examples
@@ -1247,7 +1250,7 @@ def assign_params(sess, params, network):
 
     Returns
     --------
-    ops : list of operations
+    list of operations
         A list of tf ops in order that assign params. Support sess.run(ops) manually.
 
     Examples
@@ -1281,7 +1284,8 @@ def load_and_assign_npz(sess=None, name=None, network=None):
 
     Returns
     --------
-    Returns False if faild to model is not exist.
+    False or network
+        Returns False, if the model is not exist.
 
     Examples
     --------
@@ -1646,7 +1650,8 @@ def exists_or_mkdir(path, verbose=True):
 
     Returns
     --------
-    True if folder exist, otherwise, returns False and create the folder
+    boolean
+        True if folder already exist, otherwise, returns False and create the folder.
 
     Examples
     --------
@@ -1683,7 +1688,8 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
 
     Returns
     ----------
-    Filepath to dowloaded (uncompressed) file
+    str
+        File path of the dowloaded (uncompressed) file.
 
     Examples
     --------

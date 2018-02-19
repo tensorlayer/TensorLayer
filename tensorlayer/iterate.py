@@ -7,14 +7,14 @@ from six.moves import xrange
 
 def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     """Generate a generator that input a group of example in numpy.array and
-    their labels, return the examples and labels by the given batchsize.
+    their labels, return the examples and labels by the given batch size.
 
     Parameters
     ----------
     inputs : numpy.array
-        (X) The input features, every row is a example.
+        The input features, every row is a example.
     targets : numpy.array
-        (y) The labels of inputs, every row is a example.
+        The labels of inputs, every row is a example.
     batch_size : int
         The batch size.
     shuffle : boolean
@@ -39,8 +39,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 
     Notes
     -----
-    If you have two inputs, e.g. X1 (1000, 100) and X2 (1000, 80), you can ``np.hstack((X1, X2))
-    into (1000, 180) and feed into ``inputs``, then you can split a batch of X1 and X2.
+    If you have two inputs and one label and want to shuffle them together, e.g. X1 (1000, 100), X2 (1000, 80) and Y (1000, 1), you can stack them together (`np.hstack((X1, X2))`)
+    into (1000, 180) and feed to ``inputs``. After getting a batch, you can split it back into X1 and X2.
 
     """
     assert len(inputs) == len(targets)
@@ -57,14 +57,14 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 
 def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     """Generate a generator that return a batch of sequence inputs and targets.
-    If ``batch_size=100, seq_length=5``, one return will have ``500`` rows (examples).
+    If `batch_size=100` and `seq_length=5`, one return will have 500 rows (examples).
 
     Parameters
     ----------
     inputs : numpy.array
-        (X) The input features, every row is a example.
+        The input features, every row is a example.
     targets : numpy.array
-        (y) The labels of inputs, every element is a example.
+        The labels of inputs, every element is a example.
     batch_size : int
         The batch size.
     seq_length : int
@@ -135,15 +135,6 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     the target context by the given batch_size and num_steps (sequence_length).
     In TensorFlow's tutorial, this generates the `batch_size` pointers into the raw PTB data, and allows minibatch iteration along these pointers.
 
-    - Hint, if the input data are images, you can modify the code as follow.
-
-    .. code-block:: python
-
-        from
-        data = np.zeros([batch_size, batch_len)
-        to
-        data = np.zeros([batch_size, batch_len, inputs.shape[1], inputs.shape[2], inputs.shape[3]])
-
     Parameters
     ----------
     inputs : list of data
@@ -186,6 +177,9 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     ... [[ 26.  27.  28.]
     ... [ 36.  37.  38.]]
 
+    Notes
+    -----
+    - Hint, if the input data are images, you can modify the source code `data = np.zeros([batch_size, batch_len)` to `data = np.zeros([batch_size, batch_len, inputs.shape[1], inputs.shape[2], inputs.shape[3]])`.
     """
     assert len(inputs) == len(targets)
     data_len = len(inputs)
@@ -211,8 +205,7 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
 
 def ptb_iterator(raw_data, batch_size, num_steps):
     """Generate a generator that iterates on a list of words, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__.
-    Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length)
-    e.g. x = [0, 1, 2]  y = [1, 2, 3] , when batch_size = 1, num_steps = 3, raw_data = [i for i in range(100)]
+    Yields the source contexts and the target context by the given batch_size and num_steps (sequence_length).
 
     In TensorFlow's tutorial, this generates `batch_size` pointers into the raw
     PTB data, and allows minibatch iteration along these pointers.
@@ -258,11 +251,6 @@ def ptb_iterator(raw_data, batch_size, num_steps):
     ...  [16 17 18]]
     ... [[ 7  8  9]
     ...  [17 18 19]]
-
-    See Also
-    ----------------
-    - ``tensorflow/models/rnn/ptb/reader.py``
-
     """
     raw_data = np.array(raw_data, dtype=np.int32)
 

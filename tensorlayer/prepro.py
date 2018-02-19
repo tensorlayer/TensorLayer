@@ -27,7 +27,7 @@ else:
 
 
 def threading_data(data=None, fn=None, thread_count=None, **kwargs):
-    """Return a batch of result by given data.
+    """Process a batch of data by given function by threading.
 
     Usually be used for data augmentation.
 
@@ -58,7 +58,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     ...     return x
     >>> images = tl.prepro.threading_data(images, distort_img)
 
-    Process images and masks together.
+    Process images and masks together (Usually be used for image segmentation).
 
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], tl.prepro.zoom_multi, zoom_range=[0.5, 1], is_random=True)
@@ -68,7 +68,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     >>> tl.vis.save_image(X_, 'images.png')
     >>> tl.vis.save_image(Y_, 'masks.png')
 
-    Process images and masks together, using ``thread_count`` threads.
+    Process images and masks together by using ``thread_count``.
 
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data(X, tl.prepro.zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
@@ -82,13 +82,18 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     >>> def distort_img(data):
     ...     x, y = data
-    ...     x, y = flip_axis_multi([x, y], axis=0, is_random=True)
-    ...     x, y = flip_axis_multi([x, y], axis=1, is_random=True)
-    ...     x, y = crop_multi([x, y], 100, 100, is_random=True)
+    ...     x, y = tl.prepro.flip_axis_multi([x, y], axis=0, is_random=True)
+    ...     x, y = tl.prepro.flip_axis_multi([x, y], axis=1, is_random=True)
+    ...     x, y = tl.prepro.crop_multi([x, y], 100, 100, is_random=True)
     ...     return x, y
     >>> X, Y --> [batch_size, row, col, channel]
     >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], distort_img)
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
+
+    Returns
+    -------
+    list or numpyarray
+        The processed results.
 
     References
     ----------
@@ -152,12 +157,17 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode=`constant`. Default is 0.0
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     ---------
@@ -188,6 +198,11 @@ def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_
         List of images with dimension of [n_images, row, col, channel] (default).
     others : args
         See ``tl.prepro.rotation``.
+
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
 
     Examples
     --------
@@ -226,6 +241,10 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
     row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     h, w = x.shape[row_index], x.shape[col_index]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -258,6 +277,10 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_i
     others : args
         See ``tl.prepro.crop``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -288,12 +311,16 @@ def flip_axis(x, axis=1, is_random=False):
         An image with dimension of [row, col, channel] (default).
     axis : int
         Which axis to flip.
-        - 0, flip up and down
-        - 1, flip left and right
-        - 2, flip channel
+            - 0, flip up and down
+            - 1, flip left and right
+            - 2, flip channel
     is_random : boolean
         If True, randomly flip. Default is False.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -321,6 +348,10 @@ def flip_axis_multi(x, axis, is_random=False):
     others : args
         See ``tl.prepro.flip_axis``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -370,13 +401,17 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     h, w = x.shape[row_index], x.shape[col_index]
     if is_random:
@@ -402,6 +437,10 @@ def shift_multi(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, 
     others : args
         See ``tl.prepro.shift``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     if is_random:
@@ -435,12 +474,17 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     References
     -----------
@@ -470,6 +514,10 @@ def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, cha
     others : args
         See ``tl.prepro.shear``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if is_random:
         shear = np.random.uniform(-intensity, intensity)
@@ -494,18 +542,23 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
         An image with dimension of [row, col, channel] (default).
     shear : tuple of two floats
         Percentage of shear for height and width direction (0, 1).
-    is_random : boolean,
+    is_random : boolean
         If True, randomly shear. Default is False.
     row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     References
     -----------
@@ -536,6 +589,10 @@ def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1,
     others : args
         See ``tl.prepro.shear2``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
     if is_random:
@@ -595,10 +652,15 @@ def swirl(x,
         Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
     is_random : boolean,
         If True, random swirl. Default is False.
-        - random center = [(0 ~ x.shape[0]), (0 ~ x.shape[1])]
-        - random strength = [0, strength]
-        - random radius = [1e-10, radius]
-        - random rotation = [-rotation, rotation]
+            - random center = [(0 ~ x.shape[0]), (0 ~ x.shape[1])]
+            - random strength = [0, strength]
+            - random radius = [1e-10, radius]
+            - random rotation = [-rotation, rotation]
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     ---------
@@ -658,6 +720,10 @@ def swirl_multi(x,
     others : args
         See ``tl.prepro.swirl``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     assert radius != 0, Exception("Invalid radius value")
     rotation = np.pi / 180 * rotation
@@ -713,6 +779,11 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
     is_random : boolean
         Default is False.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
     Examples
     ---------
     >>> x = tl.prepro.elastic_transform(x, alpha=x.shape[1]*3, sigma=x.shape[1]*0.07)
@@ -759,6 +830,10 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
     others : args
         See ``tl.prepro.elastic_transform``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if is_random is False:
         random_state = np.random.RandomState(None)
@@ -803,21 +878,25 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
         An image with dimension of [row, col, channel] (default).
     zoom_range : list or tuple
         Zoom range for height and width.
-        - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
-        - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
+            - If is_random=False, (h, w) are the fixed zoom factor for row and column axies, factor small than one is zoom in.
+            - If is_random=True, (h, w) are (min zoom out, max zoom out) for x and y with different random zoom in/out factor, e.g (0.5, 1) zoom in 1~2 times.
     is_random : boolean
         If True, randomly zoom. Default is False.
     row_index col_index and channel_index : int
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0.
     order : int
         The order of interpolation. The order has to be in the range 0-5. See ``tl.prepro.apply_transform``.
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -849,6 +928,10 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index
     others : args
         See ``tl.prepro.zoom``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -889,12 +972,17 @@ def brightness(x, gamma=1, gain=1, is_random=False):
         An image with dimension of [row, col, channel] (default).
     gamma : float
         Non negative real number. Default value is 1.
-        - Small than 1 means brighter.
-        - If `is_random` is True, gamma in a range of (1-gamma, 1+gamma).
+            - Small than 1 means brighter.
+            - If `is_random` is True, gamma in a range of (1-gamma, 1+gamma).
     gain : float
         The constant multiplier. Default value is 1.
     is_random : boolean
-        - If True, randomly change brightness. Default is False.
+        If True, randomly change brightness. Default is False.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     References
     -----------
@@ -919,6 +1007,10 @@ def brightness_multi(x, gamma=1, gain=1, is_random=False):
     others : args
         See ``tl.prepro.brightness``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if is_random:
         gamma = np.random.uniform(1 - gamma, 1 + gamma)
@@ -938,18 +1030,23 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
         An image with dimension of [row, col, channel] (default).
     gamma : float
         Change brightness (the same with ``tl.prepro.brightness``)
-        - if is_random=False, one float number, small than one means brighter, greater than one means darker.
-        - if is_random=True, tuple of two float numbers, (min, max).
+            - if is_random=False, one float number, small than one means brighter, greater than one means darker.
+            - if is_random=True, tuple of two float numbers, (min, max).
     contrast : float
         Change contrast.
-        - if is_random=False, one float number, small than one means blur.
-        - if is_random=True, tuple of two float numbers, (min, max).
+            - if is_random=False, one float number, small than one means blur.
+            - if is_random=True, tuple of two float numbers, (min, max).
     saturation : float
         Change saturation.
-        - if is_random=False, one float number, small than one means unsaturation.
-        - if is_random=True, tuple of two float numbers, (min, max).
+            - if is_random=False, one float number, small than one means unsaturation.
+            - if is_random=True, tuple of two float numbers, (min, max).
     is_random : boolean
-        Whether the parameters are randomly set.
+        If True, randomly change illumination. Default is False.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     ---------
@@ -1008,6 +1105,10 @@ def rgb_to_hsv(rgb):
     rgb : numpy.array
         An image with values between 0 and 255.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     # Translated from source of colorsys.rgb_to_hsv
     # r,g,b should be a numpy arrays with values between 0 and 255
@@ -1041,6 +1142,10 @@ def hsv_to_rgb(hsv):
     hsv : numpy.array
         An image with values between 0.0 and 1.0
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     # Translated from source of colorsys.hsv_to_rgb
     # h,s should be a numpy arrays with values between 0.0 and 1.0
@@ -1073,14 +1178,20 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
     im : numpy.array
         An image with values between 0 and 255.
     hout : float
-        - If is_offset is False, set all hue values to this value. 0 is red; 0.33 is green; 0.66 is blue.
-        - If is_offset is True, add this value as the offset to the hue channel.
+        The scale value for adjusting hue.
+            - If is_offset is False, set all hue values to this value. 0 is red; 0.33 is green; 0.66 is blue.
+            - If is_offset is True, add this value as the offset to the hue channel.
     is_offset : boolean
         Whether `hout` is added on HSV as offset or not. Default is True.
     is_clip : boolean
         If HSV value smaller than 0, set to 0. Default is True.
     is_random : boolean
-        Whether change HSV randomly. Default is False.
+        If True, randomly change hue. Default is False.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     ---------
@@ -1142,6 +1253,11 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
     mode : str
         The PIL image mode (`P`, `L`, etc.) to convert arr before resizing.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
     References
     ------------
     - `scipy.misc.imresize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.misc.imresize.html>`__
@@ -1167,9 +1283,14 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
     im : numpy.array
         An image.
     val : float
-        Degree of value change.
-        - If is_random=False, multiply this value with all pixels.
-        - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
+        The scale value for changing pixel value.
+            - If is_random=False, multiply this value with all pixels.
+            - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     ----------
@@ -1210,6 +1331,11 @@ def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_nor
         If True, divide each input by its std.
     epsilon : float
         A small position value for dividing standard deviation.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     --------
@@ -1260,6 +1386,11 @@ def featurewise_norm(x, mean=None, std=None, epsilon=1e-7):
     epsilon : float
         A small position value for dividing standard deviation.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
     """
     if mean:
         x = x - mean
@@ -1276,6 +1407,11 @@ def get_zca_whitening_principal_components_img(X):
     -----------
     x : numpy.array
         Batch of images with dimension of [n_example, row, col, channel] (default).
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     """
     flatX = np.reshape(X, (X.shape[0], X.shape[1] * X.shape[2] * X.shape[3]))
@@ -1297,6 +1433,11 @@ def zca_whitening(x, principal_components):
         An image with dimension of [row, col, channel] (default).
     principal_components : matrix
         Matrix from ``get_zca_whitening_principal_components_img``.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     """
     flatx = np.reshape(x, (x.size))
@@ -1336,6 +1477,11 @@ def channel_shift(x, intensity, is_random=False, channel_index=2):
     channel_index : int
         Index of channel. Default is 2.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
+
     """
     if is_random:
         factor = np.random.uniform(-intensity, intensity)
@@ -1367,6 +1513,10 @@ def channel_shift_multi(x, intensity, is_random=False, channel_index=2):
     others : args
         See ``tl.prepro.channel_shift``.
 
+    Returns
+    -------
+    numpy.array
+        A list of processed images.
     """
     if is_random:
         factor = np.random.uniform(-intensity, intensity)
@@ -1395,6 +1545,10 @@ def drop(x, keep=0.5):
     keep : float
         The keeping probability (0, 1), the lower more values will be set to zero.
 
+    Returns
+    -------
+    numpy.array
+        A processed image.
     """
     if len(x.shape) == 3:
         if x.shape[-1] == 3:  # color
@@ -1437,6 +1591,11 @@ def transform_matrix_offset_center(matrix, x, y):
     x and y : 2 int
         Size of image.
 
+    Returns
+    -------
+    numpy.array
+        The transform matrix.
+
     Examples
     --------
     - See ``tl.prepro.rotation``, ``tl.prepro.shear``, ``tl.prepro.zoom``.
@@ -1451,7 +1610,7 @@ def transform_matrix_offset_center(matrix, x, y):
 
 
 def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', cval=0., order=1):
-    """Return transformed images by given transform_matrix from ``transform_matrix_offset_center``.
+    """Return transformed images by given ``transform_matrix`` from ``transform_matrix_offset_center``.
 
     Parameters
     ----------
@@ -1463,18 +1622,23 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
         Index of channel, default 2.
     fill_mode : str
         Method to fill missing pixel, default `nearest`, more options `constant`, `reflect` or `wrap`
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
     cval : float
         Value used for points outside the boundaries of the input if mode='constant'. Default is 0.0
     order : int
         The order of interpolation. The order has to be in the range 0-5:
-        - 0 Nearest-neighbor
-        - 1 Bi-linear (default)
-        - 2 Bi-quadratic
-        - 3 Bi-cubic
-        - 4 Bi-quartic
-        - 5 Bi-quintic
-        - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+            - 0 Nearest-neighbor
+            - 1 Bi-linear (default)
+            - 2 Bi-quadratic
+            - 3 Bi-cubic
+            - 4 Bi-quartic
+            - 5 Bi-quintic
+            - `scipy ndimage affine_transform <https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.interpolation.affine_transform.html>`__
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     --------
@@ -1511,12 +1675,12 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
         Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
     order : int
         The order of interpolation. The order has to be in the range 0-5:
-        - 0 Nearest-neighbor
-        - 1 Bi-linear (default)
-        - 2 Bi-quadratic
-        - 3 Bi-cubic
-        - 4 Bi-quartic
-        - 5 Bi-quintic
+            - 0 Nearest-neighbor
+            - 1 Bi-linear (default)
+            - 2 Bi-quadratic
+            - 3 Bi-cubic
+            - 4 Bi-quartic
+            - 5 Bi-quintic
     mode : str
         One of `constant` (default), `edge`, `symmetric`, `reflect` or `wrap`.
         Points outside the boundaries of the input are filled according to the given mode. Modes match the behaviour of numpy.pad.
@@ -1526,6 +1690,11 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
         Whether to clip the output to the range of values of the input image. This is enabled by default, since higher order interpolation may produce values outside the given input range.
     preserve_range : boolean
         Whether to keep the original range of values. Otherwise, the input image is converted according to the conventions of img_as_float.
+
+    Returns
+    -------
+    numpy.array
+        A processed image.
 
     Examples
     --------
@@ -1566,6 +1735,11 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
         Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
     scale : boolean
         If True, converts image to [0, 255] from any range of value like [-1, 2]. Default is True.
+
+    Returns
+    -------
+    PIL.image
+        An image.
 
     References
     -----------
@@ -1611,6 +1785,10 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
     positive_orientation : str
         Either `low` or `high`. Indicates whether the output contours will produce positively-oriented polygons around islands of low- or high-valued elements. If `low` then contours will wind counter-clockwise around elements below the iso-value. Alternately, this means that low-valued elements are always on the left of the contour.
 
+    Returns
+    --------
+    list of (n,2)-ndarrays
+        Each contour is an ndarray of shape (n, 2), consisting of n (row, column) coordinates along the contour.
     """
     return skimage.measure.find_contours(x, level, fully_connected='low', positive_orientation='low')
 
@@ -1627,6 +1805,10 @@ def pt2map(list_points=[], size=(100, 100), val=1):
     val : float or int
         For the contour value.
 
+    Returns
+    -------
+    numpy.array
+        An image.
     """
     i_m = np.zeros(size)
     if list_points == []:
@@ -1645,10 +1827,14 @@ def binary_dilation(x, radius=3):
     Parameters
     -----------
     x : 2D array
-        An image.
+        A binary image.
     radius : int
         For the radius of mask.
 
+    Returns
+    -------
+    numpy.array
+        A processed binary image.
     """
     from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
@@ -1663,10 +1849,14 @@ def dilation(x, radius=3):
     Parameters
     -----------
     x : 2D array
-        An image.
+        An greyscale image.
     radius : int
         For the radius of mask.
 
+    Returns
+    -------
+    numpy.array
+        A processed greyscale image.
     """
     from skimage.morphology import disk, dilation
     mask = disk(radius)
@@ -1681,10 +1871,14 @@ def binary_erosion(x, radius=3):
     Parameters
     -----------
     x : 2D array
-        An image.
+        A binary image.
     radius : int
         For the radius of mask.
 
+    Returns
+    -------
+    numpy.array
+        A processed binary image.
     """
     from skimage.morphology import disk, dilation, binary_erosion
     mask = disk(radius)
@@ -1699,10 +1893,14 @@ def erosion(x, radius=3):
     Parameters
     -----------
     x : 2D array
-        An image.
+        A greyscale image.
     radius : int
         For the radius of mask.
 
+    Returns
+    -------
+    numpy.array
+        A processed greyscale image.
     """
     from skimage.morphology import disk, dilation, erosion
     mask = disk(radius)
@@ -1720,6 +1918,12 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     shape : list of 2 int
         【height, width].
 
+    Returns
+    -------
+    list of list of 4 numbers
+        A list of new bounding boxes.
+
+
     Examples
     ---------
     >>> coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50], [10, 10, 20, 20]], shape=[100, 100])
@@ -1732,6 +1936,10 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     >>> print(coords)
     ... [[0.15, 0.4, 0.25, 0.5]]
 
+    Returns
+    -------
+    list of 4 numbers
+        New coordinates.
     """
     imh, imw = shape[0], shape[1]
     imh = imh * 1.0  # * 1.0 for python2 : force division to be float point
@@ -1758,10 +1966,15 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
     shape : list of 2 int
         For [height, width].
 
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
+
     Examples
     ---------
-    >>> coord = obj_box_coord_rescale(coord=[30, 40, 50, 50], shape=[100, 100])
-    ... [[0.3, 0.4, 0.5, 0.5]]
+    >>> coord = tl.prepro.obj_box_coord_rescale(coord=[30, 40, 50, 50], shape=[100, 100])
+    ... [0.3, 0.4, 0.5, 0.5]
 
     """
     return obj_box_coords_rescale(coords=[coord], shape=shape)[0]
@@ -1778,10 +1991,15 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
     shape : tuple of 2
         For [height, width].
 
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
+
     Examples
     ---------
-    >>> x, y, x2, y2 = obj_box_coord_scale_to_pixelunit([0.2, 0.3, 0.5, 0.7], shape=(100, 200, 3))
-    ... (40, 30, 100, 70)
+    >>> x, y, x2, y2 = tl.prepro.obj_box_coord_scale_to_pixelunit([0.2, 0.3, 0.5, 0.7], shape=(100, 200, 3))
+    ... [40, 30, 100, 70]
 
     """
     imh, imw = shape[0:2]
@@ -1813,6 +2031,11 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
         One coordinate.
     to_int : boolean
         Whether to convert output as integer.
+
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
 
     Examples
     ---------
@@ -1846,6 +2069,11 @@ def obj_box_coord_upleft_butright_to_centroid(coord):
     coord : list of 4 int/float
         One coordinate.
 
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
+
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x1, y1, x2, y2]"
     x1, y1, x2, y2 = coord
@@ -1865,6 +2093,11 @@ def obj_box_coord_centroid_to_upleft(coord):
     coord : list of 4 int/float
         One coordinate.
 
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
+
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
     x_center, y_center, w, h = coord
@@ -1882,6 +2115,10 @@ def obj_box_coord_upleft_to_centroid(coord):
     coord : list of 4 int/float
         One coordinate.
 
+    Returns
+    -------
+    list of 4 numbers
+        New bounding box.
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
     x, y, w, h = coord
@@ -1891,13 +2128,17 @@ def obj_box_coord_upleft_to_centroid(coord):
 
 
 def parse_darknet_ann_str_to_list(annotations):
-    r"""Input string format of class, x, y, w, h, return list of list format.
+    """Input string format of class, x, y, w, h, return list of list format.
 
     Parameters
     -----------
     annotations : str
         The annotations in darkent format "class, x, y, w, h ...." seperated by "\\n".
 
+    Returns
+    -------
+    list of list of 4 numbers
+        List of bounding box.
     """
     annotations = annotations.split("\n")
     ann = []
@@ -1914,7 +2155,23 @@ def parse_darknet_ann_str_to_list(annotations):
 
 
 def parse_darknet_ann_list_to_cls_box(annotations):
-    """Input list of [[class, x, y, w, h], ...], return two list of [class ...] and [[x, y, w, h], ...]."""
+    """Parse darknet annotation format into two lists for class and bounding box.
+
+    Input list of [[class, x, y, w, h], ...], return two list of [class ...] and [[x, y, w, h], ...].
+
+    Parameters
+    ------------
+    annotations : list of list
+        A list of class and bounding boxes of images e.g. [[class, x, y, w, h], ...]
+
+    Returns
+    -------
+    list of int
+        List of class labels.
+
+    list of list of 4 numbers
+        List of bounding box.
+    """
     class_list = []
     bbox_list = []
     for i in range(len(annotations)):
@@ -1938,6 +2195,13 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
         Set to True, if the x and y of coordinates are the centroid (i.e. darknet format). Default is False.
     is_random : boolean
         If True, randomly flip. Default is False.
+
+    Returns
+    -------
+    numpy.array
+        A processed image
+    list of list of 4 numbers
+        A list of new bounding boxes.
 
     Examples
     --------
@@ -2020,6 +2284,13 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
     is_rescale : boolean
         Set to True, if the input coordinates are rescaled to [0, 1], then return the original coordinates. Default is False.
 
+    Returns
+    -------
+    numpy.array
+        A processed image
+    list of list of 4 numbers
+        A list of new bounding boxes.
+
     Examples
     --------
     >>> im = np.zeros([80, 100, 3])    # as an image with shape width=100, height=80
@@ -2028,13 +2299,13 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
     ... [[40, 80, 60, 60], [20, 40, 40, 40]]
     >>> _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[40, 100], is_rescale=False)
     >>> print(coords)
-    ... [20, 20, 30, 15]
+    ... [[20, 20, 30, 15]]
     >>> _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[60, 150], is_rescale=False)
     >>> print(coords)
-    ... [30, 30, 45, 22]
+    ... [[30, 30, 45, 22]]
     >>> im2, coords = obj_box_imresize(im, coords=[[0.2, 0.4, 0.3, 0.3]], size=[160, 200], is_rescale=True)
     >>> print(coords, im2.shape)
-    ... [0.2, 0.4, 0.3, 0.3] (160, 200, 3)
+    ... [[0.2, 0.4, 0.3, 0.3]] (160, 200, 3)
 
     """
     imh, imw = im.shape[0:2]
@@ -2100,6 +2371,14 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
     thresh_wh2 : float
         Threshold, remove the box if its ratio of width to height or vice verse higher than the threshold.
 
+    Returns
+    -------
+    numpy.array
+        A processed image
+    list of int
+        A list of classes
+    list of list of 4 numbers
+        A list of new bounding boxes.
     """
     h, w = im.shape[0], im.shape[1]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -2243,6 +2522,15 @@ def obj_box_shift(im,
     thresh_wh2 : float
         Threshold, remove the box if its ratio of width to height or vice verse higher than the threshold.
 
+
+    Returns
+    -------
+    numpy.array
+        A processed image
+    list of int
+        A list of classes
+    list of list of 4 numbers
+        A list of new bounding boxes.
     """
     imh, imw = im.shape[row_index], im.shape[col_index]
     assert (hrg < 1.0) and (hrg > 0.) and (wrg < 1.0) and (wrg > 0.), "shift range should be (0, 1)"
@@ -2367,6 +2655,14 @@ def obj_box_zoom(im,
     thresh_wh2 : float
         Threshold, remove the box if its ratio of width to height or vice verse higher than the threshold.
 
+    Returns
+    -------
+    numpy.array
+        A processed image
+    list of int
+        A list of classes
+    list of list of 4 numbers
+        A list of new bounding boxes.
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -2549,6 +2845,11 @@ def remove_pad_sequences(sequences, pad_id=0):
     pad_id : int
         The pad ID.
 
+    Returns
+    ----------
+    list of list of int
+        The processed sequences.
+
     Examples
     ----------
     >>> sequences = [[2,3,4,0,0], [5,1,2,3,4,0,0,0], [4,5,0,2,4,0,0,0]]
@@ -2585,6 +2886,11 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
         Shorten the sequences. Default is True.
     remain_end_id : boolean
         Keep an `end_id` in the end. Default is False.
+
+    Returns
+    ----------
+    list of list of int
+        The processed sequences.
 
     Examples
     ---------
@@ -2627,6 +2933,11 @@ def sequences_add_start_id(sequences, start_id=0, remove_last=False):
     remove_last : boolean
         Remove the last value of each sequences. Usually be used for removing the end ID.
 
+    Returns
+    ----------
+    list of list of int
+        The processed sequences.
+
     Examples
     ---------
     >>> sentences_ids = [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
@@ -2661,6 +2972,11 @@ def sequences_add_end_id(sequences, end_id=888):
     end_id : int
         The end ID.
 
+    Returns
+    ----------
+    list of list of int
+        The processed sequences.
+
     Examples
     ---------
     >>> sequences = [[1,2,3],[4,5,6,7]]
@@ -2685,6 +3001,11 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
         The end ID.
     pad_id : int
         The pad ID.
+
+    Returns
+    ----------
+    list of list of int
+        The processed sequences.
 
     Examples
     ---------
@@ -2725,6 +3046,11 @@ def sequences_get_mask(sequences, pad_val=0):
         All sequences where each row is a sequence.
     pad_val : int
         The pad value.
+
+    Returns
+    ----------
+    list of list of int
+        The mask.
 
     Examples
     ---------

@@ -118,6 +118,8 @@ class Conv2dLayer(Layer):
 
     Examples
     --------
+    With TensorFlow
+
     >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.Conv2dLayer(net,
@@ -137,7 +139,8 @@ class Conv2dLayer(Layer):
     ...                   pool = tf.nn.max_pool,
     ...                   name ='pool_layer1',)   # output: (?, 14, 14, 32)
 
-    >>> Without TensorLayer, you can implement 2d convolution as follow.
+    Without TensorLayer, you can implement 2d convolution as follow.
+
     >>> W = tf.Variable(W_init(shape=[5, 5, 1, 32], ), name='W_conv')
     >>> b = tf.Variable(b_init(shape=[32], ), name='b_conv')
     >>> outputs = tf.nn.relu( tf.nn.conv2d(inputs, W,
@@ -431,7 +434,7 @@ class UpSampling2dLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
-    size : tuple of int/float.
+    size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
         If True (default), the `size` is a scale factor; otherwise, the `size` is the numbers of pixels of height and width.
@@ -491,7 +494,7 @@ class DownSampling2dLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
-    size : tuple of int/float.
+    size : tuple of int/float
         (height, width) scale factor or new size of height and width.
     is_scale : boolean
         If True (default), the `size` is the scale factor; otherwise, the `size` are numbers of pixels of height and width.
@@ -701,7 +704,7 @@ class DeformableConv2dLayer(Layer):
     >>> offset_1 = tl.layers.Conv2dLayer(layer=net, act=act, shape=(3, 3, 3, 18), strides=(1, 1, 1, 1),padding='SAME', name='offset_layer1')
     >>> net = tl.layers.DeformableConv2dLayer(layer=net, act=act, offset_layer=offset_1, shape=(3, 3, 3, 32),  name='deformable_conv_2d_layer1')
     >>> offset_2 = tl.layers.Conv2dLayer(layer=net, act=act, shape=(3, 3, 32, 18), strides=(1, 1, 1, 1), padding='SAME', name='offset_layer2')
-    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act = act, offset_layer=offset_2, shape=(3, 3, 32, 64), name='deformable_conv_2d_layer2')
+    >>> net = tl.layers.DeformableConv2dLayer(layer=net, act=act, offset_layer=offset_2, shape=(3, 3, 32, 64), name='deformable_conv_2d_layer2')
 
     References
     ----------
@@ -783,6 +786,61 @@ class DeformableConv2dLayer(Layer):
         # this layer
         self.all_layers.extend([self.outputs])
         self.all_params.extend([W, b])
+
+
+class _DeformableConv2d(DeformableConv2dLayer):  # TODO
+    """Simplified version of :class:`DeformableConv2dLayer`, see
+    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
+
+    Parameters
+    ----------
+    layer : :class:`Layer`
+        Previous layer.
+    offset_layer : :class:`Layer`
+        To predict the offset of convolution operations.
+        The output shape is (batchsize, input height, input width, 2*(number of element in the convolution kernel))
+        e.g. if apply a 3*3 kernel, the number of the last dimension should be 18 (2*3*3)
+    act : activation function
+        The activation function of this layer.
+    n_filter : int
+        The number of filters.
+    filter_size : tuple of int
+        The filter size (height, width).
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
+    """
+
+    def __init__(
+            self,
+            layer,
+            act=tf.identity,
+            offset_layer=None,
+            # shape=(3, 3, 1, 100),
+            n_filter=32,
+            filter_size=(3, 3),
+            name='deformable_conv_2d_layer',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args={},
+            b_init_args={}):
+
+        try:
+            pre_channel = int(layer.outputs.get_shape()[-1])
+        except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+            pre_channel = 1
+            logging.info("[warnings] unknow input channels, set to 1")
+        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+
+        DeformableConv2dLayer.__init__(
+            self, act=act, offset_layer=offset_layer, shape=shape, name=name, W_init=W_init, b_init=b_init, W_init_args=W_init_args, b_init_args=b_init_args)
 
 
 def atrous_conv1d(
@@ -920,7 +978,7 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend([filters])
 
 
-class SeparableConv2dLayer(Layer):
+class _SeparableConv2dLayer(Layer):  # TODO
     """The :class:`SeparableConv2dLayer` class is 2D convolution with separable filters, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`__.
 
     This layer has not been fully tested yet.

@@ -112,8 +112,8 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     ----------
     x : Tensor
         input.
-        - For 2d image, 4D tensor (batch_size, height, weight, channel), where channel >= 2.
-        - For 3d image, 5D tensor (batch_size, depth, height, weight, channel), where channel >= 2.
+            - For 2d image, 4D tensor (batch_size, height, weight, channel), where channel >= 2.
+            - For 3d image, 5D tensor (batch_size, depth, height, weight, channel), where channel >= 2.
     name : str
         function name (optional)
 

@@ -28,7 +28,7 @@ except:  # For TF11 and before
 
 def flatten_reshape(variable, name='flatten'):
     """Reshapes a high-dimension vector input.
-    [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row * mask_col * n_mask]
+    [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row x mask_col x n_mask]
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def flatten_reshape(variable, name='flatten'):
 
 
 def clear_layers_name():
-    """Clear all layer names in set_keep['_layers_name_list'] if layer names are reused.
+    """Clear all layer names in `set_keep['_layers_name_list']` if layer names are reused.
 
     Examples
     ---------
@@ -92,7 +92,9 @@ def clear_layers_name():
 
 
 def set_name_reuse(enable=True):
-    """Enable or disable reuse layer name. By default, each layer must has unique
+    """Enable or disable reuse layer name.
+
+    By default, each layer must has unique
     name. When you want two or more input placeholder (inference) share the same
     model parameters, you need to enable layer name reuse, then allow the
     parameters have same name scope.
@@ -100,7 +102,7 @@ def set_name_reuse(enable=True):
     Parameters
     ----------
     enable : boolean
-        Enable or disable name/layer reuse, None means False
+        Enable or disable name/layer reuse, None means False.
 
     Examples
     --------
@@ -133,14 +135,14 @@ def set_name_reuse(enable=True):
 
 def initialize_rnn_state(state, feed_dict=None):
     """Returns the initialized RNN state.
-    The inputs are LSTMStateTuple or State of RNNCells and an optional feed_dict.
+    The inputs are `LSTMStateTuple` or `State` of `RNNCells`, and an optional `feed_dict`.
 
     Parameters
     ----------
     state : RNN state.
         The TensorFlow's RNN state.
     feed_dict : dictionary
-        Initial RNN state; if None, returns null state.
+        Initial RNN state; if None, returns zero state.
 
     Returns
     -------
@@ -163,13 +165,15 @@ def initialize_rnn_state(state, feed_dict=None):
 
 
 def print_all_variables(train_only=False):
-    """Print all trainable and non-trainable variables
-    without tl.layers.initialize_global_variables(sess)
+    """Print information of trainable or all variables,
+    without ``tl.layers.initialize_global_variables(sess)``.
 
     Parameters
     ----------
     train_only : boolean
-        If True, print the trainable variables; if False, print all variables.
+        Whether print trainable variables only.
+            - If True, print the trainable variables.
+            - If False, print all variables.
 
     """
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
@@ -200,7 +204,7 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
 
     Returns
     -------
-    list
+    list of Tensor
         A list of TensorFlow variables
 
     Examples
@@ -241,8 +245,8 @@ def get_layers_with_name(net, name="", printable=False):
 
     Returns
     --------
-    list
-        a list of layers' output (TensorFlow tensor)
+    list of Tensor
+        A list of layers' output (TensorFlow tensor)
 
     Examples
     ---------
@@ -339,7 +343,7 @@ def initialize_global_variables(sess):
     Parameters
     ----------
     sess : Session
-        The TensorFlow session object.
+        TensorFlow session.
 
     """
     assert sess is not None
@@ -360,10 +364,18 @@ class Layer(object):
     Parameters
     ----------
     inputs : :class:`Layer` instance
-        The `Layer` class feeding into this layer
+        The `Layer` class feeding into this layer.
     name : str or None
-        A unique layer name
+        A unique layer name.
 
+    Methods
+    ---------
+    print_params(details=True, session=None)
+        Print all parameters of this network.
+    print_layers()
+        Print all outputs of all layers of this network.
+    count_params()
+        Return the number of parameters of this network.
     """
 
     def __init__(self, inputs=None, name='layer'):
@@ -433,9 +445,9 @@ class InputLayer(Layer):
     Parameters
     ----------
     inputs : placeholder or tensor
-        The input of a network
+        The input of a network.
     name : str
-        A unique layer name
+        A unique layer name.
 
     """
 
@@ -455,20 +467,20 @@ class OneHotInputLayer(Layer):
     Parameters
     ----------
     inputs : placeholder or tensor
-        The input of a network
+        The input of a network.
     depth : None or int
-        If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension `axis` (default: the new axis is appended at the end)
+        If the input indices is rank N, the output will have rank N+1. The new axis is created at dimension `axis` (default: the new axis is appended at the end).
     on_value : None or number
-        If None, it will default to the value 1 with type dtype
+        The value to represnt `ON`.
+            - If None, it will default to the value 1.
     off_value : None or number
-        If None, it will default to the value 0 with type dtype
-        None for default
+        The value to represnt `OFF`. If None, it will default to the value 0.
     axis : None or int
-        The axis
+        The axis.
     dtype : None or TensorFlow dtype
-        The data type, None for tf.float32
+        The data type, None means tf.float32.
     name : str
-        A unique layer name
+        A unique layer name.
 
     """
 
@@ -627,14 +639,11 @@ class Word2vecEmbeddingInputlayer(Layer):
 
 class EmbeddingInputlayer(Layer):
     """
-    The :class:`EmbeddingInputlayer` class is a fully connected layer,
-    for Word Embedding. Word content are accessed using integer indexes.
-    The output is the embedded word vector.
+    The :class:`EmbeddingInputlayer` class is a look-up table for word embedding.
 
-    If you have a pre-train matrix, you can assign the matrix into it.
+    Word content are accessed using integer indexes, then the output is the embedded word vector.
     To train a word embedding matrix, you can used :class:`Word2vecEmbeddingInputlayer`.
-
-    Note that, do not update this embedding matrix.
+    If you have a pre-trained matrix, you can assign the parameters into it.
 
     Parameters
     ----------
@@ -659,47 +668,12 @@ class EmbeddingInputlayer(Layer):
 
     Examples
     --------
-    >>> vocabulary_size = 50000
-    >>> embedding_size = 200
-    >>> model_file_name = "model_word2vec_50k_200"
-    >>> batch_size = None
-    ...
-    >>> all_var = tl.files.load_npy_to_any(name=model_file_name+'.npy')
-    >>> data = all_var['data']; count = all_var['count']
-    >>> dictionary = all_var['dictionary']
-    >>> reverse_dictionary = all_var['reverse_dictionary']
-    >>> tl.files.save_vocab(count, name='vocab_'+model_file_name+'.txt')
-    >>> del all_var, data, count
-    ...
-    >>> load_params = tl.files.load_npz(name=model_file_name+'.npz')
-    >>> x = tf.placeholder(tf.int32, shape=(batch_size))
-    >>> y_ = tf.placeholder(tf.int32, shape=(batch_size, 1))
+    >>> x = tf.placeholder(tf.int32, shape=(batch_size,))
     >>> emb_net = tl.layers.EmbeddingInputlayer(
     ...                inputs = x,
     ...                vocabulary_size = vocabulary_size,
     ...                embedding_size = embedding_size,
-    ...                name ='embedding_layer')
-    >>> tl.layers.initialize_global_variables(sess)
-    >>> tl.files.assign_params(sess, [load_params[0]], emb_net)
-    >>> word = b'hello'
-    >>> word_id = dictionary[word]
-    >>> print('word_id:', word_id)
-    ... 6428
-    ...
-    >>> words = [b'i', b'am', b'hao', b'dong']
-    >>> word_ids = tl.files.words_to_word_ids(words, dictionary)
-    >>> context = tl.files.word_ids_to_words(word_ids, reverse_dictionary)
-    >>> print('word_ids:', word_ids)
-    ... [72, 1226, 46744, 20048]
-    >>> print('context:', context)
-    ... [b'i', b'am', b'hao', b'dong']
-    ...
-    >>> vector = sess.run(emb_net.outputs, feed_dict={x : [word_id]})
-    >>> print('vector:', vector.shape)
-    ... (1, 200)
-    >>> vectors = sess.run(emb_net.outputs, feed_dict={x : word_ids})
-    >>> print('vectors:', vectors.shape)
-    ... (4, 200)
+    ...                name ='embed')
 
     """
 
@@ -710,7 +684,7 @@ class EmbeddingInputlayer(Layer):
             embedding_size=200,
             E_init=tf.random_uniform_initializer(-0.1, 0.1),
             E_init_args={},
-            name='embedding_layer',
+            name='embedding',
     ):
         Layer.__init__(self, name=name)
         self.inputs = inputs
@@ -907,9 +881,9 @@ class DenseLayer(Layer):
 
 
 class ReconLayer(DenseLayer):
-    """
-    The :class:`ReconLayer` class is a reconstruction layer for :class:`DenseLayer` for AutoEncoder.
-    It is used to pre-train the previous :class:`DenseLayer`
+    """A reconstruction layer for :class:`DenseLayer` to implement AutoEncoder.
+
+    It is often used to pre-train the previous :class:`DenseLayer`
 
     Parameters
     ----------
@@ -940,7 +914,7 @@ class ReconLayer(DenseLayer):
     Methods
     -------
     pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre')
-        Start to pre-train the parameters of previous DenseLayer.
+        Start to pre-train the parameters of the previous DenseLayer.
 
     Notes
     -----
