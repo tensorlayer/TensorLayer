@@ -117,7 +117,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, second=3):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
     """Load CIFAR-10 dataset.
 
     It consists of 60000 32x32 colour images in 10 classes, with
@@ -137,8 +137,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False, sec
         The path that the data is downloaded to, defaults is ``data/cifar10/``.
     plotable : boolean
         Whether to plot some image examples, False as default.
-    second : int
-        If ``plotable`` is True, it is the display time.
 
     Examples
     --------
@@ -1791,4 +1789,4 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     for f in file_list:
         W = load_npz(path, f)[0]
         logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
-        visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
+        visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)

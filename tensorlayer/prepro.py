@@ -102,23 +102,17 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     """
 
-    ## plot function info
-    # for name, value in kwargs.items():
-    #     logging.info('{0} = {1}'.format(name, value))
-    # exit()
-    # define function for threading
     def apply_fn(results, i, data, kwargs):
         results[i] = fn(data, **kwargs)
 
-    ## start multi-threaded reading.
-    if thread_count is None:  # by Milo
-        results = [None] * len(data)  ## preallocate result list
+    if thread_count is None:
+        results = [None] * len(data)
         threads = []
         for i in range(len(data)):
             t = threading.Thread(name='threading_and_return', target=apply_fn, args=(results, i, data[i], kwargs))
             t.start()
             threads.append(t)
-    else:  # by geometrikal
+    else:
         divs = np.linspace(0, len(data), thread_count + 1)
         divs = np.round(divs).astype(int)
         results = [None] * thread_count
@@ -128,20 +122,18 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
             t.start()
             threads.append(t)
 
-    ## <Milo> wait for all threads to complete
     for t in threads:
         t.join()
 
     if thread_count is None:
         try:
             return np.asarray(results)
-        except:  # if dim don't match
+        except:
             return results
     else:
         return np.concatenate(results)
 
 
-## Image
 def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
     """Rotate an image randomly or non-randomly.
 
@@ -225,7 +217,7 @@ def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_
 
 
 # crop
-def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2):
+def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """Randomly or centrally crop an image.
 
     Parameters
@@ -238,13 +230,16 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
         Size of height.
     is_random : boolean,
         If True, randomly crop, else central crop. Default is False.
-    row_index col_index and channel_index : int
-        Index of row, col and channel, default (0, 1, 2), for theano (1, 2, 0).
+    row_index: int
+        index of row.
+    col_index: int
+        index of column.
 
     Returns
     -------
     numpy.array
         A processed image.
+
     """
     h, w = x.shape[row_index], x.shape[col_index]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -267,7 +262,7 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2
         # central crop
 
 
-def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_index=2):
+def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     """Randomly or centrally crop multiple images.
 
     Parameters
@@ -281,6 +276,7 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1, channel_i
     -------
     numpy.array
         A list of processed images.
+
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -321,6 +317,7 @@ def flip_axis(x, axis=1, is_random=False):
     -------
     numpy.array
         A processed image.
+
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -352,6 +349,7 @@ def flip_axis_multi(x, axis, is_random=False):
     -------
     numpy.array
         A list of processed images.
+
     """
     if is_random:
         factor = np.random.uniform(-1, 1)
@@ -412,6 +410,7 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
     -------
     numpy.array
         A processed image.
+
     """
     h, w = x.shape[row_index], x.shape[col_index]
     if is_random:
@@ -441,6 +440,7 @@ def shift_multi(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, 
     -------
     numpy.array
         A list of processed images.
+
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
     if is_random:
@@ -518,6 +518,7 @@ def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, cha
     -------
     numpy.array
         A list of processed images.
+
     """
     if is_random:
         shear = np.random.uniform(-intensity, intensity)
@@ -593,6 +594,7 @@ def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1,
     -------
     numpy.array
         A list of processed images.
+
     """
     assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
     if is_random:
@@ -724,6 +726,7 @@ def swirl_multi(x,
     -------
     numpy.array
         A list of processed images.
+
     """
     assert radius != 0, Exception("Invalid radius value")
     rotation = np.pi / 180 * rotation
@@ -834,6 +837,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
     -------
     numpy.array
         A list of processed images.
+
     """
     if is_random is False:
         random_state = np.random.RandomState(None)
@@ -897,6 +901,7 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
     -------
     numpy.array
         A processed image.
+
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -932,6 +937,7 @@ def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index
     -------
     numpy.array
         A list of processed images.
+
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -1011,6 +1017,7 @@ def brightness_multi(x, gamma=1, gain=1, is_random=False):
     -------
     numpy.array
         A list of processed images.
+
     """
     if is_random:
         gamma = np.random.uniform(1 - gamma, 1 + gamma)
@@ -1109,6 +1116,7 @@ def rgb_to_hsv(rgb):
     -------
     numpy.array
         A processed image.
+
     """
     # Translated from source of colorsys.rgb_to_hsv
     # r,g,b should be a numpy arrays with values between 0 and 255
@@ -1517,6 +1525,7 @@ def channel_shift_multi(x, intensity, is_random=False, channel_index=2):
     -------
     numpy.array
         A list of processed images.
+
     """
     if is_random:
         factor = np.random.uniform(-intensity, intensity)
@@ -1549,6 +1558,7 @@ def drop(x, keep=0.5):
     -------
     numpy.array
         A processed image.
+
     """
     if len(x.shape) == 3:
         if x.shape[-1] == 3:  # color
@@ -1743,7 +1753,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
 
     References
     -----------
-    - `PIL Image.fromarray <http://pillow.readthedocs.io/en/3.1.x/reference/Image.html?highlight=fromarray>`__
+    `PIL Image.fromarray <http://pillow.readthedocs.io/en/3.1.x/reference/Image.html?highlight=fromarray>`__
 
     """
     from PIL import Image
@@ -1789,8 +1799,9 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
     --------
     list of (n,2)-ndarrays
         Each contour is an ndarray of shape (n, 2), consisting of n (row, column) coordinates along the contour.
+
     """
-    return skimage.measure.find_contours(x, level, fully_connected='low', positive_orientation='low')
+    return skimage.measure.find_contours(x, level, fully_connected=fully_connected, positive_orientation=positive_orientation)
 
 
 def pt2map(list_points=[], size=(100, 100), val=1):
@@ -1809,9 +1820,10 @@ def pt2map(list_points=[], size=(100, 100), val=1):
     -------
     numpy.array
         An image.
+
     """
     i_m = np.zeros(size)
-    if list_points == []:
+    if len(list_points) == 0:
         return i_m
     for xx in list_points:
         for x in xx:
@@ -1835,6 +1847,7 @@ def binary_dilation(x, radius=3):
     -------
     numpy.array
         A processed binary image.
+
     """
     from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
@@ -1857,6 +1870,7 @@ def dilation(x, radius=3):
     -------
     numpy.array
         A processed greyscale image.
+
     """
     from skimage.morphology import disk, dilation
     mask = disk(radius)
@@ -1879,6 +1893,7 @@ def binary_erosion(x, radius=3):
     -------
     numpy.array
         A processed binary image.
+
     """
     from skimage.morphology import disk, dilation, binary_erosion
     mask = disk(radius)
@@ -1901,6 +1916,7 @@ def erosion(x, radius=3):
     -------
     numpy.array
         A processed greyscale image.
+
     """
     from skimage.morphology import disk, dilation, erosion
     mask = disk(radius)
@@ -1940,6 +1956,7 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     -------
     list of 4 numbers
         New coordinates.
+
     """
     imh, imw = shape[0], shape[1]
     imh = imh * 1.0  # * 1.0 for python2 : force division to be float point
@@ -2119,6 +2136,7 @@ def obj_box_coord_upleft_to_centroid(coord):
     -------
     list of 4 numbers
         New bounding box.
+
     """
     assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
     x, y, w, h = coord
@@ -2139,6 +2157,7 @@ def parse_darknet_ann_str_to_list(annotations):
     -------
     list of list of 4 numbers
         List of bounding box.
+
     """
     annotations = annotations.split("\n")
     ann = []
@@ -2171,6 +2190,7 @@ def parse_darknet_ann_list_to_cls_box(annotations):
 
     list of list of 4 numbers
         List of bounding box.
+
     """
     class_list = []
     bbox_list = []
@@ -2379,6 +2399,7 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
         A list of classes
     list of list of 4 numbers
         A list of new bounding boxes.
+
     """
     h, w = im.shape[0], im.shape[1]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
@@ -2531,6 +2552,7 @@ def obj_box_shift(im,
         A list of classes
     list of list of 4 numbers
         A list of new bounding boxes.
+
     """
     imh, imw = im.shape[row_index], im.shape[col_index]
     assert (hrg < 1.0) and (hrg > 0.) and (wrg < 1.0) and (wrg > 0.), "shift range should be (0, 1)"
@@ -2663,6 +2685,7 @@ def obj_box_zoom(im,
         A list of classes
     list of list of 4 numbers
         A list of new bounding boxes.
+
     """
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
@@ -3069,170 +3092,3 @@ def sequences_get_mask(sequences, pad_val=0):
             else:
                 break  # <-- exit the for loop, prepcess next sequence
     return mask
-
-
-## Text
-# see tensorlayer.nlp
-
-## Tensor Opt
-# def distorted_images(images=None, height=24, width=24):
-#     """Distort images for generating more training data.
-#
-#     Features
-#     ---------
-#     They are cropped to height * width pixels randomly.
-#
-#     They are approximately whitened to make the model insensitive to dynamic range.
-#
-#     Randomly flip the image from left to right.
-#
-#     Randomly distort the image brightness.
-#
-#     Randomly distort the image contrast.
-#
-#     Whiten (Normalize) the images.
-#
-#     Parameters
-#     ----------
-#     images : 4D Tensor
-#         The tensor or placeholder of images
-#     height : int
-#         The height for random crop.
-#     width : int
-#         The width for random crop.
-#
-#     Returns
-#     -------
-#     result : tuple of Tensor
-#         (Tensor for distorted images, Tensor for while loop index)
-#
-#     Examples
-#     --------
-#     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
-#     >>> sess = tf.InteractiveSession()
-#     >>> batch_size = 128
-#     >>> x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
-#     >>> distorted_images_op = tl.preprocess.distorted_images(images=x, height=24, width=24)
-#     >>> sess.run(tf.initialize_all_variables())
-#     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
-#     >>> distorted_images, idx = sess.run(distorted_images_op, feed_dict=feed_dict)
-#     >>> tl.vis.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
-#     >>> tl.vis.images2d(distorted_images[1:10,:,:,:], second=10, saveable=False, name='distorted_images', dtype=None, fig_idx=23012)
-#
-#     Notes
-#     ------
-#     - The first image in 'distorted_images' should be removed.
-#
-#     References
-#     -----------
-#     - `tensorflow.models.image.cifar10.cifar10_input <https://github.com/tensorflow/tensorflow/blob/r0.9/tensorflow/models/image/cifar10/cifar10_input.py>`__
-#     """
-#     logging.info("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
-#             t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
-#     exit()
-#     # logging.info(" [Warning] distorted_images will be deprecated due to speed, see TFRecord tutorial for more info...")
-#     try:
-#         batch_size = int(images._shape[0])
-#     except:
-#         raise Exception('unknow batch_size of images')
-#     distorted_x = tf.Variable(tf.constant(0.1, shape=[1, height, width, 3]))
-#     i = tf.Variable(tf.constant(0))
-#
-#     c = lambda distorted_x, i: tf.less(i, batch_size)
-#
-#     def body(distorted_x, i):
-#         # 1. Randomly crop a [height, width] section of the image.
-#         image = tf.random_crop(tf.gather(images, i), [height, width, 3])
-#         # 2. Randomly flip the image horizontally.
-#         image = tf.image.random_flip_left_right(image)
-#         # 3. Randomly change brightness.
-#         image = tf.image.random_brightness(image, max_delta=63)
-#         # 4. Randomly change contrast.
-#         image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
-#         # 5. Subtract off the mean and divide by the variance of the pixels.
-#         image = tf.image.per_image_whitening(image)
-#         # 6. Append the image to a batch.
-#         image = tf.expand_dims(image, 0)
-#         return tf.concat(0, [distorted_x, image]), tf.add(i, 1)
-#
-#     result = tf.while_loop(cond=c, body=body, loop_vars=(distorted_x, i), parallel_iterations=16)
-#     return result
-#
-#
-# def crop_central_whiten_images(images=None, height=24, width=24):
-#     """Crop the central of image, and normailize it for test data.
-#
-#     They are cropped to central of height * width pixels.
-#
-#     Whiten (Normalize) the images.
-#
-#     Parameters
-#     ----------
-#     images : 4D Tensor
-#         The tensor or placeholder of images
-#     height : int
-#         The height for central crop.
-#     width : int
-#         The width for central crop.
-#
-#     Returns
-#     -------
-#     result : tuple Tensor
-#         (Tensor for distorted images, Tensor for while loop index)
-#
-#     Examples
-#     --------
-#     >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
-#     >>> sess = tf.InteractiveSession()
-#     >>> batch_size = 128
-#     >>> x = tf.placeholder(tf.float32, shape=[batch_size, 32, 32, 3])
-#     >>> central_images_op = tl.preprocess.crop_central_whiten_images(images=x, height=24, width=24)
-#     >>> sess.run(tf.initialize_all_variables())
-#     >>> feed_dict={x: X_train[0:batch_size,:,:,:]}
-#     >>> central_images, idx = sess.run(central_images_op, feed_dict=feed_dict)
-#     >>> tl.vis.images2d(X_train[0:9,:,:,:], second=2, saveable=False, name='cifar10', dtype=np.uint8, fig_idx=20212)
-#     >>> tl.vis.images2d(central_images[1:10,:,:,:], second=10, saveable=False, name='central_images', dtype=None, fig_idx=23012)
-#
-#     Notes
-#     ------
-#     The first image in 'central_images' should be removed.
-#
-#     Code References
-#     ----------------
-#     - ``tensorflow.models.image.cifar10.cifar10_input``
-#     """
-#     logging.info("This function is deprecated, please use tf.map_fn instead, e.g:\n   \
-#             t_image = tf.map_fn(lambda img: tf.image.random_brightness(img, max_delta=32. / 255.), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_contrast(img, lower=0.5, upper=1.5), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_saturation(img, lower=0.5, upper=1.5), t_image)\n \
-#             t_image = tf.map_fn(lambda img: tf.image.random_hue(img, max_delta=0.032), t_image)")
-#     exit()
-#     # logging.info(" [Warning] crop_central_whiten_images will be deprecated due to speed, see TFRecord tutorial for more info...")
-#     try:
-#         batch_size = int(images._shape[0])
-#     except:
-#         raise Exception('unknow batch_size of images')
-#     central_x = tf.Variable(tf.constant(0.1, shape=[1, height, width, 3]))
-#     i = tf.Variable(tf.constant(0))
-#
-#     c = lambda central_x, i: tf.less(i, batch_size)
-#
-#     def body(central_x, i):
-#         # 1. Crop the central [height, width] of the image.
-#         image = tf.image.resize_image_with_crop_or_pad(tf.gather(images, i), height, width)
-#         # 2. Subtract off the mean and divide by the variance of the pixels.
-#         image = tf.image.per_image_whitening(image)
-#         # 5. Append the image to a batch.
-#         image = tf.expand_dims(image, 0)
-#         return tf.concat(0, [central_x, image]), tf.add(i, 1)
-#
-#     result = tf.while_loop(cond=c, body=body, loop_vars=(central_x, i), parallel_iterations=16)
-#     return result
-#
-#
-#
-
-#
