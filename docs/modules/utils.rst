@@ -62,15 +62,15 @@ Flatten a list
 .. autofunction:: flatten_list
 
 Close TF session and associated processes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 .. autofunction:: exit_tensorflow
 
 Open TensorBoard
-^^^^^^^^^^^^^^^^^^^
+---------------------------
 .. autofunction:: open_tensorboard
 
 Clear TensorFlow placeholder
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 .. autofunction:: clear_all_placeholder_variables
 
 Set GPU functions
