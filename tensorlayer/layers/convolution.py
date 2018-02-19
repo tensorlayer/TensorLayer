@@ -56,9 +56,10 @@ class Conv1dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
         if act is None:
             act = tf.identity
+        logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
+
         with tf.variable_scope(name) as vs:
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             self.outputs = tf.nn.convolution(
@@ -166,6 +167,8 @@ class Conv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+        if act is None:
+            act = tf.identity
         logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -280,6 +283,8 @@ class DeConv2dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+        if act is None:
+            act = tf.identity
         logging.info("DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
                                                                                            act.__name__))
         # logging.info("  DeConv2dLayer: Untested")
@@ -346,6 +351,8 @@ class Conv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+        if act is None:
+            act = tf.identity
         logging.info("Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -411,6 +418,8 @@ class DeConv3dLayer(Layer):
     ):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+        if act is None:
+            act = tf.identity
         logging.info("DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
                                                                                            act.__name__))
 
@@ -761,7 +770,8 @@ class DeformableConv2d(Layer):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.offset_layer = offset_layer
-
+        if act is None:
+            act = tf.identity
         logging.info("DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" % (self.name, n_filter, str(filter_size), act.__name__))
 
         try:
@@ -946,6 +956,8 @@ class AtrousConv2dLayer(Layer):
                  name='atrou2d'):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
+        if act is None:
+            act = tf.identity
         logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
         with tf.variable_scope(name) as vs:
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
