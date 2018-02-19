@@ -800,11 +800,16 @@ class DeformableConv2d(Layer):
 
             W = tf.get_variable(
                 name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init, dtype=D_TYPE, **W_init_args)
-            b = tf.get_variable(name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args)
 
-            self.outputs = tf.reshape(
-                act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
-                (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
+            if b_init is not None:
+                b = tf.get_variable(name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args)
+                self.outputs = tf.reshape(
+                    act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
+                    (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
+            else:
+                self.outputs = tf.reshape(
+                    act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)),
+                    (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
 
         # fixed
         self.all_layers = list(layer.all_layers)
@@ -821,8 +826,10 @@ class DeformableConv2d(Layer):
 
         # this layer
         self.all_layers.extend([self.outputs])
-        self.all_params.extend([W, b])
-
+        if b_init is not None:
+            self.all_params.extend([W, b])
+        else:
+            self.all_params.extend([W])
 
 def atrous_conv1d(
         layer,
