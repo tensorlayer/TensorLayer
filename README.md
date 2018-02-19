@@ -123,7 +123,9 @@ TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](h
 -->
 
 
-# Library Features
+# Features
+
+## Design Philosophy
 
 As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library is easy for beginners by offering rich neural network 
 examples and tutorials. Later, its APIs can be extended to address *real-world problems* by allowing users to carefully manipulating TensorFlow. In the end, it is able to serve in challenging *production environments*. TensorLayer is a novel library that aims to satisfy development requirements throughout these phases. It has three key features:
@@ -146,10 +148,11 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 
 ## Compared with Keras and TFLearn
 
-A frequent question regarding TensorLayer is what is the different with other libraries like Keras and Tflearn. 
-These libraries are comfortable to start with. They provide imperative abstractions to lower adoption barrier; 
-but in turn mask the underlying engine from users. Though good for bootstrap, 
-it becomes hard to leverage the advanced features of TensorFlow, which is quite necessary in tackling real-world problems. 
+Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
+These libraries are comfortable to start with. They provide high-level abstractions; 
+but in turn mask the underlying engine features from users. Though good for bootstrap, 
+it becomes hard to manipulate the low-level powerful features of TensorFlow, which we find quite necessary 
+in tackling many real-world problems. 
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
 Users often find it easy to start with the examples and tutorials of TensorLayer, and 
 then dive into the TensorFlow low-level APIs only if need through the transparent API design.
