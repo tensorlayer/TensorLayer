@@ -577,7 +577,8 @@ def _tf_repeat(a, repeats):
 
     a = tf.expand_dims(a, -1)
     a = tf.tile(a, [1, repeats])
-    a = tf_flatten(a)
+    # a = tf_flatten(a)
+    a = flatten_reshape(a)
     return a
 
 
@@ -765,7 +766,7 @@ class DeformableConv2d(Layer):
             W_init_args={},
             b_init_args={}):
         if tf.__version__ < "1.4":
-            raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version")
+            raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version | current version %s" % tf.__version__)
 
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
@@ -840,6 +841,7 @@ class DeformableConv2d(Layer):
             self.all_params.extend([W, b])
         else:
             self.all_params.extend([W])
+
 
 def atrous_conv1d(
         layer,
