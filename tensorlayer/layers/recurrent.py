@@ -1428,6 +1428,8 @@ class Seq2Seq(Layer):
         The arguments for the cell initializer.
     n_hidden : int
         The number of hidden units in the layer.
+    initializer : initializer
+        The initializer for the parameters.
     encode_sequence_length : tensor
         For encoder sequence length, see :class:`DynamicRNNLayer` .
     decode_sequence_length : tensor
@@ -1519,6 +1521,7 @@ class Seq2Seq(Layer):
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args={'state_is_tuple': True},
             n_hidden=256,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
             encode_sequence_length=None,
             decode_sequence_length=None,
             initial_state_encode=None,
@@ -1547,6 +1550,7 @@ class Seq2Seq(Layer):
                 cell_fn=cell_fn,
                 cell_init_args=cell_init_args,
                 n_hidden=n_hidden,
+                initializer=initializer,
                 initial_state=initial_state_encode,
                 dropout=dropout,
                 n_layer=n_layer,
@@ -1561,6 +1565,7 @@ class Seq2Seq(Layer):
                 cell_fn=cell_fn,
                 cell_init_args=cell_init_args,
                 n_hidden=n_hidden,
+                initializer=initializer,
                 initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
                 dropout=dropout,
                 n_layer=n_layer,
