@@ -109,6 +109,7 @@ def log_weight(probs, weights, name='log_weight'):
     --------
     Tensor
         The Tensor after appling the log weighted expression.
+
     """
     with tf.variable_scope(name):
         exp_v = tf.reduce_mean(tf.log(probs) * weights)

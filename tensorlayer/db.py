@@ -494,13 +494,13 @@ class DBLogger:
         self.db = db
         self.model = model
 
-    def on_train_begin(self, logs={}):
+    def on_train_begin(self):
         print("start")
 
-    def on_train_end(self, logs={}):
+    def on_train_end(self):
         print("end")
 
-    def on_epoch_begin(self, epoch, logs={}):
+    def on_epoch_begin(self, epoch):
         self.epoch = epoch
         self.et = time.time()
         return
@@ -525,7 +525,7 @@ class DBLogger:
         self.losses = []
         self.batch = batch
 
-    def on_batch_end(self, batch, logs={}):
+    def on_batch_end(self, logs={}):
         self.t2 = time.time() - self.t
         logs['acc'] = np.asscalar(logs['acc'])
         #logs['loss']=np.asscalar(logs['loss'])
