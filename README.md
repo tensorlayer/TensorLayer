@@ -127,18 +127,17 @@ TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](h
 
 ## Design Philosophy
 
-As deep learning practitioners, we have been looking for a library that can serve for various development phases. This library is easy for beginners by offering rich neural network 
-examples and tutorials. Later, its APIs can be extended to address *real-world problems* by allowing users to carefully manipulating TensorFlow. In the end, it is able to serve in challenging *production environments*. TensorLayer is a novel library that aims to satisfy development requirements throughout these phases. It has three key features:
+As deep learning practitioners, we have been looking for a TensorFlow wrapper library that can serve for various development phases. This library is easy for beginners by offering rich neural network implementations,
+examples and tutorials. Later, its APIs do not prohibit users from manipulating the low-level powerful features of TensorFlow, which is necessary in tackling real-world problems. In the end, the extra wrappers shall not compromise TensorFlow performance, and thus suit for production deployment. TensorLayer is a novel library that aims to satisfy these requirements that can occur in various phases. It has three key features:
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** deep learning modules. It also
-provides users with massive examples and tutorials to help bootstrap.
-- *Transparency* : TensorLayer provides access to the **native APIs** of TensorFlow. This helps users achieve flexible controls within the training engine.
-- *Performance* : TensorLayer provides **zero-cost** abstraction. It can run on distributed and heterogeneous TensorFlow platforms with full power.
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** layers. It also provides users with massive examples and tutorials to help bootstrap.
+- *Flexibility* : TensorLayer APIs are transparent: it does not mask TensorFlow from users but leaving massive hooks that allow **low-level tuning**.
+- *Zero-cost Abstraction* : TensorLayer is able to achieve the **full performance** of TensorFlow.
 
 ## Negligible Overhead
 
 TensorLayer has negligible performance overhead. We benchmark classic deep learning
-models using TensorLayer and native TensorFlow implementations
+models using TensorLayer and native TensorFlow
 on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 
 |             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
@@ -151,11 +150,10 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
 These libraries are comfortable to start with. They provide high-level abstractions; 
 but in turn mask the underlying engine features from users. Though good for bootstrap, 
-it becomes hard to manipulate the low-level powerful features of TensorFlow, which we find quite necessary 
-in tackling many real-world problems. 
+it becomes hard to manipulate the low-level powerful features of TensorFlow. 
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
 Users often find it easy to start with the examples and tutorials of TensorLayer, and 
-then dive into the TensorFlow low-level APIs only if need through the transparent API design.
+then dive into the TensorFlow low-level APIs only if need.
 TensorLayer does not intend to create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into
 a TensorLayer environment.
 
@@ -238,7 +236,7 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 # Academic and Industry Users
 
-TensorLayer is in an active development stage and has an open community. 
+TensorLayer has an open and fast growing community. 
 It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
