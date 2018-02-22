@@ -1,28 +1,22 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import io
-import os
-import time
 
+import os
 import numpy as np
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
 import tensorlayer as tl
-from PIL import Image
-from tensorlayer.layers import set_keep
-"""
-You will learn:
-1. How to convert CIFAR-10 dataset into TFRecord format file.
-2. How to read CIFAR-10 from TFRecord format file.
 
-More:
-1. tutorial_tfrecord.py
-2. tutoral_cifar10_tfrecord.py
+# You will learn:
+# 1. How to convert CIFAR-10 dataset into TFRecord format file.
+# 2. How to read CIFAR-10 from TFRecord format file.
+#
+# More:
+# 1. tutorial_tfrecord.py
+# 2. tutoral_cifar10_tfrecord.py
 
-
-"""
 
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
