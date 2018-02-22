@@ -1,7 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 import os
 import numpy as np
 # import matplotlib
@@ -16,7 +15,6 @@ import tensorlayer as tl
 # More:
 # 1. tutorial_tfrecord.py
 # 2. tutoral_cifar10_tfrecord.py
-
 
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)

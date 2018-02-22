@@ -1,32 +1,28 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import io
 import os
-
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from PIL import Image
-"""
-You will learn:
-1. How to save data into TFRecord format file.
-2. How to read data from TFRecord format file by using Queue and Thread.
 
-Reference:
------------
-English : https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-protobufs-queues/
-          https://www.tensorflow.org/versions/master/how_tos/reading_data/index.html
-          https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#readers
-Chinese : http://blog.csdn.net/u012759136/article/details/52232266
-          https://github.com/ycszen/tf_lab/blob/master/reading_data/TensorFlow高效加载数据的方法.md
-
-More
-------
-1. tutorial_tfrecord2.py
-2. tutorial_cifar10_tfrecord.py
-
-"""
+# You will learn:
+# 1. How to save data into TFRecord format file.
+# 2. How to read data from TFRecord format file by using Queue and Thread.
+#
+# Reference:
+# -----------
+# English : https://indico.io/blog/tensorflow-data-inputs-part1-placeholders-protobufs-queues/
+#           https://www.tensorflow.org/versions/master/how_tos/reading_data/index.html
+#           https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#readers
+# Chinese : http://blog.csdn.net/u012759136/article/details/52232266
+#           https://github.com/ycszen/tf_lab/blob/master/reading_data/TensorFlow高效加载数据的方法.md
+#
+# More
+# ------
+# 1. tutorial_tfrecord2.py
+# 2. tutorial_cifar10_tfrecord.py
 
 ## Save data ==================================================================
 classes = ['/data/cat', '/data/dog']  # cat is 0, dog is 1

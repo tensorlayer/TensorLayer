@@ -15,14 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Example of Synced sequence input and output.
-Generate text using LSTM.
+# Example of Synced sequence input and output.
+# Generate text using LSTM.
+#
+# Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
 
-Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
-
-"""
-
-import os
 import re
 import time
 
@@ -154,7 +151,6 @@ def main_restore_embedding_layer():
     load_params = tl.files.load_npz(name=model_file_name + '.npz')
 
     x = tf.placeholder(tf.int32, shape=[batch_size])
-    y_ = tf.placeholder(tf.int32, shape=[batch_size, 1])
 
     emb_net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=vocabulary_size, embedding_size=embedding_size, name='embedding_layer')
 
@@ -369,9 +365,10 @@ def main_lstm_generate_text():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    """Restore a pretrained embedding matrix."""
+    # Restore a pretrained embedding matrix
     # main_restore_embedding_layer()
-    """How to generate text from a given context."""
+
+    # How to generate text from a given context
     main_lstm_generate_text()
 
 #

@@ -104,8 +104,6 @@ from tensorlayer.layers import set_keep
 # B) for an rnn, all time steps share weights. We use one matrix to keep all
 # gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
-
-
 flags = tf.flags
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
 FLAGS = flags.FLAGS

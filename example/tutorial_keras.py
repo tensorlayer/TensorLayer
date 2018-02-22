@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import time
-
-import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from keras import backend as K
