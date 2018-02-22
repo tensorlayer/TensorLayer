@@ -205,9 +205,9 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
         plt.ion()  # interactive mode
         count = 1
-        for row in range(10):
-            for col in range(10):
-                a = fig.add_subplot(10, 10, count)
+        for _ in range(10): # each row
+            for _ in range(10): # each column
+                _ = fig.add_subplot(10, 10, count)
                 if shape == (-1, 3, 32, 32):
                     # plt.imshow(X_train[count-1], interpolation='nearest')
                     plt.imshow(np.transpose(X_train[count - 1], (1, 2, 0)), interpolation='nearest')
@@ -332,7 +332,7 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
     with zipfile.ZipFile(os.path.join(path, filename)) as f:
         word_list = f.read(f.namelist()[0]).split()
-        for idx, word in enumerate(word_list):
+        for idx, _ in enumerate(word_list):
             word_list[idx] = word_list[idx].decode()
     return word_list
 
@@ -667,7 +667,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     images_list = []
     images_folder_list = []
     for i in range(0, size):
-        images_folder_list += load_folder_list(path=path + '/images%d' % i)
+        # images_folder_list += load_folder_list(path=path + '/images%d' % i)
+        images_folder_list += load_folder_list(path=os.path.join(path, 'images%d' % i))
     images_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
     # logging.info(images_folder_list)
     # exit()
@@ -750,14 +751,14 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
     return im_train_A, im_train_B, im_test_A, im_test_B
 
 
-def download_file_from_google_drive(id, destination):
+def download_file_from_google_drive(ID, destination):
     """Download file from Google Drive.
 
     See ``tl.files.load_celebA_dataset`` for example.
 
     Parameters
     --------------
-    id : str
+    ID : str
         The driver ID.
     destination : str
         The destination for save file.
@@ -782,11 +783,11 @@ def download_file_from_google_drive(id, destination):
     URL = "https://docs.google.com/uc?export=download"
     session = requests.Session()
 
-    response = session.get(URL, params={'id': id}, stream=True)
+    response = session.get(URL, params={'id': ID}, stream=True)
     token = get_confirm_token(response)
 
     if token:
-        params = {'id': id, 'confirm': token}
+        params = {'id': ID, 'confirm': token}
         response = session.get(URL, params=params, stream=True)
     save_response_content(response, destination)
 
@@ -1613,7 +1614,7 @@ def load_file_list(path=None, regx='\.npz', printable=True):
         path = os.getcwd()
     file_list = os.listdir(path)
     return_list = []
-    for idx, f in enumerate(file_list):
+    for _, f in enumerate(file_list):
         if re.search(regx, f):
             return_list.append(f)
     # return_list.sort()
