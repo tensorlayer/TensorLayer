@@ -370,10 +370,10 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     return c_mat, f1, acc, f1_macro
 
 
-def dict_to_one(dp_dict={}):
-    """
-    Input a dictionary, return a dictionary that all items are set to one,
-    use for disable dropout, dropconnect layer and so on.
+def dict_to_one(dp_dict):
+    """Input a dictionary, return a dictionary that all items are set to one.
+
+    Used for disable dropout, dropconnect layer and so on.
 
     Parameters
     ----------
@@ -390,9 +390,8 @@ def dict_to_one(dp_dict={}):
     return {x: 1 for x in dp_dict}
 
 
-def flatten_list(list_of_list=[[], []]):
-    """
-    Input a list of list, return a list that all items are in a list.
+def flatten_list(list_of_list):
+    """Input a list of list, return a list that all items are in a list.
 
     Parameters
     ----------
