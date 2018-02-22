@@ -8,7 +8,7 @@ import numpy as np
 import scipy
 import scipy.ndimage as ndi
 import skimage
-import tensorlayer as tl
+# import tensorlayer as tl
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
@@ -16,11 +16,11 @@ from six.moves import range
 from skimage import exposure, transform
 
 # import Queue  # <-- donot work for py3
-is_py2 = sys.version[0] == '2'
-if is_py2:
-    import Queue as queue
-else:
-    import queue as queue
+# is_py2 = sys.version[0] == '2'
+# if is_py2:
+#     import Queue as queue
+# else:
+#     import queue as queue
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -1416,7 +1416,7 @@ def get_zca_whitening_principal_components_img(X):
     logging.info("zca : computing sigma ..")
     sigma = np.dot(flatX.T, flatX) / flatX.shape[0]
     logging.info("zca : computing U, S and V ..")
-    U, S, V = linalg.svd(sigma)
+    U, S, _ = linalg.svd(sigma) # USV
     logging.info("zca : computing principal components ..")
     principal_components = np.dot(np.dot(U, np.diag(1. / np.sqrt(S + 10e-7))), U.T)
     return principal_components
@@ -1884,7 +1884,7 @@ def binary_erosion(x, radius=3):
         A processed binary image.
 
     """
-    from skimage.morphology import disk, dilation, binary_erosion
+    from skimage.morphology import disk, binary_erosion
     mask = disk(radius)
     x = binary_erosion(x, selem=mask)
     return x
@@ -1907,7 +1907,7 @@ def erosion(x, radius=3):
         A processed greyscale image.
 
     """
-    from skimage.morphology import disk, dilation, erosion
+    from skimage.morphology import disk, erosion
     mask = disk(radius)
     x = erosion(x, selem=mask)
     return x
@@ -2913,7 +2913,7 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
 
     """
     max_length = 0
-    for i_s, seq in enumerate(sequences):
+    for _, seq in enumerate(sequences):
         is_end = False
         for i_w, n in enumerate(seq):
             if n == end_id and is_end == False:  # 1st time to see end_id
