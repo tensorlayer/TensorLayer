@@ -100,8 +100,10 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     if thread_count is None:
         results = [None] * len(data)
         threads = []
-        for i in range(len(data)):
-            t = threading.Thread(name='threading_and_return', target=apply_fn, args=(results, i, data[i], kwargs))
+        # for i in range(len(data)):
+        #     t = threading.Thread(name='threading_and_return', target=apply_fn, args=(results, i, data[i], kwargs))
+        for i, d in enumerate(data):
+            t = threading.Thread(name='threading_and_return', target=apply_fn, args=(results, i, d, kwargs))
             t.start()
             threads.append(t)
     else:
@@ -120,7 +122,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     if thread_count is None:
         try:
             return np.asarray(results)
-        except:
+        except Exception:
             return results
     else:
         return np.concatenate(results)
