@@ -1,16 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-import io
-import os
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from PIL import Image
-from tensorlayer.layers import *
-"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
+"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
 
 - 1. This model has 1,068,298 paramters, after few hours of training with GPU,
 accurcy of 86% was found.
@@ -46,7 +36,18 @@ Speed Up
 Reading images from disk and distorting them can use a non-trivial amount
 of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
+
 """
+
+import io
+import os
+import time
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from PIL import Image
+from tensorlayer.layers import *
+
 model_file_name = "model_cifar10_tfrecord.ckpt"
 resume = False  # load model, resume from previous checkpoint?
 
@@ -71,7 +72,7 @@ def data_to_tfrecord(images, labels, filename):
         print("%s exists" % filename)
         return
     print("Converting data into %s ..." % filename)
-    cwd = os.getcwd()
+    # cwd = os.getcwd()
     writer = tf.python_io.TFRecordWriter(filename)
     for index, img in enumerate(images):
         img_raw = img.tobytes()

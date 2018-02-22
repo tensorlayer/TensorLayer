@@ -1,13 +1,4 @@
-import random
-import time
-
-import gym
-import matplotlib.pyplot as plt
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import *
-""" Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE)
+"""Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE).
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
 delta_w = R + lambda * Q(newS, newA)
@@ -18,20 +9,31 @@ EN: https://medium.com/emergent-future/simple-reinforcement-learning-with-tensor
 CN: https://zhuanlan.zhihu.com/p/25710327
 
 Note: Policy Network has been proved to be better than Q-Learning, see tutorial_atari_pong.py
+
+# The FrozenLake v0 environment
+https://gym.openai.com/envs/FrozenLake-v0
+The agent controls the movement of a character in a grid world. Some tiles of
+the grid are walkable, and others lead to the agent falling into the water.
+Additionally, the movement direction of the agent is uncertain and only partially
+depends on the chosen direction. The agent is rewarded for finding a walkable
+path to a goal tile.
+SFFF       (S: starting point, safe)
+FHFH       (F: frozen surface, safe)
+FFFH       (H: hole, fall to your doom)
+HFFG       (G: goal, where the frisbee is located)
+The episode ends when you reach the goal or fall in a hole. You receive a reward
+of 1 if you reach the goal, and zero otherwise.
+
 """
-## The FrozenLake v0 environment
-# https://gym.openai.com/envs/FrozenLake-v0
-# The agent controls the movement of a character in a grid world. Some tiles of
-# the grid are walkable, and others lead to the agent falling into the water.
-# Additionally, the movement direction of the agent is uncertain and only partially
-# depends on the chosen direction. The agent is rewarded for finding a walkable
-# path to a goal tile.
-# SFFF       (S: starting point, safe)
-# FHFH       (F: frozen surface, safe)
-# FFFH       (H: hole, fall to your doom)
-# HFFG       (G: goal, where the frisbee is located)
-# The episode ends when you reach the goal or fall in a hole. You receive a reward
-# of 1 if you reach the goal, and zero otherwise.
+
+import time
+import gym
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from tensorlayer.layers import *
+
 env = gym.make('FrozenLake-v0')
 
 

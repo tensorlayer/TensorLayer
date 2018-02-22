@@ -2,7 +2,7 @@ import os
 
 
 def _list_py_files(root):
-    for root, dirs, files in os.walk(root):
+    for root, _dirs, files in os.walk(root):
         if root.find('third_party') != -1:
             continue
         for file in files:

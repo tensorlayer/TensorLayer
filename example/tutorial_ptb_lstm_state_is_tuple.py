@@ -1,13 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
 """Example of Synced sequence input and output.
+
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
@@ -65,8 +59,8 @@ $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.h
 $ translation : tensorflow/models/rnn/translate
 
 tensorflow (0.9.0)
-"""
-"""Example / benchmark for building a PTB LSTM model.
+
+Example / benchmark for building a PTB LSTM model.
 
 Trains the model described in:
 (Zaremba, et. al.) Recurrent Neural Network Regularization
@@ -107,6 +101,12 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 """
 
+import time
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from tensorlayer.layers import set_keep
+
 flags = tf.flags
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
 FLAGS = flags.FLAGS
@@ -137,7 +137,7 @@ def main(_):
         init_scale = 0.05
         learning_rate = 1.0
         max_grad_norm = 5
-        num_layers = 2
+        # num_layers = 2
         num_steps = 35
         hidden_size = 650
         max_epoch = 6
@@ -150,7 +150,7 @@ def main(_):
         init_scale = 0.04
         learning_rate = 1.0
         max_grad_norm = 10
-        num_layers = 2
+        # num_layers = 2
         num_steps = 35
         hidden_size = 1500
         max_epoch = 14

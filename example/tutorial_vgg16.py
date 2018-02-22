@@ -1,22 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-import os
-import sys
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from scipy.misc import imread, imresize
-from tensorlayer.layers import *
-
-try:
-    from data.imagenet_classes import *
-except Exception as e:
-    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 """
-VGG-16 for ImageNet
+VGG-16 for ImageNet.
 
 Introduction
 ----------------
@@ -48,7 +33,22 @@ following snippet:
 >>> crop_x = (image_w - 224) / 2
 >>> crop_y = (image_h - 224) / 2
 >>> img = img[crop_y:crop_y+224,crop_x:crop_x+224,:]
+
 """
+
+import os
+import sys
+import time
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from scipy.misc import imread, imresize
+from tensorlayer.layers import *
+
+try:
+    from data.imagenet_classes import *
+except Exception as e:
+    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 
 
 def conv_layers(net_in):
