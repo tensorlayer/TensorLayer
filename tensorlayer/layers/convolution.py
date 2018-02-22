@@ -59,7 +59,7 @@ class Conv1dLayer(Layer):
             act = tf.identity
         logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):# as vs:
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             self.outputs = tf.nn.convolution(
                 self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ), data_format=data_format)  # 1.2
