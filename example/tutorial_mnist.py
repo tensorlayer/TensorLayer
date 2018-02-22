@@ -203,7 +203,7 @@ def main_test_denoise_AE(model='relu'):
 
     # placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    
+
     print("Build Network")
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input')
@@ -296,7 +296,6 @@ def main_test_stacked_denoise_AE(model='relu'):
 
     # Define fine-tune process
     y = network.outputs
-    tf.argmax(tf.nn.softmax(y), 1)
     cost = tl.cost.cross_entropy(y, y_, name='cost')
 
     n_epoch = 200
