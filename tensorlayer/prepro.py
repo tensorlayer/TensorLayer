@@ -1416,7 +1416,7 @@ def get_zca_whitening_principal_components_img(X):
     logging.info("zca : computing sigma ..")
     sigma = np.dot(flatX.T, flatX) / flatX.shape[0]
     logging.info("zca : computing U, S and V ..")
-    U, S, _ = linalg.svd(sigma) # USV
+    U, S, _ = linalg.svd(sigma)  # USV
     logging.info("zca : computing principal components ..")
     principal_components = np.dot(np.dot(U, np.diag(1. / np.sqrt(S + 10e-7))), U.T)
     return principal_components

@@ -21,7 +21,6 @@
 # and all inferences share the same model parameters.
 # (see tutorial_ptb_lstm.py)
 
-
 import time
 
 import numpy as np

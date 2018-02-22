@@ -27,7 +27,6 @@ except Exception as e:
 # For simplified CNN layer see "Convolutional layer (Simplified)"
 # in read the docs website.
 
-
 VGG_MEAN = [103.939, 116.779, 123.68]
 
 
@@ -193,7 +192,7 @@ def Vgg19_simple_api(rgb):
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_4')
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')
-    # fc 6~8 
+    # fc 6~8
     network = FlattenLayer(network, name='flatten')
     network = DenseLayer(network, n_units=4096, act=tf.nn.relu, name='fc6')
     network = DenseLayer(network, n_units=4096, act=tf.nn.relu, name='fc7')

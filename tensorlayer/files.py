@@ -205,8 +205,8 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
         plt.ion()  # interactive mode
         count = 1
-        for _ in range(10): # each row
-            for _ in range(10): # each column
+        for _ in range(10):  # each row
+            for _ in range(10):  # each column
                 _ = fig.add_subplot(10, 10, count)
                 if shape == (-1, 3, 32, 32):
                     # plt.imshow(X_train[count-1], interpolation='nearest')
