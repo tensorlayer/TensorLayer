@@ -1,12 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
 This tutorial uses placeholder to control all keeping probabilities,
@@ -28,6 +21,13 @@ and all inferences share the same model parameters.
 (see tutorial_ptb_lstm.py)
 
 """
+
+import time
+
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from tensorlayer.layers import set_keep
 
 
 def main_test_layers(model='relu'):
@@ -91,7 +91,6 @@ def main_test_layers(model='relu'):
     # cost = cost + tl.cost.lo_regularizer(0.0001)(network.all_params[0]) + tl.cost.lo_regularizer(0.0001)(network.all_params[2])
     # cost = cost + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[0]) + tl.cost.maxnorm_o_regularizer(0.001)(network.all_params[2])
 
-    params = network.all_params
     # train
     n_epoch = 100
     batch_size = 128
@@ -147,7 +146,7 @@ def main_test_layers(model='relu'):
                 tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
                 # You can also save the weight of 1st hidden layer to .npz file.
                 # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
-            except:
+            except:  # pylint: disable=bare-except
                 print("You should change vis.W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
@@ -204,7 +203,7 @@ def main_test_denoise_AE(model='relu'):
 
     # placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(
+    tf.placeholder(
         tf.int64, shape=[
             None,
         ], name='y_')
@@ -301,7 +300,7 @@ def main_test_stacked_denoise_AE(model='relu'):
 
     # Define fine-tune process
     y = network.outputs
-    y_op = tf.argmax(tf.nn.softmax(y), 1)
+    tf.argmax(tf.nn.softmax(y), 1)
     cost = tl.cost.cross_entropy(y, y_, name='cost')
 
     n_epoch = 200
@@ -371,7 +370,7 @@ def main_test_stacked_denoise_AE(model='relu'):
             try:
                 # visualize the 1st hidden layer during fine-tune
                 tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
-            except:
+            except:  # pylint: disable=bare-except
                 print("You should change vis.W(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
@@ -533,7 +532,7 @@ def main_test_cnn_layer():
             print("   val acc: %f" % (val_acc / n_batch))
             try:
                 tl.vis.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_' + str(epoch + 1), fig_idx=2012)
-            except:
+            except:  # pylint: disable=bare-except
                 print("You should change vis.CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
@@ -552,11 +551,15 @@ def main_test_cnn_layer():
 
 if __name__ == '__main__':
     sess = tf.InteractiveSession()
-    """Dropout and Dropconnect"""
+
+    # Dropout and Dropconnect
     main_test_layers(model='relu')  # model = relu, dropconnect
-    """Single Denoising Autoencoder"""
+
+    # Single Denoising Autoencoder
     # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
-    """Stacked Denoising Autoencoder"""
+
+    # Stacked Denoising Autoencoder
     # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
-    """CNN"""
+
+    # CNN
     # main_test_cnn_layer()
