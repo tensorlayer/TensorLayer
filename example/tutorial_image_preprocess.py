@@ -2,6 +2,7 @@
 
 Alternatively, we can use TFRecord to preprocess data,
 see `tutorial_cifar10_tfrecord.py` for more details.
+
 """
 
 import time

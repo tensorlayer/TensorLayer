@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
-VGG-16 for ImageNet
+VGG-16 for ImageNet.
 
 Introduction
 ----------------
@@ -33,7 +33,9 @@ following snippet:
 >>> crop_x = (image_w - 224) / 2
 >>> crop_y = (image_h - 224) / 2
 >>> img = img[crop_y:crop_y+224,crop_x:crop_x+224,:]
+
 """
+
 import os
 import sys
 import time

@@ -19,6 +19,7 @@ Alternatively, if you don't want to use placeholder to control them, you can
 build different inferences for training, evaluating and testing,
 and all inferences share the same model parameters.
 (see tutorial_ptb_lstm.py)
+
 """
 
 import time

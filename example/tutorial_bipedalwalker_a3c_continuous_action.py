@@ -28,6 +28,7 @@ points, more optimal agent will get better score. State consists of hull angle
 speed, angular velocity, horizontal speed, vertical speed, position of joints
 and joints angular speed, legs contact with ground, and 10 lidar rangefinder
 measurements. There's no coordinates in the state vector.
+
 """
 
 import multiprocessing

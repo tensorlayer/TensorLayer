@@ -1,14 +1,17 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""VGG-19 for ImageNet
---------------------
+"""
+VGG-19 for ImageNet.
+
 Pre-trained model in this example - VGG19 NPZ and
 trainable examples of VGG16/19 in TensorFlow can be found here:
 https://github.com/machrisaa/tensorflow-vgg
 
 For simplified CNN layer see "Convolutional layer (Simplified)"
 in read the docs website.
+
 """
+
 import inspect
 import os
 import time

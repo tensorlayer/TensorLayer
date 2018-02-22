@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """Example of Synced sequence input and output.
+
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
@@ -96,6 +97,7 @@ A) use the zero_state function on the cell object
 
 B) for an rnn, all time steps share weights. We use one matrix to keep all
 gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
+
 """
 
 import time
@@ -116,6 +118,7 @@ def main(_):
     sentence. The memory state of the network is initialized with a vector
     of zeros and gets updated after reading each word. Also, for computational
     reasons, we will process data in mini-batches of size batch_size.
+
     """
 
     if FLAGS.model == "small":

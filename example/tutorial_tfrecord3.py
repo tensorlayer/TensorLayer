@@ -1,7 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
-You will learn:
+You will learn.
+
 1. How to save time-series data (e.g. sentence) into TFRecord format file.
 2. How to read time-series data from TFRecord format file.
 3. How to create inputs, targets and mask.

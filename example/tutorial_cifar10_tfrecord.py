@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
+"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
 
 - 1. This model has 1,068,298 paramters, after few hours of training with GPU,
 accurcy of 86% was found.
@@ -36,6 +36,7 @@ Speed Up
 Reading images from disk and distorting them can use a non-trivial amount
 of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
+
 """
 
 import io

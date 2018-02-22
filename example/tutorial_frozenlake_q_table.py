@@ -1,4 +1,6 @@
-"""Q-Table learning algorithm, non deep learning - TD Learning, Off-Policy, e-Greedy Exploration
+"""Q-Table learning algorithm.
+
+Non deep learning - TD Learning, Off-Policy, e-Greedy Exploration
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
 
@@ -8,6 +10,7 @@ For Q-Network, see tutorial_frozenlake_q_network.py
 
 EN: https://medium.com/emergent-future/simple-reinforcement-learning-with-tensorflow-part-0-q-learning-with-tables-and-neural-networks-d195264329d0#.5m3361vlw
 CN: https://zhuanlan.zhihu.com/p/25710327
+
 """
 
 import time

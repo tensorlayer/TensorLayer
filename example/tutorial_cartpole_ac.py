@@ -29,6 +29,7 @@ falling over.
 A reward of +1 is provided for every timestep that the pole remains upright.
 The episode ends when the pole is more than 15 degrees from vertical, or the
 cart moves more than 2.4 units from the center.
+
 """
 
 import time

@@ -1,9 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Example of training an Inception V3 model with ImageNet. The parameters are set as in the
-best results of the paper: https://arxiv.org/abs/1512.00567
+"""Example of training an Inception V3 model with ImageNet.
+
+The parameters are set as in the best results of the paper: https://arxiv.org/abs/1512.00567
+
 The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition:
 https://www.kaggle.com/c/imagenet-object-localization-challenge/data
+
 """
 
 import argparse

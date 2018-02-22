@@ -1,12 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""You will learn:
+"""You will learn.
+
 1. How to convert CIFAR-10 dataset into TFRecord format file.
 2. How to read CIFAR-10 from TFRecord format file.
 
 More:
 1. tutorial_tfrecord.py
 2. tutoral_cifar10_tfrecord.py
+
 """
 
 import os

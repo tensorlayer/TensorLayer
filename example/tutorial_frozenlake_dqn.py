@@ -1,4 +1,4 @@
-"""Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE)
+"""Q-Network Q(a, s) - TD Learning, Off-Policy, e-Greedy Exploration (GLIE).
 
 Q(S, A) <- Q(S, A) + alpha * (R + lambda * Q(newS, newA) - Q(S, A))
 delta_w = R + lambda * Q(newS, newA)
@@ -23,6 +23,7 @@ FFFH       (H: hole, fall to your doom)
 HFFG       (G: goal, where the frisbee is located)
 The episode ends when you reach the goal or fall in a hole. You receive a reward
 of 1 if you reach the goal, and zero otherwise.
+
 """
 
 import time

@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""You will learn:
+"""You will learn.
+
 1. How to save data into TFRecord format file.
 2. How to read data from TFRecord format file by using Queue and Thread.
 
@@ -16,6 +17,7 @@ More
 ------
 1. tutorial_tfrecord2.py
 2. tutorial_cifar10_tfrecord.py
+
 """
 
 import os
