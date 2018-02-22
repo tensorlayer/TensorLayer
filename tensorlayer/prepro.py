@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import threading
 import time
 
@@ -14,13 +13,6 @@ from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 from six.moves import range
 from skimage import exposure, transform
-
-# import Queue  # <-- donot work for py3
-# is_py2 = sys.version[0] == '2'
-# if is_py2:
-#     import Queue as queue
-# else:
-#     import queue as queue
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
