@@ -15,15 +15,12 @@ Reference
 
 """
 
-import io
 import json
 import os
-import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from PIL import Image
-from tensorlayer.layers import set_keep
 
 
 def _int64_feature(value):
