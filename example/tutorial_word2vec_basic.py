@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""
-Vector Representations of Words
----------------------------------
+"""Vector Representations of Words.
+
 This is the minimalistic reimplementation of
 tensorflow/examples/tutorials/word2vec/word2vec_basic.py
 This basic example contains the code needed to download some data,

@@ -1,28 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""You will learn.
 
-import os
-import time
-
-import numpy as np
-# from tensorflow.contrib.slim.python.slim.nets.resnet_v2 import resnet_v2_152
-# from tensorflow.contrib.slim.python.slim.nets.vgg import vgg_16
-import skimage
-import skimage.io
-import skimage.transform
-import tensorflow as tf
-import tensorlayer as tl
-from scipy.misc import imread, imresize
-from tensorflow.contrib.slim.python.slim.nets.alexnet import alexnet_v2
-from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3, inception_v3_arg_scope, inception_v3_base)
-
-slim = tf.contrib.slim
-try:
-    from data.imagenet_classes import *
-except Exception as e:
-    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
-"""
-You will learn:
 1. What is TF-Slim ?
 1. How to combine TensorLayer and TF-Slim ?
 
@@ -33,14 +12,34 @@ With the help of SlimNetsLayer, all Slim Model can be combined into TensorLayer.
 All models in the following link, end with `return net, end_points`` are available.
 https://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim/python/slim/nets
 
-
 Bugs
 -----
 tf.variable_scope :
         https://groups.google.com/a/tensorflow.org/forum/#!topic/discuss/RoxrU3UnbFA
 load inception_v3 for prediction:
         http://stackoverflow.com/questions/39357454/restore-checkpoint-in-tensorflow-tensor-name-not-found
+
 """
+
+import os
+import time
+import numpy as np
+# from tensorflow.contrib.slim.python.slim.nets.resnet_v2 import resnet_v2_152
+# from tensorflow.contrib.slim.python.slim.nets.vgg import vgg_16
+import skimage
+import skimage.io
+import skimage.transform
+import tensorflow as tf
+import tensorlayer as tl
+# from scipy.misc import imread, imresize
+# from tensorflow.contrib.slim.python.slim.nets.alexnet import alexnet_v2
+from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3, inception_v3_arg_scope)  #, inception_v3_base)
+
+slim = tf.contrib.slim
+try:
+    from data.imagenet_classes import *
+except Exception as e:
+    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
 
 
 def load_image(path):

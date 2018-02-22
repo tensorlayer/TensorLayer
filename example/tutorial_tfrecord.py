@@ -1,15 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""You will learn.
 
-import io
-import os
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from PIL import Image
-"""
-You will learn:
 1. How to save data into TFRecord format file.
 2. How to read data from TFRecord format file by using Queue and Thread.
 
@@ -27,6 +19,12 @@ More
 2. tutorial_cifar10_tfrecord.py
 
 """
+
+import os
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from PIL import Image
 
 ## Save data ==================================================================
 classes = ['/data/cat', '/data/dog']  # cat is 0, dog is 1

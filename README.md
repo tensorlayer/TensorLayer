@@ -19,7 +19,7 @@
 [![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=latest)](http://tensorlayer.readthedocs.io/en/latest/?badge=latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 
-TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software Award by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
+TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
 - Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
@@ -116,7 +116,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 - Float 16 half-precision model, see [tutorial\_mnist_float16.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_float16.py)
 
 ## Notes
-TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Simplified)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
+TensorLayer provides two set of Convolutional layer APIs, see [(Advanced)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Basic)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
 <!-- 
 * If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
@@ -128,11 +128,11 @@ TensorLayer provides two set of Convolutional layer APIs, see [(Professional)](h
 
 ## Design Philosophy
 
-As deep learning practitioners, we have been looking for a TensorFlow wrapper library that can serve for various development phases. This library is easy for beginners by offering rich neural network implementations,
-examples and tutorials. Later, its APIs do not prohibit users from manipulating the low-level powerful features of TensorFlow, which is necessary in tackling real-world problems. In the end, the extra wrappers shall not compromise TensorFlow performance, and thus suit for production deployment. TensorLayer is a novel library that aims to satisfy these requirements that can occur in various phases. It has three key features:
+As TensorFlow users, we have been looking for a library that can serve for various development phases. This library is easy for beginners by providing rich neural network implementations,
+examples and tutorials. Later, its APIs shall naturally allow users to leverage the powerful features of TensorFlow, exhibiting best performance in addressing real-world problems. In the end, the extra abstraction shall not compromise TensorFlow performance, and thus suit for production deployment. TensorLayer is a novel library that aims to satisfy these requirements. It has three key features:
 
-- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** layers. It also provides users with massive examples and tutorials to help bootstrap.
-- *Flexibility* : TensorLayer APIs are transparent: it does not mask TensorFlow from users but leaving massive hooks that allow **low-level tuning**.
+- *Simplicity* : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to **high-level** layers. It also provides users with massive examples and tutorials to minimize learning barrier.
+- *Flexibility* : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that support diverse **low-level tuning**.
 - *Zero-cost Abstraction* : TensorLayer is able to achieve the **full performance** of TensorFlow.
 
 ## Negligible Overhead
@@ -150,12 +150,12 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 
 Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
 These libraries are comfortable to start with. They provide high-level abstractions; 
-but in turn mask the underlying engine features from users. Though good for bootstrap, 
-it becomes hard to manipulate the low-level powerful features of TensorFlow. 
+but mask the underlying engine from users. It is thus hard to 
+customize model behaviors and touch the essential features of TensorFlow. 
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
 Users often find it easy to start with the examples and tutorials of TensorLayer, and 
 then dive into the TensorFlow low-level APIs only if need.
-TensorLayer does not intend to create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into
+TensorLayer does not create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into
 a TensorLayer environment.
 
 

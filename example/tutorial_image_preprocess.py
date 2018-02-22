@@ -1,15 +1,12 @@
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.prepro import *
-"""
-Data Augmentation by numpy, scipy, threading and queue.
+"""Data Augmentation by numpy, scipy, threading and queue.
 
 Alternatively, we can use TFRecord to preprocess data,
 see `tutorial_cifar10_tfrecord.py` for more details.
+
 """
+
+import time
+import tensorlayer as tl
 
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 

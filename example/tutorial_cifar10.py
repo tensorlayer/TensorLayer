@@ -1,15 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-""" tl.prepro for data augmentation """
 
-import io
-import os
+# tl.prepro for data augmentation
+
 import time
 
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from PIL import Image
 from tensorlayer.layers import *
 
 sess = tf.InteractiveSession()
