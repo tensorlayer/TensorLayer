@@ -1,6 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""VGG-19 for ImageNet
+--------------------
+Pre-trained model in this example - VGG19 NPZ and
+trainable examples of VGG16/19 in TensorFlow can be found here:
+https://github.com/machrisaa/tensorflow-vgg
 
+For simplified CNN layer see "Convolutional layer (Simplified)"
+in read the docs website.
+"""
 import inspect
 import os
 import time
@@ -17,15 +25,6 @@ try:
     from data.imagenet_classes import *
 except Exception as e:
     raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
-
-# VGG-19 for ImageNet
-# --------------------
-# Pre-trained model in this example - VGG19 NPZ and
-# trainable examples of VGG16/19 in TensorFlow can be found here:
-# https://github.com/machrisaa/tensorflow-vgg
-#
-# For simplified CNN layer see "Convolutional layer (Simplified)"
-# in read the docs website.
 
 VGG_MEAN = [103.939, 116.779, 123.68]
 

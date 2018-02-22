@@ -1,16 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-import io
-import json
-import os
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from PIL import Image
-from tensorlayer.layers import set_keep
 """
 You will learn:
 1. How to save time-series data (e.g. sentence) into TFRecord format file.
@@ -24,6 +13,16 @@ Reference
 3. Batching and Padding data in http://www.wildml.com/2016/08/rnns-in-tensorflow-a-practical-guide-and-undocumented-features/
 
 """
+
+import io
+import json
+import os
+import time
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+from PIL import Image
+from tensorlayer.layers import set_keep
 
 
 def _int64_feature(value):

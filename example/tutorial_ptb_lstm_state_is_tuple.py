@@ -1,109 +1,109 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""Example of Synced sequence input and output.
+This is a reimpmentation of the TensorFlow official PTB example in :
+tensorflow/models/rnn/ptb
+
+The batch_size can be seem as how many concurrent computations.\n
+As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
+The second batch learn the sequence information by using 10 to 19.\n
+So it ignores the information from 9 to 10 !\n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
+
+The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
+batch_size reflects how many examples we consider in each iteration, while in
+PTB example, batch_size is how many concurrent processes (segments)
+for speed up computation.
+
+Some Information will be ignored if batch_size > 1, however, if your dataset
+is "long" enough (a text corpus usually has billions words), the ignored
+information would not effect the final result.
+
+In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
+At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
+segments, then go through 20 segments separately.
+
+The training data will be generated as follow:\n
+
+>>> train_data = [i for i in range(20)]
+>>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
+>>>     x, y = batch
+>>>     print(x, '\n',y)
+... [[ 0  1  2] <---x                       1st subset/ iteration
+...  [10 11 12]]
+... [[ 1  2  3] <---y
+...  [11 12 13]]
+...
+... [[ 3  4  5]  <--- 1st batch input       2nd subset/ iteration
+...  [13 14 15]] <--- 2nd batch input
+... [[ 4  5  6]  <--- 1st batch target
+...  [14 15 16]] <--- 2nd batch target
+...
+... [[ 6  7  8]                             3rd subset/ iteration
+...  [16 17 18]]
+... [[ 7  8  9]
+...  [17 18 19]]
+
+Hao Dong: This example can also be considered as pre-training of the word
+embedding matrix.
+
+About RNN
+----------
+$ Karpathy Blog : http://karpathy.github.io/2015/05/21/rnn-effectiveness/
+
+More TensorFlow official RNN examples can be found here
+---------------------------------------------------------
+$ RNN for PTB : https://www.tensorflow.org/versions/master/tutorials/recurrent/index.html#recurrent-neural-networks
+$ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
+$ translation : tensorflow/models/rnn/translate
+
+tensorflow (0.9.0)
+
+Example / benchmark for building a PTB LSTM model.
+
+Trains the model described in:
+(Zaremba, et. al.) Recurrent Neural Network Regularization
+http://arxiv.org/abs/1409.2329
+
+There are 3 supported model configurations:
+===========================================
+| config | epochs | train | valid  | test
+===========================================
+| small  | 13     | 37.99 | 121.39 | 115.91
+| medium | 39     | 48.45 |  86.16 |  82.07
+| large  | 55     | 37.87 |  82.62 |  78.29
+The exact results may vary depending on the random initialization.
+
+The hyperparameters used in the model:
+- init_scale - the initial scale of the weights
+- learning_rate - the initial value of the learning rate
+- max_grad_norm - the maximum permissible norm of the gradient
+- num_layers - the number of LSTM layers
+- num_steps - the number of unrolled steps of LSTM
+- hidden_size - the number of LSTM units
+- max_epoch - the number of epochs trained with the initial learning rate
+- max_max_epoch - the total number of epochs for training
+- keep_prob - the probability of keeping weights in the dropout layer
+- lr_decay - the decay of the learning rate for each epoch after "max_epoch"
+- batch_size - the batch size
+
+The data required for this example is in the data/ dir of the
+PTB dataset from Tomas Mikolov's webpage:
+
+$ wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
+$ tar xvf simple-examples.tgz
+
+A) use the zero_state function on the cell object
+
+B) for an rnn, all time steps share weights. We use one matrix to keep all
+gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
+"""
 
 import time
-
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import set_keep
-# Example of Synced sequence input and output.
-# This is a reimpmentation of the TensorFlow official PTB example in :
-# tensorflow/models/rnn/ptb
-#
-# The batch_size can be seem as how many concurrent computations.\n
-# As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
-# The second batch learn the sequence information by using 10 to 19.\n
-# So it ignores the information from 9 to 10 !\n
-# If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
-#
-# The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
-# batch_size reflects how many examples we consider in each iteration, while in
-# PTB example, batch_size is how many concurrent processes (segments)
-# for speed up computation.
-#
-# Some Information will be ignored if batch_size > 1, however, if your dataset
-# is "long" enough (a text corpus usually has billions words), the ignored
-# information would not effect the final result.
-#
-# In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segments.
-# At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
-# segments, then go through 20 segments separately.
-#
-# The training data will be generated as follow:\n
-#
-# >>> train_data = [i for i in range(20)]
-# >>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
-# >>>     x, y = batch
-# >>>     print(x, '\n',y)
-# ... [[ 0  1  2] <---x                       1st subset/ iteration
-# ...  [10 11 12]]
-# ... [[ 1  2  3] <---y
-# ...  [11 12 13]]
-# ...
-# ... [[ 3  4  5]  <--- 1st batch input       2nd subset/ iteration
-# ...  [13 14 15]] <--- 2nd batch input
-# ... [[ 4  5  6]  <--- 1st batch target
-# ...  [14 15 16]] <--- 2nd batch target
-# ...
-# ... [[ 6  7  8]                             3rd subset/ iteration
-# ...  [16 17 18]]
-# ... [[ 7  8  9]
-# ...  [17 18 19]]
-#
-# Hao Dong: This example can also be considered as pre-training of the word
-# embedding matrix.
-#
-# About RNN
-# ----------
-# $ Karpathy Blog : http://karpathy.github.io/2015/05/21/rnn-effectiveness/
-#
-# More TensorFlow official RNN examples can be found here
-# ---------------------------------------------------------
-# $ RNN for PTB : https://www.tensorflow.org/versions/master/tutorials/recurrent/index.html#recurrent-neural-networks
-# $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.html#sequence-to-sequence-models
-# $ translation : tensorflow/models/rnn/translate
-#
-# tensorflow (0.9.0)
-#
-# Example / benchmark for building a PTB LSTM model.
-#
-# Trains the model described in:
-# (Zaremba, et. al.) Recurrent Neural Network Regularization
-# http://arxiv.org/abs/1409.2329
-#
-# There are 3 supported model configurations:
-# ===========================================
-# | config | epochs | train | valid  | test
-# ===========================================
-# | small  | 13     | 37.99 | 121.39 | 115.91
-# | medium | 39     | 48.45 |  86.16 |  82.07
-# | large  | 55     | 37.87 |  82.62 |  78.29
-# The exact results may vary depending on the random initialization.
-#
-# The hyperparameters used in the model:
-# - init_scale - the initial scale of the weights
-# - learning_rate - the initial value of the learning rate
-# - max_grad_norm - the maximum permissible norm of the gradient
-# - num_layers - the number of LSTM layers
-# - num_steps - the number of unrolled steps of LSTM
-# - hidden_size - the number of LSTM units
-# - max_epoch - the number of epochs trained with the initial learning rate
-# - max_max_epoch - the total number of epochs for training
-# - keep_prob - the probability of keeping weights in the dropout layer
-# - lr_decay - the decay of the learning rate for each epoch after "max_epoch"
-# - batch_size - the batch size
-#
-# The data required for this example is in the data/ dir of the
-# PTB dataset from Tomas Mikolov's webpage:
-#
-# $ wget http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz
-# $ tar xvf simple-examples.tgz
-#
-# A) use the zero_state function on the cell object
-#
-# B) for an rnn, all time steps share weights. We use one matrix to keep all
-# gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 flags = tf.flags
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")

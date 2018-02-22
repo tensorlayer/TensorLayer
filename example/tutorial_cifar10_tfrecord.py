@@ -1,51 +1,51 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
+
+- 1. This model has 1,068,298 paramters, after few hours of training with GPU,
+accurcy of 86% was found.
+
+- 2. For simplified CNN layers see "Convolutional layer (Simplified)"
+in read the docs website.
+
+- 3. Data augmentation without TFRecord see `tutorial_image_preprocess.py` !!
+
+Links
+-------
+.. https://www.tensorflow.org/versions/r0.9/tutorials/deep_cnn/index.html
+.. https://github.com/tensorflow/tensorflow/tree/r0.9/tensorflow/models/image/cifar10
+
+Note
+------
+The optimizers between official code and this code are different.
+
+Description
+-----------
+The images are processed as follows:
+.. They are cropped to 24 x 24 pixels, centrally for evaluation or randomly for training.
+.. They are approximately whitened to make the model insensitive to dynamic range.
+
+For training, we additionally apply a series of random distortions to
+artificially increase the data set size:
+.. Randomly flip the image from left to right.
+.. Randomly distort the image brightness.
+.. Randomly distort the image contrast.
+
+Speed Up
+--------
+Reading images from disk and distorting them can use a non-trivial amount
+of processing time. To prevent these operations from slowing down training,
+we run them inside 16 separate threads which continuously fill a TensorFlow queue.
+"""
 
 import io
 import os
 import time
-
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from PIL import Image
 from tensorlayer.layers import *
-# Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials:
-#
-# - 1. This model has 1,068,298 paramters, after few hours of training with GPU,
-# accurcy of 86% was found.
-#
-# - 2. For simplified CNN layers see "Convolutional layer (Simplified)"
-# in read the docs website.
-#
-# - 3. Data augmentation without TFRecord see `tutorial_image_preprocess.py` !!
-#
-# Links
-# -------
-# .. https://www.tensorflow.org/versions/r0.9/tutorials/deep_cnn/index.html
-# .. https://github.com/tensorflow/tensorflow/tree/r0.9/tensorflow/models/image/cifar10
-#
-# Note
-# ------
-# The optimizers between official code and this code are different.
-#
-# Description
-# -----------
-# The images are processed as follows:
-# .. They are cropped to 24 x 24 pixels, centrally for evaluation or randomly for training.
-# .. They are approximately whitened to make the model insensitive to dynamic range.
-#
-# For training, we additionally apply a series of random distortions to
-# artificially increase the data set size:
-# .. Randomly flip the image from left to right.
-# .. Randomly distort the image brightness.
-# .. Randomly distort the image contrast.
-#
-# Speed Up
-# --------
-# Reading images from disk and distorting them can use a non-trivial amount
-# of processing time. To prevent these operations from slowing down training,
-# we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 model_file_name = "model_cifar10_tfrecord.ckpt"
 resume = False  # load model, resume from previous checkpoint?

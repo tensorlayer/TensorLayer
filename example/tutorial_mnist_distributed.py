@@ -1,15 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""Alpha Version for Distributed Training
 
-# Alpha Version for Distributed Training
+you can test this example in your local machine using 2 workers and 1 ps like below,
+where CUDA_VISIBLE_DEVICES can be used to set the GPUs the process can use.
 
-# you can test this example in your local machine using 2 workers and 1 ps like below,
-# where CUDA_VISIBLE_DEVICES can be used to set the GPUs the process can use.
-#
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 0}}' python example/tutorial_mnist_distributed.py > output-master 2>&1 &
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 1}}' python example/tutorial_mnist_distributed.py > output-worker 2>&1 &
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "ps", "index": 0}}' python example/tutorial_mnist_distributed.py > output-ps 2>&1 &
-# Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 0}}' python example/tutorial_mnist_distributed.py > output-master 2>&1 &
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 1}}' python example/tutorial_mnist_distributed.py > output-worker 2>&1 &
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "ps", "index": 0}}' python example/tutorial_mnist_distributed.py > output-ps 2>&1 &
+Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
+"""
 
 import tensorflow as tf
 import tensorlayer as tl
