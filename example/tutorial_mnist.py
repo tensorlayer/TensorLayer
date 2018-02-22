@@ -1,26 +1,26 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
-This tutorial uses placeholder to control all keeping probabilities,
-so we need to set the non-one probabilities during training, and set them to 1
-during evaluating and testing.
+# Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
+#
+# This tutorial uses placeholder to control all keeping probabilities,
+# so we need to set the non-one probabilities during training, and set them to 1
+# during evaluating and testing.
+#
+# $ Set keeping probabilities.
+# >>> feed_dict = {x: X_train_a, y_: y_train_a}
+# >>> feed_dict.update( network.all_drop )
+#
+# $ Set all keeping probabilities to 1 for evaluating and testing.
+# >>> dp_dict = tl.utils.dict_to_one( network.all_drop )
+# >>> feed_dict = {x: X_train_a, y_: y_train_a}
+# >>> feed_dict.update(dp_dict)
+#
+# Alternatively, if you don't want to use placeholder to control them, you can
+# build different inferences for training, evaluating and testing,
+# and all inferences share the same model parameters.
+# (see tutorial_ptb_lstm.py)
 
-$ Set keeping probabilities.
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update( network.all_drop )
-
-$ Set all keeping probabilities to 1 for evaluating and testing.
->>> dp_dict = tl.utils.dict_to_one( network.all_drop )
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update(dp_dict)
-
-Alternatively, if you don't want to use placeholder to control them, you can
-build different inferences for training, evaluating and testing,
-and all inferences share the same model parameters.
-(see tutorial_ptb_lstm.py)
-
-"""
 
 import time
 
@@ -84,7 +84,7 @@ def main_test_layers(model='relu'):
     cost = tl.cost.cross_entropy(y, y_, name='xentropy')
     correct_prediction = tf.equal(tf.argmax(y, 1), y_)
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    y_op = tf.argmax(tf.nn.softmax(y), 1)
+    # y_op = tf.argmax(tf.nn.softmax(y), 1)
 
     # You can add more penalty to the cost function as follow.
     # cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) + tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
