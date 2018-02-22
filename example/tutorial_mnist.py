@@ -203,11 +203,7 @@ def main_test_denoise_AE(model='relu'):
 
     # placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    tf.placeholder(
-        tf.int64, shape=[
-            None,
-        ], name='y_')
-
+    
     print("Build Network")
     if model == 'relu':
         network = tl.layers.InputLayer(x, name='input')
