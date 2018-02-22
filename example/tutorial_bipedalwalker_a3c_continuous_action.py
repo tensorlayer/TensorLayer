@@ -182,7 +182,7 @@ class Worker(object):
                 if self.name == 'Worker_0' and total_step % 30 == 0:
                     self.env.render()
                 a = self.AC.choose_action(s)
-                s_, r, done, info = self.env.step(a)
+                s_, r, done, _info = self.env.step(a)
 
                 # set robot falls reward to -2 instead of -100
                 if r == -100: r = -2
