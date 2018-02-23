@@ -1456,7 +1456,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info("[*] load ckpt fail ...")
 
 
-def save_any_to_npy(save_dict={}, name='file.npy'):
+def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.
 
     Parameters
@@ -1503,8 +1503,7 @@ def load_npy_to_any(path='', name='file.npy'):
         try:
             return npy
         except Exception:
-            logging.info("[!] Fail to load %s" % file_path)
-            exit()
+            raise Exception("[!] Fail to load %s" % file_path)
 
 
 def file_exists(filepath):

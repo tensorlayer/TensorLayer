@@ -45,7 +45,7 @@ import time
 # import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from PIL import Image
+# from PIL import Image
 from tensorlayer.layers import *
 
 model_file_name = "model_cifar10_tfrecord.ckpt"

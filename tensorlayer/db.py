@@ -205,7 +205,8 @@ class TensorDB(object):
 
         print("[TensorDB] Delete params SUCCESS: {}".format(args))
 
-    def _print_dict(self, args):
+    @staticmethod
+    def _print_dict(args):
         # return " / ".join(str(key) + ": "+ str(value) for key, value in args.items())
 
         string = ''
