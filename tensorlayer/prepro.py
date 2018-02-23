@@ -1270,7 +1270,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
 
 
 # value scale
-def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
+def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
     """Scales each value in the pixels of the image.
 
     Parameters
@@ -1281,6 +1281,10 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
         The scale value for changing pixel value.
             - If is_random=False, multiply this value with all pixels.
             - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
+    clip : tuple of 2 numbers
+        The minimum and maximum value.
+    is_random : boolean
+        If True, see ``val``.
 
     Returns
     -------
@@ -1306,6 +1310,8 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
 
     if len(clip) == 2:
         im = np.clip(im, clip[0], clip[1])
+    else:
+        raise Exception("clip : tuple of 2 numbers")
 
     return im
 
@@ -1792,13 +1798,13 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
     return skimage.measure.find_contours(x, level, fully_connected=fully_connected, positive_orientation=positive_orientation)
 
 
-def pt2map(list_points=[], size=(100, 100), val=1):
+def pt2map(list_points=None, size=(100, 100), val=1):
     """Inputs a list of points, return a 2D image.
 
     Parameters
     --------------
     list_points : list of 2 int
-        [x, y] for point coordinates.
+        [[x, y], [x, y]..] for point coordinates.
     size : tuple of 2 int
         (w, h) for output size.
     val : float or int
@@ -1810,6 +1816,8 @@ def pt2map(list_points=[], size=(100, 100), val=1):
         An image.
 
     """
+    if list_points is None:
+        raise Exception("list_points : list of 2 int")
     i_m = np.zeros(size)
     if len(list_points) == 0:
         return i_m

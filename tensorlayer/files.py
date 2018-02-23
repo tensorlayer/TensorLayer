@@ -1459,6 +1459,13 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 def save_any_to_npy(save_dict={}, name='file.npy'):
     """Save variables to `.npy` file.
 
+    Parameters
+    ------------
+    save_dict : directory
+        The variables to be saved.
+    name : str
+        File name.
+
     Examples
     ---------
     >>> tl.files.save_any_to_npy(save_dict={'data': ['a','b']}, name='test.npy')
@@ -1467,11 +1474,20 @@ def save_any_to_npy(save_dict={}, name='file.npy'):
     ... {'data': ['a','b']}
 
     """
+    if save_dict is None:
+        save_dict = {}
     np.save(name, save_dict)
 
 
 def load_npy_to_any(path='', name='file.npy'):
     """Load `.npy` file.
+
+    Parameters
+    ------------
+    path : str
+        Path to the file (optional).
+    name : str
+        File name.
 
     Examples
     ---------

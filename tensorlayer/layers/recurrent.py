@@ -256,7 +256,7 @@ class BiRNNLayer(Layer):
         A TensorFlow core RNN cell.
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
             - Note TF1.0+ and TF1.0- are different.
-    cell_init_args : dictionary
+    cell_init_args : dictionary or None
         The arguments for the cell function.
     n_hidden : int
         The number of hidden units in the layer.
@@ -316,10 +316,7 @@ class BiRNNLayer(Layer):
             self,
             layer,
             cell_fn,
-            cell_init_args={
-                'use_peepholes': True,
-                'state_is_tuple': True
-            },
+            cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
@@ -331,6 +328,11 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn_layer',
     ):
+        if cell_init_args is None:
+            cell_init_args = {
+                'use_peepholes': True,
+                'state_is_tuple': True}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")

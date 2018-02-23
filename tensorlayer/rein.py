@@ -118,7 +118,7 @@ def log_weight(probs, weights, name='log_weight'):
         return exp_v
 
 
-def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
+def choice_action_by_probs(probs=(0.5, 0.5), action_list=None):
     """Choice and return an an action by given the action probability distribution.
 
     Parameters

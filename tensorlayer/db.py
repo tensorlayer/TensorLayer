@@ -298,13 +298,15 @@ class TensorDB(object):
         return _result
 
     @AutoFill
-    def del_test_log(self, args={}):
+    def del_test_log(self, args=None):
         """ Delete test log.
 
         Parameters
         -----------
         args : dictionary, find items to delete, leave it empty to delete all log.
         """
+        if args is None:
+            args = {}
 
         self.db.TestLog.delete_many(args)
         print("[TensorDB] Delete TestLog SUCCESS")

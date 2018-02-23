@@ -95,7 +95,7 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     return batch, labels, data_index
 
 
-def sample(a=[], temperature=1.0):
+def sample(a=None, temperature=1.0):
     """Sample an index from a probability array.
 
     Parameters
@@ -115,6 +115,8 @@ def sample(a=[], temperature=1.0):
     - For large vocabulary size, choice a higher temperature or ``tl.nlp.sample_top`` to avoid error.
 
     """
+    if a is None:
+        raise Exception("a : list of float")
     b = np.copy(a)
     try:
         if temperature == 1:
@@ -125,7 +127,7 @@ def sample(a=[], temperature=1.0):
             a = np.log(a) / temperature
             a = np.exp(a) / np.sum(np.exp(a))
             return np.argmax(np.random.multinomial(1, a, 1))
-    except:
+    except Exception:
         # np.set_printoptions(threshold=np.nan)
         # logging.info(a)
         # logging.info(np.sum(a))
@@ -477,7 +479,7 @@ def read_words(filename="nietzsche.txt", replace=None):
     with tf.gfile.GFile(filename, "r") as f:
         try:  # python 3.4 or older
             context_list = f.read().replace(*replace).split()
-        except:  # python 3.5
+        except Exception:  # python 3.5
             f.seek(0)
             replace = [x.encode('utf-8') for x in replace]
             context_list = f.read().replace(*replace).split()
@@ -610,7 +612,7 @@ def build_reverse_dictionary(word_to_id):
     return reverse_dictionary
 
 
-def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key='UNK'):
+def build_words_dataset(words=None, vocabulary_size=50000, printable=True, unk_key='UNK'):
     """Build the words dictionary and replace rare words with 'UNK' token.
     The most common word has the smallest integer id.
 
@@ -650,6 +652,8 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     - `tensorflow/examples/tutorials/word2vec/word2vec_basic.py <https://github.com/tensorflow/tensorflow/blob/r0.7/tensorflow/examples/tutorials/word2vec/word2vec_basic.py>`__
 
     """
+    if words is None:
+        raise Exception("words : list of str or byte")
     import collections
     count = [[unk_key, -1]]
     count.extend(collections.Counter(words).most_common(vocabulary_size - 1))
@@ -677,7 +681,7 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     return data, count, dictionary, reverse_dictionary
 
 
-def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
+def words_to_word_ids(data=None, word_to_id=None, unk_key='UNK'):
     """Convert a list of string (words) to IDs.
 
     Parameters
@@ -712,6 +716,10 @@ def words_to_word_ids(data=[], word_to_id={}, unk_key='UNK'):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     """
+    if data is None:
+        raise Exception("data : list of string or byte")
+    if word_to_id is None:
+        raise Exception("word_to_id : a dictionary")
     # if isinstance(data[0], six.string_types):
     #     logging.info(type(data[0]))
     #     # exit()
@@ -845,7 +853,7 @@ def create_vocabulary(vocabulary_path,
                       tokenizer=None,
                       normalize_digits=True,
                       _DIGIT_RE=re.compile(br"\d"),
-                      _START_VOCAB=[b"_PAD", b"_GO", b"_EOS", b"_UNK"]):
+                      _START_VOCAB=None):
     """Create vocabulary file (if it does not exist yet) from data file.
 
     Data file is assumed to contain one sentence per line. Each sentence is
@@ -866,12 +874,18 @@ def create_vocabulary(vocabulary_path,
         A function to use to tokenize each data sentence. If None, basic_tokenizer will be used.
     normalize_digits : boolean
         If true, all digits are replaced by `0`.
+    _DIGIT_RE : regular expression function
+        Default is ``re.compile(br"\d")``.
+    _START_VOCAB : list of str
+        The pad, go, eos and unk token, default is ``[b"_PAD", b"_GO", b"_EOS", b"_UNK"]``.
 
     References
     ----------
     - Code from ``/tensorflow/models/rnn/translation/data_utils.py``
 
     """
+    if _START_VOCAB is None:
+        _START_VOCAB = [b"_PAD", b"_GO", b"_EOS", b"_UNK"]
     if not gfile.Exists(vocabulary_path):
         logging.info("Creating vocabulary %s from data %s" % (vocabulary_path, data_path))
         vocab = {}

@@ -289,11 +289,14 @@ def list_remove_repeat(x):
 
     """
     y = []
-    [y.append(i) for i in x if not i in y]
+    # [y.append(i) for i in x if not i in y]
+    for i in x:
+        if not i in y:
+            y.append(i)
     return y
 
 
-def merge_networks(layers=[]):
+def merge_networks(layers=None):
     """Merge all parameters, layers and dropout probabilities to a :class:`Layer`.
     The output of return network is the first network in the list.
 
@@ -314,6 +317,8 @@ def merge_networks(layers=[]):
     >>> n1 = tl.layers.merge_networks([n1, n2])
 
     """
+    if layers is None:
+        raise Exception("layers should be a list of TensorLayer's Layers.")
     layer = layers[0]
 
     all_params = []
