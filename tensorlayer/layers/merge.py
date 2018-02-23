@@ -52,7 +52,7 @@ class ConcatLayer(Layer):
             self.inputs.append(l.outputs)
         try:  # TF1.0
             self.outputs = tf.concat(self.inputs, concat_dim, name=name)
-        except:  # TF0.12
+        except Exception:  # TF0.12
             self.outputs = tf.concat(concat_dim, self.inputs, name=name)
 
         logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))

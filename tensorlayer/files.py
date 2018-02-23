@@ -1180,7 +1180,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         try:
             for k, value in enumerate(save_list):
                 save_list_var.append(value.eval())
-        except:
+        except Exception:
             logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
     save_list_var = None

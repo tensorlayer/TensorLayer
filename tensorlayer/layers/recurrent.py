@@ -1268,7 +1268,7 @@ class BiDynamicRNNLayer(Layer):
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
+            except Exception:
                 pass
         self.inputs = layer.outputs
 
@@ -1278,7 +1278,7 @@ class BiDynamicRNNLayer(Layer):
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self.inputs.get_shape().with_rank(3)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
@@ -1308,7 +1308,7 @@ class BiDynamicRNNLayer(Layer):
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
                 try:
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
-                except:
+                except Exception:
                     DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
 
                     # cell_instance_fn1=cell_instance_fn            # HanSheng
@@ -1337,7 +1337,7 @@ class BiDynamicRNNLayer(Layer):
             if sequence_length is None:
                 try:  # TF1.0
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
-                except:  # TF0.12
+                except Exception:  # TF0.12
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             if n_layer > 1:
@@ -1373,7 +1373,7 @@ class BiDynamicRNNLayer(Layer):
             # Manage the outputs
             try:  # TF1.0
                 outputs = tf.concat(outputs, 2)
-            except:  # TF0.12
+            except Exception:  # TF0.12
                 outputs = tf.concat(2, outputs)
             if return_last:
                 # [batch_size, 2 * n_hidden]
@@ -1386,7 +1386,7 @@ class BiDynamicRNNLayer(Layer):
                     # 2D Tensor [n_example, 2 * n_hidden]
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, 2 * n_hidden])
                 else:
                     # <akara>:
@@ -1546,7 +1546,7 @@ class Seq2Seq(Layer):
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
+            except Exception:
                 pass
         # self.inputs = layer.outputs
         logging.info("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
