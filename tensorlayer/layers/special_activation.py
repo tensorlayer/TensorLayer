@@ -31,9 +31,12 @@ class PReluLayer(Layer):
             layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
-            a_init_args={},
+            a_init_args=None,
             # restore = True,
             name="prelu_layer"):
+        if a_init_args is None:
+            a_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))

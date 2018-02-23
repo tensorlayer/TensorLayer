@@ -2,15 +2,14 @@
 
 import os
 
-import matplotlib
 import numpy as np
-# save/read image(s)
-import scipy.misc
+import scipy.misc  # save/read image(s)
 
 from . import _logging as logging
 from . import prepro
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
+# import matplotlib
 # matplotlib.use('Agg')
 
 
@@ -124,7 +123,7 @@ def save_images(images, size, image_path=''):
     return imsave(images, size, image_path)
 
 
-def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], classes_list=[], is_center=True, is_rescale=True, save_name=None):
+def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
@@ -438,7 +437,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         logging.info("Please install sklearn and matplotlib to visualize embeddings.")
 
 
-def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512):
+def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig_idx=2396512):
     """Visualize every columns of the weight matrix to a group of Greyscale img.
 
     Parameters
@@ -449,7 +448,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist',
         The display second(s) for the image(s), if saveable is False.
     saveable : boolean
         Save or plot the figure.
-    shape : a list with 2 int
+    shape : a list with 2 int or None
         The shape of feature image, MNIST is [28, 80].
     name : a string
         A name to save the image, if saveable is True.
@@ -461,6 +460,9 @@ def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist',
     >>> tl.visualize.draw_weights(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
 
     """
+    if shape is None:
+        shape = [28, 28]
+
     import matplotlib.pyplot as plt
     if saveable is False:
         plt.ion()

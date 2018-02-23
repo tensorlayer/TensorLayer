@@ -136,7 +136,7 @@ def sample(a=[], temperature=1.0):
         return np.argmax(np.random.multinomial(1, b, 1))
 
 
-def sample_top(a=[], top_k=10):
+def sample_top(a=None, top_k=10):
     """Sample from ``top_k`` probabilities.
 
     Parameters
@@ -147,6 +147,9 @@ def sample_top(a=[], top_k=10):
         Number of candidates to be considered.
 
     """
+    if a is None:
+        a = []
+
     idx = np.argpartition(a, -top_k)[-top_k:]
     probs = a[idx]
     # logging.info("new %f" % probs)
@@ -441,7 +444,7 @@ def simple_read_words(filename="nietzsche.txt"):
         return words
 
 
-def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
+def read_words(filename="nietzsche.txt", replace=None):
     """Read list format context from a file.
 
     For customized read_words method, see ``tutorial_generate_text.py``.
@@ -463,6 +466,9 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
     - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
 
     """
+    if replace is None:
+        replace = ['\n', '<eos>']
+
     with tf.gfile.GFile(filename, "r") as f:
         try:  # python 3.4 or older
             context_list = f.read().replace(*replace).split()
@@ -473,7 +479,7 @@ def read_words(filename="nietzsche.txt", replace=['\n', '<eos>']):
         return context_list
 
 
-def read_analogies_file(eval_file='questions-words.txt', word2id={}):
+def read_analogies_file(eval_file='questions-words.txt', word2id=None):
     """Reads through an analogy question file, return its id format.
 
     Parameters
@@ -518,6 +524,9 @@ def read_analogies_file(eval_file='questions-words.txt', word2id={}):
     ... [ 1216  4309   140   312]]
 
     """
+    if word2id is None:
+        word2id = {}
+
     questions = []
     questions_skipped = 0
     with open(eval_file, "rb") as analogy_f:
@@ -745,7 +754,7 @@ def word_ids_to_words(data, id_to_word):
     return [id_to_word[i] for i in data]
 
 
-def save_vocab(count=[], name='vocab.txt'):
+def save_vocab(count=None, name='vocab.txt'):
     """Save the vocabulary to a file so the model can be reloaded.
 
     Parameters
@@ -772,6 +781,9 @@ def save_vocab(count=[], name='vocab.txt'):
     ... to 316376
 
     """
+    if count is None:
+        count = []
+
     pwd = os.getcwd()
     vocabulary_size = len(count)
     with open(os.path.join(pwd, name), "w") as f:

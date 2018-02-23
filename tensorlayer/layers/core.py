@@ -589,15 +589,24 @@ class Word2vecEmbeddingInputlayer(Layer):
             vocabulary_size=80000,
             embedding_size=200,
             num_sampled=64,
-            nce_loss_args={},
+            nce_loss_args=None,
             E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
-            E_init_args={},
+            E_init_args=None,
             nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
-            nce_W_init_args={},
+            nce_W_init_args=None,
             nce_b_init=tf.constant_initializer(value=0.0),
-            nce_b_init_args={},
+            nce_b_init_args=None,
             name='word2vec',
     ):
+        if nce_loss_args is None:
+            nce_loss_args = {}
+        if E_init_args is None:
+            E_init_args = {}
+        if nce_W_init_args is None:
+            nce_W_init_args = {}
+        if nce_b_init_args is None:
+            nce_b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = inputs
         logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
@@ -682,9 +691,12 @@ class EmbeddingInputlayer(Layer):
             vocabulary_size=80000,
             embedding_size=200,
             E_init=tf.random_uniform_initializer(-0.1, 0.1),
-            E_init_args={},
+            E_init_args=None,
             name='embedding',
     ):
+        if E_init_args is None:
+            E_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = inputs
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
@@ -844,10 +856,15 @@ class DenseLayer(Layer):
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='dense',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
@@ -1283,10 +1300,15 @@ class DropconnectDenseLayer(Layer):
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='dropconnect_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
