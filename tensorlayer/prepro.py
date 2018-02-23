@@ -2165,7 +2165,7 @@ def parse_darknet_ann_str_to_list(annotations):
     for a in annotations:
         a = a.split()
         if len(a) == 5:
-            for i in range(len(a)):
+            for i, _v in enumerate(a):
                 if i == 0:
                     a[i] = int(a[i])
                 else:
@@ -3069,8 +3069,8 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
     #         sequences_out[i].append(pad_id)
     # # pad -- > end
     # max_len = 0
-    for i in range(len(sequences)):
-        for j in range(len(sequences[i])):
+    for i, v in enumerate(sequences):
+        for j, _v2 in enumerate(v):
             if sequences[i][j] == pad_id:
                 sequences_out[i][j] = end_id
                 # if j > max_len:
