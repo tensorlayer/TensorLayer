@@ -31,9 +31,12 @@ class PReluLayer(Layer):
             layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
-            a_init_args={},
+            a_init_args=None,
             # restore = True,
             name="prelu_layer"):
+        if a_init_args is None:
+            a_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
@@ -43,7 +46,7 @@ class PReluLayer(Layer):
             w_shape = int(self.inputs.get_shape()[-1])
 
         # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, dtype=D_TYPE, **a_init_args)
             try:  # TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5

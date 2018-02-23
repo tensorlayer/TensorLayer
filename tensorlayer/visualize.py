@@ -2,15 +2,14 @@
 
 import os
 
-import matplotlib
 import numpy as np
-# save/read image(s)
-import scipy.misc
+import scipy.misc  # save/read image(s)
 
 from . import _logging as logging
 from . import prepro
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
+# import matplotlib
 # matplotlib.use('Agg')
 
 
@@ -77,7 +76,7 @@ def save_image(image, image_path=''):
     """
     try:  # RGB
         scipy.misc.imsave(image_path, image)
-    except:  # Greyscale
+    except Exception:  # Greyscale
         scipy.misc.imsave(image_path, image[:, :, 0])
 
 
@@ -124,7 +123,7 @@ def save_images(images, size, image_path=''):
     return imsave(images, size, image_path)
 
 
-def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], classes_list=[], is_center=True, is_rescale=True, save_name=None):
+def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
@@ -175,7 +174,7 @@ def draw_boxes_and_labels_to_image(image, classes=[], coords=[], scores=[], clas
     imh, imw = image.shape[0:2]
     thick = int((imh + imw) // 430)
 
-    for i in range(len(coords)):
+    for i, _v in enumerate(coords):
         if is_center:
             x, y, x2, y2 = prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
         else:
@@ -236,7 +235,7 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
     import matplotlib.pyplot as plt
     if saveable is False:
         plt.ion()
-    fig = plt.figure(fig_idx)  # show all feature images
+    plt.figure(fig_idx)  # show all feature images
 
     if len(I.shape) and I.shape[-1] == 1:  # (10,10,1) --> (10,10)
         I = I[:, :, 0]
@@ -286,8 +285,8 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     plt.ion()  # active mode
     fig = plt.figure(fig_idx)
     count = 1
-    for ir in range(1, row + 1):
-        for ic in range(1, col + 1):
+    for _ir in range(1, row + 1):
+        for _ic in range(1, col + 1):
             if count > n_mask:
                 break
             a = fig.add_subplot(col, row, count)
@@ -354,7 +353,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
         for ic in range(1, col + 1):
             if count > n_mask:
                 break
-            a = fig.add_subplot(col, row, count)
+            fig.add_subplot(col, row, count)
             # logging.info(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # plt.imshow(
             #         np.reshape(images[count-1,:,:,:], (n_row, n_col)),
@@ -438,7 +437,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         logging.info("Please install sklearn and matplotlib to visualize embeddings.")
 
 
-def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist', fig_idx=2396512):
+def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig_idx=2396512):
     """Visualize every columns of the weight matrix to a group of Greyscale img.
 
     Parameters
@@ -449,7 +448,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist',
         The display second(s) for the image(s), if saveable is False.
     saveable : boolean
         Save or plot the figure.
-    shape : a list with 2 int
+    shape : a list with 2 int or None
         The shape of feature image, MNIST is [28, 80].
     name : a string
         A name to save the image, if saveable is True.
@@ -461,21 +460,23 @@ def draw_weights(W=None, second=10, saveable=True, shape=[28, 28], name='mnist',
     >>> tl.visualize.draw_weights(network.all_params[0].eval(), second=10, saveable=True, name='weight_of_1st_layer', fig_idx=2012)
 
     """
+    if shape is None:
+        shape = [28, 28]
+
     import matplotlib.pyplot as plt
     if saveable is False:
         plt.ion()
     fig = plt.figure(fig_idx)  # show all feature images
-    size = W.shape[0]
     n_units = W.shape[1]
 
     num_r = int(np.sqrt(n_units))  # 每行显示的个数   若25个hidden unit -> 每行显示5个
     num_c = int(np.ceil(n_units / num_r))
     count = int(1)
-    for row in range(1, num_r + 1):
-        for col in range(1, num_c + 1):
+    for _row in range(1, num_r + 1):
+        for _col in range(1, num_c + 1):
             if count > n_units:
                 break
-            a = fig.add_subplot(num_r, num_c, count)
+            fig.add_subplot(num_r, num_c, count)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1],(28,28)), cmap='gray')
             # ------------------------------------------------------------

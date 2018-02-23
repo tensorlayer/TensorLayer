@@ -80,7 +80,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
     else:
         whole_name = name
 
-    for i in range(len(outputs)):
+    for i, _v in enumerate(outputs):
         n = Layer(None, name=whole_name + str(i))
         n.outputs = outputs[i]
         n.all_layers = list(layer.all_layers)

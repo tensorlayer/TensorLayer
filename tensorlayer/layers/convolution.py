@@ -49,14 +49,19 @@ class Conv1dLayer(Layer):
             data_format='NWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='cnn1d',
     ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
         if act is None:
             act = tf.identity
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
         logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
 
         with tf.variable_scope(name):  # as vs:
@@ -158,19 +163,24 @@ class Conv2dLayer(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             use_cudnn_on_gpu=None,
             data_format=None,
             name='cnn_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if act is None:
             act = tf.identity
         logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args)
@@ -276,10 +286,15 @@ class DeConv2dLayer(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='decnn2d_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if act is None:
@@ -344,10 +359,15 @@ class Conv3dLayer(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='cnn3d_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if act is None:
@@ -411,10 +431,15 @@ class DeConv3dLayer(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='decnn3d_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if act is None:
@@ -486,7 +511,7 @@ class UpSampling2dLayer(Layer):
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
-            except:  # for TF 0.10
+            except Exception:  # for TF 0.10
                 self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
 
         self.all_layers = list(layer.all_layers)
@@ -546,31 +571,13 @@ class DownSampling2dLayer(Layer):
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
-            except:  # for TF 0.10
+            except Exception:  # for TF 0.10
                 self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend([self.outputs])
-
-
-class DeformableConv2dLayer(Layer):
-    """The :class:`DeformableConv2dLayer` class is a 2D
-    `Deformable Convolutional Networks <https://arxiv.org/abs/1703.06211>`__.
-    """
-
-    def __init__(self,
-                 layer,
-                 act=tf.identity,
-                 offset_layer=None,
-                 shape=(3, 3, 1, 100),
-                 name='deformable_conv_2d_layer',
-                 W_init=tf.truncated_normal_initializer(stddev=0.02),
-                 b_init=tf.constant_initializer(value=0.0),
-                 W_init_args={},
-                 b_init_args={}):
-        raise Exception("deprecated, use DeformableConv2d instead")
 
 
 class DeformableConv2d(Layer):
@@ -637,10 +644,15 @@ class DeformableConv2d(Layer):
             name='deformable_conv_2d',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={}):
+            W_init_args=None,
+            b_init_args=None):
         if tf.__version__ < "1.4":
             raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version | current version %s" % tf.__version__)
+
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
 
         def _to_bc_h_w(x, x_shape):
             """(b, h, w, c) -> (b*c, h, w)"""
@@ -780,7 +792,7 @@ class DeformableConv2d(Layer):
 
         try:
             pre_channel = int(layer.outputs.get_shape()[-1])
-        except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
@@ -857,8 +869,8 @@ def atrous_conv1d(
         data_format='NWC',
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
-        W_init_args={},
-        b_init_args={},
+        W_init_args=None,
+        b_init_args=None,
         name='conv1d',
 ):
     """Simplified version of :class:`AtrousConv1dLayer`.
@@ -898,6 +910,12 @@ def atrous_conv1d(
         A :class:`AtrousConv1dLayer` object
 
     """
+
+    if W_init_args is None:
+        W_init_args = {}
+    if b_init_args is None:
+        b_init_args = {}
+
     return Conv1dLayer(
         layer=layer,
         act=act,
@@ -956,9 +974,14 @@ class AtrousConv2dLayer(Layer):
                  padding='SAME',
                  W_init=tf.truncated_normal_initializer(stddev=0.02),
                  b_init=tf.constant_initializer(value=0.0),
-                 W_init_args={},
-                 b_init_args={},
+                 W_init_args=None,
+                 b_init_args=None,
                  name='atrou2d'):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if act is None:
@@ -1058,7 +1081,8 @@ class _SeparableConv2dLayer(Layer):  # TODO
                  name='atrou2d'):
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
-        assert tf.__version__ > "0.12.1", "This layer only supports for TF 1.0+"
+        if tf.__version__ > "0.12.1":
+            raise Exception("This layer only supports for TF 1.0+")
 
         bias_initializer = bias_initializer()
 
@@ -1173,8 +1197,8 @@ def conv1d(
         data_format="NWC",
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
-        W_init_args={},
-        b_init_args={},
+        W_init_args=None,
+        b_init_args=None,
         name='conv1d',
 ):
     """Simplified version of :class:`Conv1dLayer`.
@@ -1231,6 +1255,12 @@ def conv1d(
     >>> n = DenseLayer(n, 2, tf.identity, name='o')
 
     """
+
+    if W_init_args is None:
+        W_init_args = {}
+    if b_init_args is None:
+        b_init_args = {}
+
     return Conv1dLayer(
         layer=layer,
         act=act,
@@ -1256,8 +1286,8 @@ def conv2d(
         padding='SAME',
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
-        W_init_args={},
-        b_init_args={},
+        W_init_args=None,
+        b_init_args=None,
         use_cudnn_on_gpu=None,
         data_format=None,
         name='conv2d',
@@ -1310,10 +1340,18 @@ def conv2d(
     >>> net = MaxPool2d(net, (2, 2), name='pool2')
 
     """
-    assert len(strides) == 2, "len(strides) should be 2, Conv2d and Conv2dLayer are different."
+
+    if W_init_args is None:
+        W_init_args = {}
+    if b_init_args is None:
+        b_init_args = {}
+
+    if len(strides) != 2:
+        raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
+
     try:
         pre_channel = int(layer.outputs.get_shape()[-1])
-    except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+    except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
         pre_channel = 1
         logging.info("[warnings] unknow input channels, set to 1")
     return Conv2dLayer(
@@ -1341,8 +1379,8 @@ def deconv2d(layer,
              act=tf.identity,
              W_init=tf.truncated_normal_initializer(stddev=0.02),
              b_init=tf.constant_initializer(value=0.0),
-             W_init_args={},
-             b_init_args={},
+             W_init_args=None,
+             b_init_args=None,
              name='decnn2d'):
     """Simplified version of :class:`DeConv2dLayer`.
 
@@ -1382,9 +1420,14 @@ def deconv2d(layer,
         A :class:`DeConv2dLayer` object.
 
     """
+    if W_init_args is None:
+        W_init_args = {}
+    if b_init_args is None:
+        b_init_args = {}
     if act is None:
         act = tf.identity
-    assert len(strides) == 2, "len(strides) should be 2, DeConv2d and DeConv2dLayer are different."
+    if len(strides) != 2:
+        raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
     if tf.__version__ > '1.3':
         logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
         inputs = layer.outputs
@@ -1555,10 +1598,15 @@ class DepthwiseConv2d(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='depthwise_conv2d',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
 
@@ -1568,7 +1616,7 @@ class DepthwiseConv2d(Layer):
         logging.info("DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
         try:
             pre_channel = int(layer.outputs.get_shape()[-1])
-        except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
 
@@ -1604,3 +1652,4 @@ AtrousConv1dLayer = atrous_conv1d
 Conv1d = conv1d
 Conv2d = conv2d
 DeConv2d = deconv2d
+DeformableConv2dLayer = DeformableConv2d

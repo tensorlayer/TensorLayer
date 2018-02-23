@@ -123,7 +123,7 @@ if not os.path.isfile("inception_v3.ckpt"):
     exit()
 try:  # TF12+
     saver.restore(sess, "./inception_v3.ckpt")
-except:  # TF11
+except Exception:  # TF11
     saver.restore(sess, "inception_v3.ckpt")
 print("Model Restored")
 
