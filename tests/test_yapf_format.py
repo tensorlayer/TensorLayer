@@ -1,8 +1,6 @@
-
 import sys
 import testing
 from yapf.yapflib.yapf_api import FormatCode
-
 
 
 def _read_utf_8_file(filename):
