@@ -7,6 +7,7 @@ registry = violations.ErrorRegistry
 
 _disabled_checks = [
     'D202',  #  No blank lines allowed after function docstring
+    'D205',  #  1 blank line required between summary line and description
 ]
 
 
