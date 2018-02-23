@@ -6,7 +6,7 @@ import tensorflow as tf
 from six.moves import xrange
 
 
-def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
+def discount_episode_rewards(rewards=None, gamma=0.99, mode=0):
     """Take 1D float array of rewards and compute discounted rewards for an
     episode. When encount a non-zero value, consider as the end a of an episode.
 
@@ -40,6 +40,8 @@ def discount_episode_rewards(rewards=[], gamma=0.99, mode=0):
     ... 1.49048996  1.65610003  0.72899997  0.81        0.89999998  1.        ]
 
     """
+    if rewards is None:
+        raise Exception("rewards should be a list")
     discounted_r = np.zeros_like(rewards, dtype=np.float32)
     running_add = 0
     for t in reversed(xrange(0, rewards.size)):
@@ -84,13 +86,13 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     """
     try:  # TF 1.0+
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
-    except:
+    except Exception:
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions)
         # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
 
     try:  ## TF1.0+
         loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
-    except:  ## TF0.12
+    except Exception:  ## TF0.12
         loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))  # element-wise mul
     return loss
 
@@ -153,5 +155,6 @@ def choice_action_by_probs(probs=[0.5, 0.5], action_list=None):
         n_action = len(probs)
         action_list = np.arange(n_action)
     else:
-        assert len(action_list) == len(probs), "Number of actions should equal to number of probabilities."
+        if len(action_list) != len(probs):
+            raise Exception("number of actions should equal to number of probabilities.")
     return np.random.choice(action_list, p=probs)
