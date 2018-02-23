@@ -289,7 +289,6 @@ def list_remove_repeat(x):
 
     """
     y = []
-    # [y.append(i) for i in x if not i in y]
     for i in x:
         if not i in y:
             y.append(i)
