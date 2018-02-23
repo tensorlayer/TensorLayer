@@ -1160,7 +1160,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
 
     References
     ----------
-    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
+    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
     if save_list is None:
@@ -1171,8 +1171,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         save_list_var = sess.run(save_list)
     else:
         try:
-            for _k, v in enumerate(save_list):
-                save_list_var.append(v.eval())
+            save_list_var.extend([v.eval() for v in save_list])
         except Exception:
             logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
