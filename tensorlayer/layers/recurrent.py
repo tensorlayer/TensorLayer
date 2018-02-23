@@ -148,7 +148,7 @@ class RNNLayer(Layer):
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
-                pass
+                logging.warning('pop state_is_tuple fails.')
 
         self.inputs = layer.outputs
 
