@@ -553,7 +553,7 @@ def exit_tensorflow(sess=None, port=6006):
         logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
     elif _platform == "win32":
-        raise NotImplementedError()
+        raise NotImplementedError("this function is not supported on the Windows platform")
     else:
         logging.info(text2 + _platform)
 
@@ -583,7 +583,7 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
             sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port),
             shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
-        raise NotImplementedError()
+        raise NotImplementedError("this function is not supported on the Windows platform")
     else:
         logging.info(_platform + text2)
 

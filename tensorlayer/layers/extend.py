@@ -68,7 +68,7 @@ class TileLayer(Layer):
         self.inputs = layer.outputs
 
         logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))
-        with tf.variable_scope(name):  # as vs:
+        with tf.variable_scope(name): 
             self.outputs = tf.tile(self.inputs, multiples=multiples)
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)

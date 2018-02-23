@@ -2205,9 +2205,6 @@ def parse_darknet_ann_list_to_cls_box(annotations):
     """
     class_list = []
     bbox_list = []
-    # for i in range(len(annotations)):
-    #     class_list.append(annotations[i][0])
-    #     bbox_list.append(annotations[i][1:])
     for ann in annotations:
         class_list.append(ann[0])
         bbox_list.append(ann[1:])
