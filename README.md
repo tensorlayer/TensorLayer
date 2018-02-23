@@ -242,7 +242,7 @@ It has been widely used by researchers from Imperial College London, Carnegie Me
 Tsinghua University, UCLA, Linköping University and etc., 
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
-- 🇬🇧 If you any question, we suggest to create an issue to discuss with us.
+- 🇬🇧 If you have any question, we suggest to create an issue to discuss with us.
 - 🇨🇳 我们有中文讨论社区: 如[QQ群](img/img_qq.png)和[微信群](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 
 
