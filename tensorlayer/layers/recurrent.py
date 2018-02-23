@@ -367,7 +367,7 @@ class BiRNNLayer(Layer):
             rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
             # Apply dropout
             if dropout:
-                if type(dropout) in [tuple, list]:
+                if isinstance(dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
                     in_keep_prob = dropout[0]
                     out_keep_prob = dropout[1]
                 elif isinstance(dropout, float):
@@ -1256,7 +1256,7 @@ class BiDynamicRNNLayer(Layer):
             self,
             layer,
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'state_is_tuple': True},
+            cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             sequence_length=None,
@@ -1269,6 +1269,8 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
+        if cell_init_args is None:
+            cell_init_args = {'state_is_tuple': True}
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
 

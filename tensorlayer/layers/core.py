@@ -1245,7 +1245,7 @@ class GaussianNoiseLayer(Layer):
         else:
             self.inputs = layer.outputs
             logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
-            with tf.variable_scope(name) as vs:
+            with tf.variable_scope(name):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
                 self.outputs = self.inputs + noise

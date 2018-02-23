@@ -802,7 +802,6 @@ def load_celebA_dataset(path='data'):
         The path that the data is downloaded to, defaults is ``data/celebA/``.
 
     """
-    import zipfile, os
     data_dir = 'celebA'
     filename, drive_id = "img_align_celeba.zip", "0B7EVK8r0v71pZjFTYXZWM3FlRnM"
     save_path = os.path.join(path, filename)
