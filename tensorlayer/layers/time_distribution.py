@@ -48,12 +48,12 @@ class TimeDistributedLayer(Layer):
     ):
         if args is None:
             args = {}
+        if not isinstance(args, dict):
+            raise TypeError("'args' must be a dict.")
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
-
-        if not args: args = dict()
-        assert isinstance(args, dict), "'args' must be a dict."
 
         if not isinstance(self.inputs, tf.Tensor):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
