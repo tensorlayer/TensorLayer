@@ -94,7 +94,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     net_new = Layer(inputs, name=whole_name)
     # with tf.name_scope(name):
-    with tf.variable_scope(name) as vs:
+    with tf.variable_scope(name):# as vs:
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
 
     net_new.all_layers = list(net.all_layers)

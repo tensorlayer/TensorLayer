@@ -427,7 +427,7 @@ class BiRNNLayer(Layer):
 
             if return_last:
                 raise Exception("Do not support return_last at the moment.")
-                self.outputs = outputs[-1]
+                # self.outputs = outputs[-1]
             else:
                 self.outputs = outputs
                 if return_seq_2d:
@@ -1382,7 +1382,7 @@ class BiDynamicRNNLayer(Layer):
             if return_last:
                 # [batch_size, 2 * n_hidden]
                 raise Exception("Do not support return_last at the moment")
-                self.outputs = advanced_indexing_op(outputs, sequence_length)
+                # self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
                 if return_seq_2d:

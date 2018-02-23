@@ -702,7 +702,7 @@ class EmbeddingInputlayer(Layer):
         self.inputs = inputs
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):# as vs:
             embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 

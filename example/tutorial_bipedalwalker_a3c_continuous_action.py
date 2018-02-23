@@ -32,8 +32,6 @@ measurements. There's no coordinates in the state vector.
 """
 
 import multiprocessing
-import os
-import shutil
 import threading
 
 import gym
