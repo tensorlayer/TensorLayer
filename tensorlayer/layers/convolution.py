@@ -302,7 +302,7 @@ class DeConv2dLayer(Layer):
         logging.info("DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
                                                                                            act.__name__))
         # logging.info("  DeConv2dLayer: Untested")
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init:
                 b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=D_TYPE, **b_init_args)

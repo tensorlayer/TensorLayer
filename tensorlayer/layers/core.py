@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 from .. import _logging as logging
-from .. import cost, files, iterate, utils, visualize
+from .. import files, iterate, utils, visualize
 
 # __all__ = [
 #     "Layer",
@@ -289,11 +289,13 @@ def list_remove_repeat(x):
 
     """
     y = []
-    [y.append(i) for i in x if not i in y]
+    for i in x:
+        if not i in y:
+            y.append(i)
     return y
 
 
-def merge_networks(layers=[]):
+def merge_networks(layers=None):
     """Merge all parameters, layers and dropout probabilities to a :class:`Layer`.
     The output of return network is the first network in the list.
 
@@ -314,6 +316,8 @@ def merge_networks(layers=[]):
     >>> n1 = tl.layers.merge_networks([n1, n2])
 
     """
+    if layers is None:
+        raise Exception("layers should be a list of TensorLayer's Layers.")
     layer = layers[0]
 
     all_params = []
@@ -702,7 +706,7 @@ class EmbeddingInputlayer(Layer):
         self.inputs = inputs
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
