@@ -1076,7 +1076,7 @@ class DynamicRNNLayer(Layer):
             #                     cell_instance_fn1(),
             #                     input_keep_prob=in_keep_prob,
             #                     output_keep_prob=out_keep_prob)
-            cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)  #out_keep_prob)
+            cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)
         else:
             cell_creator = rnn_creator
         self.cell = cell_creator()
@@ -1323,9 +1323,8 @@ class BiDynamicRNNLayer(Layer):
                 cell_creator = lambda is_last=True: \
                     DropoutWrapper_fn(rnn_creator(),
                                       input_keep_prob=in_keep_prob,
-                                      output_keep_prob=out_keep_prob if is_last else 1.0)  # out_keep_prob)
+                                      output_keep_prob=out_keep_prob if is_last else 1.0)
             else:
-                # cell_creator = lambda: rnn_creator()
                 cell_creator = rnn_creator
 
             # if dropout:
