@@ -37,6 +37,7 @@ following snippet:
 """
 
 import os
+
 import tensorlayer as tl
 from scipy.misc import imread, imresize
 from tensorlayer.layers import *

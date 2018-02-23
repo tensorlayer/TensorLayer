@@ -14,16 +14,16 @@ test:
 	python tests/test_mnist_simple.py
 
 format:
-	yapf -i example/*.py
-	yapf -i tensorlayer/*.py
-	yapf -i tensorlayer/**/*.py
-
 	autoflake -i example/*.py
 	autoflake -i tensorlayer/*.py
 	autoflake -i tensorlayer/**/*.py
 
 	isort -rc example
 	isort -rc tensorlayer
+
+	yapf -i example/*.py
+	yapf -i tensorlayer/*.py
+	yapf -i tensorlayer/**/*.py
 
 install3:
 	pip3 install -U . --user
