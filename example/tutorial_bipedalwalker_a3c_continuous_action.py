@@ -63,6 +63,7 @@ N_S = env.observation_space.shape[0]
 N_A = env.action_space.shape[0]
 A_BOUND = [env.action_space.low, env.action_space.high]
 
+
 # print(env.unwrapped.hull.position[0])
 # exit()
 
@@ -145,7 +146,8 @@ class ACNet(object):
             self.v = v.outputs
 
     def update_global(self, feed_dict):  # run by a local
-        _, _, t = sess.run([self.update_a_op, self.update_c_op, self.test], feed_dict)  # local grads applies to global net
+        _, _, t = sess.run([self.update_a_op, self.update_c_op, self.test],
+                           feed_dict)  # local grads applies to global net
         return t
 
     def pull_global(self):  # run by a local
@@ -157,7 +159,8 @@ class ACNet(object):
 
     def save_ckpt(self):
         tl.files.exists_or_mkdir(self.scope)
-        tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope, printable=True)
+        tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params,
+                           save_dir=self.scope, printable=True)
 
     def load_ckpt(self):
         tl.files.load_ckpt(sess=sess, var_list=self.a_params + self.c_params, save_dir=self.scope, printable=True)
@@ -203,7 +206,8 @@ class Worker(object):
                         buffer_v_target.append(v_s_)
                     buffer_v_target.reverse()
 
-                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
+                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(
+                        buffer_v_target)
                     feed_dict = {
                         self.AC.s: buffer_s,
                         self.AC.a_his: buffer_a,
@@ -257,8 +261,7 @@ if __name__ == "__main__":
     # start TF threading
     worker_threads = []
     for worker in workers:
-        job = lambda: worker.work()
-        t = threading.Thread(target=job)
+        t = threading.Thread(target=worker.work)
         t.start()
         worker_threads.append(t)
     COORD.join(worker_threads)
