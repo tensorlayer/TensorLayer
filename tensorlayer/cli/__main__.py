@@ -1,4 +1,5 @@
 import argparse
+
 from tensorlayer.cli import train
 
 if __name__ == "__main__":
