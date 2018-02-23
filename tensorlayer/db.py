@@ -148,7 +148,7 @@ class TensorDB(object):
             params = self.__deserialization(self.paramsfs.get(f_id).read())
             print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time() - s, 2)))
             return params, f_id
-        except:
+        except Exception:
             return False, False
 
     @AutoFill

@@ -121,7 +121,7 @@ def read_and_decode(filename, is_train=None):
         # 5. Subtract off the mean and divide by the variance of the pixels.
         try:  # TF 0.12+
             img = tf.image.per_image_standardization(img)
-        except:  # earlier TF versions
+        except Exception:  # earlier TF versions
             img = tf.image.per_image_whitening(img)
 
     elif is_train == False:
@@ -130,7 +130,7 @@ def read_and_decode(filename, is_train=None):
         # 2. Subtract off the mean and divide by the variance of the pixels.
         try:  # TF 0.12+
             img = tf.image.per_image_standardization(img)
-        except:  # earlier TF versions
+        except Exception:  # earlier TF versions
             img = tf.image.per_image_whitening(img)
     elif is_train == None:
         img = img

@@ -32,7 +32,7 @@ class ExpandDimsLayer(Layer):
         with tf.variable_scope(name) as vs:
             try:  # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
-            except:  # TF11
+            except Exception:  # TF11
                 self.outputs = tf.expand_dims(self.inputs, dim=axis)
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)

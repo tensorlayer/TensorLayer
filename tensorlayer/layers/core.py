@@ -22,7 +22,7 @@ D_TYPE = tf.float32
 
 try:  # For TF12 and later
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
-except:  # For TF11 and before
+except Exception:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
 
@@ -152,7 +152,7 @@ def initialize_rnn_state(state, feed_dict=None):
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
-    except:
+    except Exception:
         LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
 
     if isinstance(state, LSTMStateTuple):
@@ -183,7 +183,7 @@ def print_all_variables(train_only=False):
     else:
         try:  # TF1.0+
             t_vars = tf.global_variables()
-        except:  # TF0.12
+        except Exception:  # TF0.12
             t_vars = tf.all_variables()
         logging.info("  [*] printing global variables")
     for idx, v in enumerate(t_vars):
@@ -998,7 +998,7 @@ class ReconLayer(DenseLayer):
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
         try:  # TF1.0
             KLD = beta * tf.reduce_sum(rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat))))
-        except:  # TF0.12
+        except Exception:  # TF0.12
             KLD = beta * tf.reduce_sum(rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat))))
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
