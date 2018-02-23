@@ -15,15 +15,12 @@ Reference
 
 """
 
-import io
 import json
 import os
-import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from PIL import Image
-from tensorlayer.layers import set_keep
 
 
 def _int64_feature(value):
@@ -326,7 +323,7 @@ img = tf.image.convert_image_dtype(img, dtype=tf.float32)
 try:
     # for TensorFlow 0.11
     img = tf.image.resize_images(img, size=(resize_height, resize_width), method=tf.image.ResizeMethod.BILINEAR)
-except:
+except Exception:
     # for TensorFlow 0.10
     img = tf.image.resize_images(img, new_height=resize_height, new_width=resize_width, method=tf.image.ResizeMethod.BILINEAR)
 # Crop to final dimensions.
