@@ -174,7 +174,7 @@ def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list,
     imh, imw = image.shape[0:2]
     thick = int((imh + imw) // 430)
 
-    for i in range(len(coords)):
+    for i, _v in enumerate(coords):
         if is_center:
             x, y, x2, y2 = prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
         else:
