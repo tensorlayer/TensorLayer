@@ -491,12 +491,23 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
 
 
 ## Random
-def get_random_int(min=0, max=10, number=5, seed=None):
+def get_random_int(min_v=0, max_v=10, number=5, seed=None):
     """Return a list of random integer by the given range and quantity.
+
+    Parameters
+    -----------
+    min_v : number
+        The minimum value.
+    max_v : number
+        The maximum value.
+    number : int
+        Number of value.
+    seed : int or None
+        The seed for random.
 
     Examples
     ---------
-    >>> r = get_random_int(min=0, max=10, number=5)
+    >>> r = get_random_int(min_v=0, max_v=10, number=5)
     ... [10, 2, 3, 3, 7]
 
     """
@@ -504,7 +515,7 @@ def get_random_int(min=0, max=10, number=5, seed=None):
     if seed:
         rnd = random.Random(seed)
     # return [random.randint(min,max) for p in range(0, number)]
-    return [rnd.randint(min, max) for p in range(0, number)]
+    return [rnd.randint(min_v, max_v) for p in range(0, number)]
 
 
 def list_string_to_dict(string):
@@ -528,7 +539,7 @@ def exit_tensorflow(sess=None, port=6006):
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
-    if sess != None:
+    if sess is not None:
         sess.close()
     # import time
     # time.sleep(2)
@@ -542,8 +553,7 @@ def exit_tensorflow(sess=None, port=6006):
         logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
     elif _platform == "win32":
-        logging.info(text2 + "Windows")
-        # TODO
+        raise NotImplementedError("this function is not supported on the Windows platform")
     else:
         logging.info(text2 + _platform)
 
@@ -566,16 +576,14 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
         logging.info("[TL] Log reportory was created at %s" % log_dir)
 
     if _platform == "linux" or _platform == "linux2":
-        logging.info('linux %s' % text2)
-        # TODO
+        raise NotImplementedError()
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
         subprocess.Popen(
             sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port),
             shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
-        logging.info('Windows%s' % text2)
-        # TODO
+        raise NotImplementedError("this function is not supported on the Windows platform")
     else:
         logging.info(_platform + text2)
 

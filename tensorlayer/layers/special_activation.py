@@ -50,7 +50,7 @@ class PReluLayer(Layer):
             alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, dtype=D_TYPE, **a_init_args)
             try:  # TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
-            except:  # TF 0.12
+            except Exception:  # TF 0.12
                 self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
         self.all_layers = list(layer.all_layers)
