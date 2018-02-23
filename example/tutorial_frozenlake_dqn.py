@@ -27,8 +27,7 @@ of 1 if you reach the goal, and zero otherwise.
 """
 
 import time
-
-import matplotlib.pyplot as plt
+import gym
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl

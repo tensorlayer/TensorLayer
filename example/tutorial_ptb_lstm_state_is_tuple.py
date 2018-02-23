@@ -106,7 +106,6 @@ import time
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
 
 flags = tf.flags
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")

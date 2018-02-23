@@ -138,7 +138,7 @@ class BatchNormLayer(Layer):
                 update_moving_variance = moving_averages.assign_moving_average(
                     moving_variance, variance, decay, zero_debias=False)  # if zero_debias=True, has bias
                 # logging.info("TF12 moving")
-            except Exception as e:  # TF11
+            except Exception:  # TF11
                 update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay)
                 update_moving_variance = moving_averages.assign_moving_average(moving_variance, variance, decay)
                 # logging.info("TF11 moving")

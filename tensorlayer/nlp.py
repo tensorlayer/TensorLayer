@@ -652,7 +652,7 @@ def build_words_dataset(words=None, vocabulary_size=50000, printable=True, unk_k
     """
     if words is None:
         raise Exception("words : list of str or byte")
-    import collections
+
     count = [[unk_key, -1]]
     count.extend(collections.Counter(words).most_common(vocabulary_size - 1))
     dictionary = dict()
