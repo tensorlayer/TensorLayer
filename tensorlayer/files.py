@@ -1501,7 +1501,6 @@ def load_npy_to_any(path='', name='file.npy'):
     raise Exception("[!] Fail to load %s" % file_path)
 
 
-
 def file_exists(filepath):
     """Check whether a file exists by given file path."""
     return os.path.isfile(filepath)
