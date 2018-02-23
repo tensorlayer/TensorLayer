@@ -349,8 +349,8 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
     plt.ion()  # active mode
     fig = plt.figure(fig_idx)
     count = 1
-    for ir in range(1, row + 1):
-        for ic in range(1, col + 1):
+    for _ir in range(1, row + 1):
+        for _ic in range(1, col + 1):
             if count > n_mask:
                 break
             fig.add_subplot(col, row, count)

@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 from .. import _logging as logging
-from .. import cost, files, iterate, utils, visualize
+from .. import files, iterate, utils, visualize
 
 # __all__ = [
 #     "Layer",
