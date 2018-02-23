@@ -834,9 +834,9 @@ class DeformableConv2d(Layer):
         offset_params = [osparam for osparam in offset_layer.all_params if osparam not in layer.all_params]
         offset_layers = [oslayer for oslayer in offset_layer.all_layers if oslayer not in layer.all_layers]
 
-        self.all_params.extend(offset_params)
-        self.all_layers.extend(offset_layers)
-        self.all_drop.update(offset_layer.all_drop)
+        self.all_params.extend(list(offset_params))
+        self.all_layers.extend(list(offset_layers))
+        self.all_drop.update(dict(offset_layer.all_drop))
 
         # this layer
         self.all_layers.extend([self.outputs])
