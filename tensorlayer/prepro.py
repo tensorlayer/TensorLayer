@@ -2738,7 +2738,7 @@ def obj_box_zoom(im,
         if is_center:
             coord = obj_box_coord_centroid_to_upleft(coord)
 
-        ##======= pixel unit format and upleft, w, h ==========##
+        # ======= pixel unit format and upleft, w, h ==========
         x = (coord[0] - im.shape[1] / 2) / zy + im.shape[1] / 2  # only change this
         y = (coord[1] - im.shape[0] / 2) / zx + im.shape[0] / 2  # only change this
         w = coord[2] / zy  # only change this
@@ -2776,7 +2776,7 @@ def obj_box_zoom(im,
 
         coord = [x, y, w, h]
 
-        ## convert back if input format is center.
+        # convert back if input format is center.
         if is_center:
             coord = obj_box_coord_upleft_to_centroid(coord)
 
@@ -2788,7 +2788,7 @@ def obj_box_zoom(im,
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
-            """ for scaled coord, upscaled before process and scale back in the end. """
+            # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
             coord = _get_coord(coord)
             if coord is not None:
@@ -2803,7 +2803,6 @@ def obj_box_zoom(im,
     return im_new, classes_new, coords_new
 
 
-## Sequence
 def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncating='pre', value=0.):
     """Pads each sequence to the same length:
     the length of the longest sequence.
