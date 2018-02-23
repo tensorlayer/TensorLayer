@@ -37,10 +37,6 @@ following snippet:
 """
 
 import os
-import sys
-import time
-import numpy as np
-import tensorflow as tf
 import tensorlayer as tl
 from scipy.misc import imread, imresize
 from tensorlayer.layers import *
@@ -52,7 +48,7 @@ except Exception as e:
 
 
 def conv_layers(net_in):
-    with tf.name_scope('preprocess') as scope:
+    with tf.name_scope('preprocess'):
         """
         Notice that we include a preprocessing layer that takes the RGB image
         with pixels values in the range of 0-255 and subtracts the mean image
@@ -60,7 +56,8 @@ def conv_layers(net_in):
         """
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         net_in.outputs = net_in.outputs - mean
-    """ conv1 """
+
+    # conv1
     network = Conv2dLayer(
         net_in,
         act=tf.nn.relu,
@@ -76,7 +73,8 @@ def conv_layers(net_in):
         padding='SAME',
         name='conv1_2')
     network = PoolLayer(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
-    """ conv2 """
+
+    # conv2
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
@@ -92,7 +90,8 @@ def conv_layers(net_in):
         padding='SAME',
         name='conv2_2')
     network = PoolLayer(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
-    """ conv3 """
+
+    # conv3
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
@@ -115,7 +114,8 @@ def conv_layers(net_in):
         padding='SAME',
         name='conv3_3')
     network = PoolLayer(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
-    """ conv4 """
+
+    # conv4
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
@@ -138,7 +138,8 @@ def conv_layers(net_in):
         padding='SAME',
         name='conv4_3')
     network = PoolLayer(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
-    """ conv5 """
+
+    # conv5
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
@@ -173,25 +174,30 @@ def conv_layers_simple_api(net_in):
         """
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         net_in.outputs = net_in.outputs - mean
-    """ conv1 """
+
+    # conv1
     network = Conv2d(net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
     network = Conv2d(network, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
-    """ conv2 """
+
+    # conv2
     network = Conv2d(network, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
     network = Conv2d(network, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
-    """ conv3 """
+
+    # conv3
     network = Conv2d(network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
     network = Conv2d(network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
     network = Conv2d(network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
-    """ conv4 """
+
+    # conv4
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4')
-    """ conv5 """
+
+    # conv5
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')
     network = Conv2d(network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
@@ -249,5 +255,3 @@ print("  End time : %.5ss" % (time.time() - start_time))
 preds = (np.argsort(prob)[::-1])[0:5]
 for p in preds:
     print(class_names[p], prob[p])
-
-#

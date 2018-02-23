@@ -37,10 +37,6 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 
 """
 
-import collections
-import math
-import os
-import random
 import time
 
 import numpy as np
@@ -56,10 +52,9 @@ FLAGS = flags.FLAGS
 def main_word2vec_basic():
     # sess = tf.InteractiveSession()
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
-    """ Step 1: Download the data, read the context into a list of strings.
-    Set hyperparameters.
-    """
 
+    # Step 1: Download the data, read the context into a list of strings.
+    # Set hyperparameters.
     words = tl.files.load_matt_mahoney_text8_dataset()
     data_size = len(words)
     print(data_size)  # 17005207
@@ -126,8 +121,8 @@ def main_word2vec_basic():
     print('%d Steps in a Epoch, total Epochs %d' % (int(data_size / batch_size), n_epoch))
     print('   learning_rate: %f' % learning_rate)
     print('   batch_size: %d' % batch_size)
-    """ Step 2: Build the dictionary and replace rare words with 'UNK' token.
-    """
+
+    # Step 2: Build the dictionary and replace rare words with 'UNK' token.
     print()
     if resume:
         print("Load existing data and dictionaries" + "!" * 10)
@@ -146,10 +141,10 @@ def main_word2vec_basic():
     ])  # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
 
     del words  # Hint to reduce memory.
-    """ Step 3: Function to generate a training batch for the Skip-Gram model.
-    """
+
+    # Step 3: Function to generate a training batch for the Skip-Gram model.
     print()
-    data_index = 0
+
     batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=4, skip_window=2, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
@@ -157,10 +152,10 @@ def main_word2vec_basic():
     batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
-    # exit()
-    """ Step 4: Build a Skip-Gram model.
-    """
+
+    # Step 4: Build a Skip-Gram model.
     print()
+
     # We pick a random validation set to sample nearest neighbors. Here we limit the
     # validation samples to the words that have a low numeric ID, which by
     # construction are also the most frequent.
@@ -208,9 +203,10 @@ def main_word2vec_basic():
     similarity = tf.matmul(valid_embed, normalized_embeddings, transpose_b=True)
     # multiply all valid word vector with all word vector.
     # transpose_b=True, normalized_embeddings is transposed before multiplication.
-    """ Step 5: Start training.
-    """
+
+    # Step 5: Start training.
     print()
+
     tl.layers.initialize_global_variables(sess)
     if resume:
         print("Load existing model" + "!" * 10)
@@ -229,7 +225,7 @@ def main_word2vec_basic():
     average_loss = 0
     step = 0
     print_freq = 2000
-    while (step < num_steps):
+    while step < num_steps:
         start_time = time.time()
         batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
             data=data, batch_size=batch_size, num_skips=num_skips, skip_window=skip_window, data_index=data_index)
@@ -279,16 +275,17 @@ def main_word2vec_basic():
         #         learning_rate = float(input("Input new learning rate: "))
         #         train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
         step += 1
-    """ Step 6: Visualize the normalized embedding matrix by t-SNE.
-    """
+
+    # Step 6: Visualize the normalized embedding matrix by t-SNE.
     print()
+
     final_embeddings = sess.run(normalized_embeddings)  #.eval()
     tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary, plot_only=500, second=5, saveable=False, name='word2vec_basic')
-    """ Step 7: Evaluate by analogy questions.
-        see tensorflow/models/embedding/word2vec_optimized.py
-    """
+
+    # Step 7: Evaluate by analogy questions. see tensorflow/models/embedding/word2vec_optimized.py
     print()
-    #   from tensorflow/models/embedding/word2vec.py
+
+    #  from tensorflow/models/embedding/word2vec.py
     analogy_questions = tl.nlp.read_analogies_file( \
                 eval_file='questions-words.txt', word2id=dictionary)
     # The eval feeds three vectors of word ids for a, b, c, each of
@@ -352,5 +349,3 @@ def main_word2vec_basic():
 
 if __name__ == '__main__':
     main_word2vec_basic()
-
-#

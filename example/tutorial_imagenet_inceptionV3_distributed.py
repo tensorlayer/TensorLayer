@@ -288,12 +288,12 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
 def run_evaluator(task_spec, checkpoints_path, batch_size=32):
     with tf.Graph().as_default():
         # load dataset
-        images_input, one_hot_classes, num_classes, dataset_size = \
+        images_input, one_hot_classes, num_classes, _dataset_size = \
             load_data(file=VAL_FILE,
                       task_spec=task_spec,
                       batch_size=batch_size,
                       epochs=1)
-        network, predictions = build_network(images_input, num_classes=num_classes, is_training=False)
+        _network, predictions = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
         metrics_init_ops, _, metrics_ops = \

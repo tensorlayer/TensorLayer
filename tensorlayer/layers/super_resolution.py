@@ -72,14 +72,13 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
     def _PS(X, r, n_out_channels):
         if n_out_channels >= 1:
             assert int(X.get_shape()[-1]) == (r**2) * n_out_channels, _err_log
-            """
-            bsize, a, b, c = X.get_shape().as_list()
-            bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
-            Xs=tf.split(X,r,3) #b*h*w*r*r
-            Xr=tf.concat(Xs,2) #b*h*(r*w)*r
-            X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
 
-            """
+            # bsize, a, b, c = X.get_shape().as_list()
+            # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
+            # Xs=tf.split(X,r,3) #b*h*w*r*r
+            # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
+            # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
+
             X = tf.depth_to_space(X, r)
         else:
             logging.info(_err_log)

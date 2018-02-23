@@ -22,7 +22,7 @@ D_TYPE = tf.float32
 
 try:  # For TF12 and later
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
-except:  # For TF11 and before
+except Exception:  # For TF11 and before
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.VARIABLES
 
 
@@ -152,7 +152,7 @@ def initialize_rnn_state(state, feed_dict=None):
     """
     try:  # TF1.0
         LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
-    except:
+    except Exception:
         LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
 
     if isinstance(state, LSTMStateTuple):
@@ -183,7 +183,7 @@ def print_all_variables(train_only=False):
     else:
         try:  # TF1.0+
             t_vars = tf.global_variables()
-        except:  # TF0.12
+        except Exception:  # TF0.12
             t_vars = tf.all_variables()
         logging.info("  [*] printing global variables")
     for idx, v in enumerate(t_vars):
@@ -221,7 +221,7 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     else:
         try:  # TF1.0+
             t_vars = tf.global_variables()
-        except:  # TF0.12
+        except Exception:  # TF0.12
             t_vars = tf.all_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
@@ -418,13 +418,13 @@ class Layer(object):
     def count_params(self):
         """Return the number of parameters in the network"""
         n_params = 0
-        for i, p in enumerate(self.all_params):
+        for _i, p in enumerate(self.all_params):
             n = 1
             # for s in p.eval().shape:
             for s in p.get_shape():
                 try:
                     s = int(s)
-                except:
+                except Exception:
                     s = 1
                 if s:
                     n = n * s
@@ -589,18 +589,28 @@ class Word2vecEmbeddingInputlayer(Layer):
             vocabulary_size=80000,
             embedding_size=200,
             num_sampled=64,
-            nce_loss_args={},
+            nce_loss_args=None,
             E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
-            E_init_args={},
+            E_init_args=None,
             nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
-            nce_W_init_args={},
+            nce_W_init_args=None,
             nce_b_init=tf.constant_initializer(value=0.0),
-            nce_b_init_args={},
+            nce_b_init_args=None,
             name='word2vec',
     ):
+        if nce_loss_args is None:
+            nce_loss_args = {}
+        if E_init_args is None:
+            E_init_args = {}
+        if nce_W_init_args is None:
+            nce_W_init_args = {}
+        if nce_b_init_args is None:
+            nce_b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = inputs
         logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -608,7 +618,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         # multiply by the embedding matrix.
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
@@ -682,9 +692,12 @@ class EmbeddingInputlayer(Layer):
             vocabulary_size=80000,
             embedding_size=200,
             E_init=tf.random_uniform_initializer(-0.1, 0.1),
-            E_init_args={},
+            E_init_args=None,
             name='embedding',
     ):
+        if E_init_args is None:
+            E_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = inputs
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
@@ -844,10 +857,15 @@ class DenseLayer(Layer):
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='dense',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:
@@ -861,7 +879,7 @@ class DenseLayer(Layer):
             if b_init is not None:
                 try:
                     b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args)
-                except:  # If initializer is a constant, do not specify shape.
+                except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=D_TYPE, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
@@ -965,10 +983,11 @@ class ReconLayer(DenseLayer):
         L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[0]) \
                 + tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[2])           # faster than the code below
         # L2_w = lambda_l2_w * tf.reduce_mean(tf.square(self.train_params[0])) + lambda_l2_w * tf.reduce_mean( tf.square(self.train_params[2]))
+
         # DropNeuro
-        P_o = cost.lo_regularizer(0.03)(
-            self.train_params[0])  # + cost.lo_regularizer(0.5)(self.train_params[2])    # <haodong>: if add lo on decoder, no neuron will be broken
-        P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
+        # P_o = cost.lo_regularizer(0.03)(
+        #     self.train_params[0])  # + cost.lo_regularizer(0.5)(self.train_params[2])    # <haodong>: if add lo on decoder, no neuron will be broken
+        # P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
 
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
@@ -981,7 +1000,7 @@ class ReconLayer(DenseLayer):
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
         try:  # TF1.0
             KLD = beta * tf.reduce_sum(rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat))))
-        except:  # TF0.12
+        except Exception:  # TF0.12
             KLD = beta * tf.reduce_sum(rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat))))
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
@@ -1065,7 +1084,7 @@ class ReconLayer(DenseLayer):
                         visualize.draw_weights(
                             self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
-                    except:
+                    except Exception:
                         raise Exception(
                             "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
 
@@ -1283,10 +1302,15 @@ class DropconnectDenseLayer(Layer):
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args={},
-            b_init_args={},
+            W_init_args=None,
+            b_init_args=None,
             name='dropconnect_layer',
     ):
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         if self.inputs.get_shape().ndims != 2:

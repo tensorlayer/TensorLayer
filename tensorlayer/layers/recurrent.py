@@ -129,7 +129,7 @@ class RNNLayer(Layer):
             self,
             layer,
             cell_fn,
-            cell_init_args={},
+            cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
@@ -138,14 +138,17 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn_layer',
     ):
+        if cell_init_args is None:
+            cell_init_args = {}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
-                pass
+            except Exception:
+                logging.warning('pop state_is_tuple fails.')
 
         self.inputs = layer.outputs
 
@@ -159,7 +162,7 @@ class RNNLayer(Layer):
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self.inputs.get_shape().with_rank(3)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
         # is_reshape : boolean (deprecate)
@@ -220,7 +223,7 @@ class RNNLayer(Layer):
                 # 2D Tensor [n_example, n_hidden]
                 try:  # TF1.0
                     self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
-                except:  # TF0.12
+                except Exception:  # TF0.12
                     self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
 
             else:
@@ -228,7 +231,7 @@ class RNNLayer(Layer):
                 # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
                 try:  # TF1.0
                     self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
-                except:  # TF0.12
+                except Exception:  # TF0.12
                     self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.final_state = state
@@ -334,8 +337,8 @@ class BiRNNLayer(Layer):
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
-                pass
+            except Exception:
+                logging.warning("pop state_is_tuple fails.")
 
         self.inputs = layer.outputs
 
@@ -357,7 +360,7 @@ class BiRNNLayer(Layer):
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self.inputs.get_shape().with_rank(3)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -373,7 +376,7 @@ class BiRNNLayer(Layer):
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
                 try:  # TF 1.0
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
-                except:
+                except Exception:
                     DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
                 cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)  # out_keep_prob)
             else:
@@ -385,13 +388,13 @@ class BiRNNLayer(Layer):
             if n_layer > 1:
                 try:  # TF1.0
                     MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
-                except:
+                except Exception:
                     MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
                 try:
                     self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
                     self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
-                except:
+                except Exception:
                     self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
                     self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
@@ -408,12 +411,12 @@ class BiRNNLayer(Layer):
             # Feedforward to MultiRNNCell
             try:  # TF1.0
                 list_rnn_inputs = tf.unstack(self.inputs, axis=1)
-            except:  # TF0.12
+            except Exception:  # TF0.12
                 list_rnn_inputs = tf.unpack(self.inputs, axis=1)
 
             try:  # TF1.0
                 bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
-            except:
+            except Exception:
                 bidirectional_rnn_fn = tf.nn.bidirectional_rnn
             outputs, fw_state, bw_state = bidirectional_rnn_fn(  # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
@@ -431,7 +434,7 @@ class BiRNNLayer(Layer):
                     # 2D Tensor [n_example, n_hidden]
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden * 2])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden * 2])
                 else:
                     # <akara>: stack more RNN layer after that
@@ -439,7 +442,7 @@ class BiRNNLayer(Layer):
 
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden * 2])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden * 2])
             self.fw_final_state = fw_state
             self.bw_final_state = bw_state
@@ -694,7 +697,7 @@ class ConvLSTMLayer(Layer):
         # Input dimension should be rank 5 [batch_size, n_steps(max), h, w, c]
         try:
             self.inputs.get_shape().with_rank(5)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 5 : [batch_size, n_steps, input_x, " "input_y, feature_map]")
 
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
@@ -910,7 +913,7 @@ class DynamicRNNLayer(Layer):
         A TensorFlow core RNN cell
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
             - Note TF1.0+ and TF1.0- are different
-    cell_init_args : dictionary
+    cell_init_args : dictionary or None
         The arguments for the cell function.
     n_hidden : int
         The number of hidden units in the layer.
@@ -929,7 +932,7 @@ class DynamicRNNLayer(Layer):
             - If one int, input and output keep probability are the same.
     n_layer : int
         The number of RNN layers, default is 1.
-    return_last : boolean
+    return_last : boolean or None
         Whether return last output or all outputs in each step.
             - If True, return the last output, "Sequence input and single output"
             - If False, return all outputs, "Synced sequence input and output"
@@ -1001,26 +1004,33 @@ class DynamicRNNLayer(Layer):
             self,
             layer,
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'state_is_tuple': True},
+            cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             sequence_length=None,
             initial_state=None,
             dropout=None,
             n_layer=1,
-            return_last=False,
+            return_last=None,
             return_seq_2d=False,
-            dynamic_rnn_init_args={},
+            dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
+        if dynamic_rnn_init_args is None:
+            dynamic_rnn_init_args = {}
+        if cell_init_args is None:
+            cell_init_args = {'state_is_tuple': True}
+        if return_last is None:
+            return_last = True
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
-                pass
+            except Exception:
+                logging.warning("pop state_is_tuple fails.")
         self.inputs = layer.outputs
 
         logging.info("DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
@@ -1029,7 +1039,7 @@ class DynamicRNNLayer(Layer):
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self.inputs.get_shape().with_rank(3)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
@@ -1058,7 +1068,7 @@ class DynamicRNNLayer(Layer):
                 raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
             try:  # TF1.0
                 DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
-            except:
+            except Exception:
                 DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
 
             # cell_instance_fn1=cell_instance_fn        # HanSheng
@@ -1074,14 +1084,14 @@ class DynamicRNNLayer(Layer):
         if n_layer > 1:
             try:
                 MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
-            except:
+            except Exception:
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
             try:
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
                 self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
-            except:  # when GRU
+            except Exception:  # when GRU
                 # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
                 self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
@@ -1097,7 +1107,7 @@ class DynamicRNNLayer(Layer):
         if sequence_length is None:
             try:  # TF1.0
                 sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
-            except:  # TF0.12
+            except Exception:  # TF0.12
                 sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
         # Main - Computes outputs and last_states
@@ -1127,7 +1137,7 @@ class DynamicRNNLayer(Layer):
                     # 2D Tensor [n_example, n_hidden]
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
                 else:
                     # <akara>:
@@ -1137,7 +1147,7 @@ class DynamicRNNLayer(Layer):
 
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, n_hidden])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, n_hidden])
                     # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, n_hidden])
 
@@ -1250,17 +1260,20 @@ class BiDynamicRNNLayer(Layer):
             n_layer=1,
             return_last=False,
             return_seq_2d=False,
-            dynamic_rnn_init_args={},
+            dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
+        if dynamic_rnn_init_args is None:
+            dynamic_rnn_init_args = {}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
-                pass
+            except Exception:
+                logging.warning("pop state_is_tuple fails.")
         self.inputs = layer.outputs
 
         logging.info("BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
@@ -1269,7 +1282,7 @@ class BiDynamicRNNLayer(Layer):
         # Input dimension should be rank 3 [batch_size, n_steps(max), n_features]
         try:
             self.inputs.get_shape().with_rank(3)
-        except:
+        except Exception:
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps(max), n_features]")
 
         # Get the batch_size
@@ -1299,7 +1312,7 @@ class BiDynamicRNNLayer(Layer):
                     raise Exception("Invalid dropout type (must be a 2-D tuple of " "float)")
                 try:
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
-                except:
+                except Exception:
                     DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
 
                     # cell_instance_fn1=cell_instance_fn            # HanSheng
@@ -1328,7 +1341,7 @@ class BiDynamicRNNLayer(Layer):
             if sequence_length is None:
                 try:  # TF1.0
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.stack(self.inputs))
-                except:  # TF0.12
+                except Exception:  # TF0.12
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             if n_layer > 1:
@@ -1364,7 +1377,7 @@ class BiDynamicRNNLayer(Layer):
             # Manage the outputs
             try:  # TF1.0
                 outputs = tf.concat(outputs, 2)
-            except:  # TF0.12
+            except Exception:  # TF0.12
                 outputs = tf.concat(2, outputs)
             if return_last:
                 # [batch_size, 2 * n_hidden]
@@ -1377,7 +1390,7 @@ class BiDynamicRNNLayer(Layer):
                     # 2D Tensor [n_example, 2 * n_hidden]
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, 2 * n_hidden])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, 2 * n_hidden])
                 else:
                     # <akara>:
@@ -1386,7 +1399,7 @@ class BiDynamicRNNLayer(Layer):
                     batch_size = tf.shape(outputs)[0]
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
-                    except:  # TF0.12
+                    except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, 2 * n_hidden])
                     # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, 2 * n_hidden])
 
@@ -1537,12 +1550,12 @@ class Seq2Seq(Layer):
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
-            except:
-                pass
+            except Exception:
+                logging.warning("pop state_is_tuple fails.")
         # self.inputs = layer.outputs
         logging.info("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
-        with tf.variable_scope(name) as vs:  #, reuse=reuse):
+        with tf.variable_scope(name):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
             network_encode = DynamicRNNLayer(

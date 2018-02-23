@@ -1229,7 +1229,7 @@ def adjust_hue(im, hout=0.66, is_offset=True, is_clip=True, is_random=False):
 #     pass
 
 
-def imresize(x, size=[100, 100], interp='bicubic', mode=None):
+def imresize(x, size=None, interp='bicubic', mode=None):
     """Resize an image by given output size and method.
 
     Warning, this function will rescale the value to [0, 255].
@@ -1238,7 +1238,7 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
     -----------
     x : numpy.array
         An image with dimension of [row, col, channel] (default).
-    size : list of 2 int
+    size : list of 2 int or None
         For height and width.
     interp : str
         Interpolation method for re-sizing (`nearest`, `lanczos`, `bilinear`, `bicubic` (default) or `cubic`).
@@ -1255,6 +1255,9 @@ def imresize(x, size=[100, 100], interp='bicubic', mode=None):
     - `scipy.misc.imresize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.misc.imresize.html>`__
 
     """
+    if size is None:
+        size = [100, 100]
+
     if x.shape[-1] == 1:
         # greyscale
         x = scipy.misc.imresize(x[:, :, 0], size, interp=interp, mode=mode)
@@ -1649,7 +1652,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     return x
 
 
-def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
+def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
     """Projective transform by given coordinates, usually 4 coordinates.
 
     see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__.
@@ -1662,7 +1665,7 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
         The original coordinates, usually 4 coordinates of (width, height).
     dst : list or numpy
         The coordinates after transformation, the number of coordinates is the same with src.
-    map_args : dictionary
+    map_args : dictionary or None
         Keyword arguments passed to inverse map.
     output_shape : tuple of 2 int
         Shape of the output image generated. By default the shape of the input image is preserved. Note that, even for multi-band images, only rows and columns need to be specified.
@@ -1703,6 +1706,8 @@ def projective_transform_by_points(x, src, dst, map_args={}, output_shape=None, 
     - `scikit-image : examples <http://scikit-image.org/docs/dev/auto_examples/index.html>`__
 
     """
+    if map_args is None:
+        map_args = {}
     if type(src) is list:  # convert to numpy
         src = np.array(src)
     if type(dst) is list:
@@ -1907,14 +1912,14 @@ def erosion(x, radius=3):
     return x
 
 
-def obj_box_coords_rescale(coords=[], shape=[100, 200]):
+def obj_box_coords_rescale(coords=None, shape=None):
     """Scale down a list of coordinates from pixel unit to the ratio of image size i.e. in the range of [0, 1].
 
     Parameters
     ------------
-    coords : list of list for 4 int
+    coords : list of list of 4 ints or None
         For coordinates of more than one images .e.g.[[x, y, w, h], [x, y, w, h], ...].
-    shape : list of 2 int
+    shape : list of 2 int or None
         【height, width].
 
     Returns
@@ -1941,6 +1946,11 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
         New coordinates.
 
     """
+    if coords is None:
+        coords = []
+    if shape is None:
+        shape = [100, 200]
+
     imh, imw = shape[0], shape[1]
     imh = imh * 1.0  # * 1.0 for python2 : force division to be float point
     imw = imw * 1.0
@@ -1955,15 +1965,15 @@ def obj_box_coords_rescale(coords=[], shape=[100, 200]):
     return coords_new
 
 
-def obj_box_coord_rescale(coord=[], shape=[100, 200]):
+def obj_box_coord_rescale(coord=None, shape=None):
     """Scale down one coordinates from pixel unit to the ratio of image size i.e. in the range of [0, 1].
     It is the reverse process of ``obj_box_coord_scale_to_pixelunit``.
 
     Parameters
     ------------
-    coords : list of 4 int
+    coords : list of 4 int or None
         One coordinates of one image e.g. [x, y, w, h].
-    shape : list of 2 int
+    shape : list of 2 int or None
         For [height, width].
 
     Returns
@@ -1977,10 +1987,15 @@ def obj_box_coord_rescale(coord=[], shape=[100, 200]):
     ... [0.3, 0.4, 0.5, 0.5]
 
     """
+    if coord is None:
+        coord = []
+    if shape is None:
+        shape = [100, 200]
+
     return obj_box_coords_rescale(coords=[coord], shape=shape)[0]
 
 
-def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
+def obj_box_coord_scale_to_pixelunit(coord, shape=None):
     """Convert one coordinate [x, y, w (or x2), h (or y2)] in ratio format to image coordinate format.
     It is the reverse process of ``obj_box_coord_rescale``.
 
@@ -1988,7 +2003,7 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
     -----------
     coord : list of 4 float
         One coordinate of one image [x, y, w (or x2), h (or y2)] in ratio format, i.e value range [0~1].
-    shape : tuple of 2
+    shape : tuple of 2 or None
         For [height, width].
 
     Returns
@@ -2002,6 +2017,9 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=(100, 100)):
     ... [40, 30, 100, 70]
 
     """
+    if shape is None:
+        shape = [100, 100]
+
     imh, imw = shape[0:2]
     x = int(coord[0] * imw)
     x2 = int(coord[2] * imw)
@@ -2147,7 +2165,7 @@ def parse_darknet_ann_str_to_list(annotations):
     for a in annotations:
         a = a.split()
         if len(a) == 5:
-            for i in range(len(a)):
+            for i, _v in enumerate(a):
                 if i == 0:
                     a[i] = int(a[i])
                 else:
@@ -2183,14 +2201,14 @@ def parse_darknet_ann_list_to_cls_box(annotations):
     return class_list, bbox_list
 
 
-def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is_random=False):
+def obj_box_left_right_flip(im, coords=None, is_rescale=False, is_center=False, is_random=False):
     """Left-right flip the image and coordinates for object detection.
 
     Parameters
     ----------
     im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    coords : list of list of 4 int/float
+    coords : list of list of 4 int/float or None
         Coordinates [[x, y, w, h], [x, y, w, h], ...].
     is_rescale : boolean
         Set to True, if the input coordinates are rescaled to [0, 1]. Default is False.
@@ -2223,6 +2241,9 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
     ... [[50, 40, 30, 30]]
 
     """
+
+    if coords is None:
+        coords = []
 
     def _flip(im, coords):
         im = flip_axis(im, axis=1, is_random=False)
@@ -2273,14 +2294,14 @@ def obj_box_left_right_flip(im, coords=[], is_rescale=False, is_center=False, is
 # exit()
 
 
-def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None, is_rescale=False):
+def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is_rescale=False):
     """Resize an image, and compute the new bounding box coordinates.
 
     Parameters
     -------------
     im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    coords : list of list of 4 int/float
+    coords : list of list of 4 int/float or None
         Coordinates [[x, y, w, h], [x, y, w, h], ...]
     size interp and mode : args
         See ``tl.prepro.imresize``.
@@ -2311,6 +2332,11 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
     ... [[0.2, 0.4, 0.3, 0.3]] (160, 200, 3)
 
     """
+    if coords is None:
+        coords = []
+    if size is None:
+        size = [100, 100]
+
     imh, imw = im.shape[0:2]
     imh = imh * 1.0  # * 1.0 for python2 : force division to be float point
     imw = imw * 1.0
@@ -2351,7 +2377,7 @@ def obj_box_imresize(im, coords=[], size=[100, 100], interp='bicubic', mode=None
 # exit()
 
 
-def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.):
+def obj_box_crop(im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.):
     """Randomly or centrally crop an image, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
@@ -2359,9 +2385,9 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
     -----------
     im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of int
+    classes : list of int or None
         Class IDs.
-    coords : list of list of 4 int/float
+    coords : list of list of 4 int/float or None
         Coordinates [[x, y, w, h], [x, y, w, h], ...]
     wrg hrg and is_random : args
         See ``tl.prepro.crop``.
@@ -2384,6 +2410,11 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
         A list of new bounding boxes.
 
     """
+    if classes is None:
+        classes = []
+    if coords is None:
+        coords = []
+
     h, w = im.shape[0], im.shape[1]
     assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
     if is_random:
@@ -2490,8 +2521,8 @@ def obj_box_crop(im, classes=[], coords=[], wrg=100, hrg=100, is_rescale=False, 
 
 
 def obj_box_shift(im,
-                  classes=[],
-                  coords=[],
+                  classes=None,
+                  coords=None,
                   wrg=0.1,
                   hrg=0.1,
                   row_index=0,
@@ -2512,9 +2543,9 @@ def obj_box_shift(im,
     -----------
     im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of int
+    classes : list of int or None
         Class IDs.
-    coords : list of list of 4 int/float
+    coords : list of list of 4 int/float or None
         Coordinates [[x, y, w, h], [x, y, w, h], ...]
     wrg, hrg row_index col_index channel_index is_random fill_mode cval and order : see ``tl.prepro.shift``.
     is_rescale : boolean
@@ -2537,6 +2568,11 @@ def obj_box_shift(im,
         A list of new bounding boxes.
 
     """
+    if classes is None:
+        classes = []
+    if coords is None:
+        coords = []
+
     imh, imw = im.shape[row_index], im.shape[col_index]
     assert (hrg < 1.0) and (hrg > 0.) and (wrg < 1.0) and (wrg > 0.), "shift range should be (0, 1)"
     if is_random:
@@ -2625,8 +2661,8 @@ def obj_box_shift(im,
 
 
 def obj_box_zoom(im,
-                 classes=[],
-                 coords=[],
+                 classes=None,
+                 coords=None,
                  zoom_range=(0.9, 1.1),
                  row_index=0,
                  col_index=1,
@@ -2646,9 +2682,9 @@ def obj_box_zoom(im,
     -----------
     im : numpy.array
         An image with dimension of [row, col, channel] (default).
-    classes : list of int
+    classes : list of int or None
         Class IDs.
-    coords : list of list of 4 int/float
+    coords : list of list of 4 int/float or None
         Coordinates [[x, y, w, h], [x, y, w, h], ...].
     zoom_range row_index col_index channel_index is_random fill_mode cval and order : see ``tl.prepro.zoom``.
     is_rescale : boolean
@@ -2670,6 +2706,11 @@ def obj_box_zoom(im,
         A list of new bounding boxes.
 
     """
+    if classes is None:
+        classes = []
+    if coords is None:
+        coords = []
+
     if len(zoom_range) != 2:
         raise Exception('zoom_range should be a tuple or list of two floats. ' 'Received arg: ', zoom_range)
     if is_random:
@@ -2697,7 +2738,7 @@ def obj_box_zoom(im,
         if is_center:
             coord = obj_box_coord_centroid_to_upleft(coord)
 
-        ##======= pixel unit format and upleft, w, h ==========##
+        # ======= pixel unit format and upleft, w, h ==========
         x = (coord[0] - im.shape[1] / 2) / zy + im.shape[1] / 2  # only change this
         y = (coord[1] - im.shape[0] / 2) / zx + im.shape[0] / 2  # only change this
         w = coord[2] / zy  # only change this
@@ -2735,7 +2776,7 @@ def obj_box_zoom(im,
 
         coord = [x, y, w, h]
 
-        ## convert back if input format is center.
+        # convert back if input format is center.
         if is_center:
             coord = obj_box_coord_upleft_to_centroid(coord)
 
@@ -2747,7 +2788,7 @@ def obj_box_zoom(im,
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
-            """ for scaled coord, upscaled before process and scale back in the end. """
+            # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
             coord = _get_coord(coord)
             if coord is not None:
@@ -2762,7 +2803,6 @@ def obj_box_zoom(im,
     return im_new, classes_new, coords_new
 
 
-## Sequence
 def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncating='pre', value=0.):
     """Pads each sequence to the same length:
     the length of the longest sequence.
@@ -3029,8 +3069,8 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
     #         sequences_out[i].append(pad_id)
     # # pad -- > end
     # max_len = 0
-    for i in range(len(sequences)):
-        for j in range(len(sequences[i])):
+    for i, v in enumerate(sequences):
+        for j, _v2 in enumerate(v):
             if sequences[i][j] == pad_id:
                 sequences_out[i][j] = end_id
                 # if j > max_len:

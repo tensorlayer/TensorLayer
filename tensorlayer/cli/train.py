@@ -7,17 +7,17 @@ tl train
 (Alpha release - usage might change later)
 
 The tensorlayer.cli.train module provides the ``tl train`` subcommand.
-It helps the user bootstrap a TensorFlow/TensorLayer program for distributed training 
+It helps the user bootstrap a TensorFlow/TensorLayer program for distributed training
 using multiple GPU cards or CPUs on a computer.
 
-You need to first setup the `CUDA_VISIBLE_DEVICES <http://acceleware.com/blog/cudavisibledevices-masking-gpus>`_ 
+You need to first setup the `CUDA_VISIBLE_DEVICES <http://acceleware.com/blog/cudavisibledevices-masking-gpus>`_
 to tell ``tl train`` which GPUs are available. If the CUDA_VISIBLE_DEVICES is not given,
-``tl train`` would try best to discover all available GPUs. 
+``tl train`` would try best to discover all available GPUs.
 
 In distribute training, each TensorFlow program needs a TF_CONFIG environment variable to describe
-the cluster. It also needs a master daemon to 
+the cluster. It also needs a master daemon to
 monitor all trainers. ``tl train`` is responsible
-for automatically managing these two tasks. 
+for automatically managing these two tasks.
 
 Usage
 -----
@@ -25,7 +25,7 @@ Usage
 tl train [-h] [-p NUM_PSS] [-c CPU_TRAINERS] <file> [args [args ...]]
 
 .. code-block:: bash
-  
+
   # example of using GPU 0 and 1 for training mnist
   CUDA_VISIBLE_DEVICES="0,1"
   tl train example/tutorial_mnist_distributed.py
@@ -56,13 +56,13 @@ Notes
 -----
 A parallel training program would require multiple parameter servers
 to help parallel trainers to exchange intermediate gradients.
-The best number of parameter servers is often proportional to the 
+The best number of parameter servers is often proportional to the
 size of your model as well as the number of CPUs available.
 You can control the number of parameter servers using the ``-p`` parameter.
 
 If you have a single computer with massive CPUs, you can use the ``-c`` parameter
 to enable CPU-only parallel training.
-The reason we are not supporting GPU-CPU co-training is because GPU and 
+The reason we are not supporting GPU-CPU co-training is because GPU and
 CPU are running at different speeds. Using them together in training would
 incur stragglers.
 
