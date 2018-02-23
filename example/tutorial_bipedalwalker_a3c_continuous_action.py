@@ -210,7 +210,7 @@ class Worker(object):
                         self.AC.v_target: buffer_v_target,
                     }
                     # update gradients on global network
-                    test = self.AC.update_global(feed_dict)
+                    self.AC.update_global(feed_dict)
                     buffer_s, buffer_a, buffer_r = [], [], []
 
                     # update local network from global network

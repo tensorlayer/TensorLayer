@@ -135,15 +135,11 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     def _transform(theta, input_dim, out_size):
         with tf.variable_scope('_transform'):
             num_batch = tf.shape(input_dim)[0]
-            height = tf.shape(input_dim)[1]
-            width = tf.shape(input_dim)[2]
             num_channels = tf.shape(input_dim)[3]
             theta = tf.reshape(theta, (-1, 2, 3))
             theta = tf.cast(theta, 'float32')
 
             # grid of (x_t, y_t, 1), eq (1) in ref [1]
-            height_f = tf.cast(height, 'float32')
-            width_f = tf.cast(width, 'float32')
             out_height = out_size[0]
             out_width = out_size[1]
             grid = _meshgrid(out_height, out_width)
@@ -260,7 +256,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             else:
                 from tensorflow.python.ops import array_ops
                 batch_size = array_ops.shape(self.inputs)[0]
-            size = self.inputs.get_shape().as_list()
+
             n_channels = self.inputs.get_shape().as_list()[-1]
             # logging.info(self.outputs)
             self.outputs = tf.reshape(self.outputs, shape=[batch_size, out_size[0], out_size[1], n_channels])

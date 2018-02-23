@@ -221,7 +221,7 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     else:
         try:  # TF1.0+
             t_vars = tf.global_variables()
-        except:  # TF0.12
+        except Exception:  # TF0.12
             t_vars = tf.all_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
@@ -418,13 +418,13 @@ class Layer(object):
     def count_params(self):
         """Return the number of parameters in the network"""
         n_params = 0
-        for i, p in enumerate(self.all_params):
+        for _i, p in enumerate(self.all_params):
             n = 1
             # for s in p.eval().shape:
             for s in p.get_shape():
                 try:
                     s = int(s)
-                except:
+                except Exception:
                     s = 1
                 if s:
                     n = n * s
@@ -610,6 +610,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         Layer.__init__(self, name=name)
         self.inputs = inputs
         logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
         # for the sake of speed, it is better to slice the embedding matrix
@@ -617,7 +618,7 @@ class Word2vecEmbeddingInputlayer(Layer):
         # multiply by the embedding matrix.
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
@@ -878,7 +879,7 @@ class DenseLayer(Layer):
             if b_init is not None:
                 try:
                     b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args)
-                except:  # If initializer is a constant, do not specify shape.
+                except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=D_TYPE, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
@@ -982,10 +983,11 @@ class ReconLayer(DenseLayer):
         L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[0]) \
                 + tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[2])           # faster than the code below
         # L2_w = lambda_l2_w * tf.reduce_mean(tf.square(self.train_params[0])) + lambda_l2_w * tf.reduce_mean( tf.square(self.train_params[2]))
+
         # DropNeuro
-        P_o = cost.lo_regularizer(0.03)(
-            self.train_params[0])  # + cost.lo_regularizer(0.5)(self.train_params[2])    # <haodong>: if add lo on decoder, no neuron will be broken
-        P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
+        # P_o = cost.lo_regularizer(0.03)(
+        #     self.train_params[0])  # + cost.lo_regularizer(0.5)(self.train_params[2])    # <haodong>: if add lo on decoder, no neuron will be broken
+        # P_i = cost.li_regularizer(0.03)(self.train_params[0])  # + cost.li_regularizer(0.001)(self.train_params[2])
 
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
@@ -1082,7 +1084,7 @@ class ReconLayer(DenseLayer):
                         visualize.draw_weights(
                             self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
-                    except:
+                    except Exception:
                         raise Exception(
                             "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
 

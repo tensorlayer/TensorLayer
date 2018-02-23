@@ -1171,8 +1171,8 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         save_list_var = sess.run(save_list)
     else:
         try:
-            for k, value in enumerate(save_list):
-                save_list_var.append(value.eval())
+            for _k, v in enumerate(save_list):
+                save_list_var.append(v.eval())
         except Exception:
             logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
@@ -1349,60 +1349,6 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 
     sess.run(ops)
     logging.info("[*] Model restored from npz_dict %s" % name)
-
-
-# def save_npz_dict(save_list=[], name='model.npz', sess=None):
-#     """Input parameters and the file name, save parameters as a dictionary into .npz file. Use tl.utils.load_npz_dict() to restore.
-#
-#     Parameters
-#     ----------
-#     save_list : a list
-#         Parameters want to be saved.
-#     name : a string or None
-#         The name of the .npz file.
-#     sess : None or Session
-#
-#     Notes
-#     -----
-#     This function tries to avoid a potential broadcasting error raised by numpy.
-#
-#     """
-#     ## save params into a list
-#     save_list_var = []
-#     if sess:
-#         save_list_var = sess.run(save_list)
-#     else:
-#         try:
-#             for k, value in enumerate(save_list):
-#                 save_list_var.append(value.eval())
-#         except:
-#             logging.info(" Fail to save model, Hint: pass the session into this function, save_npz_dict(network.all_params, name='model.npz', sess=sess)")
-#     save_var_dict = {str(idx):val for idx, val in enumerate(save_list_var)}
-#     np.savez(name, **save_var_dict)
-#     save_list_var = None
-#     save_var_dict = None
-#     del save_list_var
-#     del save_var_dict
-#     logging.info("[*] %s saved" % name)
-#
-# def load_npz_dict(path='', name='model.npz'):
-#     """Load the parameters of a Model saved by tl.files.save_npz_dict().
-#
-#     Parameters
-#     ----------
-#     path : a string
-#         Folder path to .npz file.
-#     name : a string or None
-#         The name of the .npz file.
-#
-#     Returns
-#     --------
-#     params : list
-#         A list of parameters in order.
-#     """
-#     d = np.load( path+name )
-#     saved_list_var = [val[1] for val in sorted(d.items(), key=lambda tup: int(tup[0]))]
-#     return saved_list_var
 
 
 def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
