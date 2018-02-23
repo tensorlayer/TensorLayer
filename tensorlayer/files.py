@@ -594,7 +594,7 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     else:
         logging.info("[Flickr25k] reading images with tag: {}".format(tag))
     images_list = []
-    for idx in range(0, len(path_tags)):
+    for idx, _v in enumerate(path_tags):
         tags = read_file(folder_tags + '/' + path_tags[idx]).split('\n')
         # logging.info(idx+1, tags)
         if tag is None or tag in tags:

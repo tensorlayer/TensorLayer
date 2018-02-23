@@ -528,7 +528,7 @@ def exit_tensorflow(sess=None, port=6006):
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
-    if sess != None:
+    if sess is not None:
         sess.close()
     # import time
     # time.sleep(2)
@@ -542,8 +542,7 @@ def exit_tensorflow(sess=None, port=6006):
         logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
     elif _platform == "win32":
-        logging.info(text2 + "Windows")
-        # TODO
+        raise NotImplementedError()
     else:
         logging.info(text2 + _platform)
 
@@ -566,16 +565,14 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
         logging.info("[TL] Log reportory was created at %s" % log_dir)
 
     if _platform == "linux" or _platform == "linux2":
-        logging.info('linux %s' % text2)
-        # TODO
+        raise NotImplementedError()
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
         subprocess.Popen(
             sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port),
             shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
-        logging.info('Windows%s' % text2)
-        # TODO
+        raise NotImplementedError()
     else:
         logging.info(_platform + text2)
 

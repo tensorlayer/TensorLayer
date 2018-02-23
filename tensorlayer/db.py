@@ -309,9 +309,12 @@ class TensorDB(object):
         self.db.TestLog.delete_many(args)
         print("[TensorDB] Delete TestLog SUCCESS")
 
-    ## =========================== Network Architecture ================== ##
+    # =========================== Network Architecture ================== ##
     @AutoFill
-    def save_model_architecture(self, s, args={}):
+    def save_model_architecture(self, s, args=None):
+        if args is None:
+            args = {}
+
         self.__autofill(args)
         fid = self.archfs.put(s, filename="modelarchitecture")
         args.update({"fid": fid})
