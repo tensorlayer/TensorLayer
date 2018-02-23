@@ -13,7 +13,7 @@ class LambdaLayer(Layer):
         Previous layer.
     fn : function
         The function that applies to the outputs of previous layer.
-    fn_args : dictionary
+    fn_args : dictionary or None
         The arguments for the function (option).
     name : str
         A unique layer name.
@@ -47,9 +47,11 @@ class LambdaLayer(Layer):
             self,
             layer,
             fn,
-            fn_args={},
+            fn_args=None,
             name='lambda_layer',
     ):
+        if fn_args is None:
+            fn_args = {}
         Layer.__init__(self, name=name)
         assert layer is not None
         assert fn is not None

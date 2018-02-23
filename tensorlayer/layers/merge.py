@@ -68,7 +68,6 @@ class ConcatLayer(Layer):
 
         self.all_layers = list_remove_repeat(self.all_layers)
         self.all_params = list_remove_repeat(self.all_params)
-        #self.all_drop = list_remove_repeat(self.all_drop) # it is a dict
 
 
 class ElementwiseLayer(Layer):
@@ -112,8 +111,8 @@ class ElementwiseLayer(Layer):
         self.outputs = layers[0].outputs
         # logging.info(self.outputs._shape, type(self.outputs._shape))
         for l in layers[1:]:
-            assert str(self.outputs.get_shape()) == str(
-                l.outputs.get_shape()), "Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape()))
+            if str(self.outputs.get_shape()) != str(l.outputs.get_shape()):
+                raise Exception("Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape())))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
         self.all_layers = list(layers[0].all_layers)

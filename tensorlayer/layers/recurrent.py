@@ -256,7 +256,7 @@ class BiRNNLayer(Layer):
         A TensorFlow core RNN cell.
             - See `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__.
             - Note TF1.0+ and TF1.0- are different.
-    cell_init_args : dictionary
+    cell_init_args : dictionary or None
         The arguments for the cell function.
     n_hidden : int
         The number of hidden units in the layer.
@@ -316,10 +316,7 @@ class BiRNNLayer(Layer):
             self,
             layer,
             cell_fn,
-            cell_init_args={
-                'use_peepholes': True,
-                'state_is_tuple': True
-            },
+            cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
@@ -331,6 +328,9 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn_layer',
     ):
+        if cell_init_args is None:
+            cell_init_args = {'use_peepholes': True, 'state_is_tuple': True}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
@@ -427,7 +427,7 @@ class BiRNNLayer(Layer):
 
             if return_last:
                 raise Exception("Do not support return_last at the moment.")
-                self.outputs = outputs[-1]
+                # self.outputs = outputs[-1]
             else:
                 self.outputs = outputs
                 if return_seq_2d:
@@ -752,13 +752,13 @@ class ConvLSTMLayer(Layer):
 
 
 # Advanced Ops for Dynamic RNN
-def advanced_indexing_op(input, index):
+def advanced_indexing_op(inputs, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
     When return the last output :class:`DynamicRNNLayer` uses it to get the last outputs with the sequence lengths.
 
     Parameters
     -----------
-    input : tensor for data
+    inputs : tensor for data
         With shape of [batch_size, n_step(max), n_features]
     index : tensor for indexing
         Sequence length in Dynamic RNN. [batch_size]
@@ -790,12 +790,12 @@ def advanced_indexing_op(input, index):
     - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__.
 
     """
-    batch_size = tf.shape(input)[0]
-    # max_length = int(input.get_shape()[1])    # for fixed length rnn, length is given
-    max_length = tf.shape(input)[1]  # for dynamic_rnn, length is unknown
-    dim_size = int(input.get_shape()[2])
+    batch_size = tf.shape(inputs)[0]
+    # max_length = int(inputs.get_shape()[1])    # for fixed length rnn, length is given
+    max_length = tf.shape(inputs)[1]  # for dynamic_rnn, length is unknown
+    dim_size = int(inputs.get_shape()[2])
     index = tf.range(0, batch_size) * max_length + (index - 1)
-    flat = tf.reshape(input, [-1, dim_size])
+    flat = tf.reshape(inputs, [-1, dim_size])
     relevant = tf.gather(flat, index)
     return relevant
 
@@ -1076,7 +1076,7 @@ class DynamicRNNLayer(Layer):
             #                     cell_instance_fn1(),
             #                     input_keep_prob=in_keep_prob,
             #                     output_keep_prob=out_keep_prob)
-            cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)  #out_keep_prob)
+            cell_creator = lambda: DropoutWrapper_fn(rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=1.0)
         else:
             cell_creator = rnn_creator
         self.cell = cell_creator()
@@ -1323,9 +1323,9 @@ class BiDynamicRNNLayer(Layer):
                 cell_creator = lambda is_last=True: \
                     DropoutWrapper_fn(rnn_creator(),
                                       input_keep_prob=in_keep_prob,
-                                      output_keep_prob=out_keep_prob if is_last else 1.0)  # out_keep_prob)
+                                      output_keep_prob=out_keep_prob if is_last else 1.0)
             else:
-                cell_creator = lambda: rnn_creator()
+                cell_creator = rnn_creator
 
             # if dropout:
             #     self.fw_cell = DropoutWrapper_fn(self.fw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)
@@ -1374,15 +1374,17 @@ class BiDynamicRNNLayer(Layer):
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             logging.info("     n_params : %d" % (len(rnn_variables)))
+
             # Manage the outputs
             try:  # TF1.0
                 outputs = tf.concat(outputs, 2)
             except Exception:  # TF0.12
                 outputs = tf.concat(2, outputs)
+
             if return_last:
                 # [batch_size, 2 * n_hidden]
-                raise Exception("Do not support return_last at the moment")
-                self.outputs = advanced_indexing_op(outputs, sequence_length)
+                raise NotImplementedError("Return last is not implemented yet.")
+                # self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
                 if return_seq_2d:
@@ -1401,7 +1403,6 @@ class BiDynamicRNNLayer(Layer):
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
                     except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, 2 * n_hidden])
-                    # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, 2 * n_hidden])
 
         # Final state
         self.fw_final_states = states_fw
@@ -1417,7 +1418,6 @@ class BiDynamicRNNLayer(Layer):
         self.all_params.extend(rnn_variables)
 
 
-# Seq2seq
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a simple :class:`DynamicRNNLayer` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`__.

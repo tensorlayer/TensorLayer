@@ -68,7 +68,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
 
     """
     inputs = layer.outputs
-    with tf.variable_scope(name) as vs:
+    with tf.variable_scope(name):
         outputs = tf.unstack(inputs, num=num, axis=axis)
 
     logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (name, num, axis, len(outputs)))

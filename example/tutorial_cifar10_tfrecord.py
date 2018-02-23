@@ -42,7 +42,7 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 import io
 import os
 import time
-import numpy as np
+# import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from PIL import Image
