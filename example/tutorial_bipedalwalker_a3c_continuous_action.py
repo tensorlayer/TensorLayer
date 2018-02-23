@@ -32,8 +32,6 @@ measurements. There's no coordinates in the state vector.
 """
 
 import multiprocessing
-import os
-import shutil
 import threading
 
 import gym
@@ -257,8 +255,7 @@ if __name__ == "__main__":
     # start TF threading
     worker_threads = []
     for worker in workers:
-        job = lambda: worker.work()
-        t = threading.Thread(target=job)
+        t = threading.Thread(target=worker.work)
         t.start()
         worker_threads.append(t)
     COORD.join(worker_threads)

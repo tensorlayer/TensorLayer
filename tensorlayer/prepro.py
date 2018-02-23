@@ -794,7 +794,7 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
         is_3d = True
     elif len(x.shape) == 3 and x.shape[-1] != 1:
         raise Exception("Only support greyscale image")
-    assert len(x.shape) == 2
+    assert len(x.shape) == 2, "input should be grey-scale image"
 
     shape = x.shape
 
@@ -843,7 +843,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
             is_3d = True
         elif len(data.shape) == 3 and data.shape[-1] != 1:
             raise Exception("Only support greyscale image")
-        assert len(data.shape) == 2
+        assert len(data.shape) == 2, "input should be grey-scale image"
 
         dx = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
         dy = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
@@ -1270,7 +1270,7 @@ def imresize(x, size=None, interp='bicubic', mode=None):
 
 
 # value scale
-def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
+def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
     """Scales each value in the pixels of the image.
 
     Parameters
@@ -1281,6 +1281,10 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
         The scale value for changing pixel value.
             - If is_random=False, multiply this value with all pixels.
             - If is_random=True, multiply a value between [1-val, 1+val] with all pixels.
+    clip : tuple of 2 numbers
+        The minimum and maximum value.
+    is_random : boolean
+        If True, see ``val``.
 
     Returns
     -------
@@ -1306,6 +1310,8 @@ def pixel_value_scale(im, val=0.9, clip=[], is_random=False):
 
     if len(clip) == 2:
         im = np.clip(im, clip[0], clip[1])
+    else:
+        raise Exception("clip : tuple of 2 numbers")
 
     return im
 
@@ -1708,9 +1714,11 @@ def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None
     """
     if map_args is None:
         map_args = {}
-    if type(src) is list:  # convert to numpy
+    # if type(src) is list:
+    if isinstance(src, list):  # convert to numpy
         src = np.array(src)
-    if type(dst) is list:
+    # if type(dst) is list:
+    if isinstance(dst, list):
         dst = np.array(dst)
     if np.max(x) > 1:  # convert to [0, 1]
         x = x / 255
@@ -1792,13 +1800,13 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
     return skimage.measure.find_contours(x, level, fully_connected=fully_connected, positive_orientation=positive_orientation)
 
 
-def pt2map(list_points=[], size=(100, 100), val=1):
+def pt2map(list_points=None, size=(100, 100), val=1):
     """Inputs a list of points, return a 2D image.
 
     Parameters
     --------------
     list_points : list of 2 int
-        [x, y] for point coordinates.
+        [[x, y], [x, y]..] for point coordinates.
     size : tuple of 2 int
         (w, h) for output size.
     val : float or int
@@ -1810,6 +1818,8 @@ def pt2map(list_points=[], size=(100, 100), val=1):
         An image.
 
     """
+    if list_points is None:
+        raise Exception("list_points : list of 2 int")
     i_m = np.zeros(size)
     if len(list_points) == 0:
         return i_m
@@ -2195,9 +2205,9 @@ def parse_darknet_ann_list_to_cls_box(annotations):
     """
     class_list = []
     bbox_list = []
-    for i in range(len(annotations)):
-        class_list.append(annotations[i][0])
-        bbox_list.append(annotations[i][1:])
+    for ann in annotations:
+        class_list.append(ann[0])
+        bbox_list.append(ann[1:])
     return class_list, bbox_list
 
 

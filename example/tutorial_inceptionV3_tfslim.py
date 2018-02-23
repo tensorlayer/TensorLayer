@@ -46,7 +46,8 @@ def load_image(path):
     # load image
     img = skimage.io.imread(path)
     img = img / 255.0
-    assert (0 <= img).all() and (img <= 1.0).all()
+    if ((0 <= img).all() and (img <= 1.0).all()) is False:
+        raise Exception("image value should be [0, 1]")
     # print "Original Image Shape: ", img.shape
     # we crop image from center
     short_edge = min(img.shape[:2])
