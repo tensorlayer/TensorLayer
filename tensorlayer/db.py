@@ -85,13 +85,16 @@ class TensorDB(object):
         self.db_name = db_name
         self.user_name = user_name
 
+    @classmethod
     def __autofill(self, args):
         return args.update({'studyID': self.studyID})
 
-    def __serialization(self, ps):
+    @staticmethod
+    def __serialization(ps):
         return pickle.dumps(ps, protocol=2)
 
-    def __deserialization(self, ps):
+    @staticmethod
+    def __deserialization(ps):
         return pickle.loads(ps)
 
     def save_params(self, params=None, args=None):  #, file_name='parameters'):

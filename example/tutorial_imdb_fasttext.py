@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-__doc__ = """
+"""
+This demo implements FastText[1] for sentence classification.
 
-This demo implements FastText[1] for sentence classification. FastText is a
-simple model for text classification with performance often close to
-state-of-the-art, and is useful as a solid baseline.
+FastText is a simple model for text classification with performance often close
+to state-of-the-art, and is useful as a solid baseline.
 
 There are some important differences between this implementation and what
 is described in the paper. Instead of Hogwild! SGD[2], we use Adam optimizer

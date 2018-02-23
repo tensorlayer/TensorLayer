@@ -115,7 +115,7 @@ class ElementwiseLayer(Layer):
             # assert str(self.outputs.get_shape()) == str(
             #     l.outputs.get_shape()), "Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape()))
             if str(self.outputs.get_shape()) != str(l.outputs.get_shape()):
-                raise Exception("Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape()))
+                raise Exception("Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape())))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
         self.all_layers = list(layers[0].all_layers)

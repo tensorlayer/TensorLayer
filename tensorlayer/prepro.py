@@ -1714,9 +1714,11 @@ def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None
     """
     if map_args is None:
         map_args = {}
-    if type(src) is list:  # convert to numpy
+    # if type(src) is list:
+    if isinstance(src, list): # convert to numpy
         src = np.array(src)
-    if type(dst) is list:
+    # if type(dst) is list:
+    if isinstance(dst, list):
         dst = np.array(dst)
     if np.max(x) > 1:  # convert to [0, 1]
         x = x / 255
@@ -2203,9 +2205,12 @@ def parse_darknet_ann_list_to_cls_box(annotations):
     """
     class_list = []
     bbox_list = []
-    for i in range(len(annotations)):
-        class_list.append(annotations[i][0])
-        bbox_list.append(annotations[i][1:])
+    # for i in range(len(annotations)):
+    #     class_list.append(annotations[i][0])
+    #     bbox_list.append(annotations[i][1:])
+    for ann in annotations:
+        class_list.append(ann[0])
+        bbox_list.append(ann[1:])
     return class_list, bbox_list
 
 

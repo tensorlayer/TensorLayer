@@ -754,13 +754,13 @@ class ConvLSTMLayer(Layer):
 
 
 # Advanced Ops for Dynamic RNN
-def advanced_indexing_op(input, index):
+def advanced_indexing_op(inputs, index):
     """Advanced Indexing for Sequences, returns the outputs by given sequence lengths.
     When return the last output :class:`DynamicRNNLayer` uses it to get the last outputs with the sequence lengths.
 
     Parameters
     -----------
-    input : tensor for data
+    inputs : tensor for data
         With shape of [batch_size, n_step(max), n_features]
     index : tensor for indexing
         Sequence length in Dynamic RNN. [batch_size]
@@ -792,12 +792,12 @@ def advanced_indexing_op(input, index):
     - Modified from TFlearn (the original code is used for fixed length rnn), `references <https://github.com/tflearn/tflearn/blob/master/tflearn/layers/recurrent.py>`__.
 
     """
-    batch_size = tf.shape(input)[0]
-    # max_length = int(input.get_shape()[1])    # for fixed length rnn, length is given
-    max_length = tf.shape(input)[1]  # for dynamic_rnn, length is unknown
-    dim_size = int(input.get_shape()[2])
+    batch_size = tf.shape(inputs)[0]
+    # max_length = int(inputs.get_shape()[1])    # for fixed length rnn, length is given
+    max_length = tf.shape(inputs)[1]  # for dynamic_rnn, length is unknown
+    dim_size = int(inputs.get_shape()[2])
     index = tf.range(0, batch_size) * max_length + (index - 1)
-    flat = tf.reshape(input, [-1, dim_size])
+    flat = tf.reshape(inputs, [-1, dim_size])
     relevant = tf.gather(flat, index)
     return relevant
 
@@ -1327,7 +1327,8 @@ class BiDynamicRNNLayer(Layer):
                                       input_keep_prob=in_keep_prob,
                                       output_keep_prob=out_keep_prob if is_last else 1.0)  # out_keep_prob)
             else:
-                cell_creator = lambda: rnn_creator()
+                # cell_creator = lambda: rnn_creator()
+                cell_creator = rnn_creator
 
             # if dropout:
             #     self.fw_cell = DropoutWrapper_fn(self.fw_cell, input_keep_prob=1.0, output_keep_prob=out_keep_prob)

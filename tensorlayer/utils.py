@@ -491,12 +491,23 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
 
 
 ## Random
-def get_random_int(min=0, max=10, number=5, seed=None):
+def get_random_int(min_v=0, max_v=10, number=5, seed=None):
     """Return a list of random integer by the given range and quantity.
+
+    Parameters
+    -----------
+    min_v : number
+        The minimum value.
+    max_v : number
+        The maximum value.
+    number : int
+        Number of value.
+    seed : int or None
+        The seed for random.
 
     Examples
     ---------
-    >>> r = get_random_int(min=0, max=10, number=5)
+    >>> r = get_random_int(min_v=0, max_v=10, number=5)
     ... [10, 2, 3, 3, 7]
 
     """
@@ -504,7 +515,7 @@ def get_random_int(min=0, max=10, number=5, seed=None):
     if seed:
         rnd = random.Random(seed)
     # return [random.randint(min,max) for p in range(0, number)]
-    return [rnd.randint(min, max) for p in range(0, number)]
+    return [rnd.randint(min_v, max_v) for p in range(0, number)]
 
 
 def list_string_to_dict(string):
