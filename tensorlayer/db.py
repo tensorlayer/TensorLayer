@@ -85,13 +85,16 @@ class TensorDB(object):
         self.db_name = db_name
         self.user_name = user_name
 
+    @classmethod
     def __autofill(self, args):
         return args.update({'studyID': self.studyID})
 
-    def __serialization(self, ps):
+    @staticmethod
+    def __serialization(ps):
         return pickle.dumps(ps, protocol=2)
 
-    def __deserialization(self, ps):
+    @staticmethod
+    def __deserialization(ps):
         return pickle.loads(ps)
 
     def save_params(self, params=None, args=None):  #, file_name='parameters'):
@@ -298,20 +301,25 @@ class TensorDB(object):
         return _result
 
     @AutoFill
-    def del_test_log(self, args={}):
+    def del_test_log(self, args=None):
         """ Delete test log.
 
         Parameters
         -----------
         args : dictionary, find items to delete, leave it empty to delete all log.
         """
+        if args is None:
+            args = {}
 
         self.db.TestLog.delete_many(args)
         print("[TensorDB] Delete TestLog SUCCESS")
 
-    ## =========================== Network Architecture ================== ##
+    # =========================== Network Architecture ================== ##
     @AutoFill
-    def save_model_architecture(self, s, args={}):
+    def save_model_architecture(self, s, args=None):
+        if args is None:
+            args = {}
+
         self.__autofill(args)
         fid = self.archfs.put(s, filename="modelarchitecture")
         args.update({"fid": fid})

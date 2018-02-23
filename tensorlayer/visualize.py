@@ -289,7 +289,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
         for _ic in range(1, col + 1):
             if count > n_mask:
                 break
-            a = fig.add_subplot(col, row, count)
+            fig.add_subplot(col, row, count)
             # logging.info(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # exit()
             # plt.imshow(
@@ -349,8 +349,8 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
     plt.ion()  # active mode
     fig = plt.figure(fig_idx)
     count = 1
-    for ir in range(1, row + 1):
-        for ic in range(1, col + 1):
+    for _ir in range(1, row + 1):
+        for _ic in range(1, col + 1):
             if count > n_mask:
                 break
             fig.add_subplot(col, row, count)
@@ -424,7 +424,6 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
 
     try:
         from sklearn.manifold import TSNE
-        import matplotlib.pyplot as plt
         from six.moves import xrange
 
         tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=5000)
