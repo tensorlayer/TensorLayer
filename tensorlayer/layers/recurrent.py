@@ -338,7 +338,7 @@ class BiRNNLayer(Layer):
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
-                pass
+                logging.warning("pop state_is_tuple fails.")
 
         self.inputs = layer.outputs
 
@@ -1030,7 +1030,7 @@ class DynamicRNNLayer(Layer):
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
-                pass
+                logging.warning("pop state_is_tuple fails.")
         self.inputs = layer.outputs
 
         logging.info("DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
@@ -1273,7 +1273,7 @@ class BiDynamicRNNLayer(Layer):
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
-                pass
+                logging.warning("pop state_is_tuple fails.")
         self.inputs = layer.outputs
 
         logging.info("BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
@@ -1551,7 +1551,7 @@ class Seq2Seq(Layer):
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
-                pass
+                logging.warning("pop state_is_tuple fails.")
         # self.inputs = layer.outputs
         logging.info("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
