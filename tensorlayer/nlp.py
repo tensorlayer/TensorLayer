@@ -67,8 +67,13 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     # global data_index   # you can put data_index outside the function, then
     #       modify the global data_index in the function without return it.
     # note: without using yield, this code use data_index to instead.
-    assert batch_size % num_skips == 0
-    assert num_skips <= 2 * skip_window
+
+    # assert batch_size % num_skips == 0
+    if batch_size % num_skips != 0:
+        raise Exception("batch_size should be able to be divided by num_skips.")
+    # assert num_skips <= 2 * skip_window
+    if num_skips > 2 * skip_window:
+        raise Exception("num_skips <= 2 * skip_window")
     batch = np.ndarray(shape=(batch_size), dtype=np.int32)
     labels = np.ndarray(shape=(batch_size, 1), dtype=np.int32)
     span = 2 * skip_window + 1  # [ skip_window target skip_window ]
@@ -665,8 +670,10 @@ def build_words_dataset(words=[], vocabulary_size=50000, printable=True, unk_key
     if printable:
         logging.info('Real vocabulary size    %d' % len(collections.Counter(words).keys()))
         logging.info('Limited vocabulary size {}'.format(vocabulary_size))
-    assert len(collections.Counter(words).keys()) >= vocabulary_size, \
-        "the limited vocabulary_size must be less than or equal to the read vocabulary_size"
+    # assert len(collections.Counter(words).keys()) >= vocabulary_size, \
+    #     "the limited vocabulary_size must be less than or equal to the read vocabulary_size"
+    if len(collections.Counter(words).keys()) < vocabulary_size:
+        raise Exception("len(collections.Counter(words).keys()) >= vocabulary_size , the limited vocabulary_size must be less than or equal to the read vocabulary_size")
     return data, count, dictionary, reverse_dictionary
 
 

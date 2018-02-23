@@ -1,4 +1,4 @@
-import os
+
 
 from pydocstyle.checker import check
 from pydocstyle.checker import violations

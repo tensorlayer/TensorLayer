@@ -794,7 +794,7 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
         is_3d = True
     elif len(x.shape) == 3 and x.shape[-1] != 1:
         raise Exception("Only support greyscale image")
-    assert len(x.shape) == 2
+    assert len(x.shape) == 2, "input should be grey-scale image"
 
     shape = x.shape
 
@@ -843,7 +843,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
             is_3d = True
         elif len(data.shape) == 3 and data.shape[-1] != 1:
             raise Exception("Only support greyscale image")
-        assert len(data.shape) == 2
+        assert len(data.shape) == 2, "input should be grey-scale image"
 
         dx = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
         dy = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
