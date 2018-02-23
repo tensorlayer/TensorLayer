@@ -1715,7 +1715,7 @@ def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None
     if map_args is None:
         map_args = {}
     # if type(src) is list:
-    if isinstance(src, list): # convert to numpy
+    if isinstance(src, list):  # convert to numpy
         src = np.array(src)
     # if type(dst) is list:
     if isinstance(dst, list):

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """
 This demo implements FastText[1] for sentence classification.
 

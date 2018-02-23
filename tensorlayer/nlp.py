@@ -677,7 +677,8 @@ def build_words_dataset(words=None, vocabulary_size=50000, printable=True, unk_k
     # assert len(collections.Counter(words).keys()) >= vocabulary_size, \
     #     "the limited vocabulary_size must be less than or equal to the read vocabulary_size"
     if len(collections.Counter(words).keys()) < vocabulary_size:
-        raise Exception("len(collections.Counter(words).keys()) >= vocabulary_size , the limited vocabulary_size must be less than or equal to the read vocabulary_size")
+        raise Exception(
+            "len(collections.Counter(words).keys()) >= vocabulary_size , the limited vocabulary_size must be less than or equal to the read vocabulary_size")
     return data, count, dictionary, reverse_dictionary
 
 
@@ -847,13 +848,7 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
     return [w for w in words if w]
 
 
-def create_vocabulary(vocabulary_path,
-                      data_path,
-                      max_vocabulary_size,
-                      tokenizer=None,
-                      normalize_digits=True,
-                      _DIGIT_RE=re.compile(br"\d"),
-                      _START_VOCAB=None):
+def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, tokenizer=None, normalize_digits=True, _DIGIT_RE=re.compile(br"\d"), _START_VOCAB=None):
     """Create vocabulary file (if it does not exist yet) from data file.
 
     Data file is assumed to contain one sentence per line. Each sentence is

@@ -329,9 +329,7 @@ class BiRNNLayer(Layer):
             name='birnn_layer',
     ):
         if cell_init_args is None:
-            cell_init_args = {
-                'use_peepholes': True,
-                'state_is_tuple': True}
+            cell_init_args = {'use_peepholes': True, 'state_is_tuple': True}
 
         Layer.__init__(self, name=name)
         if cell_fn is None:

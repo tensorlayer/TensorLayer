@@ -166,7 +166,7 @@ def conv_layers(net_in):
 
 
 def conv_layers_simple_api(net_in):
-    with tf.name_scope('preprocess'):# as scope:
+    with tf.name_scope('preprocess'):  # as scope:
         """
         Notice that we include a preprocessing layer that takes the RGB image
         with pixels values in the range of 0-255 and subtracts the mean image
