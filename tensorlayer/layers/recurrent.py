@@ -1374,14 +1374,16 @@ class BiDynamicRNNLayer(Layer):
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
             logging.info("     n_params : %d" % (len(rnn_variables)))
+
             # Manage the outputs
             try:  # TF1.0
                 outputs = tf.concat(outputs, 2)
             except Exception:  # TF0.12
                 outputs = tf.concat(2, outputs)
+
             if return_last:
                 # [batch_size, 2 * n_hidden]
-                raise Exception("Do not support return_last at the moment")
+                raise NotImplementedError("Return last is not implemented yet.")
                 # self.outputs = advanced_indexing_op(outputs, sequence_length)
             else:
                 # [batch_size, n_step(max), 2 * n_hidden]
@@ -1401,7 +1403,6 @@ class BiDynamicRNNLayer(Layer):
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
                     except Exception:  # TF0.12
                         self.outputs = tf.reshape(tf.concat(1, outputs), [batch_size, max_length, 2 * n_hidden])
-                    # self.outputs = tf.reshape(tf.concat(1, outputs), [-1, max_length, 2 * n_hidden])
 
         # Final state
         self.fw_final_states = states_fw
@@ -1417,7 +1418,6 @@ class BiDynamicRNNLayer(Layer):
         self.all_params.extend(rnn_variables)
 
 
-# Seq2seq
 class Seq2Seq(Layer):
     """
     The :class:`Seq2Seq` class is a simple :class:`DynamicRNNLayer` based Seq2seq layer without using `tl.contrib.seq2seq <https://www.tensorflow.org/api_guides/python/contrib.seq2seq>`__.
