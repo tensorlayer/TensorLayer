@@ -49,11 +49,9 @@ except Exception as e:
 
 def conv_layers(net_in):
     with tf.name_scope('preprocess'):
-        """
-        Notice that we include a preprocessing layer that takes the RGB image
-        with pixels values in the range of 0-255 and subtracts the mean image
-        values (calculated over the entire ImageNet training set).
-        """
+        # Notice that we include a preprocessing layer that takes the RGB image
+        # with pixels values in the range of 0-255 and subtracts the mean image
+        # values (calculated over the entire ImageNet training set).
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         net_in.outputs = net_in.outputs - mean
 
