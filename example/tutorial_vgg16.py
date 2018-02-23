@@ -48,7 +48,7 @@ except Exception as e:
 
 
 def conv_layers(net_in):
-    with tf.name_scope('preprocess') as scope:
+    with tf.name_scope('preprocess'):
         """
         Notice that we include a preprocessing layer that takes the RGB image
         with pixels values in the range of 0-255 and subtracts the mean image

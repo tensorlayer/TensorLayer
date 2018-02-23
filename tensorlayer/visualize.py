@@ -76,7 +76,7 @@ def save_image(image, image_path=''):
     """
     try:  # RGB
         scipy.misc.imsave(image_path, image)
-    except:  # Greyscale
+    except Exception:  # Greyscale
         scipy.misc.imsave(image_path, image[:, :, 0])
 
 
@@ -235,7 +235,7 @@ def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=1283
     import matplotlib.pyplot as plt
     if saveable is False:
         plt.ion()
-    fig = plt.figure(fig_idx)  # show all feature images
+    plt.figure(fig_idx)  # show all feature images
 
     if len(I.shape) and I.shape[-1] == 1:  # (10,10,1) --> (10,10)
         I = I[:, :, 0]
@@ -285,8 +285,8 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
     plt.ion()  # active mode
     fig = plt.figure(fig_idx)
     count = 1
-    for ir in range(1, row + 1):
-        for ic in range(1, col + 1):
+    for _ir in range(1, row + 1):
+        for _ic in range(1, col + 1):
             if count > n_mask:
                 break
             a = fig.add_subplot(col, row, count)
@@ -353,7 +353,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
         for ic in range(1, col + 1):
             if count > n_mask:
                 break
-            a = fig.add_subplot(col, row, count)
+            fig.add_subplot(col, row, count)
             # logging.info(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # plt.imshow(
             #         np.reshape(images[count-1,:,:,:], (n_row, n_col)),
@@ -467,17 +467,16 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
     if saveable is False:
         plt.ion()
     fig = plt.figure(fig_idx)  # show all feature images
-    size = W.shape[0]
     n_units = W.shape[1]
 
     num_r = int(np.sqrt(n_units))  # 每行显示的个数   若25个hidden unit -> 每行显示5个
     num_c = int(np.ceil(n_units / num_r))
     count = int(1)
-    for row in range(1, num_r + 1):
-        for col in range(1, num_c + 1):
+    for _row in range(1, num_r + 1):
+        for _col in range(1, num_c + 1):
             if count > n_units:
                 break
-            a = fig.add_subplot(num_r, num_c, count)
+            fig.add_subplot(num_r, num_c, count)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1],(28,28)), cmap='gray')
             # ------------------------------------------------------------

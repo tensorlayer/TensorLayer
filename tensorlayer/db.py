@@ -407,8 +407,8 @@ class TensorDB(object):
 
     def push_job(self, margs, wargs, dargs, epoch):
 
-        ms, mid = self.load_model_architecture(margs)
-        weight, wid = self.find_one_params(wargs)
+        _ms, mid = self.load_model_architecture(margs)
+        _weight, wid = self.find_one_params(wargs)
         args = {"weight": wid, "model": mid, "dargs": dargs, "epoch": epoch, "time": datetime.utcnow(), "Running": False}
         self.__autofill(args)
         self.db.JOBS.insert_one(args)

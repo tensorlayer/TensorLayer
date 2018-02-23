@@ -180,7 +180,7 @@ class Conv2dLayer(Layer):
             act = tf.identity
         logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=D_TYPE, **b_init_args)
@@ -511,7 +511,7 @@ class UpSampling2dLayer(Layer):
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
-            except:  # for TF 0.10
+            except Exception:  # for TF 0.10
                 self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
 
         self.all_layers = list(layer.all_layers)
@@ -571,7 +571,7 @@ class DownSampling2dLayer(Layer):
         with tf.variable_scope(name) as vs:
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
-            except:  # for TF 0.10
+            except Exception:  # for TF 0.10
                 self.outputs = tf.image.resize_images(self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners)
 
         self.all_layers = list(layer.all_layers)
@@ -792,7 +792,7 @@ class DeformableConv2d(Layer):
 
         try:
             pre_channel = int(layer.outputs.get_shape()[-1])
-        except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
@@ -1351,7 +1351,7 @@ def conv2d(
 
     try:
         pre_channel = int(layer.outputs.get_shape()[-1])
-    except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+    except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
         pre_channel = 1
         logging.info("[warnings] unknow input channels, set to 1")
     return Conv2dLayer(
@@ -1616,7 +1616,7 @@ class DepthwiseConv2d(Layer):
         logging.info("DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
         try:
             pre_channel = int(layer.outputs.get_shape()[-1])
-        except:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
 
