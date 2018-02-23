@@ -802,7 +802,6 @@ def load_celebA_dataset(path='data'):
         The path that the data is downloaded to, defaults is ``data/celebA/``.
 
     """
-    import zipfile, os
     data_dir = 'celebA'
     filename, drive_id = "img_align_celeba.zip", "0B7EVK8r0v71pZjFTYXZWM3FlRnM"
     save_path = os.path.join(path, filename)
@@ -1496,14 +1495,10 @@ def load_npy_to_any(path='', name='file.npy'):
     """
     file_path = os.path.join(path, name)
     try:
-        npy = np.load(file_path).item()
+        return np.load(file_path).item()
     except Exception:
-        npy = np.load(file_path)
-    finally:
-        try:
-            return npy
-        except Exception:
-            raise Exception("[!] Fail to load %s" % file_path)
+        return np.load(file_path)
+    raise Exception("[!] Fail to load %s" % file_path)
 
 
 def file_exists(filepath):

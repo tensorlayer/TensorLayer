@@ -2511,7 +2511,7 @@ def obj_box_crop(im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=Fal
 
     coords_new = list()
     classes_new = list()
-    for i in range(len(coords)):
+    for i, _ in enumerate(coords):
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
@@ -2915,7 +2915,7 @@ def remove_pad_sequences(sequences, pad_id=0):
     """
     import copy
     sequences_out = copy.deepcopy(sequences)
-    for i in range(len(sequences)):
+    for i, _ in enumerate(sequences):
         # for j in range(len(sequences[i])):
         #     if sequences[i][j] == pad_id:
         #         sequences_out[i] = sequences_out[i][:j]
