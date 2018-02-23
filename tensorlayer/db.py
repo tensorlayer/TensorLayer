@@ -335,7 +335,6 @@ class TensorDB(object):
             return False, False
         try:
             archs = self.archfs.get(fid).read()
-            '''print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time()-s, 2)))'''
             return archs, fid
         except Exception as e:
             print("exception")
