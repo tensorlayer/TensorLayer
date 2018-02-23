@@ -10,4 +10,10 @@ The following tools are used to ensure that your commits can pass through the CI
 * [isort](https://github.com/timothycrosley/isort) (sort imports), optional
 * [autoflake](https://github.com/myint/autoflake) (remove unused imports), optional
 
-Please apply these tools in the changed files before submitting your PR.
+You can simply run
+
+```
+make format
+```
+
+to apply those tools before submitting your PR.

@@ -12,7 +12,6 @@ in read the docs website.
 
 """
 
-import inspect
 import os
 import time
 

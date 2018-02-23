@@ -27,12 +27,14 @@ of 1 if you reach the goal, and zero otherwise.
 """
 
 import time
-import gym
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
+
+import gym
 
 env = gym.make('FrozenLake-v0')
 

@@ -25,11 +25,12 @@ Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
 import re
 import time
 
-import nltk
 import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
+
+import nltk
 
 # # _UNK = "_UNK"
 

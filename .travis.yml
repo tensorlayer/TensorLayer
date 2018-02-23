@@ -15,6 +15,7 @@ script:
   # - pytest
 
   # smoke tests
+  # - make test  # TODO: make it use python3 by default
   - python tests/test_yapf_format.py
   - python tests/test_pydocstyle.py
   - python tests/test_mnist_simple.py
