@@ -196,7 +196,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
     y_train = np.array(y_train)
 
-    if plotable == True:
+    if plotable:
         logging.info('\nCIFAR-10')
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
@@ -1133,7 +1133,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
 
 ## Load and save network list npz
-def save_npz(save_list=[], name='model.npz', sess=None):
+def save_npz(save_list=None, name='model.npz', sess=None):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
@@ -1170,6 +1170,9 @@ def save_npz(save_list=[], name='model.npz', sess=None):
 
     """
     ## save params into a list
+    if save_list is None:
+        save_list = []
+
     save_list_var = []
     if sess:
         save_list_var = sess.run(save_list)
@@ -1291,8 +1294,10 @@ def load_and_assign_npz(sess=None, name=None, network=None):
     - See ``tl.files.save_npz``
 
     """
-    assert network is not None
-    assert sess is not None
+    if network is None:
+        raise ValueError("network is None.")
+    if sess is None:
+        raise ValueError("session is None.")
     if not os.path.exists(name):
         logging.info("[!] Load {} failed!".format(name))
         return False
@@ -1303,8 +1308,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         return network
 
 
-## Load and save network dict npz
-def save_npz_dict(save_list=[], name='model.npz', sess=None):
+def save_npz_dict(save_list=None, name='model.npz', sess=None):
     """Input parameters and the file name, save parameters as a dictionary into .npz file.
 
     Use ``tl.files.load_and_assign_npz_dict()`` to restore.
@@ -1319,7 +1323,11 @@ def save_npz_dict(save_list=[], name='model.npz', sess=None):
         TensorFlow Session.
 
     """
-    assert sess is not None
+    if sess is None:
+        raise ValueError("session is None.")
+    if save_list is None:
+        save_list = []
+
     save_list_names = [tensor.name for tensor in save_list]
     save_list_var = sess.run(save_list)
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
@@ -1342,7 +1350,9 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         TensorFlow Session.
 
     """
-    assert sess is not None
+    if sess is None:
+        raise ValueError("session is None.")
+
     if not os.path.exists(name):
         logging.info("[!] Load {} failed!".format(name))
         return False
@@ -1424,8 +1434,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 #     return saved_list_var
 
 
-## Load and save network ckpt
-def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=[], global_step=None, printable=False):
+def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
     """Save parameters into `ckpt` file.
 
     Parameters
@@ -1448,7 +1457,11 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     load_ckpt
 
     """
-    assert sess is not None
+    if sess is None:
+        raise ValueError("session is None.")
+    if var_list is None:
+        var_list = []
+
     ckpt_file = os.path.join(save_dir, mode_name)
     if var_list == []:
         var_list = tf.global_variables()
@@ -1463,7 +1476,7 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     saver.save(sess, ckpt_file, global_step=global_step)
 
 
-def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=[], is_latest=True, printable=False):
+def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, is_latest=True, printable=False):
     """Load parameters from `ckpt` file.
 
     Parameters
@@ -1500,7 +1513,10 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
 
     """
-    assert sess is not None
+    if sess is None:
+        raise ValueError("session is None.")
+    if var_list is None:
+        var_list = []
 
     if is_latest:
         ckpt_file = tf.train.latest_checkpoint(save_dir)
@@ -1524,7 +1540,6 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info("[*] load ckpt fail ...")
 
 
-## Load and save variables
 def save_any_to_npy(save_dict={}, name='file.npy'):
     """Save variables to `.npy` file.
 
@@ -1560,7 +1575,6 @@ def load_npy_to_any(path='', name='file.npy'):
             exit()
 
 
-## Folder functions
 def file_exists(filepath):
     """Check whether a file exists by given file path."""
     return os.path.isfile(filepath)

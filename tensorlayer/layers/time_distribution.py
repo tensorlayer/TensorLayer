@@ -43,9 +43,11 @@ class TimeDistributedLayer(Layer):
             self,
             layer,
             layer_class=None,
-            args={},
+            args=None,
             name='time_distributed',
     ):
+        if args is None:
+            args = {}
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))

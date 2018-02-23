@@ -93,12 +93,15 @@ class SlimNetsLayer(Layer):
             self,
             layer,
             slim_layer,
-            slim_args={},
+            slim_args=None,
             name='tfslim_layer',
     ):
+        if slim_layer is None:
+            raise ValueError("slim layer is None")
+        if slim_args is None:
+            slim_args = {}
+
         Layer.__init__(self, name=name)
-        assert slim_layer is not None
-        assert slim_args is not None
         self.inputs = layer.outputs
         logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
@@ -152,12 +155,15 @@ class KerasLayer(Layer):
             self,
             layer,
             keras_layer,
-            keras_args={},
+            keras_args=None,
             name='keras_layer',
     ):
+        if layer is None:
+            raise ValueError("layer is None")
+        if keras_args is None:
+            keras_args = {}
+
         Layer.__init__(self, name=name)
-        assert layer is not None
-        assert keras_layer is not None
         self.inputs = layer.outputs
         logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
         logging.info("This API will be removed, please use LambdaLayer instead.")
@@ -194,12 +200,14 @@ class EstimatorLayer(Layer):
             self,
             layer,
             model_fn,
-            args={},
+            args=None,
             name='estimator_layer',
     ):
+        if model_fn is None:
+            raise ValueError('model fn is None')
+        if args is None:
+            args = {}
         Layer.__init__(self, name=name)
-        assert layer is not None
-        assert model_fn is not None
         self.inputs = layer.outputs
         logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
         logging.info("This API will be removed, please use LambdaLayer instead.")

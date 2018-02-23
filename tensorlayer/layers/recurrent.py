@@ -129,7 +129,7 @@ class RNNLayer(Layer):
             self,
             layer,
             cell_fn,
-            cell_init_args={},
+            cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             n_steps=5,
@@ -138,6 +138,9 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn_layer',
     ):
+        if cell_init_args is None:
+            cell_init_args = {}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
@@ -1010,9 +1013,12 @@ class DynamicRNNLayer(Layer):
             n_layer=1,
             return_last=False,
             return_seq_2d=False,
-            dynamic_rnn_init_args={},
+            dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
+        if dynamic_rnn_init_args is None:
+            dynamic_rnn_init_args = {}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
@@ -1250,9 +1256,12 @@ class BiDynamicRNNLayer(Layer):
             n_layer=1,
             return_last=False,
             return_seq_2d=False,
-            dynamic_rnn_init_args={},
+            dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
+        if dynamic_rnn_init_args is None:
+            dynamic_rnn_init_args = {}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")

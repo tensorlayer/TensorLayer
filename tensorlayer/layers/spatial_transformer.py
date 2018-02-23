@@ -207,7 +207,7 @@ class SpatialTransformer2dAffineLayer(Layer):
     theta_layer : :class:`Layer`
         The localisation network.
         - We will use a :class:`DenseLayer` to make the theta size to [batch, 6], value range to [0, 1] (via tanh).
-    out_size : tuple of int
+    out_size : tuple of int or None
         The size of the output of the network (height, width), the feature maps will be resized by this.
     name : str
         A unique layer name.
@@ -223,9 +223,12 @@ class SpatialTransformer2dAffineLayer(Layer):
             self,
             layer=None,
             theta_layer=None,
-            out_size=[40, 40],
+            out_size=None,
             name='sapatial_trans_2d_affine',
     ):
+        if out_size is None:
+            out_size = [40, 40]
+
         Layer.__init__(self, name=name)
         self.inputs = layer.outputs
         self.theta_layer = theta_layer
