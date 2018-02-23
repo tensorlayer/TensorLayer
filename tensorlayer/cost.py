@@ -31,7 +31,8 @@ def cross_entropy(output, target, name=None):
     # try: # old
     #     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
     # except: # TF 1.0
-    assert name is not None, "Please give a unique name to tl.cost.cross_entropy for TF1.0+"
+    if name is None:
+        raise Exception("Please give a unique name to tl.cost.cross_entropy for TF1.0+")
     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
 
 
@@ -186,7 +187,7 @@ def absolute_difference_error(output, target, is_mean=False):
         return loss
 
 
-def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
+def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
     """Soft dice (Sørensen or Jaccard) coefficient for comparing the similarity
     of two batch of data, usually be used for binary image segmentation
     i.e. labels are binary. The coefficient between 0 to 1, 1 means totally match.
@@ -199,7 +200,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
         The target distribution, format the same with `output`.
     loss_type : str
         ``jaccard`` or ``sorensen``, default is ``jaccard``.
-    axis : list of int
+    axis : tuple of int
         All dimensions are reduced, default ``[1,2,3]``.
     smooth : float
         This small value will be added to the numerator and denominator.
@@ -236,7 +237,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=[1, 2, 3], smooth=1e-5):
     return dice
 
 
-def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
+def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     """Non-differentiable Sørensen–Dice coefficient for comparing the similarity
     of two batch of data, usually be used for binary image segmentation i.e. labels are binary.
     The coefficient between 0 to 1, 1 if totally match.
@@ -249,8 +250,8 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
         The target distribution, format the same with `output`.
     threshold : float
         The threshold value to be true.
-    axis : list of integer
-        All dimensions are reduced, default ``[1,2,3]``.
+    axis : tuple of integer
+        All dimensions are reduced, default ``(1,2,3)``.
     smooth : float
         This small value will be added to the numerator and denominator, see ``dice_coe``.
 
@@ -275,7 +276,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
     return hard_dice
 
 
-def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
+def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     """Non-differentiable Intersection over Union (IoU) for comparing the
     similarity of two batch of data, usually be used for evaluating binary image segmentation.
     The coefficient between 0 to 1, and 1 means totally match.
@@ -288,8 +289,8 @@ def iou_coe(output, target, threshold=0.5, axis=[1, 2, 3], smooth=1e-5):
         The target distribution, format the same with `output`.
     threshold : float
         The threshold value to be true.
-    axis : list of integer
-        All dimensions are reduced, default ``[1,2,3]``.
+    axis : tuple of integer
+        All dimensions are reduced, default ``(1,2,3)``.
     smooth : float
         This small value will be added to the numerator and denominator, see ``dice_coe``.
 
