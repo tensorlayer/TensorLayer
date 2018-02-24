@@ -1311,7 +1311,7 @@ class BiDynamicRNNLayer(Layer):
 
             # Apply dropout
             if dropout:
-                if type(dropout) in [tuple, list]:
+                if isinstance(dropout, (tuple, list)):
                     in_keep_prob = dropout[0]
                     out_keep_prob = dropout[1]
                 elif isinstance(dropout, float):

@@ -508,7 +508,7 @@ class UpSampling2dLayer(Layer):
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
         logging.info("UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" % (name, is_scale, size, method, align_corners))
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
             except Exception:  # for TF 0.10
