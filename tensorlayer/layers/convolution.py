@@ -568,7 +568,7 @@ class DownSampling2dLayer(Layer):
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
         logging.info("DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
             except Exception:  # for TF 0.10
@@ -797,7 +797,7 @@ class DeformableConv2d(Layer):
             logging.info("[warnings] unknow input channels, set to 1")
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             offset = self.offset_layer.outputs
             assert offset.get_shape()[-1] == 2 * shape[0] * shape[1]
 
@@ -987,7 +987,7 @@ class AtrousConv2dLayer(Layer):
         if act is None:
             act = tf.identity
         logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=D_TYPE, **W_init_args)
             if b_init:
@@ -1627,7 +1627,7 @@ class DepthwiseConv2d(Layer):
 
         assert len(strides) == 4, "len(strides) should be 4."
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W_sepconv2d', shape=shape, initializer=W_init, dtype=D_TYPE,
                 **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]

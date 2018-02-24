@@ -1323,10 +1323,10 @@ class DropconnectDenseLayer(Layer):
         self.n_units = n_units
         logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args)
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args)
-            self.outputs = act(tf.matmul(self.inputs, W) + b)  #, name=name)    # 1.2
+            self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         set_keep[name] = tf.placeholder(tf.float32)
         W_dropcon = tf.nn.dropout(W, set_keep[name])
