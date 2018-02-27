@@ -61,7 +61,7 @@ Reinforcement Learning
  - `DAGGER <https://www.cs.cmu.edu/%7Esross1/publications/Ross-AIStats11-NoRegret.pdf>`_ for (`Gym Torcs <https://github.com/ugo-nama-kun/gym_torcs>`_) by `zsdonghao <https://github.com/zsdonghao/Imitation-Learning-Dagger-Torcs>`_.
  - `TRPO <https://arxiv.org/abs/1502.05477>`_ for continuous and discrete action space by `jjkke88 <https://github.com/jjkke88/RL_toolbox>`_.
 
-Special Examples
+Miscellaneous
 =================
 
  - Distributed Training. `mnist <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_ and `imagenet <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`_ by `jorgemf <https://github.com/jorgemf>`__.
