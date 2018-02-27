@@ -1062,7 +1062,7 @@ class DynamicRNNLayer(Layer):
 
         # Apply dropout
         if dropout:
-            if type(dropout) in [tuple, list]:
+            if isinstance(dropout, (tuple, list)):
                 in_keep_prob = dropout[0]
                 out_keep_prob = dropout[1]
             elif isinstance(dropout, float):
@@ -1311,7 +1311,7 @@ class BiDynamicRNNLayer(Layer):
 
             # Apply dropout
             if dropout:
-                if type(dropout) in [tuple, list]:
+                if isinstance(dropout, (tuple, list)):
                     in_keep_prob = dropout[0]
                     out_keep_prob = dropout[1]
                 elif isinstance(dropout, float):
@@ -1445,7 +1445,7 @@ class Seq2Seq(Layer):
         A TensorFlow core RNN cell
             - see `RNN Cells in TensorFlow <https://www.tensorflow.org/api_docs/python/>`__
             - Note TF1.0+ and TF1.0- are different
-    cell_init_args : dictionary
+    cell_init_args : dictionary or None
         The arguments for the cell initializer.
     n_hidden : int
         The number of hidden units in the layer.
@@ -1540,7 +1540,7 @@ class Seq2Seq(Layer):
             net_encode_in,
             net_decode_in,
             cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-            cell_init_args={'state_is_tuple': True},
+            cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
             encode_sequence_length=None,
@@ -1552,6 +1552,9 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
+        if cell_init_args is None:
+            cell_init_args = {'state_is_tuple': True}
+
         Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
