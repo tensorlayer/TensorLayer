@@ -2651,7 +2651,7 @@ def obj_box_shift(im,
 
     coords_new = list()
     classes_new = list()
-    for i in range(len(coords)):
+    for i, _ in enumerate(coords):
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
@@ -2794,7 +2794,7 @@ def obj_box_zoom(im,
 
     coords_new = list()
     classes_new = list()
-    for i in range(len(coords)):
+    for i, _ in enumerate(coords):
         coord = coords[i]
         assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
         if is_rescale:
@@ -3010,7 +3010,7 @@ def sequences_add_start_id(sequences, start_id=0, remove_last=False):
 
     """
     sequences_out = [[] for _ in range(len(sequences))]  #[[]] * len(sequences)
-    for i in range(len(sequences)):
+    for i, _ in enumerate(sequences):
         if remove_last:
             sequences_out[i] = [start_id] + sequences[i][:-1]
         else:
@@ -3041,7 +3041,7 @@ def sequences_add_end_id(sequences, end_id=888):
 
     """
     sequences_out = [[] for _ in range(len(sequences))]  #[[]] * len(sequences)
-    for i in range(len(sequences)):
+    for i, _ in enumerate(sequences):
         sequences_out[i] = sequences[i] + [end_id]
     return sequences_out
 
