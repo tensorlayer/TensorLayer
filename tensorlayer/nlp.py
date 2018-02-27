@@ -465,11 +465,6 @@ def read_words(filename="nietzsche.txt", replace=None):
     -------
     list of str
         The context in a list (split using space).
-
-    See Also
-    --------
-    - `tensorflow.models.rnn.ptb.reader <https://github.com/tensorflow/tensorflow/tree/master/tensorflow/models/rnn/ptb>`__
-
     """
     if replace is None:
         replace = ['\n', '<eos>']
