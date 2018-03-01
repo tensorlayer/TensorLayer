@@ -1704,17 +1704,9 @@ class GroupConv2d(Layer):
         channels = int(self.inputs.get_shape()[-1])
         with tf.variable_scope(name):
             We = tf.get_variable(
-                name='weights',
-                shape=[filter_size[0], filter_size[1], channels / n_group, n_filter],
-                initializer=W_init,
-                dtype=D_TYPE,
-                trainable=True,
-                **W_init_args)
+                name='W', shape=[filter_size[0], filter_size[1], channels / n_group, n_filter], initializer=W_init, dtype=D_TYPE, trainable=True, **W_init_args)
             if b_init:
-                bi = tf.get_variable(
-                    name='biases', shape=[
-                        n_filter,
-                    ], initializer=b_init, dtype=D_TYPE, trainable=True, **b_init_args)
+                bi = tf.get_variable(name='b', shape=n_filter, initializer=b_init, dtype=D_TYPE, trainable=True, **b_init_args)
         if n_group == 1:
             conv = groupConv(self.inputs, We)
         else:
@@ -1722,7 +1714,7 @@ class GroupConv2d(Layer):
             weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
             convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
             conv = tf.concat(axis=3, values=convGroups)
-        if b_init is not None:
+        if b_init:
             conv = tf.add(conv, bi, name='add')
 
         self.outputs = act(conv)
@@ -1730,10 +1722,10 @@ class GroupConv2d(Layer):
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
         self.all_layers.extend([self.outputs])
-        if b_init is not None:
+        if b_init:
             self.all_params.extend([We, bi])
         else:
-            self.all_params.extend([We])
+            self.all_params.append(We)
 
 
 # Alias
