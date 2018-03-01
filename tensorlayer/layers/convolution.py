@@ -1561,6 +1561,8 @@ class DepthwiseConv2d(Layer):
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    rate: tuple of 2 int
+        The dilation rate in which we sample input values across the height and width dimensions in atrous convolution. If it is greater than 1, then all values of strides must be 1.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -1574,28 +1576,29 @@ class DepthwiseConv2d(Layer):
 
     Examples
     ---------
-    >>> t_im = tf.placeholder("float32", (None, 256, 256, 3))
-    >>> net = InputLayer(t_im, name='in')
-    >>> net = DepthwiseConv2d(net, 32, (3, 3), (1, 1, 1, 1), tf.nn.relu, padding="SAME", name='dep')
-    >>> print(net.outputs.get_shape())
-    ... (?, 256, 256, 96)
+    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name='x')
+    >>> n = InputLayer(x, name='in')
+    >>> n = Conv2d(n, 32, (3, 3), (2, 2), act=tf.nn.relu, name='c1')
+    >>> n = DepthwiseConv2d(n, 1, (3, 3), (1, 1), name='d1')
+    >>> print(n.outputs.get_shape())
+    ... (?, 14, 14, 32)
 
     References
     -----------
     - tflearn's `grouped_conv_2d <https://github.com/tflearn/tflearn/blob/3e0c3298ff508394f3ef191bcd7d732eb8860b2e/tflearn/layers/conv.py>`__
     - keras's `separableconv2d <https://keras.io/layers/convolutional/#separableconv2d>`__
 
-    """
+    """ # # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
 
     def __init__(
             self,
             layer,
-            # n_filter = 32,
-            channel_multiplier=3,
+            channel_multiplier=1,
             shape=(3, 3),
             strides=(1, 1),
             act=tf.identity,
             padding='SAME',
+            rate=(1, 1),
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -1629,13 +1632,13 @@ class DepthwiseConv2d(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W_sepconv2d', shape=shape, initializer=W_init, dtype=D_TYPE,
+                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=D_TYPE,
                 **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]
             if b_init:
-                b = tf.get_variable(name='b_sepconv2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=D_TYPE, **b_init_args)
-                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding) + b)
+                b = tf.get_variable(name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=D_TYPE, **b_init_args)
+                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate) + b)
             else:
-                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding))
+                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate))
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
