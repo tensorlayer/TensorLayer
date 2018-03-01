@@ -270,6 +270,9 @@ Layer list
    Conv2d
    DeConv2d
    DeConv3d
+   DepthwiseConv2d
+   DeformableConv2d
+   GroupConv2d
 
    MaxPool1d
    MeanPool1d
@@ -277,9 +280,6 @@ Layer list
    MeanPool2d
    MaxPool3d
    MeanPool3d
-
-   DepthwiseConv2d
-   DeformableConv2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -496,6 +496,9 @@ APIs may better for you.
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DeformableConv2d
 
+2D Grouped Conv
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GroupConv2d
 
 Super-Resolution layer
 ------------------------
