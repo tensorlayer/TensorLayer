@@ -88,7 +88,7 @@ class SlimNetsLayer(Layer):
 
     Notes
     -----
-    - The due to TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
+    - As TF-Slim stores the layers as dictionary, the ``all_layers`` in this network is not in order ! Fortunately, the ``all_params`` are in order.
 
     """
 
