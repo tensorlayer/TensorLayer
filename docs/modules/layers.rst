@@ -762,7 +762,7 @@ Connect TF-Slim
 ------------------
 
 Yes ! TF-Slim models can be connected into TensorLayer, all Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/slim#Install>`__.
+see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
 
 .. autoclass:: SlimNetsLayer
 
