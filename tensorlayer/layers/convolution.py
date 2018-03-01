@@ -1702,7 +1702,7 @@ class GroupConv2d(Layer):
         self.inputs = layer.outputs
         groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
         channels = int(self.inputs.get_shape()[-1])
-        with tf.variable_scope(name) as vs:
+        with tf.variable_scope(name):
             We = tf.get_variable(
                 name='weights',
                 shape=[filter_size[0], filter_size[1], channels / n_group, n_filter],
