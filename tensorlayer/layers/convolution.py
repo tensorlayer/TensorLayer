@@ -1721,7 +1721,7 @@ class GroupConv2d(Layer):
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([We, bi])
         else:
