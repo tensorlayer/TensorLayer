@@ -1647,6 +1647,95 @@ class DepthwiseConv2d(Layer):
             self.all_params.extend([W])
 
 
+class GroupConv2d(Layer):
+    """The :class:`GroupConv2d` class is 2D grouped convolution, see `here <https://blog.yani.io/filter-group-tutorial/>`__.
+
+    Parameters
+    --------------
+    layer : :class:`Layer`
+        Previous layer.
+    n_filter : int
+        The number of filters.
+    filter_size : int
+        The filter size.
+    stride : int
+        The stride step.
+    n_group : int
+        The number of groups.
+    act : activation function
+        The activation function of this layer.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            n_group=2,
+            act=tf.identity,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='groupconv',
+    ):  # Windaway
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+
+        Layer.__init__(self, name=name)
+        self.inputs = layer.outputs
+        groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
+        channels = int(self.inputs.get_shape()[-1])
+        with tf.variable_scope(name) as vs:
+            We = tf.get_variable(
+                name='weights',
+                shape=[filter_size[0], filter_size[1], channels / n_group, n_filter],
+                initializer=W_init,
+                dtype=D_TYPE,
+                trainable=True,
+                **W_init_args)
+            if b_init:
+                bi = tf.get_variable(
+                    name='biases', shape=[
+                        n_filter,
+                    ], initializer=b_init, dtype=D_TYPE, trainable=True, **b_init_args)
+        if n_group == 1:
+            conv = groupConv(self.inputs, We)
+        else:
+            inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
+            weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
+            convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
+            conv = tf.concat(axis=3, values=convGroups)
+        if b_init is not None:
+            conv = tf.add(conv, bi, name='add')
+
+        self.outputs = act(conv)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+        self.all_layers.extend([self.outputs])
+        if b_init is not None:
+            self.all_params.extend([We, bi])
+        else:
+            self.all_params.extend([We])
+
+
 # Alias
 AtrousConv1dLayer = atrous_conv1d
 Conv1d = conv1d
