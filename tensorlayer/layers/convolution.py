@@ -1632,10 +1632,10 @@ class DepthwiseConv2d(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W_sepconv2d', shape=shape, initializer=W_init, dtype=D_TYPE,
+                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=D_TYPE,
                 **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]
             if b_init:
-                b = tf.get_variable(name='b_sepconv2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=D_TYPE, **b_init_args)
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate) + b)
             else:
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate))
