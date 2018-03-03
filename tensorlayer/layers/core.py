@@ -439,7 +439,9 @@ class Layer(object):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
+        set_name_reuse(True)
         net_new = Layer(self.inputs, name=self.name)
+        set_name_reuse(set_keep['name_reuse'])  # set back
         net_new.outputs = self.outputs[key]
 
         net_new.all_layers = list(self.all_layers[:-1])
