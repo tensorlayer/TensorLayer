@@ -436,10 +436,30 @@ class Layer(object):
         return n_params
 
     def __str__(self):
-        # logging.info("\nIt is a Layer class")
-        # self.print_params(False)
-        # self.print_layers()
-        return "  Last layer is: %s" % self.__class__.__name__
+        return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
+
+    def __getitem__(self, key):
+        net_new = Layer(self.inputs, name=self.name)
+        net_new.outputs = self.outputs[key]
+
+        net_new.all_layers = list(self.all_layers[:-1])
+        net_new.all_layers.append(net_new.outputs)
+        net_new.all_params = list(self.all_params)
+        net_new.all_drop = dict(self.all_drop)
+        return net_new
+
+    def __setitem__(self, key):
+        raise NotImplementedError("%s: __setitem__" % self.name)
+
+    def __delitem__(self, key):
+        raise NotImplementedError("%s: __delitem__" % self.name)
+
+    def __iter__(self):
+        for x in self.all_layers:
+            yield x
+
+    def __len__(self):
+        return len(self.all_layers)
 
 
 class InputLayer(Layer):
