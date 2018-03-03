@@ -450,7 +450,8 @@ class Layer(object):
         net_new.all_drop = dict(self.all_drop)
         return net_new
 
-    def __setitem__(self, key):
+    def __setitem__(self, key, item):
+        # self.outputs[key] = item
         raise NotImplementedError("%s: __setitem__" % self.name)
 
     def __delitem__(self, key):
