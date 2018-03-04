@@ -120,7 +120,7 @@ class ElementwiseLayer(Layer):
 
         if act:
             self.outputs = act(self.outputs)
-            
+
         self.all_layers = list(layers[0].all_layers)
         self.all_params = list(layers[0].all_params)
         self.all_drop = dict(layers[0].all_drop)
