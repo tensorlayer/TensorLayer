@@ -42,7 +42,7 @@ TensorLayer is simple
 
 The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
 We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
-if you want to understand the details and be a machine learning expert, we suggest you to train the network by using the data iternation toolbox (``tl.iternate``) and
+if you want to understand the details and be a machine learning expert, we suggest you to train the network by using the data iteration toolbox (``tl.iterate``) and
 the TensorFlow's native API like ``sess.run()``, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>_` , `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>_` for more details.
 
 .. code-block:: python
@@ -313,7 +313,7 @@ that the ``InputLayer`` is not tied to any specific data yet.
 
 .. code-block:: python
 
-    network = tl.layers.InputLayer(x, name='input_layer')
+    network = tl.layers.InputLayer(x, name='input')
 
 Before adding the first hidden layer, we'll apply 20% dropout to the input
 data. This is realized via a :class:`DropoutLayer
@@ -357,7 +357,7 @@ details in ``tl.cost.cross_entropy()``.
     network = tl.layers.DenseLayer(network,
                                   n_units=10,
                                   act = tf.identity,
-                                  name='output_layer')
+                                  name='output')
 
 As mentioned above, each layer is linked to its incoming layer(s), so we only
 need the output layer(s) to access a network in TensorLayer:
