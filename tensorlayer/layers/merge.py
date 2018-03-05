@@ -81,6 +81,8 @@ class ElementwiseLayer(Layer):
     combine_fn : a TensorFlow element-wise combine function
         e.g. AND is ``tf.minimum`` ;  OR is ``tf.maximum`` ; ADD is ``tf.add`` ; MUL is ``tf.multiply`` and so on.
         See `TensorFlow Math API <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html#math>`__ .
+    act : activation function
+        The activation function of this layer.
     name : str
         A unique layer name.
 
@@ -102,6 +104,7 @@ class ElementwiseLayer(Layer):
             self,
             layers,
             combine_fn=tf.minimum,
+            act=None,
             name='elementwise_layer',
     ):
         Layer.__init__(self, name=name)
@@ -109,11 +112,12 @@ class ElementwiseLayer(Layer):
         logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layers[0].outputs
-        # logging.info(self.outputs._shape, type(self.outputs._shape))
+
         for l in layers[1:]:
-            if str(self.outputs.get_shape()) != str(l.outputs.get_shape()):
-                raise Exception("Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape())))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
+
+        if act:
+            self.outputs = act(self.outputs)
 
         self.all_layers = list(layers[0].all_layers)
         self.all_params = list(layers[0].all_params)
