@@ -436,10 +436,6 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         logging.info("Please install sklearn and matplotlib to visualize embeddings.")
 
 
-def W(W=None, second=10, saveable=True, shape=None, name='mnist', fig_idx=2396512):
-    raise Exception("use tl.vis.draw_weights instead")
-
-
 def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig_idx=2396512):
     """Visualize every columns of the weight matrix to a group of Greyscale img.
 
@@ -503,3 +499,6 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
     else:
         plt.draw()
         plt.pause(second)
+
+        
+W = draw_weights
