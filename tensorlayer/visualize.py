@@ -500,5 +500,4 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
         plt.draw()
         plt.pause(second)
 
-        
 W = draw_weights
