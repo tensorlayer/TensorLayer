@@ -112,10 +112,8 @@ class ElementwiseLayer(Layer):
         logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__))
 
         self.outputs = layers[0].outputs
-        # logging.info(self.outputs._shape, type(self.outputs._shape))
+
         for l in layers[1:]:
-            # if str(self.outputs.get_shape()) != str(l.outputs.get_shape()): # issue 376
-            #    raise Exception("Hint: the input shapes should be the same. %s != %s" % (self.outputs.get_shape(), str(l.outputs.get_shape())))
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
         if act:
