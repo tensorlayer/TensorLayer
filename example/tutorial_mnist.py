@@ -140,7 +140,7 @@ def main_test_layers(model='relu'):
                 # You can also save the weight of 1st hidden layer to .npz file.
                 # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
             except:  # pylint: disable=bare-except
-                print("You should change vis.W(), if you want to save the feature images for different dataset")
+                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -156,7 +156,6 @@ def main_test_layers(model='relu'):
     print("   test acc: %f" % (test_acc / n_batch))
 
     # Add ops to save and restore all the variables, including variables for training.
-    # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
     save_path = saver.save(sess, "./model.ckpt")
     print("Model saved in file: %s" % save_path)
@@ -329,7 +328,7 @@ def main_test_stacked_denoise_AE(model='relu'):
                 # visualize the 1st hidden layer during fine-tune
                 tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
             except:  # pylint: disable=bare-except
-                print("You should change vis.W(), if you want to save the feature images for different dataset")
+                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
