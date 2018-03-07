@@ -89,7 +89,7 @@ def main_test_layers(model='relu'):
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 5
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
     tl.layers.initialize_global_variables(sess)
 
@@ -269,7 +269,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     train_params = network.all_params
 
     # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
     # Initialize all variables including weights, biases and the variables in train_op
     tl.layers.initialize_global_variables(sess)
@@ -433,7 +433,7 @@ def main_test_cnn_layer():
     print_freq = 10
 
     train_params = network.all_params
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
     tl.layers.initialize_global_variables(sess)
     network.print_params()
