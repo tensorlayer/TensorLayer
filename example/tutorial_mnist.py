@@ -2,23 +2,12 @@
 # -*- coding: utf-8 -*-
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
-This tutorial uses placeholder to control all keeping probabilities,
-so we need to set the non-one probabilities during training, and set them to 1
-during evaluating and testing.
+ - Multi-layer perceptron (MNIST) - Classification task, see tutorial_mnist_simple.py
+    https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py
 
-$ Set keeping probabilities.
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update( network.all_drop )
-
-$ Set all keeping probabilities to 1 for evaluating and testing.
->>> dp_dict = tl.utils.dict_to_one( network.all_drop )
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update(dp_dict)
-
-Alternatively, if you don't want to use placeholder to control them, you can
-build different inferences for training, evaluating and testing,
-and all inferences share the same model parameters.
-(see tutorial_ptb_lstm.py)
+ - Multi-layer perceptron (MNIST) - Classification using Iterator, see:
+    method1 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py
+    method2 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py
 
 """
 
@@ -495,7 +484,7 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
 
     # Dropout and Dropconnect
-    # main_test_layers(model='relu')  # model = relu, dropconnect
+    main_test_layers(model='relu')  # model = relu, dropconnect
 
     # Single Denoising Autoencoder
     # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
@@ -504,4 +493,4 @@ if __name__ == '__main__':
     # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
 
     # CNN
-    main_test_cnn_layer()
+    # main_test_cnn_layer()
