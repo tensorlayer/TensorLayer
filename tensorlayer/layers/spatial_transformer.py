@@ -238,10 +238,10 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 2.1 W
             n_in = int(self.theta_layer.outputs.get_shape()[-1])
             shape = (n_in, 6)
-            W = tf.get_variable(name='W', initializer=tf.zeros(shape), dtype=D_TYPE)
+            W = tf.get_variable(name='W', initializer=tf.zeros(shape), dtype=CoreConfig.D_TYPE)
             # 2.2 b
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
-            b = tf.get_variable(name='b', initializer=identity, dtype=D_TYPE)
+            b = tf.get_variable(name='b', initializer=identity, dtype=CoreConfig.D_TYPE)
             # 2.3 transformation matrix
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)
             # 3. Spatial Transformer Sampling

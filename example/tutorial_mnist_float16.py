@@ -8,7 +8,8 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 
 D_TYPE = tf.float16  # tf.float32  tf.float16
-tl.layers.D_TYPE = D_TYPE  # define global dtype in tl.layers
+tl.layers.set_dtype(D_TYPE)
+
 
 X_train, y_train, X_val, y_val, X_test, y_test = \
                 tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))

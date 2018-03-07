@@ -18,7 +18,18 @@ set_keep = globals()
 set_keep['_layers_name_list'] = []
 set_keep['name_reuse'] = False
 
-D_TYPE = tf.float32
+
+class CoreConfig:
+    D_TYPE = tf.float32
+
+
+def set_dtype(dtype):
+    CoreConfig.D_TYPE = dtype
+
+
+def get_dtype(dtype):
+    return CoreConfig.D_TYPE
+
 
 try:  # For TF12 and later
     TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
@@ -646,11 +657,12 @@ class Word2vecEmbeddingInputlayer(Layer):
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=CoreConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
-            nce_weights = tf.get_variable(name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init, dtype=D_TYPE, **nce_W_init_args)
-            nce_biases = tf.get_variable(name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=D_TYPE, **nce_b_init_args)
+            nce_weights = tf.get_variable(
+                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init, dtype=CoreConfig.D_TYPE, **nce_W_init_args)
+            nce_biases = tf.get_variable(name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=CoreConfig.D_TYPE, **nce_b_init_args)
 
         # Compute the average NCE loss for the batch.
         # tf.nce_loss automatically draws a new sample of the negative labels
@@ -730,7 +742,7 @@ class EmbeddingInputlayer(Layer):
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=CoreConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -795,7 +807,7 @@ class AverageEmbeddingInputlayer(Layer):
                 name='embeddings',
                 shape=(vocabulary_size, embedding_size),
                 initializer=embeddings_initializer,
-                dtype=D_TYPE,
+                dtype=CoreConfig.D_TYPE,
                 **(embeddings_kwargs or {})
                 # **embeddings_kwargs
             )  # **(embeddings_kwargs or {}),
@@ -810,7 +822,7 @@ class AverageEmbeddingInputlayer(Layer):
             word_embeddings *= tf.cast(
                 tf.expand_dims(masks, axis=-1),
                 # tf.float32,
-                dtype=D_TYPE,
+                dtype=CoreConfig.D_TYPE,
             )
             sum_word_embeddings = tf.reduce_sum(word_embeddings, axis=1)
 
@@ -820,7 +832,7 @@ class AverageEmbeddingInputlayer(Layer):
                 axis=1,
                 keep_dims=True,
                 # dtype=tf.float32,
-                dtype=D_TYPE,
+                dtype=CoreConfig.D_TYPE,
                 name='sentence_lengths',
             )
 
@@ -902,12 +914,12 @@ class DenseLayer(Layer):
         self.n_units = n_units
         logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args)
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args)
+                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=D_TYPE, **b_init_args)
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
@@ -1347,8 +1359,8 @@ class DropconnectDenseLayer(Layer):
         logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=D_TYPE, **W_init_args)
-            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=D_TYPE, **b_init_args)
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
             self.outputs = act(tf.matmul(self.inputs, W) + b)
 
         set_keep[name] = tf.placeholder(tf.float32)
