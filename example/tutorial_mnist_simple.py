@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+
 import tensorlayer as tl
 
 sess = tf.InteractiveSession()

@@ -27,10 +27,10 @@ import time
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import *
 
 import nltk
+import tensorlayer as tl
+from tensorlayer.layers import *
 
 # # _UNK = "_UNK"
 

@@ -36,10 +36,10 @@ import time
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import *
 
 import gym
+import tensorlayer as tl
+from tensorlayer.layers import *
 
 np.random.seed(2)
 tf.set_random_seed(2)  # reproducible

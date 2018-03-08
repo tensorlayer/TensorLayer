@@ -106,13 +106,13 @@ class BatchNormLayer(Layer):
             # 1. beta, gamma
             if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                 beta_init = beta_init()
-            beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=D_TYPE, trainable=is_train)
+            beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train)
 
             gamma = tf.get_variable(
                 'gamma',
                 shape=params_shape,
                 initializer=gamma_init,
-                dtype=D_TYPE,
+                dtype=LayersConfig.tf_dtype,
                 trainable=is_train,
             )
 
@@ -121,12 +121,12 @@ class BatchNormLayer(Layer):
                 moving_mean_init = tf.zeros_initializer()
             else:
                 moving_mean_init = tf.zeros_initializer
-            moving_mean = tf.get_variable('moving_mean', params_shape, initializer=moving_mean_init, dtype=D_TYPE, trainable=False)
+            moving_mean = tf.get_variable('moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False)
             moving_variance = tf.get_variable(
                 'moving_variance',
                 params_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=D_TYPE,
+                dtype=LayersConfig.tf_dtype,
                 trainable=False,
             )
 
@@ -196,8 +196,9 @@ class InstanceNormLayer(Layer):
 
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
-            scale = tf.get_variable('scale', [self.inputs.get_shape()[-1]], initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=D_TYPE)
-            offset = tf.get_variable('offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0), dtype=D_TYPE)
+            scale = tf.get_variable(
+                'scale', [self.inputs.get_shape()[-1]], initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype)
+            offset = tf.get_variable('offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0), dtype=LayersConfig.tf_dtype)
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
             self.outputs = act(self.outputs)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

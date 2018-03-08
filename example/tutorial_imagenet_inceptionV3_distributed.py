@@ -20,7 +20,6 @@ from xml.etree import ElementTree
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from tensorflow.contrib import slim
 from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3, inception_v3_arg_scope)
 from tensorflow.python.framework.errors_impl import OutOfRangeError
@@ -28,6 +27,8 @@ from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
 from tensorflow.python.training.monitored_session import \
     SingularMonitoredSession
+
+import tensorlayer as tl
 
 ########## VARIABLES ##########
 

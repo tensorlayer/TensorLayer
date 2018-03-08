@@ -36,10 +36,10 @@ import threading
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import *
 
 import gym
+import tensorlayer as tl
+from tensorlayer.layers import *
 
 GAME = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2
 OUTPUT_GRAPH = False
