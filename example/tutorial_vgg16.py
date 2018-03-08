@@ -38,8 +38,9 @@ following snippet:
 
 import os
 
-import tensorlayer as tl
 from scipy.misc import imread, imresize
+
+import tensorlayer as tl
 from tensorlayer.layers import *
 
 try:

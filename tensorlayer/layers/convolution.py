@@ -825,7 +825,11 @@ class DeformableConv2d(Layer):
             input_deform = _tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(
-                name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
+                name='W_deformableconv2d',
+                shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
+                initializer=W_init,
+                dtype=LayersConfig.D_TYPE,
+                **W_init_args)
 
             if b_init:
                 b = tf.get_variable(name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
@@ -1635,7 +1639,8 @@ class DepthwiseConv2d(Layer):
                 name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE,
                 **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]
             if b_init:
-                b = tf.get_variable(name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(
+                    name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate) + b)
             else:
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate))

@@ -26,10 +26,9 @@ of 1 if you reach the goal, and zero otherwise.
 
 """
 
+import gym
 import tensorlayer as tl
 from tensorlayer.layers import *
-
-import gym
 
 env = gym.make('FrozenLake-v0')
 

@@ -15,7 +15,7 @@ from .. import files, iterate, utils, visualize
 
 
 class LayersConfig:
-    D_TYPE = tf.float32 # data type is set to float32 in default
+    D_TYPE = tf.float32  # data type is set to float32 in default
     SET_KEEP = {'_layers_name_list': [], 'name_reuse': False}
 
 
@@ -645,7 +645,8 @@ class Word2vecEmbeddingInputlayer(Layer):
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(
@@ -730,7 +731,8 @@ class EmbeddingInputlayer(Layer):
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed

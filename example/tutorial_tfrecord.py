@@ -24,8 +24,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from PIL import Image
+
+import tensorlayer as tl
 
 ## Save data ==================================================================
 classes = ['/data/cat', '/data/dog']  # cat is 0, dog is 1
