@@ -2,44 +2,25 @@
 # -*- coding: utf-8 -*-
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
-This tutorial uses placeholder to control all keeping probabilities,
-so we need to set the non-one probabilities during training, and set them to 1
-during evaluating and testing.
+ - Multi-layer perceptron (MNIST) - Classification task, see tutorial_mnist_simple.py
+    https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py
 
-$ Set keeping probabilities.
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update( network.all_drop )
-
-$ Set all keeping probabilities to 1 for evaluating and testing.
->>> dp_dict = tl.utils.dict_to_one( network.all_drop )
->>> feed_dict = {x: X_train_a, y_: y_train_a}
->>> feed_dict.update(dp_dict)
-
-Alternatively, if you don't want to use placeholder to control them, you can
-build different inferences for training, evaluating and testing,
-and all inferences share the same model parameters.
-(see tutorial_ptb_lstm.py)
+ - Multi-layer perceptron (MNIST) - Classification using Iterator, see:
+    method1 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py
+    method2 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py
 
 """
 
 import time
 
-import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-from tensorlayer.layers import set_keep
 
 
 def main_test_layers(model='relu'):
     X_train, y_train, X_val, y_val, X_test, y_test = \
                                     tl.files.load_mnist_dataset(shape=(-1,784))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int32)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int32)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int32)
 
     print('X_train.shape', X_train.shape)
     print('y_train.shape', y_train.shape)
@@ -96,7 +77,7 @@ def main_test_layers(model='relu'):
     batch_size = 128
     learning_rate = 0.0001
     print_freq = 5
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
     tl.layers.initialize_global_variables(sess)
 
@@ -147,7 +128,7 @@ def main_test_layers(model='relu'):
                 # You can also save the weight of 1st hidden layer to .npz file.
                 # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
             except:  # pylint: disable=bare-except
-                print("You should change vis.W(), if you want to save the feature images for different dataset")
+                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -163,7 +144,6 @@ def main_test_layers(model='relu'):
     print("   test acc: %f" % (test_acc / n_batch))
 
     # Add ops to save and restore all the variables, including variables for training.
-    # ref: https://www.tensorflow.org/versions/r0.8/how_tos/variables/index.html
     saver = tf.train.Saver()
     save_path = saver.save(sess, "./model.ckpt")
     print("Model saved in file: %s" % save_path)
@@ -183,21 +163,6 @@ def main_test_layers(model='relu'):
 def main_test_denoise_AE(model='relu'):
     X_train, y_train, X_val, y_val, X_test, y_test = \
                                 tl.files.load_mnist_dataset(shape=(-1,784))
-
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
 
     sess = tf.InteractiveSession()
 
@@ -246,21 +211,6 @@ def main_test_stacked_denoise_AE(model='relu'):
     X_train, y_train, X_val, y_val, X_test, y_test = \
                                 tl.files.load_mnist_dataset(shape=(-1,784))
 
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
     sess = tf.InteractiveSession()
 
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
@@ -306,7 +256,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     train_params = network.all_params
 
     # train_op = tf.train.GradientDescentOptimizer(0.5).minimize(cost)
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
     # Initialize all variables including weights, biases and the variables in train_op
     tl.layers.initialize_global_variables(sess)
@@ -335,7 +285,7 @@ def main_test_stacked_denoise_AE(model='relu'):
         for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update(network.all_drop)  # enable noise layers
-            feed_dict[set_keep['denoising1']] = 1  # disable denoising layer
+            feed_dict[tl.layers.LayersConfig.set_keep['denoising1']] = 1  # disable denoising layer
             sess.run(train_op, feed_dict=feed_dict)
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
@@ -366,7 +316,7 @@ def main_test_stacked_denoise_AE(model='relu'):
                 # visualize the 1st hidden layer during fine-tune
                 tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
             except:  # pylint: disable=bare-except
-                print("You should change vis.W(), if you want to save the feature images for different dataset")
+                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -406,21 +356,6 @@ def main_test_cnn_layer():
     X_train, y_train, X_val, y_val, X_test, y_test = \
                     tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
-    X_train = np.asarray(X_train, dtype=np.float32)
-    y_train = np.asarray(y_train, dtype=np.int64)
-    X_val = np.asarray(X_val, dtype=np.float32)
-    y_val = np.asarray(y_val, dtype=np.int64)
-    X_test = np.asarray(X_test, dtype=np.float32)
-    y_test = np.asarray(y_test, dtype=np.int64)
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
-
     sess = tf.InteractiveSession()
 
     # Define the batchsize at the begin, you can give the batchsize in x and y_
@@ -435,7 +370,7 @@ def main_test_cnn_layer():
         ])
 
     network = tl.layers.InputLayer(x, name='input')
-    ## Professional conv API for tensorflow user
+    ## Professional conv API for tensorflow expert
     # network = tl.layers.Conv2dLayer(network,
     #                     act = tf.nn.relu,
     #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
@@ -460,7 +395,7 @@ def main_test_cnn_layer():
     #                     padding='SAME',
     #                     pool = tf.nn.max_pool,
     #                     name ='pool2',)   # output: (?, 7, 7, 64)
-    ## Simplified conv API for beginner (the same with the above layers)
+    ## Simplified conv API (the same with the above layers)
     network = tl.layers.Conv2d(network, 32, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
     network = tl.layers.MaxPool2d(network, (2, 2), (2, 2), padding='SAME', name='pool1')
     network = tl.layers.Conv2d(network, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
@@ -485,7 +420,7 @@ def main_test_cnn_layer():
     print_freq = 10
 
     train_params = network.all_params
-    train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
     tl.layers.initialize_global_variables(sess)
     network.print_params()

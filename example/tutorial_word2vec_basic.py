@@ -41,8 +41,9 @@ import time
 
 import numpy as np
 import tensorflow as tf
-import tensorlayer as tl
 from six.moves import xrange  # pylint: disable=redefined-builtin
+
+import tensorlayer as tl
 
 flags = tf.flags
 flags.DEFINE_string("model", "one", "A type of model.")
