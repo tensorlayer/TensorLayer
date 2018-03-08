@@ -130,7 +130,7 @@ The following is an example implementation of a layer that multiplies its input 
           self.all_drop = dict(layer.all_drop)
 
           # update layer (customized)
-          self.all_layers.extend( [self.outputs] )
+          self.all_layers.append(self.outputs)
 
 
 Your Dense Layer
@@ -280,6 +280,10 @@ Layer list
    MeanPool2d
    MaxPool3d
    MeanPool3d
+   GlobalMaxPool1d
+   GlobalMeanPool1d
+   GlobalMaxPool2d
+   GlobalMeanPool2d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -561,12 +565,27 @@ Padding layer for any modes.
 
 3D Max pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool3d
+.. autoclass:: MaxPool3d
 
 3D Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool3d
+.. autoclass:: MeanPool3d
 
+1D Global Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMaxPool1d
+
+1D Global Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMeanPool1d
+
+2D Global Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMaxPool2d
+
+2D Global Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMeanPool2d
 
 
 Normalization layer

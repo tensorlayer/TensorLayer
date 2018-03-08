@@ -4,6 +4,8 @@ import copy
 
 from .core import *
 
+# from tensorlayer.layers.core import *
+
 
 class PoolLayer(Layer):
     """
@@ -162,7 +164,7 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
 
     Parameters
     -----------
-    net : :class:`Layer`
+    layer : :class:`Layer`
         The previous layer with a output rank as 4.
     filter_size : tuple of int
         (height, width) for filter size.
@@ -186,12 +188,13 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
     return net
 
 
-def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+# def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+class MaxPool3d(Layer):
     """Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
     Parameters
     ------------
-    net : :class:`Layer`
+    layer : :class:`Layer`
         The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
@@ -213,21 +216,35 @@ def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', da
         A max pooling 3-D layer with a output rank as 5.
 
     """
-    logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.max_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend([outputs])
-    return net_new
+    def __init__(self, layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+
+        self.outputs = tf.layers.max_pooling3d(layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
 
 
-def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+# def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+class MeanPool3d(Layer):
     """Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 
     Parameters
     ------------
-    net : :class:`Layer`
+    layer : :class:`Layer`
         The previous layer with a output rank as 5.
     filter_size : tuple of int
         Pooling window size.
@@ -249,19 +266,237 @@ def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', d
         A mean pooling 3-D layer with a output rank as 5.
 
     """
-    logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.average_pooling3d(net.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
-    net_new = copy.copy(net)
-    net_new.outputs = outputs
-    net_new.all_layers.extend([outputs])
-    return net_new
+    def __init__(self, layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+
+        # operation (customized)
+        self.outputs = tf.layers.average_pooling3d(layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
+        # self.all_params.extend( [W, b] )
+
+
+class GlobalMaxPool1d(Layer):
+    """ The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
+
+    Parameters
+    ------------
+    layer : :class:`Layer`
+        The previous layer with a output rank as 3.
+    name : str
+        A unique layer name.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder("float32", [None, 100, 30])
+    >>> n = InputLayer(x, name='in')
+    >>> n = GlobalMaxPool1d(n)
+    ... [None, 30]
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            name='globalmaxpool1d',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        logging.info("GlobalMaxPool1d %s" % name)
+
+        # operation (customized)
+        self.outputs = tf.reduce_max(layer.outputs, axis=1, name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
+        # self.all_params.extend( [W, b] )
+
+
+class GlobalMeanPool1d(Layer):
+    """ The :class:`GlobalMeanPool1d` class is a 1D Global Mean Pooling layer.
+
+    Parameters
+    ------------
+    layer : :class:`Layer`
+        The previous layer with a output rank as 3.
+    name : str
+        A unique layer name.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder("float32", [None, 100, 30])
+    >>> n = InputLayer(x, name='in')
+    >>> n = GlobalMeanPool1d(n)
+    ... [None, 30]
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            name='globalmeanpool1d',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        logging.info("GlobalMeanPool1d %s" % name)
+
+        # operation (customized)
+        self.outputs = tf.reduce_mean(layer.outputs, axis=1, name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
+        # self.all_params.extend( [W, b] )
+
+
+class GlobalMaxPool2d(Layer):
+    """ The :class:`GlobalMaxPool2d` class is a 2D Global Max Pooling layer.
+
+    Parameters
+    ------------
+    layer : :class:`Layer`
+        The previous layer with a output rank as 4.
+    name : str
+        A unique layer name.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder("float32", [None, 100, 100, 30])
+    >>> n = InputLayer(x, name='in2')
+    >>> n = GlobalMaxPool2d(n)
+    ... [None, 30]
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            name='globalmaxpool2d',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        logging.info("GlobalMaxPool2d %s" % name)
+
+        # operation (customized)
+        self.outputs = tf.reduce_max(layer.outputs, axis=[1, 2], name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
+        # self.all_params.extend( [W, b] )
+
+
+class GlobalMeanPool2d(Layer):
+    """ The :class:`GlobalMeanPool2d` class is a 2D Global Mean Pooling layer.
+
+    Parameters
+    ------------
+    layer : :class:`Layer`
+        The previous layer with a output rank as 4.
+    name : str
+        A unique layer name.
+
+    Examples
+    ---------
+    >>> x = tf.placeholder("float32", [None, 100, 100, 30])
+    >>> n = InputLayer(x, name='in2')
+    >>> n = GlobalMeanPool2d(n)
+    ... [None, 30]
+    """
+
+    def __init__(
+            self,
+            layer=None,
+            name='globalmeanpool2d',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        logging.info("GlobalMeanPool2d %s" % name)
+
+        # operation (customized)
+        self.outputs = tf.reduce_mean(layer.outputs, axis=[1, 2], name=name)
+
+        # get stuff from previous layer (fixed)
+        self.all_layers = list(layer.all_layers)
+        self.all_params = list(layer.all_params)
+        self.all_drop = dict(layer.all_drop)
+
+        # update layer (customized)
+        self.all_layers.append(self.outputs)
+        # self.all_params.extend( [W, b] )
 
 
 # Alias
 MaxPool1d = maxpool1d
 MaxPool2d = maxpool2d
-MaxPool3d = maxpool3d
+# MaxPool3d = maxpool3d
 MeanPool1d = meanpool1d
 MeanPool2d = meanpool2d
-MeanPool3d = meanpool3d
+# MeanPool3d = meanpool3d
+
+if __name__ == '__main__':
+    x = tf.placeholder("float32", [None, 100, 30])
+    n = InputLayer(x, name='in1')
+    n = GlobalMaxPool1d(n)
+    print(n)
+
+    x = tf.placeholder("float32", [None, 100, 100, 30])
+    n = InputLayer(x, name='in2')
+    n = GlobalMaxPool2d(n)
+    print(n)
+
+    x = tf.placeholder("float32", [None, 100, 100, 100, 30])
+    n = InputLayer(x, name='in3')
+    n = MaxPool3d(n)
+    n.print_layers()
+    print(n)
+
+    x = tf.placeholder("float32", [None, 100, 100, 100, 30])
+    n = InputLayer(x, name='in4')
+    n = MeanPool3d(n)
+    n.print_layers()
+    print(n)
