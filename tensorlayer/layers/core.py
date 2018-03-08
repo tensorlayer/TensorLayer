@@ -13,22 +13,10 @@ from .. import files, iterate, utils, visualize
 #     "DenseLayer",
 # ]
 
-# set_keep = locals()
-set_keep = globals()
-set_keep['_layers_name_list'] = []
-set_keep['name_reuse'] = False
 
-
-class CoreConfig:
-    D_TYPE = tf.float32
-
-
-def set_dtype(dtype):
-    CoreConfig.D_TYPE = dtype
-
-
-def get_dtype(dtype):
-    return CoreConfig.D_TYPE
+class LayersConfig:
+    D_TYPE = tf.float32 # data type is set to float32 in default
+    SET_KEEP = {'_layers_name_list': [], 'name_reuse': False}
 
 
 try:  # For TF12 and later
@@ -76,7 +64,7 @@ def flatten_reshape(variable, name='flatten'):
 
 
 def clear_layers_name():
-    """Clear all layer names in `set_keep['_layers_name_list']` if layer names are reused.
+    """Clear all layer names in `LayersConfig.SET_KEEP['_layers_name_list']` if layer names are reused.
 
     Examples
     ---------
@@ -99,7 +87,7 @@ def clear_layers_name():
     >>> net2 = tl.layers.DenseLayer(net2, n_units=800, name='relu1')
 
     """
-    set_keep['_layers_name_list'] = []
+    LayersConfig.SET_KEEP['_layers_name_list'] = []
 
 
 def set_name_reuse(enable=True):
@@ -141,7 +129,7 @@ def set_name_reuse(enable=True):
     - see ``tutorial_ptb_lstm.py`` for example.
 
     """
-    set_keep['name_reuse'] = enable
+    LayersConfig.SET_KEEP['name_reuse'] = enable
 
 
 def initialize_rnn_state(state, feed_dict=None):
@@ -398,7 +386,7 @@ class Layer(object):
         scope_name = tf.get_variable_scope().name
         if scope_name:
             name = scope_name + '/' + name
-        if (name in set_keep['_layers_name_list']) and set_keep['name_reuse'] == False:
+        if (name in LayersConfig.SET_KEEP['_layers_name_list']) and LayersConfig.SET_KEEP['name_reuse'] == False:
             raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
             \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)\
             \nAdditional Informations: http://tensorlayer.readthedocs.io/en/latest/modules/layers.html?highlight=clear_layers_name#tensorlayer.layers.clear_layers_name"
@@ -406,7 +394,7 @@ class Layer(object):
         else:
             self.name = name
             if name not in ['', None, False]:
-                set_keep['_layers_name_list'].append(name)
+                LayersConfig.SET_KEEP['_layers_name_list'].append(name)
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -452,7 +440,7 @@ class Layer(object):
     def __getitem__(self, key):
         set_name_reuse(True)
         net_new = Layer(self.inputs, name=self.name)
-        set_name_reuse(set_keep['name_reuse'])  # set back
+        set_name_reuse(LayersConfig.SET_KEEP['name_reuse'])  # set back
         net_new.outputs = self.outputs[key]
 
         net_new.all_layers = list(self.all_layers[:-1])
@@ -657,12 +645,12 @@ class Word2vecEmbeddingInputlayer(Layer):
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=CoreConfig.D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(
-                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init, dtype=CoreConfig.D_TYPE, **nce_W_init_args)
-            nce_biases = tf.get_variable(name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=CoreConfig.D_TYPE, **nce_b_init_args)
+                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init, dtype=LayersConfig.D_TYPE, **nce_W_init_args)
+            nce_biases = tf.get_variable(name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=LayersConfig.D_TYPE, **nce_b_init_args)
 
         # Compute the average NCE loss for the batch.
         # tf.nce_loss automatically draws a new sample of the negative labels
@@ -742,7 +730,7 @@ class EmbeddingInputlayer(Layer):
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         with tf.variable_scope(name):
-            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=CoreConfig.D_TYPE, **E_init_args)
+            embeddings = tf.get_variable(name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.D_TYPE, **E_init_args)
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -807,7 +795,7 @@ class AverageEmbeddingInputlayer(Layer):
                 name='embeddings',
                 shape=(vocabulary_size, embedding_size),
                 initializer=embeddings_initializer,
-                dtype=CoreConfig.D_TYPE,
+                dtype=LayersConfig.D_TYPE,
                 **(embeddings_kwargs or {})
                 # **embeddings_kwargs
             )  # **(embeddings_kwargs or {}),
@@ -822,7 +810,7 @@ class AverageEmbeddingInputlayer(Layer):
             word_embeddings *= tf.cast(
                 tf.expand_dims(masks, axis=-1),
                 # tf.float32,
-                dtype=CoreConfig.D_TYPE,
+                dtype=LayersConfig.D_TYPE,
             )
             sum_word_embeddings = tf.reduce_sum(word_embeddings, axis=1)
 
@@ -832,7 +820,7 @@ class AverageEmbeddingInputlayer(Layer):
                 axis=1,
                 keep_dims=True,
                 # dtype=tf.float32,
-                dtype=CoreConfig.D_TYPE,
+                dtype=LayersConfig.D_TYPE,
                 name='sentence_lengths',
             )
 
@@ -914,12 +902,12 @@ class DenseLayer(Layer):
         self.n_units = n_units
         logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
@@ -1083,8 +1071,8 @@ class ReconLayer(DenseLayer):
         logging.info("     [*] %s start pretrain" % self.name)
         logging.info("     batch_size: %d" % batch_size)
         if denoise_name:
-            logging.info("     denoising layer keep: %f" % self.all_drop[set_keep[denoise_name]])
-            dp_denoise = self.all_drop[set_keep[denoise_name]]
+            logging.info("     denoising layer keep: %f" % self.all_drop[LayersConfig.SET_KEEP[denoise_name]])
+            dp_denoise = self.all_drop[LayersConfig.SET_KEEP[denoise_name]]
         else:
             logging.info("     no denoising layer")
 
@@ -1093,7 +1081,7 @@ class ReconLayer(DenseLayer):
             for X_train_a, _ in iterate.minibatches(X_train, X_train, batch_size, shuffle=True):
                 dp_dict = utils.dict_to_one(self.all_drop)
                 if denoise_name:
-                    dp_dict[set_keep[denoise_name]] = dp_denoise
+                    dp_dict[LayersConfig.SET_KEEP[denoise_name]] = dp_denoise
                 feed_dict = {x: X_train_a}
                 feed_dict.update(dp_dict)
                 sess.run(self.train_op, feed_dict=feed_dict)
@@ -1211,14 +1199,14 @@ class DropoutLayer(Layer):
             if is_fix:
                 self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
             else:
-                set_keep[name] = tf.placeholder(tf.float32)
-                self.outputs = tf.nn.dropout(self.inputs, set_keep[name], seed=seed, name=name)  # 1.2
+                LayersConfig.SET_KEEP[name] = tf.placeholder(tf.float32)
+                self.outputs = tf.nn.dropout(self.inputs, LayersConfig.SET_KEEP[name], seed=seed, name=name)  # 1.2
 
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
             if is_fix is False:
-                self.all_drop.update({set_keep[name]: keep})
+                self.all_drop.update({LayersConfig.SET_KEEP[name]: keep})
             self.all_layers.extend([self.outputs])
 
         # logging.info(set_keep[name])
@@ -1359,17 +1347,17 @@ class DropconnectDenseLayer(Layer):
         logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
-            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
+            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
             self.outputs = act(tf.matmul(self.inputs, W) + b)
 
-        set_keep[name] = tf.placeholder(tf.float32)
-        W_dropcon = tf.nn.dropout(W, set_keep[name])
+        LayersConfig.SET_KEEP[name] = tf.placeholder(tf.float32)
+        W_dropcon = tf.nn.dropout(W, LayersConfig.SET_KEEP[name])
         self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        self.all_drop.update({set_keep[name]: keep})
+        self.all_drop.update({LayersConfig.SET_KEEP[name]: keep})
         self.all_layers.extend([self.outputs])
         self.all_params.extend([W, b])

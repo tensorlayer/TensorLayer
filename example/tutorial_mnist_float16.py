@@ -1,14 +1,10 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import time
-
-import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
-D_TYPE = tf.float16  # tf.float32  tf.float16
-tl.layers.set_dtype(D_TYPE)
+LayersConfig.D_TYPE = tf.float16  # tf.float32  tf.float16
 
 
 X_train, y_train, X_val, y_val, X_test, y_test = \
@@ -18,7 +14,7 @@ sess = tf.InteractiveSession()
 
 batch_size = 128
 
-x = tf.placeholder(D_TYPE, shape=[batch_size, 28, 28, 1])
+x = tf.placeholder(LayersConfig.D_TYPE, shape=[batch_size, 28, 28, 1])
 y_ = tf.placeholder(
     tf.int64, shape=[
         batch_size,
@@ -59,7 +55,7 @@ cost = tl.cost.cross_entropy(y, y_, name='xentropy')
 y2 = net_test.outputs
 cost_test = tl.cost.cross_entropy(y2, y_, name='xentropy2')
 correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
-acc = tf.reduce_mean(tf.cast(correct_prediction, D_TYPE))
+acc = tf.reduce_mean(tf.cast(correct_prediction, LayersConfig.D_TYPE))
 
 # define the optimizer
 train_params = tl.layers.get_variables_with_name('model', train_only=True, printable=False)

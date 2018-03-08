@@ -65,11 +65,11 @@ class Conv1dLayer(Layer):
         logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
             self.outputs = tf.nn.convolution(
                 self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ), data_format=data_format)  # 1.2
             if b_init:
-                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=CoreConfig.D_TY, **b_init_args)
+                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.D_TY, **b_init_args)
                 self.outputs = self.outputs + b
 
             self.outputs = act(self.outputs)
@@ -181,9 +181,9 @@ class Conv2dLayer(Layer):
         logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
             if b_init:
-                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(
                     tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
             else:
@@ -303,9 +303,9 @@ class DeConv2dLayer(Layer):
                                                                                            act.__name__))
         # logging.info("  DeConv2dLayer: Untested")
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
             if b_init:
-                b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b)
             else:
                 self.outputs = act(tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding))
@@ -377,8 +377,8 @@ class Conv3dLayer(Layer):
         with tf.variable_scope(name):
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
-            W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
-            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+            W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
+            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
             self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b)
 
         # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
@@ -448,8 +448,8 @@ class DeConv3dLayer(Layer):
                                                                                            act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
-            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+            W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
+            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
 
             self.outputs = act(tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b)
 
@@ -825,10 +825,10 @@ class DeformableConv2d(Layer):
             input_deform = _tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(
-                name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+                name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
 
             if b_init:
-                b = tf.get_variable(name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = tf.reshape(
                     act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
                     (tf.shape(self.inputs)[0], input_h, input_w, shape[-1]))
@@ -989,9 +989,9 @@ class AtrousConv2dLayer(Layer):
         logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
-            filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE, **W_init_args)
+            filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE, **W_init_args)
             if b_init:
-                b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding) + b)
             else:
                 self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
@@ -1182,7 +1182,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
         weights[:, :, i, i] = bilinear_kernel
 
     # assign numpy array to constant_initalizer and pass to get_variable
-    bilinear_weights_init = tf.constant_initializer(value=weights, dtype=CoreConfig.D_TYPE)  # dtype=tf.float32)
+    bilinear_weights_init = tf.constant_initializer(value=weights, dtype=LayersConfig.D_TYPE)  # dtype=tf.float32)
     return bilinear_weights_init
 
 
@@ -1632,10 +1632,10 @@ class DepthwiseConv2d(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=CoreConfig.D_TYPE,
+                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.D_TYPE,
                 **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]
             if b_init:
-                b = tf.get_variable(name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=CoreConfig.D_TYPE, **b_init_args)
+                b = tf.get_variable(name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=LayersConfig.D_TYPE, **b_init_args)
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate) + b)
             else:
                 self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate))
@@ -1710,11 +1710,11 @@ class GroupConv2d(Layer):
                 name='W',
                 shape=[filter_size[0], filter_size[1], channels / n_group, n_filter],
                 initializer=W_init,
-                dtype=CoreConfig.D_TYPE,
+                dtype=LayersConfig.D_TYPE,
                 trainable=True,
                 **W_init_args)
             if b_init:
-                bi = tf.get_variable(name='b', shape=n_filter, initializer=b_init, dtype=CoreConfig.D_TYPE, trainable=True, **b_init_args)
+                bi = tf.get_variable(name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.D_TYPE, trainable=True, **b_init_args)
         if n_group == 1:
             conv = groupConv(self.inputs, We)
         else:

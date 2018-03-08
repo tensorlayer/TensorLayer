@@ -199,7 +199,7 @@ class RNNLayer(Layer):
         else:
             self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=CoreConfig.D_TYPE)  #dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.D_TYPE)  #dtype=tf.float32)  # 1.2.3
         state = self.initial_state
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -403,11 +403,11 @@ class BiRNNLayer(Layer):
 
             # Initial state of RNN
             if fw_initial_state is None:
-                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=CoreConfig.D_TYPE)  # dtype=tf.float32)
+                self.fw_initial_state = self.fw_cell.zero_state(self.batch_size, dtype=LayersConfig.D_TYPE)  # dtype=tf.float32)
             else:
                 self.fw_initial_state = fw_initial_state
             if bw_initial_state is None:
-                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=CoreConfig.D_TYPE)  # dtype=tf.float32)
+                self.bw_initial_state = self.bw_cell.zero_state(self.batch_size, dtype=LayersConfig.D_TYPE)  # dtype=tf.float32)
             else:
                 self.bw_initial_state = bw_initial_state
             # exit()
@@ -717,7 +717,7 @@ class ConvLSTMLayer(Layer):
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=CoreConfig.D_TYPE)  # dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.D_TYPE)  # dtype=tf.float32)  # 1.2.3
         state = self.initial_state
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -1105,7 +1105,7 @@ class DynamicRNNLayer(Layer):
 
         # Initialize initial_state
         if initial_state is None:
-            self.initial_state = self.cell.zero_state(batch_size, dtype=CoreConfig.D_TYPE)  # dtype=tf.float32)
+            self.initial_state = self.cell.zero_state(batch_size, dtype=LayersConfig.D_TYPE)  # dtype=tf.float32)
         else:
             self.initial_state = initial_state
 
@@ -1363,7 +1363,7 @@ class BiDynamicRNNLayer(Layer):
                     sequence_length=sequence_length,
                     initial_states_fw=self.fw_initial_state,
                     initial_states_bw=self.bw_initial_state,
-                    dtype=CoreConfig.D_TYPE,
+                    dtype=LayersConfig.D_TYPE,
                     **dynamic_rnn_init_args)
 
             else:
@@ -1376,7 +1376,7 @@ class BiDynamicRNNLayer(Layer):
                     sequence_length=sequence_length,
                     initial_state_fw=self.fw_initial_state,
                     initial_state_bw=self.bw_initial_state,
-                    dtype=CoreConfig.D_TYPE,
+                    dtype=LayersConfig.D_TYPE,
                     **dynamic_rnn_init_args)
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
