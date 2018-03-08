@@ -64,10 +64,9 @@ class TimeDistributedLayer(Layer):
         x = tf.unstack(self.inputs, axis=1)
 
         for i in range(0, timestep):
-            with tf.variable_scope(name, reuse=(LayersConfig.SET_KEEP['name_reuse'] if i == 0 else True)) as vs:
-                set_name_reuse((LayersConfig.SET_KEEP['name_reuse'] if i == 0 else True))
+            with tf.variable_scope(name, reuse=(LayersConfig._name_reuse if i == 0 else True)) as vs:
+                set_name_reuse((LayersConfig._name_reuse if i == 0 else True))
                 net = layer_class(InputLayer(x[i], name=args['name'] + str(i)), **args)
-                # net = layer_class(InputLayer(x[i], name="input_"+args['name']), **args)
                 x[i] = net.outputs
                 variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 

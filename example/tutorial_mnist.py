@@ -285,7 +285,7 @@ def main_test_stacked_denoise_AE(model='relu'):
         for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update(network.all_drop)  # enable noise layers
-            feed_dict[tl.layers.LayersConfig.SET_KEEP['denoising1']] = 1  # disable denoising layer
+            feed_dict[tl.layers.LayersConfig.object_store['denoising1']] = 1  # disable denoising layer
             sess.run(train_op, feed_dict=feed_dict)
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
