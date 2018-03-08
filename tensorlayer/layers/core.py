@@ -11,8 +11,7 @@ from .. import files, iterate, utils, visualize
 
 class LayersConfig:
     tf_dtype = tf.float32  # TensorFlow DType
-
-    object_store = {}  # A global object store (internal use only)
+    set_keep = {}  # A dictionary for holding tf.placeholders
     _layer_name_list = []  # A list of used layer names
     _name_reuse = False  # Boolean to indicate if layer names can be reused
 
@@ -1071,8 +1070,8 @@ class ReconLayer(DenseLayer):
         logging.info("     [*] %s start pretrain" % self.name)
         logging.info("     batch_size: %d" % batch_size)
         if denoise_name:
-            logging.info("     denoising layer keep: %f" % self.all_drop[LayersConfig.object_store[denoise_name]])
-            dp_denoise = self.all_drop[LayersConfig.object_store[denoise_name]]
+            logging.info("     denoising layer keep: %f" % self.all_drop[LayersConfig.set_keep[denoise_name]])
+            dp_denoise = self.all_drop[LayersConfig.set_keep[denoise_name]]
         else:
             logging.info("     no denoising layer")
 
@@ -1081,7 +1080,7 @@ class ReconLayer(DenseLayer):
             for X_train_a, _ in iterate.minibatches(X_train, X_train, batch_size, shuffle=True):
                 dp_dict = utils.dict_to_one(self.all_drop)
                 if denoise_name:
-                    dp_dict[LayersConfig.object_store[denoise_name]] = dp_denoise
+                    dp_dict[LayersConfig.set_keep[denoise_name]] = dp_denoise
                 feed_dict = {x: X_train_a}
                 feed_dict.update(dp_dict)
                 sess.run(self.train_op, feed_dict=feed_dict)
@@ -1199,14 +1198,14 @@ class DropoutLayer(Layer):
             if is_fix:
                 self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
             else:
-                LayersConfig.object_store[name] = tf.placeholder(tf.float32)
-                self.outputs = tf.nn.dropout(self.inputs, LayersConfig.object_store[name], seed=seed, name=name)  # 1.2
+                LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+                self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
 
             self.all_layers = list(layer.all_layers)
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
             if is_fix is False:
-                self.all_drop.update({LayersConfig.object_store[name]: keep})
+                self.all_drop.update({LayersConfig.set_keep[name]: keep})
             self.all_layers.extend([self.outputs])
 
         # logging.info(set_keep[name])
@@ -1351,13 +1350,13 @@ class DropconnectDenseLayer(Layer):
             b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
             self.outputs = act(tf.matmul(self.inputs, W) + b)
 
-        LayersConfig.object_store[name] = tf.placeholder(tf.float32)
-        W_dropcon = tf.nn.dropout(W, LayersConfig.object_store[name])
+        LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+        W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
         self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_layers = list(layer.all_layers)
         self.all_params = list(layer.all_params)
         self.all_drop = dict(layer.all_drop)
-        self.all_drop.update({LayersConfig.object_store[name]: keep})
+        self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.extend([self.outputs])
         self.all_params.extend([W, b])
