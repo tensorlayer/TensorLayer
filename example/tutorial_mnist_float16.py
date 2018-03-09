@@ -15,10 +15,7 @@ sess = tf.InteractiveSession()
 batch_size = 128
 
 x = tf.placeholder(LayersConfig.tf_dtype, shape=[batch_size, 28, 28, 1])
-y_ = tf.placeholder(
-    tf.int64, shape=[
-        batch_size,
-    ])
+y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 
 def model(x, is_train=True, reuse=False):
