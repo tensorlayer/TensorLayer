@@ -63,7 +63,7 @@ class TimeDistributedLayer(Layer):
         timestep = input_shape[1]
         x = tf.unstack(self.inputs, axis=1)
 
-        is_name_reuse = tf.variable_scope().reuse
+        is_name_reuse = tf.get_variable_scope().reuse
         for i in range(0, timestep):
             with tf.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
                 net = layer_class(InputLayer(x[i], name=args['name'] + str(i)), **args)
