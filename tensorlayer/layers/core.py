@@ -4,6 +4,7 @@ import time
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.util.deprecation import deprecated
 
 from .. import _logging as logging
 from .. import files, iterate, utils, visualize
@@ -12,8 +13,6 @@ from .. import files, iterate, utils, visualize
 class LayersConfig:
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
-    _layer_name_list = []  # A list of used layer names
-    _name_reuse = False  # Boolean to indicate if layer names can be reused
 
 
 try:  # For TF12 and later
@@ -60,73 +59,14 @@ def flatten_reshape(variable, name='flatten'):
     return tf.reshape(variable, shape=[-1, dim], name=name)
 
 
+@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check naming.")
 def clear_layers_name():
-    """Clear all layer names in LayersConfig
-
-    Examples
-    ---------
-    Clean the current graph and try to re-define model.
-
-    >>> for .... (different model settings):
-    >>>    with tf.Graph().as_default() as graph:   # clear all variables of TF
-    >>>       tl.layers.clear_layers_name()         # clear all layer name of TL
-    >>>       sess = tf.InteractiveSession()
-    >>>       # define and train a model here
-    >>>       sess.close()
-
-    Enable reusing layer names.
-
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
-    >>> net = tl.layers.DenseLayer(net, n_units=800, name='relu1')
-    ...
-    >>> tl.layers.clear_layers_name()
-    >>> net2 = tl.layers.InputLayer(x, name='input_layer')
-    >>> net2 = tl.layers.DenseLayer(net2, n_units=800, name='relu1')
-
-    """
-    LayersConfig._layer_name_list = []
+    logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
+@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check name reusing.")
 def set_name_reuse(enable=True):
-    """Enable or disable reuse layer name.
-
-    By default, each layer must has unique
-    name. When you want two or more input placeholder (inference) share the same
-    model parameters, you need to enable layer name reuse, then allow the
-    parameters have same name scope.
-
-    Parameters
-    ----------
-    enable : boolean
-        Enable or disable name/layer reuse, None means False.
-
-    Examples
-    --------
-    >>> def embed_seq(input_seqs, is_train, reuse):
-    >>>    with tf.variable_scope("model", reuse=reuse):
-    >>>         tl.layers.set_name_reuse(reuse)
-    >>>         net = tl.layers.EmbeddingInputlayer(
-    ...                     inputs = input_seqs,
-    ...                     vocabulary_size = vocab_size,
-    ...                     embedding_size = embedding_size,
-    ...                     name = 'e_embedding')
-    >>>         net = tl.layers.DynamicRNNLayer(net,
-    ...                     cell_fn = tf.contrib.rnn.BasicLSTMCell,
-    ...                     n_hidden = embedding_size,
-    ...                     dropout = (0.7 if is_train else None),
-    ...                     initializer = w_init,
-    ...                     sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
-    ...                     return_last = True,
-    ...                     name = 'e_dynamicrnn')
-    >>>    return net
-    >>>
-    >>> net_train = embed_seq(t_caption, is_train=True, reuse=False)
-    >>> net_test = embed_seq(t_caption, is_train=False, reuse=True)
-
-    - see ``tutorial_ptb_lstm.py`` for example.
-
-    """
-    LayersConfig._name_reuse = enable
+    logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
 def initialize_rnn_state(state, feed_dict=None):
@@ -383,15 +323,7 @@ class Layer(object):
         scope_name = tf.get_variable_scope().name
         if scope_name:
             name = scope_name + '/' + name
-        if (name in LayersConfig._layer_name_list) and LayersConfig._name_reuse is False:
-            raise Exception("Layer '%s' already exists, please choice other 'name' or reuse this layer\
-            \nHint : Use different name for different 'Layer' (The name is used to control parameter sharing)\
-            \nAdditional Informations: http://tensorlayer.readthedocs.io/en/latest/modules/layers.html?highlight=clear_layers_name#tensorlayer.layers.clear_layers_name"
-                            % name)
-        else:
-            self.name = name
-            if name not in ['', None, False]:
-                LayersConfig._layer_name_list.append(name)
+        self.name = name
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -435,9 +367,7 @@ class Layer(object):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
-        set_name_reuse(True)
         net_new = Layer(self.inputs, name=self.name)
-        set_name_reuse(LayersConfig._name_reuse)  # set back
         net_new.outputs = self.outputs[key]
 
         net_new.all_layers = list(self.all_layers[:-1])

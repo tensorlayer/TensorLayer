@@ -231,7 +231,6 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
             network = EmbeddingInputlayer(inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=rnn_init, name='embedding')
             network = RNNLayer(
                 network,

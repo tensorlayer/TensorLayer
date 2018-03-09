@@ -194,7 +194,6 @@ def main(_):
         print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
         initializer = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
             network = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding')
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(

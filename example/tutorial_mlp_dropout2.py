@@ -18,7 +18,6 @@ y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 # define the network
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
-        tl.layers.set_name_reuse(reuse)
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropoutLayer(network, keep=0.8, is_fix=True, is_train=is_train, name='drop1')
         network = tl.layers.DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu1')
