@@ -208,7 +208,7 @@ with tf.device('/cpu:0'):
             net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
             #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
-            net = FlattenLayer(net, name='flatten')                             # output: (batch_size, 2304)
+            net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
             net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
             net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
             net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
