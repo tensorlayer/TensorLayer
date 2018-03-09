@@ -186,7 +186,6 @@ with tf.device('/cpu:0'):
         W_init2 = tf.truncated_normal_initializer(stddev=0.04)
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
             net = InputLayer(x_crop, name='input')
             net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
             # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 3, 64],
@@ -234,7 +233,6 @@ with tf.device('/cpu:0'):
         W_init2 = tf.truncated_normal_initializer(stddev=0.04)
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
             net = InputLayer(x_crop, name='input')
 
             net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')

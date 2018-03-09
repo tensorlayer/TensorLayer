@@ -13,7 +13,6 @@ from .. import files, iterate, utils, visualize
 class LayersConfig:
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
-    _name_reuse = False  # Boolean to indicate if layer names can be reused
 
 
 try:  # For TF12 and later
@@ -62,49 +61,12 @@ def flatten_reshape(variable, name='flatten'):
 
 @deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check naming.")
 def clear_layers_name():
-    raise NotImplementedError('TensorLayer relies on TensorFlow to check naming.')
+    raise NotImplementedError('TensorLayer relies on TensorFlow to check naming. Remove this function call.')
 
 
+@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check name reusing.")
 def set_name_reuse(enable=True):
-    """Enable or disable reuse layer name.
-
-    By default, each layer must has unique
-    name. When you want two or more input placeholder (inference) share the same
-    model parameters, you need to enable layer name reuse, then allow the
-    parameters have same name scope.
-
-    Parameters
-    ----------
-    enable : boolean
-        Enable or disable name/layer reuse, None means False.
-
-    Examples
-    --------
-    >>> def embed_seq(input_seqs, is_train, reuse):
-    >>>    with tf.variable_scope("model", reuse=reuse):
-    >>>         tl.layers.set_name_reuse(reuse)
-    >>>         net = tl.layers.EmbeddingInputlayer(
-    ...                     inputs = input_seqs,
-    ...                     vocabulary_size = vocab_size,
-    ...                     embedding_size = embedding_size,
-    ...                     name = 'e_embedding')
-    >>>         net = tl.layers.DynamicRNNLayer(net,
-    ...                     cell_fn = tf.contrib.rnn.BasicLSTMCell,
-    ...                     n_hidden = embedding_size,
-    ...                     dropout = (0.7 if is_train else None),
-    ...                     initializer = w_init,
-    ...                     sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
-    ...                     return_last = True,
-    ...                     name = 'e_dynamicrnn')
-    >>>    return net
-    >>>
-    >>> net_train = embed_seq(t_caption, is_train=True, reuse=False)
-    >>> net_test = embed_seq(t_caption, is_train=False, reuse=True)
-
-    - see ``tutorial_ptb_lstm.py`` for example.
-
-    """
-    LayersConfig._name_reuse = enable
+    raise NotImplementedError('TensorLayer relies on TensorFlow to check naming. Remove this function call.')
 
 
 def initialize_rnn_state(state, feed_dict=None):
@@ -405,9 +367,7 @@ class Layer(object):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
-        set_name_reuse(True)
         net_new = Layer(self.inputs, name=self.name)
-        set_name_reuse(LayersConfig._name_reuse)  # set back
         net_new.outputs = self.outputs[key]
 
         net_new.all_layers = list(self.all_layers[:-1])

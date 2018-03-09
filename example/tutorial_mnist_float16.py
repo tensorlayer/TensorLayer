@@ -20,7 +20,6 @@ y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("model", reuse=reuse):
-        tl.layers.set_name_reuse(reuse)
         n = InputLayer(x, name='input')
         # cnn
         n = Conv2d(n, 32, (5, 5), (1, 1), padding='SAME', name='cnn1')
