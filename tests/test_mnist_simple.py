@@ -15,10 +15,10 @@ y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 # define the network
 network = tl.layers.InputLayer(x, name='input')
 network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
-network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
-network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+network = tl.layers.DenseLayer(network, 100, tf.nn.relu, name='relu1')
+network = tl.layers.DropoutLayer(network, keep=0.8, name='drop2')
+network = tl.layers.DenseLayer(network, 100, tf.nn.relu, name='relu2')
+network = tl.layers.DropoutLayer(network, keep=0.8, name='drop3')
 # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
 # speed up computation, so we use identity here.
 # see tf.nn.sparse_softmax_cross_entropy_with_logits()
