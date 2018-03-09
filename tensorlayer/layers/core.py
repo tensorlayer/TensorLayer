@@ -59,14 +59,14 @@ def flatten_reshape(variable, name='flatten'):
     return tf.reshape(variable, shape=[-1, dim], name=name)
 
 
-@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check naming. Remove this function call.")
+@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check naming.")
 def clear_layers_name():
-    pass
+    logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
-@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check name reusing. Remove this function call.")
+@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check name reusing.")
 def set_name_reuse(enable=True):
-    pass
+    logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
 
 def initialize_rnn_state(state, feed_dict=None):
