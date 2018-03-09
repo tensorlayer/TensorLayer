@@ -291,7 +291,7 @@ class MeanPool3d(Layer):
 
 
 class GlobalMaxPool1d(Layer):
-    """ The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
+    """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.
 
     Parameters
     ------------
@@ -336,7 +336,7 @@ class GlobalMaxPool1d(Layer):
 
 
 class GlobalMeanPool1d(Layer):
-    """ The :class:`GlobalMeanPool1d` class is a 1D Global Mean Pooling layer.
+    """The :class:`GlobalMeanPool1d` class is a 1D Global Mean Pooling layer.
 
     Parameters
     ------------
@@ -381,7 +381,7 @@ class GlobalMeanPool1d(Layer):
 
 
 class GlobalMaxPool2d(Layer):
-    """ The :class:`GlobalMaxPool2d` class is a 2D Global Max Pooling layer.
+    """The :class:`GlobalMaxPool2d` class is a 2D Global Max Pooling layer.
 
     Parameters
     ------------
@@ -426,7 +426,7 @@ class GlobalMaxPool2d(Layer):
 
 
 class GlobalMeanPool2d(Layer):
-    """ The :class:`GlobalMeanPool2d` class is a 2D Global Mean Pooling layer.
+    """The :class:`GlobalMeanPool2d` class is a 2D Global Mean Pooling layer.
 
     Parameters
     ------------
