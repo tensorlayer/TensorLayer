@@ -190,7 +190,7 @@ with tf.device('/cpu:0'):
             net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
             # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 3, 64],
             #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5x3 patch
-            #             W_init=W_init, name ='cnn1')           # output: (batch_size, 24, 24, 64)
+            #             W_init=W_init, name ='cnn1')                          # output: (batch_size, 24, 24, 64)
             net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
             # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
             #             padding='SAME', pool = tf.nn.max_pool, name ='pool1',)# output: (batch_size, 12, 12, 64)
@@ -201,18 +201,17 @@ with tf.device('/cpu:0'):
             net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
             # net = Conv2dLayer(net, act=tf.nn.relu, shape=[5, 5, 64, 64],
             #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5 patch
-            #             W_init=W_init, name ='cnn2')           # output: (batch_size, 12, 12, 64)
+            #             W_init=W_init, name ='cnn2')                          # output: (batch_size, 12, 12, 64)
             net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
             # net.outputs = tf.nn.lrn(net.outputs, 4, bias=1.0, alpha=0.001 / 9.0,
             #             beta=0.75, name='norm2')
             net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
             #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
-            net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+            net = FlattenLayer(net, name='flatten')                             # output: (batch_size, 2304)
             net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
             net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-            net = DenseLayer(
-                net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output')  # output: (batch_size, 10)
+            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -258,8 +257,7 @@ with tf.device('/cpu:0'):
             net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
             net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
             net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-            net = DenseLayer(
-                net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output')  # output: (batch_size, 10)
+            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -329,8 +327,7 @@ with tf.device('/cpu:0'):
             n_batch += 1
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print("Epoch %d : Step %d-%d of %d took %fs" %
-                (epoch, step, step + n_step_epoch, n_step, time.time() - start_time))
+            print("Epoch %d : Step %d-%d of %d took %fs" % (epoch, step, step + n_step_epoch, n_step, time.time() - start_time))
             print("   train loss: %f" % (train_loss / n_batch))
             print("   train acc: %f" % (train_acc / n_batch))
 
