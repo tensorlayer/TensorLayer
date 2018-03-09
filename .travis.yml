@@ -20,3 +20,5 @@ script:
   - python tests/test_pydocstyle.py
   - python tests/test_mnist_simple.py
   - python tests/test_pooling.py
+  - python tests/test_reuse_mlp.py
+  - python tests/test_time_distributed.py
