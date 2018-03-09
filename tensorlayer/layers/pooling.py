@@ -4,8 +4,6 @@ import copy
 
 from .core import *
 
-# from tensorlayer.layers.core import *
-
 
 class PoolLayer(Layer):
     """
