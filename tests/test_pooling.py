@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, GlobalMaxPool1d, GlobalMaxPool2d, MaxPool3d, MeanPool3d
 
 x = tf.placeholder("float32", [None, 100, 30])
 n = InputLayer(x, name='in1')
