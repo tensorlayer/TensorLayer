@@ -477,26 +477,3 @@ MaxPool2d = maxpool2d
 MeanPool1d = meanpool1d
 MeanPool2d = meanpool2d
 # MeanPool3d = meanpool3d
-
-if __name__ == '__main__':
-    x = tf.placeholder("float32", [None, 100, 30])
-    n = InputLayer(x, name='in1')
-    n = GlobalMaxPool1d(n)
-    print(n)
-
-    x = tf.placeholder("float32", [None, 100, 100, 30])
-    n = InputLayer(x, name='in2')
-    n = GlobalMaxPool2d(n)
-    print(n)
-
-    x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    n = InputLayer(x, name='in3')
-    n = MaxPool3d(n)
-    n.print_layers()
-    print(n)
-
-    x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    n = InputLayer(x, name='in4')
-    n = MeanPool3d(n)
-    n.print_layers()
-    print(n)
