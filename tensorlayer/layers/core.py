@@ -371,24 +371,11 @@ class Layer(object):
             self.all_params = list(layer.all_params)
             self.all_drop = dict(layer.all_drop)
         elif isinstance(layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
-            # add 1st layer
-            self.all_layers = list(layer[0].all_layers)
-            self.all_params = list(layer[0].all_params)
-            self.all_drop = dict(layer[0].all_drop)
-            # add other layers
-            for i in range(1, len(layer)):
-                self.all_layers.extend(list(layer[i].all_layers))
-                self.all_params.extend(list(layer[i].all_params))
-                self.all_drop.update(dict(layer[i].all_drop))
-            # remove repeated stuff
-            self.all_layers = list_remove_repeat(self.all_layers)
-            self.all_params = list_remove_repeat(self.all_params)
+            self.all_layers = list_remove_repeat(sum([l.all_layers for l in layer], []))
+            self.all_params = list_remove_repeat(sum([l.all_params for l in layer], []))
+            self.all_drop = dict(sum([l.all_drop.items() for l in layer], []))
         elif isinstance(layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-            self.all_layers = []
-            self.all_params = []
-            self.all_drop = {}
-
         elif layer is not None:
             raise Exception("Unsupport layer type %s" % type(layer))
 
