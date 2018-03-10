@@ -34,7 +34,7 @@ class StackLayer(Layer):
             axis=1,
             name='stack',
     ):
-        Layer.__init__(self, layer=layers, name=name)
+        Layer.__init__(self, prev_layer=layers, name=name)
         self.inputs = []
         for l in layers:
             self.inputs.append(l.outputs)
@@ -93,7 +93,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
         whole_name = name
 
     for i, _v in enumerate(outputs):
-        n = Layer(None, layer=layer, name=whole_name + str(i))
+        n = Layer(None, prev_layer=layer, name=whole_name + str(i))
         n.outputs = outputs[i]
         # n.all_layers = list(layer.all_layers)
         # n.all_params = list(layer.all_params)

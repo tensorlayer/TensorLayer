@@ -27,11 +27,11 @@ class FlattenLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             name='flatten_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
         logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
@@ -65,12 +65,12 @@ class ReshapeLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             shape,
             name='reshape_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
         # self.all_layers = list(layer.all_layers)
@@ -104,12 +104,12 @@ class TransposeLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             perm,
             name='transpose',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         assert perm is not None
 
         logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))

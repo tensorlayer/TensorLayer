@@ -37,15 +37,15 @@ class PoolLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             ksize=(1, 2, 2, 1),
             strides=(1, 2, 2, 1),
             padding='SAME',
             pool=tf.nn.max_pool,
             name='pool_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" % (self.name, str(ksize), str(strides), padding, pool.__name__))
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
@@ -215,17 +215,17 @@ class MaxPool3d(Layer):
 
     """
 
-    def __init__(self, layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+    def __init__(self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
 
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
 
-        self.outputs = tf.layers.max_pooling3d(layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+        self.outputs = tf.layers.max_pooling3d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)
@@ -265,18 +265,18 @@ class MeanPool3d(Layer):
 
     """
 
-    def __init__(self, layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+    def __init__(self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         # print out info (customized)
         logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
 
         # operation (customized)
-        self.outputs = tf.layers.average_pooling3d(layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+        self.outputs = tf.layers.average_pooling3d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)
@@ -308,20 +308,20 @@ class GlobalMaxPool1d(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             name='globalmaxpool1d',
     ):
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         # print out info (customized)
         logging.info("GlobalMaxPool1d %s" % name)
 
         # operation (customized)
-        self.outputs = tf.reduce_max(layer.outputs, axis=1, name=name)
+        self.outputs = tf.reduce_max(prev_layer.outputs, axis=1, name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)
@@ -353,20 +353,20 @@ class GlobalMeanPool1d(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             name='globalmeanpool1d',
     ):
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         # print out info (customized)
         logging.info("GlobalMeanPool1d %s" % name)
 
         # operation (customized)
-        self.outputs = tf.reduce_mean(layer.outputs, axis=1, name=name)
+        self.outputs = tf.reduce_mean(prev_layer.outputs, axis=1, name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)
@@ -398,20 +398,20 @@ class GlobalMaxPool2d(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             name='globalmaxpool2d',
     ):
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         # print out info (customized)
         logging.info("GlobalMaxPool2d %s" % name)
 
         # operation (customized)
-        self.outputs = tf.reduce_max(layer.outputs, axis=[1, 2], name=name)
+        self.outputs = tf.reduce_max(prev_layer.outputs, axis=[1, 2], name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)
@@ -443,20 +443,20 @@ class GlobalMeanPool2d(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             name='globalmeanpool2d',
     ):
         # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
+        self.inputs = prev_layer.outputs
 
         # print out info (customized)
         logging.info("GlobalMeanPool2d %s" % name)
 
         # operation (customized)
-        self.outputs = tf.reduce_mean(layer.outputs, axis=[1, 2], name=name)
+        self.outputs = tf.reduce_mean(prev_layer.outputs, axis=[1, 2], name=name)
 
         # get stuff from previous layer (fixed)
         # self.all_layers = list(layer.all_layers)

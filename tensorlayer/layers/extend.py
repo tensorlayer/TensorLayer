@@ -27,12 +27,12 @@ class ExpandDimsLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             axis,
             name='expand_dims',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
 
         logging.info("ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
         with tf.variable_scope(name):
@@ -41,8 +41,8 @@ class ExpandDimsLayer(Layer):
             except Exception:  # TF11
                 self.outputs = tf.expand_dims(self.inputs, dim=axis)
         # self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        self.all_params = list(prev_layer.all_params)
+        self.all_drop = dict(prev_layer.all_drop)
         self.all_layers.append(self.outputs)
         # self.all_params.extend( variables )
 
@@ -74,12 +74,12 @@ class TileLayer(Layer):
 
     def __init__(
             self,
-            layer=None,
+            prev_layer=None,
             multiples=None,
             name='tile',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
 
         logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))
         with tf.variable_scope(name):

@@ -29,14 +29,14 @@ class ROIPoolingLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             rois,
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
         try:
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling

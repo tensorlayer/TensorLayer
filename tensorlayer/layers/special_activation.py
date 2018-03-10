@@ -28,7 +28,7 @@ class PReluLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
             a_init_args=None,
@@ -37,8 +37,8 @@ class PReluLayer(Layer):
         if a_init_args is None:
             a_init_args = {}
 
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
         if channel_shared:
             w_shape = (1, )

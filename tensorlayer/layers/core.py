@@ -355,29 +355,30 @@ class Layer(object):
 
     """
 
-    def __init__(self, layer=None, name='layer'):
-        # ## get input
-        # self.inputs = inputs # seem useless
-        ## get scope name
+    def __init__(self, prev_layer=None, name=None):
+        if name is None:
+            raise ValueError('Layer must have a name.')
+
         scope_name = tf.get_variable_scope().name
         if scope_name:
             name = scope_name + '/' + name
         self.name = name
-        ## get all properties of previous layer(s)
-        if isinstance(layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
+
+        # get all properties of previous layer(s)
+        if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
-            self.all_layers = list(layer.all_layers)
-            self.all_params = list(layer.all_params)
-            self.all_drop = dict(layer.all_drop)
-        elif isinstance(layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
-            self.all_layers = list_remove_repeat(sum([l.all_layers for l in layer], []))
-            self.all_params = list_remove_repeat(sum([l.all_params for l in layer], []))
-            self.all_drop = dict(sum([list(l.all_drop.items()) for l in layer], []))
-        elif isinstance(layer, tf.Tensor):
+            self.all_layers = list(prev_layer.all_layers)
+            self.all_params = list(prev_layer.all_params)
+            self.all_drop = dict(prev_layer.all_drop)
+        elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
+            self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
+            self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
+            self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
+        elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-        elif layer is not None:
-            raise Exception("Unsupport layer type %s" % type(layer))
+        elif prev_layer is not None:
+            raise Exception("Unknown layer type %s" % type(prev_layer))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -873,7 +874,7 @@ class DenseLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             n_units=100,
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
@@ -887,8 +888,8 @@ class DenseLayer(Layer):
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
@@ -966,13 +967,13 @@ class ReconLayer(DenseLayer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             x_recon=None,
             n_units=784,
             act=tf.nn.softplus,
             name='recon',
     ):
-        DenseLayer.__init__(self, layer=layer, n_units=n_units, act=act, name=name)
+        DenseLayer.__init__(self, prev_layer=prev_layer, n_units=n_units, act=act, name=name)
         logging.info("%s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
@@ -1170,22 +1171,22 @@ class DropoutLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             keep=0.5,
             is_fix=False,
             is_train=True,
             seed=None,
             name='dropout_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if is_train is False:
             logging.info("  skip DropoutLayer")
-            self.outputs = layer.outputs
+            self.outputs = prev_layer.outputs
             # self.all_layers = list(layer.all_layers)
             # self.all_params = list(layer.all_params)
             # self.all_drop = dict(layer.all_drop)
         else:
-            self.inputs = layer.outputs
+            self.inputs = prev_layer.outputs
             logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
@@ -1253,22 +1254,22 @@ class GaussianNoiseLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             mean=0.0,
             stddev=1.0,
             is_train=True,
             seed=None,
             name='gaussian_noise_layer',
     ):
-        Layer.__init__(self, layer=layer, name=name)
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
-            self.outputs = layer.outputs
+            self.outputs = prev_layer.outputs
             # self.all_layers = list(layer.all_layers)
             # self.all_params = list(layer.all_params)
             # self.all_drop = dict(layer.all_drop)
         else:
-            self.inputs = layer.outputs
+            self.inputs = prev_layer.outputs
             logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
             with tf.variable_scope(name):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
@@ -1326,7 +1327,7 @@ class DropconnectDenseLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             keep=0.5,
             n_units=100,
             act=tf.identity,
@@ -1341,8 +1342,8 @@ class DropconnectDenseLayer(Layer):
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, layer=layer, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
