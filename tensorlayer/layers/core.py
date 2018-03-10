@@ -373,7 +373,7 @@ class Layer(object):
         elif isinstance(layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in layer], []))
-            self.all_drop = dict(sum([l.all_drop.items() for l in layer], []))
+            self.all_drop = dict(sum([list(l.all_drop.items()) for l in layer], []))
         elif isinstance(layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
         elif layer is not None:
