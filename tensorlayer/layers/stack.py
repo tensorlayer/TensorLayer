@@ -88,12 +88,12 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
     net_new = []
     scope_name = tf.get_variable_scope().name
     if scope_name:
-        whole_name = scope_name + '/' + name
+        full_name = scope_name + '/' + name
     else:
-        whole_name = name
+        full_name = name
 
     for i, _v in enumerate(outputs):
-        n = Layer(None, prev_layer=layer, name=whole_name + str(i))
+        n = Layer(prev_layer=layer, name=full_name + str(i))
         n.outputs = outputs[i]
         # n.all_layers = list(layer.all_layers)
         # n.all_params = list(layer.all_params)

@@ -149,7 +149,7 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
     inputs = net.outputs
-    net_new = Layer(inputs, prev_layer=net, name=name)
+    net_new = Layer(prev_layer=net, name=name)
     with tf.name_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale))
 
