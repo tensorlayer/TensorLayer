@@ -63,11 +63,11 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
-    scope_name = tf.get_variable_scope().name
-    if scope_name:
-        whole_name = scope_name + '/' + name
-    else:
-        whole_name = name
+    # scope_name = tf.get_variable_scope().name
+    # if scope_name:
+    #     whole_name = scope_name + '/' + name
+    # else:
+    #     whole_name = name
 
     def _PS(X, r, n_out_channels):
         if n_out_channels >= 1:
@@ -91,7 +91,7 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(prev_layer=net, name=whole_name)
+    net_new = Layer(prev_layer=net, name=name)#whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
