@@ -1435,11 +1435,11 @@ def deconv2d(layer,
         logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
         inputs = layer.outputs
         scope_name = tf.get_variable_scope().name
-        if scope_name:
-            whole_name = scope_name + '/' + name
-        else:
-            whole_name = name
-        net_new = Layer(inputs, name=whole_name)
+        # if scope_name:
+        #     whole_name = scope_name + '/' + name
+        # else:
+        #     whole_name = name
+        net_new = Layer(name=name)#whole_name)
         # with tf.name_scope(name):
         with tf.variable_scope(name) as vs:
             net_new.outputs = tf.contrib.layers.conv2d_transpose(
