@@ -63,11 +63,11 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
 
     _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
-    scope_name = tf.get_variable_scope().name
-    if scope_name:
-        whole_name = scope_name + '/' + name
-    else:
-        whole_name = name
+    # scope_name = tf.get_variable_scope().name
+    # if scope_name:
+    #     whole_name = scope_name + '/' + name
+    # else:
+    #     whole_name = name
 
     def _PS(X, r, n_out_channels):
         if n_out_channels >= 1:
@@ -85,22 +85,21 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
         return X
 
     inputs = net.outputs
-
     if n_out_channel is None:
         assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
     logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(inputs, name=whole_name)
+    net_new = Layer(prev_layer=net, name=name)  #whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
 
-    net_new.all_layers = list(net.all_layers)
-    net_new.all_params = list(net.all_params)
-    net_new.all_drop = dict(net.all_drop)
-    net_new.all_layers.extend([net_new.outputs])
+    # net_new.all_layers = list(net.all_layers)
+    # net_new.all_params = list(net.all_params)
+    # net_new.all_drop = dict(net.all_drop)
+    net_new.all_layers.append(net_new.outputs)
     return net_new
 
 
@@ -149,14 +148,14 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
     logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
     inputs = net.outputs
-    net_new = Layer(inputs, name=name)
+    net_new = Layer(prev_layer=net, name=name)
     with tf.name_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale))
 
-    net_new.all_layers = list(net.all_layers)
-    net_new.all_params = list(net.all_params)
-    net_new.all_drop = dict(net.all_drop)
-    net_new.all_layers.extend([net_new.outputs])
+    # net_new.all_layers = list(net.all_layers)
+    # net_new.all_params = list(net.all_params)
+    # net_new.all_drop = dict(net.all_drop)
+    net_new.all_layers.append(net_new.outputs)
     return net_new
 
 

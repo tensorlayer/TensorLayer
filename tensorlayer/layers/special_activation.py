@@ -28,7 +28,7 @@ class PReluLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
             a_init_args=None,
@@ -37,8 +37,8 @@ class PReluLayer(Layer):
         if a_init_args is None:
             a_init_args = {}
 
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
         if channel_shared:
             w_shape = (1, )
@@ -53,9 +53,9 @@ class PReluLayer(Layer):
             except Exception:  # TF 0.12
                 self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
 
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         self.all_params.extend([alphas])

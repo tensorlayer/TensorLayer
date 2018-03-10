@@ -29,14 +29,14 @@ class ROIPoolingLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             rois,
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',
     ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
         try:
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
@@ -45,7 +45,7 @@ class ROIPoolingLayer(Layer):
             logging.info("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
