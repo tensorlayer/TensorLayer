@@ -1,9 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import tensorflow as tf
 import tensorlayer as tl
-from keras import backend as K
 from keras.layers import *
 from tensorlayer.layers import *
 slim = tf.contrib.slim
@@ -11,8 +9,7 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
 
 sess = tf.InteractiveSession()
 
-# batch_size = 128
-## LambdaLayer
+# LambdaLayer
 x = tf.placeholder(tf.float32, shape=[None, 784])
 
 
@@ -29,11 +26,12 @@ def keras_block(x):
 network = InputLayer(x, name='input')
 network = LambdaLayer(network, fn=keras_block, name='keras')
 
-## SlimNetsLayer
+# SlimNetsLayer
 x = tf.placeholder(tf.float32, shape=[None, 299, 299, 3])
 net_in = tl.layers.InputLayer(x, name='input_layer')
 with slim.arg_scope(inception_v3_arg_scope()):
-    ## Alternatively, you should implement inception_v3 without TensorLayer as follow.
+
+    # Alternatively, you should implement inception_v3 without TensorLayer as follow.
     # logits, end_points = inception_v3(X, num_classes=1001,
     #                                   is_training=False)
     network = tl.layers.SlimNetsLayer(
