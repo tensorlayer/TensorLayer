@@ -17,10 +17,7 @@ sess = tf.InteractiveSession()
 
 batch_size = 128
 x = tf.placeholder(tf.float32, shape=[None, 784])
-y_ = tf.placeholder(
-    tf.int64, shape=[
-        None,
-    ])
+y_ = tf.placeholder(tf.int64, shape=[None])
 
 
 def keras_block(x):

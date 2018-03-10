@@ -53,7 +53,7 @@ class LambdaLayer(Layer):
     ):
         if fn_args is None:
             fn_args = {}
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         assert layer is not None
         assert fn is not None
         self.inputs = layer.outputs
@@ -62,10 +62,10 @@ class LambdaLayer(Layer):
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
 
@@ -104,7 +104,7 @@ class SlimNetsLayer(Layer):
         if slim_args is None:
             slim_args = {}
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
@@ -127,9 +127,9 @@ class SlimNetsLayer(Layer):
             # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
 
         self.all_layers.extend(slim_layers)
         self.all_params.extend(slim_variables)
@@ -166,17 +166,17 @@ class KerasLayer(Layer):
         if keras_args is None:
             keras_args = {}
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
         logging.info("This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = keras_layer(self.inputs, **keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
 
@@ -210,15 +210,15 @@ class EstimatorLayer(Layer):
             raise ValueError('model fn is None')
         if args is None:
             args = {}
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
         logging.info("This API will be removed, please use LambdaLayer instead.")
         with tf.variable_scope(name) as vs:
             self.outputs = model_fn(self.inputs, **args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)

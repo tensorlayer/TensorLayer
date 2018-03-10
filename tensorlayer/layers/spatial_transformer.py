@@ -225,7 +225,7 @@ class SpatialTransformer2dAffineLayer(Layer):
         if out_size is None:
             out_size = [40, 40]
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=[layer, theta_layer], name=name)
         self.inputs = layer.outputs
         self.theta_layer = theta_layer
         logging.info("SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" % (name, self.inputs.get_shape().as_list(), out_size))
@@ -265,16 +265,16 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # fixed
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-
-        # theta_layer
-        self.all_layers.extend(theta_layer.all_layers)
-        self.all_params.extend(theta_layer.all_params)
-        self.all_drop.update(theta_layer.all_drop)
+        # # fixed
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        #
+        # # theta_layer
+        # self.all_layers.extend(theta_layer.all_layers)
+        # self.all_params.extend(theta_layer.all_params)
+        # self.all_drop.update(theta_layer.all_drop)
 
         # this layer
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)

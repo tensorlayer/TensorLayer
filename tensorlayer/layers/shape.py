@@ -21,6 +21,7 @@ class FlattenLayer(Layer):
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.FlattenLayer(net, name='flatten')
+    ... [?, 784]
 
     """
 
@@ -29,15 +30,15 @@ class FlattenLayer(Layer):
             layer,
             name='flatten_layer',
     ):
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
         logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
 
 
 class ReshapeLayer(Layer):
@@ -54,26 +55,11 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
-    Use TensorLayer
-
-    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
+    >>> x = tf.placeholder(tf.float32, shape=(None, 784))
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.ReshapeLayer(net, (-1, 28*28), name='reshape')
+    >>> net = tl.layers.ReshapeLayer(net, [-1, 28, 28, 1], name='reshape')
     >>> print(net.outputs)
-    ... (?, 784)
-
-    Use native TensorFlow API ``tf.reshape``
-
-    >>> x = tf.placeholder(tf.float32, shape=[None, 3])
-    >>> y = tf.reshape(x, shape=[-1, 3, 3])
-    >>> sess = tf.InteractiveSession()
-    >>> print(sess.run(y, feed_dict={x:[[1,1,1],[2,2,2],[3,3,3],[4,4,4],[5,5,5],[6,6,6]]}))
-    ... [[[ 1.  1.  1.]
-    ... [ 2.  2.  2.]
-    ... [ 3.  3.  3.]]
-    ... [[ 4.  4.  4.]
-    ... [ 5.  5.  5.]
-    ... [ 6.  6.  6.]]]
+    ... (?, 28, 28, 1)
 
     """
 
@@ -83,14 +69,14 @@ class ReshapeLayer(Layer):
             shape,
             name='reshape_layer',
     ):
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
 
 
 class TransposeLayer(Layer):
@@ -107,6 +93,13 @@ class TransposeLayer(Layer):
     name : str
         A unique layer name.
 
+    Examples
+    ----------
+    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.TransposeLayer(net, perm=[0, 1, 3, 2], name='trans')
+    ... [None, 28, 1, 28]
+
     """
 
     def __init__(
@@ -115,15 +108,15 @@ class TransposeLayer(Layer):
             perm,
             name='transpose',
     ):
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         assert perm is not None
 
         logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))
         # with tf.variable_scope(name) as vs:
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         # self.all_params.extend( variables )

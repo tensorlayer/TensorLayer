@@ -60,57 +60,43 @@ class RNNLayer(Layer):
 
     Examples
     --------
-    For language modeling, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
+    - For synced sequence input and output, see `PTB example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py>`__
 
+    - For encoding see below.
+
+    >>> batch_size = 32
+    >>> num_steps = 5
+    >>> vocab_size = 3000
+    >>> hidden_size = 256
+    >>> keep_prob = 0.8
+    >>> is_train = True
     >>> input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
-    >>> net = tl.layers.EmbeddingInputlayer(
-    ...                 inputs = input_data,
-    ...                 vocabulary_size = vocab_size,
-    ...                 embedding_size = hidden_size,
-    ...                 E_init = tf.random_uniform_initializer(-init_scale, init_scale),
-    ...                 name ='embedding_layer')
+    >>> net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size,
+    ...     embedding_size=hidden_size, name='embed')
     >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop1')
-    >>> net = tl.layers.RNNLayer(net,
-    ...             cell_fn=tf.contrib.rnn.BasicLSTMCell,
-    ...             cell_init_args={'forget_bias': 0.0},# 'state_is_tuple': True},
-    ...             n_hidden=hidden_size,
-    ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
-    ...             n_steps=num_steps,
-    ...             return_last=False,
-    ...             name='basic_lstm_layer1')
-    >>> lstm1 = net
+    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=False, name='lstm1')
     >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop2')
-    >>> net = tl.layers.RNNLayer(net,
-    ...             cell_fn=tf.contrib.rnn.BasicLSTMCell,
-    ...             cell_init_args={'forget_bias': 0.0}, # 'state_is_tuple': True},
-    ...             n_hidden=hidden_size,
-    ...             initializer=tf.random_uniform_initializer(-init_scale, init_scale),
-    ...             n_steps=num_steps,
-    ...             return_last=False,
-    ...             return_seq_2d=True,
-    ...             name='basic_lstm_layer2')
-    >>> lstm2 = net
+    >>> net = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    ...     n_hidden=hidden_size, n_steps=num_steps, return_last=True, name='lstm2')
     >>> net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_train, name='drop3')
     >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name='output')
 
-    For CNN+LSTM
+    - For CNN+LSTM
 
+    >>> image_size = 100
+    >>> batch_size = 10
+    >>> num_steps = 5
     >>> x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
-    >>> net = tl.layers.InputLayer(x, name='input_layer')
+    >>> net = tl.layers.InputLayer(x, name='in')
     >>> net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='cnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool1')
     >>> net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='cnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool2')
-    >>> net = tl.layers.FlattenLayer(net, name='flatten_layer')
+    >>> net = tl.layers.FlattenLayer(net, name='flatten')
     >>> net = tl.layers.ReshapeLayer(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])
-    >>> rnn1 = tl.layers.RNNLayer(net,
-    ...                   cell_fn=tf.nn.rnn_cell.LSTMCell,
-    ...                   n_hidden=200,
-    ...                   n_steps=num_steps,
-    ...                   return_last=False,
-    ...                   return_seq_2d=True,
-    ...                   name='rnn')
-    >>> net = tl.layers.DenseLayer(rnn1, 3, name='output')
+    >>> rnn = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')
+    >>> net = tl.layers.DenseLayer(rnn, 3, name='out')
 
     Notes
     -----
@@ -136,12 +122,12 @@ class RNNLayer(Layer):
             initial_state=None,
             return_last=False,
             return_seq_2d=False,
-            name='rnn_layer',
+            name='rnn',
     ):
         if cell_init_args is None:
             cell_init_args = {}
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -212,35 +198,35 @@ class RNNLayer(Layer):
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        logging.info("     n_params : %d" % (len(rnn_variables)))
+            logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        if return_last:
-            # 2D Tensor [batch_size, n_hidden]
-            self.outputs = outputs[-1]
-        else:
-            if return_seq_2d:
-                # PTB tutorial: stack dense layer after that, or compute the cost from the output
-                # 2D Tensor [n_example, n_hidden]
-                try:  # TF1.0
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
-                except Exception:  # TF0.12
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
-
+            if return_last:
+                # 2D Tensor [batch_size, n_hidden]
+                self.outputs = outputs[-1]
             else:
-                # <akara>: stack more RNN layer after that
-                # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
-                try:  # TF1.0
-                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
-                except Exception:  # TF0.12
-                    self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
+                if return_seq_2d:
+                    # PTB tutorial: stack dense layer after that, or compute the cost from the output
+                    # 2D Tensor [n_example, n_hidden]
+                    try:  # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_hidden])
+                    except Exception:  # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_hidden])
+
+                else:
+                    # <akara>: stack more RNN layer after that
+                    # 3D Tensor [n_example/n_steps, n_steps, n_hidden]
+                    try:  # TF1.0
+                        self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, n_hidden])
+                    except Exception:  # TF0.12
+                        self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.final_state = state
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        # logging.info(type(self.outputs))
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+
+        self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
 
@@ -326,12 +312,12 @@ class BiRNNLayer(Layer):
             n_layer=1,
             return_last=False,
             return_seq_2d=False,
-            name='birnn_layer',
+            name='birnn',
     ):
         if cell_init_args is None:
-            cell_init_args = {'use_peepholes': True, 'state_is_tuple': True}
+            cell_init_args = {'state_is_tuple': True}  # 'use_peepholes': True,
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -455,10 +441,10 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
 
@@ -479,7 +465,7 @@ class ConvRNNCell(object):
         """Integer or TensorShape: size of outputs produced by this cell."""
         raise NotImplementedError("Abstract method")
 
-    def zero_state(self, batch_size):
+    def zero_state(self, batch_size, dtype=LayersConfig.tf_dtype):
         """Return zero-filled state tensor(s).
         Args:
           batch_size: int, float, or unit Tensor representing the batch size.
@@ -490,7 +476,8 @@ class ConvRNNCell(object):
         """
         shape = self.shape
         num_features = self.num_features
-        zeros = tf.zeros([batch_size, shape[0], shape[1], num_features * 2])
+        # TODO : TypeError: 'NoneType' object is not subscriptable
+        zeros = tf.zeros([batch_size, shape[0], shape[1], num_features * 2], dtype=dtype)
         return zeros
 
 
@@ -686,9 +673,9 @@ class ConvLSTMLayer(Layer):
             initial_state=None,
             return_last=False,
             return_seq_2d=False,
-            name='convlstm_layer',
+            name='convlstm',
     ):
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         logging.info("ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
                      "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
@@ -713,7 +700,6 @@ class ConvLSTMLayer(Layer):
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
-
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
         if initial_state is None:
@@ -730,27 +716,27 @@ class ConvLSTMLayer(Layer):
             # rnn_variables = [v for v in tf.all_variables() if v.name.startswith(vs.name)]
             rnn_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope=vs.name)
 
-        logging.info(" n_params : %d" % (len(rnn_variables)))
+            logging.info(" n_params : %d" % (len(rnn_variables)))
 
-        if return_last:
-            # 2D Tensor [batch_size, n_hidden]
-            self.outputs = outputs[-1]
-        else:
-            if return_seq_2d:
-                # PTB tutorial: stack dense layer after that, or compute the cost from the output
-                # 4D Tensor [n_example, h, w, c]
-                self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, cell_shape[0] * cell_shape[1] * feature_map])
+            if return_last:
+                # 2D Tensor [batch_size, n_hidden]
+                self.outputs = outputs[-1]
             else:
-                # <akara>: stack more RNN layer after that
-                # 5D Tensor [n_example/n_steps, n_steps, h, w, c]
-                self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, cell_shape[0], cell_shape[1], feature_map])
+                if return_seq_2d:
+                    # PTB tutorial: stack dense layer after that, or compute the cost from the output
+                    # 4D Tensor [n_example, h, w, c]
+                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, cell_shape[0] * cell_shape[1] * feature_map])
+                else:
+                    # <akara>: stack more RNN layer after that
+                    # 5D Tensor [n_example/n_steps, n_steps, h, w, c]
+                    self.outputs = tf.reshape(tf.concat(outputs, 1), [-1, n_steps, cell_shape[0], cell_shape[1], feature_map])
 
         self.final_state = state
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
 
@@ -980,17 +966,18 @@ class DynamicRNNLayer(Layer):
 
     >>> input_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="input")
     >>> net = tl.layers.EmbeddingInputlayer(
-    ...             inputs = input_seqs,
-    ...             vocabulary_size = vocab_size,
-    ...             embedding_size = embedding_size,
-    ...             name = 'seq_embedding')
+    ...             inputs=input_seqs,
+    ...             vocabulary_size=vocab_size,
+    ...             embedding_size=embedding_size,
+    ...             name='embedding')
     >>> net = tl.layers.DynamicRNNLayer(net,
-    ...             cell_fn = tf.contrib.rnn.BasicLSTMCell, # for TF0.2 use tf.nn.rnn_cell.BasicLSTMCell,
-    ...             n_hidden = embedding_size,
-    ...             dropout = (0.7 if is_train else None),
-    ...             sequence_length = tl.layers.retrieve_seq_length_op2(input_seqs),
-    ...             return_seq_2d = True,                   # stack denselayer or compute cost after it
-    ...             name = 'dynamicrnn')
+    ...             cell_fn=tf.contrib.rnn.BasicLSTMCell, # for TF0.2 use tf.nn.rnn_cell.BasicLSTMCell,
+    ...             n_hidden=embedding_size,
+    ...             dropout=(0.7 if is_train else None),
+    ...             sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    ...             return_last=False,                    # for encoder, set to True
+    ...             return_seq_2d=True,                   # stack denselayer or compute cost after it
+    ...             name='dynamicrnn')
     ... net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
 
     References
@@ -1026,7 +1013,7 @@ class DynamicRNNLayer(Layer):
         if return_last is None:
             return_last = True
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1162,11 +1149,11 @@ class DynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
 
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
 
@@ -1239,11 +1226,9 @@ class BiDynamicRNNLayer(Layer):
     sequence_length : a tensor or array
         The sequence lengths computed by Advanced Opt or the given sequence lengths, [batch_size].
 
-
     Notes
     -----
     Input dimension should be rank 3 : [batch_size, n_steps(max), n_features], if no, please see :class:`ReshapeLayer`.
-
 
     References
     ----------
@@ -1274,7 +1259,7 @@ class BiDynamicRNNLayer(Layer):
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1418,11 +1403,11 @@ class BiDynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
 
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
 
@@ -1564,7 +1549,7 @@ class Seq2Seq(Layer):
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
         # self.inputs = layer.outputs
-        logging.info("  [**] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
+        logging.info("[*] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" % (self.name, n_hidden, cell_fn.__name__, dropout, n_layer))
 
         with tf.variable_scope(name):
             # tl.layers.set_name_reuse(reuse)
@@ -1581,7 +1566,7 @@ class Seq2Seq(Layer):
                 sequence_length=encode_sequence_length,
                 return_last=False,
                 return_seq_2d=True,
-                name=name + '_encode')
+                name='encode')
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(
@@ -1596,7 +1581,7 @@ class Seq2Seq(Layer):
                 sequence_length=decode_sequence_length,
                 return_last=False,
                 return_seq_2d=return_seq_2d,
-                name=name + '_decode')
+                name='decode')
             self.outputs = network_decode.outputs
 
             # rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -1618,7 +1603,7 @@ class Seq2Seq(Layer):
         self.all_params.extend(list(network_decode.all_params))
         self.all_drop.update(dict(network_decode.all_drop))
 
-        self.all_layers.extend([self.outputs])
+        self.all_layers.append(self.outputs)
         # self.all_params.extend( rnn_variables )
 
         self.all_layers = list_remove_repeat(self.all_layers)

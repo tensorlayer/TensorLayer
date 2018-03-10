@@ -51,7 +51,7 @@ class TimeDistributedLayer(Layer):
         if not isinstance(args, dict):
             raise TypeError("'args' must be a dict.")
 
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
         self.inputs = layer.outputs
         logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
 
@@ -72,8 +72,8 @@ class TimeDistributedLayer(Layer):
 
         self.outputs = tf.stack(x, axis=1, name=name)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
