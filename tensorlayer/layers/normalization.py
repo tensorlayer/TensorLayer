@@ -28,23 +28,24 @@ class LocalResponseNormLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             depth_radius=None,
             bias=None,
             alpha=None,
             beta=None,
             name='lrn_layer',
     ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
-        logging.info("LocalResponseNormLayer %s: depth_radius: %d, bias: %f, alpha: %f, beta: %f" % (self.name, depth_radius, bias, alpha, beta))
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
+        logging.info("LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" % (self.name, str(depth_radius), str(bias), str(alpha),
+                                                                                                     str(beta)))
         with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
 
 
 class BatchNormLayer(Layer):
@@ -83,7 +84,7 @@ class BatchNormLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             decay=0.9,
             epsilon=0.00001,
             act=tf.identity,
@@ -92,8 +93,8 @@ class BatchNormLayer(Layer):
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             name='batchnorm_layer',
     ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" % (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -160,10 +161,10 @@ class BatchNormLayer(Layer):
             #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
             # exit()
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
 
@@ -185,13 +186,13 @@ class InstanceNormLayer(Layer):
 
     def __init__(
             self,
-            layer,
+            prev_layer,
             act=tf.identity,
             epsilon=1e-5,
             name='instan_norm',
     ):
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
 
         with tf.variable_scope(name) as vs:
@@ -203,10 +204,10 @@ class InstanceNormLayer(Layer):
             self.outputs = act(self.outputs)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
 
@@ -226,7 +227,7 @@ class LayerNormLayer(Layer):
     """
 
     def __init__(self,
-                 layer,
+                 prev_layer,
                  center=True,
                  scale=True,
                  act=tf.identity,
@@ -238,30 +239,46 @@ class LayerNormLayer(Layer):
                  begin_params_axis=-1,
                  name='layernorm'):
 
-        if tf.__version__ < "1.3":
-            raise Exception("Please use TF 1.3+")
-
-        Layer.__init__(self, name=name)
-        self.inputs = layer.outputs
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
         logging.info("LayerNormLayer %s: act:%s" % (self.name, act.__name__))
-        with tf.variable_scope(name) as vs:
-            self.outputs = tf.contrib.layers.layer_norm(
-                self.inputs,
-                center=center,
-                scale=scale,
-                activation_fn=act,
-                reuse=reuse,
-                variables_collections=variables_collections,
-                outputs_collections=outputs_collections,
-                trainable=trainable,
-                begin_norm_axis=begin_norm_axis,
-                begin_params_axis=begin_params_axis,
-                scope='var',
-            )
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
-        self.all_layers.extend([self.outputs])
+        if tf.__version__ < "1.3":
+            # raise Exception("Please use TF 1.3+")
+            with tf.variable_scope(name) as vs:
+                self.outputs = tf.contrib.layers.layer_norm(
+                    self.inputs,
+                    center=center,
+                    scale=scale,
+                    activation_fn=act,
+                    reuse=reuse,
+                    variables_collections=variables_collections,
+                    outputs_collections=outputs_collections,
+                    trainable=trainable,
+                    # begin_norm_axis=begin_norm_axis,
+                    # begin_params_axis=begin_params_axis,
+                    scope='var',
+                )
+                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        else:
+            with tf.variable_scope(name) as vs:
+                self.outputs = tf.contrib.layers.layer_norm(
+                    self.inputs,
+                    center=center,
+                    scale=scale,
+                    activation_fn=act,
+                    reuse=reuse,
+                    variables_collections=variables_collections,
+                    outputs_collections=outputs_collections,
+                    trainable=trainable,
+                    begin_norm_axis=begin_norm_axis,
+                    begin_params_axis=begin_params_axis,
+                    scope='var',
+                )
+                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
