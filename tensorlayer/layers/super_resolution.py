@@ -85,14 +85,13 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
         return X
 
     inputs = net.outputs
-
     if n_out_channel is None:
         assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
     logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(inputs, prev_layer=net, name=whole_name)
+    net_new = Layer(prev_layer=net, name=whole_name)
     # with tf.name_scope(name):
     with tf.variable_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
