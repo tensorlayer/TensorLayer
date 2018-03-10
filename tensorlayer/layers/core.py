@@ -775,7 +775,8 @@ class AverageEmbeddingInputlayer(Layer):
             embeddings_kwargs=None,
             name='average_embedding',
     ):
-        super().__init__(name=name)
+        # super().__init__(name=name) # dont work for py2
+        Layer.__init__(self, name=name)
 
         # if embeddings_kwargs is None:
         #     embeddings_kwargs = {}
