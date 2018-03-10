@@ -1439,7 +1439,7 @@ def deconv2d(layer,
         #     whole_name = scope_name + '/' + name
         # else:
         #     whole_name = name
-        net_new = Layer(name=name)#whole_name)
+        net_new = Layer(name=name)  #whole_name)
         # with tf.name_scope(name):
         with tf.variable_scope(name) as vs:
             net_new.outputs = tf.contrib.layers.conv2d_transpose(
