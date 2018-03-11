@@ -1099,7 +1099,7 @@ class DynamicRNNLayer(Layer):
                 try:
                     self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
                 except Exception:  # when GRU
-                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])                
+                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
         # self.cell=cell_instance_fn() # HanSheng
 
