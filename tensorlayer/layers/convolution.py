@@ -1721,17 +1721,17 @@ class GroupConv2d(Layer):
                 **W_init_args)
             if b_init:
                 bi = tf.get_variable(name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True, **b_init_args)
-        if n_group == 1:
-            conv = groupConv(self.inputs, We)
-        else:
-            inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
-            weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
-            convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
-            conv = tf.concat(axis=3, values=convGroups)
-        if b_init:
-            conv = tf.add(conv, bi, name='add')
+            if n_group == 1:
+                conv = groupConv(self.inputs, We)
+            else:
+                inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
+                weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
+                convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
+                conv = tf.concat(axis=3, values=convGroups)
+            if b_init:
+                conv = tf.add(conv, bi, name='add')
 
-        self.outputs = act(conv)
+            self.outputs = act(conv)
         # self.all_layers = list(layer.all_layers)
         # self.all_params = list(layer.all_params)
         # self.all_drop = dict(layer.all_drop)
