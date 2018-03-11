@@ -1710,7 +1710,8 @@ class GroupConv2d(Layer):
         groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
         channels = int(self.inputs.get_shape()[-1])
 
-        logging.info("GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), n_group, padding, act.__name__))
+        logging.info("GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), n_group,
+                                                                                                  padding, act.__name__))
         with tf.variable_scope(name):
             We = tf.get_variable(
                 name='W',
