@@ -38,7 +38,6 @@ if len(net.all_params) != 4:
 if net.count_params() != 157000:
     raise Exception("params dont match")
 
-
 ### image
 x = tf.placeholder(tf.float32, shape=[None, 100, 100, 3])
 inputs = tl.layers.InputLayer(x, name='input')
