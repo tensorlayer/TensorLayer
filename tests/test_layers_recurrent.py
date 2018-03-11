@@ -89,23 +89,21 @@ net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_siz
 net = tl.layers.BiRNNLayer(
     net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=hidden_size, n_steps=num_steps, n_layer=2, return_last=False, return_seq_2d=False, name='birnn2')
 
-# net.print_layers()
-# net.print_params(False)
-#
-# shape = net.outputs.get_shape().as_list()
-# if shape[1:3] != [num_steps, hidden_size * 2]:
-#     raise Exception("shape dont match")
-#
-# if len(net.all_layers) != 2:
-#     raise Exception("layers dont match")
-#
-# if len(net.all_params) != 5:
-#     raise Exception("params dont match")
-#
-# if net.count_params() != 7160:
-#     raise Exception("params dont match")
-#
-# exit()
+net.print_layers()
+net.print_params(False)
+
+shape = net.outputs.get_shape().as_list()
+if shape[1:3] != [num_steps, hidden_size * 2]:
+    raise Exception("shape dont match")
+
+if len(net.all_layers) != 2:
+    raise Exception("layers dont match")
+
+if len(net.all_params) != 9:
+    raise Exception("params dont match")
+
+if net.count_params() != 13720:
+    raise Exception("params dont match")
 
 ## ConvLSTMLayer TODO
 # image_size = 100
@@ -217,10 +215,31 @@ rnn = tl.layers.BiDynamicRNNLayer(
     n_hidden=embedding_size,
     dropout=(keep_prob if is_train else None),
     sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=2,
     return_last=False,
     return_seq_2d=True,
     name='bidynamicrnn2')
 net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o4")
+
+net.print_layers()
+net.print_params(False)
+
+shape = rnn.outputs.get_shape().as_list()
+if shape[-1] != embedding_size * 2:
+    raise Exception("shape dont match")
+
+shape = net.outputs.get_shape().as_list()
+if shape[-1] != vocab_size:
+    raise Exception("shape dont match")
+
+if len(net.all_layers) != 3:
+    raise Exception("layers dont match")
+
+if len(net.all_params) != 11:
+    raise Exception("params dont match")
+
+if net.count_params() != 18150:
+    raise Exception("params dont match")
 
 ## Seq2Seq
 from tensorlayer.layers import EmbeddingInputlayer, Seq2Seq, retrieve_seq_length_op2, DenseLayer
