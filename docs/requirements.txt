@@ -3,4 +3,4 @@ pymongo
 scikit-image
 scipy
 sphinx==1.7.1
-tensorflow
+tensorflow==1.5
