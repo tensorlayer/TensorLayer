@@ -2,5 +2,5 @@ matplotlib
 pymongo
 scikit-image
 scipy
-sphinx
+sphinx==1.7.1
 tensorflow
