@@ -379,13 +379,20 @@ class BiRNNLayer(Layer):
                     MultiRNNCell_fn = tf.contrib.rnn.MultiRNNCell
                 except Exception:
                     MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
-
-                try:
-                    self.fw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
-                    self.bw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
-                except Exception:
-                    self.fw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
-                    self.bw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+                if dropout:
+                    try:
+                        self.fw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
+                        self.bw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
+                    except Exception:
+                        self.fw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+                        self.bw_cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+                else:
+                    try:
+                        self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
+                        self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
+                    except Exception:
+                        self.fw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
+                        self.bw_cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])
 
             # Initial state of RNN
             if fw_initial_state is None:
@@ -1081,12 +1088,18 @@ class DynamicRNNLayer(Layer):
                 MultiRNNCell_fn = tf.nn.rnn_cell.MultiRNNCell
 
             # cell_instance_fn2=cell_instance_fn # HanSheng
-            try:
-                # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
-                self.cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
-            except Exception:  # when GRU
-                # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
-                self.cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+            if dropout:
+                try:
+                    # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)], state_is_tuple=True) # HanSheng
+                    self.cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)], state_is_tuple=True)
+                except Exception:  # when GRU
+                    # cell_instance_fn=lambda: MultiRNNCell_fn([cell_instance_fn2() for _ in range(n_layer)]) # HanSheng
+                    self.cell = MultiRNNCell_fn([cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)])
+            else:
+                try:
+                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)], state_is_tuple=True)
+                except Exception:  # when GRU
+                    self.cell = MultiRNNCell_fn([cell_creator() for _ in range(n_layer)])                
 
         # self.cell=cell_instance_fn() # HanSheng
 
@@ -1338,8 +1351,12 @@ class BiDynamicRNNLayer(Layer):
                     sequence_length = retrieve_seq_length_op(self.inputs if isinstance(self.inputs, tf.Tensor) else tf.pack(self.inputs))
 
             if n_layer > 1:
-                self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
-                self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+                if dropout:
+                    self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+                    self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+                else:
+                    self.fw_cell = [cell_creator() for _ in range(n_layer)]
+                    self.bw_cell = [cell_creator() for _ in range(n_layer)]
                 from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell,

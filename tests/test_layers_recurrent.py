@@ -220,7 +220,7 @@ rnn = tl.layers.BiDynamicRNNLayer(
     return_last=False,
     return_seq_2d=True,
     name='bidynamicrnn2')
-net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o4")
 
 ## Seq2Seq
 from tensorlayer.layers import EmbeddingInputlayer, Seq2Seq, retrieve_seq_length_op2, DenseLayer
