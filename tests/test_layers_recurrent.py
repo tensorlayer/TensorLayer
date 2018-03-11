@@ -84,6 +84,27 @@ if len(net.all_params) != 5:
 if net.count_params() != 7160:
     raise Exception("params dont match")
 
+# n_layer=2
+net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size, embedding_size=hidden_size, name='emb2')
+net = tl.layers.BiRNNLayer(
+    net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=hidden_size, n_steps=num_steps, n_layer=2, return_last=False, return_seq_2d=False, name='birnn2')
+
+net.print_layers()
+net.print_params(False)
+
+shape = net.outputs.get_shape().as_list()
+if shape[1:3] != [num_steps, hidden_size * 2]:
+    raise Exception("shape dont match")
+
+if len(net.all_layers) != 2:
+    raise Exception("layers dont match")
+
+if len(net.all_params) != 9:
+    raise Exception("params dont match")
+
+if net.count_params() != 13720:
+    raise Exception("params dont match")
+
 ## ConvLSTMLayer TODO
 # image_size = 100
 # batch_size = 10
@@ -141,6 +162,20 @@ if len(net.all_params) != 5:
 if net.count_params() != 4510:
     raise Exception("params dont match")
 
+# n_layer=3
+nin = tl.layers.EmbeddingInputlayer(inputs=input_seqs, vocabulary_size=vocab_size, embedding_size=embedding_size, name='seq_embedding2')
+rnn = tl.layers.DynamicRNNLayer(
+    nin,
+    cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    n_hidden=embedding_size,
+    dropout=(keep_prob if is_train else None),
+    sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=3,
+    return_last=False,
+    return_seq_2d=True,
+    name='dynamicrnn2')
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o2")
+
 ## BiDynamic Synced input and output
 rnn = tl.layers.BiDynamicRNNLayer(
     nin,
@@ -151,7 +186,7 @@ rnn = tl.layers.BiDynamicRNNLayer(
     return_last=False,
     return_seq_2d=True,
     name='bidynamicrnn')
-net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o2")
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
 
 net.print_layers()
 net.print_params(False)
@@ -171,6 +206,39 @@ if len(net.all_params) != 7:
     raise Exception("params dont match")
 
 if net.count_params() != 8390:
+    raise Exception("params dont match")
+
+# n_layer=2
+rnn = tl.layers.BiDynamicRNNLayer(
+    nin,
+    cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    n_hidden=embedding_size,
+    dropout=(keep_prob if is_train else None),
+    sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=2,
+    return_last=False,
+    return_seq_2d=True,
+    name='bidynamicrnn2')
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o4")
+
+net.print_layers()
+net.print_params(False)
+
+shape = rnn.outputs.get_shape().as_list()
+if shape[-1] != embedding_size * 2:
+    raise Exception("shape dont match")
+
+shape = net.outputs.get_shape().as_list()
+if shape[-1] != vocab_size:
+    raise Exception("shape dont match")
+
+if len(net.all_layers) != 3:
+    raise Exception("layers dont match")
+
+if len(net.all_params) != 11:
+    raise Exception("params dont match")
+
+if net.count_params() != 18150:
     raise Exception("params dont match")
 
 ## Seq2Seq
@@ -198,7 +266,7 @@ with tf.variable_scope("model"):
         decode_sequence_length=retrieve_seq_length_op2(decode_seqs),
         initial_state_encode=None,
         dropout=None,
-        n_layer=1,
+        n_layer=2,
         return_seq_2d=True,
         name='Seq2seq')
 net = DenseLayer(net, n_units=10000, act=tf.identity, name='oo')
@@ -215,8 +283,8 @@ if shape[-1] != 10000:
 if len(net.all_layers) != 5:
     raise Exception("layers dont match")
 
-if len(net.all_params) != 7:
+if len(net.all_params) != 11:
     raise Exception("params dont match")
 
-if net.count_params() != 4651600:
+if net.count_params() != 5293200:
     raise Exception("params dont match")
