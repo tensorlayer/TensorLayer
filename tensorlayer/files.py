@@ -50,30 +50,76 @@ from . import nlp, utils, visualize
 
 
 ## Load dataset functions
-def load_mnist_dataset(shape=(-1, 784), path="data"):
-    """Load MNIST dataset.
-
+def load_mnist_dataset(shape=(-1, 784), path='data'):
+    """Load the original mnist.
+    
     Automatically download MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
 
     Parameters
     ----------
     shape : tuple
-        The shape of digit images e.g. (-1,784) or (-1, 28, 28, 1).
+        The shape of digit images (the default is (-1, 784)).
     path : str
-        The path that the data is downloaded to, defaults is ``data/mnist/``.
+        The path that the data is downloaded to.
+    
+    Returns
+    -------
+    X_train, y_train, X_val, y_val, X_test, y_test: tuple
+        Return splitted training/Validation/test set respectively.
 
     Examples
     --------
-    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784), path='datasets')
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
-
     """
-    path = os.path.join(path, 'mnist')
+    return _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/')
 
-    # We first define functions for loading MNIST images and labels.
+
+def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
+    """Load the fashion mnist.
+    
+    Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
+
+    Parameters
+    ----------
+    shape : tuple
+        The shape of digit images (the default is (-1, 784)).
+    path : str
+        The path that the data is downloaded to.
+    
+    Returns
+    -------
+    X_train, y_train, X_val, y_val, X_test, y_test: tuple
+        Return splitted training/Validation/test set respectively.
+
+    Examples
+    --------
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1,784), path='datasets')
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1, 28, 28, 1))
+    """
+    return _load_mnist_dataset(shape, path, name='fashion_mnist', url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/')
+
+
+def _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/'):
+    """A generic function to load mnist-like dataset.
+    
+    Parameters:
+    ----------
+    shape : tuple
+        The shape of digit images.
+    path : str
+        The path that the data is downloaded to.
+    name : str
+        The dataset name you want to use(the default is 'mnist').
+    url : str
+        The url of dataset(the default is 'http://yann.lecun.com/exdb/mnist/').
+    """
+    path = os.path.join(path, name)
+
+    # Define functions for loading mnist-like data's images and labels.
     # For convenience, they also download the requested files if needed.
     def load_mnist_images(path, filename):
-        filepath = maybe_download_and_extract(filename, path, 'http://yann.lecun.com/exdb/mnist/')
+        filepath = maybe_download_and_extract(filename, path, url)
 
         logging.info(filepath)
         # Read the inputs in Yann LeCun's binary format.
@@ -88,7 +134,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
         return data / np.float32(256)
 
     def load_mnist_labels(path, filename):
-        filepath = maybe_download_and_extract(filename, path, 'http://yann.lecun.com/exdb/mnist/')
+        filepath = maybe_download_and_extract(filename, path, url)
         # Read the labels in Yann LeCun's binary format.
         with gzip.open(filepath, 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=8)
@@ -96,7 +142,7 @@ def load_mnist_dataset(shape=(-1, 784), path="data"):
         return data
 
     # Download and read the training and test set images and labels.
-    logging.info("Load or Download MNIST > {}".format(path))
+    logging.info("Load or Download {0} > {1}".format(name.upper(), path))
     X_train = load_mnist_images(path, 'train-images-idx3-ubyte.gz')
     y_train = load_mnist_labels(path, 'train-labels-idx1-ubyte.gz')
     X_test = load_mnist_images(path, 't10k-images-idx3-ubyte.gz')
