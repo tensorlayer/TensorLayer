@@ -44,7 +44,7 @@ class ConcatLayer(Layer):
     def __init__(
             self,
             layers,
-            concat_dim=1,
+            concat_dim=-1,
             name='concat_layer',
     ):
         Layer.__init__(self, prev_layer=layers, name=name)
