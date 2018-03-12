@@ -38,7 +38,7 @@ if len(net.all_params) != 4:
 if net.count_params() != 157000:
     raise Exception("params dont match")
 
-### image
+## image
 x = tf.placeholder(tf.float32, shape=[None, 100, 100, 3])
 inputs = tl.layers.InputLayer(x, name='input')
 net1 = tl.layers.Conv2d(inputs, 32, (3, 3), (2, 2), act=tf.nn.relu, name='c1')
