@@ -1709,6 +1709,9 @@ class GroupConv2d(Layer):
         self.inputs = prev_layer.outputs
         groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
         channels = int(self.inputs.get_shape()[-1])
+
+        logging.info("GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), n_group,
+                                                                                                  padding, act.__name__))
         with tf.variable_scope(name):
             We = tf.get_variable(
                 name='W',
@@ -1719,17 +1722,17 @@ class GroupConv2d(Layer):
                 **W_init_args)
             if b_init:
                 bi = tf.get_variable(name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True, **b_init_args)
-        if n_group == 1:
-            conv = groupConv(self.inputs, We)
-        else:
-            inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
-            weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
-            convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
-            conv = tf.concat(axis=3, values=convGroups)
-        if b_init:
-            conv = tf.add(conv, bi, name='add')
+            if n_group == 1:
+                conv = groupConv(self.inputs, We)
+            else:
+                inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
+                weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
+                convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
+                conv = tf.concat(axis=3, values=convGroups)
+            if b_init:
+                conv = tf.add(conv, bi, name='add')
 
-        self.outputs = act(conv)
+            self.outputs = act(conv)
         # self.all_layers = list(layer.all_layers)
         # self.all_params = list(layer.all_params)
         # self.all_drop = dict(layer.all_drop)
