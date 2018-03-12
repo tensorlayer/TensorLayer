@@ -122,7 +122,6 @@ def _load_mnist_dataset(shape,
     url : str
         The url of dataset(the default is 'http://yann.lecun.com/exdb/mnist/').
     """
-
     path = os.path.join(path, name)
 
     # Define functions for loading mnist-like data's images and labels.
