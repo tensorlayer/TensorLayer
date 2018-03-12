@@ -3,7 +3,7 @@ import tensorlayer as tl
 
 sess = tf.InteractiveSession()
 
-### vector
+## vector
 x = tf.placeholder(tf.float32, shape=[None, 784])
 inputs = tl.layers.InputLayer(x, name='input_layer')
 net1 = tl.layers.DenseLayer(inputs, 100, act=tf.nn.relu, name='relu1_1')
