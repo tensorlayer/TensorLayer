@@ -58,14 +58,14 @@ def load_mnist_dataset(shape=(-1, 784), path='data'):
     Parameters
     ----------
     shape : tuple
-        The shape of digit images (the default is (-1, 784)).
+        The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
     path : str
         The path that the data is downloaded to.
     
     Returns
     -------
     X_train, y_train, X_val, y_val, X_test, y_test: tuple
-        Return splitted training/Validation/test set respectively.
+        Return splitted training/validation/test set respectively.
 
     Examples
     --------
@@ -78,19 +78,19 @@ def load_mnist_dataset(shape=(-1, 784), path='data'):
 def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
     """Load the fashion mnist.
     
-    Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
+    Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 fashion images respectively, `examples <http://marubon-ds.blogspot.co.uk/2017/09/fashion-mnist-exploring.html>`__.
 
     Parameters
     ----------
     shape : tuple
-        The shape of digit images (the default is (-1, 784)).
+        The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
     path : str
         The path that the data is downloaded to.
     
     Returns
     -------
     X_train, y_train, X_val, y_val, X_test, y_test: tuple
-        Return splitted training/Validation/test set respectively.
+        Return splitted training/validation/test set respectively.
 
     Examples
     --------
