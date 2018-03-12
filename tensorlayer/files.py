@@ -225,14 +225,17 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
     X_train = None
     y_train = []
     for i in range(1, 6):
-        data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "data_batch_{}".format(i)))
+        data_dic = unpickle(
+            os.path.join(path, 'cifar-10-batches-py/',
+                         "data_batch_{}".format(i)))
         if i == 1:
             X_train = data_dic['data']
         else:
             X_train = np.vstack((X_train, data_dic['data']))
         y_train += data_dic['labels']
 
-    test_data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "test_batch"))
+    test_data_dic = unpickle(
+        os.path.join(path, 'cifar-10-batches-py/', "test_batch"))
     X_test = test_data_dic['data']
     y_test = np.array(test_data_dic['labels'])
 
@@ -255,7 +258,8 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
-        logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
+        logging.info(
+            'Shape of a training image: X_train[0] %s' % X_train[0].shape)
 
         plt.ion()  # interactive mode
         count = 1
@@ -264,14 +268,19 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
                 _ = fig.add_subplot(10, 10, count)
                 if shape == (-1, 3, 32, 32):
                     # plt.imshow(X_train[count-1], interpolation='nearest')
-                    plt.imshow(np.transpose(X_train[count - 1], (1, 2, 0)), interpolation='nearest')
+                    plt.imshow(
+                        np.transpose(X_train[count - 1], (1, 2, 0)),
+                        interpolation='nearest')
                     # plt.imshow(np.transpose(X_train[count-1], (2, 1, 0)), interpolation='nearest')
                 elif shape == (-1, 32, 32, 3):
                     plt.imshow(X_train[count - 1], interpolation='nearest')
                     # plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation='nearest')
                 else:
-                    raise Exception("Do not support the given 'shape' to plot the image examples")
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())  # 不显示刻度(tick)
+                    raise Exception(
+                        "Do not support the given 'shape' to plot the image examples"
+                    )
+                plt.gca().xaxis.set_major_locator(
+                    plt.NullLocator())  # 不显示刻度(tick)
                 plt.gca().yaxis.set_major_locator(plt.NullLocator())
                 count = count + 1
         plt.draw()  # interactive mode
@@ -326,7 +335,8 @@ def load_ptb_dataset(path='data'):
 
     """
     path = os.path.join(path, 'ptb')
-    logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
+    logging.info(
+        "Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
     #Maybe dowload and uncompress tar, or load exsisting files
     filename = 'simple-examples.tgz'
@@ -378,7 +388,8 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
     """
     path = os.path.join(path, 'mm_test8')
-    logging.info("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
+    logging.info(
+        "Load or Download matt_mahoney_text8 Dataset> {}".format(path))
 
     filename = 'text8.zip'
     url = 'http://mattmahoney.net/dc/'
@@ -391,7 +402,15 @@ def load_matt_mahoney_text8_dataset(path='data'):
     return word_list
 
 
-def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2, index_from=3):
+def load_imdb_dataset(path='data',
+                      nb_words=None,
+                      skip_top=0,
+                      maxlen=None,
+                      test_split=0.2,
+                      seed=113,
+                      start_char=1,
+                      oov_char=2,
+                      index_from=3):
     """Load IMDB dataset.
 
     Parameters
@@ -461,14 +480,17 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
         X = new_X
         labels = new_labels
     if not X:
-        raise Exception('After filtering for sequences shorter than maxlen=' + str(maxlen) + ', no sequence was kept. ' 'Increase maxlen.')
+        raise Exception('After filtering for sequences shorter than maxlen=' +
+                        str(maxlen) + ', no sequence was kept. '
+                        'Increase maxlen.')
     if not nb_words:
         nb_words = max([max(x) for x in X])
 
     # by convention, use 2 as OOV word
     # reserve 'index_from' (=3 by default) characters: 0 (padding), 1 (start), 2 (OOV)
     if oov_char is not None:
-        X = [[oov_char if (w >= nb_words or w < skip_top) else w for w in x] for x in X]
+        X = [[oov_char if (w >= nb_words or w < skip_top) else w for w in x]
+             for x in X]
     else:
         nX = []
         for x in X:
@@ -557,7 +579,8 @@ def load_wmt_en_fr_dataset(path='data'):
     def get_wmt_enfr_train_set(path):
         """Download the WMT en-fr training corpus to directory unless it's there."""
         filename = "training-giga-fren.tar"
-        maybe_download_and_extract(filename, path, _WMT_ENFR_TRAIN_URL, extract=True)
+        maybe_download_and_extract(
+            filename, path, _WMT_ENFR_TRAIN_URL, extract=True)
         train_path = os.path.join(path, "giga-fren.release2.fixed")
         gunzip_file(train_path + ".fr.gz", train_path + ".fr")
         gunzip_file(train_path + ".en.gz", train_path + ".en")
@@ -566,10 +589,12 @@ def load_wmt_en_fr_dataset(path='data'):
     def get_wmt_enfr_dev_set(path):
         """Download the WMT en-fr training corpus to directory unless it's there."""
         filename = "dev-v2.tgz"
-        dev_file = maybe_download_and_extract(filename, path, _WMT_ENFR_DEV_URL, extract=False)
+        dev_file = maybe_download_and_extract(
+            filename, path, _WMT_ENFR_DEV_URL, extract=False)
         dev_name = "newstest2013"
         dev_path = os.path.join(path, "newstest2013")
-        if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
+        if not (gfile.Exists(dev_path + ".fr")
+                and gfile.Exists(dev_path + ".en")):
             logging.info("Extracting tgz file %s" % dev_file)
             with tarfile.open(dev_file, "r:gz") as dev_tar:
                 fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
@@ -580,7 +605,8 @@ def load_wmt_en_fr_dataset(path='data'):
                 dev_tar.extract(en_dev_file, path)
         return dev_path
 
-    logging.info("Load or Download WMT English-to-French translation > {}".format(path))
+    logging.info(
+        "Load or Download WMT English-to-French translation > {}".format(path))
 
     train_path = get_wmt_enfr_train_set(path)
     dev_path = get_wmt_enfr_dev_set(path)
@@ -588,7 +614,10 @@ def load_wmt_en_fr_dataset(path='data'):
     return train_path, dev_path
 
 
-def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False):
+def load_flickr25k_dataset(tag='sky',
+                           path="data",
+                           n_threads=50,
+                           printable=False):
     """Load Flickr25K dataset.
 
     Returns a list of images by a given tag from Flick25k dataset,
@@ -634,12 +663,14 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
     # return images by the given tag.
     # 1. image path list
     folder_imgs = path + "/mirflickr"
-    path_imgs = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    path_imgs = load_file_list(
+        path=folder_imgs, regx='\\.jpg', printable=False)
     path_imgs.sort(key=natural_keys)
 
     # 2. tag path list
     folder_tags = path + "/mirflickr/meta/tags"
-    path_tags = load_file_list(path=folder_tags, regx='\\.txt', printable=False)
+    path_tags = load_file_list(
+        path=folder_tags, regx='\\.txt', printable=False)
     path_tags.sort(key=natural_keys)
 
     # 3. select images
@@ -654,11 +685,16 @@ def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False
         if tag is None or tag in tags:
             images_list.append(path_imgs[idx])
 
-    images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
+    images = visualize.read_images(
+        images_list, folder_imgs, n_threads=n_threads, printable=printable)
     return images
 
 
-def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printable=False):
+def load_flickr1M_dataset(tag='sky',
+                          size=10,
+                          path="data",
+                          n_threads=50,
+                          printable=False):
     """Load Flick1M dataset.
 
     Returns a list of images by a given tag from Flickr1M dataset,
@@ -693,9 +729,12 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
 
     """
     path = os.path.join(path, 'flickr1M')
-    logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
+    logging.info("[Flickr1M] using {}% of images = {}".format(
+        size * 10, size * 100000))
     images_zip = [
-        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip', 'images7.zip', 'images8.zip', 'images9.zip'
+        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip',
+        'images4.zip', 'images5.zip', 'images6.zip', 'images7.zip',
+        'images8.zip', 'images9.zip'
     ]
     tag_zip = 'tags.zip'
     url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
@@ -706,12 +745,15 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
         # logging.info(path+"/"+image_folder)
         if folder_exists(path + "/" + image_folder) is False:
             # logging.info(image_zip)
-            logging.info("[Flickr1M] {} is missing in {}".format(image_folder, path))
+            logging.info("[Flickr1M] {} is missing in {}".format(
+                image_folder, path))
             maybe_download_and_extract(image_zip, path, url, extract=True)
             del_file(path + '/' + image_zip)
-            os.system("mv {} {}".format(path + '/images', path + '/' + image_folder))
+            os.system("mv {} {}".format(path + '/images',
+                                        path + '/' + image_folder))
         else:
-            logging.info("[Flickr1M] {} exists in {}".format(image_folder, path))
+            logging.info("[Flickr1M] {} exists in {}".format(
+                image_folder, path))
 
     # download tag
     if folder_exists(path + "/tags") is False:
@@ -725,8 +767,10 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     images_list = []
     images_folder_list = []
     for i in range(0, size):
-        images_folder_list += load_folder_list(path=os.path.join(path, 'images%d' % i))
-    images_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
+        images_folder_list += load_folder_list(
+            path=os.path.join(path, 'images%d' % i))
+    images_folder_list.sort(
+        key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
 
     for folder in images_folder_list[0:size * 10]:
         tmp = load_file_list(path=folder, regx='\\.jpg', printable=False)
@@ -736,7 +780,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     # 2. tag path list
     tag_list = []
     tag_folder_list = load_folder_list(path + "/tags")
-    tag_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
+    tag_folder_list.sort(
+        key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
 
     for folder in tag_folder_list[0:size * 10]:
         tmp = load_file_list(path=folder, regx='\\.txt', printable=False)
@@ -753,7 +798,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
             select_images_list.append(images_list[idx])
 
     logging.info("[Flickr1M] reading images with tag: {}".format(tag))
-    images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
+    images = visualize.read_images(
+        select_images_list, '', n_threads=n_threads, printable=printable)
     return images
 
 
@@ -782,7 +828,8 @@ def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
 
     def load_image_from_folder(path):
         path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
-        return visualize.read_images(path_imgs, path=path, n_threads=10, printable=False)
+        return visualize.read_images(
+            path_imgs, path=path, n_threads=10, printable=False)
 
     im_train_A = load_image_from_folder(os.path.join(path, filename, "trainA"))
     im_train_B = load_image_from_folder(os.path.join(path, filename, "trainB"))
@@ -823,7 +870,12 @@ def download_file_from_google_drive(ID, destination):
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
-            for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True, desc=destination):
+            for chunk in tqdm(
+                    response.iter_content(chunk_size),
+                    total=total_size,
+                    unit='B',
+                    unit_scale=True,
+                    desc=destination):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
 
@@ -872,13 +924,16 @@ def load_celebA_dataset(path='data'):
         os.remove(save_path)
         os.rename(os.path.join(path, zip_dir), image_path)
 
-    data_files = load_file_list(path=image_path, regx='\\.jpg', printable=False)
+    data_files = load_file_list(
+        path=image_path, regx='\\.jpg', printable=False)
     for i, _v in enumerate(data_files):
         data_files[i] = os.path.join(image_path, data_files[i])
     return data_files
 
 
-def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
+def load_voc_dataset(path='data',
+                     dataset='2012',
+                     contain_classes_in_person=False):
     """Pascal VOC 2007/2012 Dataset.
 
     It has 20 objects:
@@ -990,15 +1045,20 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     elif dataset == "2012test":
         extracted_filename = "VOC2012test"  #"VOCdevkit/VOC2012"
         logging.info("    [============= VOC 2012 Test Set =============]")
-        logging.info("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
+        logging.info(
+            "    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n"
+        )
         import time
         time.sleep(3)
         if os.path.isdir(os.path.join(path, extracted_filename)) is False:
-            logging.info("For VOC 2012 Test data - online registration required")
+            logging.info(
+                "For VOC 2012 Test data - online registration required")
             logging.info(
                 " Please download VOC2012test.tar from:  \n register: http://host.robots.ox.ac.uk:8080 \n voc2012 : http://host.robots.ox.ac.uk:8080/eval/challenges/voc2012/ \ndownload: http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar"
             )
-            logging.info(" unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s" % path)
+            logging.info(
+                " unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s"
+                % path)
             exit()
         # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
         # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
@@ -1016,34 +1076,43 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         extracted_filename = "VOC2007test"
         logging.info("    [============= VOC 2007 Test Set =============]")
     else:
-        raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
+        raise Exception(
+            "Please set the dataset aug to 2012, 2012test or 2007.")
 
     # download dataset
     if dataset != "2012test":
         from sys import platform as _platform
         if folder_exists(os.path.join(path, extracted_filename)) is False:
-            logging.info("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
+            logging.info("[VOC] {} is nonexistent in {}".format(
+                extracted_filename, path))
             maybe_download_and_extract(tar_filename, path, url, extract=True)
             del_file(os.path.join(path, tar_filename))
             if dataset == "2012":
                 if _platform == "win32":
-                    os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(path, path))
+                    os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(
+                        path, path))
                 else:
-                    os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
+                    os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(
+                        path, path))
             elif dataset == "2007":
                 if _platform == "win32":
-                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(
+                        path, path))
                 else:
-                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(
+                        path, path))
             elif dataset == "2007test":
                 if _platform == "win32":
-                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007test".format(path, path))
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007test".format(
+                        path, path))
                 else:
-                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007test".format(path, path))
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007test".format(
+                        path, path))
             del_folder(os.path.join(path, 'VOCdevkit'))
     # object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = [
-        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
+        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat",
+        "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
         "pottedplant", "sheep", "sofa", "train", "tvmonitor"
     ]
     if contain_classes_in_person:
@@ -1059,27 +1128,46 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     # 1. image path list
     # folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
     folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
-    imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    imgs_file_list = load_file_list(
+        path=folder_imgs, regx='\\.jpg', printable=False)
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
-    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.jpg --> 2007000027
+    imgs_file_list.sort(
+        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+    )  # 2007_000027.jpg --> 2007000027
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     if dataset != "2012test":
         ##======== 2. semantic segmentation maps path list
         # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
-        folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
-        imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
-        logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
-        imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
+        folder_semseg = os.path.join(path, extracted_filename,
+                                     "SegmentationClass")
+        imgs_semseg_file_list = load_file_list(
+            path=folder_semseg, regx='\\.png', printable=False)
+        logging.info("[VOC] {} maps for semantic segmentation found".format(
+            len(imgs_semseg_file_list)))
+        imgs_semseg_file_list.sort(
+            key=
+            lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+        )  # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list = [
+            os.path.join(folder_semseg, s) for s in imgs_semseg_file_list
+        ]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         ##======== 3. instance segmentation maps path list
         # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
-        folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
-        imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
-        logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
-        imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
+        folder_insseg = os.path.join(path, extracted_filename,
+                                     "SegmentationObject")
+        imgs_insseg_file_list = load_file_list(
+            path=folder_insseg, regx='\\.png', printable=False)
+        logging.info("[VOC] {} maps for instance segmentation found".format(
+            len(imgs_semseg_file_list)))
+        imgs_insseg_file_list.sort(
+            key=
+            lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+        )  # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list = [
+            os.path.join(folder_insseg, s) for s in imgs_insseg_file_list
+        ]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
         imgs_semseg_file_list = []
@@ -1087,10 +1175,17 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     # 4. annotations for bounding box and object class
     # folder_ann = path+"/"+extracted_filename+"/Annotations/"
     folder_ann = os.path.join(path, extracted_filename, "Annotations")
-    imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
-    logging.info("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
-    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.xml --> 2007000027
-    imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
+    imgs_ann_file_list = load_file_list(
+        path=folder_ann, regx='\\.xml', printable=False)
+    logging.info(
+        "[VOC] {} XML annotation files for bounding box and object class found".
+        format(len(imgs_ann_file_list)))
+    imgs_ann_file_list.sort(
+        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+    )  # 2007_000027.xml --> 2007000027
+    imgs_ann_file_list = [
+        os.path.join(folder_ann, s) for s in imgs_ann_file_list
+    ]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
     if dataset == "2012test":  # remove unused images in JPEG folder
@@ -1141,10 +1236,14 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     continue
             cls_id = classes.index(cls)
             xmlbox = obj.find('bndbox')
-            b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+            b = (float(xmlbox.find('xmin').text),
+                 float(xmlbox.find('xmax').text),
+                 float(xmlbox.find('ymin').text),
+                 float(xmlbox.find('ymax').text))
             bb = convert((w, h), b)
 
-            out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+            out_file += str(cls_id) + " " + " ".join([str(a)
+                                                      for a in bb]) + '\n'
             n_objs += 1
             if cls in "person":
                 for part in obj.iter('part'):
@@ -1153,10 +1252,14 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                         continue
                     cls_id = classes.index(cls)
                     xmlbox = part.find('bndbox')
-                    b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+                    b = (float(xmlbox.find('xmin').text),
+                         float(xmlbox.find('xmax').text),
+                         float(xmlbox.find('ymin').text),
+                         float(xmlbox.find('ymax').text))
                     bb = convert((w, h), b)
                     # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
-                    out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+                    out_file += str(cls_id) + " " + " ".join(
+                        [str(a) for a in bb]) + '\n'
                     n_objs += 1
         in_file.close()
         return n_objs, out_file
@@ -1226,7 +1329,9 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         try:
             save_list_var.extend([v.eval() for v in save_list])
         except Exception:
-            logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
+            logging.info(
+                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
+            )
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
@@ -1353,7 +1458,10 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
 
     save_list_names = [tensor.name for tensor in save_list]
     save_list_var = sess.run(save_list)
-    save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
+    save_var_dict = {
+        save_list_names[idx]: val
+        for idx, val in enumerate(save_list_var)
+    }
     np.savez(name, **save_var_dict)
     save_list_var = None
     save_var_dict = None
@@ -1388,22 +1496,31 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
         try:
             # tensor = tf.get_default_graph().get_tensor_by_name(key)
             # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
-            varlist = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=key)
+            varlist = tf.get_collection(
+                tf.GraphKeys.GLOBAL_VARIABLES, scope=key)
             if len(varlist) > 1:
-                raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
+                raise Exception(
+                    "[!] Multiple candidate variables to be assigned for name %s"
+                    % key)
             elif len(varlist) == 0:
                 raise KeyError
             else:
                 ops.append(varlist[0].assign(params[key]))
                 logging.info("[*] params restored: %s" % key)
         except KeyError:
-            logging.info("[!] Warning: Tensor named %s not found in network." % key)
+            logging.info(
+                "[!] Warning: Tensor named %s not found in network." % key)
 
     sess.run(ops)
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
-def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
+def save_ckpt(sess=None,
+              mode_name='model.ckpt',
+              save_dir='checkpoint',
+              var_list=None,
+              global_step=None,
+              printable=False):
     """Save parameters into `ckpt` file.
 
     Parameters
@@ -1439,13 +1556,19 @@ def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     if printable:
         for idx, v in enumerate(var_list):
-            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  param {:3}: {:15}   {}".format(
+                idx, v.name, str(v.get_shape())))
 
     saver = tf.train.Saver(var_list)
     saver.save(sess, ckpt_file, global_step=global_step)
 
 
-def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, is_latest=True, printable=False):
+def load_ckpt(sess=None,
+              mode_name='model.ckpt',
+              save_dir='checkpoint',
+              var_list=None,
+              is_latest=True,
+              printable=False):
     """Load parameters from `ckpt` file.
 
     Parameters
@@ -1499,7 +1622,8 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     if printable:
         for idx, v in enumerate(var_list):
-            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+            logging.info("  param {:3}: {:15}   {}".format(
+                idx, v.name, str(v.get_shape())))
 
     try:
         saver = tf.train.Saver(var_list)
@@ -1627,7 +1751,10 @@ def load_folder_list(path=""):
         A folder path.
 
     """
-    return [os.path.join(path, o) for o in os.listdir(path) if os.path.isdir(os.path.join(path, o))]
+    return [
+        os.path.join(path, o) for o in os.listdir(path)
+        if os.path.isdir(os.path.join(path, o))
+    ]
 
 
 def exists_or_mkdir(path, verbose=True):
@@ -1662,7 +1789,11 @@ def exists_or_mkdir(path, verbose=True):
         return True
 
 
-def maybe_download_and_extract(filename, working_directory, url_source, extract=False, expected_bytes=None):
+def maybe_download_and_extract(filename,
+                               working_directory,
+                               url_source,
+                               extract=False,
+                               expected_bytes=None):
     """Checks if file exists in working_directory otherwise tries to dowload the file,
     and optionally also tries to extract the file if format is ".zip" or ".tar"
 
@@ -1701,7 +1832,9 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
         def _dlProgress(count, blockSize, totalSize):
             if (totalSize != 0):
                 percent = float(count * blockSize) / float(totalSize) * 100.0
-                sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
+                sys.stdout.write(
+                    "\r"
+                    "Downloading " + filename + "...%d%%" % percent)
                 sys.stdout.flush()
 
         if sys.version_info[0] == 2:
@@ -1718,9 +1851,12 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     if not os.path.exists(filepath):
         _download(filename, working_directory, url_source)
         statinfo = os.stat(filepath)
-        logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  #, 'bytes.')
-        if (not (expected_bytes is None) and (expected_bytes != statinfo.st_size)):
-            raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
+        logging.info('Succesfully downloaded %s %s bytes.' %
+                     (filename, statinfo.st_size))  #, 'bytes.')
+        if (not (expected_bytes is None)
+                and (expected_bytes != statinfo.st_size)):
+            raise Exception('Failed to verify ' + filename +
+                            '. Can you get to it with a browser?')
         if (extract):
             if tarfile.is_tarfile(filepath):
                 logging.info('Trying to extract tar file')
@@ -1732,7 +1868,9 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
                     zf.extractall(working_directory)
                 logging.info('... Success!')
             else:
-                logging.info("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
+                logging.info(
+                    "Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported"
+                )
     return filepath
 
 
@@ -1784,4 +1922,5 @@ def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
     for f in file_list:
         W = load_npz(path, f)[0]
         logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
-        visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
+        visualize.draw_weights(
+            W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
