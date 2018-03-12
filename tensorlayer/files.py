@@ -127,7 +127,7 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path="data"):
     shape : tuple
         The shape of digit images e.g. (-1,784) or (-1, 28, 28, 1).
     path : str
-        The path that the data is downloaded to, defaults is ``data/fashionMnist/``.
+        The path that the data is downloaded to, defaults is ``data/fashion_mnist/``.
 
     Examples
     --------
@@ -135,7 +135,7 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path="data"):
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1, 28, 28, 1))
 
     """
-    path = os.path.join(path, 'fashionMnist')
+    path = os.path.join(path, 'fashion_mnist')
 
     # We first define functions for loading fashion-MNIST images and labels.
     # For convenience, they also download the requested files if needed.
