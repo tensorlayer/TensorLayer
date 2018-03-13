@@ -1582,7 +1582,7 @@ class DepthwiseConv2d(Layer):
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name='x')
     >>> n = InputLayer(x, name='in')
     >>> n = Conv2d(n, 32, (3, 3), (2, 2), act=tf.nn.relu, name='c1')
-    >>> n = DepthwiseConv2d(n, 1, (3, 3), (1, 1), name='d1')
+    >>> n = DepthwiseConv2d(n, (3, 3), (1, 1), name='d1')
     >>> print(n.outputs.get_shape())
     ... (?, 14, 14, 32)
 
