@@ -1657,8 +1657,8 @@ class DepthwiseConv2d(Layer):
 class SeparableConv2d(Layer):
     """The :class:`SeparableConv2d` class is a 2D depthwise separable convolutional layer, see `tf.layers.separable_conv2d <https://www.tensorflow.org/api_docs/python/tf/layers/separable_conv2d>`__.
 
-    This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels,
-    while :class:`DepthwiseConv2d` performs depthwise convolution only.
+    This layer performs a depthwise convolution that acts separately on channels, followed by a pointwise convolution that mixes channels.
+    While :class:`DepthwiseConv2d` performs depthwise convolution only, which allow us to add batch normalization between depthwise and pointwise convolution.
 
     Parameters
     ------------
