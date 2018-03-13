@@ -1548,14 +1548,12 @@ class DepthwiseConv2d(Layer):
     Input:
         4-D Tensor (batch, height, width, in_channels).
     Output:
-        4-D Tensor (batch, new height, new width, in_channels * channel_multiplier).
+        4-D Tensor (batch, new height, new width, in_channels * depth_multiplier).
 
     Parameters
     ------------
     layer : :class:`Layer`
         Previous layer.
-    channel_multiplier : int
-        The number of channels to expand to.
     filter_size : tuple of int
         The filter size (height, width).
     stride : tuple of int
@@ -1564,8 +1562,10 @@ class DepthwiseConv2d(Layer):
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    rate: tuple of 2 int
+    dilation_rate: tuple of 2 int
         The dilation rate in which we sample input values across the height and width dimensions in atrous convolution. If it is greater than 1, then all values of strides must be 1.
+    depth_multiplier : int
+        The number of channels to expand to.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -1580,11 +1580,11 @@ class DepthwiseConv2d(Layer):
     Examples
     ---------
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name='x')
-    >>> n = InputLayer(x, name='in')
-    >>> n = Conv2d(n, 32, (3, 3), (2, 2), act=tf.nn.relu, name='c1')
-    >>> n = DepthwiseConv2d(n, 1, (3, 3), (1, 1), name='d1')
-    >>> print(n.outputs.get_shape())
-    ... (?, 14, 14, 32)
+    >>> net = InputLayer(x, name='in')
+    >>> net = Conv2d(net, 32, (3, 3), (1, 1), name='conv1')
+    >>> net = MaxPool2d(net, (2, 2), name='pool1')
+    >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), act=tf.nn.relu, name='dethwise1')
+    >>> net = Conv2d(net, 64, (1, 1), (1, 1), act=tf.nn.relu, name='conv2')
 
     References
     -----------
@@ -1596,12 +1596,12 @@ class DepthwiseConv2d(Layer):
     def __init__(
             self,
             prev_layer,
-            channel_multiplier=1,
             shape=(3, 3),
             strides=(1, 1),
             act=tf.identity,
             padding='SAME',
-            rate=(1, 1),
+            dilation_rate=(1, 1),
+            depth_multiplier=1,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -1626,7 +1626,7 @@ class DepthwiseConv2d(Layer):
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
 
-        shape = [shape[0], shape[1], pre_channel, channel_multiplier]
+        shape = [shape[0], shape[1], pre_channel, depth_multiplier]
 
         if len(strides) == 2:
             strides = [1, strides[0], strides[1], 1]
@@ -1636,13 +1636,13 @@ class DepthwiseConv2d(Layer):
         with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype,
-                **W_init_args)  # [filter_height, filter_width, in_channels, channel_multiplier]
+                **W_init_args)  # [filter_height, filter_width, in_channels, depth_multiplier]
             if b_init:
                 b = tf.get_variable(
-                    name='b_depthwise2d', shape=(pre_channel * channel_multiplier), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate) + b)
+                    name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate) + b)
             else:
-                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=rate))
+                self.outputs = act(tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate))
 
         # self.all_layers = list(layer.all_layers)
         # self.all_params = list(layer.all_params)
