@@ -1580,11 +1580,11 @@ class DepthwiseConv2d(Layer):
     Examples
     ---------
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name='x')
-    >>> n = InputLayer(x, name='in')
-    >>> n = Conv2d(n, 32, (3, 3), (2, 2), act=tf.nn.relu, name='c1')
-    >>> n = DepthwiseConv2d(n, (3, 3), (1, 1), name='d1')
-    >>> print(n.outputs.get_shape())
-    ... (?, 14, 14, 32)
+    >>> net = InputLayer(x, name='in')
+    >>> net = Conv2d(net, 32, (3, 3), (1, 1), name='conv1')
+    >>> net = MaxPool2d(net, (2, 2), name='pool1')
+    >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), act=tf.nn.relu, name='dethwise1')
+    >>> net = Conv2d(net, 64, (1, 1), (1, 1), act=tf.nn.relu, name='conv2')
 
     References
     -----------
