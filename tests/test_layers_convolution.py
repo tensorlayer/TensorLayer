@@ -71,14 +71,32 @@ if (shape[1] != 25) or (shape[2] != 25) or (shape[3] != 32):
 # n = UpSampling2dLayer
 # n = DownSampling2dLayer
 
-offset1 = tl.layers.Conv2d(nin, 18, (3, 3), (1, 1), padding='SAME', name='offset1')
-net = tl.layers.DeformableConv2d(nin, offset1, 32, (3, 3), name='deformable1')
-offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), padding='SAME', name='offset2')
-net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), name='deformable2')
-net.print_layers()
-net.print_params(False)
+# offset1 = tl.layers.Conv2d(nin, 18, (3, 3), (1, 1), padding='SAME', name='offset1')
+# net = tl.layers.DeformableConv2d(nin, offset1, 32, (3, 3), name='deformable1')
+# offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), padding='SAME', name='offset2')
+# net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), name='deformable2')
+# net.print_layers()
+# net.print_params(False)
 
 # AtrousConv2dLayer
+
+n = tl.layers.SeparableConv2d(nin, 32, (3, 3), (1, 1), tf.nn.relu, name='seperable1')
+n.print_layers()
+n.print_params(False)
+
+shape = n.outputs.get_shape().as_list()
+if shape[1:] != [98, 98, 32]:
+    raise Exception("shape dont match")
+
+if len(n.all_layers) != 1:
+    raise Exception("layers dont match")
+
+if len(n.all_params) != 3:
+    raise Exception("params dont match")
+
+if n.count_params() != 155:
+    raise Exception("params dont match")
+# exit()
 
 ## 3D
 x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
