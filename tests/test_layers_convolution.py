@@ -55,7 +55,7 @@ shape = n.outputs.get_shape().as_list()
 if (shape[3] != 32):
     raise Exception("shape dont match")
 
-n = tl.layers.DepthwiseConv2d(nin, 2, (3, 3), (2, 2), name='depthwise')
+n = tl.layers.DepthwiseConv2d(nin, (3, 3), (2, 2), tf.nn.relu, depth_multiplier=2, name='depthwise')
 print(n)
 shape = n.outputs.get_shape().as_list()
 if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 6):
