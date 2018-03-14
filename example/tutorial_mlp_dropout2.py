@@ -11,6 +11,7 @@ X_train, y_train, X_val, y_val, X_test, y_test = \
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
+
 # define the network
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
@@ -22,6 +23,7 @@ def mlp(x, is_train=True, reuse=False):
         network = tl.layers.DropoutLayer(network, keep=0.5, is_fix=True, is_train=is_train, name='drop3')
         network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
     return network
+
 
 # define inferences
 net_train = mlp(x, is_train=True, reuse=False)
