@@ -36,3 +36,7 @@ script:
   - python tests/test_layers_stack.py
   - python tests/test_layers_super_resolution.py
   - python tests/test_layers_time_distributed.py
+  
+  # update Docker image
+  - docker image build -t tensorlayer:latest -f Dockerfile .
+  - docker image build -t tensorlayer:latest-gpu -f Dockerfile.gpu .
