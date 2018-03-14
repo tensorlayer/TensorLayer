@@ -2,6 +2,7 @@
 
 import inspect
 import tensorflow as tf
+from .. import _logging as logging
 from .core import *
 
 __all__ = [
