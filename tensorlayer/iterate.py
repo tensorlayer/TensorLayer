@@ -4,6 +4,13 @@
 import numpy as np
 from six.moves import xrange
 
+__all__ = [
+    'minibatches',
+    'seq_minibatches',
+    'seq_minibatches2',
+    'ptb_iterator',
+]
+
 
 def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     """Generate a generator that input a group of example in numpy.array and

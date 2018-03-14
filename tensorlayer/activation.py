@@ -3,6 +3,16 @@
 
 import tensorflow as tf
 
+__all__ = [
+    'identity',
+    'ramp',
+    'leaky_relu',
+    'swish',
+    'pixel_wise_softmax',
+    'linear',
+    'lrelu',
+]
+
 
 def identity(x):
     """The identity activation function.
