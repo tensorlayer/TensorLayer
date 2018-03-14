@@ -2,6 +2,8 @@
 
 from six.moves import xrange
 from .core import *
+from .. import _logging as logging
+import tensorflow as tf
 
 __all__ = [
     'transformer',
