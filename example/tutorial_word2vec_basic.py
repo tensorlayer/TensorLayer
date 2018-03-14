@@ -38,11 +38,9 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 """
 
 import time
-
 import numpy as np
 import tensorflow as tf
 from six.moves import xrange  # pylint: disable=redefined-builtin
-
 import tensorlayer as tl
 
 flags = tf.flags

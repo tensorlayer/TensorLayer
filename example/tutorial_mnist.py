@@ -12,9 +12,7 @@
 """
 
 import time
-
 import tensorflow as tf
-
 import tensorlayer as tl
 
 
@@ -34,10 +32,7 @@ def main_test_layers(model='relu'):
 
     # placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(
-        tf.int64, shape=[
-            None,
-        ], name='y_')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
     # Note: the softmax is implemented internally in tl.cost.cross_entropy(y, y_)
     # to speed up computation, so we use identity in the last layer.
@@ -214,10 +209,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     sess = tf.InteractiveSession()
 
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(
-        tf.int64, shape=[
-            None,
-        ], name='y_')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
     if model == 'relu':
         act = tf.nn.relu
@@ -364,10 +356,7 @@ def main_test_cnn_layer():
     batch_size = 128
 
     x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])  # [batch_size, height, width, channels]
-    y_ = tf.placeholder(
-        tf.int64, shape=[
-            batch_size,
-        ])
+    y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
     network = tl.layers.InputLayer(x, name='input')
     ## Professional conv API for tensorflow expert

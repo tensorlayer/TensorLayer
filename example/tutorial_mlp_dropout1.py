@@ -1,8 +1,5 @@
-# train the network
 import time
-
 import tensorflow as tf
-
 import tensorlayer as tl
 
 sess = tf.InteractiveSession()

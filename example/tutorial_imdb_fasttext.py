@@ -28,10 +28,8 @@ After 5 epochs, you should get test accuracy close to 90.9%.
 import array
 import hashlib
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 
