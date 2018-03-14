@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-
 import tensorflow as tf
-
 import tensorlayer as tl
 from keras import backend as K
 from keras.layers import *

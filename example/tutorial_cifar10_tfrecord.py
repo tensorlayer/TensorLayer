@@ -54,10 +54,10 @@ resume = False  # load model, resume from previous checkpoint?
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
-print('X_train.shape', X_train.shape)  # (50000, 32, 32, 3)
-print('y_train.shape', y_train.shape)  # (50000,)
-print('X_test.shape', X_test.shape)  # (10000, 32, 32, 3)
-print('y_test.shape', y_test.shape)  # (10000,)
+print('X_train.shape', X_train.shape)   # (50000, 32, 32, 3)
+print('y_train.shape', y_train.shape)   # (50000,)
+print('X_test.shape', X_test.shape)     # (10000, 32, 32, 3)
+print('y_test.shape', y_test.shape)     # (10000,)
 print('X %s   y %s' % (X_test.dtype, y_test.dtype))
 
 
