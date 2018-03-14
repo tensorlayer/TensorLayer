@@ -46,15 +46,21 @@ TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk 
 The simplest way to install TensorLayer is: 
 
 ```bash
-[for master version] pip install git+https://github.com/zsdonghao/tensorlayer.git (Recommended)
-[for stable version] pip install tensorlayer
+# for master version (Recommended)
+$ pip install git+https://github.com/tensorlayer/tensorlayer.git 
+
+# for stable version 
+$ pip install tensorlayer
 ```
 
 Dockerfile is supplied to build images, build as usual
 
 ```bash
-[for CPU version] docker image build -t tensorlayer:latest -f Dockerfile .
-[for GPU version] docker image build -t tensorlayer:latest-gpu -f Dockerfile.gpu .
+# for CPU version
+$ docker build -t tensorlayer:latest .
+
+# for GPU version
+$ docker build -t tensorlayer:latest-gpu -f Dockerfile.gpu . 
 ```
 
 Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. 
