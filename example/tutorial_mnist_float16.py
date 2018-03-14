@@ -35,6 +35,7 @@ def model(x, is_train=True, reuse=False):
         n = DenseLayer(n, 10, act=tf.identity, name='output')
     return n
 
+
 # define inferences
 net_train = model(x, is_train=True, reuse=False)
 net_test = model(x, is_train=False, reuse=True)
