@@ -27,7 +27,7 @@ import tensorflow as tf
 
 import gym
 import tensorlayer as tl
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, DenseLayer
 
 # hyper-parameters
 image_size = 80
