@@ -20,14 +20,11 @@ http://karpathy.github.io/2016/05/31/rl/
 
 """
 
-import time
-
+import time, gym
 import numpy as np
 import tensorflow as tf
-
-import gym
 import tensorlayer as tl
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, DenseLayer
 
 # hyper-parameters
 image_size = 80

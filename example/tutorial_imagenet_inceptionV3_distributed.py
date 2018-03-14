@@ -12,12 +12,8 @@ https://www.kaggle.com/c/imagenet-object-localization-challenge/data
 import argparse
 import logging
 import multiprocessing
-import os
-import random
-import sys
-import time
+import os, random, sys, time
 from xml.etree import ElementTree
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib import slim
