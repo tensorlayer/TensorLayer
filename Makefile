@@ -9,9 +9,26 @@ lint:
 	pylint tensorlayer
 
 test:
-	python tests/test_yapf_format.py
-	python tests/test_pydocstyle.py
-	python tests/test_mnist_simple.py
+	python3 tests/test_yapf_format.py
+	# python3 tests/test_pydocstyle.py
+	python3 tests/test_mnist_simple.py
+	python3 tests/test_reuse_mlp.py
+	python3 tests/test_layers_basic.py
+	python3 tests/test_layers_convolution.py
+	python3 tests/test_layers_core.py
+	python3 tests/test_layers_extend.py
+	python3 tests/test_layers_flow_control.py
+	python3 tests/test_layers_importer.py
+	python3 tests/test_layers_merge.py
+	python3 tests/test_layers_normalization.py
+	python3 tests/test_layers_pooling.py
+	python3 tests/test_layers_recurrent.py
+	python3 tests/test_layers_shape.py
+	python3 tests/test_layers_spatial_transformer.py
+	python3 tests/test_layers_special_activation.py
+	python3 tests/test_layers_stack.py
+	python3 tests/test_layers_super_resolution.py
+	python3 tests/test_layers_time_distributed.py
 
 format:
 	autoflake -i example/*.py
