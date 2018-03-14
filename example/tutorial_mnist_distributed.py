@@ -28,10 +28,7 @@ X_train, y_train, X_val, y_val, X_test, y_test = \
 with tf.device(device_fn):
     # define placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(
-        tf.int64, shape=[
-            None,
-        ], name='y_')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
     # define the network
     network = tl.layers.InputLayer(x, name='input')
