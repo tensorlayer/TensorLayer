@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from .core import *
+import tensorflow as tf
+
+__all__ = [
+    'PReluLayer',
+]
 
 
 class PReluLayer(Layer):

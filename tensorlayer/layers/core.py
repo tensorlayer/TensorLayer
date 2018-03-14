@@ -1,13 +1,37 @@
 # -*- coding: utf-8 -*-
 
 import time
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
-
 from .. import _logging as logging
 from .. import files, iterate, utils, visualize
+
+__all__ = [
+    'LayersConfig',
+    'TF_GRAPHKEYS_VARIABLES',
+    'flatten_reshape',
+    'clear_layers_name',
+    'set_name_reuse',
+    'initialize_rnn_state',
+    'print_all_variables',
+    'get_variables_with_name',
+    'get_layers_with_name',
+    'list_remove_repeat',
+    'merge_networks',
+    'initialize_global_variables',
+    'Layer',
+    'InputLayer',
+    'OneHotInputLayer',
+    'Word2vecEmbeddingInputlayer',
+    'EmbeddingInputlayer',
+    'AverageEmbeddingInputlayer',
+    'DenseLayer',
+    'ReconLayer',
+    'DropoutLayer',
+    'GaussianNoiseLayer',
+    'DropconnectDenseLayer',
+]
 
 
 class LayersConfig:

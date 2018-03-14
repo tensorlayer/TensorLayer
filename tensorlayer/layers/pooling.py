@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import copy
-
+import tensorflow as tf
 from .core import *
+
+__all__ = [
+    'PoolLayer',
+    'MaxPool1d',
+    'MeanPool1d',
+    'MaxPool2d',
+    'MeanPool2d',
+    'MaxPool3d',
+    'MeanPool3d',
+    'GlobalMaxPool1d',
+    'GlobalMeanPool1d',
+    'GlobalMaxPool2d',
+    'GlobalMeanPool2d',
+]
 
 
 class PoolLayer(Layer):

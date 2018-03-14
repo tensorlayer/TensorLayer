@@ -2,6 +2,10 @@
 
 from .core import *
 
+__all__ = [
+    'MultiplexerLayer',
+]
+
 
 class MultiplexerLayer(Layer):
     """

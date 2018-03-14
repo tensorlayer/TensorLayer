@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from .core import *
+import tensorflow as tf
+
+__all__ = [
+    'SubpixelConv1d',
+    'SubpixelConv2d',
+]
 
 
 def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
