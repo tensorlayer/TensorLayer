@@ -34,6 +34,8 @@ Natural Language Processing and Word Representation.
    sentence_to_token_ids
    data_to_token_ids
 
+   moses_multi_bleu
+
 
 Iteration function for training embedding matrix
 -------------------------------------------------
@@ -136,3 +138,11 @@ Convert words to IDs and IDs to words
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: sentence_to_token_ids
 .. autofunction:: data_to_token_ids
+
+
+Metrics
+---------------------------
+
+BLEU
+^^^^^^^^^^^^^^^^^^^
+.. autofunction:: moses_multi_bleu

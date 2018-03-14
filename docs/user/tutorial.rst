@@ -1,8 +1,8 @@
 .. _tutorial:
 
-========
-Tutorial
-========
+=========
+Tutorials
+=========
 
 For deep learning, this tutorial will walk you through building handwritten
 digits classifiers using the MNIST dataset, arguably the "Hello World" of neural
@@ -42,9 +42,8 @@ TensorLayer is simple
 
 The following code shows a simple example of TensorLayer, see ``tutorial_mnist_simple.py`` .
 We provide a lot of simple functions （like ``fit()`` , ``test()`` ), however,
-if you want to understand the details and be a machine learning expert, we suggest you to train the network by using
-TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more details.
-
+if you want to understand the details and be a machine learning expert, we suggest you to train the network by using the data iteration toolbox (``tl.iterate``) and
+the TensorFlow's native API like ``sess.run()``, see `tutorial_mnist.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist.py>_` , `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`_ and `tutorial_mlp_dropout2.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py>_` for more details.
 
 .. code-block:: python
 
@@ -70,7 +69,7 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
   network = tl.layers.DenseLayer(network, n_units=800,
                                   act = tf.nn.relu, name='relu2')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
-  # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
+  # the softmax is implemented internally in tl.cost.cross_entropy(y, y_, 'cost') to
   # speed up computation, so we use identity here.
   # see tf.nn.sparse_softmax_cross_entropy_with_logits()
   network = tl.layers.DenseLayer(network, n_units=10,
@@ -78,7 +77,7 @@ TensorFlow's methods like ``sess.run()``, see ``tutorial_mnist.py`` for more det
                                   name='output_layer')
   # define cost function and metric.
   y = network.outputs
-  cost = tl.cost.cross_entropy(y, y_)
+  cost = tl.cost.cross_entropy(y, y_, 'cost')
   correct_prediction = tf.equal(tf.argmax(y, 1), y_)
   acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
   y_op = tf.argmax(tf.nn.softmax(y), 1)
@@ -149,13 +148,13 @@ If everything is set up correctly, you will get an output like the following:
   y_test.shape (10000,)
   X float32   y int64
 
-  tensorlayer:Instantiate InputLayer   input_layer (?, 784)
-  tensorlayer:Instantiate DropoutLayer drop1: keep: 0.800000
-  tensorlayer:Instantiate DenseLayer   relu1: 800, relu
-  tensorlayer:Instantiate DropoutLayer drop2: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer   relu2: 800, relu
-  tensorlayer:Instantiate DropoutLayer drop3: keep: 0.500000
-  tensorlayer:Instantiate DenseLayer   output_layer: 10, identity
+  [TL] InputLayer   input_layer (?, 784)
+  [TL] DropoutLayer drop1: keep: 0.800000
+  [TL] DenseLayer   relu1: 800, relu
+  [TL] DropoutLayer drop2: keep: 0.500000
+  [TL] DenseLayer   relu2: 800, relu
+  [TL] DropoutLayer drop3: keep: 0.500000
+  [TL] DenseLayer   output_layer: 10, identity
 
   param 0: (784, 800) (mean: -0.000053, median: -0.000043 std: 0.035558)
   param 1: (800,)     (mean:  0.000000, median:  0.000000 std: 0.000000)
@@ -314,7 +313,7 @@ that the ``InputLayer`` is not tied to any specific data yet.
 
 .. code-block:: python
 
-    network = tl.layers.InputLayer(x, name='input_layer')
+    network = tl.layers.InputLayer(x, name='input')
 
 Before adding the first hidden layer, we'll apply 20% dropout to the input
 data. This is realized via a :class:`DropoutLayer
@@ -358,7 +357,7 @@ details in ``tl.cost.cross_entropy()``.
     network = tl.layers.DenseLayer(network,
                                   n_units=10,
                                   act = tf.identity,
-                                  name='output_layer')
+                                  name='output')
 
 As mentioned above, each layer is linked to its incoming layer(s), so we only
 need the output layer(s) to access a network in TensorLayer:
@@ -375,7 +374,7 @@ output represents the class index. While ``cost`` is the cross-entropy between t
 Denoising Autoencoder (DAE)
 --------------------------------------
 
-Autoencoder is a unsupervised learning models which able to extract representative features,
+Autoencoder is an unsupervised learning model which is able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
 For vanilla Autoencoder see `Deeplearning Tutorial`_.
 
@@ -423,61 +422,24 @@ Convolutional Neural Network (CNN)
 
 Finally, the ``main_test_cnn_layer()`` script creates two CNN layers and
 max pooling stages, a fully-connected hidden layer and a fully-connected output
-layer. More CNN examples can be found in the tutorial scripts, like ``tutorial_cifar10_tfrecord.py``.
-
-At the begin, we add a :class:`Conv2dLayer
-<tensorlayer.layers.Conv2dLayer>` with 32 filters of size 5x5 on top, follow by
-max-pooling of factor 2 in both dimensions. And then apply a ``Conv2dLayer`` with
-64 filters of size 5x5 again and follow by a max_pool again. After that, flatten
-the 4D output to 1D vector by using ``FlattenLayer``, and apply a dropout with 50%
-to last hidden layer. The ``?`` represents arbitrary batch_size.
-
-Note, ``tutorial_mnist.py`` introduces the simplified CNN API for beginner.
+layer. More CNN examples can be found in other examples, like ``tutorial_cifar10_tfrecord.py``.
 
 .. code-block:: python
 
-    network = tl.layers.InputLayer(x, name='input_layer')
-    network = tl.layers.Conv2dLayer(network,
-                            act = tf.nn.relu,
-                            shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-                            strides=[1, 1, 1, 1],
-                            padding='SAME',
-                            name ='cnn_layer1')     # output: (?, 28, 28, 32)
-    network = tl.layers.PoolLayer(network,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME',
-                            pool = tf.nn.max_pool,
-                            name ='pool_layer1',)   # output: (?, 14, 14, 32)
-    network = tl.layers.Conv2dLayer(network,
-                            act = tf.nn.relu,
-                            shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-                            strides=[1, 1, 1, 1],
-                            padding='SAME',
-                            name ='cnn_layer2')     # output: (?, 14, 14, 64)
-    network = tl.layers.PoolLayer(network,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME',
-                            pool = tf.nn.max_pool,
-                            name ='pool_layer2',)   # output: (?, 7, 7, 64)
-    network = tl.layers.FlattenLayer(network, name='flatten_layer')
-                                                    # output: (?, 3136)
+    network = tl.layers.Conv2d(network, 32, (5, 5), (1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn1')
+    network = tl.layers.MaxPool2d(network, (2, 2), (2, 2),
+            padding='SAME', name='pool1')
+    network = tl.layers.Conv2d(network, 64, (5, 5), (1, 1),
+            act=tf.nn.relu, padding='SAME', name='cnn2')
+    network = tl.layers.MaxPool2d(network, (2, 2), (2, 2),
+            padding='SAME', name='pool2')
+
+    network = tl.layers.FlattenLayer(network, name='flatten')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop1')
-                                                    # output: (?, 3136)
-    network = tl.layers.DenseLayer(network, n_units=256, act = tf.nn.relu, name='relu1')
-                                                    # output: (?, 256)
+    network = tl.layers.DenseLayer(network, 256, act=tf.nn.relu, name='relu1')
     network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
-                                                    # output: (?, 256)
-    network = tl.layers.DenseLayer(network, n_units=10,
-                    act = tf.identity, name='output_layer')
-                                                    # output: (?, 10)
-
-
-.. note::
-    For experts: ``Conv2dLayer`` will create a convolutional layer using
-    ``tensorflow.nn.conv2d``, TensorFlow's default convolution.
-
+    network = tl.layers.DenseLayer(network, 10, act=tf.identity, name='output')
 
 
 Training the model
@@ -511,8 +473,8 @@ Continuing, we create a loss expression to be minimized in training:
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
 
-More cost or regularization can be applied here, take ``main_test_layers()`` for example,
-to apply max-norm on the weight matrices, we can add the following line:
+More cost or regularization can be applied here.
+For example, to apply max-norm on the weight matrices, we can add the following line.
 
 .. code-block:: python
 
@@ -521,9 +483,10 @@ to apply max-norm on the weight matrices, we can add the following line:
 
 Depending on the problem you are solving, you will need different loss functions,
 see :mod:`tensorlayer.cost` for more.
+Apart from using ``network.all_params`` to get the variables, we can also use ``tl.layers.get_variables_with_name`` to get the specific variables by string name.
 
-Having the model and the loss function defined, we create update expressions
-for training the network. TensorLayer do not provide many optimizer, we used TensorFlow's
+Having the model and the loss function here, we create update expression/operation
+for training the network. TensorLayer do not provide many optimizers, we used TensorFlow's
 optimizer instead:
 
 .. code-block:: python
@@ -542,8 +505,8 @@ For training the network, we fed data and the keeping probabilities to the ``fee
     sess.run(train_op, feed_dict=feed_dict)
 
 While, for validation and testing, we use slightly different way. All
-dropout, dropconnect, corrosion layers need to be disable.
-``tl.utils.dict_to_one`` set all ``network.all_drop`` to 1.
+Dropout, Dropconnect, Corrosion layers need to be disable.
+We use ``tl.utils.dict_to_one`` to set all ``network.all_drop`` to 1.
 
 .. code-block:: python
 
@@ -552,8 +515,7 @@ dropout, dropconnect, corrosion layers need to be disable.
     feed_dict.update(dp_dict)
     err, ac = sess.run([cost, acc], feed_dict=feed_dict)
 
-As an additional monitoring quantity, we create an expression for the
-classification accuracy:
+For evaluation, we create an expression for the classification accuracy:
 
 .. code-block:: python
 
@@ -564,7 +526,7 @@ classification accuracy:
 What Next?
 ^^^^^^^^^^^
 
-We also have a more advanced image classification example in ``tutorial_cifar10_tfrecord.py``.
+We also have a more advanced image classification example in `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`_.
 Please read the code and notes, figure out how to generate more training data and what
 is local response normalization. After that, try to implement
 `Residual Network <http://doi.org/10.3389/fpsyg.2013.00124>`_ (Hint: you may want
@@ -578,26 +540,26 @@ Run the Pong Game example
 =========================
 
 In the second part of the tutorial, we will run the Deep Reinforcement Learning
-example that is introduced by Karpathy in `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_.
+example which is introduced by Karpathy in `Deep Reinforcement Learning: Pong from Pixels <http://karpathy.github.io/2016/05/31/rl/>`_.
 
 .. code-block:: bash
 
   python tutorial_atari_pong.py
 
 Before running the tutorial code, you need to install `OpenAI gym environment <https://gym.openai.com/docs>`_
-which is a benchmark for Reinforcement Learning.
+which is a popular benchmark for Reinforcement Learning.
 If everything is set up correctly, you will get an output like the following:
 
 .. code-block:: text
 
   [2016-07-12 09:31:59,760] Making new env: Pong-v0
-    tensorlayer:Instantiate InputLayer input_layer (?, 6400)
-    tensorlayer:Instantiate DenseLayer relu1: 200, relu
-    tensorlayer:Instantiate DenseLayer output_layer: 3, identity
-    param 0: (6400, 200) (mean: -0.000009, median: -0.000018 std: 0.017393)
-    param 1: (200,) (mean: 0.000000, median: 0.000000 std: 0.000000)
-    param 2: (200, 3) (mean: 0.002239, median: 0.003122 std: 0.096611)
-    param 3: (3,) (mean: 0.000000, median: 0.000000 std: 0.000000)
+    [TL] InputLayer input_layer (?, 6400)
+    [TL] DenseLayer relu1: 200, relu
+    [TL] DenseLayer output_layer: 3, identity
+    param 0: (6400, 200) (mean: -0.000009  median: -0.000018 std: 0.017393)
+    param 1: (200,)      (mean: 0.000000   median: 0.000000  std: 0.000000)
+    param 2: (200, 3)    (mean: 0.002239   median: 0.003122  std: 0.096611)
+    param 3: (3,)        (mean: 0.000000   median: 0.000000  std: 0.000000)
     num of params: 1280803
     layer 0: Tensor("Relu:0", shape=(?, 200), dtype=float32)
     layer 1: Tensor("add_1:0", shape=(?, 3), dtype=float32)
@@ -631,11 +593,13 @@ If everything is set up correctly, you will get an output like the following:
   episode 1: game 5 took 0.17348s, reward: -1.000000
   episode 1: game 6 took 0.09415s, reward: -1.000000
 
-This example allow computer to learn how to play Pong game from the screen inputs,
-just like human behavior. After training for 15,000 episodes, the computer can
-win 20% of the games. The computer win 35% of the games at 20,000 episode,
-we can seen the computer learn faster and faster as it has more winning data to
-train. If you run it for 30,000 episode, it start to win.
+This example allow neural network to learn how to play Pong game from the screen inputs,
+just like human behavior.
+The neural network will play with a fake AI player, and lean to beat it.
+After training for 15,000 episodes, the neural network can
+win 20% of the games. The neural network win 35% of the games at 20,000 episode,
+we can seen the neural network learn faster and faster as it has more winning data to
+train. If you run it for 30,000 episode, it never loss.
 
 .. code-block:: python
 
@@ -646,8 +610,6 @@ Setting ``render`` to ``True``, if you want to display the game environment. Whe
 you run the code again, you can set ``resume`` to ``True``, the code will load the
 existing model and train the model basic on it.
 
-
-.. _fig_0601:
 
 .. image:: my_figs/pong_game.jpeg
     :scale: 30 %
@@ -765,7 +727,7 @@ using RMSProp on batches of 10 episodes.
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Continuing, we create a loss expression to be minimized in training:
+We create a loss expression to be minimized in training:
 
 .. code-block:: python
 
@@ -806,7 +768,7 @@ Also, the default parameters of the model are not tuned. You can try changing
 the learning rate, decay, or initializing the weights of your model in a
 different way.
 
-Finally, you can try the model on different tasks (games).
+Finally, you can try the model on different tasks (games) and try other reinforcement learning algorithm in `Example <http://tensorlayer.readthedocs.io/en/latest/user/example.html>`_.
 
 
 
@@ -828,8 +790,6 @@ plane, words that are similar end up clustering nearby each other.
 
 
 If everything is set up correctly, you will get an output in the end.
-
-.. _fig_0601:
 
 .. image:: my_figs/tsne.png
   :scale: 100 %
@@ -971,16 +931,16 @@ challenging task of language modeling.
 
 Given a sentence "I am from Imperial College London", the model can learn to
 predict "Imperial College London" from "from Imperial College". In other
-word, it predict next words in a text given a history of previous words.
-In previous example , ``num_steps (sequence length)`` is 3.
+word, it predict the next word in a text given a history of previous words.
+In the previous example , ``num_steps`` (sequence length) is 3.
 
 .. code-block:: bash
 
   python tutorial_ptb_lstm.py
 
 
-The script provides three settings (small, medium, large), larger model has
-better performance, you can choice different setting in:
+The script provides three settings (small, medium, large), where a larger model has
+better performance. You can choose different settings in:
 
 .. code-block:: python
 
@@ -988,7 +948,7 @@ better performance, you can choice different setting in:
       "model", "small",
       "A type of model. Possible options are: small, medium, large.")
 
-If you choice small setting, you can see:
+If you choose the small setting, you can see:
 
 .. code-block:: text
 
@@ -1021,11 +981,11 @@ If you choice small setting, you can see:
   Epoch: 13 Valid Perplexity: 121.475
   Test Perplexity: 116.716
 
-The PTB example proves RNN is able to modeling language, but this example
-did not do something practical. However, you should read through this example
-and “Understand LSTM” in order to understand the basic of RNN.
-After that, you learn how to generate text, how to achieve language translation
-and how to build a questions answering system by using RNN.
+The PTB example shows that RNN is able to model language, but this example
+did not do something practically interesting. However, you should read through this example
+and “Understand LSTM” in order to understand the basics of RNN.
+After that, you will learn how to generate text, how to achieve language translation,
+and how to build a question answering system by using RNN.
 
 
 Understand LSTM
@@ -1038,10 +998,8 @@ We personally think Andrey Karpathy's blog is the best material to
 `Understand Recurrent Neural Network`_ , after reading that, Colah's blog can
 help you to `Understand LSTM Network`_ `[chinese] <http://dataunion.org/9331.html>`_
 which can solve The Problem of Long-Term
-Dependencies. We do not describe more about RNN, please read through these blogs
+Dependencies. We will not describe more about the theory of RNN, so please read through these blogs
 before you go on.
-
-.. _fig_0601:
 
 .. image:: my_figs/karpathy_rnn.jpeg
 
@@ -1051,28 +1009,28 @@ Image by Andrey Karpathy
 Synced sequence input and output
 ---------------------------------
 
-The model in PTB example is a typically type of synced sequence input and output,
+The model in PTB example is a typical type of synced sequence input and output,
 which was described by Karpathy as
 "(5) Synced sequence input and output (e.g. video classification where we wish
-to label each frame of the video). Notice that in every case are no pre-specified
-constraints on the lengths sequences because the recurrent transformation (green)
-is fixed and can be applied as many times as we like."
+to label each frame of the video). Notice that in every case there are no pre-specified
+constraints on the lengths of sequences because the recurrent transformation (green)
+can be applied as many times as we like."
 
-The model is built as follow. Firstly, transfer the words into word vectors by
-looking up an embedding matrix, in this tutorial, no pre-training on embedding
-matrix. Secondly, we stacked two LSTMs together use dropout among the embedding
-layer, LSTM layers and output layer for regularization. In the last layer,
+The model is built as follows. Firstly, we transfer the words into word vectors by
+looking up an embedding matrix. In this tutorial, there is no pre-training on the embedding
+matrix. Secondly, we stack two LSTMs together using dropout between the embedding
+layer, LSTM layers, and the output layer for regularization. In the final layer,
 the model provides a sequence of softmax outputs.
 
-The first LSTM layer outputs [batch_size, num_steps, hidden_size] for stacking
-another LSTM after it. The second LSTM layer outputs [batch_size*num_steps, hidden_size]
-for stacking DenseLayer after it, then compute the softmax outputs of each example
-（n_examples = batch_size*num_steps).
+The first LSTM layer outputs ``[batch_size, num_steps, hidden_size]`` for stacking
+another LSTM after it. The second LSTM layer outputs ``[batch_size*num_steps, hidden_size]``
+for stacking a DenseLayer after it. Then the DenseLayer computes the softmax outputs of each example
+（``n_examples = batch_size*num_steps``).
 
 To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 <https://www.tensorflow.org/versions/r0.9/tutorials/recurrent/index.html#recurrent-neural-networks>`_.
 
-(Note that, TensorLayer supports DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layer in one single layer)
+(Note that, TensorLayer supports DynamicRNNLayer after v1.1, so you can set the input/output dropouts, number of RNN layers in one single layer)
 
 
 .. code-block:: python
@@ -1086,7 +1044,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
   if is_training:
       network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop1')
   network = tl.layers.RNNLayer(network,
-              cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+              cell_fn=tf.contrib.rnn.BasicLSTMCell,
               cell_init_args={'forget_bias': 0.0},
               n_hidden=hidden_size,
               initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -1097,7 +1055,7 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
   if is_training:
       network = tl.layers.DropoutLayer(network, keep=keep_prob, name='drop2')
   network = tl.layers.RNNLayer(network,
-              cell_fn=tf.nn.rnn_cell.BasicLSTMCell,
+              cell_fn=tf.contrib.rnn.BasicLSTMCell,
               cell_init_args={'forget_bias': 0.0},
               n_hidden=hidden_size,
               initializer=tf.random_uniform_initializer(-init_scale, init_scale),
@@ -1118,26 +1076,26 @@ To understand the PTB tutorial, you can also read `TensorFlow PTB tutorial
 Dataset iteration
 ^^^^^^^^^^^^^^^^^
 
-The batch_size can be seem as how many concurrent computations.
-As the following example shows, the first batch learn the sequence information by using 0 to 9.
-The second batch learn the sequence information by using 10 to 19.
-So it ignores the information from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all information from 0 to 20.
+The ``batch_size`` can be seen as the number of concurrent computations we are running.
+As the following example shows, the first batch learns the sequence information by using items 0 to 9.
+The second batch learn the sequence information by using items 10 to 19.
+So it ignores the information from items 9 to 10 !\n
+If only if we set ``batch_size = 1```, it will consider all the information from items 0 to 20.
 
-The meaning of batch_size here is not the same with the batch_size in MNIST example. In MNIST example,
-batch_size reflects how many examples we consider in each iteration, while in
-PTB example, batch_size is how many concurrent processes (segments)
-for speed up computation.
+The meaning of ``batch_size`` here is not the same as the ``batch_size`` in the MNIST example. In the MNIST example,
+``batch_size`` reflects how many examples we consider in each iteration, while in the
+PTB example, ``batch_size`` is the number of concurrent processes (segments)
+for accelerating the computation.
 
-Some Information will be ignored if batch_size > 1, however, if your dataset
-is "long" enough (a text corpus usually has billions words), the ignored
-information would not effect the final result.
+Some information will be ignored if ``batch_size`` > 1, however, if your dataset
+is "long" enough (a text corpus usually has billions of words), the ignored
+information would not affect the final result.
 
-In PTB tutorial, we set batch_size = 20, so we cut the dataset into 20 segments.
-At the beginning of each epoch, we initialize (reset) the 20 RNN states for 20
-segments, then go through 20 segments separately.
+In the PTB tutorial, we set ``batch_size = 20``, so we divide the dataset into 20 segments.
+At the beginning of each epoch, we initialize (reset) the 20 RNN states for the 20
+segments to zero, then go through the 20 segments separately.
 
-A example of generating training data as follow:
+An example of generating training data is as follows:
 
 .. code-block:: python
 
@@ -1169,7 +1127,7 @@ A example of generating training data as follow:
 Loss and update expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cost function is the averaged cost of each mini-batch:
+The cost function is the average cost of each mini-batch:
 
 .. code-block:: python
 
@@ -1181,7 +1139,7 @@ The cost function is the averaged cost of each mini-batch:
       # targets : 2D tensor [batch_size, num_steps], need to be reshaped.
       # n_examples = batch_size * num_steps
       # so
-      # cost is the averaged cost of each mini-batch (concurrent process).
+      # cost is the average cost of each mini-batch (concurrent process).
       loss = tf.nn.seq2seq.sequence_loss_by_example(
           [outputs],
           [tf.reshape(targets, [-1])],
@@ -1193,9 +1151,7 @@ The cost function is the averaged cost of each mini-batch:
   cost = loss_fn(network.outputs, targets, batch_size, num_steps)
 
 
-For updating, this example decreases the initial learning rate after several
-epochs (defined by ``max_epoch``), by multiplying a ``lr_decay``. In addition,
-truncated backpropagation clips values of gradients by the ratio of the sum of
+For updating, truncated backpropagation clips values of gradients by the ratio of the sum of
 their norms, so as to make the learning process tractable.
 
 .. code-block:: python
@@ -1210,7 +1166,7 @@ their norms, so as to make the learning process tractable.
   train_op = optimizer.apply_gradients(zip(grads, tvars))
 
 
-If the epoch index greater than ``max_epoch``, decrease the learning rate
+In addition, if the epoch index is greater than ``max_epoch``, we decrease the learning rate
 by multipling ``lr_decay``.
 
 .. code-block:: python
@@ -1220,8 +1176,8 @@ by multipling ``lr_decay``.
 
 
 At the beginning of each epoch, all states of LSTMs need to be reseted
-(initialized) to zero states, then after each iteration, the LSTMs' states
-is updated, so the new LSTM states (final states) need to be assigned as the initial states of next iteration:
+(initialized) to zero states. Then after each iteration, the LSTMs' states
+is updated, so the new LSTM states (final states) need to be assigned as the initial states of the next iteration:
 
 .. code-block:: python
 
@@ -1249,8 +1205,8 @@ Predicting
 ^^^^^^^^^^^^^
 
 After training the model, when we predict the next output, we no long consider
-the number of steps (sequence length), i.e. ``batch_size, num_steps`` are ``1``.
-Then we can output the next word step by step, instead of predict a sequence
+the number of steps (sequence length), i.e. ``batch_size, num_steps`` are set to ``1``.
+Then we can output the next word one by one, instead of predicting a sequence
 of words from a sequence of words.
 
 .. code-block:: python
@@ -1291,12 +1247,12 @@ of words from a sequence of words.
 What Next?
 -----------
 
-Now, you understand Synced sequence input and output. Let think about
-Many to one (Sequence input and one output), LSTM is able to predict
+Now, you have understood Synced sequence input and output. Let's think about
+Many to one (Sequence input and one output), so that LSTM is able to predict
 the next word "English" from "I am from London, I speak ..".
 
-Please read and understand the code of ``tutorial_generate_text.py``,
-it show you how to restore a pre-trained Embedding matrix and how to learn text
+Please read and understand the code of ``tutorial_generate_text.py``.
+It shows you how to restore a pre-trained Embedding matrix and how to learn text
 generation from a given context.
 
 Karpathy's blog :
@@ -1305,668 +1261,674 @@ classified as expressing positive or negative sentiment). "
 
 
 
+More Tutorials
+===================
+
+In Example page, we provide many examples include Seq2seq, different type of Adversarial Learning, Reinforcement Learning and etc.
 
 
 
 
 
 
-Run the Translation example
-===========================
 
-.. code-block:: python
+..
+  Run the Translation example
+  ===========================
 
-  python tutorial_translate.py
+  .. code-block:: python
 
-This script is going to training a neural network to translate English to French.
-If everything is correct, you will see.
+    python tutorial_translate.py
 
-- Download WMT English-to-French translation data, includes training and testing data.
-- Create vocabulary files for English and French from training data.
-- Create the tokenized training and testing data from original training and
-  testing data.
+  This script is going to training a neural network to translate English to French.
+  If everything is correct, you will see.
 
-.. code-block:: bash
+  - Download WMT English-to-French translation data, includes training and testing data.
+  - Create vocabulary files for English and French from training data.
+  - Create the tokenized training and testing data from original training and
+    testing data.
 
-  Prepare raw data
-  Load or Download WMT English-to-French translation > wmt
-  Training data : wmt/giga-fren.release2
-  Testing data : wmt/newstest2013
+  .. code-block:: bash
 
-  Create vocabularies
-  Vocabulary of French : wmt/vocab40000.fr
-  Vocabulary of English : wmt/vocab40000.en
-  Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
-    processing line 100000
-    processing line 200000
-    processing line 300000
-    processing line 400000
-    processing line 500000
-    processing line 600000
-    processing line 700000
-    processing line 800000
-    processing line 900000
-    processing line 1000000
-    processing line 1100000
-    processing line 1200000
+    Prepare raw data
+    Load or Download WMT English-to-French translation > wmt
+    Training data : wmt/giga-fren.release2
+    Testing data : wmt/newstest2013
+
+    Create vocabularies
+    Vocabulary of French : wmt/vocab40000.fr
+    Vocabulary of English : wmt/vocab40000.en
+    Creating vocabulary wmt/vocab40000.fr from data wmt/giga-fren.release2.fr
+      processing line 100000
+      processing line 200000
+      processing line 300000
+      processing line 400000
+      processing line 500000
+      processing line 600000
+      processing line 700000
+      processing line 800000
+      processing line 900000
+      processing line 1000000
+      processing line 1100000
+      processing line 1200000
+      ...
+      processing line 22500000
+    Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
+      processing line 100000
+      ...
+      processing line 22500000
+
     ...
-    processing line 22500000
-  Creating vocabulary wmt/vocab40000.en from data wmt/giga-fren.release2.en
-    processing line 100000
+
+  Firstly, we download English-to-French translation data from the WMT'15
+  Website. The training and testing data as follow. The training data is used to
+  train the model, the testing data is used to evaluate the model.
+
+  .. code-block:: text
+
+    wmt/training-giga-fren.tar  <-- Training data for English-to-French (2.6GB)
+                                    giga-fren.release2.* are extracted from it.
+    wmt/dev-v2.tgz              <-- Testing data for different language (21.4MB)
+                                    newstest2013.* are extracted from it.
+
+    wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+    wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+    wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+    wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+  As ``giga-fren.release2.*`` are the training data, the context of ``giga-fren.release2.fr`` look as follow.
+
+  .. code-block:: text
+
+    Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
+    Plan du site
+    Rétroaction
+    Crédits
+    English
+    Qu’est-ce que la lumière?
+    La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
+    Le ciel des premiers habitants La vision contemporaine de l'Univers L’astronomie pour tous
+    Bande dessinée
+    Liens
+    Glossaire
+    Observatoires
     ...
-    processing line 22500000
 
-  ...
+  While ``giga-fren.release2.en`` look as follow, we can see words or sentences
+  are separated by ``|`` or ``\n``.
 
-Firstly, we download English-to-French translation data from the WMT'15
-Website. The training and testing data as follow. The training data is used to
-train the model, the testing data is used to evaluate the model.
+  .. code-block:: text
 
-.. code-block:: text
-
-  wmt/training-giga-fren.tar  <-- Training data for English-to-French (2.6GB)
-                                  giga-fren.release2.* are extracted from it.
-  wmt/dev-v2.tgz              <-- Testing data for different language (21.4MB)
-                                  newstest2013.* are extracted from it.
-
-  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
-  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
-
-  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
-  wmt/newstest2013.en         <-- Testing data of English   (333KB)
-
-As ``giga-fren.release2.*`` are the training data, the context of ``giga-fren.release2.fr`` look as follow.
-
-.. code-block:: text
-
-  Il a transformé notre vie | Il a transformé la société | Son fonctionnement | La technologie, moteur du changement Accueil | Concepts | Enseignants | Recherche | Aperçu | Collaborateurs | Web HHCC | Ressources | Commentaires Musée virtuel du Canada
-  Plan du site
-  Rétroaction
-  Crédits
-  English
-  Qu’est-ce que la lumière?
-  La découverte du spectre de la lumière blanche Des codes dans la lumière Le spectre électromagnétique Les spectres d’émission Les spectres d’absorption Les années-lumière La pollution lumineuse
-  Le ciel des premiers habitants La vision contemporaine de l'Univers L’astronomie pour tous
-  Bande dessinée
-  Liens
-  Glossaire
-  Observatoires
-  ...
-
-While ``giga-fren.release2.en`` look as follow, we can see words or sentences
-are separated by ``|`` or ``\n``.
-
-.. code-block:: text
-
-  Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
-  Site map
-  Feedback
-  Credits
-  Français
-  What is light ?
-  The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
-  The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
-  Cartoon
-  Links
-  Glossary
-  Observatories
+    Changing Lives | Changing Society | How It Works | Technology Drives Change Home | Concepts | Teachers | Search | Overview | Credits | HHCC Web | Reference | Feedback Virtual Museum of Canada Home Page
+    Site map
+    Feedback
+    Credits
+    Français
+    What is light ?
+    The white light spectrum Codes in the light The electromagnetic spectrum Emission spectra Absorption spectra Light-years Light pollution
+    The sky of the first inhabitants A contemporary vison of the Universe Astronomy for everyone
+    Cartoon
+    Links
+    Glossary
+    Observatories
 
 
-The testing data ``newstest2013.en`` and ``newstest2013.fr`` look as follow.
+  The testing data ``newstest2013.en`` and ``newstest2013.fr`` look as follow.
 
-.. code-block:: text
+  .. code-block:: text
 
-  newstest2013.en :
-  A Republican strategy to counter the re-election of Obama
-  Republican leaders justified their policy by the need to combat electoral fraud.
-  However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
+    newstest2013.en :
+    A Republican strategy to counter the re-election of Obama
+    Republican leaders justified their policy by the need to combat electoral fraud.
+    However, the Brennan Centre considers this a myth, stating that electoral fraud is rarer in the United States than the number of people killed by lightning.
 
-  newstest2013.fr :
-  Une stratégie républicaine pour contrer la réélection d'Obama
-  Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
-  Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
-
-
-After downloading the dataset, it start to create vocabulary files,
-``vocab40000.fr`` and ``vocab40000.en`` from the training data ``giga-fren.release2.fr``
-and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
-reflects the vocabulary size.
-
-The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
-
-.. code-block:: text
-
-  _PAD
-  _GO
-  _EOS
-  _UNK
-  de
-  ,
-  .
-  '
-  la
-  et
-  des
-  les
-  à
-  le
-  du
-  l
-  en
-  )
-  d
-  0
-  (
-  00
-  pour
-  dans
-  un
-  que
-  une
-  sur
-  au
-  0000
-  a
-  par
-
-The ``vocab40000.en`` (344KB) stores one-item-per-line as follow as well.
-
-.. code-block:: text
-
-  _PAD
-  _GO
-  _EOS
-  _UNK
-  the
-  .
-  ,
-  of
-  and
-  to
-  in
-  a
-  )
-  (
-  0
-  for
-  00
-  that
-  is
-  on
-  The
-  0000
-  be
-  by
-  with
-  or
-  :
-  as
-  "
-  000
-  are
-  ;
+    newstest2013.fr :
+    Une stratégie républicaine pour contrer la réélection d'Obama
+    Les dirigeants républicains justifièrent leur politique par la nécessité de lutter contre la fraude électorale.
+    Or, le Centre Brennan considère cette dernière comme un mythe, affirmant que la fraude électorale est plus rare aux États-Unis que le nombre de personnes tuées par la foudre.
 
 
-And then, we start to create the tokenized training and testing data for both
-English and French. It will take a while as well.
+  After downloading the dataset, it start to create vocabulary files,
+  ``vocab40000.fr`` and ``vocab40000.en`` from the training data ``giga-fren.release2.fr``
+  and ``giga-fren.release2.en``, usually it will take a while. The number ``40000``
+  reflects the vocabulary size.
 
-.. code-block:: text
+  The ``vocab40000.fr`` (381KB) stores one-item-per-line as follow.
 
-  Tokenize data
-  Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
-    tokenizing line 100000
-    tokenizing line 200000
-    tokenizing line 300000
-    tokenizing line 400000
+  .. code-block:: text
+
+    _PAD
+    _GO
+    _EOS
+    _UNK
+    de
+    ,
+    .
+    '
+    la
+    et
+    des
+    les
+    à
+    le
+    du
+    l
+    en
+    )
+    d
+    0
+    (
+    00
+    pour
+    dans
+    un
+    que
+    une
+    sur
+    au
+    0000
+    a
+    par
+
+  The ``vocab40000.en`` (344KB) stores one-item-per-line as follow as well.
+
+  .. code-block:: text
+
+    _PAD
+    _GO
+    _EOS
+    _UNK
+    the
+    .
+    ,
+    of
+    and
+    to
+    in
+    a
+    )
+    (
+    0
+    for
+    00
+    that
+    is
+    on
+    The
+    0000
+    be
+    by
+    with
+    or
+    :
+    as
+    "
+    000
+    are
+    ;
+
+
+  And then, we start to create the tokenized training and testing data for both
+  English and French. It will take a while as well.
+
+  .. code-block:: text
+
+    Tokenize data
+    Tokenizing data in wmt/giga-fren.release2.fr  <-- Training data of French
+      tokenizing line 100000
+      tokenizing line 200000
+      tokenizing line 300000
+      tokenizing line 400000
+      ...
+      tokenizing line 22500000
+    Tokenizing data in wmt/giga-fren.release2.en  <-- Training data of English
+      tokenizing line 100000
+      tokenizing line 200000
+      tokenizing line 300000
+      tokenizing line 400000
+      ...
+      tokenizing line 22500000
+    Tokenizing data in wmt/newstest2013.fr        <-- Testing data of French
+    Tokenizing data in wmt/newstest2013.en        <-- Testing data of English
+
+
+  In the end, all files we have as follow.
+
+  .. code-block:: text
+
+    wmt/training-giga-fren.tar  <-- Compressed Training data for English-to-French (2.6GB)
+                                    giga-fren.release2.* are extracted from it.
+    wmt/dev-v2.tgz              <-- Compressed Testing data for different language (21.4MB)
+                                    newstest2013.* are extracted from it.
+
+    wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
+    wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
+
+    wmt/newstest2013.fr         <-- Testing data of French    (393KB)
+    wmt/newstest2013.en         <-- Testing data of English   (333KB)
+
+    wmt/vocab40000.fr           <-- Vocabulary of French      (381KB)
+    wmt/vocab40000.en           <-- Vocabulary of English     (344KB)
+
+    wmt/giga-fren.release2.ids40000.fr   <-- Tokenized Training data of French (2.81GB)
+    wmt/giga-fren.release2.ids40000.en   <-- Tokenized Training data of English (2.38GB)
+
+    wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
+    wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
+
+
+  Now, read all tokenized data into buckets and compute the number of data of each bucket.
+
+  .. code-block:: text
+
+    Read development (test) data into buckets
+    dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
+    en word_ids: [13388, 4, 949]
+    en context: [b'Preventing', b'the', b'disease']
+    fr word_ids: [23113, 8, 910, 2]
+    fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
+
+    Read training data into buckets (limit: 0)
+      reading data line 100000
+      reading data line 200000
+      reading data line 300000
+      reading data line 400000
+      reading data line 500000
+      reading data line 600000
+      reading data line 700000
+      reading data line 800000
+      ...
+      reading data line 22400000
+      reading data line 22500000
+    train_bucket_sizes: [239121, 1344322, 5239557, 10445326]
+    train_total_size: 17268326.0
+    train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
+    train data: (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
+    en word_ids: [1368, 3344]
+    en context: [b'Site', b'map']
+    fr word_ids: [1089, 14, 261, 2]
+    fr context: [b'Plan', b'du', b'site', b'_EOS']
+
+    the num of training data in each buckets: [239121, 1344322, 5239557, 10445326]
+    the num of training data: 17268326
+    train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
+
+
+  Start training by using the tokenized bucket data, the training process can
+  only be terminated by stop the program.
+  When ``steps_per_checkpoint = 10`` you will see.
+
+  .. code-block:: text
+
+    Create Embedding Attention Seq2seq Model
+
+    global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
+      eval: bucket 0 perplexity 5887.75
+      eval: bucket 1 perplexity 3891.96
+      eval: bucket 2 perplexity 3748.77
+      eval: bucket 3 perplexity 4940.10
+    global step 20 learning rate 0.5000 step-time 20.38 perplexity 28761.36
+      eval: bucket 0 perplexity 10137.01
+      eval: bucket 1 perplexity 12809.90
+      eval: bucket 2 perplexity 15758.65
+      eval: bucket 3 perplexity 26760.93
+    global step 30 learning rate 0.5000 step-time 20.64 perplexity 6372.95
+      eval: bucket 0 perplexity 1789.80
+      eval: bucket 1 perplexity 1690.00
+      eval: bucket 2 perplexity 2190.18
+      eval: bucket 3 perplexity 3808.12
+    global step 40 learning rate 0.5000 step-time 16.10 perplexity 3418.93
+      eval: bucket 0 perplexity 4778.76
+      eval: bucket 1 perplexity 3698.90
+      eval: bucket 2 perplexity 3902.37
+      eval: bucket 3 perplexity 22612.44
+    global step 50 learning rate 0.5000 step-time 14.84 perplexity 1811.02
+      eval: bucket 0 perplexity 644.72
+      eval: bucket 1 perplexity 759.16
+      eval: bucket 2 perplexity 984.18
+      eval: bucket 3 perplexity 1585.68
+    global step 60 learning rate 0.5000 step-time 19.76 perplexity 1580.55
+      eval: bucket 0 perplexity 1724.84
+      eval: bucket 1 perplexity 2292.24
+      eval: bucket 2 perplexity 2698.52
+      eval: bucket 3 perplexity 3189.30
+    global step 70 learning rate 0.5000 step-time 17.16 perplexity 1250.57
+      eval: bucket 0 perplexity 298.55
+      eval: bucket 1 perplexity 502.04
+      eval: bucket 2 perplexity 645.44
+      eval: bucket 3 perplexity 604.29
+    global step 80 learning rate 0.5000 step-time 18.50 perplexity 793.90
+      eval: bucket 0 perplexity 2056.23
+      eval: bucket 1 perplexity 1344.26
+      eval: bucket 2 perplexity 767.82
+      eval: bucket 3 perplexity 649.38
+    global step 90 learning rate 0.5000 step-time 12.61 perplexity 541.57
+      eval: bucket 0 perplexity 180.86
+      eval: bucket 1 perplexity 350.99
+      eval: bucket 2 perplexity 326.85
+      eval: bucket 3 perplexity 383.22
+    global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
+      eval: bucket 0 perplexity 216.63
+      eval: bucket 1 perplexity 348.96
+      eval: bucket 2 perplexity 318.20
+      eval: bucket 3 perplexity 389.92
+    global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
+      eval: bucket 0 perplexity 8049.85
+      eval: bucket 1 perplexity 1677.24
+      eval: bucket 2 perplexity 936.98
+      eval: bucket 3 perplexity 657.46
+    global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
+      eval: bucket 0 perplexity 189.22
+      eval: bucket 1 perplexity 360.69
+      eval: bucket 2 perplexity 410.57
+      eval: bucket 3 perplexity 456.40
+    global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
+      eval: bucket 0 perplexity 196.93
+      eval: bucket 1 perplexity 655.18
+      eval: bucket 2 perplexity 860.44
+      eval: bucket 3 perplexity 1062.36
+    global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
+      eval: bucket 0 perplexity 391.88
+      eval: bucket 1 perplexity 339.09
+      eval: bucket 2 perplexity 320.08
+      eval: bucket 3 perplexity 376.44
+    global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
+      eval: bucket 0 perplexity 269.16
+      eval: bucket 1 perplexity 286.51
+      eval: bucket 2 perplexity 391.78
+      eval: bucket 3 perplexity 485.23
+    global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
+      eval: bucket 0 perplexity 137.00
+      eval: bucket 1 perplexity 198.85
+      eval: bucket 2 perplexity 276.58
+      eval: bucket 3 perplexity 357.78
+    global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
+      eval: bucket 0 perplexity 1051.29
+      eval: bucket 1 perplexity 626.64
+      eval: bucket 2 perplexity 496.32
+      eval: bucket 3 perplexity 458.85
+    global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
+      eval: bucket 0 perplexity 178.12
+      eval: bucket 1 perplexity 299.86
+      eval: bucket 2 perplexity 294.84
+      eval: bucket 3 perplexity 296.46
+    global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
+      eval: bucket 0 perplexity 860.60
+      eval: bucket 1 perplexity 910.16
+      eval: bucket 2 perplexity 909.24
+      eval: bucket 3 perplexity 786.04
+    global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
+      eval: bucket 0 perplexity 152.13
+      eval: bucket 1 perplexity 234.41
+      eval: bucket 2 perplexity 249.66
+      eval: bucket 3 perplexity 285.95
     ...
-    tokenizing line 22500000
-  Tokenizing data in wmt/giga-fren.release2.en  <-- Training data of English
-    tokenizing line 100000
-    tokenizing line 200000
-    tokenizing line 300000
-    tokenizing line 400000
+    global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
+      eval: bucket 0 perplexity 78.45
+      eval: bucket 1 perplexity 108.40
+      eval: bucket 2 perplexity 137.83
+      eval: bucket 3 perplexity 173.53
+    global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
+      eval: bucket 0 perplexity 78.37
+      eval: bucket 1 perplexity 119.72
+      eval: bucket 2 perplexity 169.11
+      eval: bucket 3 perplexity 202.89
+    global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
+      eval: bucket 0 perplexity 76.52
+      eval: bucket 1 perplexity 125.97
+      eval: bucket 2 perplexity 150.13
+      eval: bucket 3 perplexity 181.07
     ...
-    tokenizing line 22500000
-  Tokenizing data in wmt/newstest2013.fr        <-- Testing data of French
-  Tokenizing data in wmt/newstest2013.en        <-- Testing data of English
-
-
-In the end, all files we have as follow.
-
-.. code-block:: text
-
-  wmt/training-giga-fren.tar  <-- Compressed Training data for English-to-French (2.6GB)
-                                  giga-fren.release2.* are extracted from it.
-  wmt/dev-v2.tgz              <-- Compressed Testing data for different language (21.4MB)
-                                  newstest2013.* are extracted from it.
-
-  wmt/giga-fren.release2.fr   <-- Training data of French   (4.57GB)
-  wmt/giga-fren.release2.en   <-- Training data of English  (3.79GB)
-
-  wmt/newstest2013.fr         <-- Testing data of French    (393KB)
-  wmt/newstest2013.en         <-- Testing data of English   (333KB)
-
-  wmt/vocab40000.fr           <-- Vocabulary of French      (381KB)
-  wmt/vocab40000.en           <-- Vocabulary of English     (344KB)
-
-  wmt/giga-fren.release2.ids40000.fr   <-- Tokenized Training data of French (2.81GB)
-  wmt/giga-fren.release2.ids40000.en   <-- Tokenized Training data of English (2.38GB)
-
-  wmt/newstest2013.ids40000.fr         <-- Tokenized Testing data of French (268KB)
-  wmt/newstest2013.ids40000.en         <-- Tokenized Testing data of English (232KB)
-
-
-Now, read all tokenized data into buckets and compute the number of data of each bucket.
-
-.. code-block:: text
-
-  Read development (test) data into buckets
-  dev data: (5, 10) [[13388, 4, 949], [23113, 8, 910, 2]]
-  en word_ids: [13388, 4, 949]
-  en context: [b'Preventing', b'the', b'disease']
-  fr word_ids: [23113, 8, 910, 2]
-  fr context: [b'Pr\xc3\xa9venir', b'la', b'maladie', b'_EOS']
-
-  Read training data into buckets (limit: 0)
-    reading data line 100000
-    reading data line 200000
-    reading data line 300000
-    reading data line 400000
-    reading data line 500000
-    reading data line 600000
-    reading data line 700000
-    reading data line 800000
-    ...
-    reading data line 22400000
-    reading data line 22500000
-  train_bucket_sizes: [239121, 1344322, 5239557, 10445326]
-  train_total_size: 17268326.0
-  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
-  train data: (5, 10) [[1368, 3344], [1089, 14, 261, 2]]
-  en word_ids: [1368, 3344]
-  en context: [b'Site', b'map']
-  fr word_ids: [1089, 14, 261, 2]
-  fr context: [b'Plan', b'du', b'site', b'_EOS']
-
-  the num of training data in each buckets: [239121, 1344322, 5239557, 10445326]
-  the num of training data: 17268326
-  train_buckets_scale: [0.013847375825543252, 0.09169638099257565, 0.3951164693091849, 1.0]
-
-
-Start training by using the tokenized bucket data, the training process can
-only be terminated by stop the program.
-When ``steps_per_checkpoint = 10`` you will see.
-
-.. code-block:: text
-
-  Create Embedding Attention Seq2seq Model
-
-  global step 10 learning rate 0.5000 step-time 22.26 perplexity 12761.50
-    eval: bucket 0 perplexity 5887.75
-    eval: bucket 1 perplexity 3891.96
-    eval: bucket 2 perplexity 3748.77
-    eval: bucket 3 perplexity 4940.10
-  global step 20 learning rate 0.5000 step-time 20.38 perplexity 28761.36
-    eval: bucket 0 perplexity 10137.01
-    eval: bucket 1 perplexity 12809.90
-    eval: bucket 2 perplexity 15758.65
-    eval: bucket 3 perplexity 26760.93
-  global step 30 learning rate 0.5000 step-time 20.64 perplexity 6372.95
-    eval: bucket 0 perplexity 1789.80
-    eval: bucket 1 perplexity 1690.00
-    eval: bucket 2 perplexity 2190.18
-    eval: bucket 3 perplexity 3808.12
-  global step 40 learning rate 0.5000 step-time 16.10 perplexity 3418.93
-    eval: bucket 0 perplexity 4778.76
-    eval: bucket 1 perplexity 3698.90
-    eval: bucket 2 perplexity 3902.37
-    eval: bucket 3 perplexity 22612.44
-  global step 50 learning rate 0.5000 step-time 14.84 perplexity 1811.02
-    eval: bucket 0 perplexity 644.72
-    eval: bucket 1 perplexity 759.16
-    eval: bucket 2 perplexity 984.18
-    eval: bucket 3 perplexity 1585.68
-  global step 60 learning rate 0.5000 step-time 19.76 perplexity 1580.55
-    eval: bucket 0 perplexity 1724.84
-    eval: bucket 1 perplexity 2292.24
-    eval: bucket 2 perplexity 2698.52
-    eval: bucket 3 perplexity 3189.30
-  global step 70 learning rate 0.5000 step-time 17.16 perplexity 1250.57
-    eval: bucket 0 perplexity 298.55
-    eval: bucket 1 perplexity 502.04
-    eval: bucket 2 perplexity 645.44
-    eval: bucket 3 perplexity 604.29
-  global step 80 learning rate 0.5000 step-time 18.50 perplexity 793.90
-    eval: bucket 0 perplexity 2056.23
-    eval: bucket 1 perplexity 1344.26
-    eval: bucket 2 perplexity 767.82
-    eval: bucket 3 perplexity 649.38
-  global step 90 learning rate 0.5000 step-time 12.61 perplexity 541.57
-    eval: bucket 0 perplexity 180.86
-    eval: bucket 1 perplexity 350.99
-    eval: bucket 2 perplexity 326.85
-    eval: bucket 3 perplexity 383.22
-  global step 100 learning rate 0.5000 step-time 18.42 perplexity 471.12
-    eval: bucket 0 perplexity 216.63
-    eval: bucket 1 perplexity 348.96
-    eval: bucket 2 perplexity 318.20
-    eval: bucket 3 perplexity 389.92
-  global step 110 learning rate 0.5000 step-time 18.39 perplexity 474.89
-    eval: bucket 0 perplexity 8049.85
-    eval: bucket 1 perplexity 1677.24
-    eval: bucket 2 perplexity 936.98
-    eval: bucket 3 perplexity 657.46
-  global step 120 learning rate 0.5000 step-time 18.81 perplexity 832.11
-    eval: bucket 0 perplexity 189.22
-    eval: bucket 1 perplexity 360.69
-    eval: bucket 2 perplexity 410.57
-    eval: bucket 3 perplexity 456.40
-  global step 130 learning rate 0.5000 step-time 20.34 perplexity 452.27
-    eval: bucket 0 perplexity 196.93
-    eval: bucket 1 perplexity 655.18
-    eval: bucket 2 perplexity 860.44
-    eval: bucket 3 perplexity 1062.36
-  global step 140 learning rate 0.5000 step-time 21.05 perplexity 847.11
-    eval: bucket 0 perplexity 391.88
-    eval: bucket 1 perplexity 339.09
-    eval: bucket 2 perplexity 320.08
-    eval: bucket 3 perplexity 376.44
-  global step 150 learning rate 0.4950 step-time 15.53 perplexity 590.03
-    eval: bucket 0 perplexity 269.16
-    eval: bucket 1 perplexity 286.51
-    eval: bucket 2 perplexity 391.78
-    eval: bucket 3 perplexity 485.23
-  global step 160 learning rate 0.4950 step-time 19.36 perplexity 400.80
-    eval: bucket 0 perplexity 137.00
-    eval: bucket 1 perplexity 198.85
-    eval: bucket 2 perplexity 276.58
-    eval: bucket 3 perplexity 357.78
-  global step 170 learning rate 0.4950 step-time 17.50 perplexity 541.79
-    eval: bucket 0 perplexity 1051.29
-    eval: bucket 1 perplexity 626.64
-    eval: bucket 2 perplexity 496.32
-    eval: bucket 3 perplexity 458.85
-  global step 180 learning rate 0.4950 step-time 16.69 perplexity 400.65
-    eval: bucket 0 perplexity 178.12
-    eval: bucket 1 perplexity 299.86
-    eval: bucket 2 perplexity 294.84
-    eval: bucket 3 perplexity 296.46
-  global step 190 learning rate 0.4950 step-time 19.93 perplexity 886.73
-    eval: bucket 0 perplexity 860.60
-    eval: bucket 1 perplexity 910.16
-    eval: bucket 2 perplexity 909.24
-    eval: bucket 3 perplexity 786.04
-  global step 200 learning rate 0.4901 step-time 18.75 perplexity 449.64
-    eval: bucket 0 perplexity 152.13
-    eval: bucket 1 perplexity 234.41
-    eval: bucket 2 perplexity 249.66
-    eval: bucket 3 perplexity 285.95
-  ...
-  global step 980 learning rate 0.4215 step-time 18.31 perplexity 208.74
-    eval: bucket 0 perplexity 78.45
-    eval: bucket 1 perplexity 108.40
-    eval: bucket 2 perplexity 137.83
-    eval: bucket 3 perplexity 173.53
-  global step 990 learning rate 0.4173 step-time 17.31 perplexity 175.05
-    eval: bucket 0 perplexity 78.37
-    eval: bucket 1 perplexity 119.72
-    eval: bucket 2 perplexity 169.11
-    eval: bucket 3 perplexity 202.89
-  global step 1000 learning rate 0.4173 step-time 15.85 perplexity 174.33
-    eval: bucket 0 perplexity 76.52
-    eval: bucket 1 perplexity 125.97
-    eval: bucket 2 perplexity 150.13
-    eval: bucket 3 perplexity 181.07
-  ...
-
-
-After training the model for 350000 steps, you can play with the translation by switch
-``main_train()`` to ``main_decode()``. You type in a English sentence, the program will outputs
-a French sentence.
-
-
-.. code-block:: text
-
-  Reading model parameters from wmt/translate.ckpt-350000
-  >  Who is the president of the United States?
-  Qui est le président des États-Unis ?
-
-
-
-
-
-
-
-Understand Translation
-======================
-
-Seq2seq
----------
-
-Sequence to sequence model is commonly be used to translate a language to another.
-Actually it can do many thing you can't imagine, we can translate
-a long sentence into short and simple sentence, for example, translation going
-from Shakespeare to modern English.
-With CNN, we can also translate a video into a sentence, i.e. video captioning.
-
-If you just want to use Seq2seq but not going to design a new algorithm, the
-only think you need to consider is the data format including how to split
-the words, how to tokenize the words etc.
-In this tutorial, we described a lot about data formating.
-
-
-
-Basics
-^^^^^^
-
-Sequence to sequence model is a type of "Many to many" but different with Synced
-sequence input and output in PTB tutorial. Seq2seq generates sequence output
-after feeding all sequence inputs. The following two methods can improve the
-accuracy:
- - Reversing the inputs
- - Attention mechanism
-
-To speed up the computation, we used:
-
- - Sampled softmax
-
-Karpathy's blog described Seq2seq as:
-"(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
-reads a sentence in English and then outputs a sentence in French)."
-
-.. _fig_0601:
-
-.. image:: my_figs/basic_seq2seq.png
-  :scale: 100 %
-  :align: center
-
-As the above figure shows, the encoder inputs, decoder inputs and targets are:
-
-.. code-block:: text
-
-   encoder_input =  A    B    C
-   decoder_input =  <go> W    X    Y    Z
-   targets       =  W    X    Y    Z    <eos>
-
-   Note: in the code, the size of targets is one smaller than the size
-   of decoder_input, not like this figure. More details will be show later.
-
-Papers
-^^^^^^^^
-
-The English-to-French example implements a multi-layer recurrent neural
-network as encoder, and an Attention-based decoder.
-It is the same as the model described in this paper:
- - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
-
-The example uses sampled softmax to handle large output vocabulary size.
-In this example, as ``target_vocab_size=4000``, for vocabularies smaller
-than ``512``, it might be a better idea to just use a standard softmax loss.
-Sampled softmax is described in Section 3 of the this paper:
- - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
-
-Reversing the inputs and Multi-layer cells have been successfully used in
-sequence-to-sequence models for translation has beed described in this paper:
- - `Sequence to Sequence Learning with Neural Networks <http://arxiv.org/abs/1409.3215>`_
-
-Attention mechanism allows the decoder more direct access to the input, it was
-described in this paper:
- - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
-
-Alternatively, the model can also be implemented by a single-layer
-version, but with Bi-directional encoder, was presented in this paper:
- - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
-
-
-
-Implementation
----------------
-
-Bucketing and Padding
-^^^^^^^^^^^^^^^^^^^^^
-
-(Note that, TensorLayer supports Dynamic RNN layer after v1.2, so bucketing is not longer necessary in many cases)
-
-Bucketing is a method to efficiently handle sentences of different length.
-When translating English to French, we will have English sentences of
-different lengths ``L1`` on input, and French sentences of different
-lengths ``L2`` on output. We should in principle create a seq2seq model
-for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
-lengths of an English and French sentence.
-
-To minimize the number of buckets and find the closest bucket for each pair, then we could just pad every
-sentence with a special PAD symbol in the end if the bucket is bigger
-than the sentence
-
-We use a number of buckets and pad to the closest one for efficiency.
-In this example, we used 4 buckets as follow.
-
-.. code-block:: python
-
-  buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
-
-If the input is an English sentence with ``3`` tokens, and the corresponding
-output is a French sentence with ``6`` tokens, then they will be put in the
-first bucket and padded to length ``5`` for encoder inputs (English sentence),
-and length ``10`` for decoder inputs.
-If we have an English sentence with 8 tokens and the corresponding French
-sentence has 18 tokens, then they will be fit into ``(20, 25)`` bucket.
-
-In other word, bucket ``(I, O)`` is ``(encoder_input_size, decoder_inputs_size)``.
-
-Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
-we fit it into bucket ``(5, 10)``.
-The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
-and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
-are decoder inputs shifted by one. The ``target_weights`` is the mask of
-``targets``.
-
-
-.. code-block:: text
-
-  bucket = (I, O) = (5, 10)
-  encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5  x batch_size
-  decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 x batch_size
-  target_weights = [1   1     1     1   0 0 0 0 0 0 0]          <-- 10 x batch_size
-  targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
-
-
-In this example, one sentence is represented by one column, so assume
-``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
-
-.. code-block:: text
-
-  encoder_inputs    decoder_inputs    target_weights    targets
-  0    0    0       1    1    1       1    1    1       87   71   16748
-  0    0    0       87   71   16748   1    1    1       2    3    14195
-  0    0    0       2    3    14195   0    1    1       0    2    2
-  0    0    3233    0    2    2       0    0    0       0    0    0
-  3    698  4061    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0       0    0    0
-                    0    0    0       0    0    0
-
-  where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
-
-During training, the decoder inputs are the targets, while
-during prediction, the next decoder input is the last decoder output.
-
-
-Special vocabulary symbols, punctuations and digits
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The special vocabulary symbols in this example are:
-
-.. code-block:: python
-
-  _PAD = b"_PAD"
-  _GO = b"_GO"
-  _EOS = b"_EOS"
-  _UNK = b"_UNK"
-  PAD_ID = 0      <-- index (row number) in vocabulary
-  GO_ID = 1
-  EOS_ID = 2
-  UNK_ID = 3
-  _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
-
-.. code-block:: text
-
-          ID    MEANINGS
-  _PAD    0     Padding, empty word
-  _GO     1     1st element of decoder_inputs
-  _EOS    2     End of Sentence of targets
-  _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
-
-
-For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
-must be consistent, if ``normalize_digits=True`` all digits will be replaced by ``0``. Like
-``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
-`0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
-
-Otherwise, if ``normalize_digits=False``, different digits
-will be seem in the vocabulary, then the vocabulary size will be very big.
-The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
-(see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
-
-For word split, the regular expression is
-``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use the symbols like
-``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
-``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
-``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
-
-
-All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
-of both English and French.
-
-
-
-Sampled softmax
-^^^^^^^^^^^^^^^
-
-Sampled softmax is a method to reduce the computation of cost so as to
-handle large output vocabulary. Instead of compute the cross-entropy of large
-output, we compute the loss from samples of ``num_samples``.
-
-
-Dataset iteration
-^^^^^^^^^^^^^^^^^
-
-The iteration is done by ``EmbeddingAttentionSeq2seqWrapper.get_batch``, which get a random batch of data
-from the specified bucket, prepare for step. The data
-
-
-Loss and update expressions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``EmbeddingAttentionSeq2seqWrapper`` has built in SGD optimizer.
-
-
-What Next?
------------
-
-Try other applications.
+
+
+  After training the model for 350000 steps, you can play with the translation by switch
+  ``main_train()`` to ``main_decode()``. You type in a English sentence, the program will outputs
+  a French sentence.
+
+
+  .. code-block:: text
+
+    Reading model parameters from wmt/translate.ckpt-350000
+    >  Who is the president of the United States?
+    Qui est le président des États-Unis ?
+
+
+
+
+
+
+
+  Understand Translation
+  ======================
+
+  Seq2seq
+  ---------
+
+  Sequence to sequence model is commonly be used to translate a language to another.
+  Actually it can do many thing you can't imagine, we can translate
+  a long sentence into short and simple sentence, for example, translation going
+  from Shakespeare to modern English.
+  With CNN, we can also translate a video into a sentence, i.e. video captioning.
+
+  If you just want to use Seq2seq but not going to design a new algorithm, the
+  only think you need to consider is the data format including how to split
+  the words, how to tokenize the words etc.
+  In this tutorial, we described a lot about data formating.
+
+
+
+  Basics
+  ^^^^^^
+
+  Sequence to sequence model is a type of "Many to many" but different with Synced
+  sequence input and output in PTB tutorial. Seq2seq generates sequence output
+  after feeding all sequence inputs. The following two methods can improve the
+  accuracy:
+   - Reversing the inputs
+   - Attention mechanism
+
+  To speed up the computation, we used:
+
+   - Sampled softmax
+
+  Karpathy's blog described Seq2seq as:
+  "(4) Sequence input and sequence output (e.g. Machine Translation: an RNN
+  reads a sentence in English and then outputs a sentence in French)."
+
+  .. _fig_0601:
+
+  .. image:: my_figs/basic_seq2seq.png
+    :scale: 100 %
+    :align: center
+
+  As the above figure shows, the encoder inputs, decoder inputs and targets are:
+
+  .. code-block:: text
+
+     encoder_input =  A    B    C
+     decoder_input =  <go> W    X    Y    Z
+     targets       =  W    X    Y    Z    <eos>
+
+     Note: in the code, the size of targets is one smaller than the size
+     of decoder_input, not like this figure. More details will be show later.
+
+  Papers
+  ^^^^^^^^
+
+  The English-to-French example implements a multi-layer recurrent neural
+  network as encoder, and an Attention-based decoder.
+  It is the same as the model described in this paper:
+   - `Grammar as a Foreign Language <http://arxiv.org/abs/1412.7449>`_
+
+  The example uses sampled softmax to handle large output vocabulary size.
+  In this example, as ``target_vocab_size=4000``, for vocabularies smaller
+  than ``512``, it might be a better idea to just use a standard softmax loss.
+  Sampled softmax is described in Section 3 of the this paper:
+   - `On Using Very Large Target Vocabulary for Neural Machine Translation <http://arxiv.org/abs/1412.2007>`_
+
+  Reversing the inputs and Multi-layer cells have been successfully used in
+  sequence-to-sequence models for translation has beed described in this paper:
+   - `Sequence to Sequence Learning with Neural Networks <http://arxiv.org/abs/1409.3215>`_
+
+  Attention mechanism allows the decoder more direct access to the input, it was
+  described in this paper:
+   - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+  Alternatively, the model can also be implemented by a single-layer
+  version, but with Bi-directional encoder, was presented in this paper:
+   - `Neural Machine Translation by Jointly Learning to Align and Translate <http://arxiv.org/abs/1409.0473>`_
+
+
+
+  Implementation
+  ---------------
+
+  Bucketing and Padding
+  ^^^^^^^^^^^^^^^^^^^^^
+
+  (Note that, TensorLayer supports Dynamic RNN layer after v1.2, so bucketing is not longer necessary in many cases)
+
+  Bucketing is a method to efficiently handle sentences of different length.
+  When translating English to French, we will have English sentences of
+  different lengths ``L1`` on input, and French sentences of different
+  lengths ``L2`` on output. We should in principle create a seq2seq model
+  for every pair ``(L1, L2+1)`` (prefixed by a GO symbol) of
+  lengths of an English and French sentence.
+
+  To minimize the number of buckets and find the closest bucket for each pair, then we could just pad every
+  sentence with a special PAD symbol in the end if the bucket is bigger
+  than the sentence
+
+  We use a number of buckets and pad to the closest one for efficiency.
+  In this example, we used 4 buckets as follow.
+
+  .. code-block:: python
+
+    buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
+
+  If the input is an English sentence with ``3`` tokens, and the corresponding
+  output is a French sentence with ``6`` tokens, then they will be put in the
+  first bucket and padded to length ``5`` for encoder inputs (English sentence),
+  and length ``10`` for decoder inputs.
+  If we have an English sentence with 8 tokens and the corresponding French
+  sentence has 18 tokens, then they will be fit into ``(20, 25)`` bucket.
+
+  In other word, bucket ``(I, O)`` is ``(encoder_input_size, decoder_inputs_size)``.
+
+  Given a pair of ``[["I", "go", "."], ["Je", "vais", "."]]`` in tokenized format,
+  we fit it into bucket ``(5, 10)``.
+  The training data of encoder inputs representing ``[PAD PAD "." "go" "I"]``
+  and decoder inputs ``[GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD]``. The targets
+  are decoder inputs shifted by one. The ``target_weights`` is the mask of
+  ``targets``.
+
+
+  .. code-block:: text
+
+    bucket = (I, O) = (5, 10)
+    encoder_inputs = [PAD PAD "." "go" "I"]                       <-- 5  x batch_size
+    decoder_inputs = [GO "Je" "vais" "." EOS PAD PAD PAD PAD PAD] <-- 10 x batch_size
+    target_weights = [1   1     1     1   0 0 0 0 0 0 0]          <-- 10 x batch_size
+    targets        = ["Je" "vais" "." EOS PAD PAD PAD PAD PAD]    <-- 9  x batch_size
+
+
+  In this example, one sentence is represented by one column, so assume
+  ``batch_size = 3``, ``bucket = (5, 10)`` the training data will look like:
+
+  .. code-block:: text
+
+    encoder_inputs    decoder_inputs    target_weights    targets
+    0    0    0       1    1    1       1    1    1       87   71   16748
+    0    0    0       87   71   16748   1    1    1       2    3    14195
+    0    0    0       2    3    14195   0    1    1       0    2    2
+    0    0    3233    0    2    2       0    0    0       0    0    0
+    3    698  4061    0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0       0    0    0
+                      0    0    0       0    0    0
+
+    where 0 : _PAD    1 : _GO     2 : _EOS      3 : _UNK
+
+  During training, the decoder inputs are the targets, while
+  during prediction, the next decoder input is the last decoder output.
+
+
+  Special vocabulary symbols, punctuations and digits
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  The special vocabulary symbols in this example are:
+
+  .. code-block:: python
+
+    _PAD = b"_PAD"
+    _GO = b"_GO"
+    _EOS = b"_EOS"
+    _UNK = b"_UNK"
+    PAD_ID = 0      <-- index (row number) in vocabulary
+    GO_ID = 1
+    EOS_ID = 2
+    UNK_ID = 3
+    _START_VOCAB = [_PAD, _GO, _EOS, _UNK]
+
+  .. code-block:: text
+
+            ID    MEANINGS
+    _PAD    0     Padding, empty word
+    _GO     1     1st element of decoder_inputs
+    _EOS    2     End of Sentence of targets
+    _UNK    3     Unknown word, words do not exist in vocabulary will be marked as 3
+
+
+  For digits, the ``normalize_digits`` of creating vocabularies and tokenized dataset
+  must be consistent, if ``normalize_digits=True`` all digits will be replaced by ``0``. Like
+  ``123`` to ``000```, `9` to `0` and `1990-05` to `0000-00`, then `000`, `0` and
+  `0000-00` etc will be the words in the vocabulary (see ``vocab40000.en``).
+
+  Otherwise, if ``normalize_digits=False``, different digits
+  will be seem in the vocabulary, then the vocabulary size will be very big.
+  The regular expression to find digits is ``_DIGIT_RE = re.compile(br"\d")``.
+  (see ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``)
+
+  For word split, the regular expression is
+  ``_WORD_SPLIT = re.compile(b"([.,!?\"':;)(])")``, this means use the symbols like
+  ``[ . , ! ? " ' : ; ) ( ]`` and space to split the sentence, see
+  ``tl.nlp.basic_tokenizer()`` which is the default tokenizer of
+  ``tl.nlp.create_vocabulary()`` and ``tl.nlp.data_to_token_ids()``.
+
+
+  All punctuation marks, such as ``. , ) (`` are all reserved in the vocabularies
+  of both English and French.
+
+
+
+  Sampled softmax
+  ^^^^^^^^^^^^^^^
+
+  Sampled softmax is a method to reduce the computation of cost so as to
+  handle large output vocabulary. Instead of compute the cross-entropy of large
+  output, we compute the loss from samples of ``num_samples``.
+
+
+  Dataset iteration
+  ^^^^^^^^^^^^^^^^^
+
+  The iteration is done by ``EmbeddingAttentionSeq2seqWrapper.get_batch``, which get a random batch of data
+  from the specified bucket, prepare for step. The data
+
+
+  Loss and update expressions
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  The ``EmbeddingAttentionSeq2seqWrapper`` has built in SGD optimizer.
+
+
+  What Next?
+  -----------
+
+  Try other applications.
 
 
 
@@ -1998,8 +1960,6 @@ cost expressions and regularizers (:mod:`tensorlayer.cost`),
 
 load and save files (:mod:`tensorlayer.files`),
 
-operating system (:mod:`tensorlayer.ops`),
-
 helper functions (:mod:`tensorlayer.utils`),
 
 visualization (:mod:`tensorlayer.visualize`),
@@ -2007,6 +1967,8 @@ visualization (:mod:`tensorlayer.visualize`),
 iteration functions (:mod:`tensorlayer.iterate`),
 
 preprocessing functions (:mod:`tensorlayer.prepro`),
+
+command line interface (:mod:`tensorlayer.prepro`),
 
 
 .. _TensorLayer: https://github.com/zsdonghao/tensorlayer/

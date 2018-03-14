@@ -3,7 +3,7 @@ API - Cost
 
 To make TensorLayer simple, we minimize the number of cost functions as much as
 we can. So we encourage you to use TensorFlow's function.
-For example, you can implement L1, L2 and sum regularization by ``tf.nn.l2_loss``, 
+For example, you can implement L1, L2 and sum regularization by ``tf.nn.l2_loss``,
 ``tf.contrib.layers.l1_regularizer``, ``tf.contrib.layers.l2_regularizer`` and
 ``tf.contrib.layers.sum_regularizer``, see `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`_.
 
@@ -16,13 +16,13 @@ TensorLayer provides a simple way to create you own cost function. Take a MLP be
 
 .. code-block:: python
 
-  network = tl.InputLayer(x, name='input_layer')
-  network = tl.DropoutLayer(network, keep=0.8, name='drop1')
-  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu1')
-  network = tl.DropoutLayer(network, keep=0.5, name='drop2')
-  network = tl.DenseLayer(network, n_units=800, act = tf.nn.relu, name='relu2')
-  network = tl.DropoutLayer(network, keep=0.5, name='drop3')
-  network = tl.DenseLayer(network, n_units=10, act = tl.activation.identity, name='output_layer')
+  network = InputLayer(x, name='input')
+  network = DropoutLayer(network, keep=0.8, name='drop1')
+  network = DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu1')
+  network = DropoutLayer(network, keep=0.5, name='drop2')
+  network = DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu2')
+  network = DropoutLayer(network, keep=0.5, name='drop3')
+  network = DenseLayer(network, n_units=10, act=tf.identity, name='output')
 
 The network parameters will be ``[W1, b1, W2, b2, W_out, b_out]``,
 then you can apply L2 regularization on the weights matrix of first two layer as follow.
@@ -30,7 +30,8 @@ then you can apply L2 regularization on the weights matrix of first two layer as
 .. code-block:: python
 
   cost = tl.cost.cross_entropy(y, y_)
-  cost = cost + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[0]) + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[2])
+  cost = cost + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[0])
+          + tf.contrib.layers.l2_regularizer(0.001)(network.all_params[2])
 
 Besides, TensorLayer provides a easy way to get all variables by a given name, so you can also
 apply L2 regularization on some weights as follow.
@@ -44,6 +45,7 @@ apply L2 regularization on some weights as follow.
 
 
 
+
 Regularization of Weights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -52,7 +54,7 @@ observed by using ``network.print_params()``.
 
 .. code-block:: python
 
-  sess.run(tf.initialize_all_variables())
+  tl.layers.initialize_global_variables(sess)
   network.print_params()
 
 .. code-block:: text
@@ -75,12 +77,11 @@ Then max-norm regularization on W1 and W2 can be performed as follow.
 
 .. code-block:: python
 
-  y = network.outputs
-  # Alternatively, you can use tl.cost.cross_entropy(y, y_) instead.
-  cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
-  cost = cross_entropy
-  cost = cost + tl.cost.maxnorm_regularizer(1.0)(network.all_params[0]) +
-            tl.cost.maxnorm_regularizer(1.0)(network.all_params[2])
+  max_norm = 0
+  for w in tl.layers.get_variables_with_name('W', train_only=True, printable=False):
+      max_norm += tl.cost.maxnorm_regularizer(1)(w)
+  cost = tl.cost.cross_entropy(y, y_) + max_norm
+
 
 In addition, all TensorFlow's regularizers like
 ``tf.contrib.layers.l2_regularizer`` can be used with TensorLayer.
@@ -117,8 +118,11 @@ to the cost function.
 .. autosummary::
 
    cross_entropy
+   sigmoid_cross_entropy
    binary_cross_entropy
    mean_squared_error
+   normalized_mean_square_error
+   absolute_difference_error
    dice_coe
    dice_hard_coe
    iou_coe
@@ -132,17 +136,29 @@ to the cost function.
    maxnorm_i_regularizer
 
 
-Cross entropy
-------------------
+Softmax cross entropy
+----------------------
 .. autofunction:: cross_entropy
+
+Sigmoid cross entropy
+----------------------
+.. autofunction:: sigmoid_cross_entropy
 
 Binary cross entropy
 -------------------------
 .. autofunction:: binary_cross_entropy
 
-Mean squared error
+Mean squared error (L2)
 -------------------------
 .. autofunction:: mean_squared_error
+
+Normalized mean square error
+--------------------------------
+.. autofunction:: normalized_mean_square_error
+
+Absolute difference error (L1)
+--------------------------------
+.. autofunction:: absolute_difference_error
 
 Dice coefficient
 -------------------------

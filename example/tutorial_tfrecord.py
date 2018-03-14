@@ -1,17 +1,7 @@
 #! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
+"""You will learn.
 
-
-import tensorflow as tf
-import tensorlayer as tl
-import numpy as np
-from PIL import Image
-import io
-import os
-
-
-"""
-You will learn:
 1. How to save data into TFRecord format file.
 2. How to read data from TFRecord format file by using Queue and Thread.
 
@@ -29,6 +19,14 @@ More
 2. tutorial_cifar10_tfrecord.py
 
 """
+
+import os
+
+import numpy as np
+import tensorflow as tf
+from PIL import Image
+
+import tensorlayer as tl
 
 ## Save data ==================================================================
 classes = ['/data/cat', '/data/dog']  # cat is 0, dog is 1
@@ -58,11 +56,10 @@ for index, name in enumerate(classes):
         writer.write(example.SerializeToString())  # Serialize To String
 writer.close()
 
-
 ## Load Data Method 1: Simple read ============================================
 # read data one by one in order
 for serialized_example in tf.python_io.tf_record_iterator("train.tfrecords"):
-    example = tf.train.Example()    # SequenceExample for seuqnce example
+    example = tf.train.Example()  # SequenceExample for seuqnce example
     example.ParseFromString(serialized_example)
     img_raw = example.features.feature['img_raw'].bytes_list.value
     label = example.features.feature['label'].int64_list.value
@@ -78,12 +75,13 @@ def read_and_decode(filename):
     # generate a queue with a given file name
     filename_queue = tf.train.string_input_producer([filename])
     reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)     # return the file and the name of file
-    features = tf.parse_single_example(serialized_example,  # see parse_single_sequence_example for sequence example
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'img_raw' : tf.FixedLenFeature([], tf.string),
-                                       })
+    _, serialized_example = reader.read(filename_queue)  # return the file and the name of file
+    features = tf.parse_single_example(
+        serialized_example,  # see parse_single_sequence_example for sequence example
+        features={
+            'label': tf.FixedLenFeature([], tf.int64),
+            'img_raw': tf.FixedLenFeature([], tf.string),
+        })
     # You can do more image distortion here for training data
     img = tf.decode_raw(features['img_raw'], tf.uint8)
     img = tf.reshape(img, [224, 224, 3])
@@ -91,16 +89,12 @@ def read_and_decode(filename):
     label = tf.cast(features['label'], tf.int32)
     return img, label
 
+
 img, label = read_and_decode("train.tfrecords")
 
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
-img_batch, label_batch = tf.train.shuffle_batch([img, label],
-                                                batch_size=4,
-                                                capacity=2000,
-                                                min_after_dequeue=1000,
-                                                num_threads=16
-                                                )
+img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=2000, min_after_dequeue=1000, num_threads=16)
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
 # init = tf.initialize_all_variables()
@@ -119,22 +113,5 @@ with tf.Session() as sess:
     coord.request_stop()
     coord.join(threads)
     sess.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #

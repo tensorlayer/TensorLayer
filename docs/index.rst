@@ -2,12 +2,15 @@ Welcome to TensorLayer
 =======================================
 
 
-.. image:: user/my_figs/img_tensorlayer.png
-  :scale: 25 %
+.. image:: user/my_figs/tl_transparent_logo.png
+  :scale: 30 %
   :align: center
-  :target: https://github.com/zsdonghao/tensorlayer
+  :target: https://github.com/tensorlayer/tensorlayer
+
+**Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
+More details can be found `here <https://github.com/zsdonghao/tensorlayer>`_.
 
 .. note::
    If you got problem to read the docs online, you could download the repository
@@ -48,8 +51,19 @@ method, this part of the documentation is for you.
   modules/rein
   modules/files
   modules/visualize
-  modules/ops
   modules/activation
+  modules/distributed
+
+
+Command-line Reference
+----------------------
+
+TensorLayer provides a handy command-line tool `tl` to perform some common tasks.
+
+.. toctree::
+  :maxdepth: 2
+
+  modules/cli
 
 
 Indices and tables

@@ -1,48 +1,127 @@
-#! /usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
+"""
+A collections of helper functions to work with dataset.
 
+Load benchmark dataset, save and restore model, save and load variables.
+TensorFlow provides ``.ckpt`` file format to save and restore the models, while
+we suggest to use standard python file format ``.npz`` to save models for the
+sake of cross-platform.
 
-import tensorflow as tf
+.. code-block:: python
+
+  ## save model as .ckpt
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "model.ckpt")
+  # restore model from .ckpt
+  saver = tf.train.Saver()
+  saver.restore(sess, "model.ckpt")
+
+  ## save model as .npz
+  tl.files.save_npz(network.all_params , name='model.npz')
+  # restore model from .npz (method 1)
+  load_params = tl.files.load_npz(name='model.npz')
+  tl.files.assign_params(sess, load_params, network)
+  # restore model from .npz (method 2)
+  tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
+
+  ## you can assign the pre-trained parameters as follow
+  # 1st parameter
+  tl.files.assign_params(sess, [load_params[0]], network)
+  # the first three parameters
+  tl.files.assign_params(sess, load_params[:3], network)
+
+"""
+
+import gzip
 import os
-import numpy as np
+import pickle
 import re
 import sys
 import tarfile
-import gzip
 import zipfile
-from . import visualize
-from . import nlp
-import pickle
-from six.moves import urllib
-from six.moves import cPickle
-from six.moves import zip
+
+import numpy as np
+import tensorflow as tf
+from six.moves import cPickle, zip
 from tensorflow.python.platform import gfile
+
+from . import _logging as logging
+from . import nlp, utils, visualize
 
 
 ## Load dataset functions
-def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
-    """Automatically download MNIST dataset
-    and return the training, validation and test set with 50000, 10000 and 10000
-    digit images respectively.
+def load_mnist_dataset(shape=(-1, 784), path='data'):
+    """Load the original mnist.
+    
+    Automatically download MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
 
     Parameters
     ----------
     shape : tuple
-        The shape of digit images, defaults to (-1,784)
-    path : string
-        Path to download data to, defaults to data/mnist/
+        The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
+    path : str
+        The path that the data is downloaded to.
+    
+    Returns
+    -------
+    X_train, y_train, X_val, y_val, X_test, y_test: tuple
+        Return splitted training/validation/test set respectively.
 
     Examples
     --------
-    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784), path='datasets')
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
     """
-    # We first define functions for loading MNIST images and labels.
+    return _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/')
+
+
+def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
+    """Load the fashion mnist.
+    
+    Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 fashion images respectively, `examples <http://marubon-ds.blogspot.co.uk/2017/09/fashion-mnist-exploring.html>`__.
+
+    Parameters
+    ----------
+    shape : tuple
+        The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
+    path : str
+        The path that the data is downloaded to.
+    
+    Returns
+    -------
+    X_train, y_train, X_val, y_val, X_test, y_test: tuple
+        Return splitted training/validation/test set respectively.
+
+    Examples
+    --------
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1,784), path='datasets')
+    >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1, 28, 28, 1))
+    """
+    return _load_mnist_dataset(shape, path, name='fashion_mnist', url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/')
+
+
+def _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/'):
+    """A generic function to load mnist-like dataset.
+    
+    Parameters:
+    ----------
+    shape : tuple
+        The shape of digit images.
+    path : str
+        The path that the data is downloaded to.
+    name : str
+        The dataset name you want to use(the default is 'mnist').
+    url : str
+        The url of dataset(the default is 'http://yann.lecun.com/exdb/mnist/').
+    """
+    path = os.path.join(path, name)
+
+    # Define functions for loading mnist-like data's images and labels.
     # For convenience, they also download the requested files if needed.
     def load_mnist_images(path, filename):
-        filepath = maybe_download_and_extract(filename, path, 'http://yann.lecun.com/exdb/mnist/')
+        filepath = maybe_download_and_extract(filename, path, url)
 
-        print(filepath)
+        logging.info(filepath)
         # Read the inputs in Yann LeCun's binary format.
         with gzip.open(filepath, 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=16)
@@ -55,7 +134,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
         return data / np.float32(256)
 
     def load_mnist_labels(path, filename):
-        filepath = maybe_download_and_extract(filename, path, 'http://yann.lecun.com/exdb/mnist/')
+        filepath = maybe_download_and_extract(filename, path, url)
         # Read the labels in Yann LeCun's binary format.
         with gzip.open(filepath, 'rb') as f:
             data = np.frombuffer(f.read(), np.uint8, offset=8)
@@ -63,7 +142,7 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
         return data
 
     # Download and read the training and test set images and labels.
-    print("Load or Download MNIST > {}".format(path))
+    logging.info("Load or Download {0} > {1}".format(name.upper(), path))
     X_train = load_mnist_images(path, 'train-images-idx3-ubyte.gz')
     y_train = load_mnist_labels(path, 'train-labels-idx1-ubyte.gz')
     X_test = load_mnist_images(path, 't10k-images-idx3-ubyte.gz')
@@ -84,8 +163,10 @@ def load_mnist_dataset(shape=(-1,784), path="data/mnist/"):
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=False, second=3):
-    """The CIFAR-10 dataset consists of 60000 32x32 colour images in 10 classes, with
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
+    """Load CIFAR-10 dataset.
+
+    It consists of 60000 32x32 colour images in 10 classes, with
     6000 images per class. There are 50000 training images and 10000 test images.
 
     The dataset is divided into five training batches and one test batch, each with
@@ -97,43 +178,25 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     Parameters
     ----------
     shape : tupe
-        The shape of digit images: e.g. (-1, 3, 32, 32) , (-1, 32, 32, 3) , (-1, 32*32*3)
-    plotable : True, False
-        Whether to plot some image examples.
-    second : int
-        If ``plotable`` is True, ``second`` is the display time.
-    path : string
-        Path to download data to, defaults to data/cifar10/
+        The shape of digit images e.g. (-1, 3, 32, 32) and (-1, 32, 32, 3).
+    path : str
+        The path that the data is downloaded to, defaults is ``data/cifar10/``.
+    plotable : boolean
+        Whether to plot some image examples, False as default.
 
     Examples
     --------
-    >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=True)
-
-    Notes
-    ------
-    CIFAR-10 images can only be display without color change under uint8.
-    >>> X_train = np.asarray(X_train, dtype=np.uint8)
-    >>> plt.ion()
-    >>> fig = plt.figure(1232)
-    >>> count = 1
-    >>> for row in range(10):
-    >>>     for col in range(10):
-    >>>         a = fig.add_subplot(10, 10, count)
-    >>>         plt.imshow(X_train[count-1], interpolation='nearest')
-    >>>         plt.gca().xaxis.set_major_locator(plt.NullLocator())    # 不显示刻度(tick)
-    >>>         plt.gca().yaxis.set_major_locator(plt.NullLocator())
-    >>>         count = count + 1
-    >>> plt.draw()
-    >>> plt.pause(3)
+    >>> X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3))
 
     References
     ----------
-    - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`_
-    - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`_
-    - `Code references <https://teratail.com/questions/28932>`_
-    """
+    - `CIFAR website <https://www.cs.toronto.edu/~kriz/cifar.html>`__
+    - `Data download link <https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz>`__
+    - `<https://teratail.com/questions/28932>`__
 
-    print("Load or Download cifar10 > {}".format(path))
+    """
+    path = os.path.join(path, 'cifar10')
+    logging.info("Load or Download cifar10 > {}".format(path))
 
     #Helper function to unpickle the data
     def unpickle(file):
@@ -153,7 +216,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     #Unpickle file and fill in data
     X_train = None
     y_train = []
-    for i in range(1,6):
+    for i in range(1, 6):
         data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "data_batch_{}".format(i)))
         if i == 1:
             X_train = data_dic['data']
@@ -161,7 +224,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
             X_train = np.vstack((X_train, data_dic['data']))
         y_train += data_dic['labels']
 
-    test_data_dic = unpickle(os.path.join(path,  'cifar-10-batches-py/', "test_batch"))
+    test_data_dic = unpickle(os.path.join(path, 'cifar-10-batches-py/', "test_batch"))
     X_test = test_data_dic['data']
     y_test = np.array(test_data_dic['labels'])
 
@@ -179,37 +242,37 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
 
     y_train = np.array(y_train)
 
-    if plotable == True:
-        print('\nCIFAR-10')
+    if plotable:
+        logging.info('\nCIFAR-10')
         import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
-        print('Shape of a training image: X_train[0]',X_train[0].shape)
+        logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
 
-        plt.ion()       # interactive mode
+        plt.ion()  # interactive mode
         count = 1
-        for row in range(10):
-            for col in range(10):
-                a = fig.add_subplot(10, 10, count)
+        for _ in range(10):  # each row
+            for _ in range(10):  # each column
+                _ = fig.add_subplot(10, 10, count)
                 if shape == (-1, 3, 32, 32):
                     # plt.imshow(X_train[count-1], interpolation='nearest')
-                    plt.imshow(np.transpose(X_train[count-1], (1, 2, 0)), interpolation='nearest')
+                    plt.imshow(np.transpose(X_train[count - 1], (1, 2, 0)), interpolation='nearest')
                     # plt.imshow(np.transpose(X_train[count-1], (2, 1, 0)), interpolation='nearest')
                 elif shape == (-1, 32, 32, 3):
-                    plt.imshow(X_train[count-1], interpolation='nearest')
+                    plt.imshow(X_train[count - 1], interpolation='nearest')
                     # plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation='nearest')
                 else:
                     raise Exception("Do not support the given 'shape' to plot the image examples")
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())    # 不显示刻度(tick)
+                plt.gca().xaxis.set_major_locator(plt.NullLocator())  # 不显示刻度(tick)
                 plt.gca().yaxis.set_major_locator(plt.NullLocator())
                 count = count + 1
-        plt.draw()      # interactive mode
-        plt.pause(3)   # interactive mode
+        plt.draw()  # interactive mode
+        plt.pause(3)  # interactive mode
 
-        print("X_train:",X_train.shape)
-        print("y_train:",y_train.shape)
-        print("X_test:",X_test.shape)
-        print("y_test:",y_test.shape)
+        logging.info("X_train: %s" % X_train.shape)
+        logging.info("y_train: %s" % y_train.shape)
+        logging.info("X_test:  %s" % X_test.shape)
+        logging.info("y_test:  %s" % y_test.shape)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
@@ -219,57 +282,43 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data/cifar10/', plotable=F
     return X_train, y_train, X_test, y_test
 
 
-def load_ptb_dataset(path='data/ptb/'):
-    """Penn TreeBank (PTB) dataset is used in many LANGUAGE MODELING papers,
+def load_ptb_dataset(path='data'):
+    """Load Penn TreeBank (PTB) dataset.
+
+    It is used in many LANGUAGE MODELING papers,
     including "Empirical Evaluation and Combination of Advanced Language
     Modeling Techniques", "Recurrent Neural Network Regularization".
-
     It consists of 929k training words, 73k validation words, and 82k test
     words. It has 10k words in its vocabulary.
 
-    In "Recurrent Neural Network Regularization", they trained regularized LSTMs
-    of two sizes; these are denoted the medium LSTM and large LSTM. Both LSTMs
-    have two layers and are unrolled for 35 steps. They initialize the hidden
-    states to zero. They then use the final hidden states of the current
-    minibatch as the initial hidden state of the subsequent minibatch
-    (successive minibatches sequentially traverse the training set).
-    The size of each minibatch is 20.
-
-    The medium LSTM has 650 units per layer and its parameters are initialized
-    uniformly in [−0.05, 0.05]. They apply 50% dropout on the non-recurrent
-    connections. They train the LSTM for 39 epochs with a learning rate of 1,
-    and after 6 epochs they decrease it by a factor of 1.2 after each epoch.
-    They clip the norm of the gradients (normalized by minibatch size) at 5.
-
-    The large LSTM has 1500 units per layer and its parameters are initialized
-    uniformly in [−0.04, 0.04]. We apply 65% dropout on the non-recurrent
-    connections. They train the model for 55 epochs with a learning rate of 1;
-    after 14 epochs they start to reduce the learning rate by a factor of 1.15
-    after each epoch. They clip the norm of the gradients (normalized by
-    minibatch size) at 10.
-
     Parameters
     ----------
-    path : : string
-        Path to download data to, defaults to data/ptb/
+    path : str
+        The path that the data is downloaded to, defaults is ``data/ptb/``.
 
     Returns
     --------
-    train_data, valid_data, test_data, vocabulary size
+    train_data, valid_data, test_data : list of int
+        The training, validating and testing data in integer format.
+    vocab_size : int
+        The vocabulary size.
 
     Examples
     --------
     >>> train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
 
-    Code References
+    References
     ---------------
     - ``tensorflow.models.rnn.ptb import reader``
+    - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`__
 
-    Download Links
-    ---------------
-    - `Manual download <http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz>`_
+    Notes
+    ------
+    - If you want to get the raw data, see the source code.
+
     """
-    print("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
+    path = os.path.join(path, 'ptb')
+    logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
     #Maybe dowload and uncompress tar, or load exsisting files
     filename = 'simple-examples.tgz'
@@ -286,40 +335,42 @@ def load_ptb_dataset(path='data/ptb/'):
     train_data = nlp.words_to_word_ids(nlp.read_words(train_path), word_to_id)
     valid_data = nlp.words_to_word_ids(nlp.read_words(valid_path), word_to_id)
     test_data = nlp.words_to_word_ids(nlp.read_words(test_path), word_to_id)
-    vocabulary = len(word_to_id)
+    vocab_size = len(word_to_id)
 
-    # print(nlp.read_words(train_path))     # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
-    # print(train_data)                 # ...  214,         5,    23,    1,       2]
-    # print(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
-    # print(vocabulary)                 # 10000
+    # logging.info(nlp.read_words(train_path)) # ... 'according', 'to', 'mr.', '<unk>', '<eos>']
+    # logging.info(train_data)                 # ...  214,         5,    23,    1,       2]
+    # logging.info(word_to_id)                 # ... 'beyond': 1295, 'anti-nuclear': 9599, 'trouble': 1520, '<eos>': 2 ... }
+    # logging.info(vocabulary)                 # 10000
     # exit()
-    return train_data, valid_data, test_data, vocabulary
+    return train_data, valid_data, test_data, vocab_size
 
 
-def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
-    """Download a text file from Matt Mahoney's website
+def load_matt_mahoney_text8_dataset(path='data'):
+    """Load Matt Mahoney's dataset.
+
+    Download a text file from Matt Mahoney's website
     if not present, and make sure it's the right size.
     Extract the first file enclosed in a zip file as a list of words.
     This dataset can be used for Word Embedding.
 
     Parameters
     ----------
-    path : : string
-        Path to download data to, defaults to data/mm_test8/
+    path : str
+        The path that the data is downloaded to, defaults is ``data/mm_test8/``.
 
     Returns
     --------
-    word_list : a list
-        a list of string (word).\n
-        e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
+    list of str
+        The raw text data e.g. [.... 'their', 'families', 'who', 'were', 'expelled', 'from', 'jerusalem', ...]
 
     Examples
     --------
     >>> words = tl.files.load_matt_mahoney_text8_dataset()
     >>> print('Data size', len(words))
-    """
 
-    print("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
+    """
+    path = os.path.join(path, 'mm_test8')
+    logging.info("Load or Download matt_mahoney_text8 Dataset> {}".format(path))
 
     filename = 'text8.zip'
     url = 'http://mattmahoney.net/dc/'
@@ -327,23 +378,36 @@ def load_matt_mahoney_text8_dataset(path='data/mm_test8/'):
 
     with zipfile.ZipFile(os.path.join(path, filename)) as f:
         word_list = f.read(f.namelist()[0]).split()
-
+        for idx, _ in enumerate(word_list):
+            word_list[idx] = word_list[idx].decode()
     return word_list
 
 
-def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
-              maxlen=None, test_split=0.2, seed=113,
-              start_char=1, oov_char=2, index_from=3):
-    """Load IMDB dataset
+def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2, index_from=3):
+    """Load IMDB dataset.
 
     Parameters
     ----------
-    path : : string
-        Path to download data to, defaults to data/imdb/
+    path : str
+        The path that the data is downloaded to, defaults is ``data/imdb/``.
+    nb_words : int
+        Number of words to get.
+    skip_top : int
+        Top most frequent words to ignore (they will appear as oov_char value in the sequence data).
+    maxlen : int
+        Maximum sequence length. Any longer sequence will be truncated.
+    seed : int
+        Seed for reproducible data shuffling.
+    start_char : int
+        The start of a sequence will be marked with this character. Set to 1 because 0 is usually the padding character.
+    oov_char : int
+        Words that were cut out because of the num_words or skip_top limit will be replaced with this character.
+    index_from : int
+        Index actual words with this index and higher.
 
     Examples
     --------
-    >>> X_train, y_train, X_test, y_test = tl.files.load_imbd_dataset(
+    >>> X_train, y_train, X_test, y_test = tl.files.load_imdb_dataset(
     ...                                 nb_words=20000, test_split=0.2)
     >>> print('X_train.shape', X_train.shape)
     ... (20000,)  [[1, 62, 74, ... 1033, 507, 27],[1, 60, 33, ... 13, 1053, 7]..]
@@ -352,8 +416,10 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
 
     References
     -----------
-    - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`_
+    - `Modified from keras. <https://github.com/fchollet/keras/blob/master/keras/datasets/imdb.py>`__
+
     """
+    path = os.path.join(path, 'imdb')
 
     filename = "imdb.pkl"
     url = 'https://s3.amazonaws.com/text-datasets/'
@@ -387,9 +453,7 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
         X = new_X
         labels = new_labels
     if not X:
-        raise Exception('After filtering for sequences shorter than maxlen=' +
-                        str(maxlen) + ', no sequence was kept. '
-                        'Increase maxlen.')
+        raise Exception('After filtering for sequences shorter than maxlen=' + str(maxlen) + ', no sequence was kept. ' 'Increase maxlen.')
     if not nb_words:
         nb_words = max([max(x) for x in X])
 
@@ -415,14 +479,19 @@ def load_imdb_dataset(path='data/imdb/', nb_words=None, skip_top=0,
 
     return X_train, y_train, X_test, y_test
 
-def load_nietzsche_dataset(path='data/nietzsche/'):
+
+def load_nietzsche_dataset(path='data'):
     """Load Nietzsche dataset.
-    Returns a string.
 
     Parameters
     ----------
-    path : string
-        Path to download data to, defaults to data/nietzsche/
+    path : str
+        The path that the data is downloaded to, defaults is ``data/nietzsche/``.
+
+    Returns
+    --------
+    str
+        The content.
 
     Examples
     --------
@@ -430,8 +499,10 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
     >>> words = tl.files.load_nietzsche_dataset()
     >>> words = basic_clean_str(words)
     >>> words = words.split()
+
     """
-    print("Load or Download nietzsche dataset > {}".format(path))
+    logging.info("Load or Download nietzsche dataset > {}".format(path))
+    path = os.path.join(path, 'nietzsche')
 
     filename = "nietzsche.txt"
     url = 'https://s3.amazonaws.com/text-datasets/'
@@ -441,16 +512,17 @@ def load_nietzsche_dataset(path='data/nietzsche/'):
         words = f.read()
         return words
 
-def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
-    """It will download English-to-French translation data from the WMT'15
-    Website (10^9-French-English corpus), and the 2013 news test from
-    the same site as development set.
+
+def load_wmt_en_fr_dataset(path='data'):
+    """Load WMT'15 English-to-French translation dataset.
+
+    It will download the data from the WMT'15 Website (10^9-French-English corpus), and the 2013 news test from the same site as development set.
     Returns the directories of training data and test data.
 
     Parameters
     ----------
-    path : string
-        Path to download data to, defaults to data/wmt_en_fr/
+    path : str
+        The path that the data is downloaded to, defaults is ``data/wmt_en_fr/``.
 
     References
     ----------
@@ -459,14 +531,16 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
     Notes
     -----
     Usually, it will take a long time to download this dataset.
+
     """
+    path = os.path.join(path, 'wmt_en_fr')
     # URLs for WMT data.
     _WMT_ENFR_TRAIN_URL = "http://www.statmt.org/wmt10/"
     _WMT_ENFR_DEV_URL = "http://www.statmt.org/wmt15/"
 
     def gunzip_file(gz_path, new_path):
         """Unzips from gz_path into new_path."""
-        print("Unpacking %s to %s" % (gz_path, new_path))
+        logging.info("Unpacking %s to %s" % (gz_path, new_path))
         with gzip.open(gz_path, "rb") as gz_file:
             with open(new_path, "wb") as new_file:
                 for line in gz_file:
@@ -488,17 +562,17 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
         dev_name = "newstest2013"
         dev_path = os.path.join(path, "newstest2013")
         if not (gfile.Exists(dev_path + ".fr") and gfile.Exists(dev_path + ".en")):
-            print("Extracting tgz file %s" % dev_file)
+            logging.info("Extracting tgz file %s" % dev_file)
             with tarfile.open(dev_file, "r:gz") as dev_tar:
-              fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
-              en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
-              fr_dev_file.name = dev_name + ".fr"  # Extract without "dev/" prefix.
-              en_dev_file.name = dev_name + ".en"
-              dev_tar.extract(fr_dev_file, path)
-              dev_tar.extract(en_dev_file, path)
+                fr_dev_file = dev_tar.getmember("dev/" + dev_name + ".fr")
+                en_dev_file = dev_tar.getmember("dev/" + dev_name + ".en")
+                fr_dev_file.name = dev_name + ".fr"  # Extract without "dev/" prefix.
+                en_dev_file.name = dev_name + ".en"
+                dev_tar.extract(fr_dev_file, path)
+                dev_tar.extract(en_dev_file, path)
         return dev_path
 
-    print("Load or Download WMT English-to-French translation > {}".format(path))
+    logging.info("Load or Download WMT English-to-French translation > {}".format(path))
 
     train_path = get_wmt_enfr_train_set(path)
     dev_path = get_wmt_enfr_dev_set(path)
@@ -506,30 +580,624 @@ def load_wmt_en_fr_dataset(path='data/wmt_en_fr/'):
     return train_path, dev_path
 
 
-## Load and save network
-def save_npz(save_list=[], name='model.npz', sess=None):
+def load_flickr25k_dataset(tag='sky', path="data", n_threads=50, printable=False):
+    """Load Flickr25K dataset.
+
+    Returns a list of images by a given tag from Flick25k dataset,
+    it will download Flickr25k from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`__
+    at the first time you use it.
+
+    Parameters
+    ------------
+    tag : str or None
+        What images to return.
+            - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
+            - If you want to get all images, set to ``None``.
+
+    path : str
+        The path that the data is downloaded to, defaults is ``data/flickr25k/``.
+    n_threads : int
+        The number of thread to read image.
+    printable : boolean
+        Whether to print infomation when reading images, default is ``False``.
+
+    Examples
+    -----------
+    Get images with tag of sky
+
+    >>> images = tl.files.load_flickr25k_dataset(tag='sky')
+
+    Get all images
+
+    >>> images = tl.files.load_flickr25k_dataset(tag=None, n_threads=100, printable=True)
+
+    """
+    path = os.path.join(path, 'flickr25k')
+
+    filename = 'mirflickr25k.zip'
+    url = 'http://press.liacs.nl/mirflickr/mirflickr25k/'
+
+    # download dataset
+    if folder_exists(path + "/mirflickr") is False:
+        logging.info("[*] Flickr25k is nonexistent in {}".format(path))
+        maybe_download_and_extract(filename, path, url, extract=True)
+        del_file(path + '/' + filename)
+
+    # return images by the given tag.
+    # 1. image path list
+    folder_imgs = path + "/mirflickr"
+    path_imgs = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    path_imgs.sort(key=natural_keys)
+
+    # 2. tag path list
+    folder_tags = path + "/mirflickr/meta/tags"
+    path_tags = load_file_list(path=folder_tags, regx='\\.txt', printable=False)
+    path_tags.sort(key=natural_keys)
+
+    # 3. select images
+    if tag is None:
+        logging.info("[Flickr25k] reading all images")
+    else:
+        logging.info("[Flickr25k] reading images with tag: {}".format(tag))
+    images_list = []
+    for idx, _v in enumerate(path_tags):
+        tags = read_file(folder_tags + '/' + path_tags[idx]).split('\n')
+        # logging.info(idx+1, tags)
+        if tag is None or tag in tags:
+            images_list.append(path_imgs[idx])
+
+    images = visualize.read_images(images_list, folder_imgs, n_threads=n_threads, printable=printable)
+    return images
+
+
+def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printable=False):
+    """Load Flick1M dataset.
+
+    Returns a list of images by a given tag from Flickr1M dataset,
+    it will download Flickr1M from `the official website <http://press.liacs.nl/mirflickr/mirdownload.html>`__
+    at the first time you use it.
+
+    Parameters
+    ------------
+    tag : str or None
+        What images to return.
+            - If you want to get images with tag, use string like 'dog', 'red', see `Flickr Search <https://www.flickr.com/search/>`__.
+            - If you want to get all images, set to ``None``.
+
+    size : int
+        integer between 1 to 10. 1 means 100k images ... 5 means 500k images, 10 means all 1 million images. Default is 10.
+    path : str
+        The path that the data is downloaded to, defaults is ``data/flickr25k/``.
+    n_threads : int
+        The number of thread to read image.
+    printable : boolean
+        Whether to print infomation when reading images, default is ``False``.
+
+    Examples
+    ----------
+    Use 200k images
+
+    >>> images = tl.files.load_flickr1M_dataset(tag='zebra', size=2)
+
+    Use 1 Million images
+
+    >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
+
+    """
+    path = os.path.join(path, 'flickr1M')
+    logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
+    images_zip = [
+        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip', 'images7.zip', 'images8.zip', 'images9.zip'
+    ]
+    tag_zip = 'tags.zip'
+    url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
+
+    # download dataset
+    for image_zip in images_zip[0:size]:
+        image_folder = image_zip.split(".")[0]
+        # logging.info(path+"/"+image_folder)
+        if folder_exists(path + "/" + image_folder) is False:
+            # logging.info(image_zip)
+            logging.info("[Flickr1M] {} is missing in {}".format(image_folder, path))
+            maybe_download_and_extract(image_zip, path, url, extract=True)
+            del_file(path + '/' + image_zip)
+            os.system("mv {} {}".format(path + '/images', path + '/' + image_folder))
+        else:
+            logging.info("[Flickr1M] {} exists in {}".format(image_folder, path))
+
+    # download tag
+    if folder_exists(path + "/tags") is False:
+        logging.info("[Flickr1M] tag files is nonexistent in {}".format(path))
+        maybe_download_and_extract(tag_zip, path, url, extract=True)
+        del_file(path + '/' + tag_zip)
+    else:
+        logging.info("[Flickr1M] tags exists in {}".format(path))
+
+    # 1. image path list
+    images_list = []
+    images_folder_list = []
+    for i in range(0, size):
+        images_folder_list += load_folder_list(path=os.path.join(path, 'images%d' % i))
+    images_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
+
+    for folder in images_folder_list[0:size * 10]:
+        tmp = load_file_list(path=folder, regx='\\.jpg', printable=False)
+        tmp.sort(key=lambda s: int(s.split('.')[-2]))  # ddd.jpg
+        images_list.extend([folder + '/' + x for x in tmp])
+
+    # 2. tag path list
+    tag_list = []
+    tag_folder_list = load_folder_list(path + "/tags")
+    tag_folder_list.sort(key=lambda s: int(s.split('/')[-1]))  # folder/images/ddd
+
+    for folder in tag_folder_list[0:size * 10]:
+        tmp = load_file_list(path=folder, regx='\\.txt', printable=False)
+        tmp.sort(key=lambda s: int(s.split('.')[-2]))  # ddd.txt
+        tmp = [folder + '/' + s for s in tmp]
+        tag_list += tmp
+
+    # 3. select images
+    logging.info("[Flickr1M] searching tag: {}".format(tag))
+    select_images_list = []
+    for idx, _val in enumerate(tag_list):
+        tags = read_file(tag_list[idx]).split('\n')
+        if tag in tags:
+            select_images_list.append(images_list[idx])
+
+    logging.info("[Flickr1M] reading images with tag: {}".format(tag))
+    images = visualize.read_images(select_images_list, '', n_threads=n_threads, printable=printable)
+    return images
+
+
+def load_cyclegan_dataset(filename='summer2winter_yosemite', path='data'):
+    """Load images from CycleGAN's database, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`__.
+
+    Parameters
+    ------------
+    filename : str
+        The dataset you want, see `this link <https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/>`__.
+    path : str
+        The path that the data is downloaded to, defaults is `data/cyclegan`
+
+    Examples
+    ---------
+    >>> im_train_A, im_train_B, im_test_A, im_test_B = load_cyclegan_dataset(filename='summer2winter_yosemite')
+
+    """
+    path = os.path.join(path, 'cyclegan')
+    url = 'https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/'
+
+    if folder_exists(os.path.join(path, filename)) is False:
+        logging.info("[*] {} is nonexistent in {}".format(filename, path))
+        maybe_download_and_extract(filename + '.zip', path, url, extract=True)
+        del_file(os.path.join(path, filename + '.zip'))
+
+    def load_image_from_folder(path):
+        path_imgs = load_file_list(path=path, regx='\\.jpg', printable=False)
+        return visualize.read_images(path_imgs, path=path, n_threads=10, printable=False)
+
+    im_train_A = load_image_from_folder(os.path.join(path, filename, "trainA"))
+    im_train_B = load_image_from_folder(os.path.join(path, filename, "trainB"))
+    im_test_A = load_image_from_folder(os.path.join(path, filename, "testA"))
+    im_test_B = load_image_from_folder(os.path.join(path, filename, "testB"))
+
+    def if_2d_to_3d(images):  # [h, w] --> [h, w, 3]
+        for i, _v in enumerate(images):
+            if len(images[i].shape) == 2:
+                images[i] = images[i][:, :, np.newaxis]
+                images[i] = np.tile(images[i], (1, 1, 3))
+        return images
+
+    im_train_A = if_2d_to_3d(im_train_A)
+    im_train_B = if_2d_to_3d(im_train_B)
+    im_test_A = if_2d_to_3d(im_test_A)
+    im_test_B = if_2d_to_3d(im_test_B)
+
+    return im_train_A, im_train_B, im_test_A, im_test_B
+
+
+def download_file_from_google_drive(ID, destination):
+    """Download file from Google Drive.
+
+    See ``tl.files.load_celebA_dataset`` for example.
+
+    Parameters
+    --------------
+    ID : str
+        The driver ID.
+    destination : str
+        The destination for save file.
+
+    """
+    from tqdm import tqdm
+    import requests
+
+    def save_response_content(response, destination, chunk_size=32 * 1024):
+        total_size = int(response.headers.get('content-length', 0))
+        with open(destination, "wb") as f:
+            for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True, desc=destination):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
+
+    def get_confirm_token(response):
+        for key, value in response.cookies.items():
+            if key.startswith('download_warning'):
+                return value
+        return None
+
+    URL = "https://docs.google.com/uc?export=download"
+    session = requests.Session()
+
+    response = session.get(URL, params={'id': ID}, stream=True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = {'id': ID, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
+    save_response_content(response, destination)
+
+
+def load_celebA_dataset(path='data'):
+    """Load CelebA dataset
+
+    Return a list of image path.
+
+    Parameters
+    -----------
+    path : str
+        The path that the data is downloaded to, defaults is ``data/celebA/``.
+
+    """
+    data_dir = 'celebA'
+    filename, drive_id = "img_align_celeba.zip", "0B7EVK8r0v71pZjFTYXZWM3FlRnM"
+    save_path = os.path.join(path, filename)
+    image_path = os.path.join(path, data_dir)
+    if os.path.exists(image_path):
+        logging.info('[*] {} already exists'.format(save_path))
+    else:
+        exists_or_mkdir(path)
+        download_file_from_google_drive(drive_id, save_path)
+        zip_dir = ''
+        with zipfile.ZipFile(save_path) as zf:
+            zip_dir = zf.namelist()[0]
+            zf.extractall(path)
+        os.remove(save_path)
+        os.rename(os.path.join(path, zip_dir), image_path)
+
+    data_files = load_file_list(path=image_path, regx='\\.jpg', printable=False)
+    for i, _v in enumerate(data_files):
+        data_files[i] = os.path.join(image_path, data_files[i])
+    return data_files
+
+
+def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=False):
+    """Pascal VOC 2007/2012 Dataset.
+
+    It has 20 objects:
+    aeroplane, bicycle, bird, boat, bottle, bus, car, cat, chair, cow, diningtable, dog, horse, motorbike, person, pottedplant, sheep, sofa, train, tvmonitor
+    and additional 3 classes : head, hand, foot for person.
+
+    Parameters
+    -----------
+    path : str
+        The path that the data is downloaded to, defaults is ``data/VOC``.
+    dataset : str
+        The VOC dataset version, `2012`, `2007`, `2007test` or `2012test`. We usually train model on `2007+2012` and test it on `2007test`.
+    contain_classes_in_person : boolean
+        Whether include head, hand and foot annotation, default is False.
+
+    Returns
+    ---------
+    imgs_file_list : list of str
+        Full paths of all images.
+    imgs_semseg_file_list : list of str
+        Full paths of all maps for semantic segmentation. Note that not all images have this map!
+    imgs_insseg_file_list : list of str
+        Full paths of all maps for instance segmentation. Note that not all images have this map!
+    imgs_ann_file_list : list of str
+        Full paths of all annotations for bounding box and object class, all images have this annotations.
+    classes : list of str
+        Classes in order.
+    classes_in_person : list of str
+        Classes in person.
+    classes_dict : dictionary
+        Class label to integer.
+    n_objs_list : list of int
+        Number of objects in all images in ``imgs_file_list`` in order.
+    objs_info_list : list of str
+        Darknet format for the annotation of all images in ``imgs_file_list`` in order. ``[class_id x_centre y_centre width height]`` in ratio format.
+    objs_info_dicts : dictionary
+        The annotation of all images in ``imgs_file_list``, ``{imgs_file_list : dictionary for annotation}``,
+        format from `TensorFlow/Models/object-detection <https://github.com/tensorflow/models/blob/master/object_detection/create_pascal_tf_record.py>`__.
+
+    Examples
+    ----------
+    >>> imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list,
+    >>>     classes, classes_in_person, classes_dict,
+    >>>     n_objs_list, objs_info_list, objs_info_dicts = tl.files.load_voc_dataset(dataset="2012", contain_classes_in_person=False)
+    >>> idx = 26
+    >>> print(classes)
+    ... ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']
+    >>> print(classes_dict)
+    ... {'sheep': 16, 'horse': 12, 'bicycle': 1, 'bottle': 4, 'cow': 9, 'sofa': 17, 'car': 6, 'dog': 11, 'cat': 7, 'person': 14, 'train': 18, 'diningtable': 10, 'aeroplane': 0, 'bus': 5, 'pottedplant': 15, 'tvmonitor': 19, 'chair': 8, 'bird': 2, 'boat': 3, 'motorbike': 13}
+    >>> print(imgs_file_list[idx])
+    ... data/VOC/VOC2012/JPEGImages/2007_000423.jpg
+    >>> print(n_objs_list[idx])
+    ... 2
+    >>> print(imgs_ann_file_list[idx])
+    ... data/VOC/VOC2012/Annotations/2007_000423.xml
+    >>> print(objs_info_list[idx])
+    ... 14 0.173 0.461333333333 0.142 0.496
+    ... 14 0.828 0.542666666667 0.188 0.594666666667
+    >>> ann = tl.prepro.parse_darknet_ann_str_to_list(objs_info_list[idx])
+    >>> print(ann)
+    ... [[14, 0.173, 0.461333333333, 0.142, 0.496], [14, 0.828, 0.542666666667, 0.188, 0.594666666667]]
+    >>> c, b = tl.prepro.parse_darknet_ann_list_to_cls_box(ann)
+    >>> print(c, b)
+    ... [14, 14] [[0.173, 0.461333333333, 0.142, 0.496], [0.828, 0.542666666667, 0.188, 0.594666666667]]
+
+    References
+    -------------
+    - `Pascal VOC2012 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2012/#devkit>`__.
+    - `Pascal VOC2007 Website <http://host.robots.ox.ac.uk/pascal/VOC/voc2007/>`__.
+
+    """
+    path = os.path.join(path, 'VOC')
+
+    def _recursive_parse_xml_to_dict(xml):
+        """Recursively parses XML contents to python dict.
+
+        We assume that `object` tags are the only ones that can appear
+        multiple times at the same level of a tree.
+
+        Args:
+            xml: xml tree obtained by parsing XML file contents using lxml.etree
+
+        Returns:
+            Python dictionary holding XML contents.
+
+        """
+        if not xml:
+            # if xml is not None:
+            return {xml.tag: xml.text}
+        result = {}
+        for child in xml:
+            child_result = _recursive_parse_xml_to_dict(child)
+            if child.tag != 'object':
+                result[child.tag] = child_result[child.tag]
+            else:
+                if child.tag not in result:
+                    result[child.tag] = []
+                result[child.tag].append(child_result[child.tag])
+        return {xml.tag: result}
+
+    from lxml import etree  # pip install lxml
+    import xml.etree.ElementTree as ET
+
+    if dataset == "2012":
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
+        tar_filename = "VOCtrainval_11-May-2012.tar"
+        extracted_filename = "VOC2012"  #"VOCdevkit/VOC2012"
+        logging.info("    [============= VOC 2012 =============]")
+    elif dataset == "2012test":
+        extracted_filename = "VOC2012test"  #"VOCdevkit/VOC2012"
+        logging.info("    [============= VOC 2012 Test Set =============]")
+        logging.info("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
+        import time
+        time.sleep(3)
+        if os.path.isdir(os.path.join(path, extracted_filename)) is False:
+            logging.info("For VOC 2012 Test data - online registration required")
+            logging.info(
+                " Please download VOC2012test.tar from:  \n register: http://host.robots.ox.ac.uk:8080 \n voc2012 : http://host.robots.ox.ac.uk:8080/eval/challenges/voc2012/ \ndownload: http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar"
+            )
+            logging.info(" unzip VOC2012test.tar,rename the folder to VOC2012test and put it into %s" % path)
+            exit()
+        # # http://host.robots.ox.ac.uk:8080/eval/downloads/VOC2012test.tar
+        # url = "http://host.robots.ox.ac.uk:8080/eval/downloads/"
+        # tar_filename = "VOC2012test.tar"
+    elif dataset == "2007":
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
+        tar_filename = "VOCtrainval_06-Nov-2007.tar"
+        extracted_filename = "VOC2007"
+        logging.info("    [============= VOC 2007 =============]")
+    elif dataset == "2007test":
+        # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html#testdata
+        # http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
+        url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2007/"
+        tar_filename = "VOCtest_06-Nov-2007.tar"
+        extracted_filename = "VOC2007test"
+        logging.info("    [============= VOC 2007 Test Set =============]")
+    else:
+        raise Exception("Please set the dataset aug to 2012, 2012test or 2007.")
+
+    # download dataset
+    if dataset != "2012test":
+        from sys import platform as _platform
+        if folder_exists(os.path.join(path, extracted_filename)) is False:
+            logging.info("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
+            maybe_download_and_extract(tar_filename, path, url, extract=True)
+            del_file(os.path.join(path, tar_filename))
+            if dataset == "2012":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2012 {}\VOC2012".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2012 {}/VOC2012".format(path, path))
+            elif dataset == "2007":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007".format(path, path))
+            elif dataset == "2007test":
+                if _platform == "win32":
+                    os.system("mv {}\VOCdevkit\VOC2007 {}\VOC2007test".format(path, path))
+                else:
+                    os.system("mv {}/VOCdevkit/VOC2007 {}/VOC2007test".format(path, path))
+            del_folder(os.path.join(path, 'VOCdevkit'))
+    # object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
+    classes = [
+        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
+        "pottedplant", "sheep", "sofa", "train", "tvmonitor"
+    ]
+    if contain_classes_in_person:
+        classes_in_person = ["head", "hand", "foot"]
+    else:
+        classes_in_person = []
+
+    classes += classes_in_person  # use extra 3 classes for person
+
+    classes_dict = utils.list_string_to_dict(classes)
+    logging.info("[VOC] object classes {}".format(classes_dict))
+
+    # 1. image path list
+    # folder_imgs = path+"/"+extracted_filename+"/JPEGImages/"
+    folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
+    imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
+    logging.info("[VOC] {} images found".format(len(imgs_file_list)))
+    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.jpg --> 2007000027
+    imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
+    # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
+    if dataset != "2012test":
+        ##======== 2. semantic segmentation maps path list
+        # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
+        folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
+        imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
+        logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
+        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
+        # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
+        ##======== 3. instance segmentation maps path list
+        # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
+        folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
+        imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
+        logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
+        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
+        # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
+    else:
+        imgs_semseg_file_list = []
+        imgs_insseg_file_list = []
+    # 4. annotations for bounding box and object class
+    # folder_ann = path+"/"+extracted_filename+"/Annotations/"
+    folder_ann = os.path.join(path, extracted_filename, "Annotations")
+    imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
+    logging.info("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
+    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.xml --> 2007000027
+    imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
+    # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
+
+    if dataset == "2012test":  # remove unused images in JPEG folder
+        imgs_file_list_new = []
+        for ann in imgs_ann_file_list:
+            ann = os.path.split(ann)[-1].split('.')[0]
+            for im in imgs_file_list:
+                if ann in im:
+                    imgs_file_list_new.append(im)
+                    break
+        imgs_file_list = imgs_file_list_new
+        logging.info("[VOC] keep %d images" % len(imgs_file_list_new))
+
+    # parse XML annotations
+    def convert(size, box):
+        dw = 1. / size[0]
+        dh = 1. / size[1]
+        x = (box[0] + box[1]) / 2.0
+        y = (box[2] + box[3]) / 2.0
+        w = box[1] - box[0]
+        h = box[3] - box[2]
+        x = x * dw
+        w = w * dw
+        y = y * dh
+        h = h * dh
+        return x, y, w, h
+
+    def convert_annotation(file_name):
+        """Given VOC2012 XML Annotations, returns number of objects and info."""
+        in_file = open(file_name)
+        out_file = ""
+        tree = ET.parse(in_file)
+        root = tree.getroot()
+        size = root.find('size')
+        w = int(size.find('width').text)
+        h = int(size.find('height').text)
+        n_objs = 0
+
+        for obj in root.iter('object'):
+            if dataset != "2012test":
+                difficult = obj.find('difficult').text
+                cls = obj.find('name').text
+                if cls not in classes or int(difficult) == 1:
+                    continue
+            else:
+                cls = obj.find('name').text
+                if cls not in classes:
+                    continue
+            cls_id = classes.index(cls)
+            xmlbox = obj.find('bndbox')
+            b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+            bb = convert((w, h), b)
+
+            out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+            n_objs += 1
+            if cls in "person":
+                for part in obj.iter('part'):
+                    cls = part.find('name').text
+                    if cls not in classes_in_person:
+                        continue
+                    cls_id = classes.index(cls)
+                    xmlbox = part.find('bndbox')
+                    b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+                    bb = convert((w, h), b)
+                    # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
+                    out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
+                    n_objs += 1
+        in_file.close()
+        return n_objs, out_file
+
+    logging.info("[VOC] Parsing xml annotations files")
+    n_objs_list = []
+    objs_info_list = []  # Darknet Format list of string
+    objs_info_dicts = {}
+    for idx, ann_file in enumerate(imgs_ann_file_list):
+        n_objs, objs_info = convert_annotation(ann_file)
+        n_objs_list.append(n_objs)
+        objs_info_list.append(objs_info)
+        with tf.gfile.GFile(ann_file, 'r') as fid:
+            xml_str = fid.read()
+        xml = etree.fromstring(xml_str)
+        data = _recursive_parse_xml_to_dict(xml)['annotation']
+        objs_info_dicts.update({imgs_file_list[idx]: data})
+
+    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
+        classes, classes_in_person, classes_dict,\
+        n_objs_list, objs_info_list, objs_info_dicts
+
+
+def save_npz(save_list=None, name='model.npz', sess=None):
     """Input parameters and the file name, save parameters into .npz file. Use tl.utils.load_npz() to restore.
 
     Parameters
     ----------
-    save_list : a list
-        Parameters want to be saved.
-    name : a string or None
-        The name of the .npz file.
+    save_list : list of tensor
+        A list of parameters (tensor) to be saved.
+    name : str
+        The name of the `.npz` file.
     sess : None or Session
+        Session may be required in some case.
 
     Examples
     --------
-    >>> tl.files.save_npz(network.all_params, name='model_test.npz', sess=sess)
-    ... File saved to: model_test.npz
-    >>> load_params = tl.files.load_npz(name='model_test.npz')
-    ... Loading param0, (784, 800)
-    ... Loading param1, (800,)
-    ... Loading param2, (800, 800)
-    ... Loading param3, (800,)
-    ... Loading param4, (800, 10)
-    ... Loading param5, (10,)
-    >>> put parameters into a TensorLayer network, please see assign_params()
+    Save model to npz
+
+    >>> tl.files.save_npz(network.all_params, name='model.npz', sess=sess)
+
+    Load model from npz (Method 1)
+
+    >>> load_params = tl.files.load_npz(name='model.npz')
+    >>> tl.files.assign_params(sess, load_params, network)
+
+    Load model from npz (Method 2)
+
+    >>> tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
 
     Notes
     -----
@@ -537,132 +1205,311 @@ def save_npz(save_list=[], name='model.npz', sess=None):
 
     References
     ----------
-    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
+
     """
-    ## save params into a list
+    if save_list is None:
+        save_list = []
+
     save_list_var = []
     if sess:
         save_list_var = sess.run(save_list)
     else:
         try:
-            for k, value in enumerate(save_list):
-                save_list_var.append(value.eval())
-        except:
-            print(" Fail to save model, Hint: pass the session into this function, save_npz(network.all_params, name='model.npz', sess=sess)")
+            save_list_var.extend([v.eval() for v in save_list])
+        except Exception:
+            logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    print('Model is saved to: %s' % name)
+    logging.info("[*] %s saved" % name)
 
-    ## save params into a dictionary
-    # rename_dict = {}
-    # for k, value in enumerate(save_dict):
-    #     rename_dict.update({'param'+str(k) : value.eval()})
-    # np.savez(name, **rename_dict)
-    # print('Model is saved to: %s' % name)
 
 def load_npz(path='', name='model.npz'):
     """Load the parameters of a Model saved by tl.files.save_npz().
 
     Parameters
     ----------
-    path : a string
-        Folder path to .npz file.
-    name : a string or None
-        The name of the .npz file.
+    path : str
+        Folder path to `.npz` file.
+    name : str
+        The name of the `.npz` file.
 
     Returns
     --------
-    params : list
+    list of array
         A list of parameters in order.
 
     Examples
     --------
-    - See save_npz and assign_params
+    - See ``tl.files.save_npz``
 
     References
     ----------
-    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`_
+    - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
+
     """
-    ## if save_npz save params into a dictionary
-    # d = np.load( path+name )
-    # params = []
-    # print('Load Model')
-    # for key, val in sorted( d.items() ):
-    #     params.append(val)
-    #     print('Loading %s, %s' % (key, str(val.shape)))
-    # return params
-    ## if save_npz save params into a list
-    d = np.load( path+name )
-    # for val in sorted( d.items() ):
-    #     params = val
-    #     return params
+    d = np.load(path + name)
     return d['params']
-    # print(d.items()[0][1]['params'])
-    # exit()
-    # return d.items()[0][1]['params']
+
 
 def assign_params(sess, params, network):
     """Assign the given parameters to the TensorLayer network.
 
     Parameters
     ----------
-    sess : TensorFlow Session
-    params : a list
-        A list of parameters in order.
-    network : a :class:`Layer` class
-        The network to be assigned
+    sess : Session
+        TensorFlow Session.
+    params : list of array
+        A list of parameters (array) in order.
+    network : :class:`Layer`
+        The network to be assigned.
+
+    Returns
+    --------
+    list of operations
+        A list of tf ops in order that assign params. Support sess.run(ops) manually.
 
     Examples
     --------
-    >>> Save your network as follow:
-    >>> tl.files.save_npz(network.all_params, name='model_test.npz')
-    >>> network.print_params()
-    ...
-    ... Next time, load and assign your network as follow:
-    >>> sess.run(tf.initialize_all_variables()) # re-initialize, then save and assign
-    >>> load_params = tl.files.load_npz(name='model_test.npz')
-    >>> tl.files.assign_params(sess, load_params, network)
-    >>> network.print_params()
+    - See ``tl.files.save_npz``
 
     References
     ----------
-    - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`_
+    - `Assign value to a TensorFlow variable <http://stackoverflow.com/questions/34220532/how-to-assign-value-to-a-tensorflow-variable>`__
+
     """
     ops = []
     for idx, param in enumerate(params):
         ops.append(network.all_params[idx].assign(param))
-    sess.run(ops)
+    if sess is not None:
+        sess.run(ops)
+    return ops
+
 
 def load_and_assign_npz(sess=None, name=None, network=None):
     """Load model from npz and assign to a network.
 
     Parameters
     -------------
-    sess : TensorFlow Session
-    name : string
-        Model path.
-    network : a :class:`Layer` class
-        The network to be assigned
+    sess : Session
+        TensorFlow Session.
+    name : str
+        The name of the `.npz` file.
+    network : :class:`Layer`
+        The network to be assigned.
+
+    Returns
+    --------
+    False or network
+        Returns False, if the model is not exist.
 
     Examples
-    ---------
-    >>> tl.files.load_and_assign_npz(sess=sess, name='net.npz', network=net)
+    --------
+    - See ``tl.files.save_npz``
+
     """
-    assert network is not None
-    assert sess is not None
+    if network is None:
+        raise ValueError("network is None.")
+    if sess is None:
+        raise ValueError("session is None.")
     if not os.path.exists(name):
-        print("[!] Load {} failed!".format(name))
+        logging.info("[!] Load {} failed!".format(name))
         return False
     else:
-        params = tl.files.load_npz(name=name)
-        tl.files.assign_params(sess, params, network)
-        print("[*] Load {} SUCCESS!".format(name))
+        params = load_npz(name=name)
+        assign_params(sess, params, network)
+        logging.info("[*] Load {} SUCCESS!".format(name))
         return network
 
-# Load and save variables
-def save_any_to_npy(save_dict={}, name='any.npy'):
-    """Save variables to .npy file.
+
+def save_npz_dict(save_list=None, name='model.npz', sess=None):
+    """Input parameters and the file name, save parameters as a dictionary into .npz file.
+
+    Use ``tl.files.load_and_assign_npz_dict()`` to restore.
+
+    Parameters
+    ----------
+    save_list : list of parameters
+        A list of parameters (tensor) to be saved.
+    name : str
+        The name of the `.npz` file.
+    sess : Session
+        TensorFlow Session.
+
+    """
+    if sess is None:
+        raise ValueError("session is None.")
+    if save_list is None:
+        save_list = []
+
+    save_list_names = [tensor.name for tensor in save_list]
+    save_list_var = sess.run(save_list)
+    save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
+    np.savez(name, **save_var_dict)
+    save_list_var = None
+    save_var_dict = None
+    del save_list_var
+    del save_var_dict
+    logging.info("[*] Model saved in npz_dict %s" % name)
+
+
+def load_and_assign_npz_dict(name='model.npz', sess=None):
+    """Restore the parameters saved by ``tl.files.save_npz_dict()``.
+
+    Parameters
+    ----------
+    name : str
+        The name of the `.npz` file.
+    sess : Session
+        TensorFlow Session.
+
+    """
+    if sess is None:
+        raise ValueError("session is None.")
+
+    if not os.path.exists(name):
+        logging.info("[!] Load {} failed!".format(name))
+        return False
+
+    params = np.load(name)
+    if len(params.keys()) != len(set(params.keys())):
+        raise Exception("Duplication in model npz_dict %s" % name)
+    ops = list()
+    for key in params.keys():
+        try:
+            # tensor = tf.get_default_graph().get_tensor_by_name(key)
+            # varlist = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=key)
+            varlist = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=key)
+            if len(varlist) > 1:
+                raise Exception("[!] Multiple candidate variables to be assigned for name %s" % key)
+            elif len(varlist) == 0:
+                raise KeyError
+            else:
+                ops.append(varlist[0].assign(params[key]))
+                logging.info("[*] params restored: %s" % key)
+        except KeyError:
+            logging.info("[!] Warning: Tensor named %s not found in network." % key)
+
+    sess.run(ops)
+    logging.info("[*] Model restored from npz_dict %s" % name)
+
+
+def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
+    """Save parameters into `ckpt` file.
+
+    Parameters
+    ------------
+    sess : Session
+        TensorFlow Session.
+    mode_name : str
+        The name of the model, default is ``model.ckpt``.
+    save_dir : str
+        The path / file directory to the `ckpt`, default is ``checkpoint``.
+    var_list : list of tensor
+        The parameters / variables (tensor) to be saved. If empty, save all global variables (default).
+    global_step : int or None
+        Step number.
+    printable : boolean
+        Whether to print all parameters information.
+
+    See Also
+    --------
+    load_ckpt
+
+    """
+    if sess is None:
+        raise ValueError("session is None.")
+    if var_list is None:
+        var_list = []
+
+    ckpt_file = os.path.join(save_dir, mode_name)
+    if var_list == []:
+        var_list = tf.global_variables()
+
+    logging.info("[*] save %s n_params: %d" % (ckpt_file, len(var_list)))
+
+    if printable:
+        for idx, v in enumerate(var_list):
+            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+
+    saver = tf.train.Saver(var_list)
+    saver.save(sess, ckpt_file, global_step=global_step)
+
+
+def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, is_latest=True, printable=False):
+    """Load parameters from `ckpt` file.
+
+    Parameters
+    ------------
+    sess : Session
+        TensorFlow Session.
+    mode_name : str
+        The name of the model, default is ``model.ckpt``.
+    save_dir : str
+        The path / file directory to the `ckpt`, default is ``checkpoint``.
+    var_list : list of tensor
+        The parameters / variables (tensor) to be saved. If empty, save all global variables (default).
+    is_latest : boolean
+        Whether to load the latest `ckpt`, if False, load the `ckpt` with the name of ```mode_name``.
+    printable : boolean
+        Whether to print all parameters information.
+
+    Examples
+    ----------
+    Save all global parameters.
+
+    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', save_dir='model', printable=True)
+
+    Save specific parameters.
+
+    >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
+
+    Load latest ckpt.
+
+    >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
+
+    Load specific ckpt.
+
+    >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
+
+    """
+    if sess is None:
+        raise ValueError("session is None.")
+    if var_list is None:
+        var_list = []
+
+    if is_latest:
+        ckpt_file = tf.train.latest_checkpoint(save_dir)
+    else:
+        ckpt_file = os.path.join(save_dir, mode_name)
+
+    if not var_list:
+        var_list = tf.global_variables()
+
+    logging.info("[*] load %s n_params: %d" % (ckpt_file, len(var_list)))
+
+    if printable:
+        for idx, v in enumerate(var_list):
+            logging.info("  param {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+
+    try:
+        saver = tf.train.Saver(var_list)
+        saver.restore(sess, ckpt_file)
+    except Exception as e:
+        logging.info(e)
+        logging.info("[*] load ckpt fail ...")
+
+
+def save_any_to_npy(save_dict=None, name='file.npy'):
+    """Save variables to `.npy` file.
+
+    Parameters
+    ------------
+    save_dict : directory
+        The variables to be saved.
+    name : str
+        File name.
 
     Examples
     ---------
@@ -670,177 +1517,263 @@ def save_any_to_npy(save_dict={}, name='any.npy'):
     >>> data = tl.files.load_npy_to_any(name='test.npy')
     >>> print(data)
     ... {'data': ['a','b']}
+
     """
+    if save_dict is None:
+        save_dict = {}
     np.save(name, save_dict)
 
-def load_npy_to_any(path='', name='any.npy'):
-    """Load .npy file.
+
+def load_npy_to_any(path='', name='file.npy'):
+    """Load `.npy` file.
+
+    Parameters
+    ------------
+    path : str
+        Path to the file (optional).
+    name : str
+        File name.
 
     Examples
     ---------
-    - see save_any_to_npy()
+    - see tl.files.save_any_to_npy()
+
     """
+    file_path = os.path.join(path, name)
     try:
-        npy = np.load(path+name).item()
-    except:
-        npy = np.load(path+name)
-    finally:
-        return npy
+        return np.load(file_path).item()
+    except Exception:
+        return np.load(file_path)
+    raise Exception("[!] Fail to load %s" % file_path)
 
 
-# Visualizing npz files
-def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
-    """Convert the first weight matrix of .npz file to .pdf by using tl.visualize.W().
+def file_exists(filepath):
+    """Check whether a file exists by given file path."""
+    return os.path.isfile(filepath)
 
-    Parameters
-    ----------
-    path : a string or None
-        A folder path to npz files.
-    regx : a string
-        Regx for the file name.
+
+def folder_exists(folderpath):
+    """Check whether a folder exists by given folder path."""
+    return os.path.isdir(folderpath)
+
+
+def del_file(filepath):
+    """Delete a file by given file path."""
+    os.remove(filepath)
+
+
+def del_folder(folderpath):
+    """Delete a folder by given folder path."""
+    os.rmdir(folderpath)
+
+
+def read_file(filepath):
+    """Read a file and return a string.
 
     Examples
-    --------
-    >>> Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
-    >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
+    ---------
+    >>> data = tl.files.read_file('data.txt')
+
     """
-    file_list = load_file_list(path=path, regx=regx)
-    for f in file_list:
-        W = load_npz(path, f)[0]
-        print("%s --> %s" % (f, f.split('.')[0]+'.pdf'))
-        visualize.W(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)
+    with open(filepath, 'r') as afile:
+        return afile.read()
 
 
-## Helper functions
 def load_file_list(path=None, regx='\.npz', printable=True):
-    """Return a file list in a folder by given a path and regular expression.
+    r"""Return a file list in a folder by given a path and regular expression.
 
     Parameters
     ----------
-    path : a string or None
-        A folder path.
-    regx : a string
+    path : str or None
+        A folder path, if `None`, use the current directory.
+    regx : str
         The regx of file name.
-    printable : boolean, whether to print the files infomation.
+    printable : boolean
+        Whether to print the files infomation.
 
     Examples
     ----------
     >>> file_list = tl.files.load_file_list(path=None, regx='w1pre_[0-9]+\.(npz)')
+
     """
-    if path == False:
+    if path is None:
         path = os.getcwd()
     file_list = os.listdir(path)
     return_list = []
-    for idx, f in enumerate(file_list):
+    for _, f in enumerate(file_list):
         if re.search(regx, f):
             return_list.append(f)
     # return_list.sort()
     if printable:
-        print('Match file list = %s' % return_list)
-        print('Number of files = %d' % len(return_list))
+        logging.info('Match file list = %s' % return_list)
+        logging.info('Number of files = %d' % len(return_list))
     return return_list
+
 
 def load_folder_list(path=""):
     """Return a folder list in a folder by given a folder path.
 
     Parameters
     ----------
-    path : a string or None
+    path : str
         A folder path.
+
     """
-    return [os.path.join(path,o) for o in os.listdir(path) if os.path.isdir(os.path.join(path,o))]
+    return [os.path.join(path, o) for o in os.listdir(path) if os.path.isdir(os.path.join(path, o))]
 
 
 def exists_or_mkdir(path, verbose=True):
-    """Check a directory, if not exist, create the folder and return False,
+    """Check a folder by given name, if not exist, create the folder and return False,
     if directory exists, return True.
 
     Parameters
     ----------
-    path : a string
+    path : str
         A folder path.
     verbose : boolean
-        If true prints results, deaults to True
+        If True (default), prints results.
+
+    Returns
+    --------
+    boolean
+        True if folder already exist, otherwise, returns False and create the folder.
 
     Examples
     --------
     >>> tl.files.exists_or_mkdir("checkpoints/train")
+
     """
     if not os.path.exists(path):
         if verbose:
-            print("[!] Create %s ..." % path)
+            logging.info("[*] creates %s ..." % path)
         os.makedirs(path)
         return False
     else:
         if verbose:
-            print("[*] %s exists ..." % path)
+            logging.info("[!] %s exists ..." % path)
         return True
+
 
 def maybe_download_and_extract(filename, working_directory, url_source, extract=False, expected_bytes=None):
     """Checks if file exists in working_directory otherwise tries to dowload the file,
     and optionally also tries to extract the file if format is ".zip" or ".tar"
 
     Parameters
-    ----------
-    filename : string
+    -----------
+    filename : str
         The name of the (to be) dowloaded file.
-    working_directory : string
+    working_directory : str
         A folder path to search for the file in and dowload the file to
-    url : string
+    url : str
         The URL to download the file from
-    extract : bool, defaults to False
-        If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file
-    expected_bytes : int/None
-        If set tries to verify that the downloaded file is of the specified size, otherwise raises an Exception,
-        defaults to None which corresponds to no check being performed
+    extract : boolean
+        If True, tries to uncompress the dowloaded file is ".tar.gz/.tar.bz2" or ".zip" file, default is False.
+    expected_bytes : int or None
+        If set tries to verify that the downloaded file is of the specified size, otherwise raises an Exception, defaults is None which corresponds to no check being performed.
+
     Returns
     ----------
-    filepath to dowloaded (uncompressed) file
+    str
+        File path of the dowloaded (uncompressed) file.
 
     Examples
     --------
-    >>> down_file = tl.files.maybe_download_and_extract(filename = 'train-images-idx3-ubyte.gz',
-                                                        working_directory = 'data/',
-                                                        url_source = 'http://yann.lecun.com/exdb/mnist/')
-    >>> tl.files.maybe_download_and_extract(filename = 'ADEChallengeData2016.zip',
-                                            working_directory = 'data/',
-                                            url_source = 'http://sceneparsing.csail.mit.edu/data/',
-                                            extract=True)
+    >>> down_file = tl.files.maybe_download_and_extract(filename='train-images-idx3-ubyte.gz',
+    ...                                            working_directory='data/',
+    ...                                            url_source='http://yann.lecun.com/exdb/mnist/')
+    >>> tl.files.maybe_download_and_extract(filename='ADEChallengeData2016.zip',
+    ...                                             working_directory='data/',
+    ...                                             url_source='http://sceneparsing.csail.mit.edu/data/',
+    ...                                             extract=True)
+
     """
+
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
-            if(totalSize != 0):
+            if (totalSize != 0):
                 percent = float(count * blockSize) / float(totalSize) * 100.0
                 sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
                 sys.stdout.flush()
+
         if sys.version_info[0] == 2:
             from urllib import urlretrieve
         else:
             from urllib.request import urlretrieve
         filepath = os.path.join(working_directory, filename)
-        urlretrieve(url_source+filename, filepath, reporthook=_dlProgress)
+        urlretrieve(url_source + filename, filepath, reporthook=_dlProgress)
+        sys.stdout.write('\n')
 
     exists_or_mkdir(working_directory, verbose=False)
     filepath = os.path.join(working_directory, filename)
 
     if not os.path.exists(filepath):
         _download(filename, working_directory, url_source)
-        print()
         statinfo = os.stat(filepath)
-        print('Succesfully downloaded', filename, statinfo.st_size, 'bytes.')
-        if(not(expected_bytes is None) and (expected_bytes != statinfo.st_size)):
+        logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  #, 'bytes.')
+        if (not (expected_bytes is None) and (expected_bytes != statinfo.st_size)):
             raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
-        if(extract):
+        if (extract):
             if tarfile.is_tarfile(filepath):
-                print('Trying to extract tar file')
+                logging.info('Trying to extract tar file')
                 tarfile.open(filepath, 'r').extractall(working_directory)
-                print('... Success!')
+                logging.info('... Success!')
             elif zipfile.is_zipfile(filepath):
-                print('Trying to extract zip file')
+                logging.info('Trying to extract zip file')
                 with zipfile.ZipFile(filepath) as zf:
                     zf.extractall(working_directory)
-                print('... Success!')
+                logging.info('... Success!')
             else:
-                print("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
+                logging.info("Unknown compression_format only .tar.gz/.tar.bz2/.tar and .zip supported")
     return filepath
+
+
+def natural_keys(text):
+    """Sort list of string with number in human order.
+
+    Examples
+    ----------
+    >>> l = ['im1.jpg', 'im31.jpg', 'im11.jpg', 'im21.jpg', 'im03.jpg', 'im05.jpg']
+    >>> l.sort(key=tl.files.natural_keys)
+    ... ['im1.jpg', 'im03.jpg', 'im05', 'im11.jpg', 'im21.jpg', 'im31.jpg']
+    >>> l.sort() # that is what we dont want
+    ... ['im03.jpg', 'im05', 'im1.jpg', 'im11.jpg', 'im21.jpg', 'im31.jpg']
+
+    References
+    ----------
+    - `link <http://nedbatchelder.com/blog/200712/human_sorting.html>`__
+
+    """
+
+    # - alist.sort(key=natural_keys) sorts in human order
+    # http://nedbatchelder.com/blog/200712/human_sorting.html
+    # (See Toothy's implementation in the comments)
+    def atoi(text):
+        return int(text) if text.isdigit() else text
+
+    return [atoi(c) for c in re.split('(\d+)', text)]
+
+
+# Visualizing npz files
+def npz_to_W_pdf(path=None, regx='w1pre_[0-9]+\.(npz)'):
+    r"""Convert the first weight matrix of `.npz` file to `.pdf` by using `tl.visualize.W()`.
+
+    Parameters
+    ----------
+    path : str
+        A folder path to `npz` files.
+    regx : str
+        Regx for the file name.
+
+    Examples
+    ---------
+    Convert the first weight matrix of w1_pre...npz file to w1_pre...pdf.
+
+    >>> tl.files.npz_to_W_pdf(path='/Users/.../npz_file/', regx='w1pre_[0-9]+\.(npz)')
+
+    """
+    file_list = load_file_list(path=path, regx=regx)
+    for f in file_list:
+        W = load_npz(path, f)[0]
+        logging.info("%s --> %s" % (f, f.split('.')[0] + '.pdf'))
+        visualize.draw_weights(W, second=10, saveable=True, name=f.split('.')[0], fig_idx=2012)

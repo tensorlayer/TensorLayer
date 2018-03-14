@@ -1,0 +1,87 @@
+# https://docs.docker.com/compose/compose-file/
+#
+# reference: https://docs.microsoft.com/en-us/azure/container-service/dcos-swarm/container-service-swarm-walkthrough
+# 1. create a swarm cluster on azure:
+#   $ az group create -l southeastasia -n tensorlayer-swarm -o table --debug
+#   $ az acs create -n tl-swarm-culster --orchestrator-type Swarm -g tensorlayer-swarm --agent-count 3 -o table --debug
+#
+# 2. create a ssh tunnel to swarm master:
+#   $ master=$(az acs show -n tl-swarm-culster -g tensorlayer-swarm --query 'masterProfile.fqdn' | jq -r .)
+#   $ ssh -p 2200 -fNL 2375:localhost:2375 azureuser@$master
+#   $ export DOCKER_HOST=:2375
+#
+# 3. start
+#   $ docker-compose -f tutorial_mnist_distributed.yml up
+
+---
+version: '3'
+services:
+  master:
+    image: tensorlayer/tensorlayer:latest
+    entrypoint:
+    - python
+    - /tensorlayer/example/tutorial_mnist_distributed.py
+    environment:
+      CUDA_VISIBLE_DEVICES: ''
+      TF_CONFIG: |-
+        {
+            "cluster": {
+                "ps": [
+                    "ps:3001"
+                ],
+                "worker": [
+                    "master:3002",
+                    "worker:3003"
+                ]
+            },
+            "task": {
+                "type": "worker",
+                "index": 0
+            }
+        }
+  worker:
+    image: tensorlayer/tensorlayer:latest
+    entrypoint:
+    - python
+    - /tensorlayer/example/tutorial_mnist_distributed.py
+    environment:
+      CUDA_VISIBLE_DEVICES: ''
+      TF_CONFIG: |-
+        {
+            "cluster": {
+                "ps": [
+                    "ps:3001"
+                ],
+                "worker": [
+                    "master:3002",
+                    "worker:3003"
+                ]
+            },
+            "task": {
+                "type": "worker",
+                "index": 1
+            }
+        }
+  ps:
+    image: tensorlayer/tensorlayer:latest
+    entrypoint:
+    - python
+    - /tensorlayer/example/tutorial_mnist_distributed.py
+    environment:
+      CUDA_VISIBLE_DEVICES: ''
+      TF_CONFIG: |-
+        {
+            "cluster": {
+                "ps": [
+                    "ps:3001"
+                ],
+                "worker": [
+                    "master:3002",
+                    "worker:3003"
+                ]
+            },
+            "task": {
+                "type": "ps",
+                "index": 0
+            }
+        }

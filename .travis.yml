@@ -1,0 +1,38 @@
+# https://docs.travis-ci.com/user/languages/python/
+language: python
+python:
+  - "2.7"
+  - "3.5"
+  # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
+install:
+  - pip install tensorflow
+  - pip install -r tests/requirements.txt
+  - pip install .
+script:
+  # units test
+  # https://docs.pytest.org/en/latest/
+  # TODO: make it work
+  # - pytest
+
+  # smoke tests
+  # - make test  # TODO: make it use python3 by default
+  - python tests/test_yapf_format.py
+  - python tests/test_pydocstyle.py
+  - python tests/test_mnist_simple.py
+  - python tests/test_reuse_mlp.py
+  - python tests/test_layers_basic.py
+  - python tests/test_layers_convolution.py
+  - python tests/test_layers_core.py
+  - python tests/test_layers_extend.py
+  - python tests/test_layers_flow_control.py
+  - python tests/test_layers_importer.py
+  - python tests/test_layers_merge.py
+  - python tests/test_layers_normalization.py
+  - python tests/test_layers_pooling.py
+  - python tests/test_layers_recurrent.py
+  - python tests/test_layers_shape.py
+  - python tests/test_layers_spatial_transformer.py
+  - python tests/test_layers_special_activation.py
+  - python tests/test_layers_stack.py
+  - python tests/test_layers_super_resolution.py
+  - python tests/test_layers_time_distributed.py

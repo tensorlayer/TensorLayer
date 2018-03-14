@@ -153,6 +153,74 @@ To install it, copy the ``*.h`` files to ``/usr/local/cuda/include`` and the
 .. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
 
 
+
+Windows User
+==============
+
+TensorLayer is built on the top of Python-version TensorFlow, so please install Python first.
+Note：We highly recommend installing Anaconda. The lowest version requirements of Python is py35.
+
+`Anaconda download <https://www.continuum.io/downloads>`_
+
+GPU support
+------------
+Thanks to NVIDIA supports, training a fully connected network on a GPU, which may be 10 to 20 times faster than training them on a CPU. For convolutional network, may have 50 times faster. This requires an NVIDIA GPU with CUDA and cuDNN support.
+
+1. Installing Microsoft Visual Studio
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You should preinstall Microsoft Visual Studio (VS) before installing CUDA. The lowest version requirements is VS2010. We recommend installing VS2015 or VS2013. CUDA7.5 supports VS2010, VS2012 and VS2013. CUDA8.0 also supports VS2015.
+
+2. Installing CUDA
+^^^^^^^^^^^^^^^^^^^^^^^
+Download and install the latest CUDA is available from NVIDIA website:
+
+`CUDA download <https://developer.nvidia.com/CUDA-downloads>`_
+
+We do not recommend modifying the default installation directory.
+
+3. Installing cuDNN
+^^^^^^^^^^^^^^^^^^^^^^
+The NVIDIA CUDA® Deep Neural Network library (cuDNN) is a GPU-accelerated library of primitives for deep neural networks. Download and extract the latest cuDNN is available from NVIDIA website:
+
+`cuDNN download <https://developer.nvidia.com/cuDNN>`_
+
+After extracting cuDNN, you will get three folders (bin, lib, include). Then these folders should be copied to CUDA installation. (The default installation directory is `C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v8.0`)
+
+Installing TensorLayer
+------------------------
+You can easily install Tensorlayer using pip in CMD：
+
+.. code-block:: bash
+
+  pip install tensorflow        #CPU version
+  pip install tensorflow-gpu    #GPU version (GPU version and CPU version just choose one)
+  pip install tensorlayer       #Install tensorlayer
+
+Test
+--------
+
+Enter “python” in CMD. Then:
+
+.. code-block:: bash
+
+  import tensorlayer
+
+If there is no error and the following output is displayed, the GPU version is successfully installed.
+
+.. code-block:: bash
+
+  successfully opened CUDA library cublas64_80.dll locally
+  successfully opened CUDA library cuDNN64_5.dll locally
+  successfully opened CUDA library cufft64_80.dll locally
+  successfully opened CUDA library nvcuda.dll locally
+  successfully opened CUDA library curand64_80.dll locally
+
+If there is no error, the CPU version is successfully installed.
+
+
+
+
+
 Issue
 =======
 
