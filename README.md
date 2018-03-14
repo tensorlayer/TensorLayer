@@ -50,6 +50,13 @@ The simplest way to install TensorLayer is:
 [for stable version] pip install tensorlayer
 ```
 
+Dockerfile is supplied to build images, build as usual
+
+```bash
+[for CPU version] docker image build -t tensorlayer:latest -f Dockerfile .
+[for GPU version] docker image build -t tensorlayer:latest-gpu -f Dockerfile.gpu .
+```
+
 Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. 
 
 
