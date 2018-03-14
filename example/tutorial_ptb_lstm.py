@@ -101,10 +101,8 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 """
 
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 
 flags = tf.flags
