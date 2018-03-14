@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from .core import *
+import tensorflow as tf
+
+__all__ = [
+    'LocalResponseNormLayer',
+    'BatchNormLayer',
+    'InstanceNormLayer',
+    'LayerNormLayer',
+]
 
 
 class LocalResponseNormLayer(Layer):

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from six.moves import xrange
-
 from .core import *
+
+__all__ = [
+    'transformer',
+    'batch_transformer',
+    'SpatialTransformer2dAffineLayer',
+]
 
 
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):

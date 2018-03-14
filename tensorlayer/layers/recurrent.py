@@ -1,8 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-
+import tensorflow as tf
 from .core import *
+
+__all__ = [
+    'RNNLayer',
+    'BiRNNLayer',
+    'ConvRNNCell',
+    'BasicConvLSTMCell',
+    'ConvLSTMLayer',
+    'advanced_indexing_op',
+    'retrieve_seq_length_op',
+    'retrieve_seq_length_op2',
+    'retrieve_seq_length_op3',
+    'target_mask_op',
+    'DynamicRNNLayer',
+    'BiDynamicRNNLayer',
+    'Seq2Seq',
+]
 
 
 class RNNLayer(Layer):

@@ -2,6 +2,10 @@
 
 from .core import *
 
+__all__ = [
+    'ROIPoolingLayer',
+]
+
 
 class ROIPoolingLayer(Layer):
     """

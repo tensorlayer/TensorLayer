@@ -2,6 +2,11 @@
 
 from .core import *
 
+__all__ = [
+    'ExpandDimsLayer',
+    'TileLayer',
+]
+
 
 class ExpandDimsLayer(Layer):
     """

@@ -2,6 +2,10 @@
 
 from .core import *
 
+__all__ = [
+    'TimeDistributedLayer',
+]
+
 
 class TimeDistributedLayer(Layer):
     """

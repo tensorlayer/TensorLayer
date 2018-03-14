@@ -2,6 +2,11 @@
 
 from .core import *
 
+__all__ = [
+    'StackLayer',
+    'UnStackLayer',
+]
+
 
 class StackLayer(Layer):
     """

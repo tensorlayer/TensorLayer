@@ -2,6 +2,12 @@
 
 from .core import *
 
+__all__ = [
+    'FlattenLayer',
+    'ReshapeLayer',
+    'TransposeLayer',
+]
+
 
 class FlattenLayer(Layer):
     """A layer that reshapes high-dimension input into a vector.
