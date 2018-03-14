@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from tensorflow.python.util.deprecation import deprecated
-
 from .core import *
+from .. import _logging as logging
+import tensorflow as tf
+
+__all__ = [
+    'LambdaLayer',
+    'SlimNetsLayer',
+    'KerasLayer',
+    'EstimatorLayer',
+]
 
 
 class LambdaLayer(Layer):

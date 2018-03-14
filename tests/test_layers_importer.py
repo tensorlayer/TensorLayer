@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tensorlayer as tl
+import tensorflow as tf
 from keras.layers import *
 from tensorlayer.layers import *
 slim = tf.contrib.slim

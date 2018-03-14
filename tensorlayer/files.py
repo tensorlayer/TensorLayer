@@ -48,11 +48,49 @@ from tensorflow.python.platform import gfile
 from . import _logging as logging
 from . import nlp, utils, visualize
 
+__all__ = [
+    'load_mnist_dataset',
+    'load_fashion_mnist_dataset',
+    'load_cifar10_dataset',
+    'load_ptb_dataset',
+    'load_matt_mahoney_text8_dataset',
+    'load_imdb_dataset',
+    'load_nietzsche_dataset',
+    'load_wmt_en_fr_dataset',
+    'load_flickr25k_dataset',
+    'load_flickr1M_dataset',
+    'load_cyclegan_dataset',
+    'download_file_from_google_drive',
+    'load_celebA_dataset',
+    'load_voc_dataset',
+    'save_npz',
+    'load_npz',
+    'assign_params',
+    'load_and_assign_npz',
+    'save_npz_dict',
+    'load_and_assign_npz_dict',
+    'save_ckpt',
+    'load_ckpt',
+    'save_any_to_npy',
+    'load_npy_to_any',
+    'file_exists',
+    'folder_exists',
+    'del_file',
+    'del_folder',
+    'read_file',
+    'load_file_list',
+    'load_folder_list',
+    'exists_or_mkdir',
+    'maybe_download_and_extract',
+    'natural_keys',
+    'npz_to_W_pdf',
+]
+
 
 ## Load dataset functions
 def load_mnist_dataset(shape=(-1, 784), path='data'):
     """Load the original mnist.
-    
+
     Automatically download MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 digit images respectively.
 
     Parameters
@@ -61,7 +99,7 @@ def load_mnist_dataset(shape=(-1, 784), path='data'):
         The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
     path : str
         The path that the data is downloaded to.
-    
+
     Returns
     -------
     X_train, y_train, X_val, y_val, X_test, y_test: tuple
@@ -77,7 +115,7 @@ def load_mnist_dataset(shape=(-1, 784), path='data'):
 
 def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
     """Load the fashion mnist.
-    
+
     Automatically download fashion-MNIST dataset and return the training, validation and test set with 50000, 10000 and 10000 fashion images respectively, `examples <http://marubon-ds.blogspot.co.uk/2017/09/fashion-mnist-exploring.html>`__.
 
     Parameters
@@ -86,7 +124,7 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
         The shape of digit images (the default is (-1, 784), alternatively (-1, 28, 28, 1)).
     path : str
         The path that the data is downloaded to.
-    
+
     Returns
     -------
     X_train, y_train, X_val, y_val, X_test, y_test: tuple
@@ -102,7 +140,7 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
 
 def _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/'):
     """A generic function to load mnist-like dataset.
-    
+
     Parameters:
     ----------
     shape : tuple

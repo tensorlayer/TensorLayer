@@ -13,6 +13,8 @@ Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/
    TaskSpecDef
    TaskSpec
    DistributedSession
+   StopAtTimeHook
+   LoadCheckpoint
 
 
 Distributed training

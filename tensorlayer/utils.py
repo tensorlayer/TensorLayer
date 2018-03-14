@@ -1,19 +1,28 @@
 # -*- coding: utf-8 -*-
-import os
-import random
-import subprocess
-import sys
-import time
+import os, random, subprocess, sys, time
 from sys import exit as _exit
 from sys import platform as _platform
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
-
 from . import _logging as logging
 from . import iterate
+
+__all__ = [
+    'fit',
+    'test',
+    'predict',
+    'evaluation',
+    'dict_to_one',
+    'flatten_list',
+    'class_balancing_oversample',
+    'get_random_int',
+    'list_string_to_dict',
+    'exit_tensorflow',
+    'open_tensorboard',
+    'clear_all_placeholder_variables',
+    'set_gpu_fraction',
+]
 
 
 def fit(sess,

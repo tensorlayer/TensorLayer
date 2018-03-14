@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from .core import *
+from .. import _logging as logging
+
+__all__ = [
+    'ROIPoolingLayer',
+]
 
 
 class ROIPoolingLayer(Layer):

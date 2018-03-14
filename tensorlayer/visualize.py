@@ -1,16 +1,28 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 import numpy as np
 import scipy.misc  # save/read image(s)
-
 from . import _logging as logging
 from . import prepro
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
 # import matplotlib
 # matplotlib.use('Agg')
+
+__all__ = [
+    'read_image',
+    'read_images',
+    'save_image',
+    'save_images',
+    'draw_boxes_and_labels_to_image',
+    'frame',
+    'CNN2d',
+    'images2d',
+    'tsne_embedding',
+    'draw_weights',
+    'W',
+]
 
 
 def read_image(image, path=''):
