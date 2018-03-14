@@ -12,9 +12,6 @@ test:
 	python3 tests/test_yapf_format.py
 	# python3 tests/test_pydocstyle.py
 	python3 tests/test_mnist_simple.py
-	python3 tests/test_yapf_format.py
-	python3 tests/test_pydocstyle.py
-	python3 tests/test_mnist_simple.py
 	python3 tests/test_reuse_mlp.py
 	python3 tests/test_layers_basic.py
 	python3 tests/test_layers_convolution.py
