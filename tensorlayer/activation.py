@@ -118,7 +118,7 @@ def swish(x, name='swish'):
 
 
 @tf.RegisterGradient("QuantizeGrad")
-def _sign_grad(unused_op, grad):
+def _hard_tanh_grad(unused_op, grad):
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
 
@@ -140,8 +140,8 @@ def hard_tanh(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/m
     - `AngusG/tensorflow-xnor-bnn <https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36>`__
 
     """
-    with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
-        return tf.sign(x, name='tl_sign')
+    with tf.get_default_graph().gradient_override_map({"hard_tanh": "QuantizeGrad"}):
+        return tf.sign(x, name='hard_tanh')
 
 
 # if tf.__version__ > "1.7":
