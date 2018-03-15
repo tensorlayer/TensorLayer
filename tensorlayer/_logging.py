@@ -1,6 +1,5 @@
 import logging as _logger
 
-# logging.basicConfig(level=logging.INFO, format='[TL] %(message)s')
 logging = _logger.getLogger('tensorlayer')
 logging.setLevel(_logger.INFO)
 _hander = _logger.StreamHandler()
