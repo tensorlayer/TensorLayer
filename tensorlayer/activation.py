@@ -97,7 +97,8 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
 def swish(x, name='swish'):
     """The Swish function.
-     See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
+    
+    See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
 
     Parameters
     ----------
