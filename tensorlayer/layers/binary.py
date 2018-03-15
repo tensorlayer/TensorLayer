@@ -9,7 +9,7 @@ __all__ = [
     'get_quantize_sign_params',
     'BinaryDenseLayer',
     'SignLayer',
-    'MultiplyScaleLayer',
+    'ScaleLayer',
     'BinaryConv2d',
 ]
 
@@ -234,7 +234,7 @@ class SignLayer(Layer):
         self.all_layers.append(self.outputs)
 
 
-class MultiplyScaleLayer(Layer):
+class ScaleLayer(Layer):
     """The :class:`AddScaleLayer` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
 
     Parameters
@@ -258,7 +258,7 @@ class MultiplyScaleLayer(Layer):
         Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
 
-        logging.info("MultiplyScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
+        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
         with tf.variable_scope(name):
             # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
             scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))

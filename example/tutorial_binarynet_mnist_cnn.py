@@ -34,7 +34,7 @@ def mlp(x, is_train=True, reuse=False):
         net = tl.layers.DropoutLayer(net, 0.5, True, is_train, name='drop2')
         # net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
         net = tl.layers.BinaryDenseLayer(net, 10, name='bout')
-        # net = tl.layers.MultiplyScaleLayer(net, name='scale')
+        # net = tl.layers.ScaleLayer(net, name='scale')
     return net
 
 
