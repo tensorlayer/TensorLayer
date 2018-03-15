@@ -16,7 +16,7 @@ x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])  # [batch_size, he
 y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 
-def mlp(x, is_train=True, reuse=False):
+def model(x, is_train=True, reuse=False):
     with tf.variable_scope("binarynet", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
@@ -39,8 +39,8 @@ def mlp(x, is_train=True, reuse=False):
 
 
 # define inferences
-net_train = mlp(x, is_train=True, reuse=False)
-net_test = mlp(x, is_train=False, reuse=True)
+net_train = model(x, is_train=True, reuse=False)
+net_test = model(x, is_train=False, reuse=True)
 
 # cost for training
 y = net_train.outputs
