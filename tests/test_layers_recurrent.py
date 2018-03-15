@@ -176,6 +176,61 @@ rnn = tl.layers.DynamicRNNLayer(
     name='dynamicrnn2')
 net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o2")
 
+shape = rnn.outputs.get_shape().as_list()
+if (shape[-1] != embedding_size) or (len(shape) != 2):
+    raise Exception("shape dont match")
+
+net = tl.layers.DynamicRNNLayer(
+    nin,
+    cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    n_hidden=embedding_size,
+    dropout=None,
+    sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=3,
+    return_last=False,
+    return_seq_2d=False,
+    name='dynamicrnn3')
+# net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
+
+net.print_layers()
+net.print_params(False)
+
+shape = net.outputs.get_shape().as_list()
+if (shape[-1] != embedding_size) or (len(shape) != 3):
+    raise Exception("shape dont match")
+
+net = tl.layers.DynamicRNNLayer(
+    nin,
+    cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    n_hidden=embedding_size,
+    dropout=None,
+    sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=1,
+    return_last=True,
+    return_seq_2d=False,
+    name='dynamicrnn4')
+net.print_layers()
+net.print_params(False)
+shape = net.outputs.get_shape().as_list()
+if (shape[-1] != embedding_size) or (len(shape) != 2):
+    raise Exception("shape dont match")
+
+net = tl.layers.DynamicRNNLayer(
+    nin,
+    cell_fn=tf.contrib.rnn.BasicLSTMCell,
+    n_hidden=embedding_size,
+    dropout=None,
+    sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+    n_layer=1,
+    return_last=True,
+    return_seq_2d=True,
+    name='dynamicrnn5')
+net.print_layers()
+net.print_params(False)
+shape = net.outputs.get_shape().as_list()
+if (shape[-1] != embedding_size) or (len(shape) != 2):
+    raise Exception("shape dont match")
+
 ## BiDynamic Synced input and output
 rnn = tl.layers.BiDynamicRNNLayer(
     nin,
@@ -186,7 +241,7 @@ rnn = tl.layers.BiDynamicRNNLayer(
     return_last=False,
     return_seq_2d=True,
     name='bidynamicrnn')
-net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o4")
 
 net.print_layers()
 net.print_params(False)
@@ -219,7 +274,7 @@ rnn = tl.layers.BiDynamicRNNLayer(
     return_last=False,
     return_seq_2d=True,
     name='bidynamicrnn2')
-net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o4")
+net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o5")
 
 net.print_layers()
 net.print_params(False)
