@@ -123,7 +123,7 @@ def _sign_grad(unused_op, grad):
 
 
 def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36
-    """Differentiable sign function using ramp [-1, 1] as the derivation function, usually be used for quantizing value in binary network, see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__
+    """Differentiable sign function by clipping linear gradient into [-1, 1], usually be used for quantizing value in binary network, see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__.
 
     Parameters
     ----------
