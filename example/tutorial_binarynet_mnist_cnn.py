@@ -92,8 +92,6 @@ for epoch in range(n_epoch):
         print("   val loss: %f" % (val_loss / n_batch))
         print("   val acc: %f" % (val_acc / n_batch))
 
-        net_train.print_params()
-
 print('Evaluation')
 test_loss, test_acc, n_batch = 0, 0, 0
 for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
