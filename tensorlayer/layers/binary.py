@@ -3,41 +3,14 @@ import numpy as np
 from .core import *
 from .. import _logging as logging
 import tensorflow as tf
+import tensorlayer as tl
 
 __all__ = [
-    'get_quantize_sign_params',
     'BinaryDenseLayer',
     'SignLayer',
     'ScaleLayer',
     'BinaryConv2d',
 ]
-
-
-def get_quantize_sign_params(sess, params_list):
-    """Quantize the parameters into -1 and 1 using ``np.sign``.
-
-    Parameters
-    ----------
-    params_list : list of tensor
-        A list of parameters (tensor).
-    sess : None or Session
-        Session may be required in some case.
-
-    Returns
-    --------
-    list of array
-        The parameters in a list.
-
-    Examples
-    ---------
-    >>> tl.layers.initialize_global_variables(sess)
-    >>> v = tl.layers.get_quantize_sign_params(sess, net_test.all_params)
-    """
-    params_list_var = sess.run(params_list)
-    for i, p in enumerate(params_list_var):
-        params_list_var[i] = np.sign(p).astype(int)
-    return params_list_var
-
 
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
 def quantize_grad(op, grad):
@@ -51,6 +24,8 @@ def quantize(x):
 
 class BinaryDenseLayer(Layer):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
     """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
+
+    Note that, the bias vector would not be binarized.
 
     Parameters
     ----------
@@ -82,11 +57,15 @@ class BinaryDenseLayer(Layer):  # https://github.com/AngusG/tensorflow-xnor-bnn/
             act=tf.identity,
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
+            b_init_args=None,
             name='binary_dense',
     ):
         if W_init_args is None:
             W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
 
         Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
@@ -105,16 +84,29 @@ class BinaryDenseLayer(Layer):  # https://github.com/AngusG/tensorflow-xnor-bnn/
             W = quantize(W)
             # W = tf.Variable(W)
             # print(W)
-            self.outputs = act(tf.matmul(self.inputs, W))
-            # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
+            if b_init is not None:
+                try:
+                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                except Exception:  # If initializer is a constant, do not specify shape.
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                self.outputs = act(tf.matmul(self.inputs, W) + b)
+                # self.outputs = act(xnor_gemm(self.inputs, W) + b) # TODO
+            else:
+                self.outputs = act(tf.matmul(self.inputs, W))
+                # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
 
         self.all_layers.append(self.outputs)
-        self.all_params.append(W)
+        if b_init is not None:
+            self.all_params.extend([W, b])
+        else:
+            self.all_params.append(W)
 
 
 class BinaryConv2d(Layer):
     """
     The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
+
+    Note that, the bias vector would not be binarized.
 
     Parameters
     ----------
@@ -135,8 +127,12 @@ class BinaryConv2d(Layer):
         If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
+    b_init : initializer or None
+        The initializer for the the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
     use_cudnn_on_gpu : bool
         Default is False.
     data_format : str
@@ -156,9 +152,9 @@ class BinaryConv2d(Layer):
             padding='SAME',
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
-            # b_init=tf.constant_initializer(value=0.0),
+            b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
-            # b_init_args=None,
+            b_init_args=None,
             use_cudnn_on_gpu=None,
             data_format=None,
             # act=tf.identity,
@@ -175,6 +171,8 @@ class BinaryConv2d(Layer):
     ):
         if W_init_args is None:
             W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
 
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
@@ -198,10 +196,18 @@ class BinaryConv2d(Layer):
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             W = quantize(W)
-            self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+            if b_init:
+                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                self.outputs = act(
+                    tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
+            else:
+                self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
 
         self.all_layers.append(self.outputs)
-        self.all_params.append(W)
+        if b_init:
+            self.all_params.extend([W, b])
+        else:
+            self.all_params.append(W)
 
 
 class SignLayer(Layer):

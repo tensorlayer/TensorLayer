@@ -12,7 +12,7 @@ sess = tf.InteractiveSession()
 
 batch_size = 128
 
-x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])  # [batch_size, height, width, channels]
+x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])
 y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 
@@ -20,12 +20,13 @@ def model(x, is_train=True, reuse=False):
     with tf.variable_scope("binarynet", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
-        # drop
-        net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bn1')
+        net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+
+        net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bn')
         net = tl.layers.SignLayer(net, name='sign2')
         net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
-        # drop
-        net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bn2')
+        net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+
         net = tl.layers.SignLayer(net, name='sign2')
         net = tl.layers.FlattenLayer(net, name='flatten')
         net = tl.layers.DropoutLayer(net, 0.5, True, is_train, name='drop1')
@@ -65,8 +66,7 @@ net_train.print_layers()
 n_epoch = 200
 print_freq = 5
 
-v = tl.layers.get_quantize_sign_params(sess, net_test.all_params)
-print(v)
+# print(sess.run(net_test.all_params)) # print real value of parameters
 
 for epoch in range(n_epoch):
     start_time = time.time()
