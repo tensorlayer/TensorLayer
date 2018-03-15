@@ -3,7 +3,6 @@ import numpy as np
 from .core import *
 from .. import _logging as logging
 import tensorflow as tf
-import tensorlayer as tl
 
 __all__ = [
     'get_quantize_sign_params',
