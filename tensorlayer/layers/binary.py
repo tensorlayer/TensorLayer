@@ -12,16 +12,16 @@ __all__ = [
 
 
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
-def quantize_grad(op, grad):
+def _quantize_grad(op, grad):
+    """Clip and binarize tensor using the straight through estimator (STE) for the gradient. """
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
-
-def quantize(x):
+def quantize(x):    # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70  https://github.com/itayhubara/BinaryNet.tf/blob/master/nnUtils.py
     with tf.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
         return tf.sign(x)
 
 
-class BinaryDenseLayer(Layer):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
+class BinaryDenseLayer(Layer):
     """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
 
     Note that, the bias vector would not be binarized.

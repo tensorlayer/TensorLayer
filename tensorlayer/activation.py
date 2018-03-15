@@ -123,7 +123,9 @@ def _sign_grad(unused_op, grad):
 
 
 def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36
-    """Differentiable sign function by clipping linear gradient into [-1, 1], usually be used for quantizing value in binary network, see `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
+    """Sign function.
+
+    Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for quantizing values in `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
 
     Parameters
     ----------
