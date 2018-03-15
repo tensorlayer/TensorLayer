@@ -30,7 +30,7 @@ For more complex activation, TensorFlow API will be required.
    ramp
    leaky_relu
    swish
-   sign
+   hard_tanh
    pixel_wise_softmax
 
 Identity
@@ -49,9 +49,9 @@ Swish
 ------------
 .. autofunction:: swish
 
-Differentiable Sign
+Hard Tanh
 ---------------------
-.. autofunction:: sign
+.. autofunction:: hard_tanh
 
 Pixel-wise softmax
 --------------------
