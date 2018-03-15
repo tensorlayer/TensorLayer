@@ -1,26 +1,56 @@
 # -*- coding: utf-8 -*-
-
+import numpy as np
 from .core import *
 from .. import _logging as logging
 import tensorflow as tf
 import tensorlayer as tl
 
 __all__ = [
+    'get_quantize_sign_params',
     'BinaryDenseLayer',
     'SignLayer',
     'MultiplyScaleLayer',
+    'BinaryConv2d',
 ]
+
+
+def get_quantize_sign_params(sess, params_list):
+    """Quantize the parameters into -1 and 1 using ``np.sign``.
+
+    Parameters
+    ----------
+    params_list : list of tensor
+        A list of parameters (tensor).
+    sess : None or Session
+        Session may be required in some case.
+
+    Returns
+    --------
+    list of array
+        The parameters in a list.
+
+    Examples
+    ---------
+    >>> tl.layers.initialize_global_variables(sess)
+    >>> v = tl.layers.get_quantize_sign_params(sess, net_test.all_params)
+    """
+    params_list_var = sess.run(params_list)
+    for i, p in enumerate(params_list_var):
+        params_list_var[i] = np.sign(p).astype(int)
+    return params_list_var
 
 
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
 def quantize_grad(op, grad):
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
+
 def quantize(x):
     with tf.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
         return tf.sign(x)
 
-class BinaryDenseLayer(Layer): # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
+
+class BinaryDenseLayer(Layer):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
     """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
 
     Parameters
@@ -72,15 +102,108 @@ class BinaryDenseLayer(Layer): # https://github.com/AngusG/tensorflow-xnor-bnn/b
         logging.info("BinaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            # W = tl.act.sign(W)
+            # W = tl.act.sign(W)    # dont update ...
             W = quantize(W)
             # W = tf.Variable(W)
-            print(W)
+            # print(W)
             self.outputs = act(tf.matmul(self.inputs, W))
             # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
 
         self.all_layers.append(self.outputs)
         self.all_params.append(W)
+
+
+class BinaryConv2d(Layer):
+    """
+    The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
+
+    Parameters
+    ----------
+    layer : :class:`Layer`
+        Previous layer.
+    n_filter : int
+        The number of filters.
+    filter_size : tuple of int
+        The filter size (height, width).
+    strides : tuple of int
+        The sliding window strides of corresponding input dimensions.
+        It must be in the same order as the ``shape`` parameter.
+    act : activation function
+        The activation function of this layer.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    use_gemm : boolean
+        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+    W_init : initializer
+        The initializer for the the weight matrix.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    use_cudnn_on_gpu : bool
+        Default is False.
+    data_format : str
+        "NHWC" or "NCHW", default is "NHWC".
+    name : str
+        A unique layer name.
+
+    """
+
+    def __init__(
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            # b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            # b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            # act=tf.identity,
+            # shape=(5, 5, 1, 100),
+            # strides=(1, 1, 1, 1),
+            # padding='SAME',
+            # W_init=tf.truncated_normal_initializer(stddev=0.02),
+            # b_init=tf.constant_initializer(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            # use_cudnn_on_gpu=None,
+            # data_format=None,
+            name='binary_cnn2d',
+    ):
+        if W_init_args is None:
+            W_init_args = {}
+
+        if use_gemm:
+            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+
+        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        self.inputs = prev_layer.outputs
+        if act is None:
+            act = tf.identity
+        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
+                                                                                               act.__name__))
+
+        if len(strides) != 2:
+            raise ValueError("len(strides) should be 2.")
+        try:
+            pre_channel = int(prev_layer.outputs.get_shape()[-1])
+        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+            pre_channel = 1
+            logging.info("[warnings] unknow input channels, set to 1")
+        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+        strides = (1, strides[0], strides[1], 1)
+        with tf.variable_scope(name):
+            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = quantize(W)
+            self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+
+        self.all_layers.append(self.outputs)
+        self.all_params.append(W)
+
 
 class SignLayer(Layer):
     """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
@@ -109,6 +232,7 @@ class SignLayer(Layer):
             self.outputs = quantize(self.inputs)
 
         self.all_layers.append(self.outputs)
+
 
 class MultiplyScaleLayer(Layer):
     """The :class:`AddScaleLayer` class is for multipling a trainble scale value to the layer outputs. Usually be used on the output of binary net.
