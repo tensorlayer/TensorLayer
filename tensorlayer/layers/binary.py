@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import numpy as np
 from .core import *
 from .. import _logging as logging
 import tensorflow as tf
-import tensorlayer as tl
 
 __all__ = [
     'BinaryDenseLayer',
@@ -11,6 +9,7 @@ __all__ = [
     'ScaleLayer',
     'BinaryConv2d',
 ]
+
 
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
 def quantize_grad(op, grad):
