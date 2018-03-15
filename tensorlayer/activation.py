@@ -118,7 +118,7 @@ def swish(x, name='swish'):
 
 
 @tf.RegisterGradient("QuantizeGrad")
-def _sign_grad(grad):
+def _sign_grad(unused_op, grad):
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
 
@@ -141,7 +141,7 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 
     """
     with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
-        return tf.sign(x)
+        return tf.sign(x, name='tl_sign')
 
 
 # if tf.__version__ > "1.7":
