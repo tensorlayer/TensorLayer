@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from .core import *
+from .. import _logging as logging
+import tensorflow as tf
+
+__all__ = [
+    'ConcatLayer',
+    'ElementwiseLayer',
+]
 
 
 class ConcatLayer(Layer):

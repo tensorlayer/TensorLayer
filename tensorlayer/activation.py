@@ -2,8 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+from tensorflow.python.util.deprecation import deprecated
+
+__all__ = [
+    'identity',
+    'ramp',
+    'leaky_relu',
+    'swish',
+    'pixel_wise_softmax',
+    'linear',
+    'lrelu',
+]
 
 
+@deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
 def identity(x):
     """The identity activation function.
     Shortcut is ``linear``.
@@ -104,6 +116,7 @@ def swish(x, name='swish'):
     return x
 
 
+@deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
     Usually be used for image segmentation.

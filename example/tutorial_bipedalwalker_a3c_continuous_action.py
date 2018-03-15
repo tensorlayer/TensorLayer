@@ -33,13 +33,11 @@ measurements. There's no coordinates in the state vector.
 
 import multiprocessing
 import threading
-
+import gym
 import numpy as np
 import tensorflow as tf
-
-import gym
 import tensorlayer as tl
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, DenseLayer
 
 GAME = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2
 OUTPUT_GRAPH = False

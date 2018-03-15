@@ -32,14 +32,11 @@ cart moves more than 2.4 units from the center.
 
 """
 
-import time
-
+import time, gym
 import numpy as np
 import tensorflow as tf
-
-import gym
 import tensorlayer as tl
-from tensorlayer.layers import *
+from tensorlayer.layers import InputLayer, DenseLayer
 
 np.random.seed(2)
 tf.set_random_seed(2)  # reproducible

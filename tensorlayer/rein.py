@@ -5,6 +5,13 @@ import numpy as np
 import tensorflow as tf
 from six.moves import xrange
 
+__all__ = [
+    'discount_episode_rewards',
+    'cross_entropy_reward_loss',
+    'log_weight',
+    'choice_action_by_probs',
+]
+
 
 def discount_episode_rewards(rewards=None, gamma=0.99, mode=0):
     """Take 1D float array of rewards and compute discounted rewards for an
