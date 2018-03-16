@@ -871,11 +871,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     tag_list = []
     tag_folder_list = load_folder_list(os.path.join(path, "tags"))
 
-    from sys import platform as _platform
-    if _platform == "win32":
-        tag_folder_list.sort(key=lambda s: int(s.split("\\")[-1]))
-    else:
-        tag_folder_list.sort(key=lambda s: int(s.split("/")[-1]))  # folder/images/ddd
+    # tag_folder_list.sort(key=lambda s: int(s.split("/")[-1]))  # folder/images/ddd
+    tag_folder_list.sort(key=lambda s: int(os.path.basename(s)))
 
     for folder in tag_folder_list[0:size * 10]:
         tmp = load_file_list(path=folder, regx='\\.txt', printable=False)
