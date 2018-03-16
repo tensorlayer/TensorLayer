@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 
-def read_image(image, path=''):
+def read_image(image, path='_.png'):
     """Read one image.
 
     Parameters
@@ -44,7 +44,7 @@ def read_image(image, path=''):
     return scipy.misc.imread(os.path.join(path, image))
 
 
-def read_images(img_list, path='', n_threads=10, printable=True):
+def read_images(img_list, path='_.png', n_threads=10, printable=True):
     """Returns all images in list by given path and name of each image file.
 
     Parameters
@@ -75,7 +75,7 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     return imgs
 
 
-def save_image(image, image_path=''):
+def save_image(image, image_path='_temp.png'):
     """Save a image.
 
     Parameters
@@ -92,7 +92,7 @@ def save_image(image, image_path=''):
         scipy.misc.imsave(image_path, image[:, :, 0])
 
 
-def save_images(images, size, image_path=''):
+def save_images(images, size, image_path='_temp.png'):
     """Save multiple images into one single image.
 
     Parameters
