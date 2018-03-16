@@ -49,7 +49,7 @@ Swish
 ------------
 .. autofunction:: swish
 
-Differentiable Sign
+Sign
 ---------------------
 .. autofunction:: sign
 
