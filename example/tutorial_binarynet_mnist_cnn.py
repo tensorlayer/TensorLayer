@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 X_train, y_train, X_val, y_val, X_test, y_test = \
                 tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
+# X_train, y_train, X_test, y_test = tl.files.load_cropped_svhn(include_extra=False)
 
 sess = tf.InteractiveSession()
 
@@ -17,25 +18,29 @@ y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
 
 def model(x, is_train=True, reuse=False):
+    # In BNN, all the layers inputs are binary, with the exception of the first layer.
+    # ref: https://github.com/itayhubara/BinaryNet.tf/blob/master/models/BNN_cifar10.py
     with tf.variable_scope("binarynet", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+        net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
 
-        net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bn')
-        net = tl.layers.SignLayer(net, name='sign2')
+        net = tl.layers.SignLayer(net)
         net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+        net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
-        net = tl.layers.SignLayer(net, name='sign2')
         net = tl.layers.FlattenLayer(net, name='flatten')
-        net = tl.layers.DropoutLayer(net, 0.5, True, is_train, name='drop1')
-        # net = tl.layers.DenseLayer(net, 256, act=tf.nn.relu, name='dense')
+        net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
+        net = tl.layers.SignLayer(net)
         net = tl.layers.BinaryDenseLayer(net, 256, name='dense')
-        net = tl.layers.DropoutLayer(net, 0.5, True, is_train, name='drop2')
-        # net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+        net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn3')
+
+        net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
+        net = tl.layers.SignLayer(net)
         net = tl.layers.BinaryDenseLayer(net, 10, name='bout')
-        # net = tl.layers.ScaleLayer(net, name='scale')
+        net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bno')
     return net
 
 
@@ -66,7 +71,7 @@ net_train.print_layers()
 n_epoch = 200
 print_freq = 5
 
-# print(sess.run(net_test.all_params)) # print real value of parameters
+# print(sess.run(net_test.all_params)) # print real values of parameters
 
 for epoch in range(n_epoch):
     start_time = time.time()
