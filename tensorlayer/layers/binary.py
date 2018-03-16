@@ -142,6 +142,18 @@ class BinaryConv2d(Layer):
     name : str
         A unique layer name.
 
+    Examples
+    ---------
+    >>> net = tl.layers.InputLayer(x, name='input')
+    >>> net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
+    ...
+    >>> net = tl.layers.SignLayer(net)
+    >>> net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+    >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
+
     """
 
     def __init__(
