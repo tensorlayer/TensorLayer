@@ -75,10 +75,10 @@ class BatchNormLayer(Layer):
         The activation function of this layer.
     is_train : boolean
         Is being used for training or inference.
-    beta_init : initializer
-        The initializer for initializing beta.
-    gamma_init : initializer
-        The initializer for initializing gamma.
+    beta_init : initializer or None
+        The initializer for initializing beta, if None, skip beta
+    gamma_init : initializer or None
+        The initializer for initializing gamma, if None, skip gamma
     dtype : TensorFlow dtype
         tf.float32 (default) or tf.float16.
     name : str
@@ -112,19 +112,27 @@ class BatchNormLayer(Layer):
 
         with tf.variable_scope(name):
             axis = list(range(len(x_shape) - 1))
-
             # 1. beta, gamma
-            if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
-                beta_init = beta_init()
-            beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train)
+            variables = []
+            if beta_init:
+                if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
+                    beta_init = beta_init()
+                beta = tf.get_variable('beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train)
+                variables.append(beta)
+            else:
+                beta = None
 
-            gamma = tf.get_variable(
-                'gamma',
-                shape=params_shape,
-                initializer=gamma_init,
-                dtype=LayersConfig.tf_dtype,
-                trainable=is_train,
-            )
+            if gamma_init:
+                gamma = tf.get_variable(
+                    'gamma',
+                    shape=params_shape,
+                    initializer=gamma_init,
+                    dtype=LayersConfig.tf_dtype,
+                    trainable=is_train,
+                )
+                variables.append(gamma)
+            else:
+                gamma = None
 
             # 2.
             if tf.__version__ > '0.12.1':
@@ -163,7 +171,7 @@ class BatchNormLayer(Layer):
             else:
                 self.outputs = act(tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon))
 
-            variables = [beta, gamma, moving_mean, moving_variance]
+            variables.extend([moving_mean, moving_variance])
 
             # logging.info(len(variables))
             # for idx, v in enumerate(variables):
