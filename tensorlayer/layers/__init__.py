@@ -9,6 +9,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .core import *
 from .convolution import *
+from .binary import *
 from .super_resolution import *
 from .normalization import *
 from .spatial_transformer import *
