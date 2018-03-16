@@ -823,6 +823,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
 
     """
+    import shutil
+
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
@@ -840,7 +842,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
             logging.info("[Flickr1M] {} is missing in {}".format(image_folder, path))
             maybe_download_and_extract(image_zip, path, url, extract=True)
             del_file(os.path.join(path, image_zip))
-            os.system("mv {} {}".format(os.path.join(path, 'images'), os.path.join(path, image_folder)))
+            # os.system("mv {} {}".format(os.path.join(path, 'images'), os.path.join(path, image_folder)))
+            shutil.move(os.path.join(path, 'images'), os.path.join(path, image_folder))
         else:
             logging.info("[Flickr1M] {} exists in {}".format(image_folder, path))
 
