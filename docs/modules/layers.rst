@@ -152,7 +152,7 @@ At the end, for a layer with parameters, we also append the parameters into ``al
         name ='simple_dense',
     ):
         # check layer name (fixed)
-        Layer.__init__(self, name=name)
+        Layer.__init__(self, layer=layer, name=name)
 
         # the input of this layer is the output of previous layer (fixed)
         self.inputs = layer.outputs
@@ -168,11 +168,6 @@ At the end, for a layer with parameters, we also append the parameters into ``al
             b = tf.get_variable(name='b', shape=(n_units))
             # tensor operation
             self.outputs = act(tf.matmul(self.inputs, W) + b)
-
-        # get stuff from previous layer (fixed)
-        self.all_layers = list(layer.all_layers)
-        self.all_params = list(layer.all_params)
-        self.all_drop = dict(layer.all_drop)
 
         # update layer (customized)
         self.all_layers.extend( [self.outputs] )
@@ -335,6 +330,11 @@ Layer list
    UnStackLayer
 
    SlimNetsLayer
+
+   BinaryDenseLayer
+   BinaryConv2d
+   SignLayer
+   ScaleLayer
 
    PReluLayer
 
@@ -797,6 +797,38 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
   Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
 
   .. autoclass:: KerasLayer
+
+
+Binary Nets
+------------------
+
+Read Me
+^^^^^^^^^^^^^^
+
+This is an experimental API package for building Binary Nets.
+We are using matrix multiplication rather than add-minus and bit-count operation at the moment.
+Therefore, these APIs would not speed up the inferencing, for production, you can train model via TensorLayer and deploy the model into other customized C/C++ implementation (We probably provide users an extra C/C++ binary net framework that can load model from TensorLayer).
+
+Note that, these experimental APIs can be changed in anytime.
+
+Binarized Dense
+^^^^^^^^^^^^^^^^^
+.. autoclass:: BinaryDenseLayer
+
+
+Binarized Conv2d
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: BinaryConv2d
+
+
+Sign
+^^^^^^^^^^^^^^
+.. autoclass:: SignLayer
+
+
+Scale
+^^^^^^^^^^^^^^
+.. autoclass:: ScaleLayer
 
 
 Parametric activation layer
