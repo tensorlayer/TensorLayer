@@ -9,6 +9,7 @@ API - Files
    load_mnist_dataset
    load_fashion_mnist_dataset
    load_cifar10_dataset
+   load_cropped_svhn
    load_ptb_dataset
    load_matt_mahoney_text8_dataset
    load_imdb_dataset
@@ -62,6 +63,10 @@ Fashion-MNIST
 CIFAR-10
 ^^^^^^^^^^^^
 .. autofunction:: load_cifar10_dataset
+
+SVHN
+^^^^^^^
+.. autofunction:: load_cropped_svhn
 
 Penn TreeBank (PTB)
 ^^^^^^^^^^^^^^^^^^^^^
