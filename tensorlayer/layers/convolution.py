@@ -123,9 +123,9 @@ class Conv2dLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
-        The initializer for the the weight matrix.
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for the the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
@@ -359,7 +359,7 @@ class Conv3dLayer(Layer):
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for the the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
@@ -442,7 +442,7 @@ class DeConv3dLayer(Layer):
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for the the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
