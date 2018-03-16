@@ -5,9 +5,9 @@ import tensorflow as tf
 
 __all__ = [
     'BinaryDenseLayer',
+    'BinaryConv2d',
     'SignLayer',
     'ScaleLayer',
-    'BinaryConv2d',
 ]
 
 
