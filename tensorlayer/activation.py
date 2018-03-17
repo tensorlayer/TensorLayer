@@ -168,6 +168,28 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 #         return tf.sign(x), grad
 
 
+def hard_tanh(x, name='htanh'):
+    """Hard tanh activation function.
+
+    Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is ``htanh`.
+
+    Parameters
+    ----------
+    x : Tensor
+        input.
+    name : str
+        The function name (optional).
+
+    Returns
+    -------
+    Tensor
+        A ``Tensor`` in the same type as ``x``.
+
+    """
+    # with tf.variable_scope("hard_tanh"):
+    return tf.clip_by_value(x, -1, 1, name=name)
+
+
 @deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
@@ -204,3 +226,4 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 # Alias
 linear = identity
 lrelu = leaky_relu
+htanh = hard_tanh
