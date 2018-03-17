@@ -76,9 +76,12 @@ class BatchNormLayer(Layer):
     is_train : boolean
         Is being used for training or inference.
     beta_init : initializer or None
-        The initializer for initializing beta, if None, skip beta
+        The initializer for initializing beta, if None, skip beta.
+        Usually you should not skip beta unless you know what happened.
     gamma_init : initializer or None
-        The initializer for initializing gamma, if None, skip gamma
+        The initializer for initializing gamma, if None, skip gamma.
+        When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
+        disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
     dtype : TensorFlow dtype
         tf.float32 (default) or tf.float16.
     name : str
