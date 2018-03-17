@@ -123,9 +123,9 @@ class Conv2dLayer(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
-        The initializer for the the weight matrix.
+        The initializer for the weight matrix.
     b_init : initializer or None
-        The initializer for the the bias vector. If None, skip biases.
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
@@ -358,8 +358,8 @@ class Conv3dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
-    b_init : initializer
-        The initializer for the bias vector.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
@@ -403,8 +403,11 @@ class Conv3dLayer(Layer):
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
             W = tf.get_variable(name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-            self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b)
+            if b_init:
+                b = tf.get_variable(name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b)
+            else:
+                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None))
 
         # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
@@ -412,7 +415,10 @@ class Conv3dLayer(Layer):
         # self.all_params = list(layer.all_params)
         # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
-        self.all_params.extend([W, b])
+        if b_init:
+            self.all_params.extend([W, b])
+        else:
+            self.all_params.extend([W])
 
 
 class DeConv3dLayer(Layer):
@@ -435,8 +441,8 @@ class DeConv3dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     W_init : initializer
         The initializer for the weight matrix.
-    b_init : initializer
-        The initializer for the bias vector.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
         The arguments for the weight matrix initializer.
     b_init_args : dictionary
@@ -474,15 +480,20 @@ class DeConv3dLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-
-            self.outputs = act(tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b)
+            if b_init:
+                b = tf.get_variable(name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                self.outputs = act(tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding) + b)
+            else:
+                self.outputs = act(tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding))
 
         # self.all_layers = list(layer.all_layers)
         # self.all_params = list(layer.all_params)
         # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
-        self.all_params.extend([W, b])
+        if b_init:
+            self.all_params.extend([W, b])
+        else:
+            self.all_params.extend([W])
 
 
 class UpSampling2dLayer(Layer):
