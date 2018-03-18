@@ -13,7 +13,7 @@ __all__ = [
 class ExpandDimsLayer(Layer):
     """
     The :class:`ExpandDimsLayer` class inserts a dimension of 1 into a tensor's shape,
-    see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/array_ops/shapes_and_shaping#expand_dims>`__ .
+    see `tf.expand_dims() <https://www.tensorflow.org/api_docs/python/tf/expand_dims>`__ .
 
     Parameters
     ----------
