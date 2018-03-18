@@ -57,7 +57,7 @@ class ExpandDimsLayer(Layer):
 class TileLayer(Layer):
     """
     The :class:`TileLayer` class constructs a tensor by tiling a given tensor,
-    see `tf.tile() <https://www.tensorflow.org/api_docs/python/array_ops/slicing_and_joining#tile>`__ .
+    see `tf.tile() <https://www.tensorflow.org/api_docs/python/tf/tile>`__ .
 
     Parameters
     ----------
