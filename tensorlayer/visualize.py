@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 
-def read_image(image, path='_.png'):
+def read_image(image, path=''):
     """Read one image.
 
     Parameters
@@ -44,7 +44,7 @@ def read_image(image, path='_.png'):
     return scipy.misc.imread(os.path.join(path, image))
 
 
-def read_images(img_list, path='_.png', n_threads=10, printable=True):
+def read_images(img_list, path='', n_threads=10, printable=True):
     """Returns all images in list by given path and name of each image file.
 
     Parameters
