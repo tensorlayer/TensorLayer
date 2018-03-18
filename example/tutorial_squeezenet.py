@@ -109,7 +109,7 @@ tl.layers.initialize_global_variables(sess)
 if tl.files.file_exists('squeezenet.npz'):
     tl.files.load_and_assign_npz(sess=sess, name='squeezenet.npz', network=n)
 else:
-    raise Exception("please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models/models/squeezenet.npz")
+    raise Exception("please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models")
 
 img = tl.vis.read_image('data/tiger.jpeg', '')
 img = tl.prepro.imresize(img, (224, 224))
