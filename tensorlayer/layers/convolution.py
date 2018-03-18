@@ -1369,6 +1369,7 @@ def conv2d(
 
     Examples
     --------
+    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = InputLayer(x, name='inputs')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_1')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_2')
