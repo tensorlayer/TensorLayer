@@ -497,7 +497,7 @@ class DeConv3dLayer(Layer):
 
 
 class UpSampling2dLayer(Layer):
-    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/versions/master/api_docs/python/image/resizing#resize_images>`__.
+    """The :class:`UpSampling2dLayer` class is a up-sampling 2D layer, see `tf.image.resize_images <https://www.tensorflow.org/api_docs/python/tf/image/resize_images>`__.
 
     Parameters
     ----------
@@ -1369,6 +1369,7 @@ def conv2d(
 
     Examples
     --------
+    >>> x = tf.placeholder(tf.float32, shape=(None, 28, 28, 1))
     >>> net = InputLayer(x, name='inputs')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_1')
     >>> net = Conv2d(net, 64, (3, 3), act=tf.nn.relu, name='conv1_2')
