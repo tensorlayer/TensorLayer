@@ -325,7 +325,7 @@ def predict(sess, network, X, x, y_op, batch_size=None):
             if result is None:
                 result = result_a
             else:
-                result = np.vstack((result, result_a))  # TODO: https://github.com/tensorlayer/tensorlayer/issues/288
+                result = np.hstack((result, result_a))  # TODO: https://github.com/tensorlayer/tensorlayer/issues/288
         if result is None:
             if len(X) % batch_size != 0:
                 dp_dict = dict_to_one(network.all_drop)
@@ -343,7 +343,7 @@ def predict(sess, network, X, x, y_op, batch_size=None):
                 }
                 feed_dict.update(dp_dict)
                 result_a = sess.run(y_op, feed_dict=feed_dict)
-                result = np.vstack((result, result_a))  # TODO: https://github.com/tensorlayer/tensorlayer/issues/288
+                result = np.hstack((result, result_a))  # TODO: https://github.com/tensorlayer/tensorlayer/issues/288
         return result
 
 
