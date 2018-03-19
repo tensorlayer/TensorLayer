@@ -113,7 +113,7 @@ else:
 
 img = tl.vis.read_image('data/tiger.jpeg', '')
 img = tl.prepro.imresize(img, (224, 224))
-prob = sess.run(softmax, feed_dict={x: [img]})[0]
+prob = sess.run(softmax, feed_dict={x: [img]})[0]  # the 1st time need time to compile
 start_time = time.time()
 prob = sess.run(softmax, feed_dict={x: [img]})[0]
 print("  End time : %.5ss" % (time.time() - start_time))

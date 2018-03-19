@@ -132,6 +132,7 @@ probs = tf.nn.softmax(y)
 img1 = load_image("data/puzzle.jpeg")  # test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data
 img1 = img1.reshape((1, 299, 299, 3))
 
+prob = sess.run(probs, feed_dict={x: img1})  # the 1st time need time to compile
 start_time = time.time()
 prob = sess.run(probs, feed_dict={x: img1})
 print("End time : %.5ss" % (time.time() - start_time))
