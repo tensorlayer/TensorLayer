@@ -35,7 +35,7 @@ def model(x, is_train=True, reuse=False):
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
         net = tl.layers.SignLayer(net)
         net = tl.layers.BinaryDenseLayer(net, 256, b_init=None, name='dense')
-        net = tl.layers.BatchNormLayer(net,  act=tl.act.htanh, is_train=is_train, name='bn3')
+        net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn3')
 
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
         net = tl.layers.SignLayer(net)
