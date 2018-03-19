@@ -37,12 +37,13 @@ class PadLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            padding,
+            padding=None,
             mode='CONSTANT',
             name='pad_layer',
     ):
         Layer.__init__(self, prev_layer=prev_layer, name=name)
-        assert padding is not None, "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+        if padding is None:
+            raise Exception("padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad")
         self.inputs = prev_layer.outputs
         logging.info("PadLayer   %s: padding:%s mode:%s" % (self.name, list(padding), mode))
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
