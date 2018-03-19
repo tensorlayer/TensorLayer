@@ -28,6 +28,7 @@ script:
   - python tests/test_layers_importer.py
   - python tests/test_layers_merge.py
   - python tests/test_layers_normalization.py
+  - python tests/test_layers_padding.py
   - python tests/test_layers_pooling.py
   - python tests/test_layers_recurrent.py
   - python tests/test_layers_shape.py
