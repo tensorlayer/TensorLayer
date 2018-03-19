@@ -13,40 +13,39 @@ __all__ = [
 
 
 class PadLayer(Layer):
-    """
-    The :class:`PadLayer` class is a padding layer for any mode and dimension.
+    """The :class:`PadLayer` class is a padding layer for any mode and dimension.
     Please see `tf.pad <https://www.tensorflow.org/api_docs/python/tf/pad>`__ for usage.
 
     Parameters
     ----------
     layer : :class:`Layer`
         The previous layer.
-    paddings : Tensor
+    padding : list of lists of 2 ints, or a Tensor of type int32.
         The int32 values to pad.
     mode : str
         "CONSTANT", "REFLECT", or "SYMMETRIC" (case-insensitive).
     name : str
         A unique layer name.
 
+    Examples
+    --------
+    >>> net = InputLayer(image, name='in')
+    >>> net = PadLayer(net, [[0, 0], [3, 3], [3, 3], [0, 0]], "REFLECT", name='inpad')
+
     """
 
     def __init__(
             self,
             prev_layer,
-            paddings,
+            padding,
             mode='CONSTANT',
             name='pad_layer',
     ):
         Layer.__init__(self, prev_layer=prev_layer, name=name)
-        assert paddings is not None, "paddings should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+        assert padding is not None, "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
         self.inputs = prev_layer.outputs
-        logging.info("PadLayer   %s: paddings:%s mode:%s" % (self.name, list(paddings), mode))
-
-        self.outputs = tf.pad(self.inputs, paddings=paddings, mode=mode, name=name)
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+        logging.info("PadLayer   %s: padding:%s mode:%s" % (self.name, list(padding), mode))
+        self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
         self.all_layers.append(self.outputs)
 
 
