@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorlayer.layers import ZeroPad1d, ZeroPad2d, ZeroPad3d
+from tensorlayer.layers import ZeroPad1d, ZeroPad2d, ZeroPad3d, InputLayer
 
 ## 1D
 x = tf.placeholder(tf.float32, (None, 100, 1))
