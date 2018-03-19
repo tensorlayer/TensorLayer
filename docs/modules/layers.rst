@@ -254,8 +254,7 @@ Layer list
    DeConv2dLayer
    Conv3dLayer
    DeConv3dLayer
-   PoolLayer
-   PadLayer
+
    UpSampling2dLayer
    DownSampling2dLayer
    AtrousConv1dLayer
@@ -270,6 +269,11 @@ Layer list
    DeformableConv2d
    GroupConv2d
 
+   PadLayer
+   PoolLayer
+   ZeroPad1d
+   ZeroPad2d
+   ZeroPad3d
    MaxPool1d
    MeanPool1d
    MaxPool2d
@@ -540,40 +544,52 @@ Batch 2D Affine Transformation function
 Pooling and Padding layers
 ---------------------------
 
-Pooling (Pro)
-^^^^^^^^^^^^^^
-Pooling layer for any dimensions and any pooling functions.
-
-.. autoclass:: PoolLayer
-
 Padding (Pro)
 ^^^^^^^^^^^^^^
 Padding layer for any modes.
 
 .. autoclass:: PadLayer
 
+Pooling (Pro)
+^^^^^^^^^^^^^^
+Pooling layer for any dimensions and any pooling functions.
+
+.. autoclass:: PoolLayer
+
+1D Zero padding
+^^^^^^^^^^^^^^^^^^^
+.. autofunction:: ZeroPad1d
+
+2D Zero padding
+^^^^^^^^^^^^^^^^^^^
+.. autofunction:: ZeroPad2d
+
+3D Zero padding
+^^^^^^^^^^^^^^^^^^^
+.. autofunction:: ZeroPad3d
+
 1D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MaxPool1d
 
 1D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool1d
 
 2D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MaxPool2d
 
 2D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autofunction:: MeanPool2d
 
 3D Max pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autoclass:: MaxPool3d
 
 3D Mean pooling
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 .. autoclass:: MeanPool3d
 
 1D Global Max pooling
