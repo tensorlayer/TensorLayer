@@ -279,6 +279,8 @@ Layer list
    GlobalMeanPool1d
    GlobalMaxPool2d
    GlobalMeanPool2d
+   GlobalMaxPool3d
+   GlobalMeanPool3d
 
    SubpixelConv1d
    SubpixelConv2d
@@ -602,6 +604,14 @@ Pooling layer for any dimensions and any pooling functions.
 2D Global Mean pooling
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GlobalMeanPool2d
+
+3D Global Max pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMaxPool3d
+
+3D Global Mean pooling
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: GlobalMeanPool3d
 
 
 Normalization layer
