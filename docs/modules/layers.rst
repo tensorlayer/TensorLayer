@@ -116,18 +116,13 @@ The following is an example implementation of a layer that multiplies its input 
           name ='double_layer',
       ):
           # check layer name (fixed)
-          Layer.__init__(self, name=name)
+          Layer.__init__(self, layer=layer, name=name)
 
           # the input of this layer is the output of previous layer (fixed)
           self.inputs = layer.outputs
 
           # operation (customized)
           self.outputs = self.inputs * 2
-
-          # get stuff from previous layer (fixed)
-          self.all_layers = list(layer.all_layers)
-          self.all_params = list(layer.all_params)
-          self.all_drop = dict(layer.all_drop)
 
           # update layer (customized)
           self.all_layers.append(self.outputs)
