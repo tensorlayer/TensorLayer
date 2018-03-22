@@ -334,6 +334,10 @@ Layer list
 
    BinaryDenseLayer
    BinaryConv2d
+   TenaryDenseLayer
+   TenaryConv2d
+   DorefaDenseLayer
+   DorefaConv2d
    SignLayer
    ScaleLayer
 
@@ -834,16 +838,29 @@ Binarized Dense
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: BinaryDenseLayer
 
-
 Binarized Conv2d
 ^^^^^^^^^^^^^^^^^^
 .. autoclass:: BinaryConv2d
 
+Tenary Dense
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: TenaryDenseLayer
+
+Tenary Conv2d
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: TenaryConv2d
+
+Dorefa Dense
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: DorefaDenseLayer
+
+Dorefa Conv2d
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: DorefaConv2d
 
 Sign
 ^^^^^^^^^^^^^^
 .. autoclass:: SignLayer
-
 
 Scale
 ^^^^^^^^^^^^^^
