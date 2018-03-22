@@ -333,7 +333,7 @@ class TenaryDenseLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='binary_dense',
+            name='tenary_dense',
     ):
         if W_init_args is None:
             W_init_args = {}
@@ -454,7 +454,7 @@ class TenaryConv2d(Layer):
             # b_init_args=None,
             # use_cudnn_on_gpu=None,
             # data_format=None,
-            name='binary_cnn2d',
+            name='tenary_cnn2d',
     ):
         if W_init_args is None:
             W_init_args = {}
@@ -500,7 +500,8 @@ class TenaryConv2d(Layer):
 
 
 class DorefaDenseLayer(Layer):
-    """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
+    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the input of the previous layer 
+    are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
 
@@ -543,7 +544,7 @@ class DorefaDenseLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='binary_dense',
+            name='dorefa_dense',
     ):
         if W_init_args is None:
             W_init_args = {}
@@ -587,8 +588,8 @@ class DorefaDenseLayer(Layer):
 
 
 class DorefaConv2d(Layer):
-    """
-    The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
+    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the input of the previous layer 
+    are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
 
@@ -669,7 +670,7 @@ class DorefaConv2d(Layer):
             # b_init_args=None,
             # use_cudnn_on_gpu=None,
             # data_format=None,
-            name='binary_cnn2d',
+            name='dorefa_cnn2d',
     ):
         if W_init_args is None:
             W_init_args = {}
