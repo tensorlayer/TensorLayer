@@ -271,7 +271,7 @@ as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate
 If you find this project useful, we would be grateful if you cite the TensorLayer paper：
 
 ```
-@article{haoTL2017,
+@article{tensorlayer2017,
 author = {Dong, Hao and Supratak, Akara and Mai, Luo and Liu, Fangde and Oehmichen, Axel and Yu, Simiao and Guo, Yike},
 journal = {ACM Multimedia},
 title = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},

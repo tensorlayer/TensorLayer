@@ -1615,12 +1615,19 @@ class DepthwiseConv2d(Layer):
 
     Examples
     ---------
-    >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1], name='x')
-    >>> net = InputLayer(x, name='in')
-    >>> net = Conv2d(net, 32, (3, 3), (1, 1), name='conv1')
-    >>> net = MaxPool2d(net, (2, 2), name='pool1')
-    >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), act=tf.nn.relu, name='dethwise1')
-    >>> net = Conv2d(net, 64, (1, 1), (1, 1), act=tf.nn.relu, name='conv2')
+    >>> net = InputLayer(x, name='input')
+    >>> net = Conv2d(net, 32, (3, 3), (2, 2), b_init=None, name='cin')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bnin')
+    ...
+    >>> net = DepthwiseConv2d(net, (3, 3), (1, 1), b_init=None, name='cdw1')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn11')
+    >>> net = Conv2d(net, 64, (1, 1), (1, 1), b_init=None, name='c1')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn12')
+    ...
+    >>> net = DepthwiseConv2d(net, (3, 3), (2, 2), b_init=None, name='cdw2')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn21')
+    >>> net = Conv2d(net, 128, (1, 1), (1, 1), b_init=None, name='c2')
+    >>> net = BatchNormLayer(net, act=tf.nn.relu, is_train=is_train, name='bn22')
 
     References
     -----------
