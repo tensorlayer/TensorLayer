@@ -1,16 +1,17 @@
 #! /usr/bin/python
 # -*- coding: utf8 -*-
-
 """
 MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications
 https://github.com/rcmalli/keras-mobilenet/blob/master/keras_mobilenet/mobilenet.py
 """
 
 import time, os, json
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import InputLayer, Conv2d, DepthwiseConv2d, BatchNormLayer, GlobalMeanPool2d, \
     DenseLayer, DropoutLayer, ReshapeLayer, FlattenLayer
+
 
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
     # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
@@ -19,6 +20,7 @@ def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, 
         n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
     return n
 
+
 def depthwise_conv_block(n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
     with tf.variable_scope(name):
         n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
@@ -26,6 +28,7 @@ def depthwise_conv_block(n, n_filter, strides=(1, 1), is_train=False, name="dept
         n = Conv2d(n, n_filter, (1, 1), (1, 1), b_init=None, name='conv')
         n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm2')
     return n
+
 
 def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
@@ -47,6 +50,7 @@ def decode_predictions(preds, top=5):  # keras.applications.resnet50
         result.sort(key=lambda x: x[2], reverse=True)
         results.append(result)
     return results
+
 
 def mobilenet(x, is_train=True, reuse=False):
     with tf.variable_scope("mobilenet", reuse=reuse):
@@ -76,9 +80,8 @@ def mobilenet(x, is_train=True, reuse=False):
         n = ReshapeLayer(n, [-1, 1, 1, 1024])
         n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')
         n = FlattenLayer(n)
-        # print(n)
-        # exit()
     return n
+
 
 x = tf.placeholder(tf.float32, (None, 224, 224, 3))
 n = mobilenet(x, False, False)
@@ -89,29 +92,10 @@ n.print_params(False)
 sess = tf.InteractiveSession()
 # tl.layers.initialize_global_variables(sess)
 
-import keras
-keras_model = keras.applications.mobilenet.MobileNet(input_shape=None, alpha=1.0, depth_multiplier=1, dropout=1e-3, include_top=True, weights='imagenet', input_tensor=None, pooling=None, classes=1000)
-all_params = keras_model.get_weights()
-
-tl.layers.print_all_variables(train_only=True)
-# exit()
-
-print(len(all_params), len(n.all_params))
-import numpy as np
-# print(all_params[-2].shape)
-# all_params[-2] = np.squeeze(all_params[-2], 0)
-# print(all_params[-2].shape)
-# all_params[-2] = np.squeeze(all_params[-2], 0)
-# print(all_params[-2].shape)
-for i in range(len(all_params)):
-    print(n.all_params[i].name, all_params[i].shape, n.all_params[i].get_shape().as_list())
-    if list(all_params[i].shape) != n.all_params[i].get_shape().as_list():
-        exit("XXXX %s dont match" % n.all_params[i].name)
-
-# tl.files.assign_params(sess, all_params, n)
+if not os.path.isfile("mobilenet.npz"):
+    raise Exception("Please download mobilenet.npz from : https://github.com/tensorlayer/pretrained-models")
 
 tl.files.load_and_assign_npz(sess=sess, name='mobilenet.npz', network=n)
-# tl.files.load_and_assign_npz_dict(name='model.npz', sess=sess)
 
 img = tl.vis.read_image('data/tiger.jpeg')
 img = tl.prepro.imresize(img, (224, 224)) / 255
@@ -119,13 +103,6 @@ prob = sess.run(softmax, feed_dict={x: [img]})[0]  # the 1st time need time to c
 start_time = time.time()
 prob = sess.run(softmax, feed_dict={x: [img]})[0]
 
-prob2 = keras_model.predict(np.asarray([img]), batch_size=1)
-print(np.sum(prob-prob2))
-print(prob.shape, prob2.shape)
-
 print("  End time : %.5ss" % (time.time() - start_time))
-print('Predicted TL:', decode_predictions([prob], top=3)[0])
-print('Predicted Keras:', decode_predictions(prob2, top=3)[0])
-tl.files.save_npz(n.all_params, name='mobilenet.npz', sess=sess)
-
-tl.files.save_npz_dict(save_list=n.all_params, name='model.npz', sess=sess)
+print('Predicted :', decode_predictions([prob], top=3)[0])
+# tl.files.save_npz(n.all_params, name='mobilenet.npz', sess=sess)
