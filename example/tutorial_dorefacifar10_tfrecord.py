@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
+"""
 
 - 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 3 bits),
 after 500 epoches' training with GPU,accurcy of 81.1% was found.
@@ -133,33 +133,6 @@ def read_and_decode(filename, is_train=None):
 data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
-## Example to visualize data
-# img, label = read_and_decode("train.cifar10", None)
-# img_batch, label_batch = tf.train.shuffle_batch([img, label],
-#                                                 batch_size=4,
-#                                                 capacity=50000,
-#                                                 min_after_dequeue=10000,
-#                                                 num_threads=1)
-# print("img_batch   : %s" % img_batch._shape)
-# print("label_batch : %s" % label_batch._shape)
-#
-# init = tf.initialize_all_variables()
-# with tf.Session() as sess:
-#     sess.run(init)
-#     coord = tf.train.Coordinator()
-#     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-#
-#     for i in range(3):  # number of mini-batch (step)
-#         print("Step %d" % i)
-#         val, l = sess.run([img_batch, label_batch])
-#         # exit()
-#         print(val.shape, l)
-#         tl.visualize.images2d(val, second=1, saveable=False, name='batch'+str(i), dtype=np.uint8, fig_idx=2020121)
-#
-#     coord.request_stop()
-#     coord.join(threads)
-#     sess.close()
-
 batch_size = 128
 model_file_name = "./model_cifar10_advanced.ckpt"
 resume = False  # load model, resume from previous checkpoint?
@@ -185,12 +158,12 @@ with tf.device('/cpu:0'):
             net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
             net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
-            net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
+            net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
             net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = tl.layers.DorefaDenseLayer(net, 1, 3, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-            net = tl.layers.DorefaDenseLayer(net, 1, 3, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.DorefaDenseLayer(net, 1, 3, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.DorefaDenseLayer(net, 1, 3, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
             net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 

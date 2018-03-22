@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""Reimplementation of the TensorFlow official CIFAR-10 CNN tutorials.
+"""
 
 - 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 1 bit),
 after 500 epoches' training with GPU,accurcy of 41.1% was found.
@@ -133,32 +133,6 @@ def read_and_decode(filename, is_train=None):
 data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
-## Example to visualize data
-# img, label = read_and_decode("train.cifar10", None)
-# img_batch, label_batch = tf.train.shuffle_batch([img, label],
-#                                                 batch_size=4,
-#                                                 capacity=50000,
-#                                                 min_after_dequeue=10000,
-#                                                 num_threads=1)
-# print("img_batch   : %s" % img_batch._shape)
-# print("label_batch : %s" % label_batch._shape)
-#
-# init = tf.initialize_all_variables()
-# with tf.Session() as sess:
-#     sess.run(init)
-#     coord = tf.train.Coordinator()
-#     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-#
-#     for i in range(3):  # number of mini-batch (step)
-#         print("Step %d" % i)
-#         val, l = sess.run([img_batch, label_batch])
-#         # exit()
-#         print(val.shape, l)
-#         tl.visualize.images2d(val, second=1, saveable=False, name='batch'+str(i), dtype=np.uint8, fig_idx=2020121)
-#
-#     coord.request_stop()
-#     coord.join(threads)
-#     sess.close()
 
 batch_size = 128
 model_file_name = "./model_cifar10_advanced.ckpt"
