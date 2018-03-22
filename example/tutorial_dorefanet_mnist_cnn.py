@@ -22,12 +22,12 @@ def model(x, is_train=True, reuse=False):
     # ref: https://github.com/itayhubara/BinaryNet.tf/blob/master/models/BNN_cifar10.py
     with tf.variable_scope("binarynet", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')
+        net = tl.layers.DorefaConv2d(net, 1, 3, 32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')#pylint: disable=bare-except
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
 
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')
+        net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')#pylint: disable=bare-except
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
