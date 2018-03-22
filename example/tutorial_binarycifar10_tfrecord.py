@@ -133,7 +133,6 @@ def read_and_decode(filename, is_train=None):
 data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
-
 batch_size = 128
 model_file_name = "./model_cifar10_advanced.ckpt"
 resume = False  # load model, resume from previous checkpoint?
