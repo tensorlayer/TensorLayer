@@ -35,7 +35,7 @@ def _quantize_dorefa(x, k):
         return tf.round(x * n) / n
 
 
-def _quantize_weight(x, bitW=1, force_quantization=False):
+def _quantize_weight(x, bitW, force_quantization=False):
     G = tf.get_default_graph()
     if bitW == 32 and not force_quantization:
         return x
@@ -47,7 +47,7 @@ def _quantize_weight(x, bitW=1, force_quantization=False):
     return 2 * _quantize_dorefa(x, bitW) - 1
 
 
-def _quantize_active(x, bitA=3):
+def _quantize_active(x, bitA):
     if bitA == 32:
         return x
     return _quantize_dorefa(x, bitA)
@@ -508,9 +508,9 @@ class DorefaDenseLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer.
-    bitW  : : int
+    bitW : int
         The bits of this layer's parameter
-    bitA  : : int 
+    bitA : int 
         The bits of the output of previous layer
     n_units : int
         The number of units of this layer.
@@ -596,9 +596,9 @@ class DorefaConv2d(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer.
-    bitW  : : int
+    bitW : int
         The bits of this layer's parameter
-    bitA  : : int 
+    bitA : int 
         The bits of the output of previous layer
     n_filter : int
         The number of filters.
