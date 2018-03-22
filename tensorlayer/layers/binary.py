@@ -60,7 +60,7 @@ def _cabs(x):
 def _compute_threshold(x):
     '''
     ref: https://github.com/XJTUWYD/TWN
-    getting the threshold
+    Computing the threshold.
     '''
     x_sum = tf.reduce_sum(tf.abs(x), reduction_indices=None, keep_dims=False, name=None)
     threshold = tf.div(x_sum, tf.cast(tf.size(x), tf.float32), name=None)
@@ -70,7 +70,7 @@ def _compute_threshold(x):
 
 def _compute_alpha(x):
     '''
-    get the scale parameter
+    Computing the scale parameter.
     '''
     threshold = _compute_threshold(x)
     alpha1_temp1 = tf.where(tf.greater(x, threshold), x, tf.zeros_like(x, tf.float32))
@@ -86,7 +86,7 @@ def _compute_alpha(x):
 
 def _tenary_opration(x):
     """
-    tenary opration
+    Tenary operation use threshold computed with weights.
     """
     g = tf.get_default_graph()
     with g.gradient_override_map({"Sign": "Identity"}):
@@ -418,12 +418,12 @@ class TenaryConv2d(Layer):
     Examples
     ---------
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.TenaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.TenaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
@@ -500,7 +500,7 @@ class TenaryConv2d(Layer):
 
 
 class DorefaDenseLayer(Layer):
-    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the input of the previous layer 
+    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer 
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -588,7 +588,7 @@ class DorefaDenseLayer(Layer):
 
 
 class DorefaConv2d(Layer):
-    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the input of the previous layer 
+    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer 
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -632,12 +632,12 @@ class DorefaConv2d(Layer):
     Examples
     ---------
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.BinaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
