@@ -27,19 +27,19 @@ def model(x, is_train=True, reuse=False):
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
 
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')
+        net = tl.layers.DorefaConv2d(net, 1, 3, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
         net = tl.layers.FlattenLayer(net)
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.DorefaDenseLayer(net, 256, b_init=None, name='dense')
+        net = tl.layers.DorefaDenseLayer(net, 1, 3, 256, b_init=None, name='dense')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn3')
 
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.DorefaDenseLayer(net, 10, b_init=None, name='bout')
+        net = tl.layers.DenseLayer(net, 10, b_init=None, name='bout')
         net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bno')
     return net
 

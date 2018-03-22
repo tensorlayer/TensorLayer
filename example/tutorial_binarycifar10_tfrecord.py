@@ -42,7 +42,6 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 import os, time
 import tensorflow as tf
 import tensorlayer as tl
-from tensorlayer.layers import *
 
 model_file_name = "./model_cifar10_tfrecord.ckpt"
 resume = False  # load model, resume from previous checkpoint?
@@ -182,20 +181,20 @@ with tf.device('/cpu:0'):
         W_init2 = tf.truncated_normal_initializer(stddev=0.04)
         b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
-            net = InputLayer(x_crop, name='input')
-            net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
-            net = SignLayer(net)
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
-            net = BinaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
-            net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-            net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = SignLayer(net)
-            net = BinaryDenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-            net = SignLayer(net)
-            net = BinaryDenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
+            net = tl.layers.InputLayer(x_crop, name='input')
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
+            net = tl.layers.SignLayer(net)
+            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+            net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+            net = tl.layers.BinaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
+            net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
+            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+            net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+            net = tl.layers.SignLayer(net)
+            net = tl.layers.BinaryDenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.SignLayer(net)
+            net = tl.layers.BinaryDenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -219,28 +218,16 @@ with tf.device('/cpu:0'):
         with tf.variable_scope("model", reuse=reuse):
             net = InputLayer(x_crop, name='input')
 
-            net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
-            # net = Conv2dLayer(net, act=tf.identity, shape=[5, 5, 3, 64],
-            #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5x3 patch
-            #             W_init=W_init, b_init=None, name='cnn1')              # output: (batch_size, 24, 24, 64)
-            net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
-            #             padding='SAME', pool=tf.nn.max_pool, name='pool1',)   # output: (batch_size, 12, 12, 64)
-
-            net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
-            # net = Conv2dLayer(net, act=tf.identity, shape=[5, 5, 64, 64],
-            #             strides=[1, 1, 1, 1], padding='SAME',                 # 64 features for each 5x5 patch
-            #             W_init=W_init, b_init=None, name ='cnn2')             # output: (batch_size, 12, 12, 64)
-            net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
-            net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-            # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
-            #            padding='SAME', pool = tf.nn.max_pool, name ='pool2')  # output: (batch_size, 6, 6, 64)
-
-            net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-            net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
+            net = tl.layers.BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
+            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
+            net = tl.layers.BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
+            net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+            net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+            net = tl.layers.DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
