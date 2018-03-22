@@ -68,3 +68,25 @@ print(n)
 shape = n.outputs.get_shape().as_list()
 if shape[-1] != 32:
     raise Exception("shape dont match")
+
+## 3D ========================================================================
+x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
+nin = tl.layers.InputLayer(x, name='in')
+
+n = tl.layers.MeanPool3d(nin, (3, 3, 3), (2, 2, 2), 'SAME', name='meanpool3d')
+print(n)
+shape = n.outputs.get_shape().as_list()
+if shape != [None, 50, 50, 50, 3]:
+    raise Exception("shape dont match")
+
+n = tl.layers.GlobalMaxPool3d(nin)
+print(n)
+shape = n.outputs.get_shape().as_list()
+if shape != [None, 3]:
+    raise Exception("shape dont match")
+
+n = tl.layers.GlobalMeanPool3d(nin)
+print(n)
+shape = n.outputs.get_shape().as_list()
+if shape != [None, 3]:
+    raise Exception("shape dont match")
