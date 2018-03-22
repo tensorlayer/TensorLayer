@@ -350,7 +350,7 @@ class TenaryDenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("BinaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+        logging.info("TenaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
@@ -468,7 +468,7 @@ class TenaryConv2d(Layer):
         self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
+        logging.info("TenaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
                                                                                                act.__name__))
 
         if len(strides) != 2:
@@ -500,7 +500,7 @@ class TenaryConv2d(Layer):
 
 
 class DorefaDenseLayer(Layer):
-    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer 
+    """The :class:`DorefaDenseLayer` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -511,7 +511,7 @@ class DorefaDenseLayer(Layer):
         Previous layer.
     bitW : int
         The bits of this layer's parameter
-    bitA : int 
+    bitA : int
         The bits of the output of previous layer
     n_units : int
         The number of units of this layer.
@@ -561,7 +561,7 @@ class DorefaDenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("BinaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+        logging.info("DorefaDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
@@ -588,7 +588,7 @@ class DorefaDenseLayer(Layer):
 
 
 class DorefaConv2d(Layer):
-    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer 
+    """The :class:`DorefaConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Note that, the bias vector would not be binarized.
@@ -599,7 +599,7 @@ class DorefaConv2d(Layer):
         Previous layer.
     bitW : int
         The bits of this layer's parameter
-    bitA : int 
+    bitA : int
         The bits of the output of previous layer
     n_filter : int
         The number of filters.
@@ -684,7 +684,7 @@ class DorefaConv2d(Layer):
         self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
+        logging.info("DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
                                                                                                act.__name__))
 
         if len(strides) != 2:
