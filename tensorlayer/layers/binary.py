@@ -2,10 +2,6 @@
 from .core import *
 from .. import _logging as logging
 import tensorflow as tf
-from tensorflow.python.framework import ops
-
-bitW = 1
-bitA = 2
 
 __all__ = [
     'BinaryDenseLayer',
@@ -32,70 +28,72 @@ def quantize(x):
         return tf.sign(x)
 
 
-def quantize_dorefa(x, k):
+def _quantize_dorefa(x, k):
     G = tf.get_default_graph()
     n = float(2**k - 1)
     with G.gradient_override_map({"Round": "Identity"}):
         return tf.round(x * n) / n
 
-def fw(x, force_quantization=False):
+
+def _quantize_weight(x, bitW=1, force_quantization=False):
     G = tf.get_default_graph()
     if bitW == 32 and not force_quantization:
         return x
-    if bitW == 1:   # BWN
+    if bitW == 1:  # BWN
         with G.gradient_override_map({"Sign": "Identity"}):
             E = tf.stop_gradient(tf.reduce_mean(tf.abs(x)))
             return tf.sign(x / E) * E
-    # x = tf.tanh(x)
-    # x = x / tf.reduce_max(tf.abs(x)) * 0.5 + 0.5
-    x = tf.clip_by_value(x * 0.5 + 0.5, 0.0, 1.0) # it seems as though most weights are within -1 to 1 region anyways
-    return 2 * quantize_dorefa(x, bitW) - 1
+    x = tf.clip_by_value(x * 0.5 + 0.5, 0.0, 1.0)  # it seems as though most weights are within -1 to 1 region anyways
+    return 2 * _quantize_dorefa(x, bitW) - 1
 
-def fa(x):
-    G = tf.get_default_graph()
+
+def _quantize_active(x, bitA=3):
     if bitA == 32:
         return x
-    return quantize_dorefa(x, bitA)
+    return _quantize_dorefa(x, bitA)
 
-def cabs(x):
-    return tf.minimum(1.0, tf.abs(x), name = 'cabs')
 
-def compute_threshold(x):
+def _cabs(x):
+    return tf.minimum(1.0, tf.abs(x), name='cabs')
+
+
+def _compute_threshold(x):
     '''
     ref: https://github.com/XJTUWYD/TWN
     getting the threshold
     '''
-    x_sum = tf.reduce_sum(tf.abs(x),reduction_indices= None, keep_dims =False ,name= None)
-    threshold = tf.div(x_sum,tf.cast(tf.size(x), tf.float32),name= None)
-    threshold = tf.multiply(0.7,threshold,name= None)
+    x_sum = tf.reduce_sum(tf.abs(x), reduction_indices=None, keep_dims=False, name=None)
+    threshold = tf.div(x_sum, tf.cast(tf.size(x), tf.float32), name=None)
+    threshold = tf.multiply(0.7, threshold, name=None)
     return threshold
 
-def compute_alpha(x):
+
+def _compute_alpha(x):
     '''
     get the scale parameter
     '''
-    threshold = compute_threshold(x)
-    alpha1_temp1 = tf.where(tf.greater(x,threshold), x, tf.zeros_like(x, tf.float32))
-    alpha1_temp2 = tf.where(tf.less(x,-threshold), x, tf.zeros_like(x, tf.float32))
-    alpha_array = tf.add(alpha1_temp1,alpha1_temp2,name = None)
+    threshold = _compute_threshold(x)
+    alpha1_temp1 = tf.where(tf.greater(x, threshold), x, tf.zeros_like(x, tf.float32))
+    alpha1_temp2 = tf.where(tf.less(x, -threshold), x, tf.zeros_like(x, tf.float32))
+    alpha_array = tf.add(alpha1_temp1, alpha1_temp2, name=None)
     alpha_array_abs = tf.abs(alpha_array)
-    alpha_array_abs1 = tf.where(tf.greater(alpha_array_abs,0),tf.ones_like(alpha_array_abs,tf.float32), tf.zeros_like(alpha_array_abs, tf.float32))
+    alpha_array_abs1 = tf.where(tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, tf.float32), tf.zeros_like(alpha_array_abs, tf.float32))
     alpha_sum = tf.reduce_sum(alpha_array_abs)
     n = tf.reduce_sum(alpha_array_abs1)
-    alpha = tf.div(alpha_sum,n)
+    alpha = tf.div(alpha_sum, n)
     return alpha
 
-def tenary_opration(x):
+
+def _tenary_opration(x):
     """
     tenary opration
     """
     g = tf.get_default_graph()
+    with g.gradient_override_map({"Sign": "Identity"}):
+        threshold = _compute_threshold(x)
+        x = tf.sign(tf.add(tf.sign(tf.add(x, threshold)), tf.sign(tf.add(x, -threshold))))
+        return x
 
-    with ops.name_scope("tenarized") as name:
-        with g.gradient_override_map({"Sign": "Identity"}):
-            threshold =compute_threshold(x)
-            x=tf.sign(tf.add(tf.sign(tf.add(x,threshold)),tf.sign(tf.add(x,-threshold))))
-            return x
 
 class BinaryDenseLayer(Layer):
     """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
@@ -298,9 +296,9 @@ class BinaryConv2d(Layer):
 
 
 class TenaryDenseLayer(Layer):
-    """The :class:`BinaryDenseLayer` class is a binary fully connected layer, which weights are either -1 or 1 while inferencing.
+    """The :class:`TenaryDenseLayer` class is a tenary fully connected layer, which weights are either -1 or 1 or 0 while inferencing.
 
-    Note that, the bias vector would not be binarized.
+    Note that, the bias vector would not be tenaried.
 
     Parameters
     ----------
@@ -356,8 +354,8 @@ class TenaryDenseLayer(Layer):
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
-            alpha = compute_alpha(W)
-            W = tenary_opration(W)
+            alpha = _compute_alpha(W)
+            W = _tenary_opration(W)
             W = tf.multiply(alpha, W)
             # W = tf.Variable(W)
             # print(W)
@@ -378,11 +376,12 @@ class TenaryDenseLayer(Layer):
         else:
             self.all_params.append(W)
 
+
 class TenaryConv2d(Layer):
     """
-    The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
+    The :class:`TenaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 or 0 while inferencing.
 
-    Note that, the bias vector would not be binarized.
+    Note that, the bias vector would not be tenaried.
 
     Parameters
     ----------
@@ -483,8 +482,8 @@ class TenaryConv2d(Layer):
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            alpha = compute_alpha(W)
-            W = tenary_opration(W)
+            alpha = _compute_alpha(W)
+            W = _tenary_opration(W)
             W = tf.multiply(alpha, W)
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
@@ -509,6 +508,10 @@ class DorefaDenseLayer(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer.
+    bitW  : : int
+        The bits of this layer's parameter
+    bitA  : : int 
+        The bits of the output of previous layer
     n_units : int
         The number of units of this layer.
     act : activation function
@@ -531,6 +534,8 @@ class DorefaDenseLayer(Layer):
     def __init__(
             self,
             prev_layer,
+            bitW=1,
+            bitA=3,
             n_units=100,
             act=tf.identity,
             use_gemm=False,
@@ -559,8 +564,8 @@ class DorefaDenseLayer(Layer):
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
-            W = fw(W)
-            self.inputs = fa(cabs(self.inputs))
+            W = _quantize_weight(W, bitW)
+            self.inputs = _quantize_active(_cabs(self.inputs), bitA)
             # W = tf.Variable(W)
             # print(W)
             if b_init is not None:
@@ -580,6 +585,7 @@ class DorefaDenseLayer(Layer):
         else:
             self.all_params.append(W)
 
+
 class DorefaConv2d(Layer):
     """
     The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
@@ -590,6 +596,10 @@ class DorefaConv2d(Layer):
     ----------
     layer : :class:`Layer`
         Previous layer.
+    bitW  : : int
+        The bits of this layer's parameter
+    bitA  : : int 
+        The bits of the output of previous layer
     n_filter : int
         The number of filters.
     filter_size : tuple of int
@@ -635,6 +645,8 @@ class DorefaConv2d(Layer):
     def __init__(
             self,
             prev_layer,
+            bitW=1,
+            bitA=3,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
@@ -685,8 +697,8 @@ class DorefaConv2d(Layer):
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            W = fw(W)
-            self.inputs = fa(cabs(self.inputs))
+            W = _quantize_weight(W, bitW)
+            self.inputs = _quantize_active(_cabs(self.inputs), bitA)
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(
@@ -699,6 +711,7 @@ class DorefaConv2d(Layer):
             self.all_params.extend([W, b])
         else:
             self.all_params.append(W)
+
 
 class SignLayer(Layer):
     """The :class:`SignLayer` class is for quantizing the layer outputs to -1 or 1 while inferencing.
