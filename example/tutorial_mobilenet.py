@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import InputLayer, Conv2d, DepthwiseConv2d, BatchNormLayer, GlobalMeanPool2d, \
-    DenseLayer, DropoutLayer, ReshapeLayer, FlattenLayer
+    ReshapeLayer, FlattenLayer
 
 
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
