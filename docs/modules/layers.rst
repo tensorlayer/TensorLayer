@@ -334,8 +334,8 @@ Layer list
 
    BinaryDenseLayer
    BinaryConv2d
-   TenaryDenseLayer
-   TenaryConv2d
+   TernaryDenseLayer
+   TernaryConv2d
    DorefaDenseLayer
    DorefaConv2d
    SignLayer
@@ -842,13 +842,13 @@ Binarized Conv2d
 ^^^^^^^^^^^^^^^^^^
 .. autoclass:: BinaryConv2d
 
-Tenary Dense
+Ternary Dense
 ^^^^^^^^^^^^^^^^^^
-.. autoclass:: TenaryDenseLayer
+.. autoclass:: TernaryDenseLayer
 
-Tenary Conv2d
+Ternary Conv2d
 ^^^^^^^^^^^^^^^^^^
-.. autoclass:: TenaryConv2d
+.. autoclass:: TernaryConv2d
 
 Dorefa Dense
 ^^^^^^^^^^^^^^^^^^

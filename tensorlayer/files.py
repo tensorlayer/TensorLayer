@@ -38,8 +38,8 @@ import pickle
 import re
 import sys
 import tarfile
-import zipfile
 import time
+import zipfile
 
 import numpy as np
 import tensorflow as tf

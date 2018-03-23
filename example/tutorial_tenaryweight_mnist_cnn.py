@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import tensorflow as tf
+
 import tensorlayer as tl
 
 X_train, y_train, X_val, y_val, X_test, y_test = \
@@ -22,24 +24,24 @@ def model(x, is_train=True, reuse=False):
     # ref: https://github.com/itayhubara/BinaryNet.tf/blob/master/models/BNN_cifar10.py
     with tf.variable_scope("binarynet", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.TenaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')
+        net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn1')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
 
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.TenaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')
+        net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='bcnn2')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
         net = tl.layers.FlattenLayer(net)
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.TenaryDenseLayer(net, 256, b_init=None, name='dense')
+        net = tl.layers.TernaryDenseLayer(net, 256, b_init=None, name='dense')
         net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn3')
 
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
         # net = tl.layers.SignLayer(net)
-        net = tl.layers.TenaryDenseLayer(net, 10, b_init=None, name='bout')
+        net = tl.layers.TernaryDenseLayer(net, 10, b_init=None, name='bout')
         net = tl.layers.BatchNormLayer(net, is_train=is_train, name='bno')
     return net
 

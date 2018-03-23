@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+
 import numpy as np
 import scipy.misc  # save/read image(s)
+
 from . import _logging as logging
 from . import prepro
 

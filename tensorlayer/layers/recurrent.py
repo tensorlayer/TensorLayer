@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import inspect
+
 import tensorflow as tf
+
 from .. import _logging as logging
 from .core import *
 

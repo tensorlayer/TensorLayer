@@ -13,8 +13,11 @@ CN: https://zhuanlan.zhihu.com/p/25710327
 
 """
 
-import time, gym
+import time
+
 import numpy as np
+
+import gym
 
 ## Load the environment
 env = gym.make('FrozenLake-v0')
