@@ -824,7 +824,7 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
   .. autoclass:: KerasLayer
 
 
-Binary Nets
+Quantized Nets
 ------------------
 
 Read Me
