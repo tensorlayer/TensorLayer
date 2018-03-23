@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from six.moves import xrange
-from .core import *
-from .. import _logging as logging
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+from six.moves import xrange
+
+from .. import _logging as logging
+from .core import *
 
 __all__ = [
     'transformer',

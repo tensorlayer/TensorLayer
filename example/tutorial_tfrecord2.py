@@ -12,10 +12,12 @@ More:
 """
 
 import os
+
 import numpy as np
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
+
 import tensorlayer as tl
 
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```

@@ -12,11 +12,15 @@ in read the docs website.
 
 """
 
-import os, time, skimage
+import os
+import time
+
+import numpy as np
+import skimage
 import skimage.io
 import skimage.transform
-import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
 from tensorlayer.layers import *
 

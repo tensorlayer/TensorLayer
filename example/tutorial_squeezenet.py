@@ -1,11 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import time, os, json
+import json
+import os
+import time
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
-from tensorlayer.layers import InputLayer, Conv2d, MaxPool2d, ConcatLayer, DropoutLayer, GlobalMeanPool2d
+from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPool2d, InputLayer, MaxPool2d)
 
 
 def decode_predictions(preds, top=5):  # keras.applications.resnet50

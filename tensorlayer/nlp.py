@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 
-import collections, os, random
-import re, subprocess, tempfile, warnings
+import collections
+import os
+import random
+import re
+import subprocess
+import tempfile
+import warnings
+
 import numpy as np
 import tensorflow as tf
 from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
+
 from . import _logging as logging
 
 __all__ = [

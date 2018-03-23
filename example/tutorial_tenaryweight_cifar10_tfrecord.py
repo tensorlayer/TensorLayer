@@ -38,8 +38,11 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
-import os, time
+import os
+import time
+
 import tensorflow as tf
+
 import tensorlayer as tl
 
 model_file_name = "./model_cifar10_tfrecord.ckpt"
@@ -157,12 +160,12 @@ with tf.device('/cpu:0'):
             net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
             net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
-            net = tl.layers.TenaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
+            net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
             net = tl.layers.LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = tl.layers.TenaryDenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-            net = tl.layers.TenaryDenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.TernaryDenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.TernaryDenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
             net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')  # output: (batch_size, 10)
             y = net.outputs
 

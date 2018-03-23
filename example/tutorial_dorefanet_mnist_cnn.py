@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import tensorflow as tf
+
 import tensorlayer as tl
 
 X_train, y_train, X_val, y_val, X_test, y_test = \
