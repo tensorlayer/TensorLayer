@@ -24,7 +24,7 @@ Computer Vision
  - SqueezeNet (ImageNet). Model compression, see `tutorial_squeezenet.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_squeezenet.py>`_.
  - MobileNet (ImageNet). Model compression, see `tutorial_mobilenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mobilenet.py>`__.
  - BinaryNet. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_cifar10_tfrecord.py>`__.
- - Tenary Weight Network. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_tenaryweight_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_tenaryweight_cifar10_tfrecord.py>`__.
+ - Ternary Weight Network. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ternaryweight_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_ternaryweight_cifar10_tfrecord.py>`__.
  - DoReFa-Net. Model compression, see `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_dorefanet_mnist_cnn.py>`__ `cifar10 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_dorefanet_cifar10_tfrecord.py>`__.
  - Wide ResNet (CIFAR) by `ritchieng <https://github.com/ritchieng/wideresnet-tensorlayer>`_.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/research/slim>`_ can be connected to TensorLayer via SlimNetsLayer.
