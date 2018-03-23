@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import threading, time, scipy, skimage
+import threading
+import time
+
 import numpy as np
+import scipy
 import scipy.ndimage as ndi
+import skimage
 # import tensorlayer as tl
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter

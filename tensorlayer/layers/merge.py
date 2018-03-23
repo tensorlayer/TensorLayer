@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .core import *
-from .. import _logging as logging
 import tensorflow as tf
+
+from .. import _logging as logging
+from .core import *
 
 __all__ = [
     'ConcatLayer',

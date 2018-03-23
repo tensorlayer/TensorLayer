@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from .core import *
-from .. import _logging as logging
 import tensorflow as tf
+
+from .. import _logging as logging
+from .core import *
 
 __all__ = [
     'BinaryDenseLayer',
     'BinaryConv2d',
-    'TenaryDenseLayer',
-    'TenaryConv2d',
+    'TernaryDenseLayer',
+    'TernaryConv2d',
     'DorefaDenseLayer',
     'DorefaConv2d',
     'SignLayer',
@@ -58,10 +59,10 @@ def _cabs(x):
 
 
 def _compute_threshold(x):
-    '''
+    """
     ref: https://github.com/XJTUWYD/TWN
     Computing the threshold.
-    '''
+    """
     x_sum = tf.reduce_sum(tf.abs(x), reduction_indices=None, keep_dims=False, name=None)
     threshold = tf.div(x_sum, tf.cast(tf.size(x), tf.float32), name=None)
     threshold = tf.multiply(0.7, threshold, name=None)
@@ -69,9 +70,9 @@ def _compute_threshold(x):
 
 
 def _compute_alpha(x):
-    '''
+    """
     Computing the scale parameter.
-    '''
+    """
     threshold = _compute_threshold(x)
     alpha1_temp1 = tf.where(tf.greater(x, threshold), x, tf.zeros_like(x, tf.float32))
     alpha1_temp2 = tf.where(tf.less(x, -threshold), x, tf.zeros_like(x, tf.float32))
@@ -84,9 +85,9 @@ def _compute_alpha(x):
     return alpha
 
 
-def _tenary_opration(x):
+def _ternary_operation(x):
     """
-    Tenary operation use threshold computed with weights.
+    Ternary operation use threshold computed with weights.
     """
     g = tf.get_default_graph()
     with g.gradient_override_map({"Sign": "Identity"}):
@@ -102,14 +103,14 @@ class BinaryDenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
         The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
     use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -177,13 +178,13 @@ class BinaryDenseLayer(Layer):
 
 class BinaryConv2d(Layer):
     """
-    The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inferencing.
+    The :class:`BinaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 while inference.
 
     Note that, the bias vector would not be binarized.
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -295,21 +296,21 @@ class BinaryConv2d(Layer):
             self.all_params.append(W)
 
 
-class TenaryDenseLayer(Layer):
-    """The :class:`TenaryDenseLayer` class is a tenary fully connected layer, which weights are either -1 or 1 or 0 while inferencing.
+class TernaryDenseLayer(Layer):
+    """The :class:`TernaryDenseLayer` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
 
     Note that, the bias vector would not be tenaried.
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_units : int
         The number of units of this layer.
     act : activation function
         The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
     use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -333,7 +334,7 @@ class TenaryDenseLayer(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='tenary_dense',
+            name='ternary_dense',
     ):
         if W_init_args is None:
             W_init_args = {}
@@ -350,12 +351,12 @@ class TenaryDenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("TenaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+        logging.info("TernaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
             alpha = _compute_alpha(W)
-            W = _tenary_opration(W)
+            W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
             # W = tf.Variable(W)
             # print(W)
@@ -377,15 +378,15 @@ class TenaryDenseLayer(Layer):
             self.all_params.append(W)
 
 
-class TenaryConv2d(Layer):
+class TernaryConv2d(Layer):
     """
-    The :class:`TenaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 or 0 while inferencing.
+    The :class:`TernaryConv2d` class is a 2D binary CNN layer, which weights are either -1 or 1 or 0 while inference.
 
-    Note that, the bias vector would not be tenaried.
+    Note that, the bias vector would not be tenarized.
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -399,7 +400,7 @@ class TenaryConv2d(Layer):
     padding : str
         The padding algorithm type: "SAME" or "VALID".
     use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -418,12 +419,12 @@ class TenaryConv2d(Layer):
     Examples
     ---------
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.TenaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.TernaryConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
     ...
     >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.TenaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
 
@@ -454,7 +455,7 @@ class TenaryConv2d(Layer):
             # b_init_args=None,
             # use_cudnn_on_gpu=None,
             # data_format=None,
-            name='tenary_cnn2d',
+            name='ternary_cnn2d',
     ):
         if W_init_args is None:
             W_init_args = {}
@@ -468,8 +469,8 @@ class TenaryConv2d(Layer):
         self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("TenaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
-                                                                                               act.__name__))
+        logging.info("TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
+                                                                                                act.__name__))
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
@@ -483,7 +484,7 @@ class TenaryConv2d(Layer):
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             alpha = _compute_alpha(W)
-            W = _tenary_opration(W)
+            W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
             if b_init:
                 b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)

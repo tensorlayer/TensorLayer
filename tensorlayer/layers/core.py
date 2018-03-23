@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import time
+
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
+
 from .. import _logging as logging
 from .. import files, iterate, utils, visualize
 
@@ -47,6 +49,7 @@ except Exception:  # For TF11 and before
 
 def flatten_reshape(variable, name='flatten'):
     """Reshapes a high-dimension vector input.
+
     [batch_size, mask_row, mask_col, n_mask] ---> [batch_size, mask_row x mask_col x n_mask]
 
     Parameters
@@ -318,18 +321,16 @@ def initialize_global_variables(sess):
 
 
 class Layer(object):
-    """
-    The basic :class:`Layer` class represents a single layer of a neural network. It
-    should be subclassed when implementing new types of layers.
+    """The basic :class:`Layer` class represents a single layer of a neural network.
+
+    It should be subclassed when implementing new types of layers.
     Because each layer can keep track of the layer(s) feeding into it, a
     network's output :class:`Layer` instance can double as a handle to the full
     network.
 
     Parameters
     ----------
-    inputs : :class:`Layer` instance
-        The `Layer` class feeding into this layer.
-    layer : :class:`Layer` or None
+    prev_layer : :class:`Layer` or None
         Previous layer (optional), for adding all properties of previous layer(s) to this layer.
     name : str or None
         A unique layer name.
@@ -345,13 +346,13 @@ class Layer(object):
 
     Examples
     ---------
-    - Define model
+    Define model
     >>> x = tf.placeholder("float32", [None, 100])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.DenseLayer(n, 80, name='d1')
     >>> n = tl.layers.DenseLayer(n, 80, name='d2')
 
-    - Get information
+    Get information
     >>> print(n)
     ... Last layer is: DenseLayer (d2) [None, 80]
     >>> n.print_layers()
@@ -366,12 +367,12 @@ class Layer(object):
     >>> n.count_params()
     ... 14560
 
-    - Slicing the outputs
+    Slicing the outputs
     >>> n2 = n[:, :30]
     >>> print(n2)
     ... Last layer is: Layer (d2) [None, 30]
 
-    - Iterating the outputs
+    Iterating the outputs
     >>> for l in n:
     >>>    print(l)
     ... Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)

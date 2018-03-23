@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from tensorflow.python.util.deprecation import deprecated
-from .core import *
-from .. import _logging as logging
 import tensorflow as tf
+from tensorflow.python.util.deprecation import deprecated
+
+from .. import _logging as logging
+from .core import *
 
 __all__ = [
     'LambdaLayer',

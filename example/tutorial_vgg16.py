@@ -37,9 +37,12 @@ following snippet:
 """
 
 import os
+
 from scipy.misc import imread, imresize
+
 import tensorlayer as tl
 from tensorlayer.layers import *
+
 try:
     from data.imagenet_classes import *
 except Exception as e:

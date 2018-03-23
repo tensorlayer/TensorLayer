@@ -1,10 +1,17 @@
 # -*- coding: utf-8 -*-
-import os, random, subprocess, sys, time
+import os
+import random
+import subprocess
+import sys
+import time
 from sys import exit as _exit
 from sys import platform as _platform
+
 import numpy as np
 import tensorflow as tf
+
 import tensorlayer as tl
+
 from . import _logging as logging
 from . import iterate
 
