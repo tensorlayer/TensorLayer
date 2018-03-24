@@ -32,7 +32,8 @@ from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer,
 class Vgg16Base(object):
     """The vgg16 model."""
 
-    def conv_layers(self, net_in):
+    @staticmethod
+    def conv_layers(net_in):
         with tf.name_scope('preprocess'):
             # Notice that we include a preprocessing layer that takes the RGB image
             # with pixels values in the range of 0-255 and subtracts the mean image
@@ -147,7 +148,8 @@ class Vgg16Base(object):
         network = PoolLayer(network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
         return network
 
-    def conv_layers_simple_api(self, net_in):
+    @staticmethod
+    def conv_layers_simple_api(net_in):
         with tf.name_scope('preprocess'):
             # Notice that we include a preprocessing layer that takes the RGB image
             # with pixels values in the range of 0-255 and subtracts the mean image
@@ -184,7 +186,8 @@ class Vgg16Base(object):
         network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')
         return network
 
-    def fc_layers(self, net):
+    @staticmethod
+    def fc_layers(net):
         network = FlattenLayer(net, name='flatten')
         network = DenseLayer(network, n_units=4096, act=tf.nn.relu, name='fc1_relu')
         network = DenseLayer(network, n_units=4096, act=tf.nn.relu, name='fc2_relu')
@@ -195,14 +198,14 @@ class Vgg16Base(object):
 class Vgg16Simple(Vgg16Base):
     def __call__(self, x):
         net_in = InputLayer(x, name='input')
-        net_cnn = self.conv_layers_simple_api(net_in)  # simplified CNN APIs
-        network = self.fc_layers(net_cnn)
+        net_cnn = Vgg16Base.conv_layers_simple_api(net_in)  # simplified CNN APIs
+        network = Vgg16Base.fc_layers(net_cnn)
         return network
 
 
 class Vgg16Professional(Vgg16Base):
     def __call__(self, x):
         net_in = InputLayer(x, name='input')
-        net_cnn = self.conv_layers(net_in)
-        network = self.fc_layers(net_cnn)
+        net_cnn = Vgg16Base.conv_layers(net_in)
+        network = Vgg16Base.fc_layers(net_cnn)
         return network
