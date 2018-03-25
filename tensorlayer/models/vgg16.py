@@ -32,7 +32,7 @@ from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer,
 from ..files import maybe_download_and_extract, assign_params
 
 __all__ = [
-    'vgg16',
+    'Vgg16',
 ]
 
 
