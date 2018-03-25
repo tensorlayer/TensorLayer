@@ -307,10 +307,11 @@ class Vgg16(Vgg16Base):
     - Reuse model
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
+    >>> # get VGG without the last layer
     >>> vgg1 = tl.models.Vgg16(x1, end_with='fc2_relu')
-    >>> # reuse parameters of vgg1, but use different input
+    >>> # reuse the parameters of vgg1 with different input
     >>> vgg2 = tl.models.Vgg16(x2, end_with='fc2_relu', reuse=True)
-    >>> # restore pre-trained VGG parameters (as they share parameters, don’t need to restore vgg2)
+    >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
     >>> sess = tf.InteractiveSession()
     >>> vgg1.restore_params(sess)
 
