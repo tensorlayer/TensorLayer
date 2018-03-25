@@ -402,7 +402,7 @@ class Layer(object):
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
         elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-        elif prev_layer is not None:    # tl.models
+        elif prev_layer is not None:  # tl.models
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
