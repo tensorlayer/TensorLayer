@@ -29,7 +29,7 @@ vgg.print_layers()
 img1 = tl.vis.read_image('data/tiger.jpeg')
 img1 = tl.prepro.imresize(img1, (224, 224))
 
-_ = sess.run(probs, feed_dict={x: [img1]})[0] # 1st time takes time to compile
+_ = sess.run(probs, feed_dict={x: [img1]})[0]  # 1st time takes time to compile
 start_time = time.time()
 prob = sess.run(probs, feed_dict={x: [img1]})[0]
 print("  End time : %.5ss" % (time.time() - start_time))

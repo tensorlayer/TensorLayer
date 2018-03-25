@@ -31,7 +31,10 @@ from .. import _logging as logging
 from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer, MaxPool2d, PoolLayer)
 from ..files import maybe_download_and_extract, assign_params
 
-__all__ = ['vgg16',]
+__all__ = [
+    'vgg16',
+]
+
 
 class Vgg16Base(object):
     """The vgg16 model."""
@@ -262,6 +265,7 @@ class Vgg16Base(object):
         assign_params(sess, params, self.net)
         del params
 
+
 class Vgg16(Vgg16Base):
     """Pre-trained VGG-16 Model.
 
@@ -322,6 +326,7 @@ class Vgg16(Vgg16Base):
             self.all_drop = self.net.all_drop
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params
+
 
 # class Vgg16(Vgg16Base):
 #     def __call__(self, x):
