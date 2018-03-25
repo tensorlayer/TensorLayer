@@ -1839,16 +1839,18 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
             if (totalSize != 0):
                 totalBlocks = math.ceil(float(totalSize) / float(blockSize))
                 percent = float(count) / float(totalBlocks) * 100.0
-                sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
-                sys.stdout.flush()
+                # https://www.quora.com/How-can-I-delete-the-last-printed-line-in-Python-language
+                sys.stdout.write('\033[F')  # back to previous line
+                sys.stdout.write('\033[K')  # clear line
+                sys.stdout.write('Downloading %s...%g%%\n' % (filename, percent))
 
         if sys.version_info[0] == 2:
             from urllib import urlretrieve
         else:
             from urllib.request import urlretrieve
         filepath = os.path.join(working_directory, filename)
+        sys.stdout.write('Downloading %s...\n' % filename)
         urlretrieve(url_source + filename, filepath, reporthook=_dlProgress)
-        sys.stdout.write('\n')
 
     exists_or_mkdir(working_directory, verbose=False)
     filepath = os.path.join(working_directory, filename)

@@ -65,10 +65,8 @@ probs = tf.nn.softmax(y)
 # correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
 # acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-if not os.path.isfile("vgg16_weights.npz"):
-    print("Please download vgg16_weights.npz from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
-    exit()
-npz = np.load('vgg16_weights.npz')
+tl.files.maybe_download_and_extract('vgg16_weights.npz', 'data', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134)
+npz = np.load('data/vgg16_weights.npz')
 
 params = []
 for val in sorted(npz.items()):
