@@ -33,6 +33,7 @@ sake of cross-platform.
 """
 
 import gzip
+import math
 import os
 import pickle
 import re
@@ -1836,7 +1837,8 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     def _download(filename, working_directory, url_source):
         def _dlProgress(count, blockSize, totalSize):
             if (totalSize != 0):
-                percent = float(count * blockSize) / float(totalSize) * 100.0
+                totalBlocks = math.ceil(float(totalSize) / float(blockSize))
+                percent = float(count) / float(totalBlocks) * 100.0
                 sys.stdout.write("\r" "Downloading " + filename + "...%d%%" % percent)
                 sys.stdout.flush()
 
