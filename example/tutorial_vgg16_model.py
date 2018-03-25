@@ -65,10 +65,6 @@ probs = tf.nn.softmax(y)
 # correct_prediction = tf.equal(tf.cast(tf.argmax(y, 1), tf.float32), tf.cast(y_, tf.float32))
 # acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-tl.layers.initialize_global_variables(sess)
-network.print_params()
-network.print_layers()
-
 if not os.path.isfile("vgg16_weights.npz"):
     print("Please download vgg16_weights.npz from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
     exit()
@@ -80,6 +76,8 @@ for val in sorted(npz.items()):
     params.append(val[1])
 
 tl.files.assign_params(sess, params, network)
+network.print_params()
+network.print_layers()
 
 img1 = imread('data/laska.png', mode='RGB')  # test data in github
 img1 = imresize(img1, (224, 224))
