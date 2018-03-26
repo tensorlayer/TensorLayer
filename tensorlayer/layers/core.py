@@ -402,8 +402,11 @@ class Layer(object):
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
         elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-        elif prev_layer is not None:
-            raise Exception("Unknown layer type %s" % type(prev_layer))
+        elif prev_layer is not None:  # tl.models
+            self.all_layers = list(prev_layer.all_layers)
+            self.all_params = list(prev_layer.all_params)
+            self.all_drop = dict(prev_layer.all_drop)
+            # raise Exception("Unknown layer type %s" % type(prev_layer))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -934,11 +937,6 @@ class DenseLayer(Layer):
             else:
                 self.outputs = act(tf.matmul(self.inputs, W))
 
-        # Hint : list(), dict() is pass by value (shallow), without them, it is
-        # pass by reference.
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         if b_init is not None:
             self.all_params.extend([W, b])
