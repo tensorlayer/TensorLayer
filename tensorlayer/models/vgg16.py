@@ -327,19 +327,3 @@ class VGG16(VGG16Base):
             self.all_drop = self.net.all_drop
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params
-
-
-# class VGG16(VGG16Base):
-#     def __call__(self, x):
-#         net_in = InputLayer(x, name='input')
-#         net_cnn = VGG16Base.conv_layers_simple_api(net_in)  # simplified CNN APIs
-#         net = VGG16Base.fc_layers(net_cnn)
-#         return net
-#
-#
-# class VGG16Professional(VGG16Base):
-#     def __call__(self, x):
-#         net_in = InputLayer(x, name='input')
-#         net_cnn = VGG16Base.conv_layers(net_in)
-#         net = VGG16Base.fc_layers(net_cnn)
-#         return net
