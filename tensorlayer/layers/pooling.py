@@ -202,12 +202,12 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
 
 # def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
 class MaxPool3d(Layer):
-    """Max pooling for 3D volume [batch, height, width, depth, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
+    """Max pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
     Parameters
     ------------
     layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, height, width, depth, channel].
+        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -242,12 +242,12 @@ class MaxPool3d(Layer):
 
 # def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
 class MeanPool3d(Layer):
-    """Mean pooling for 3D volume [batch, height, width, depth, channel]. Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
+    """Mean pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 
     Parameters
     ------------
     layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, height, width, depth, channel].
+        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
     filter_size : tuple of int
         Pooling window size.
     strides : tuple of int
@@ -428,7 +428,7 @@ class GlobalMaxPool3d(Layer):
     Parameters
     ------------
     layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, height, width, depth, channel].
+        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
     name : str
         A unique layer name.
 
@@ -463,7 +463,7 @@ class GlobalMeanPool3d(Layer):
     Parameters
     ------------
     layer : :class:`Layer`
-        The previous layer with a output rank as 5 [batch, height, width, depth, channel].
+        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
     name : str
         A unique layer name.
 
