@@ -111,3 +111,9 @@ if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 50) or (shape[4] != 32):
 # n = tl.layers.DeConv3dLayer(nin, shape=(2, 2, 2, 128, 3), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1))
 # print(n)
 # shape = n.outputs.get_shape().as_list()
+
+n = tl.layers.DeConv3d(nin, 32, (3, 3, 3), (2, 2, 2))
+shape = n.outputs.get_shape().as_list()
+print(shape)
+if (shape[1] != 200) or (shape[2] != 200) or (shape[3] != 200) or (shape[4] != 32):
+    raise Exception("shape dont match")

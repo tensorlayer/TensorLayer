@@ -112,7 +112,7 @@ class ZeroPad2d(Layer):
 
 class ZeroPad3d(Layer):
     """
-    The :class:`ZeroPad3d` class is a 3D padding layer for volume [batch, height, width, depth, channel].
+    The :class:`ZeroPad3d` class is a 3D padding layer for volume [batch, depth, height, width, channel].
 
     Parameters
     ----------

@@ -1561,6 +1561,7 @@ class DeConv3d(Layer):
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.conv3d_transpose(
+                inputs=self.inputs,
                 num_outputs=n_filter,
                 kernel_size=filter_size,
                 stride=strides,
