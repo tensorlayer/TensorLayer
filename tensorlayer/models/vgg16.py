@@ -208,7 +208,8 @@ class VGG16Base(object):
         net = net_in
         for l in layers:
             net = l(net)
-            if end_with in net.name:
+            # if end_with in net.name:
+            if net.name.endswith(end_with):
                 return net
 
         raise Exception("unknown layer name (end_with): {}".format(end_with))
