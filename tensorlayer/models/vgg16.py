@@ -32,12 +32,12 @@ from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer,
 from ..files import maybe_download_and_extract, assign_params
 
 __all__ = [
-    'Vgg16',
+    'VGG16',
 ]
 
 
-class Vgg16Base(object):
-    """The vgg16 model."""
+class VGG16Base(object):
+    """The VGG16 model."""
 
     @staticmethod
     def conv_layers(net_in):
@@ -266,7 +266,7 @@ class Vgg16Base(object):
         del params
 
 
-class Vgg16(Vgg16Base):
+class VGG16(VGG16Base):
     """Pre-trained VGG-16 Model.
 
     Parameters
@@ -283,7 +283,7 @@ class Vgg16(Vgg16Base):
     - Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>__`
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
-    >>> vgg = tl.models.Vgg16(x)
+    >>> vgg = tl.models.VGG16(x)
     >>> # restore pre-trained VGG parameters
     >>> sess = tf.InteractiveSession()
     >>> vgg.restore_params(sess)
@@ -293,7 +293,7 @@ class Vgg16(Vgg16Base):
     - Extract features with VGG16 and Train a classifier with 100 classes
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
-    >>> vgg = tl.models.Vgg16(x, end_with='fc2_relu')
+    >>> vgg = tl.models.VGG16(x, end_with='fc2_relu')
     >>> # add one more layer
     >>> net = tl.layers.DenseLayer(vgg, 100, name='out')
     >>> # initialize all parameters
@@ -308,9 +308,9 @@ class Vgg16(Vgg16Base):
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
-    >>> vgg1 = tl.models.Vgg16(x1, end_with='fc2_relu')
+    >>> vgg1 = tl.models.VGG16(x1, end_with='fc2_relu')
     >>> # reuse the parameters of vgg1 with different input
-    >>> vgg2 = tl.models.Vgg16(x2, end_with='fc2_relu', reuse=True)
+    >>> vgg2 = tl.models.VGG16(x2, end_with='fc2_relu', reuse=True)
     >>> # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
     >>> sess = tf.InteractiveSession()
     >>> vgg1.restore_params(sess)
@@ -320,7 +320,7 @@ class Vgg16(Vgg16Base):
     def __init__(self, x, end_with='fc3_relu', reuse=None):
         with tf.variable_scope("vgg16", reuse=reuse):
             net = InputLayer(x, name='input')
-            self.net = Vgg16Base.vgg16_simple_api(net, end_with)
+            self.net = VGG16Base.vgg16_simple_api(net, end_with)
             self.outputs = self.net.outputs
             self.all_params = self.net.all_params
             self.all_layers = self.net.all_layers
@@ -329,17 +329,17 @@ class Vgg16(Vgg16Base):
             self.print_params = self.net.print_params
 
 
-# class Vgg16(Vgg16Base):
+# class VGG16(VGG16Base):
 #     def __call__(self, x):
 #         net_in = InputLayer(x, name='input')
-#         net_cnn = Vgg16Base.conv_layers_simple_api(net_in)  # simplified CNN APIs
-#         net = Vgg16Base.fc_layers(net_cnn)
+#         net_cnn = VGG16Base.conv_layers_simple_api(net_in)  # simplified CNN APIs
+#         net = VGG16Base.fc_layers(net_cnn)
 #         return net
 #
 #
-# class Vgg16Professional(Vgg16Base):
+# class VGG16Professional(VGG16Base):
 #     def __call__(self, x):
 #         net_in = InputLayer(x, name='input')
-#         net_cnn = Vgg16Base.conv_layers(net_in)
-#         net = Vgg16Base.fc_layers(net_cnn)
+#         net_cnn = VGG16Base.conv_layers(net_in)
+#         net = VGG16Base.fc_layers(net_cnn)
 #         return net

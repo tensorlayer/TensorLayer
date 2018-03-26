@@ -13,7 +13,7 @@ from tensorlayer.models.imagenet_classes import class_names
 x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 
 # get the whole model
-vgg = tl.models.Vgg16(x)
+vgg = tl.models.VGG16(x)
 
 # restore pre-trained VGG parameters
 sess = tf.InteractiveSession()
