@@ -172,82 +172,45 @@ class VGG16Base(object):
             mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
             net_in.outputs = net_in.outputs - mean
 
-        # conv1
-        net = Conv2d(net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
-        if end_with in net.name:
-            return net
-        net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
-        if end_with in net.name:
-            return net
+        layers = [
+            # conv1
+            lambda net: Conv2d(net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),
+            lambda net: Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2'),
+            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
 
-        # conv2
-        net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
-        if end_with in net.name:
-            return net
-        net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
-        if end_with in net.name:
-            return net
+            # conv2
+            lambda net: Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1'),
+            lambda net: Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2'),
+            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
 
-        # conv3
-        net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
-        if end_with in net.name:
-            return net
-        net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
-        if end_with in net.name:
-            return net
+            # conv3
+            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1'),
+            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2'),
+            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3'),
+            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
 
-        # conv4
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
-        if end_with in net.name:
-            return net
-        net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4')
-        if end_with in net.name:
-            return net
+            # conv4
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1'),
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2'),
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3'),
+            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
 
-        # conv5
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')
-        if end_with in net.name:
-            return net
-        net = Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
-        if end_with in net.name:
-            return net
-        net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')
-        if end_with in net.name:
-            return net
+            # conv5
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1'),
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2'),
+            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'),
+            lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
+            lambda net: FlattenLayer(net, name='flatten'),
+            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
+            lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
+            lambda net: DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu'),
+        ]
+        net = net_in
+        for l in layers:
+            net = l(net)
+            if end_with in net.name:
+                return net
 
-        net = FlattenLayer(net, name='flatten')
-        if end_with in net.name:
-            return net
-        net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
-        if end_with in net.name:
-            return net
-        net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-        if end_with in net.name:
-            return net
-        net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
-        if end_with in net.name:
-            return net
         raise Exception("unknown layer name (end_with): {}".format(end_with))
 
     def restore_params(self, sess):
