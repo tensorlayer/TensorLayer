@@ -11,7 +11,7 @@ More
 
   Coming soon
 
-FQA
+FAQ
 ===========
 
 How to effectively learn TensorLayer
