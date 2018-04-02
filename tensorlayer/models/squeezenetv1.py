@@ -79,7 +79,8 @@ class SqueezeNetV1(Layer):
         self.print_layers = self.net.print_layers
         self.print_params = self.net.print_params
 
-    def squeezenetv1(self, x, end_with='output', is_train=False, reuse=None):
+    @classmethod
+    def squeezenetv1(cls, x, end_with='output', is_train=False, reuse=None):
         with tf.variable_scope("squeezenetv1", reuse=reuse):
             with tf.variable_scope("input"):
                 n = InputLayer(x)
