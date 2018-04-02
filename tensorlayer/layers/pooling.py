@@ -166,8 +166,14 @@ def maxpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='max
     """
     if strides is None:
         strides = filter_size
-    assert len(strides) == 2, "len(strides) should be 2, MaxPool2d and PoolLayer are different."
-    net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.max_pool, name=name)
+    if tf.__version__ > '1.5':
+        outputs = tf.layers.max_pooling2d(net.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
+        net_new = copy.copy(net)
+        net_new.outputs = outputs
+        net_new.all_layers.extend([outputs])
+    else:
+        assert len(strides) == 2, "len(strides) should be 2, MaxPool2d and PoolLayer are different."
+        net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.max_pool, name=name)
     return net
 
 
@@ -195,8 +201,14 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
     """
     if strides is None:
         strides = filter_size
-    assert len(strides) == 2, "len(strides) should be 2, MeanPool2d and PoolLayer are different."
-    net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.avg_pool, name=name)
+    if tf.__version__ > '1.5':
+        outputs = tf.layers.average_pooling2d(net.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
+        net_new = copy.copy(net)
+        net_new.outputs = outputs
+        net_new.all_layers.extend([outputs])
+    else:
+        assert len(strides) == 2, "len(strides) should be 2, MeanPool2d and PoolLayer are different."
+        net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.avg_pool, name=name)
     return net
 
 
