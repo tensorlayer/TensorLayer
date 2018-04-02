@@ -171,10 +171,11 @@ def maxpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='max
         net_new = copy.copy(net)
         net_new.outputs = outputs
         net_new.all_layers.extend([outputs])
+        return net_new
     else:
         assert len(strides) == 2, "len(strides) should be 2, MaxPool2d and PoolLayer are different."
         net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.max_pool, name=name)
-    return net
+        return net
 
 
 def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool'):
@@ -206,10 +207,11 @@ def meanpool2d(net, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='me
         net_new = copy.copy(net)
         net_new.outputs = outputs
         net_new.all_layers.extend([outputs])
+        return net_new
     else:
         assert len(strides) == 2, "len(strides) should be 2, MeanPool2d and PoolLayer are different."
         net = PoolLayer(net, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.avg_pool, name=name)
-    return net
+        return net
 
 
 # def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
