@@ -74,7 +74,7 @@ Logging
 
 TensorLayer adopts the `Python logging module <https://docs.python.org/3/library/logging.html>`__
 to log running information.
-The logging module would print logs to the console in default. 
+The logging module would print logs to the console in default.
 If you want to configure the logging module,
 you shall follow its `manual <https://docs.python.org/3/library/logging.html>`__.
 
@@ -90,7 +90,7 @@ If you run the script via SSH control, sometime you may find the following error
 
   _tkinter.TclError: no display name and no $DISPLAY environment variable
 
-If happen, use ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
+If happen, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
 Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
 
 .. code-block:: python
