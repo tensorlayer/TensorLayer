@@ -37,9 +37,8 @@ following snippet:
 """
 
 import os
-
 from scipy.misc import imread, imresize
-
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
@@ -247,6 +246,7 @@ tl.files.assign_params(sess, params, network)
 img1 = imread('data/laska.png', mode='RGB')  # test data in github
 img1 = imresize(img1, (224, 224))
 
+_ = sess.run(probs, feed_dict={x: [img1]})[0]  # 1st time take time to compile
 start_time = time.time()
 prob = sess.run(probs, feed_dict={x: [img1]})[0]
 print("  End time : %.5ss" % (time.time() - start_time))
