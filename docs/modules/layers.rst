@@ -488,7 +488,7 @@ APIs may better for you.
 
 2D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: Conv2d
+.. autoclass:: Conv2d
 
 2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
