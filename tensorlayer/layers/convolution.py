@@ -209,9 +209,6 @@ class Conv2dLayer(Layer):
             else:
                 self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([W, b])
@@ -1316,21 +1313,8 @@ def conv1d(
 # TODO: DeConv1d
 
 
-def conv2d(
-        layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        name='conv2d',
-):
+# def conv2d(
+class Conv2d(Layer):
     """Simplified version of :class:`Conv2dLayer`.
 
     Parameters
@@ -1353,13 +1337,13 @@ def conv2d(
     b_init : initializer or None
         The initializer for the the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for the weight matrix initializer.
+        The arguments for the weight matrix initializer (for TF < 1.5).
     b_init_args : dictionary
-        The arguments for the bias vector initializer.
+        The arguments for the bias vector initializer (for TF < 1.5).
     use_cudnn_on_gpu : bool
-        Default is False.
+        Default is False (for TF < 1.5).
     data_format : str
-        "NHWC" or "NCHW", default is "NHWC".
+        "NHWC" or "NCHW", default is "NHWC" (for TF < 1.5).
     name : str
         A unique layer name.
 
@@ -1381,32 +1365,117 @@ def conv2d(
 
     """
 
-    if W_init_args is None:
-        W_init_args = {}
-    if b_init_args is None:
-        b_init_args = {}
+    def __init__(
+            self,
+            layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            name='conv2d',
+    ):
+        # if W_init_args is None:
+        #     W_init_args = {}
+        # if b_init_args is None:
+        #     b_init_args = {}
+        #
+        # if len(strides) != 2:
+        #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
+        #
+        # try:
+        #     pre_channel = int(layer.outputs.get_shape()[-1])
+        # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+        #     pre_channel = 1
+        #     logging.info("[warnings] unknow input channels, set to 1")
+        # return Conv2dLayer(
+        #     layer,
+        #     act=act,
+        #     shape=(filter_size[0], filter_size[1], pre_channel, n_filter),  # 32 features for each 5x5 patch
+        #     strides=(1, strides[0], strides[1], 1),
+        #     padding=padding,
+        #     W_init=W_init,
+        #     W_init_args=W_init_args,
+        #     b_init=b_init,
+        #     b_init_args=b_init_args,
+        #     use_cudnn_on_gpu=use_cudnn_on_gpu,
+        #     data_format=data_format,
+        #     name=name)
 
-    if len(strides) != 2:
-        raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
 
-    try:
-        pre_channel = int(layer.outputs.get_shape()[-1])
-    except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-        pre_channel = 1
-        logging.info("[warnings] unknow input channels, set to 1")
-    return Conv2dLayer(
-        layer,
-        act=act,
-        shape=(filter_size[0], filter_size[1], pre_channel, n_filter),  # 32 features for each 5x5 patch
-        strides=(1, strides[0], strides[1], 1),
-        padding=padding,
-        W_init=W_init,
-        W_init_args=W_init_args,
-        b_init=b_init,
-        b_init_args=b_init_args,
-        use_cudnn_on_gpu=use_cudnn_on_gpu,
-        data_format=data_format,
-        name=name)
+        Layer.__init__(self, prev_layer=layer, name=name)
+        self.inputs = layer.outputs
+
+        if act is None:
+            act = tf.identity
+
+        if tf.__version__ > '1.5':
+            logging.info("Conv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
+                                                                                             act.__name__))
+            # with tf.variable_scope(name) as vs:
+            conv2d = tf.layers.Conv2D(
+                # inputs=self.inputs,
+                filters=n_filter,
+                kernel_size=filter_size,
+                strides=strides,
+                padding=padding,
+                data_format='channels_last',
+                dilation_rate=(1, 1),
+                activation=act,
+                use_bias=(False if b_init is None else True),
+                kernel_initializer=W_init,  #None,
+                bias_initializer=b_init,  #f.zeros_initializer(),
+                kernel_regularizer=None,
+                bias_regularizer=None,
+                activity_regularizer=None,
+                kernel_constraint=None,
+                bias_constraint=None,
+                trainable=True,
+                name=name,
+                # reuse=None,
+            )
+            self.outputs = conv2d(self.inputs)
+            new_variables = conv2d.weights  #trainable_variables #tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self.all_layers.append(self.outputs)
+            self.all_params.extend(new_variables)
+        else:
+            if len(strides) != 2:
+                raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
+            try:
+                pre_channel = int(layer.outputs.get_shape()[-1])
+            except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
+                pre_channel = 1
+                logging.info("[warnings] unknow input channels, set to 1")
+            shape = (filter_size[0], filter_size[1], pre_channel, n_filter)  # 32 features for each 5x5 patch
+            strides = (1, strides[0], strides[1], 1)
+
+            logging.info("Conv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
+
+            with tf.variable_scope(name):
+                W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+                if b_init:
+                    b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    self.outputs = act(
+                        tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
+                else:
+                    self.outputs = act(
+                        tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+
+            self.all_layers.append(self.outputs)
+            if b_init:
+                self.all_params.extend([W, b])
+            else:
+                self.all_params.append(W)
 
 
 def deconv2d(layer,
@@ -1895,5 +1964,5 @@ class GroupConv2d(Layer):
 # Alias
 AtrousConv1dLayer = atrous_conv1d
 Conv1d = conv1d
-Conv2d = conv2d
+# Conv2d = conv2d
 DeConv2d = deconv2d
