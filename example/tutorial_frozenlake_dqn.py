@@ -27,6 +27,7 @@ of 1 if you reach the goal, and zero otherwise.
 """
 
 import gym
+import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
