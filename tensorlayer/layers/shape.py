@@ -37,16 +37,13 @@ class FlattenLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            name='flatten_layer',
+            name='flatten',
     ):
         Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
         logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -76,15 +73,12 @@ class ReshapeLayer(Layer):
             self,
             prev_layer,
             shape,
-            name='reshape_layer',
+            name='reshape',
     ):
         Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -122,10 +116,5 @@ class TransposeLayer(Layer):
         assert perm is not None
 
         logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))
-        # with tf.variable_scope(name) as vs:
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
-        # self.all_params.extend( variables )
