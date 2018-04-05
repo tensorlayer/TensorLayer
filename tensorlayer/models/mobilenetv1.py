@@ -145,7 +145,7 @@ class MobileNetV1(Layer):
 
             raise Exception("end_with : conv, depth1, depth2 ... depth13, globalmeanpool, out")
 
-    # @classmethod
+    @classmethod
     def conv_block(cls, n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
         # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
         with tf.variable_scope(name):
@@ -153,7 +153,7 @@ class MobileNetV1(Layer):
             n = BatchNormLayer(n, act=tf.nn.relu6, is_train=is_train, name='batchnorm')
         return n
 
-    # @classmethod
+    @classmethod
     def depthwise_conv_block(cls, n, n_filter, strides=(1, 1), is_train=False, name="depth_block"):
         with tf.variable_scope(name):
             n = DepthwiseConv2d(n, (3, 3), strides, b_init=None, name='depthwise')
