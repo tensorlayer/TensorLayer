@@ -245,6 +245,7 @@ class VGG16(VGG16Base):
     Examples
     ---------
     Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>__`
+
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
     >>> vgg = tl.models.VGG16(x)
@@ -255,6 +256,7 @@ class VGG16(VGG16Base):
     >>> probs = tf.nn.softmax(vgg.outputs)
 
     Extract features with VGG16 and Train a classifier with 100 classes
+
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
     >>> vgg = tl.models.VGG16(x, end_with='fc2_relu')
@@ -269,6 +271,7 @@ class VGG16(VGG16Base):
     >>> train_params = tl.layers.get_variables_with_name('out')
 
     Reuse model
+
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
