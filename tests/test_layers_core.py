@@ -175,8 +175,8 @@ if shape != [64, 100]:
 if len(net.all_layers) != 2:
     raise Exception("layers dont match")
 
-if len(net.all_params) != 2:
+if len(net.all_params) != 4:
     raise Exception("params dont match")
 
-if net.count_params() != 78500:
+if net.count_params() != 88600:
     raise Exception("params dont match")
