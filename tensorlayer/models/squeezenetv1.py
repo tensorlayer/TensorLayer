@@ -31,7 +31,7 @@ class SqueezeNetV1(Layer):
 
     Examples
     ---------
-    Classify ImageNet classes, see `tutorial_models_squeezenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_squeezenetv1.py>__`
+    Classify ImageNet classes, see `tutorial_models_squeezenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_squeezenetv1.py>`__
 
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
@@ -62,7 +62,7 @@ class SqueezeNetV1(Layer):
 
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> # get VGG without the last layer
+    >>> # get model without the last layer
     >>> net1 = tl.models.SqueezeNetV1(x1, end_with='fire9')
     >>> # reuse the parameters with different input
     >>> net2 = tl.models.SqueezeNetV1(x2, end_with='fire9', reuse=True)
@@ -90,16 +90,14 @@ class SqueezeNetV1(Layer):
                 # n = Conv2d(n, 96, (7,7),(2,2),tf.nn.relu,'SAME',name='conv1')
                 n = Conv2d(n, 64, (3, 3), (2, 2), tf.nn.relu, 'SAME', name='conv1')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire2"):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire3"):
                 n = Conv2d(n, 16, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
@@ -107,16 +105,14 @@ class SqueezeNetV1(Layer):
                 n2 = Conv2d(n, 64, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire4"):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 128, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire5"):
                 n = Conv2d(n, 32, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
@@ -124,47 +120,41 @@ class SqueezeNetV1(Layer):
                 n2 = Conv2d(n, 128, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
                 n = MaxPool2d(n, (3, 3), (2, 2), 'VALID', name='max')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire6"):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire7"):
                 n = Conv2d(n, 48, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 192, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 192, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire8"):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("fire9"):
                 n = Conv2d(n, 64, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='squeeze1x1')
                 n1 = Conv2d(n, 256, (1, 1), (1, 1), tf.nn.relu, 'SAME', name='expand1x1')
                 n2 = Conv2d(n, 256, (3, 3), (1, 1), tf.nn.relu, 'SAME', name='expand3x3')
                 n = ConcatLayer([n1, n2], -1, name='concat')
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             with tf.variable_scope("output"):
                 n = DropoutLayer(n, keep=0.5, is_fix=True, is_train=is_train, name='drop1')
                 n = Conv2d(n, 1000, (1, 1), (1, 1), padding='VALID', name='conv10')  # 13, 13, 1000
                 n = GlobalMeanPool2d(n)
-            if end_with in n.outputs.name:
-                return n
+            if end_with in n.outputs.name: return n
 
             raise Exception("end_with : input, fire2, fire3 ... fire9, output")
 

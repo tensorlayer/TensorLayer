@@ -244,7 +244,7 @@ class VGG16(VGG16Base):
 
     Examples
     ---------
-    Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>__`
+    Classify ImageNet classes with VGG16, see `tutorial_models_vgg16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_vgg16.py>`__
 
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
