@@ -31,7 +31,7 @@ class MobileNetV1(Layer):
 
     Examples
     ---------
-    Classify ImageNet classes, see `tutorial_models_mobilenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_mobilenetv1.py>__`
+    Classify ImageNet classes, see `tutorial_models_mobilenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_mobilenetv1.py>`__
 
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
