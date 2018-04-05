@@ -119,13 +119,13 @@ def main_test_layers(model='relu'):
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            try:
-                # You can visualize the weight of 1st hidden layer as follow.
-                tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
-                # You can also save the weight of 1st hidden layer to .npz file.
-                # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
-            except:  # pylint: disable=bare-except
-                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
+            # try:
+            #     # You can visualize the weight of 1st hidden layer as follow.
+            #     tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
+            #     # You can also save the weight of 1st hidden layer to .npz file.
+            #     # tl.files.save_npz([network.all_params[0]] , name='w1'+str(epoch+1)+'.npz')
+            # except:  # pylint: disable=bare-except
+            #     print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -306,11 +306,11 @@ def main_test_stacked_denoise_AE(model='relu'):
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            try:
-                # visualize the 1st hidden layer during fine-tune
-                tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
-            except:  # pylint: disable=bare-except
-                print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
+            # try:
+            #     # visualize the 1st hidden layer during fine-tune
+            #     tl.vis.draw_weights(network.all_params[0].eval(), second=10, saveable=True, shape=[28, 28], name='w1_' + str(epoch + 1), fig_idx=2012)
+            # except:  # pylint: disable=bare-except
+            #     print("You should change vis.draw_weights(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -451,10 +451,10 @@ def main_test_cnn_layer():
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            try:
-                tl.vis.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_' + str(epoch + 1), fig_idx=2012)
-            except:  # pylint: disable=bare-except
-                print("You should change vis.CNN(), if you want to save the feature images for different dataset")
+            # try:
+            #     tl.vis.CNN2d(network.all_params[0].eval(), second=10, saveable=True, name='cnn1_' + str(epoch + 1), fig_idx=2012)
+            # except:  # pylint: disable=bare-except
+            #     print("You should change vis.CNN(), if you want to save the feature images for different dataset")
 
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
@@ -474,7 +474,7 @@ if __name__ == '__main__':
     sess = tf.InteractiveSession()
 
     # Dropout and Dropconnect
-    main_test_layers(model='relu')  # model = relu, dropconnect
+    # main_test_layers(model='relu')  # model = relu, dropconnect
 
     # Single Denoising Autoencoder
     # main_test_denoise_AE(model='sigmoid')       # model = relu, sigmoid
@@ -483,4 +483,4 @@ if __name__ == '__main__':
     # main_test_stacked_denoise_AE(model='relu')  # model = relu, sigmoid
 
     # CNN
-    # main_test_cnn_layer()
+    main_test_cnn_layer()
