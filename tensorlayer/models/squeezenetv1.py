@@ -32,6 +32,7 @@ class SqueezeNetV1(Layer):
     Examples
     ---------
     Classify ImageNet classes, see `tutorial_models_squeezenetv1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_squeezenetv1.py>__`
+
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get the whole model
     >>> net = tl.models.SqueezeNetV1(x)
@@ -42,6 +43,7 @@ class SqueezeNetV1(Layer):
     >>> probs = tf.nn.softmax(net.outputs)
 
     Extract features and Train a classifier with 100 classes
+
     >>> x = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get model without the last layer
     >>> cnn = tl.models.SqueezeNetV1(x, end_with='fire9')
@@ -57,6 +59,7 @@ class SqueezeNetV1(Layer):
     >>> train_params = tl.layers.get_variables_with_name('output')
 
     Reuse model
+
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> # get VGG without the last layer
