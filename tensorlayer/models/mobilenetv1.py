@@ -62,7 +62,7 @@ class MobileNetV1(Layer):
 
     >>> x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
     >>> x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-    >>> # get VGG without the last layer
+    >>> # get model without the last layer
     >>> net1 = tl.models.MobileNetV1(x1, end_with='reshape')
     >>> # reuse the parameters with different input
     >>> net2 = tl.models.MobileNetV1(x2, end_with='reshape', reuse=True)
