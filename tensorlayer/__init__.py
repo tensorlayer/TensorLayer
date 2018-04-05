@@ -10,6 +10,7 @@ except ImportError:
 from . import activation
 from . import cost
 from . import files
+from . import graph
 from . import iterate
 from . import layers
 from . import models

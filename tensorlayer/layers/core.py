@@ -393,16 +393,19 @@ class Layer(object):
         if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
+            self.prev_layers = [prev_layer]
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
         elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
+            self.prev_layers = list(prev_layer)
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
         elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
         elif prev_layer is not None:  # tl.models
+            self.prev_layers = []  # TODO: use last layer of model as prev_layer
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
@@ -492,6 +495,7 @@ class InputLayer(Layer):
         Layer.__init__(self, name=name)
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
         self.outputs = inputs
+        self.prev_layers = []
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
