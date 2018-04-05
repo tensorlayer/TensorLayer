@@ -52,6 +52,7 @@ method, this part of the documentation is for you.
   modules/files
   modules/visualize
   modules/activation
+  modules/models
   modules/distributed
 
 
