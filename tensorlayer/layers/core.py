@@ -1387,8 +1387,6 @@ class DropconnectDenseLayer(Layer):
         # self.all_layers = list(layer.all_layers)
         # self.all_params = list(layer.all_params)
         # self.all_drop = dict(layer.all_drop)
-        # self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        # self.all_layers.append(self.outputs)
-        # self.all_params.extend([W, b])
-
+        self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.append(self.outputs)
+        self.all_params.extend([W, b])
