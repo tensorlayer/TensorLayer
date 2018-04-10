@@ -24,6 +24,7 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 - Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
 # News
+* [10 Apr] Load and visualize MPII dataset in one line of code.
 * [05 Apr] Release [models APIs](http://tensorlayer.readthedocs.io/en/latest/modules/models.html#) for well-known pretained networks.
 * [18 Mar] Release experimental APIs for binary networks.
 * [18 Jan] [《深度学习：一起玩转TensorLayer》](http://www.broadview.com.cn/book/5059) (Deep Learning using TensorLayer)
