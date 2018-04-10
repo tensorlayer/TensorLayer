@@ -600,7 +600,7 @@ class DownSampling2dLayer(Layer):
                 size_w = size[1] * int(self.inputs.get_shape()[2])
                 size = [int(size_h), int(size_w)]
         else:
-            raise Exception("Donot support shape %s" % self.inputs.get_shape())
+            raise Exception("Do not support shape %s" % self.inputs.get_shape())
         logging.info("DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
         with tf.variable_scope(name):
             try:
