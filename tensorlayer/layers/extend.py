@@ -35,11 +35,16 @@ class ExpandDimsLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            axis,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            axis=0,
             name='expand_dims',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
 
         logging.info("ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
@@ -83,10 +88,15 @@ class TileLayer(Layer):
     def __init__(
             self,
             prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             multiples=None,
             name='tile',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(TileLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(TileLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
 
         logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))

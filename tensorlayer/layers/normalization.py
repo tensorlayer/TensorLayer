@@ -38,15 +38,21 @@ class LocalResponseNormLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             depth_radius=None,
             bias=None,
             alpha=None,
             beta=None,
             name='lrn_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" % (self.name, str(depth_radius), str(bias), str(alpha),
                                                                                                      str(beta)))
         with tf.variable_scope(name):
@@ -95,7 +101,8 @@ class BatchNormLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             decay=0.9,
             epsilon=0.00001,
             act=tf.identity,
@@ -104,8 +111,13 @@ class BatchNormLayer(Layer):
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             name='batchnorm_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(BatchNormLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" % (self.name, decay, epsilon, act.__name__, is_train))
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
@@ -245,21 +257,28 @@ class LayerNormLayer(Layer):
 
     """
 
-    def __init__(self,
-                 prev_layer,
-                 center=True,
-                 scale=True,
-                 act=tf.identity,
-                 reuse=None,
-                 variables_collections=None,
-                 outputs_collections=None,
-                 trainable=True,
-                 begin_norm_axis=1,
-                 begin_params_axis=-1,
-                 name='layernorm'):
+    def __init__(
+            self,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            center=True,
+            scale=True,
+            act=tf.identity,
+            reuse=None,
+            variables_collections=None,
+            outputs_collections=None,
+            trainable=True,
+            begin_norm_axis=1,
+            begin_params_axis=-1,
+            name='layernorm'):
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(LayerNormLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("LayerNormLayer %s: act:%s" % (self.name, act.__name__))
 
         if tf.__version__ < "1.3":

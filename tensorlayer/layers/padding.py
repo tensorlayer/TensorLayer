@@ -37,15 +37,22 @@ class PadLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             padding=None,
             mode='CONSTANT',
             name='pad_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(PadLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(PadLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if padding is None:
             raise Exception("padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad")
-        self.inputs = prev_layer.outputs
+
         logging.info("PadLayer   %s: padding:%s mode:%s" % (self.name, list(padding), mode))
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
         self.all_layers.append(self.outputs)
@@ -69,13 +76,22 @@ class ZeroPad1d(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            padding=1,
             name='zeropad1d',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("ZeroPad1d   %s: padding:%s" % (self.name, str(padding)))
+
+        assert isinstance(padding, (int, tuple, dict))
+
         self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)
 
@@ -99,13 +115,22 @@ class ZeroPad2d(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            padding=1,
             name='zeropad2d',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("ZeroPad2d   %s: padding:%s" % (self.name, str(padding)))
+
+        assert isinstance(padding, (int, tuple))
+
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)
 
@@ -129,12 +154,21 @@ class ZeroPad3d(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            padding=1,
             name='zeropad3d',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("ZeroPad3d   %s: padding:%s" % (self.name, str(padding)))
+
+        assert isinstance(padding, (int, tuple))
+
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)

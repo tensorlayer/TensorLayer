@@ -55,17 +55,26 @@ class LambdaLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            fn,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            fn=None,
             fn_args=None,
             name='lambda_layer',
     ):
+
+        # super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(LambdaLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if fn_args is None:
             fn_args = {}
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+
         assert prev_layer is not None
         assert fn is not None
-        self.inputs = prev_layer.outputs
+
         logging.info("LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
@@ -103,18 +112,25 @@ class SlimNetsLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            slim_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            slim_layer=None,
             slim_args=None,
             name='tfslim_layer',
     ):
+
+        # super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if slim_layer is None:
             raise ValueError("slim layer is None")
         if slim_args is None:
             slim_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
         # with tf.variable_scope(name) as vs:
@@ -165,20 +181,28 @@ class KerasLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            keras_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            keras_layer=None,
             keras_args=None,
             name='keras_layer',
     ):
+
+        # super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(KerasLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if prev_layer is None:
             raise ValueError("layer is None")
         if keras_args is None:
             keras_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
-        logging.info("This API will be removed, please use LambdaLayer instead.")
+        logging.warning("This API will be removed, please use LambdaLayer instead.")
+
         with tf.variable_scope(name) as vs:
             self.outputs = keras_layer(self.inputs, **keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -210,19 +234,27 @@ class EstimatorLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            model_fn,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            model_fn=None,
             args=None,
             name='estimator_layer',
     ):
+        # super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(EstimatorLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if model_fn is None:
             raise ValueError('model fn is None')
         if args is None:
             args = {}
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
+
         logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
-        logging.info("This API will be removed, please use LambdaLayer instead.")
+        logging.warning("This API will be removed, please use LambdaLayer instead.")
+
         with tf.variable_scope(name) as vs:
             self.outputs = model_fn(self.inputs, **args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

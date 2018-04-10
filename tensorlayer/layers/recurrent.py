@@ -132,8 +132,9 @@ class RNNLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            cell_fn,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            cell_fn=None,
             cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -143,10 +144,15 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn',
     ):
+        # super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(RNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -154,8 +160,6 @@ class RNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning('pop state_is_tuple fails.')
-
-        self.inputs = prev_layer.outputs
 
         logging.info("RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " % (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims,
                                                                                                 self.inputs.get_shape(), cell_fn.__name__))
@@ -319,8 +323,9 @@ class BiRNNLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            cell_fn,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            cell_fn=None,
             cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -333,10 +338,15 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
+        # super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}  # 'use_peepholes': True,
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -344,8 +354,6 @@ class BiRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-
-        self.inputs = prev_layer.outputs
 
         logging.info("BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden, n_steps,
                                                                                                                         self.inputs.get_shape().ndims,
@@ -689,7 +697,8 @@ class ConvLSTMLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             cell_shape=None,
             feature_map=1,
             filter_size=(3, 3),
@@ -701,8 +710,13 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
                      "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
@@ -1018,8 +1032,9 @@ class DynamicRNNLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1032,14 +1047,19 @@ class DynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
+        # super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
         if return_last is None:
             return_last = True
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1047,7 +1067,6 @@ class DynamicRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        self.inputs = prev_layer.outputs
 
         logging.info("DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
                      (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
@@ -1271,8 +1290,9 @@ class BiDynamicRNNLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1286,12 +1306,17 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
+        # super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1299,7 +1324,6 @@ class BiDynamicRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        self.inputs = prev_layer.outputs
 
         logging.info("BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
                      (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))

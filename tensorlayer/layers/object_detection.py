@@ -34,15 +34,22 @@ class ROIPoolingLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            rois,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            rois=list(),
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
+
         try:
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
         except Exception as e:

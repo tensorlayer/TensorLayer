@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+import warnings
 
 import numpy as np
 import tensorflow as tf
@@ -380,7 +381,9 @@ class Layer(object):
 
     """
 
-    def __init__(self, prev_layer=None, name=None):
+    # def __init__(self, prev_layer=None, name=None):
+    def __init__(self, prev_layer=None, layer=None, name=None):  # TODO change this line for the one above for the 1.9 release
+
         if name is None:
             raise ValueError('Layer must have a name.')
 
@@ -389,6 +392,15 @@ class Layer(object):
             name = scope_name + '/' + name
         self.name = name
 
+        # TODO remove this whole block for the 1.9 release
+        # ==== START Deprecation warning for layer =====
+        if layer is not None:
+            warnings.warn("deprecated", DeprecationWarning)
+            logging.warning("DeprecationWarning: `layer` argument in %s.%s is deprecated and will be removed in 1.9, please change for `prev_layer`" %
+                            (self.__module__, self.__class__.__name__))
+            prev_layer = layer
+        # ==== END Deprecation warning for layer =====
+
         # get all properties of previous layer(s)
         if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
@@ -396,12 +408,15 @@ class Layer(object):
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
+
         elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
+
         elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
+
         elif prev_layer is not None:  # tl.models
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)

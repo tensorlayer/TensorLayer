@@ -36,11 +36,17 @@ class FlattenLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             name='flatten',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(FlattenLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
         logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
@@ -71,14 +77,24 @@ class ReshapeLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            shape,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            shape=list(),
             name='reshape',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(ReshapeLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
-        self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
+
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
+
+        if shape:
+            raise ValueError("Shape list can not be empty")
+
+        self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
         self.all_layers.append(self.outputs)
 
 
@@ -107,12 +123,18 @@ class TransposeLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            perm,
-            name='transpose',
-    ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            perm=None,
+            name='transpose'):
+
+        # super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(TransposeLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         assert perm is not None
 
         logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))

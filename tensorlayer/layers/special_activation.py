@@ -35,17 +35,24 @@ class PReluLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             channel_shared=False,
             a_init=tf.constant_initializer(value=0.0),
             a_init_args=None,
             # restore = True,
             name="prelu_layer"):
+
         if a_init_args is None:
             a_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(PReluLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(PReluLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         self.inputs = prev_layer.outputs
+
         logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
         if channel_shared:
             w_shape = (1, )
