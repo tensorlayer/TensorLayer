@@ -231,7 +231,7 @@ class VGG16Base(object):
 
 
 class VGG16(VGG16Base):
-    """Pre-trained VGG-16 Model.
+    """Pre-trained VGG-16 model.
 
     Parameters
     ------------
