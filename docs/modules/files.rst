@@ -20,6 +20,7 @@ API - Files
    load_cyclegan_dataset
    load_celebA_dataset
    load_voc_dataset
+   load_mpii_pose_dataset
    download_file_from_google_drive
 
    save_npz
@@ -107,6 +108,10 @@ CelebA
 VOC 2007/2012
 ^^^^^^^^^^^^^^^^
 .. autofunction:: load_voc_dataset
+
+MPII 
+^^^^^^^^^^^^^^^^
+.. autofunction:: load_mpii_pose_dataset
 
 Google Drive
 ^^^^^^^^^^^^^^^^
