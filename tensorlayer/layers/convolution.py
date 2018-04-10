@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import warnings
 
 import tensorflow as tf
 
@@ -1480,6 +1481,7 @@ class Conv2d(Layer):
 
 def deconv2d(layer,
              n_filter=32,
+             n_out_channel=None,
              filter_size=(3, 3),
              out_size=(30, 30),
              strides=(2, 2),
@@ -1535,8 +1537,15 @@ def deconv2d(layer,
         b_init_args = {}
     if act is None:
         act = tf.identity
+    if n_out_channel is not None:
+        warnings.warn("deprecated", DeprecationWarning)
+        logging.warning(
+            "DeprecationWarning: `n_out_channel` argument in tl.layers.DeConv2d is deprecated and will be removed in 1.9, please change for `n_filter`")
+        n_filter = n_out_channel
+
     if len(strides) != 2:
         raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
+
     if tf.__version__ > '1.3':
         logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
         inputs = layer.outputs
