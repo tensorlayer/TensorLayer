@@ -89,7 +89,7 @@ class ReshapeLayer(Layer):
 
         self.inputs = prev_layer.outputs
 
-        if shape:
+        if not shape:
             raise ValueError("Shape list can not be empty")
 
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
