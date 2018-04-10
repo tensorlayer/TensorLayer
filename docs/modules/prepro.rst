@@ -357,6 +357,10 @@ In practice, you may want to use threading method to process a batch of images a
                b_ann[i][0], b_ann[i][1], [], classes, True,
                save_name='_bbox_vis_%d.png' % i)
 
+Image Aug with TF Dataset API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Example code for VOC `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_tf_dataset_voc.py>`__.
 
 Coordinate pixel unit to percentage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
