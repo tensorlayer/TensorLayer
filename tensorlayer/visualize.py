@@ -269,7 +269,7 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
         joint_pos = people['joint_pos']
         ## draw circles
         for pos in joint_pos.items():
-            pos_id, pos_loc = pos
+            _, pos_loc = pos  # pos_id, pos_loc
             pos_loc = (int(pos_loc[0]), int(pos_loc[1]))
             cv2.circle(image, center=pos_loc, radius=radius, color=(0, 255, 0), thickness=-1)
             # rr, cc = skimage.draw.circle(int(pos_loc[1]), int(pos_loc[0]), radius)

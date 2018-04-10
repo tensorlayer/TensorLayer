@@ -1401,7 +1401,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
         # fp = open(joint_data_fn, 'w')
         mat = sio.loadmat(os.path.join(path, extracted_filename, "mpii_human_pose_v1_u12_1.mat"))
 
-        for i, (anno, train_flag) in enumerate(  # all images
+        for _, (anno, train_flag) in enumerate(  # all images
                 zip(mat['RELEASE']['annolist'][0, 0][0], mat['RELEASE']['img_train'][0, 0][0])):
 
             img_fn = anno['image']['name'][0, 0][0]
@@ -1537,10 +1537,10 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
     n_people = n_train_people + n_test_people
     logging.info("n_people: {} n_train_people: {} n_test_people: {}".format(n_people, n_train_people, n_test_people))
     # add path to all image file name
-    for i in range(len(img_train_list)):
-        img_train_list[i] = os.path.join(img_dir, img_train_list[i])
-    for i in range(len(img_test_list)):
-        img_test_list[i] = os.path.join(img_dir, img_test_list[i])
+    for i, value in enumerate(img_train_list):
+        img_train_list[i] = os.path.join(img_dir, value)
+    for i, value in enumerate(img_test_list):
+        img_test_list[i] = os.path.join(img_dir, value)
     return img_train_list, ann_train_list, img_test_list, ann_test_list
 
 
