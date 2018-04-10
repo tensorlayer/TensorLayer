@@ -13,32 +13,32 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != 10:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 4:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 6:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 930:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 net = tl.layers.UnStackLayer(net, axis=1, name='unstack')
 for n in net:
     print(n, n.outputs)
     shape = n.outputs.get_shape().as_list()
     if shape[-1] != 10:
-        raise Exception("shape dont match")
+        raise Exception("shape do not match")
 
     # n.print_layers()
     # n.print_params(False)
 
     if len(n.all_layers) != 4:
-        raise Exception("layers dont match")
+        raise Exception("layers do not match")
 
     if len(n.all_params) != 6:
-        raise Exception("params dont match")
+        raise Exception("params do not match")
 
     if n.count_params() != 930:
-        raise Exception("params dont match")
+        raise Exception("params do not match")

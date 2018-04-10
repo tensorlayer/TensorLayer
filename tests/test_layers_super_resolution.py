@@ -13,16 +13,16 @@ n.print_params(False)
 
 shape = n.outputs.get_shape().as_list()
 if shape != [10, 200, 16]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(n.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(n.all_params) != 2:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if n.count_params() != 416:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## 2D
 x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
@@ -36,13 +36,13 @@ n.print_params(False)
 
 shape = n.outputs.get_shape().as_list()
 if shape != [10, 200, 200, 8]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(n.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(n.all_params) != 2:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if n.count_params() != 608:
-    raise Exception("params dont match")
+    raise Exception("params do not match")

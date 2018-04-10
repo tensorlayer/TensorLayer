@@ -22,10 +22,10 @@ net.print_layers()
 net.print_params(False)
 
 if len(net.all_layers) != 6:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 12:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 60560:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
