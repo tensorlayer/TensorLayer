@@ -3,6 +3,7 @@ import tensorlayer as tl
 
 x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 
+
 def model(x, is_train, reuse):
     with tf.variable_scope("STN", reuse=reuse):
         nin = tl.layers.InputLayer(x, name='in')
