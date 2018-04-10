@@ -56,7 +56,7 @@ class MobileNetV1(Layer):
     >>> # restore pre-trained parameters
     >>> cnn.restore_params(sess)
     >>> # train your own classifier (only update the last layer)
-    >>> train_params = tl.layers.get_variables_with_name('output')
+    >>> train_params = tl.layers.get_variables_with_name('out')
 
     Reuse model
 
