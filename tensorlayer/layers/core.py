@@ -382,7 +382,11 @@ class Layer(object):
     """
 
     # def __init__(self, prev_layer=None, name=None):
-    def __init__(self, prev_layer=None, layer=None, name=None):  # TODO change this line for the one above for the 1.9 release
+    def __init__(
+            self,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
+            name=None):
 
         if name is None:
             raise ValueError('Layer must have a name.')
@@ -919,7 +923,8 @@ class DenseLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             n_units=100,
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
@@ -928,19 +933,26 @@ class DenseLayer(Layer):
             b_init_args=None,
             name='dense',
     ):
+        # super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(DenseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
+        self.inputs = prev_layer.outputs
+        self.n_units = n_units
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
+
         logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             if b_init is not None:
@@ -1007,13 +1019,16 @@ class ReconLayer(DenseLayer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             x_recon=None,
             n_units=784,
             act=tf.nn.softplus,
             name='recon',
     ):
-        DenseLayer.__init__(self, prev_layer=prev_layer, n_units=n_units, act=act, name=name)
+        # super(ReconLayer, self).__init__(prev_layer=prev_layer, name=name, n_units=n_units, act=act, name=name) # TODO replace the line below with this line for the 1.9 release
+        super(ReconLayer, self).__init__(prev_layer=prev_layer, layer=layer, n_units=n_units, act=act, name=name)
+
         logging.info("%s is a ReconLayer" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
@@ -1211,14 +1226,19 @@ class DropoutLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             keep=0.5,
             is_fix=False,
             is_train=True,
             seed=None,
             name='dropout_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(DropoutLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         if is_train is False:
             logging.info("  skip DropoutLayer")
             self.outputs = prev_layer.outputs
@@ -1294,14 +1314,19 @@ class GaussianNoiseLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             mean=0.0,
             stddev=1.0,
             is_train=True,
             seed=None,
             name='gaussian_noise_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        # super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
             self.outputs = prev_layer.outputs
@@ -1367,7 +1392,8 @@ class DropconnectDenseLayer(Layer):
 
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
+            layer=None,  # TODO remove this line for the 1.9 release
             keep=0.5,
             n_units=100,
             act=tf.identity,
@@ -1377,13 +1403,18 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
+        # super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
+        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
+        if layer is not None:
+            prev_layer = layer
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
+
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
