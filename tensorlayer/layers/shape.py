@@ -89,13 +89,13 @@ class ReshapeLayer(Layer):
 
         self.inputs = prev_layer.outputs
 
-        logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
-
         if shape:
             raise ValueError("Shape list can not be empty")
 
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
         self.all_layers.append(self.outputs)
+
+        logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
 
 
 class TransposeLayer(Layer):
