@@ -1,11 +1,11 @@
 import tensorflow as tf
-from tensorlayer.layers import SubpixelConv1d, SubpixelConv2d, InputLayer, Conv1d, Conv2d
+import tensorlayer as tl
 
 ## 1D
 t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-n = InputLayer(t_signal, name='in')
-n = Conv1d(n, 32, 3, 1, padding='SAME', name='conv1d')
-n = SubpixelConv1d(n, scale=2, name='subpixel')
+n = tl.layers.InputLayer(t_signal, name='in')
+n = tl.layers.Conv1d(n, n_filter=32, filter_size=3, stride=1, padding='SAME', name='conv1d')
+n = tl.layers.SubpixelConv1d(n, scale=2, name='subpixel')
 print(n.outputs.shape)
 # ... (10, 200, 2)
 n.print_layers()
@@ -26,9 +26,9 @@ if n.count_params() != 416:
 
 ## 2D
 x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
-n = InputLayer(x, name='in')
-n = Conv2d(n, 32, (3, 2), (1, 1), padding='SAME', name='conv2d')
-n = SubpixelConv2d(n, scale=2, name='subpixel2d')
+n = tl.layers.InputLayer(x, name='in')
+n = tl.layers.Conv2d(n, n_filter=32, filter_size=(3, 2), strides=(1, 1), padding='SAME', name='conv2d')
+n = tl.layers.SubpixelConv2d(n, scale=2, name='subpixel2d')
 print(n.outputs.shape)
 
 n.print_layers()
