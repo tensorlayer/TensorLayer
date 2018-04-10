@@ -7,13 +7,13 @@ n = tl.layers.InputLayer(x, name='in')
 n = tl.layers.DenseLayer(n, 100, name='d1')
 n = tl.layers.DenseLayer(n, 100, name='d2')
 
-n = tl.layers.ExpandDimsLayer(n, 2)
+n = tl.layers.ExpandDimsLayer(n, axis=2)
 print(n)
 shape = n.outputs.get_shape().as_list()
 if shape[-1] != 1:
     raise Exception("shape dont match")
 
-n = tl.layers.TileLayer(n, [-1, 1, 3])
+n = tl.layers.TileLayer(n, multiples=[-1, 1, 3])
 print(n)
 shape = n.outputs.get_shape().as_list()
 if shape[-1] != 3:
