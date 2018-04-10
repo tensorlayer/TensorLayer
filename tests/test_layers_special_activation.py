@@ -3,7 +3,7 @@ import tensorlayer as tl
 
 x = tf.placeholder(tf.float32, shape=[None, 30])
 net = tl.layers.InputLayer(x, name='input')
-net = tl.layers.DenseLayer(net, 10, name='dense')
+net = tl.layers.DenseLayer(net, n_units=10, name='dense')
 net = tl.layers.PReluLayer(net, name='prelu')
 
 net.print_layers()
