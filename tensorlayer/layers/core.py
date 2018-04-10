@@ -381,7 +381,6 @@ class Layer(object):
 
     """
 
-    # def __init__(self, prev_layer=None, name=None):
     def __init__(
             self,
             prev_layer=None,

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import warnings
+
 import numpy as np
 import tensorflow as tf
 from six.moves import xrange
@@ -230,19 +232,25 @@ class SpatialTransformer2dAffineLayer(Layer):
             layer=None,  # TODO remove this line for the 1.9 release
             theta_layer=None,
             out_size=None,
-            name='sapatial_trans_2d_affine',
+            name='spatial_trans_2d_affine',
     ):
-        # super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], layer=[layer, theta_layer], name=name)
         if layer is not None:
-            prev_layer = layer
+            # TODO remove the whole block for the 1.9 release
+            warnings.warn("deprecated", DeprecationWarning)
+            logging.warning("DeprecationWarning: `layer` argument in %s.%s is deprecated and will be removed in 1.9, please change for `prev_layer`" %
+                            (self.__module__, self.__class__.__name__))
+
+            if layer is not None:
+                prev_layer = layer
+
+        super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)
 
         self.inputs = prev_layer.outputs
+        self.theta_layer = theta_layer
 
         if out_size is None:
             out_size = [40, 40]
 
-        self.theta_layer = theta_layer
         logging.info("SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" % (name, self.inputs.get_shape().as_list(), out_size))
 
         with tf.variable_scope(name) as vs:
