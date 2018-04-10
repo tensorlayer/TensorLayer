@@ -32,7 +32,7 @@ with tf.Graph().as_default() as graph:
         raise Exception("params do not match")
 
     # add one more layer
-    net = tl.layers.DenseLayer(vgg, 100, name='out')
+    net = tl.layers.DenseLayer(vgg, n_units=100, name='out')
     # initialize all parameters
     # sess = tf.InteractiveSession()
     # tl.layers.initialize_global_variables(sess)
