@@ -59,7 +59,10 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
             excerpt = indices[start_idx:start_idx + batch_size]
         else:
             excerpt = slice(start_idx, start_idx + batch_size)
-        yield inputs[excerpt], targets[excerpt]
+        if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle == True):
+            yield [inputs[i] for i in excerpt], [targets[i] for i in excerpt]  # zsdonghao: for list indexing when shuffle==True
+        else:
+            yield inputs[excerpt], targets[excerpt]
 
 
 def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
