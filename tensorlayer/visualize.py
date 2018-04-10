@@ -231,7 +231,8 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
     -----------
     image : numpy.array
         The RGB image [height, width, channel].
-    people :
+    people : list of dict
+        The people(s) annotation in MPII format, see ``tl.files.load_mpii_pose_dataset``.
     save_name : None or str
         The name of image file (i.e. image.png), if None, not to save image.
 
