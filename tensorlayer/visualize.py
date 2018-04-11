@@ -231,7 +231,8 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
     -----------
     image : numpy.array
         The RGB image [height, width, channel].
-    people :
+    people : list of dict
+        The people(s) annotation in MPII format, see ``tl.files.load_mpii_pose_dataset``.
     save_name : None or str
         The name of image file (i.e. image.png), if None, not to save image.
 
@@ -257,25 +258,19 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
     # import skimage
     # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
     image = image.copy()
-    radius = int(image.shape[1] / 500) + 1
 
     imh, imw = image.shape[0:2]
     thick = int((imh + imw) // 430)
+    # radius = int(image.shape[1] / 500) + 1
+    radius = int(thick * 1.5)
 
     if image.max() < 1:
         image = image * 255
 
     for people in peoples:
+        ### Pose Keyponts
         joint_pos = people['joint_pos']
-        ## draw circles
-        for pos in joint_pos.items():
-            _, pos_loc = pos  # pos_id, pos_loc
-            pos_loc = (int(pos_loc[0]), int(pos_loc[1]))
-            cv2.circle(image, center=pos_loc, radius=radius, color=(0, 255, 0), thickness=-1)
-            # rr, cc = skimage.draw.circle(int(pos_loc[1]), int(pos_loc[0]), radius)
-            # image[rr, cc] = [0, 255, 0]
-
-        ## draw sketch
+        # draw sketch
         # joint id (0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee,
         #           5 - l ankle, 6 - pelvis, 7 - thorax, 8 - upper neck,
         #           9 - head top, 10 - r wrist, 11 - r elbow, 12 - r shoulder,
@@ -321,6 +316,23 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
                     thick)
                 # rr, cc, val = skimage.draw.line_aa(int(joint_pos[start][1]), int(joint_pos[start][0]), int(joint_pos[end][1]), int(joint_pos[end][0]))
                 # image[rr, cc] = line[1]
+        # draw circles
+        for pos in joint_pos.items():
+            _, pos_loc = pos  # pos_id, pos_loc
+            pos_loc = (int(pos_loc[0]), int(pos_loc[1]))
+            cv2.circle(image, center=pos_loc, radius=radius, color=(200, 200, 200), thickness=-1)
+            # rr, cc = skimage.draw.circle(int(pos_loc[1]), int(pos_loc[0]), radius)
+            # image[rr, cc] = [0, 255, 0]
+
+        ### Head
+        head_rect = people['head_rect']
+        if head_rect:  # if head exists
+            cv2.rectangle(
+                image,
+                (int(head_rect[0]), int(head_rect[1])),
+                (int(head_rect[2]), int(head_rect[3])),  # up-left and botton-right
+                [0, 180, 0],
+                thick)
 
     if save_name is not None:
         # cv2.imwrite(save_name, image)
