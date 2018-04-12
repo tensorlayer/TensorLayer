@@ -535,7 +535,7 @@ class UpSampling2dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            size=list(),
+            size,
             is_scale=True,
             method=0,
             align_corners=False,
@@ -546,7 +546,8 @@ class UpSampling2dLayer(Layer):
 
         self.inputs = prev_layer.outputs
 
-        assert isinstance(size, (list, tuple)) and len(size) == 2
+        if not isinstance(size, (list, tuple)) and len(size) == 2:
+            raise AssertionError()
 
         if len(self.inputs.get_shape()) == 3:
             if is_scale:
@@ -603,7 +604,7 @@ class DownSampling2dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            size=list(),
+            size,
             is_scale=True,
             method=0,
             align_corners=False,
@@ -614,7 +615,8 @@ class DownSampling2dLayer(Layer):
 
         self.inputs = prev_layer.outputs
 
-        assert isinstance(size, (list, tuple)) and len(size) == 2
+        if not isinstance(size, (list, tuple)) and len(size) == 2:
+            raise AssertionError()
 
         if len(self.inputs.get_shape()) == 3:
             if is_scale:

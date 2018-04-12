@@ -38,7 +38,7 @@ class ROIPoolingLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            rois=list(),
+            rois,
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',

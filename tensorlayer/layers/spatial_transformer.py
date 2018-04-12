@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import warnings
-
 import numpy as np
 import tensorflow as tf
 from six.moves import xrange

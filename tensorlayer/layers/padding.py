@@ -85,7 +85,8 @@ class ZeroPad1d(Layer):
 
         self.inputs = prev_layer.outputs
 
-        assert isinstance(padding, (int, tuple, dict))
+        if not isinstance(padding, (int, tuple, dict)):
+            raise AssertionError()
 
         self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)
@@ -120,7 +121,8 @@ class ZeroPad2d(Layer):
 
         self.inputs = prev_layer.outputs
 
-        assert isinstance(padding, (int, tuple))
+        if not isinstance(padding, (int, tuple)):
+            raise AssertionError()
 
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)
@@ -153,7 +155,9 @@ class ZeroPad3d(Layer):
         logging.info("ZeroPad3d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
-        assert isinstance(padding, (int, tuple))
+
+        if not isinstance(padding, (int, tuple)):
+            raise AssertionError()
 
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)
         self.all_layers.append(self.outputs)
