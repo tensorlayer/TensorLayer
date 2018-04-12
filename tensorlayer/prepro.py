@@ -2353,6 +2353,7 @@ def obj_box_horizontal_flip(im, coords=None, is_rescale=False, is_center=False, 
     else:
         return _flip(im, coords)
 
+
 obj_box_left_right_flip = obj_box_horizontal_flip
 
 # im = np.zeros([80, 100])    # as an image with shape width=100, height=80
