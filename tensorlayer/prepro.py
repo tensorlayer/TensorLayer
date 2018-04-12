@@ -2277,7 +2277,7 @@ def parse_darknet_ann_list_to_cls_box(annotations):
     return class_list, bbox_list
 
 
-def obj_box_left_right_flip(im, coords=None, is_rescale=False, is_center=False, is_random=False):
+def obj_box_horizontal_flip(im, coords=None, is_rescale=False, is_center=False, is_random=False):
     """Left-right flip the image and coordinates for object detection.
 
     Parameters
@@ -2353,6 +2353,7 @@ def obj_box_left_right_flip(im, coords=None, is_rescale=False, is_center=False, 
     else:
         return _flip(im, coords)
 
+obj_box_left_right_flip = obj_box_horizontal_flip
 
 # im = np.zeros([80, 100])    # as an image with shape width=100, height=80
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3], [0.1, 0.5, 0.2, 0.3]], is_rescale=True, is_center=True, is_random=False)
