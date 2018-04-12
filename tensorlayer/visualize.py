@@ -339,7 +339,9 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
         save_image(image, save_name)
     return image
 
+
 draw_mpii_people_to_image = draw_mpii_pose_to_image
+
 
 def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=12836):
     """Display a frame(image). Make sure OpenAI Gym render() is disable before using it.
