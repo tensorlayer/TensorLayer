@@ -222,7 +222,7 @@ def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list,
     return image
 
 
-def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
+def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
     """Draw people(s) into image using MPII dataset format as input, return or save the result image.
 
     This is an experimental API, can be changed in the future.
@@ -231,7 +231,7 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
     -----------
     image : numpy.array
         The RGB image [height, width, channel].
-    people : list of dict
+    poses : list of dict
         The people(s) annotation in MPII format, see ``tl.files.load_mpii_pose_dataset``.
     save_name : None or str
         The name of image file (i.e. image.png), if None, not to save image.
@@ -267,7 +267,7 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
     if image.max() < 1:
         image = image * 255
 
-    for people in peoples:
+    for people in poses:
         ### Pose Keyponts
         joint_pos = people['joint_pos']
         # draw sketch
@@ -338,6 +338,9 @@ def draw_mpii_people_to_image(image, peoples, save_name='image.png'):
         # cv2.imwrite(save_name, image)
         save_image(image, save_name)
     return image
+
+
+draw_mpii_people_to_image = draw_mpii_pose_to_image
 
 
 def frame(I=None, second=5, saveable=True, name='frame', cmap=None, fig_idx=12836):
