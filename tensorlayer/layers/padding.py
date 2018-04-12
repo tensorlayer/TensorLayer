@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'PadLayer',
     'ZeroPad1d',
@@ -19,7 +21,7 @@ class PadLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     padding : list of lists of 2 ints, or a Tensor of type int32.
         The int32 values to pad.
@@ -35,25 +37,22 @@ class PadLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             padding=None,
             mode='CONSTANT',
             name='pad_layer',
     ):
-        # super(PadLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(PadLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("PadLayer   %s: padding:%s mode:%s" % (name, list(padding), mode))
 
         self.inputs = prev_layer.outputs
 
         if padding is None:
             raise Exception("padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad")
 
-        logging.info("PadLayer   %s: padding:%s mode:%s" % (self.name, list(padding), mode))
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
         self.all_layers.append(self.outputs)
 
@@ -64,7 +63,7 @@ class ZeroPad1d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     padding : int, or tuple of 2 ints
             - If int, zeros to add at the beginning and end of the padding dimension (axis 1).
@@ -74,21 +73,17 @@ class ZeroPad1d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             padding=1,
             name='zeropad1d',
     ):
-        # super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ZeroPad1d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
-
-        logging.info("ZeroPad1d   %s: padding:%s" % (self.name, str(padding)))
 
         assert isinstance(padding, (int, tuple, dict))
 
@@ -102,7 +97,7 @@ class ZeroPad2d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
@@ -113,21 +108,17 @@ class ZeroPad2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             padding=1,
             name='zeropad2d',
     ):
-        # super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ZeroPad2d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
-
-        logging.info("ZeroPad2d   %s: padding:%s" % (self.name, str(padding)))
 
         assert isinstance(padding, (int, tuple))
 
@@ -141,7 +132,7 @@ class ZeroPad3d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     padding : int, or tuple of 2 ints, or tuple of 2 tuples of 2 ints.
             - If int, the same symmetric padding is applied to width and height.
@@ -154,20 +145,14 @@ class ZeroPad3d(Layer):
 
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             padding=1,
             name='zeropad3d',
     ):
-        # super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ZeroPad3d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
-
-        logging.info("ZeroPad3d   %s: padding:%s" % (self.name, str(padding)))
-
         assert isinstance(padding, (int, tuple))
 
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)

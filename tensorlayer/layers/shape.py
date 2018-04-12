@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'FlattenLayer',
     'ReshapeLayer',
@@ -20,7 +22,7 @@ class FlattenLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     name : str
         A unique layer name.
@@ -34,23 +36,17 @@ class FlattenLayer(Layer):
 
     """
 
-    def __init__(
-            self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            name='flatten',
-    ):
-        # super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(FlattenLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, name='flatten'):
+        super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
         self.outputs = flatten_reshape(self.inputs, name=name)
         self.n_units = int(self.outputs.get_shape()[-1])
-        logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
         self.all_layers.append(self.outputs)
+
+        logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
 
 
 class ReshapeLayer(Layer):
@@ -58,7 +54,7 @@ class ReshapeLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     shape : tuple of int
         The output shape, see ``tf.reshape``.
@@ -75,17 +71,9 @@ class ReshapeLayer(Layer):
 
     """
 
-    def __init__(
-            self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            shape=list(),
-            name='reshape',
-    ):
-        # super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(ReshapeLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, shape=list(), name='reshape'):
+        super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -105,7 +93,7 @@ class TransposeLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     perm: list of int
         The permutation of the dimensions, similar with ``numpy.transpose``.
@@ -121,22 +109,15 @@ class TransposeLayer(Layer):
 
     """
 
-    def __init__(
-            self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            perm=None,
-            name='transpose'):
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, perm=None, name='transpose'):
 
-        # super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(TransposeLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("TransposeLayer  %s: perm:%s" % (name, perm))
 
         self.inputs = prev_layer.outputs
 
         assert perm is not None
 
-        logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
         self.all_layers.append(self.outputs)

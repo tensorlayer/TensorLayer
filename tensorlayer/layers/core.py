@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import time
-import warnings
 
 import numpy as np
 import tensorflow as tf
@@ -9,6 +8,8 @@ from tensorflow.python.util.deprecation import deprecated
 
 from .. import _logging as logging
 from .. import files, iterate, utils, visualize
+
+from ..deprecation import deprecated_alias
 
 __all__ = [
     'LayersConfig',
@@ -381,11 +382,14 @@ class Layer(object):
 
     """
 
-    def __init__(
-            self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            name=None):
+    inputs = None
+    outputs = None
+    all_layers = []
+    all_params = []
+    all_drop = {}
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, name=None):
 
         if name is None:
             raise ValueError('Layer must have a name.')
@@ -394,15 +398,6 @@ class Layer(object):
         if scope_name:
             name = scope_name + '/' + name
         self.name = name
-
-        # TODO remove this whole block for the 1.9 release
-        # ==== START Deprecation warning for layer =====
-        if layer is not None:
-            warnings.warn("deprecated", DeprecationWarning)
-            logging.warning("DeprecationWarning: `layer` argument in %s.%s is deprecated and will be removed in 1.9, please change for `prev_layer`" %
-                            (self.__module__, self.__class__.__name__))
-            prev_layer = layer
-        # ==== END Deprecation warning for layer =====
 
         # get all properties of previous layer(s)
         if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
@@ -468,7 +463,7 @@ class Layer(object):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
-        net_new = Layer(name=self.name)
+        net_new = Layer(prev_layer=None, name=self.name)
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
 
@@ -507,8 +502,10 @@ class InputLayer(Layer):
     """
 
     def __init__(self, inputs=None, name='input'):
-        Layer.__init__(self, name=name)
+
+        super(InputLayer, self).__init__(prev_layer=None, name=name)
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+
         self.outputs = inputs
         self.all_layers = []
         self.all_params = []
@@ -545,8 +542,10 @@ class OneHotInputLayer(Layer):
     """
 
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
-        Layer.__init__(self, name=name)
+
+        super(OneHotInputLayer, self).__init__(prev_layer=None, name=name)
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+
         # assert depth != None, "depth is not given"
         if depth is None:
             logging.info("  [*] depth == None the number of output units is undefined")
@@ -667,9 +666,10 @@ class Word2vecEmbeddingInputlayer(Layer):
         if nce_b_init_args is None:
             nce_b_init_args = {}
 
-        Layer.__init__(self, name=name)
-        self.inputs = inputs
+        super(Word2vecEmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
         logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
+        self.inputs = inputs
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -758,9 +758,10 @@ class EmbeddingInputlayer(Layer):
         if E_init_args is None:
             E_init_args = {}
 
-        Layer.__init__(self, name=name)
-        self.inputs = inputs
+        super(EmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
+        self.inputs = inputs
 
         with tf.variable_scope(name):
             embeddings = tf.get_variable(
@@ -821,8 +822,9 @@ class AverageEmbeddingInputlayer(Layer):
             embeddings_kwargs=None,
             name='average_embedding',
     ):
-        # super().__init__(name=name) # dont work for py2
-        Layer.__init__(self, name=name)
+
+        super(AverageEmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
+        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
 
         # if embeddings_kwargs is None:
         #     embeddings_kwargs = {}
@@ -832,7 +834,6 @@ class AverageEmbeddingInputlayer(Layer):
 
         self.inputs = inputs
 
-        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
                 name='embeddings',
@@ -883,7 +884,7 @@ class DenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_units : int
         The number of units of this layer.
@@ -920,10 +921,10 @@ class DenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             n_units=100,
             act=tf.identity,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
@@ -932,10 +933,9 @@ class DenseLayer(Layer):
             b_init_args=None,
             name='dense',
     ):
-        # super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(DenseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+
+        super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
         self.n_units = n_units
@@ -949,8 +949,6 @@ class DenseLayer(Layer):
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs.get_shape()[-1])
-
-        logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -977,7 +975,7 @@ class ReconLayer(DenseLayer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     x_recon : placeholder or tensor
         The target for reconstruction.
@@ -1016,19 +1014,18 @@ class ReconLayer(DenseLayer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             x_recon=None,
             n_units=784,
             act=tf.nn.softplus,
             name='recon',
     ):
-        # super(ReconLayer, self).__init__(prev_layer=prev_layer, name=name, n_units=n_units, act=act, name=name) # TODO replace the line below with this line for the 1.9 release
-        super(ReconLayer, self).__init__(prev_layer=prev_layer, layer=layer, n_units=n_units, act=act, name=name)
+        super(ReconLayer, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
 
-        logging.info("%s is a ReconLayer" % self.name)
+        logging.info("ReconLayer %s" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -1172,7 +1169,7 @@ class DropoutLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     keep : float
         The keeping probability.
@@ -1223,20 +1220,18 @@ class DropoutLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             keep=0.5,
             is_fix=False,
             is_train=True,
             seed=None,
             name='dropout_layer',
     ):
-        # super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(DropoutLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
 
         if is_train is False:
             logging.info("  skip DropoutLayer")
@@ -1246,7 +1241,6 @@ class DropoutLayer(Layer):
             # self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = prev_layer.outputs
-            logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
@@ -1288,7 +1282,7 @@ class GaussianNoiseLayer(Layer):
 
     Parameters
     ------------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     mean : float
         The mean. Default is 0.
@@ -1311,20 +1305,17 @@ class GaussianNoiseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             mean=0.0,
             stddev=1.0,
             is_train=True,
             seed=None,
             name='gaussian_noise_layer',
     ):
-        # super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
@@ -1353,7 +1344,7 @@ class DropconnectDenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     keep : float
         The keeping probability.
@@ -1389,10 +1380,10 @@ class DropconnectDenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             keep=0.5,
             n_units=100,
             act=tf.identity,
@@ -1402,10 +1393,8 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
-        # super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
 
         if W_init_args is None:
             W_init_args = {}
@@ -1418,7 +1407,6 @@ class DropconnectDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)

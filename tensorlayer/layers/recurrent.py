@@ -7,6 +7,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'RNNLayer',
     'BiRNNLayer',
@@ -31,7 +33,7 @@ class RNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -130,10 +132,10 @@ class RNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             cell_fn=None,
             cell_init_args=None,
             n_hidden=100,
@@ -144,10 +146,7 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn',
     ):
-        # super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(RNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -259,7 +258,7 @@ class BiRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell.
@@ -321,10 +320,10 @@ class BiRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             cell_fn=None,
             cell_init_args=None,
             n_hidden=100,
@@ -338,10 +337,7 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
-        # super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -646,7 +642,7 @@ class ConvLSTMLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     cell_shape : tuple of int
         The shape of each cell width * height
@@ -695,10 +691,10 @@ class ConvLSTMLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             cell_shape=None,
             feature_map=1,
             filter_size=(3, 3),
@@ -710,10 +706,7 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        # super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -936,7 +929,7 @@ class DynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -1030,10 +1023,10 @@ class DynamicRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
@@ -1047,10 +1040,7 @@ class DynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
-        # super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -1215,7 +1205,7 @@ class BiDynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -1288,10 +1278,10 @@ class BiDynamicRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
@@ -1306,10 +1296,7 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
-        # super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -1597,10 +1584,11 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
+        super(Seq2Seq, self).__init__(prev_layer=None, name=name)
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
 
-        Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:

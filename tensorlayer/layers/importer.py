@@ -6,6 +6,8 @@ from tensorflow.python.util.deprecation import deprecated
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'LambdaLayer',
     'SlimNetsLayer',
@@ -19,7 +21,7 @@ class LambdaLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     fn : function
         The function that applies to the outputs of previous layer.
@@ -53,19 +55,17 @@ class LambdaLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             fn=None,
             fn_args=None,
             name='lambda_layer',
     ):
 
-        # super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(LambdaLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("LambdaLayer  %s" % name)
 
         self.inputs = prev_layer.outputs
 
@@ -75,7 +75,6 @@ class LambdaLayer(Layer):
         assert prev_layer is not None
         assert fn is not None
 
-        logging.info("LambdaLayer  %s" % self.name)
         with tf.variable_scope(name) as vs:
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -95,7 +94,7 @@ class SlimNetsLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     slim_layer : a slim network function
         The network you want to stack onto, end with ``return net, end_points``.
@@ -110,19 +109,17 @@ class SlimNetsLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            slim_layer=None,
+            prev_layer,
+            slim_layer,
             slim_args=None,
             name='tfslim_layer',
     ):
 
-        # super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("SlimNetsLayer %s: %s" % (name, slim_layer.__name__))
 
         self.inputs = prev_layer.outputs
 
@@ -130,8 +127,6 @@ class SlimNetsLayer(Layer):
             raise ValueError("slim layer is None")
         if slim_args is None:
             slim_args = {}
-
-        logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
@@ -168,7 +163,7 @@ class KerasLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     keras_layer : function
         A tensor in tensor out function for building model.
@@ -179,19 +174,17 @@ class KerasLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            keras_layer=None,
+            prev_layer,
+            keras_layer,
             keras_args=None,
             name='keras_layer',
     ):
 
-        # super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(KerasLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("KerasLayer %s: %s" % (name, keras_layer))
 
         self.inputs = prev_layer.outputs
 
@@ -200,7 +193,6 @@ class KerasLayer(Layer):
         if keras_args is None:
             keras_args = {}
 
-        logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
         logging.warning("This API will be removed, please use LambdaLayer instead.")
 
         with tf.variable_scope(name) as vs:
@@ -221,7 +213,7 @@ class EstimatorLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     model_fn : function
         A tensor in tensor out function for building model.
@@ -232,18 +224,16 @@ class EstimatorLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
+            prev_layer,
             model_fn=None,
             args=None,
             name='estimator_layer',
     ):
-        # super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name) # TODO replace the 3 lines below with this line for the 1.9 release
-        super(EstimatorLayer, self).__init__(prev_layer=prev_layer, layer=layer, name=name)
-        if layer is not None:
-            prev_layer = layer
+        super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("EstimatorLayer %s: %s" % (name, model_fn))
 
         self.inputs = prev_layer.outputs
 
@@ -252,7 +242,6 @@ class EstimatorLayer(Layer):
         if args is None:
             args = {}
 
-        logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
         logging.warning("This API will be removed, please use LambdaLayer instead.")
 
         with tf.variable_scope(name) as vs:

@@ -9,6 +9,8 @@ from six.moves import xrange
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'transformer',
     'batch_transformer',
@@ -209,7 +211,7 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     Parameters
     -----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     theta_layer : :class:`Layer`
         The localisation network.
@@ -226,22 +228,14 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
-            layer=None,  # TODO remove this line for the 1.9 release
-            theta_layer=None,
+            prev_layer,
+            theta_layer,
             out_size=None,
             name='spatial_trans_2d_affine',
     ):
-        if layer is not None:
-            # TODO remove the whole block for the 1.9 release
-            warnings.warn("deprecated", DeprecationWarning)
-            logging.warning("DeprecationWarning: `layer` argument in %s.%s is deprecated and will be removed in 1.9, please change for `prev_layer`" %
-                            (self.__module__, self.__class__.__name__))
-
-            if layer is not None:
-                prev_layer = layer
 
         super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)
 
