@@ -23,40 +23,41 @@ net.print_layers()
 net.print_params(False)
 
 if len(net.all_layers) != 7:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 7:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 7790:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## CNN+RNN encoder ====================================================
 image_size = 100
 batch_size = 10
 num_steps = 5
+
 x = tf.placeholder(tf.float32, shape=[batch_size, image_size, image_size, 1])
 net = tl.layers.InputLayer(x, name='in')
-net = tl.layers.Conv2d(net, 32, (5, 5), (2, 2), tf.nn.relu, name='cnn1')
-net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool1')
-net = tl.layers.Conv2d(net, 10, (5, 5), (2, 2), tf.nn.relu, name='cnn2')
-net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), name='pool2')
+net = tl.layers.Conv2d(net, n_filter=32, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn1')
+net = tl.layers.MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), name='pool1')
+net = tl.layers.Conv2d(net, n_filter=10, filter_size=(5, 5), strides=(2, 2), act=tf.nn.relu, name='cnn2')
+net = tl.layers.MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), name='pool2')
 net = tl.layers.FlattenLayer(net, name='flatten')
-net = tl.layers.ReshapeLayer(net, shape=[-1, num_steps, int(net.outputs._shape[-1])])
+net = tl.layers.ReshapeLayer(net, shape=(-1, num_steps, int(net.outputs._shape[-1])))
 rnn = tl.layers.RNNLayer(net, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=num_steps, return_last=False, return_seq_2d=True, name='rnn')
-net = tl.layers.DenseLayer(rnn, 3, name='out')
+net = tl.layers.DenseLayer(rnn, n_units=3, name='out')
 
 net.print_layers()
 net.print_params(False)
 
 if len(net.all_layers) != 8:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 8:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 562245:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## Bidirectional Synced input and output
 batch_size = 10
@@ -73,16 +74,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[1:3] != [num_steps, hidden_size * 2]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 5:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 7160:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 # n_layer=2
 net = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=vocab_size, embedding_size=hidden_size, name='emb2')
@@ -94,16 +95,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[1:3] != [num_steps, hidden_size * 2]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 9:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 13720:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## ConvLSTMLayer TODO
 # image_size = 100
@@ -147,20 +148,20 @@ net.print_params(False)
 
 shape = rnn.outputs.get_shape().as_list()
 if shape[-1] != embedding_size:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != vocab_size:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 3:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 5:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 4510:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 # n_layer=3
 nin = tl.layers.EmbeddingInputlayer(inputs=input_seqs, vocabulary_size=vocab_size, embedding_size=embedding_size, name='seq_embedding2')
@@ -178,7 +179,7 @@ net = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o2")
 
 shape = rnn.outputs.get_shape().as_list()
 if (shape[-1] != embedding_size) or (len(shape) != 2):
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 net = tl.layers.DynamicRNNLayer(
     nin,
@@ -197,7 +198,7 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if (shape[-1] != embedding_size) or (len(shape) != 3):
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 net = tl.layers.DynamicRNNLayer(
     nin,
@@ -213,7 +214,7 @@ net.print_layers()
 net.print_params(False)
 shape = net.outputs.get_shape().as_list()
 if (shape[-1] != embedding_size) or (len(shape) != 2):
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 net = tl.layers.DynamicRNNLayer(
     nin,
@@ -229,7 +230,7 @@ net.print_layers()
 net.print_params(False)
 shape = net.outputs.get_shape().as_list()
 if (shape[-1] != embedding_size) or (len(shape) != 2):
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 ## BiDynamic Synced input and output
 rnn = tl.layers.BiDynamicRNNLayer(
@@ -248,20 +249,20 @@ net.print_params(False)
 
 shape = rnn.outputs.get_shape().as_list()
 if shape[-1] != embedding_size * 2:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != vocab_size:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 3:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 7:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 8390:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 # n_layer=2
 rnn = tl.layers.BiDynamicRNNLayer(
@@ -281,20 +282,20 @@ net.print_params(False)
 
 shape = rnn.outputs.get_shape().as_list()
 if shape[-1] != embedding_size * 2:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != vocab_size:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 3:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 11:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 18150:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## Seq2Seq
 from tensorlayer.layers import EmbeddingInputlayer, Seq2Seq, retrieve_seq_length_op2, DenseLayer
@@ -333,13 +334,13 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != 10000:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 5:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 11:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 5293200:
-    raise Exception("params dont match")
+    raise Exception("params do not match")

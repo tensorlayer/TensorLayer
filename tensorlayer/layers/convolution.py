@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'Conv1dLayer',
     'Conv2dLayer',
@@ -33,7 +35,7 @@ class Conv1dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     act : activation function
         The activation function of this layer.
@@ -60,6 +62,7 @@ class Conv1dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -75,16 +78,17 @@ class Conv1dLayer(Layer):
             b_init_args=None,
             name='cnn1d',
     ):
+        super(Conv1dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (name, str(shape), str(stride), padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if act is None:
             act = tf.identity
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
-        logging.info("Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (self.name, str(shape), str(stride), padding, act.__name__))
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -112,7 +116,7 @@ class Conv2dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     act : activation function
         The activation function of this layer.
@@ -174,6 +178,7 @@ class Conv2dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -189,16 +194,17 @@ class Conv2dLayer(Layer):
             data_format=None,
             name='cnn_layer',
     ):
+        super(Conv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (name, str(shape), str(strides), padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -223,7 +229,7 @@ class DeConv2dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     act : activation function
         The activation function of this layer.
@@ -293,6 +299,7 @@ class DeConv2dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -307,17 +314,19 @@ class DeConv2dLayer(Layer):
             b_init_args=None,
             name='decnn2d_layer',
     ):
+        super(DeConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (name, str(shape), str(output_shape), str(strides), padding,
+                                                                                           act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
-                                                                                           act.__name__))
+
         # logging.info("  DeConv2dLayer: Untested")
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_deconv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -343,7 +352,7 @@ class Conv3dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     act : activation function
         The activation function of this layer.
@@ -373,6 +382,7 @@ class Conv3dLayer(Layer):
     ... [None, 50, 50, 50, 32]
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -386,16 +396,17 @@ class Conv3dLayer(Layer):
             b_init_args=None,
             name='cnn3d_layer',
     ):
+        super(Conv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (name, str(shape), str(strides), padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
 
         with tf.variable_scope(name):
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -424,7 +435,7 @@ class DeConv3dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     act : activation function
         The activation function of this layer.
@@ -450,6 +461,7 @@ class DeConv3dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -464,17 +476,18 @@ class DeConv3dLayer(Layer):
             b_init_args=None,
             name='decnn3d_layer',
     ):
+        super(DeConv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (name, str(shape), str(output_shape), str(strides), padding,
+                                                                                           act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(output_shape), str(strides), padding,
-                                                                                           act.__name__))
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -499,7 +512,7 @@ class UpSampling2dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer with 4-D Tensor of the shape (batch, height, width, channels) or 3-D Tensor of the shape (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
@@ -518,6 +531,7 @@ class UpSampling2dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -527,21 +541,29 @@ class UpSampling2dLayer(Layer):
             align_corners=False,
             name='upsample2d_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" % (name, is_scale, size, method, align_corners))
+
         self.inputs = prev_layer.outputs
+
+        if not isinstance(size, (list, tuple)) and len(size) == 2:
+            raise AssertionError()
+
         if len(self.inputs.get_shape()) == 3:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[0])
                 size_w = size[1] * int(self.inputs.get_shape()[1])
                 size = [int(size_h), int(size_w)]
+
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[1])
                 size_w = size[1] * int(self.inputs.get_shape()[2])
                 size = [int(size_h), int(size_w)]
+
         else:
             raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        logging.info("UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" % (name, is_scale, size, method, align_corners))
+
         with tf.variable_scope(name):
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
@@ -559,7 +581,7 @@ class DownSampling2dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer with 4-D Tensor in the shape of (batch, height, width, channels) or 3-D Tensor in the shape of (height, width, channels).
     size : tuple of int/float
         (height, width) scale factor or new size of height and width.
@@ -578,6 +600,7 @@ class DownSampling2dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -587,8 +610,14 @@ class DownSampling2dLayer(Layer):
             align_corners=False,
             name='downsample2d_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
+
         self.inputs = prev_layer.outputs
+
+        if not isinstance(size, (list, tuple)) and len(size) == 2:
+            raise AssertionError()
+
         if len(self.inputs.get_shape()) == 3:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[0])
@@ -600,8 +629,8 @@ class DownSampling2dLayer(Layer):
                 size_w = size[1] * int(self.inputs.get_shape()[2])
                 size = [int(size_h), int(size_w)]
         else:
-            raise Exception("Donot support shape %s" % self.inputs.get_shape())
-        logging.info("DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" % (name, is_scale, size, method, align_corners))
+            raise Exception("Do not support shape %s" % self.inputs.get_shape())
+
         with tf.variable_scope(name):
             try:
                 self.outputs = tf.image.resize_images(self.inputs, size=size, method=method, align_corners=align_corners)
@@ -620,7 +649,7 @@ class DeformableConv2d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     offset_layer : :class:`Layer`
         To predict the offset of convolution operations.
@@ -662,6 +691,7 @@ class DeformableConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -675,6 +705,7 @@ class DeformableConv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None):
+
         if tf.__version__ < "1.4":
             raise Exception("Deformable CNN layer requires tensrflow 1.4 or higher version | current version %s" % tf.__version__)
 
@@ -812,12 +843,14 @@ class DeformableConv2d(Layer):
 
             return mapped_vals
 
-        Layer.__init__(self, prev_layer=[prev_layer, offset_layer], name=name)
+        super(DeformableConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" % (name, n_filter, str(filter_size), act.__name__))
+
         self.inputs = prev_layer.outputs
+
         self.offset_layer = offset_layer
         if act is None:
             act = tf.identity
-        logging.info("DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" % (self.name, n_filter, str(filter_size), act.__name__))
 
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
@@ -891,8 +924,9 @@ class DeformableConv2d(Layer):
             self.all_params.append(W)
 
 
+@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 def atrous_conv1d(
-        layer,
+        prev_layer,
         n_filter=32,
         filter_size=2,
         stride=1,
@@ -910,7 +944,7 @@ def atrous_conv1d(
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -950,9 +984,9 @@ def atrous_conv1d(
         b_init_args = {}
 
     return Conv1dLayer(
-        prev_layer=layer,
+        prev_layer=prev_layer,
         act=act,
-        shape=(filter_size, int(layer.outputs.get_shape()[-1]), n_filter),
+        shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         padding=padding,
         dilation_rate=dilation,
@@ -971,7 +1005,7 @@ class AtrousConv2dLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     n_filter : int
         The number of filters.
@@ -998,6 +1032,7 @@ class AtrousConv2dLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self,
                  prev_layer,
                  n_filter=32,
@@ -1010,16 +1045,19 @@ class AtrousConv2dLayer(Layer):
                  W_init_args=None,
                  b_init_args=None,
                  name='atrou2d'):
+
+        super(AtrousConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (name, n_filter, filter_size, rate, padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (self.name, n_filter, filter_size, rate, padding, act.__name__))
+
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
@@ -1046,7 +1084,7 @@ class _SeparableConv2dLayer(Layer):  # TODO
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer with a 4D output tensor in the shape of [batch, height, width, channels].
     n_filter : int
         The number of filters.
@@ -1093,6 +1131,7 @@ class _SeparableConv2dLayer(Layer):  # TODO
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self,
                  prev_layer,
                  n_filter,
@@ -1112,15 +1151,17 @@ class _SeparableConv2dLayer(Layer):  # TODO
                  bias_regularizer=None,
                  activity_regularizer=None,
                  name='atrou2d'):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+
+        super(_SeparableConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("SeparableConv2dLayer %s: n_filter:%d filter_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
+                     (name, n_filter, filter_size, str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
+
         self.inputs = prev_layer.outputs
+
         if tf.__version__ > "0.12.1":
             raise Exception("This layer only supports for TF 1.0+")
 
         bias_initializer = bias_initializer()
-
-        logging.info("SeparableConv2dLayer %s: n_filter:%d filter_size:%s strides:%s padding:%s dilation_rate:%s depth_multiplier:%s act:%s" %
-                     (self.name, n_filter, filter_size, str(strides), padding, str(dilation_rate), str(depth_multiplier), act.__name__))
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.layers.separable_conv2d(
@@ -1219,8 +1260,9 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
+@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 def conv1d(
-        layer,
+        prev_layer,
         n_filter=32,
         filter_size=5,
         stride=1,
@@ -1238,7 +1280,7 @@ def conv1d(
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     n_filter : int
         The number of filters
@@ -1295,9 +1337,9 @@ def conv1d(
         b_init_args = {}
 
     return Conv1dLayer(
-        prev_layer=layer,
+        prev_layer=prev_layer,
         act=act,
-        shape=(filter_size, int(layer.outputs.get_shape()[-1]), n_filter),
+        shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
         stride=stride,
         dilation_rate=dilation_rate,
         padding=padding,
@@ -1313,13 +1355,12 @@ def conv1d(
 # TODO: DeConv1d
 
 
-# def conv2d(
 class Conv2d(Layer):
     """Simplified version of :class:`Conv2dLayer`.
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -1365,9 +1406,10 @@ class Conv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            layer,
+            prev_layer,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
@@ -1408,14 +1450,14 @@ class Conv2d(Layer):
         #     data_format=data_format,
         #     name=name)
 
+        super(Conv2d, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=layer, name=name)
-        self.inputs = layer.outputs
-
         if act is None:
             act = tf.identity
 
@@ -1452,7 +1494,7 @@ class Conv2d(Layer):
             if len(strides) != 2:
                 raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
             try:
-                pre_channel = int(layer.outputs.get_shape()[-1])
+                pre_channel = int(prev_layer.outputs.get_shape()[-1])
             except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
                 pre_channel = 1
                 logging.info("[warnings] unknow input channels, set to 1")
@@ -1478,8 +1520,9 @@ class Conv2d(Layer):
                 self.all_params.append(W)
 
 
-def deconv2d(layer,
-             n_filter=32,
+@deprecated_alias(layer='prev_layer', n_out_channel='n_filter', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def deconv2d(prev_layer,
+             n_filter,
              filter_size=(3, 3),
              out_size=(30, 30),
              strides=(2, 2),
@@ -1495,7 +1538,7 @@ def deconv2d(layer,
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -1529,23 +1572,27 @@ def deconv2d(layer,
         A :class:`DeConv2dLayer` object.
 
     """
+
+    logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
+
     if W_init_args is None:
         W_init_args = {}
     if b_init_args is None:
         b_init_args = {}
     if act is None:
         act = tf.identity
+
     if len(strides) != 2:
         raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
+
     if tf.__version__ > '1.3':
-        logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
-        inputs = layer.outputs
+        inputs = prev_layer.outputs
         scope_name = tf.get_variable_scope().name
         # if scope_name:
         #     whole_name = scope_name + '/' + name
         # else:
         #     whole_name = name
-        net_new = Layer(name=name)  #whole_name)
+        net_new = Layer(prev_layer=None, name=name)
         # with tf.name_scope(name):
         with tf.variable_scope(name) as vs:
             net_new.outputs = tf.contrib.layers.conv2d_transpose(
@@ -1559,25 +1606,25 @@ def deconv2d(layer,
                 biases_initializer=b_init,
                 scope=name)
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        net_new.all_layers = list(layer.all_layers)
-        net_new.all_params = list(layer.all_params)
-        net_new.all_drop = dict(layer.all_drop)
+        net_new.all_layers = list(prev_layer.all_layers)
+        net_new.all_params = list(prev_layer.all_params)
+        net_new.all_drop = dict(prev_layer.all_drop)
         net_new.all_layers.extend([net_new.outputs])
         net_new.all_params.extend(new_variables)
         return net_new
     else:
         if batch_size is None:
             #     batch_size = tf.shape(net.outputs)[0]
-            fixed_batch_size = layer.outputs.get_shape().with_rank_at_least(1)[0]
+            fixed_batch_size = prev_layer.outputs.get_shape().with_rank_at_least(1)[0]
             if fixed_batch_size.value:
                 batch_size = fixed_batch_size.value
             else:
                 from tensorflow.python.ops import array_ops
-                batch_size = array_ops.shape(layer.outputs)[0]
+                batch_size = array_ops.shape(prev_layer.outputs)[0]
         return DeConv2dLayer(
-            prev_layer=layer,
+            prev_layer=prev_layer,
             act=act,
-            shape=(filter_size[0], filter_size[1], n_filter, int(layer.outputs.get_shape()[-1])),
+            shape=(filter_size[0], filter_size[1], n_filter, int(prev_layer.outputs.get_shape()[-1])),
             output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
             strides=(1, strides[0], strides[1], 1),
             padding=padding,
@@ -1593,7 +1640,7 @@ class DeConv3d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -1614,6 +1661,7 @@ class DeConv3d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self,
                  prev_layer,
                  n_filter=32,
@@ -1624,9 +1672,11 @@ class DeConv3d(Layer):
                  W_init=tf.truncated_normal_initializer(stddev=0.02),
                  b_init=tf.constant_initializer(value=0.0),
                  name='decnn3d'):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
+
+        super(DeConv3d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.contrib.layers.conv3d_transpose(
@@ -1659,7 +1709,7 @@ class DepthwiseConv2d(Layer):
 
     Parameters
     ------------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     filter_size : tuple of int
         The filter size (height, width).
@@ -1707,6 +1757,7 @@ class DepthwiseConv2d(Layer):
 
     """ # # https://zhuanlan.zhihu.com/p/31551004  https://github.com/xiaohu2015/DeepLearning_tutorials/blob/master/CNNs/MobileNet.py
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1722,23 +1773,23 @@ class DepthwiseConv2d(Layer):
             b_init_args=None,
             name='depthwise_conv2d',
     ):
+        super(DepthwiseConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (name, str(shape), str(strides), padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
-
         if act is None:
             act = tf.identity
 
-        logging.info("DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (self.name, str(shape), str(strides), padding, act.__name__))
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
-            logging.info("[warnings] unknow input channels, set to 1")
+            logging.info("[warnings] unknown input channels, set to 1")
 
         shape = [shape[0], shape[1], pre_channel, depth_multiplier]
 
@@ -1776,7 +1827,7 @@ class SeparableConv2d(Layer):
 
     Parameters
     ------------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The dimensionality of the output space (i.e. the number of filters in the convolution).
@@ -1803,6 +1854,7 @@ class SeparableConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1836,11 +1888,12 @@ class SeparableConv2d(Layer):
         # if b_init_args is None:
         #     b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(SeparableConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("SeparableConv2d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" % (self.name, n_filter, str(filter_size),
+                                                                                                                    str(strides), depth_multiplier,
+                                                                                                                    act.__name__))
+
         self.inputs = prev_layer.outputs
-        # print(self.name, n_filter, str(filter_size), str(strides), depth_multiplier, act.__name__)
-        logging.info("SeparableConv2d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" \
-            % (self.name, n_filter, str(filter_size), str(strides), depth_multiplier, act.__name__))
 
         with tf.variable_scope(name) as vs:
             self.outputs = tf.layers.separable_conv2d(
@@ -1877,7 +1930,7 @@ class GroupConv2d(Layer):
 
     Parameters
     --------------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_filter : int
         The number of filters.
@@ -1903,9 +1956,10 @@ class GroupConv2d(Layer):
         A unique layer name.
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer=None,
+            prev_layer,
             n_filter=32,
             filter_size=(3, 3),
             strides=(2, 2),
@@ -1918,18 +1972,21 @@ class GroupConv2d(Layer):
             b_init_args=None,
             name='groupconv',
     ):  # Windaway
+
+        super(GroupConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), n_group,
+                                                                                                  padding, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
         channels = int(self.inputs.get_shape()[-1])
 
-        logging.info("GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), n_group,
-                                                                                                  padding, act.__name__))
         with tf.variable_scope(name):
             We = tf.get_variable(
                 name='W',

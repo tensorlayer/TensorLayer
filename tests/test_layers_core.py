@@ -4,23 +4,23 @@ import tensorlayer as tl
 ## DenseLayer
 x = tf.placeholder(tf.float32, shape=[None, 30])
 net = tl.layers.InputLayer(x, name='input')
-net = tl.layers.DenseLayer(net, 10, name='dense')
+net = tl.layers.DenseLayer(net, n_units=10, name='dense')
 
 net.print_layers()
 net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != 10:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 1:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 2:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 310:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## OneHotInputLayer
 x = tf.placeholder(tf.int32, shape=[None])
@@ -32,16 +32,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != 8:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 0:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 0:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 0:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## Word2vecEmbeddingInputlayer
 batch_size = 8
@@ -57,16 +57,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape != [8, 200]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 1:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 3:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 401000:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## EmbeddingInputlayer
 batch_size = 8
@@ -78,16 +78,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape != [batch_size, 50]:  # (8, 50)
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 1:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 1:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 50000:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## AverageEmbeddingInputlayer
 batch_size = 8
@@ -100,16 +100,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape != [batch_size, 50]:  # (8, 50)
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 1:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 1:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 50000:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## ReconLayer
 x = tf.placeholder(tf.float32, shape=(None, 784))
@@ -126,16 +126,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape[-1] != 784:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 4:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 308308:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## GaussianNoiseLayer
 x = tf.placeholder(tf.float32, shape=(64, 784))
@@ -148,16 +148,16 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape != [64, 100]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 2:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 78500:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 ## DropconnectDenseLayer
 x = tf.placeholder(tf.float32, shape=(64, 784))
@@ -170,13 +170,13 @@ net.print_params(False)
 
 shape = net.outputs.get_shape().as_list()
 if shape != [64, 100]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 
 if len(net.all_layers) != 2:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(net.all_params) != 4:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if net.count_params() != 88600:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
