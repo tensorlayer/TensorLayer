@@ -1,10 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Experimental Database Management System.
-
-Latest Version
-"""
 
 import inspect
 import pickle
