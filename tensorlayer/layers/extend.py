@@ -39,7 +39,7 @@ class ExpandDimsLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            axis=0,
+            axis,
             name='expand_dims',
     ):
         super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)

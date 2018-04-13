@@ -381,7 +381,7 @@ class Layer(object):
     ... Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
-
+    # Added to allow auto-completion
     inputs = None
     outputs = None
     all_layers = []

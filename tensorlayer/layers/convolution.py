@@ -1134,7 +1134,7 @@ class _SeparableConv2dLayer(Layer):  # TODO
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self,
                  prev_layer,
-                 n_filter=16,
+                 n_filter,
                  filter_size=5,
                  strides=(1, 1),
                  padding='valid',

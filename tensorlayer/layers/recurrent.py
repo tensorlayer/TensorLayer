@@ -136,7 +136,7 @@ class RNNLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            cell_fn=None,
+            cell_fn,
             cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -324,7 +324,7 @@ class BiRNNLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            cell_fn=None,
+            cell_fn,
             cell_init_args=None,
             n_hidden=100,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1027,7 +1027,7 @@ class DynamicRNNLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),
@@ -1282,7 +1282,7 @@ class BiDynamicRNNLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            cell_fn=None,  #tf.nn.rnn_cell.LSTMCell,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
             cell_init_args=None,
             n_hidden=256,
             initializer=tf.random_uniform_initializer(-0.1, 0.1),

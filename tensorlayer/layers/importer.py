@@ -59,7 +59,7 @@ class LambdaLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            fn=None,
+            fn,
             fn_args=None,
             name='lambda_layer',
     ):
@@ -228,7 +228,7 @@ class EstimatorLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            model_fn=None,
+            model_fn,
             args=None,
             name='estimator_layer',
     ):

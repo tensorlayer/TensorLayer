@@ -77,7 +77,7 @@ class ZeroPad1d(Layer):
     def __init__(
             self,
             prev_layer,
-            padding=1,
+            padding,
             name='zeropad1d',
     ):
         super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
@@ -113,7 +113,7 @@ class ZeroPad2d(Layer):
     def __init__(
             self,
             prev_layer,
-            padding=1,
+            padding,
             name='zeropad2d',
     ):
         super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
@@ -148,7 +148,7 @@ class ZeroPad3d(Layer):
     def __init__(
             self,
             prev_layer,
-            padding=1,
+            padding,
             name='zeropad3d',
     ):
         super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
