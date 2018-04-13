@@ -1,6 +1,8 @@
 API - Files
 ===================================
 
+A collections of helper functions to work with dataset.
+Load benchmark dataset, save and restore model, save and load variables.
 
 .. automodule:: tensorlayer.files
 
@@ -49,6 +51,7 @@ API - Files
    natural_keys
 
    npz_to_W_pdf
+
 
 Load dataset functions
 ------------------------
@@ -109,7 +112,7 @@ VOC 2007/2012
 ^^^^^^^^^^^^^^^^
 .. autofunction:: load_voc_dataset
 
-MPII 
+MPII
 ^^^^^^^^^^^^^^^^
 .. autofunction:: load_mpii_pose_dataset
 
@@ -158,6 +161,34 @@ Load network from ckpt
 
 Load and save variables
 ------------------------
+
+TensorFlow provides ``.ckpt`` file format to save and restore the models, while
+we suggest to use standard python file format ``.npz`` to save models for the
+sake of cross-platform.
+
+.. code-block:: python
+
+  ## save model as .ckpt
+  saver = tf.train.Saver()
+  save_path = saver.save(sess, "model.ckpt")
+  # restore model from .ckpt
+  saver = tf.train.Saver()
+  saver.restore(sess, "model.ckpt")
+
+  ## save model as .npz
+  tl.files.save_npz(network.all_params , name='model.npz')
+  # restore model from .npz (method 1)
+  load_params = tl.files.load_npz(name='model.npz')
+  tl.files.assign_params(sess, load_params, network)
+  # restore model from .npz (method 2)
+  tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
+
+  ## you can assign the pre-trained parameters as follow
+  # 1st parameter
+  tl.files.assign_params(sess, [load_params[0]], network)
+  # the first three parameters
+  tl.files.assign_params(sess, load_params[:3], network)
+
 
 Save variables as .npy
 ^^^^^^^^^^^^^^^^^^^^^^^^^
