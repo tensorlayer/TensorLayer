@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'TimeDistributedLayer',
 ]
@@ -18,7 +20,7 @@ class TimeDistributedLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer with output size of (batch_size, length, dim).
     layer_class : a :class:`Layer` class
         The layer class name.
@@ -46,6 +48,7 @@ class TimeDistributedLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -53,14 +56,15 @@ class TimeDistributedLayer(Layer):
             args=None,
             name='time_distributed',
     ):
+        super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
+
         if args is None:
             args = {}
         if not isinstance(args, dict):
             raise TypeError("'args' must be a dict.")
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
-        logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
 
         if not isinstance(self.inputs, tf.Tensor):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])

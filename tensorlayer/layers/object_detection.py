@@ -3,6 +3,8 @@
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'ROIPoolingLayer',
 ]
@@ -14,7 +16,7 @@ class ROIPoolingLayer(Layer):
 
     Parameters
     -----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     rois : tuple of int
         Regions of interest in the format of (feature map index, upper left, bottom right).
@@ -32,6 +34,7 @@ class ROIPoolingLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -40,9 +43,11 @@ class ROIPoolingLayer(Layer):
             pool_width=2,
             name='roipooling_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ROIPoolingLayer %s: (%d, %d)" % (name, pool_height, pool_width))
+
         self.inputs = prev_layer.outputs
-        logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
+
         try:
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
         except Exception as e:

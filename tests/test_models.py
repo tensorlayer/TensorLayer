@@ -14,10 +14,10 @@ with tf.Graph().as_default() as graph:
     # use for inferencing
     probs = tf.nn.softmax(vgg.outputs)
     if len(vgg.all_layers) != 22:
-        raise Exception("layers dont match")
+        raise Exception("layers do not match")
 
     if len(vgg.all_params) != 32:
-        raise Exception("params dont match")
+        raise Exception("params do not match")
 
 with tf.Graph().as_default() as graph:
     # - Extract features with VGG16 and Train a classifier with 100 classes
@@ -26,13 +26,13 @@ with tf.Graph().as_default() as graph:
     vgg = tl.models.VGG16(x, end_with='fc2_relu')
 
     if len(vgg.all_layers) != 21:
-        raise Exception("layers dont match")
+        raise Exception("layers do not match")
 
     if len(vgg.all_params) != 30:
-        raise Exception("params dont match")
+        raise Exception("params do not match")
 
     # add one more layer
-    net = tl.layers.DenseLayer(vgg, 100, name='out')
+    net = tl.layers.DenseLayer(vgg, n_units=100, name='out')
     # initialize all parameters
     # sess = tf.InteractiveSession()
     # tl.layers.initialize_global_variables(sess)
@@ -41,7 +41,7 @@ with tf.Graph().as_default() as graph:
     # train your own classifier (only update the last layer)
     train_params = tl.layers.get_variables_with_name('out')
     if len(train_params) != 2:
-        raise Exception("params dont match")
+        raise Exception("params do not match")
 
 with tf.Graph().as_default() as graph:
     # - Reuse model
@@ -56,7 +56,7 @@ with tf.Graph().as_default() as graph:
     # vgg1.restore_params(sess)
 
     if len(vgg1.all_layers) != 21:
-        raise Exception("layers dont match")
+        raise Exception("layers do not match")
 
     if len(vgg1.all_params) != 30:
-        raise Exception("params dont match")
+        raise Exception("params do not match")
