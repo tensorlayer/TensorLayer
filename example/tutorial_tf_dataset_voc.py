@@ -41,8 +41,8 @@ def _data_aug_fn(im, ann):
     ann = ann.decode()
     ann = tl.prepro.parse_darknet_ann_str_to_list(ann)
     clas, coords = tl.prepro.parse_darknet_ann_list_to_cls_box(ann)
-    ## random brightness, contrast and saturation
-    im = tl.prepro.brightness(im, gamma=0.5, gain=1, is_random=True)
+    ## random brightness, contrast and saturation (tf.image API is faster)
+    # im = tl.prepro.brightness(im, gamma=0.5, gain=1, is_random=True)
     # im = tl.prepro.illumination(im, gamma=(0.5, 1.5),
     #          contrast=(0.5, 1.5), saturation=(0.5, 1.5), is_random=True)    # TypeError: Cannot handle this data type
     ## random horizontal flip
@@ -65,7 +65,12 @@ def _map_fn(filename, annotation):
     image = tf.read_file(filename)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-    ## data augmentation
+    ## data augmentation for image only  0.02s
+    image = tf.image.random_brightness(image, max_delta=63)
+    image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
+    # subtract off the mean and divide by the variance of the pixels. (optional)
+    # img = tf.image.per_image_standardization(img)
+    ## data augmentation for image and bounding box
     image, annotation = tf.py_func(_data_aug_fn, [image, annotation], [tf.float32, tf.string])
     return image, annotation
 
