@@ -7,6 +7,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'RNNLayer',
     'BiRNNLayer',
@@ -31,7 +33,7 @@ class RNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -130,6 +132,7 @@ class RNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -143,10 +146,12 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn',
     ):
+        super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -154,8 +159,6 @@ class RNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning('pop state_is_tuple fails.')
-
-        self.inputs = prev_layer.outputs
 
         logging.info("RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " % (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims,
                                                                                                 self.inputs.get_shape(), cell_fn.__name__))
@@ -255,7 +258,7 @@ class BiRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell.
@@ -317,6 +320,7 @@ class BiRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -333,10 +337,12 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
+        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}  # 'use_peepholes': True,
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -344,8 +350,6 @@ class BiRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-
-        self.inputs = prev_layer.outputs
 
         logging.info("BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (self.name, n_hidden, n_steps,
                                                                                                                         self.inputs.get_shape().ndims,
@@ -638,7 +642,7 @@ class ConvLSTMLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     cell_shape : tuple of int
         The shape of each cell width * height
@@ -687,6 +691,7 @@ class ConvLSTMLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -701,8 +706,10 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         self.inputs = prev_layer.outputs
+
         logging.info("ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
                      "in_dim:%d %s, cell_fn:%s " % (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__))
         # You can get the dimension by .get_shape() or ._shape, and check the
@@ -922,7 +929,7 @@ class DynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -1016,6 +1023,7 @@ class DynamicRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1032,14 +1040,16 @@ class DynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
+        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.inputs = prev_layer.outputs
+
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
         if return_last is None:
             return_last = True
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1047,7 +1057,6 @@ class DynamicRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        self.inputs = prev_layer.outputs
 
         logging.info("DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
                      (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
@@ -1196,7 +1205,7 @@ class BiDynamicRNNLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     cell_fn : TensorFlow cell function
         A TensorFlow core RNN cell
@@ -1269,6 +1278,7 @@ class BiDynamicRNNLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1286,12 +1296,14 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
+        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.inputs = prev_layer.outputs
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
         if dynamic_rnn_init_args is None:
             dynamic_rnn_init_args = {}
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
@@ -1299,7 +1311,6 @@ class BiDynamicRNNLayer(Layer):
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        self.inputs = prev_layer.outputs
 
         logging.info("BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" %
                      (self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout, n_layer))
@@ -1573,10 +1584,11 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
+        super(Seq2Seq, self).__init__(prev_layer=None, name=name)
+
         if cell_init_args is None:
             cell_init_args = {'state_is_tuple': True}
 
-        Layer.__init__(self, name=name)
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:

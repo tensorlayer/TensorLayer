@@ -36,7 +36,7 @@ with slim.arg_scope(inception_v3_arg_scope()):
     # logits, end_points = inception_v3(X, num_classes=1001,
     #                                   is_training=False)
     network = tl.layers.SlimNetsLayer(
-        prev_layer=net_in,
+        net_in,
         slim_layer=inception_v3,
         slim_args={
             'num_classes': 1001,
