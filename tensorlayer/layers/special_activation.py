@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'PReluLayer',
 ]
@@ -16,7 +18,7 @@ class PReluLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer。
     channel_shared : boolean
         If True, single weight is shared by all channels.
@@ -33,6 +35,7 @@ class PReluLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -41,12 +44,15 @@ class PReluLayer(Layer):
             a_init_args=None,
             # restore = True,
             name="prelu_layer"):
+
         if a_init_args is None:
             a_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(PReluLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("PReluLayer %s: channel_shared:%s" % (name, channel_shared))
+
         self.inputs = prev_layer.outputs
-        logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
+
         if channel_shared:
             w_shape = (1, )
         else:
