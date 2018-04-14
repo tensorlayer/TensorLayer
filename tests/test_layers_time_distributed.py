@@ -12,11 +12,11 @@ net = InputLayer(x, name='input')
 net = TimeDistributedLayer(net, layer_class=DenseLayer, args={'n_units': 50, 'name': 'dense'}, name='time_dense')
 
 if net.outputs.get_shape().as_list() != [32, 20, 50]:
-    raise Exception("shape dont match")
+    raise Exception("shape do not match")
 # ... (32, 20, 50)
 net.print_params(False)
 if net.count_params() != 5050:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 
 ## reuse

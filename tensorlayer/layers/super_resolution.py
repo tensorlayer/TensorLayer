@@ -5,19 +5,22 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'SubpixelConv1d',
     'SubpixelConv2d',
 ]
 
 
-def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+@deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def subpixel_conv2d(prev_layer, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
     """It is a 2D sub-pixel up-sampling layer, usually be used
     for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`__ for example.
 
     Parameters
     ------------
-    net : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer,
     scale : int
         The up-scaling ratio, a wrong setting will lead to dimension size error.
@@ -92,26 +95,27 @@ def subpixel_conv2d(net, scale=2, n_out_channel=None, act=tf.identity, name='sub
             logging.info(_err_log)
         return X
 
-    inputs = net.outputs
+    inputs = prev_layer.outputs
     if n_out_channel is None:
         assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
         n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
 
     logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
 
-    net_new = Layer(prev_layer=net, name=name)  #whole_name)
+    net_new = Layer(prev_layer=prev_layer, name=name)
     # with tf.name_scope(name):
     with tf.variable_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
 
-    # net_new.all_layers = list(net.all_layers)
-    # net_new.all_params = list(net.all_params)
-    # net_new.all_drop = dict(net.all_drop)
+    # net_new.all_layers = list(prev_layer.all_layers)
+    # net_new.all_params = list(prev_layer.all_params)
+    # net_new.all_drop = dict(prev_layer.all_drop)
     net_new.all_layers.append(net_new.outputs)
     return net_new
 
 
-def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
+@deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def subpixel_conv1d(prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'):
     """It is a 1D sub-pixel up-sampling layer.
 
     Calls a TensorFlow function that directly implements this functionality.
@@ -155,14 +159,14 @@ def subpixel_conv1d(net, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
     logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
-    inputs = net.outputs
-    net_new = Layer(prev_layer=net, name=name)
+    inputs = prev_layer.outputs
+    net_new = Layer(prev_layer=prev_layer, name=name)
     with tf.name_scope(name):
         net_new.outputs = act(_PS(inputs, r=scale))
 
-    # net_new.all_layers = list(net.all_layers)
-    # net_new.all_params = list(net.all_params)
-    # net_new.all_drop = dict(net.all_drop)
+    # net_new.all_layers = list(prev_layer.all_layers)
+    # net_new.all_params = list(prev_layer.all_params)
+    # net_new.all_drop = dict(prev_layer.all_drop)
     net_new.all_layers.append(net_new.outputs)
     return net_new
 

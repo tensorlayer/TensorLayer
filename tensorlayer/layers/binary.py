@@ -4,6 +4,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'BinaryDenseLayer',
     'BinaryConv2d',
@@ -124,6 +126,7 @@ class BinaryDenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -136,13 +139,16 @@ class BinaryDenseLayer(Layer):
             b_init_args=None,
             name='binary_dense',
     ):
+        super(BinaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("BinaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
@@ -151,7 +157,7 @@ class BinaryDenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("BinaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
@@ -228,6 +234,7 @@ class BinaryConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -255,20 +262,20 @@ class BinaryConv2d(Layer):
             # data_format=None,
             name='binary_cnn2d',
     ):
+        super(BinaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+                                                                                               act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        if use_gemm:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
-                                                                                               act.__name__))
+        if use_gemm:
+            raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
@@ -324,6 +331,7 @@ class TernaryDenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -336,22 +344,24 @@ class TernaryDenseLayer(Layer):
             b_init_args=None,
             name='ternary_dense',
     ):
+        super(TernaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
-
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("TernaryDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
@@ -430,6 +440,7 @@ class TernaryConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -457,20 +468,18 @@ class TernaryConv2d(Layer):
             # data_format=None,
             name='ternary_cnn2d',
     ):
+        super(TernaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+                                                                                                act.__name__))
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
-
-        if use_gemm:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if act is None:
             act = tf.identity
-        logging.info("TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
-                                                                                                act.__name__))
+        if use_gemm:
+            raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
@@ -508,7 +517,7 @@ class DorefaDenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     bitW : int
         The bits of this layer's parameter
@@ -533,6 +542,7 @@ class DorefaDenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -547,22 +557,24 @@ class DorefaDenseLayer(Layer):
             b_init_args=None,
             name='dorefa_dense',
     ):
+        super(DorefaDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DorefaDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
-
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("DorefaDenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+
         with tf.variable_scope(name):
             W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
@@ -596,7 +608,7 @@ class DorefaConv2d(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     bitW : int
         The bits of this layer's parameter
@@ -644,6 +656,7 @@ class DorefaConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -673,20 +686,21 @@ class DorefaConv2d(Layer):
             # data_format=None,
             name='dorefa_cnn2d',
     ):
+        super(DorefaConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+                                                                                               act.__name__))
+
+        self.inputs = prev_layer.outputs
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
+        if act is None:
+            act = tf.identity
 
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
-
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
-        if act is None:
-            act = tf.identity
-        logging.info("DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (self.name, n_filter, str(filter_size), str(strides), padding,
-                                                                                               act.__name__))
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
@@ -720,23 +734,25 @@ class SignLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     name : a str
         A unique layer name.
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
             name='sign',
     ):
+        super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
 
         logging.info("SignLayer  %s" % (self.name))
+
         with tf.variable_scope(name):
             # self.outputs = tl.act.sign(self.inputs)
             self.outputs = quantize(self.inputs)
@@ -749,7 +765,7 @@ class ScaleLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     init_scale : float
         The initial value for the scale factor.
@@ -758,17 +774,18 @@ class ScaleLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
             init_scale=0.05,
             name='scale',
     ):
+        super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ScaleLayer  %s: init_scale: %f" % (name, init_scale))
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
 
-        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
         with tf.variable_scope(name):
             # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
             scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))

@@ -27,10 +27,10 @@ network.print_layers()
 network.print_params(False)
 
 if len(network.all_params) != 12:
-    raise Exception("params dont match")
+    raise Exception("params do not match")
 
 if len(network.all_layers) != 13:
-    raise Exception("layers dont match")
+    raise Exception("layers do not match")
 
 if len(network.all_drop) != 5:
-    raise Exception("drop dont match")
+    raise Exception("drop do not match")

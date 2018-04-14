@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'StackLayer',
     'UnStackLayer',
@@ -42,14 +44,15 @@ class StackLayer(Layer):
             axis=1,
             name='stack',
     ):
-        Layer.__init__(self, prev_layer=layers, name=name)
+
+        super(StackLayer, self).__init__(prev_layer=layers, name=name)
+        logging.info("StackLayer %s: axis: %d" % (name, axis))
+
         self.inputs = []
         for l in layers:
             self.inputs.append(l.outputs)
 
         self.outputs = tf.stack(self.inputs, axis=axis, name=name)
-
-        logging.info("StackLayer %s: axis: %d" % (self.name, axis))
 
         # self.all_layers = list(layers[0].all_layers)
         # self.all_params = list(layers[0].all_params)
@@ -66,13 +69,14 @@ class StackLayer(Layer):
         self.all_layers.append(self.outputs)
 
 
-def unstack_layer(layer, num=None, axis=0, name='unstack'):
+@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def unstack_layer(prev_layer, num=None, axis=0, name='unstack'):
     """
     It is layer for unstacking the given dimension of a rank-R tensor into rank-(R-1) tensors., see `tf.unstack() <https://www.tensorflow.org/api_docs/python/tf/unstack>`__.
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer
     num : int or None
         The length of the dimension axis. Automatically inferred if None (the default).
@@ -87,7 +91,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
         The list of layer objects unstacked from the input.
 
     """
-    inputs = layer.outputs
+    inputs = prev_layer.outputs
     with tf.variable_scope(name):
         outputs = tf.unstack(inputs, num=num, axis=axis)
 
@@ -101,7 +105,7 @@ def unstack_layer(layer, num=None, axis=0, name='unstack'):
         full_name = name
 
     for i, _v in enumerate(outputs):
-        n = Layer(prev_layer=layer, name=full_name + str(i))
+        n = Layer(prev_layer=prev_layer, name=full_name + str(i))
         n.outputs = outputs[i]
         # n.all_layers = list(layer.all_layers)
         # n.all_params = list(layer.all_params)
