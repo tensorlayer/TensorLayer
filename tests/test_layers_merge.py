@@ -43,7 +43,6 @@ class Layer_Basic_Test(unittest.TestCase):
         cls.data["net_vector2"]["params"] = net_v2.all_params
         cls.data["net_vector2"]["n_params"] = net_v2.count_params()
 
-
         #############
         #   Image   #
         #############

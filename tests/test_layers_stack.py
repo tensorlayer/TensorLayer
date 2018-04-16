@@ -46,10 +46,10 @@ class Layer_Basic_Test(unittest.TestCase):
         for n in self.net:
             shape = n.outputs.get_shape().as_list()
 
-            assert(shape[-1] == 10)
-            assert(len(n.all_layers) == 4)
-            assert(len(n.all_params) == 6)
-            assert(n.count_params() == 930)
+            assert (shape[-1] == 10)
+            assert (len(n.all_layers) == 4)
+            assert (len(n.all_params) == 6)
+            assert (n.count_params() == 930)
 
 
 if __name__ == '__main__':
