@@ -7,15 +7,9 @@ python:
   
 install:
   - pip install tensorflow
-  - pip install -r tests/requirements.txt
-  - pip install .
+  - pip install .[test]
   
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  # TODO: make it work
-  # - pytest
-
-  # smoke tests
-  # - make test  # TODO: make it use python3 by default
   - pytest
