@@ -2,11 +2,16 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+try:
+    from tests.unittests_helper import CustomTestCase
+except:
+    from unittests_helper import CustomTestCase
+
 import tensorflow as tf
 import tensorlayer as tl
 
 
-class Layer_Basic_Test(unittest.TestCase):
+class Layer_Basic_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
@@ -44,20 +49,19 @@ class Layer_Basic_Test(unittest.TestCase):
 
             cls.vgg2_train_params = tl.layers.get_variables_with_name('out')
 
-        with tf.Graph().as_default():
+        with tf.Graph().as_default() as graph:
             # - Reuse model
-            x1 = tf.placeholder(tf.float32, [None, 224, 224, 3])
-            x2 = tf.placeholder(tf.float32, [None, 224, 224, 3])
+            x = tf.placeholder(tf.float32, [None, 224, 224, 3])
             # get VGG without the last layer
-            vgg3 = tl.models.VGG16(x1, end_with='fc2_relu')
+            vgg3 = tl.models.VGG16(x, end_with='fc2_relu')
             # reuse the parameters of vgg1 with different input
-            _ = tl.models.VGG16(x2, end_with='fc2_relu', reuse=True)
             # restore pre-trained VGG parameters (as they share parameters, we don’t need to restore vgg2)
             # sess = tf.InteractiveSession()
             # vgg1.restore_params(sess)
 
             cls.vgg3_layers = vgg3.all_layers
             cls.vgg3_params = vgg3.all_params
+            cls.vgg3_graph = graph
 
     @classmethod
     def tearDownClass(cls):
@@ -83,6 +87,13 @@ class Layer_Basic_Test(unittest.TestCase):
 
     def test_vgg2_train_params(self):
         assert (len(self.vgg2_train_params) == 2)
+
+    def test_reuse_vgg(self):
+
+        with self.assertNotRaises(Exception):
+            with self.vgg3_graph.as_default():
+                x = tf.placeholder(tf.float32, [None, 224, 224, 3])
+                _ = tl.models.VGG16(x, end_with='fc2_relu', reuse=True)
 
 
 if __name__ == '__main__':
