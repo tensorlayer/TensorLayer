@@ -51,10 +51,6 @@ def req_file(filename):
     # Example: `\n` at the end of each line
     return [x.strip() for x in content]
 
-install_requires = [
-
-]
-
 setup(
     name=__package_name__,
 
@@ -137,9 +133,8 @@ setup(
     extras_require={
         'test': req_file("tests/requirements.txt")
     },
+
     zip_safe=True,
-
-
     include_package_data=True,
     scripts=[
         'tl',
