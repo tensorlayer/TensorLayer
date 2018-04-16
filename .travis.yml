@@ -1,16 +1,56 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
+
 python:
   - "2.7"
   - "3.5"
   - "3.6" 
+  
+#env:
+#  global:
+#
+#  ### == PYPI_PASSWORD === ###
+#  - secure: "##############################################################"
+#
+#  ### === GITHUB_PERSONAL_TOKEN === ###
+#  - secure: "##############################################################"
+  
   
 install:
   - pip install tensorflow
   - pip install -r requirements.txt
   - pip install .[test]
   
+  
 script:
   # units test
   # https://docs.pytest.org/en/latest/
   - pytest
+  
+ 
+before_deploy:
+  - python setup.py sdist
+  - python setup.py bdist_wheel
+  - python setup.py bdist_wheel --universal
+  - python setup.py egg_info
+  
+  
+#deploy:
+#- provider: pypi
+#  user: zsdh123
+#  password: "$PYPI_PASSWORD"
+#  skip_cleanup: true
+#  on:
+#    tags: true
+#    python: '3.6'
+
+#- provider: releases
+#  file:
+#    - dist/*
+#    - tensorlayer.egg-info/PKG-INFO
+#  file_glob: true
+#  skip_cleanup: true
+#  api_key: "$GITHUB_PERSONAL_TOKEN"
+#  on:
+#    tags: true
+#    python: '3.6'
