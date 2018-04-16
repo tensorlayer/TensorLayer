@@ -58,7 +58,7 @@ class Layer_Importer_Test(CustomTestCase):
                 # Alternatively, you should implement inception_v3 without TensorLayer as follow.
                 # logits, end_points = inception_v3(X, num_classes=1001,
                 #                                   is_training=False)
-                network = tl.layers.SlimNetsLayer(
+                tl.layers.SlimNetsLayer(
                     self.net_in["slim"],
                     slim_layer=inception_v3,
                     slim_args={

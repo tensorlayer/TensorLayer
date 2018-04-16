@@ -36,7 +36,7 @@ class Simple_MNIST_Test(CustomTestCase):
         correct_prediction = tf.equal(tf.argmax(y, 1), cls.y_)
 
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        y_op = tf.argmax(tf.nn.softmax(y), 1)
+        # y_op = tf.argmax(tf.nn.softmax(y), 1)
 
         # define the optimizer
         train_params = cls.network.all_params
