@@ -4,10 +4,7 @@
 import sys
 import unittest
 
-try:
-    import tests.testing as testing
-except:
-    import testing
+import tests.testing as testing
 
 from yapf.yapflib.yapf_api import FormatCode
 

@@ -3,10 +3,7 @@
 
 import unittest
 
-try:
-    import tests.testing as testing
-except:
-    import testing
+import tests.testing as testing
 
 from pydocstyle.checker import check
 from pydocstyle.checker import violations

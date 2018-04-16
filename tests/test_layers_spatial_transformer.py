@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except:
-    from unittests_helper import CustomTestCase
+from tests.unittests_helper import CustomTestCase
 
 import tensorflow as tf
 import tensorlayer as tl

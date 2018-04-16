@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-try:
-    from tests.unittests_helper import CustomTestCase
-except:
-    from unittests_helper import CustomTestCase
+from tests.unittests_helper import CustomTestCase
 
 import tensorflow as tf
 import tensorlayer as tl
 
 
-## reuse
 def model(x, is_train=True, reuse=False, name_scope="env1"):
     with tf.variable_scope(name_scope, reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
