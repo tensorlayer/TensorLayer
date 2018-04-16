@@ -45,19 +45,19 @@ class Layer_Flow_Control_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_net_shape(self):
-        assert (self.net_shape[-1] == 10)
+        self.assertEqual(self.net_shape[-1], 10)
 
     def test_net_layers(self):
-        assert (len(self.net_layers) == 13)
+        self.assertEqual(len(self.net_layers), 13)
 
     def test_net_params(self):
-        assert (len(self.net_params) == 12)
+        self.assertEqual(len(self.net_params), 12)
 
     def test_net_all_drop(self):
-        assert (len(self.net_all_drop) == 5)
+        self.assertEqual(len(self.net_all_drop), 5)
 
     def test_net_n_params(self):
-        assert (self.net_n_params == 3186410)
+        self.assertEqual(self.net_n_params, 3186410)
 
 
 if __name__ == '__main__':

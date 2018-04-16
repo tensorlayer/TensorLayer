@@ -89,75 +89,75 @@ class Layer_Convolution_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_shape_n1(self):
-        assert (self.shape_n1[1] == 50)
-        assert (self.shape_n1[2] == 32)
+        self.assertEqual(self.shape_n1[1], 50)
+        self.assertEqual(self.shape_n1[2], 32)
 
     def test_shape_n2(self):
-        assert (self.shape_n2[1] == 50)
-        assert (self.shape_n2[2] == 32)
+        self.assertEqual(self.shape_n2[1], 50)
+        self.assertEqual(self.shape_n2[2], 32)
 
     def test_shape_n3(self):
-        assert (self.shape_n3[1] == 50)
-        assert (self.shape_n3[2] == 50)
-        assert (self.shape_n3[3] == 32)
+        self.assertEqual(self.shape_n3[1], 50)
+        self.assertEqual(self.shape_n3[2], 50)
+        self.assertEqual(self.shape_n3[3], 32)
 
     def test_shape_n4(self):
-        assert (self.shape_n4[1] == 50)
-        assert (self.shape_n4[2] == 50)
-        assert (self.shape_n4[3] == 32)
+        self.assertEqual(self.shape_n4[1], 50)
+        self.assertEqual(self.shape_n4[2], 50)
+        self.assertEqual(self.shape_n4[3], 32)
 
     def test_shape_n5(self):
-        assert (self.shape_n5[1] == 50)
-        assert (self.shape_n5[2] == 50)
-        assert (self.shape_n5[3] == 32)
+        self.assertEqual(self.shape_n5[1], 50)
+        self.assertEqual(self.shape_n5[2], 50)
+        self.assertEqual(self.shape_n5[3], 32)
 
     def test_shape_n6(self):
-        assert (self.shape_n6[1] == 200)
-        assert (self.shape_n6[2] == 200)
-        assert (self.shape_n6[3] == 32)
+        self.assertEqual(self.shape_n6[1], 200)
+        self.assertEqual(self.shape_n6[2], 200)
+        self.assertEqual(self.shape_n6[3], 32)
 
     def test_shape_n7(self):
-        #assert (self.shape_n7[1] == 200)  # TODO: why [None None None 32] ?
-        #assert (self.shape_n7[2] == 200)  # TODO: why [None None None 32] ?
-        assert (self.shape_n7[3] == 32)
+        #self.assertEqual(self.shape_n7[1], 200)  # TODO: why [None None None 32] ?
+        #self.assertEqual(self.shape_n7[2], 200)  # TODO: why [None None None 32] ?
+        self.assertEqual(self.shape_n7[3], 32)
 
     def test_shape_n8(self):
-        assert (self.shape_n8[1] == 50)
-        assert (self.shape_n8[2] == 50)
-        assert (self.shape_n8[3] == 6)
+        self.assertEqual(self.shape_n8[1], 50)
+        self.assertEqual(self.shape_n8[2], 50)
+        self.assertEqual(self.shape_n8[3], 6)
 
     def test_shape_n9(self):
-        assert (self.shape_n9[1] == 25)
-        assert (self.shape_n9[2] == 25)
-        assert (self.shape_n9[3] == 32)
+        self.assertEqual(self.shape_n9[1], 25)
+        self.assertEqual(self.shape_n9[2], 25)
+        self.assertEqual(self.shape_n9[3], 32)
 
     def test_shape_n10(self):
-        assert (self.shape_n10[1:] == [98, 98, 32])
+        self.assertEqual(self.shape_n10[1:], [98, 98, 32])
 
     def test_shape_n11(self):
-        assert (self.shape_n11[1] == 50)
-        assert (self.shape_n11[2] == 50)
-        assert (self.shape_n11[3] == 50)
-        assert (self.shape_n11[4] == 32)
+        self.assertEqual(self.shape_n11[1], 50)
+        self.assertEqual(self.shape_n11[2], 50)
+        self.assertEqual(self.shape_n11[3], 50)
+        self.assertEqual(self.shape_n11[4], 32)
 
     def test_shape_n12(self):
-        assert (self.shape_n12[1] == 200)
-        assert (self.shape_n12[2] == 200)
-        assert (self.shape_n12[3] == 200)
-        assert (self.shape_n12[4] == 32)
+        self.assertEqual(self.shape_n12[1], 200)
+        self.assertEqual(self.shape_n12[2], 200)
+        self.assertEqual(self.shape_n12[3], 200)
+        self.assertEqual(self.shape_n12[4], 32)
 
     def test_params_n4(self):
-        assert (len(self.n4_params) == 2)
+        self.assertEqual(len(self.n4_params), 2)
 
     def test_params_n5(self):
-        assert (len(self.n5_params) == 1)
+        self.assertEqual(len(self.n5_params), 1)
 
     def test_params_n10(self):
-        assert (len(self.n10_params) == 3)
-        assert (self.n10_count_params == 155)
+        self.assertEqual(len(self.n10_params), 3)
+        self.assertEqual(self.n10_count_params, 155)
 
     def test_layers_n10(self):
-        assert (len(self.n10_all_layers) == 1)
+        self.assertEqual(len(self.n10_all_layers), 1)
 
 
 if __name__ == '__main__':

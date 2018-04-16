@@ -34,16 +34,16 @@ class Layer_Extend_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_shape_1(self):
-        assert (self.shape_1[-1] == 1)
+        self.assertEqual(self.shape_1[-1], 1)
 
     def test_shape_2(self):
-        assert (self.shape_2[-1] == 3)
+        self.assertEqual(self.shape_2[-1], 3)
 
     def test_layers(self):
-        assert (len(self.layers) == 4)
+        self.assertEqual(len(self.layers), 4)
 
     def test_params(self):
-        assert (len(self.params) == 4)
+        self.assertEqual(len(self.params), 4)
 
 
 if __name__ == '__main__':

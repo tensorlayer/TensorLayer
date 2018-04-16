@@ -38,10 +38,10 @@ class Layer_Time_Distributed_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_net_shape(self):
-        assert (self.net_shape == [32, 20, 50])
+        self.assertEqual(self.net_shape, [32, 20, 50])
 
     def test_net_n_params(self):
-        assert (self.n_params == 5050)
+        self.assertEqual(self.n_params, 5050)
 
     def test_reuse(self):
 

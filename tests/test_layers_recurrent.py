@@ -318,65 +318,65 @@ class Layer_Recurrent_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_net1(self):
-        assert (self.net1_shape == [self.net1_batch_size, self.vocab_size])
-        assert (len(self.net1_layers) == 7)
-        assert (len(self.net1_params) == 7)
-        assert (self.net1_n_params == 7790)
+        self.assertEqual(self.net1_shape, [self.net1_batch_size, self.vocab_size])
+        self.assertEqual(len(self.net1_layers), 7)
+        self.assertEqual(len(self.net1_params), 7)
+        self.assertEqual(self.net1_n_params, 7790)
 
     def test_net2(self):
-        assert (self.net2_shape == [self.net2_batch_size, 3])
-        assert (len(self.net2_layers) == 8)
-        assert (len(self.net2_params) == 8)
-        assert (self.net2_n_params == 562245)
+        self.assertEqual(self.net2_shape, [self.net2_batch_size, 3])
+        self.assertEqual(len(self.net2_layers), 8)
+        self.assertEqual(len(self.net2_params), 8)
+        self.assertEqual(self.net2_n_params, 562245)
 
     def test_net3(self):
-        assert (self.net3_shape[1:3] == [self.num_steps, self.hidden_size * 2])
-        assert (len(self.net3_layers) == 2)
-        assert (len(self.net3_params) == 5)
-        assert (self.net3_n_params == 7160)
+        self.assertEqual(self.net3_shape[1:3], [self.num_steps, self.hidden_size * 2])
+        self.assertEqual(len(self.net3_layers), 2)
+        self.assertEqual(len(self.net3_params), 5)
+        self.assertEqual(self.net3_n_params, 7160)
 
     def test_net4(self):
-        assert (self.net4_shape[1:3] == [self.num_steps, self.hidden_size * 2])
-        assert (len(self.net4_layers) == 2)
-        assert (len(self.net4_params) == 9)
-        assert (self.net4_n_params == 13720)
+        self.assertEqual(self.net4_shape[1:3], [self.num_steps, self.hidden_size * 2])
+        self.assertEqual(len(self.net4_layers), 2)
+        self.assertEqual(len(self.net4_params), 9)
+        self.assertEqual(self.net4_n_params, 13720)
 
     def test_net5(self):
-        assert (self.net5_shape[-1] == self.vocab_size)
-        assert (self.net5_rnn_shape[-1] == self.embedding_size)
-        assert (len(self.net5_layers) == 3)
-        assert (len(self.net5_params) == 5)
-        assert (self.net5_n_params == 4510)
+        self.assertEqual(self.net5_shape[-1], self.vocab_size)
+        self.assertEqual(self.net5_rnn_shape[-1], self.embedding_size)
+        self.assertEqual(len(self.net5_layers), 3)
+        self.assertEqual(len(self.net5_params), 5)
+        self.assertEqual(self.net5_n_params, 4510)
 
     def test_net6(self):
-        assert (self.net6_shape[-1] == self.embedding_size or len(self.net6_shape) == 2)
-        assert (self.net6_rnn_shape[-1] == self.embedding_size or len(self.net6_rnn_shape) == 3)
+        self.assertEqual(self.net6_shape[-1], self.embedding_size)
+        self.assertEqual(self.net6_rnn_shape[-1], self.embedding_size)
 
     def test_net7(self):
-        assert (self.net7_shape[-1] == self.embedding_size or len(self.net7_shape) == 2)
+        self.assertEqual(self.net7_shape[-1], self.embedding_size)
 
     def test_net8(self):
-        assert (self.net8_shape[-1] == self.embedding_size or len(self.net8_shape) == 2)
+        self.assertEqual(self.net8_shape[-1], self.embedding_size)
 
     def test_net9(self):
-        assert (self.net9_shape[-1] == self.vocab_size)
-        assert (self.net9_rnn_shape[-1] == self.embedding_size * 2)
-        assert (len(self.net9_layers) == 3)
-        assert (len(self.net9_params) == 7)
-        assert (self.net9_n_params == 8390)
+        self.assertEqual(self.net9_shape[-1], self.vocab_size)
+        self.assertEqual(self.net9_rnn_shape[-1], self.embedding_size * 2)
+        self.assertEqual(len(self.net9_layers), 3)
+        self.assertEqual(len(self.net9_params), 7)
+        self.assertEqual(self.net9_n_params, 8390)
 
     def test_net10(self):
-        assert (self.net10_shape[-1] == self.vocab_size)
-        assert (self.net10_rnn_shape[-1] == self.embedding_size * 2)
-        assert (len(self.net10_layers) == 3)
-        assert (len(self.net10_params) == 11)
-        assert (self.net10_n_params == 18150)
+        self.assertEqual(self.net10_shape[-1], self.vocab_size)
+        self.assertEqual(self.net10_rnn_shape[-1], self.embedding_size * 2)
+        self.assertEqual(len(self.net10_layers), 3)
+        self.assertEqual(len(self.net10_params), 11)
+        self.assertEqual(self.net10_n_params, 18150)
 
     def test_net11(self):
-        assert (self.net11_shape[-1] == 10000)
-        assert (len(self.net11_layers) == 5)
-        assert (len(self.net11_params) == 11)
-        assert (self.net11_n_params == 5293200)
+        self.assertEqual(self.net11_shape[-1], 10000)
+        self.assertEqual(len(self.net11_layers), 5)
+        self.assertEqual(len(self.net11_params), 11)
+        self.assertEqual(self.net11_n_params, 5293200)
 
 
 if __name__ == '__main__':

@@ -68,25 +68,25 @@ class VGG_Model_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_vgg1_layers(self):
-        assert (len(self.vgg1_layers) == 22)
+        self.assertEqual(len(self.vgg1_layers), 22)
 
     def test_vgg2_layers(self):
-        assert (len(self.vgg2_layers) == 21)
+        self.assertEqual(len(self.vgg2_layers), 21)
 
     def test_vgg3_layers(self):
-        assert (len(self.vgg3_layers) == 21)
+        self.assertEqual(len(self.vgg3_layers), 21)
 
     def test_vgg1_params(self):
-        assert (len(self.vgg1_params) == 32)
+        self.assertEqual(len(self.vgg1_params), 32)
 
     def test_vgg2_params(self):
-        assert (len(self.vgg2_params) == 30)
+        self.assertEqual(len(self.vgg2_params), 30)
 
     def test_vgg3_params(self):
-        assert (len(self.vgg3_params) == 30)
+        self.assertEqual(len(self.vgg3_params), 30)
 
     def test_vgg2_train_params(self):
-        assert (len(self.vgg2_train_params) == 2)
+        self.assertEqual(len(self.vgg2_train_params), 2)
 
     def test_reuse_vgg(self):
 

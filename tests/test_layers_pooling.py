@@ -62,43 +62,43 @@ class Layer_Pooling_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_n1_shape(self):
-        assert (self.n1_shape[1:3] == [50, 32])
+        self.assertEqual(self.n1_shape[1:3], [50, 32])
 
     def test_n2_shape(self):
-        assert (self.n2_shape[1:3] == [25, 32])
+        self.assertEqual(self.n2_shape[1:3], [25, 32])
 
     def test_n3_shape(self):
-        assert (self.n3_shape[1:3] == [25, 32])
+        self.assertEqual(self.n3_shape[1:3], [25, 32])
 
     def test_n4_shape(self):
-        assert (self.n4_shape[-1] == 32)
+        self.assertEqual(self.n4_shape[-1], 32)
 
     def test_n5_shape(self):
-        assert (self.n5_shape[-1] == 32)
+        self.assertEqual(self.n5_shape[-1], 32)
 
     def test_n6_shape(self):
-        assert (self.n6_shape[1:4] == [50, 50, 32])
+        self.assertEqual(self.n6_shape[1:4], [50, 50, 32])
 
     def test_n7_shape(self):
-        assert (self.n7_shape[1:4] == [25, 25, 32])
+        self.assertEqual(self.n7_shape[1:4], [25, 25, 32])
 
     def test_n8_shape(self):
-        assert (self.n8_shape[1:4] == [25, 25, 32])
+        self.assertEqual(self.n8_shape[1:4], [25, 25, 32])
 
     def test_n9_shape(self):
-        assert (self.n9_shape[-1] == 32)
+        self.assertEqual(self.n9_shape[-1], 32)
 
     def test_n10_shape(self):
-        assert (self.n10_shape[-1] == 32)
+        self.assertEqual(self.n10_shape[-1], 32)
 
     def test_n11_shape(self):
-        assert (self.n11_shape == [None, 50, 50, 50, 3])
+        self.assertEqual(self.n11_shape, [None, 50, 50, 50, 3])
 
     def test_n12_shape(self):
-        assert (self.n12_shape == [None, 3])
+        self.assertEqual(self.n12_shape, [None, 3])
 
     def test_n13_shape(self):
-        assert (self.n13_shape == [None, 3])
+        self.assertEqual(self.n13_shape, [None, 3])
 
 
 if __name__ == '__main__':

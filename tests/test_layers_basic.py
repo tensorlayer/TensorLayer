@@ -32,19 +32,19 @@ class Layer_Basic_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_n_params(self):
-        assert (self.n_params == 14560)
+        self.assertEqual(self.n_params, 14560)
 
     def test_shape_n(self):
-        assert (self.shape_n[-1] == 80)
+        self.assertEqual(self.shape_n[-1], 80)
 
     def test_all_layers(self):
-        assert (len(self.all_layers) == 2)
+        self.assertEqual(len(self.all_layers), 2)
 
     def test_all_params(self):
-        assert (len(self.all_params) == 4)
+        self.assertEqual(len(self.all_params), 4)
 
     def test_shape_n2(self):
-        assert (self.shape_n2[-1] == 30)
+        self.assertEqual(self.shape_n2[-1], 30)
 
 
 if __name__ == '__main__':

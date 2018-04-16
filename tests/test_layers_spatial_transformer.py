@@ -59,16 +59,16 @@ class Layer_Spatial_Transformer_Test(CustomTestCase):
             _, _ = model(self.x, is_train=True, reuse=True)
 
     def test_net_shape(self):
-        assert (self.s_shape[1:] == [40, 40, 1])
+        self.assertEqual(self.s_shape[1:], [40, 40, 1])
 
     def test_net_layers(self):
-        assert (len(self.net_layers) == 9)
+        self.assertEqual(len(self.net_layers), 9)
 
     def test_net_params(self):
-        assert (len(self.net_params) == 12)
+        self.assertEqual(len(self.net_params), 12)
 
     def test_net_n_params(self):
-        assert (self.net_n_params == 1667980)
+        self.assertEqual(self.net_n_params, 1667980)
 
 
 if __name__ == '__main__':

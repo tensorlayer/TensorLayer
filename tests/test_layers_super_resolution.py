@@ -41,28 +41,28 @@ class Layer_Super_Resolution_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_net1_shape(self):
-        assert (self.net1_shape == [10, 200, 16])
+        self.assertEqual(self.net1_shape, [10, 200, 16])
 
     def test_net1_layers(self):
-        assert (len(self.net1_layers) == 2)
+        self.assertEqual(len(self.net1_layers), 2)
 
     def test_net1_params(self):
-        assert (len(self.net1_params) == 2)
+        self.assertEqual(len(self.net1_params), 2)
 
     def test_net1_n_params(self):
-        assert (self.net1_n_params == 416)
+        self.assertEqual(self.net1_n_params, 416)
 
     def test_net2_shape(self):
-        assert (self.net2_shape == [10, 200, 200, 8])
+        self.assertEqual(self.net2_shape, [10, 200, 200, 8])
 
     def test_net2_layers(self):
-        assert (len(self.net2_layers) == 2)
+        self.assertEqual(len(self.net2_layers), 2)
 
     def test_net2_params(self):
-        assert (len(self.net2_params) == 2)
+        self.assertEqual(len(self.net2_params), 2)
 
     def test_net2_n_params(self):
-        assert (self.net2_n_params == 608)
+        self.assertEqual(self.net2_n_params, 608)
 
 
 if __name__ == '__main__':

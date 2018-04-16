@@ -32,24 +32,24 @@ class Layer_Stack_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_net_shape(self):
-        assert (self.net_shape[-1] == 10)
+        self.assertEqual(self.net_shape[-1], 10)
 
     def test_layers(self):
-        assert (len(self.layers) == 4)
+        self.assertEqual(len(self.layers), 4)
 
     def test_params(self):
-        assert (len(self.params) == 6)
-        assert (self.n_params == 930)
+        self.assertEqual(len(self.params), 6)
+        self.assertEqual(self.n_params, 930)
 
     def test_unstack(self):
 
         for n in self.net:
             shape = n.outputs.get_shape().as_list()
 
-            assert (shape[-1] == 10)
-            assert (len(n.all_layers) == 4)
-            assert (len(n.all_params) == 6)
-            assert (n.count_params() == 930)
+            self.assertEqual(shape[-1], 10)
+            self.assertEqual(len(n.all_layers), 4)
+            self.assertEqual(len(n.all_params), 6)
+            self.assertEqual(n.count_params(), 930)
 
 
 if __name__ == '__main__':

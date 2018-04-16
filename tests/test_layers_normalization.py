@@ -46,14 +46,14 @@ class Layer_Normalization_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_all_layers(self):
-        assert (len(self.data["train_network"]["layers"]) == 6)
-        assert (len(self.data["eval_network"]["layers"]) == 6)
+        self.assertEqual(len(self.data["train_network"]["layers"]), 6)
+        self.assertEqual(len(self.data["eval_network"]["layers"]), 6)
 
     def test_all_params(self):
-        assert (len(self.data["train_network"]["params"]) == 12)
+        self.assertEqual(len(self.data["train_network"]["params"]), 12)
 
     def test_n_params(self):
-        assert (self.data["train_network"]["n_params"] == 60560)
+        self.assertEqual(self.data["train_network"]["n_params"], 60560)
 
 
 if __name__ == '__main__':

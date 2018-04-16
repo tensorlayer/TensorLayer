@@ -60,28 +60,28 @@ class Layer_Padding_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_n1_shape(self):
-        assert (self.n1_shape[1:] == [102, 1])
+        self.assertEqual(self.n1_shape[1:], [102, 1])
 
     def test_n2_shape(self):
-        assert (self.n2_shape[1:] == [105, 1])
+        self.assertEqual(self.n2_shape[1:], [105, 1])
 
     def test_n3_shape(self):
-        assert (self.n3_shape[1:] == [104, 104, 3])
+        self.assertEqual(self.n3_shape[1:], [104, 104, 3])
 
     def test_n4_shape(self):
-        assert (self.n4_shape[1:] == [104, 106, 3])
+        self.assertEqual(self.n4_shape[1:], [104, 106, 3])
 
     def test_n5_shape(self):
-        assert (self.n5_shape[1:] == [106, 108, 3])
+        self.assertEqual(self.n5_shape[1:], [106, 108, 3])
 
     def test_n6_shape(self):
-        assert (self.n6_shape[1:] == [104, 104, 104, 3])
+        self.assertEqual(self.n6_shape[1:], [104, 104, 104, 3])
 
     def test_n7_shape(self):
-        assert (self.n7_shape[1:] == [104, 106, 108, 3])
+        self.assertEqual(self.n7_shape[1:], [104, 106, 108, 3])
 
     def test_n8_shape(self):
-        assert (self.n8_shape[1:] == [106, 108, 110, 3])
+        self.assertEqual(self.n8_shape[1:], [106, 108, 110, 3])
 
 
 if __name__ == '__main__':
