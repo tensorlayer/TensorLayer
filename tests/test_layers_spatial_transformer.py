@@ -1,7 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
+try:
+    from tests.unittests_helper import CustomTestCase
+except:
+    from unittests_helper import CustomTestCase
+
 import tensorflow as tf
 import tensorlayer as tl
-
-x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 
 
 def model(x, is_train, reuse):
@@ -27,21 +34,46 @@ def model(x, is_train, reuse):
     return n, s
 
 
-net, s = model(x, is_train=True, reuse=False)
-_, _ = model(x, is_train=False, reuse=True)
+class Layer_Basic_Test(CustomTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 
-net.print_layers()
-net.print_params(False)
+        net, s = model(cls.x, is_train=True, reuse=False)
 
-shape = s.outputs.get_shape().as_list()
-if shape[1:] != [40, 40, 1]:
-    raise Exception("shape do not match")
+        net.print_layers()
+        net.print_params(False)
 
-if len(net.all_layers) != 9:
-    raise Exception("layers do not match")
+        cls.s_shape = s.outputs.get_shape().as_list()
+        cls.net_layers = net.all_layers
+        cls.net_params = net.all_params
+        cls.net_n_params = net.count_params()
 
-if len(net.all_params) != 12:
-    raise Exception("params do not match")
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
 
-if net.count_params() != 1667980:
-    raise Exception("params do not match")
+    def test_reuse(self):
+
+        with self.assertNotRaises(Exception):
+            _, _ = model(self.x, is_train=True, reuse=True)
+
+    def test_net_shape(self):
+        assert (self.s_shape[1:] == [40, 40, 1])
+
+    def test_net_layers(self):
+        assert (len(self.net_layers) == 9)
+
+    def test_net_params(self):
+        assert (len(self.net_params) == 12)
+
+    def test_net_n_params(self):
+        assert (self.net_n_params == 1667980)
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()
