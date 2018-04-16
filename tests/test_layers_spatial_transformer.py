@@ -4,7 +4,7 @@ import unittest
 
 try:
     from tests.unittests_helper import CustomTestCase
-except:
+except ImportError:
     from unittests_helper import CustomTestCase
 
 import tensorflow as tf

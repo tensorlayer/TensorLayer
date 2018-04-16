@@ -5,7 +5,7 @@ import unittest
 
 try:
     import tests.testing as testing
-except:
+except ImportError:
     import testing
 
 from pydocstyle.checker import check

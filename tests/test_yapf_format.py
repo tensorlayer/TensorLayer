@@ -6,7 +6,7 @@ import unittest
 
 try:
     import tests.testing as testing
-except:
+except ImportError:
     import testing
 
 from yapf.yapflib.yapf_api import FormatCode
