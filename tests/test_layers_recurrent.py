@@ -34,12 +34,12 @@ class Layer_Recurrent_Test(unittest.TestCase):
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
         net1 = tl.layers.RNNLayer(net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, return_last=False, name='lstm1')
 
-        lstm1 = net1
+        # lstm1 = net1
 
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
         net1 = tl.layers.RNNLayer(net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, return_last=True, name='lstm2')
 
-        lstm2 = net1
+        # lstm2 = net1
 
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop3')
         net1 = tl.layers.DenseLayer(net1, n_units=cls.vocab_size, name='output')
