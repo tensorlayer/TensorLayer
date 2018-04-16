@@ -20,7 +20,7 @@ def mlp(x, is_train=True, reuse=False):
     return network
 
 
-class Layer_Basic_Test(unittest.TestCase):
+class MLP_Reuse_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 

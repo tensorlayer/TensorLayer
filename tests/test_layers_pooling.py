@@ -6,7 +6,7 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
-class Layer_Basic_Test(unittest.TestCase):
+class Layer_Pooling_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 

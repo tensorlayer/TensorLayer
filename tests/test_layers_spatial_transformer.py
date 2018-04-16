@@ -34,7 +34,7 @@ def model(x, is_train, reuse):
     return n, s
 
 
-class Layer_Basic_Test(CustomTestCase):
+class Layer_Spatial_Transformer_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
         cls.x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])

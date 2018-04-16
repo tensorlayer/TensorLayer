@@ -6,7 +6,7 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
-class Layer_Basic_Test(unittest.TestCase):
+class Layer_Super_Resolution_Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         t_signal = tf.placeholder('float32', [10, 100, 4], name='x')

@@ -18,7 +18,7 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import inception_v3_a
 slim = tf.contrib.slim
 
 
-class Layer_Basic_Test(CustomTestCase):
+class Layer_Importer_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 

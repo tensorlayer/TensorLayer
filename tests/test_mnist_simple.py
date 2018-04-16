@@ -11,7 +11,7 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
-class Layer_Basic_Test(CustomTestCase):
+class Simple_MNIST_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 

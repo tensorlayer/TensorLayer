@@ -19,7 +19,7 @@ def model(x, is_train=True, reuse=False, name_scope="env1"):
     return net
 
 
-class Layer_Basic_Test(CustomTestCase):
+class Layer_Time_Distributed_Test(CustomTestCase):
     @classmethod
     def setUpClass(cls):
 
