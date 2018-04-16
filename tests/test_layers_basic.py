@@ -1,38 +1,55 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
 import tensorflow as tf
 import tensorlayer as tl
 
-x = tf.placeholder(tf.float32, [None, 100])
-n = tl.layers.InputLayer(x, name='in')
-n = tl.layers.DenseLayer(n, n_units=80, name='d1')
-n = tl.layers.DenseLayer(n, n_units=80, name='d2')
-print(n)
-n.print_layers()
-n.print_params(False)
-print(n.count_params())
 
-if n.count_params() != 14560:
-    raise Exception("params do not match")
+class Layer_Basic_Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
 
-shape = n.outputs.get_shape().as_list()
-if shape[-1] != 80:
-    raise Exception("shape do not match")
+        x = tf.placeholder(tf.float32, [None, 100])
+        n = tl.layers.InputLayer(x, name='in')
+        n = tl.layers.DenseLayer(n, n_units=80, name='d1')
+        n = tl.layers.DenseLayer(n, n_units=80, name='d2')
 
-if len(n.all_layers) != 2:
-    raise Exception("layers do not match")
+        n.print_layers()
+        n.print_params(False)
 
-if len(n.all_params) != 4:
-    raise Exception("params do not match")
+        n2 = n[:, :30]
+        n2.print_layers()
 
-for l in n:
-    print(l)
+        cls.n_params = n.count_params()
+        cls.shape_n = n.outputs.get_shape().as_list()
+        cls.shape_n2 = n2.outputs.get_shape().as_list()
+        cls.all_layers = n.all_layers
+        cls.all_params = n.all_params
 
-n2 = n[:, :30]
-print(n2)
-n2.print_layers()
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
 
-shape = n2.outputs.get_shape().as_list()
-if shape[-1] != 30:
-    raise Exception("shape do not match")
+    def test_n_params(self):
+        assert (self.n_params == 14560)
 
-for l in n2:
-    print(l)
+    def test_shape_n(self):
+        assert (self.shape_n[-1] == 80)
+
+    def test_all_layers(self):
+        assert (len(self.all_layers) == 2)
+
+    def test_all_params(self):
+        assert (len(self.all_params) == 4)
+
+    def test_shape_n2(self):
+        assert (self.shape_n2[-1] == 30)
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()
