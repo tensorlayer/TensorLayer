@@ -1,29 +1,6 @@
-.. raw:: html
+|TensorLayer Logo|
 
-   <!--<div align="center">
-       <div class="TensorFlow">
-     <img src="https://www.tensorflow.org/images/tf_logo_transp.png" style=": left; margin-left: 5px; margin-bottom: 5px;"><br><br>
-      </div>
-      <div class="TensorLayer">
-       <img src="https://www.tensorflow.org/images/tf_logo_transp.png" style=": right; margin-left: 5px; margin-bottom: 5px;">
-       </div>
-   </div>
-   -->
-
-.. raw:: html
-
-   <div align="center">
-
-::
-
-    <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
-
-.. raw:: html
-
-   </div>
-
-|Codacy Badge| |Gitter| |Build Status| |Documentation Status| |Docker
-Pulls|
+|Codacy Badge| |Gitter| |Build Status| |Documentation Status| |Docker Pulls|
 
 TensorLayer is a deep learning and reinforcement learning library on top
 of `TensorFlow <https://www.tensorflow.org>`__. It provides rich neural
@@ -458,6 +435,9 @@ License
 =======
 
 TensorLayer is released under the Apache 2.0 license.
+
+.. |TensorLayer Logo| image:: https://raw.githubusercontent.com/tensorlayer/tensorlayer/master/img/tl_transparent_logo.png
+   :width: 50%
 
 .. |Codacy Badge| image:: https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9
    :target: https://app.codacy.com/app/tensorlayer/tensorlayer?utm_source=github.com&utm_medium=referral&utm_content=tensorlayer/tensorlayer&utm_campaign=badger
