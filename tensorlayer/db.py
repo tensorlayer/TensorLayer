@@ -7,8 +7,12 @@ import time
 import uuid
 from datetime import datetime
 
-import gridfs
-from pymongo import MongoClient
+try:
+    import gridfs
+    from pymongo import MongoClient
+except ImportError:
+    install_instr = "Please make sure you install PyMongo with the command: pip install pymongo."
+    raise ImportError("__init__.py : Could not import PyMongo." + install_instr)
 
 
 def AutoFill(func):
