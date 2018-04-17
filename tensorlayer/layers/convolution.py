@@ -71,7 +71,7 @@ class Conv1dLayer(Layer):
             stride=1,
             dilation_rate=1,
             padding='SAME',
-            data_format='NWC',
+            data_format='NWC',  #NWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -97,7 +97,6 @@ class Conv1dLayer(Layer):
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = self.outputs + b
-
             self.outputs = act(self.outputs)
 
         self.all_layers.append(self.outputs)
