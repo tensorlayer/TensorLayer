@@ -6,14 +6,14 @@ python:
   - "3.5"
   - "3.6" 
   
-#env:
-#  global:
-#
-#  ### == PYPI_PASSWORD === ###
-#  - secure: "##############################################################"
-#
-#  ### === GITHUB_PERSONAL_TOKEN === ###
-#  - secure: "##############################################################"
+env:
+  global:
+
+  ### == PYPI_PASSWORD === ###
+  - secure: "PTnOmPCT+m0lJZq9JArNy6DcIb7jx0XIrfEBBd7r3mdKjnuMdEOt+lUx5111kIKSEPYvxE2mRCDev/hhHCT9geFXjYwDXPm5t8qZoIC2cMdScqgD/7e8g3cfZrfC5LOlPYhkP2h8M25fk7zrulU5Lpfehp2m6lKkB+/iY2iIrXoh096npweAegUSU6E5IkaMvJR/uIZq3SxcJ9rxIaXco6dq3kh7DHMlTnaz+l6LHdmi9ZQUUdCC+zjDUQ9p4HCiWTnlz4iq28d8fGJd+yPXCbOFjuQm2HNtQxTWGge4EoEBmZFU8EKk0/VOnmLbBSwzopSMs9C9J2JDqqWwF771DHRiqI46CTF1CcwHq6jC/RDHqXkoepGEm9Z4aQmx0QBb4ZAwOzjSyYOPnltuXW/QKwAU/iT8Cv9vpZHbMgPtEFzMMqwr4sKQyshN3XHCxeio83hB9WlcxNTWKd/hmkeyNEdqseawELkXMBNqDN5ews9FYXEcG+RuYRg0ngJZzDN+vjTdC01fY+UQ7XR0E1/JLeIhs3juo8YpVdycwhGJjUYxXVXaJSPAPYiOtq8kh6w5XTvSdoupS5s58UBmge8FFRpdTzhvKQGu/ufQ+KLV6uLOw8J0DLwu55chkMhV6x1z2IIE9BDxbfkSK8Z8Gnq7AHwbm3a5506KzZZwkljEGiE="
+
+  ### === GITHUB_PERSONAL_TOKEN === ###
+  - secure: "GmdokEVWFS4LlSIdhfYvET+53hcuN9gN5gbhYduWkvyqvCJnP5PENzxdDz6Y3EJCSXxfKTT+jBLmJkgOElgeWxyAEa+wGj3jJzpjFD8BEcxIf5mNsyJ2LryzecFoKjcCR7viid14GDEYSeA3UB0MgKgitm9rMmcQ2W9RLJfAmTfGRQ+kMwhM7GTeFc5c99YL7DW7AUFSbiAac/k50AMx2j9KNT1JAGhDoc5yVTdVvtKrdtuCZUa82q4Cm/h4IEd6BbNrcImYyxQ814LHCrHWBi9jmuc+UxqvsTH1ErNapIObz490ri3DmZg+LUrH5dIuhSa5HGqZjob6tKG6XCKFWOuv9E73+URDitJllXHc1qSP/K61SMmsQrE2FnaxVjxpQCOcqueRMKszwH5/k3UoGbUPWsBFwbBznXrnHO/DNHAgL9XwOFP6biPP8TKp2ReX41YwcU6sbiYb7naGWo3Dhe+yEB9wBGOwuGHipDQm9R4SSIJgjpdc642KjcEMQqb3yL7DWpOmItXMxoGNM+X93kU4u4u1tGgq1yxnhEk6VG2l/yI6A2QOVIPyOu+L9FkZL3mrl9mbUeBKr/SHX4CTFODi5io8D0lqwNSRZrmi/GGWh2glbNnTapD67UnTnsh/6LE2YiSqGteH47EByb9V4ykrjfdv5EZhyJNwI7jYPDw="
   
   
 install:
@@ -35,22 +35,22 @@ before_deploy:
   - python setup.py egg_info
   
   
-#deploy:
-#- provider: pypi
-#  user: zsdh123
-#  password: "$PYPI_PASSWORD"
-#  skip_cleanup: true
-#  on:
-#    tags: true
-#    python: '3.6'
+deploy:
+- provider: pypi
+  user: jonathandekhtiar
+  password: "$PYPI_PASSWORD"
+  skip_cleanup: true
+  on:
+    tags: true
+    python: '3.6'
 
-#- provider: releases
-#  file:
-#    - dist/*
-#    - tensorlayer.egg-info/PKG-INFO
-#  file_glob: true
-#  skip_cleanup: true
-#  api_key: "$GITHUB_PERSONAL_TOKEN"
-#  on:
-#    tags: true
-#    python: '3.6'
+- provider: releases
+  file:
+    - dist/*
+    - tensorlayer.egg-info/PKG-INFO
+  file_glob: true
+  skip_cleanup: true
+  api_key: "$GITHUB_PERSONAL_TOKEN"
+  on:
+    tags: true
+    python: '3.6'
