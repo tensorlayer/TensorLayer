@@ -133,9 +133,6 @@ setup(
     extras_require={
         'test': req_file("tests/requirements.txt")
     },
-
-    zip_safe=True,
-    include_package_data=True,
     scripts=[
         'tl',
     ],
