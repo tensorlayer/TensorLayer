@@ -492,7 +492,7 @@ APIs may better for you.
 
 2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: DeConv2d
+.. autoclass:: DeConv2d
 
 3D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
