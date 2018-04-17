@@ -85,6 +85,7 @@ class Conv1dLayer(Layer):
 
         if act is None:
             act = tf.identity
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
@@ -92,17 +93,13 @@ class Conv1dLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            self.outputs = tf.nn.convolution(
-                self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ), data_format=data_format)  # 1.2
+            self.outputs = tf.nn.convolution(self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ))  # 1.2
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = self.outputs + b
 
             self.outputs = act(self.outputs)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([W, b])
@@ -1260,22 +1257,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
-@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-def conv1d(
-        prev_layer,
-        n_filter=32,
-        filter_size=5,
-        stride=1,
-        dilation_rate=1,
-        act=tf.identity,
-        padding='SAME',
-        data_format="NWC",
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='conv1d',
-):
+class Conv1d(Layer):
     """Simplified version of :class:`Conv1dLayer`.
 
     Parameters
@@ -1301,16 +1283,11 @@ def conv1d(
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for the weight matrix initializer.
+        The arguments for the weight matrix initializer (deprecated).
     b_init_args : dictionary
-        The arguments for the bias vector initializer.
+        The arguments for the bias vector initializer (deprecated).
     name : str
         A unique layer name
-
-    Returns
-    -------
-    :class:`Layer`
-        A :class:`Conv1dLayer` object.
 
     Examples
     ---------
@@ -1331,25 +1308,67 @@ def conv1d(
 
     """
 
-    if W_init_args is None:
-        W_init_args = {}
-    if b_init_args is None:
-        b_init_args = {}
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self,
+                 prev_layer,
+                 n_filter=32,
+                 filter_size=5,
+                 stride=1,
+                 dilation_rate=1,
+                 act=tf.identity,
+                 padding='SAME',
+                 data_format="channels_last",
+                 W_init=tf.truncated_normal_initializer(stddev=0.02),
+                 b_init=tf.constant_initializer(value=0.0),
+                 W_init_args=None,
+                 b_init_args=None,
+                 name='conv1d'):
 
-    return Conv1dLayer(
-        prev_layer=prev_layer,
-        act=act,
-        shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
-        stride=stride,
-        dilation_rate=dilation_rate,
-        padding=padding,
-        data_format=data_format,
-        W_init=W_init,
-        b_init=b_init,
-        W_init_args=W_init_args,
-        b_init_args=b_init_args,
-        name=name,
-    )
+        super(Conv1d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("Conv1d %s: n_filter:%d filter_size:%s stride:%d pad:%s act:%s dilation_rate:%d" % (name, n_filter, filter_size, stride, padding,
+                                                                                                         act.__name__, dilation_rate))
+
+        self.inputs = prev_layer.outputs
+        if tf.__version__ > '1.3':
+            con1d = tf.layers.Conv1D(
+                filters=n_filter,
+                kernel_size=filter_size,
+                strides=stride,
+                padding=padding,
+                data_format=data_format,
+                dilation_rate=dilation_rate,
+                activation=act,
+                use_bias=(True if b_init else False),
+                kernel_initializer=W_init,
+                bias_initializer=b_init,
+                name=name)
+            # con1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
+            self.outputs = con1d(self.inputs)
+            new_variables = con1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self.all_layers.append(self.outputs)
+            self.all_params.extend(new_variables)
+        else:
+            raise RuntimeError("please update TF > 1.3 or downgrade TL < 1.8.4")
+        # if W_init_args is None:
+        #     W_init_args = {}
+        # if b_init_args is None:
+        #     b_init_args = {}
+        # data_format='HWC'
+        # return Conv1dLayer(
+
+    #     prev_layer=prev_layer,
+    #     act=act,
+    #     shape=(filter_size, int(prev_layer.outputs.get_shape()[-1]), n_filter),
+    #     stride=stride,
+    #     dilation_rate=dilation_rate,
+    #     padding=padding,
+    #     data_format=data_format,
+    #     W_init=W_init,
+    #     b_init=b_init,
+    #     W_init_args=W_init_args,
+    #     b_init_args=b_init_args,
+    #     name=name,
+    # )
 
 
 # TODO: DeConv1d
@@ -1682,9 +1701,6 @@ class DeConv3d(Layer):
             )
             new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(new_variables)
 
@@ -2010,6 +2026,6 @@ class GroupConv2d(Layer):
 
 # Alias
 AtrousConv1dLayer = atrous_conv1d
-Conv1d = conv1d
+# Conv1d = conv1d
 # Conv2d = conv2d
 # DeConv2d = deconv2d
