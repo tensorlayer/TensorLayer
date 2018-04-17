@@ -97,6 +97,7 @@ class Conv1dLayer(Layer):
             if b_init:
                 b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = self.outputs + b
+            self.outputs = act(self.outputs)
 
         self.all_layers.append(self.outputs)
         if b_init:
