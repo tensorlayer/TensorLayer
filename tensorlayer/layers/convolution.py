@@ -1324,7 +1324,7 @@ class Conv1d(Layer):
                  b_init_args=None,
                  name='conv1d'):
 
-        super().__init__(prev_layer=prev_layer, name=name)
+        super(Conv1d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("Conv1d %s: n_filter:%d filter_size:%s stride:%d pad:%s act:%s dilation_rate:%d" % (name, n_filter, filter_size, stride, padding,
                                                                                                          act.__name__, dilation_rate))
 
