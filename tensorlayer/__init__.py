@@ -27,7 +27,8 @@ act = activation
 vis = visualize
 
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 8, 4, '')
+VERSION = (1, 8, 5, 'rc0')
+__shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
 __package_name__ = 'tensorlayer'
