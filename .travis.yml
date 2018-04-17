@@ -8,6 +8,8 @@ python:
   
 env:
   global:
+  
+  - PYPI_USER='jonathandekhtiar'
 
   ### == PYPI_PASSWORD === ###
   ## To update: travis encrypt PYPI_PASSWORD=################################
@@ -39,7 +41,7 @@ before_deploy:
   
 deploy:
 - provider: pypi
-  user: jonathandekhtiar
+  user: "$PYPI_USER"
   password: "$PYPI_PASSWORD"
   skip_cleanup: true
   on:
