@@ -71,7 +71,7 @@ class Conv1dLayer(Layer):
             stride=1,
             dilation_rate=1,
             padding='SAME',
-            data_format='NWC', #NWC',
+            data_format='NWC',  #NWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -103,6 +103,7 @@ class Conv1dLayer(Layer):
             self.all_params.extend([W, b])
         else:
             self.all_params.append(W)
+
 
 class Conv2dLayer(Layer):
     """
