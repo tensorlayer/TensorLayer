@@ -484,7 +484,7 @@ APIs may better for you.
 
 1D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: Conv1d
+.. autoclass:: Conv1d
 
 2D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
