@@ -1,92 +1,109 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
 import tensorflow as tf
 import tensorlayer as tl
 
-## 1D ========================================================================
-x = tf.placeholder(tf.float32, (None, 100, 1))
-nin = tl.layers.InputLayer(x, name='in1')
-nin = tl.layers.Conv1d(nin, n_filter=32, filter_size=5, stride=2, name='conv1d')
-print(nin)
-shape = nin.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 32):
-    raise Exception("shape do not match")
 
-n = tl.layers.MaxPool1d(nin, filter_size=3, strides=2, padding='same', name='maxpool1d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-# print(shape[1:3])
-if shape[1:3] != [25, 32]:
-    raise Exception("shape do not match")
+class Layer_Pooling_Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
 
-n = tl.layers.MeanPool1d(nin, filter_size=3, strides=2, padding='same', name='meanpool1d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[1:3] != [25, 32]:
-    raise Exception("shape do not match")
+        ## 1D ========================================================================
 
-n = tl.layers.GlobalMaxPool1d(nin, name='maxpool1d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[-1] != 32:
-    raise Exception("shape do not match")
+        x_1 = tf.placeholder(tf.float32, (None, 100, 1))
+        nin_1 = tl.layers.InputLayer(x_1, name='in1')
 
-n = tl.layers.GlobalMeanPool1d(nin, name='meanpool1d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[-1] != 32:
-    raise Exception("shape do not match")
+        n1 = tl.layers.Conv1d(nin_1, n_filter=32, filter_size=5, stride=2, name='conv1d')
+        n2 = tl.layers.MaxPool1d(n1, filter_size=3, strides=2, padding='same', name='maxpool1d')
+        n3 = tl.layers.MeanPool1d(n1, filter_size=3, strides=2, padding='same', name='meanpool1d')
+        n4 = tl.layers.GlobalMaxPool1d(n1, name='maxpool1d')
+        n5 = tl.layers.GlobalMeanPool1d(n1, name='meanpool1d')
 
-## 2D ========================================================================
-x = tf.placeholder(tf.float32, (None, 100, 100, 3))
-nin = tl.layers.InputLayer(x, name='in2')
-nin = tl.layers.Conv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d')
-print(nin)
-shape = nin.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 32):
-    raise Exception("shape do not match")
+        cls.n1_shape = n1.outputs.get_shape().as_list()
+        cls.n2_shape = n2.outputs.get_shape().as_list()
+        cls.n3_shape = n3.outputs.get_shape().as_list()
+        cls.n4_shape = n4.outputs.get_shape().as_list()
+        cls.n5_shape = n5.outputs.get_shape().as_list()
 
-n = tl.layers.MaxPool2d(nin, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-# print(shape[1:3])
-if shape[1:4] != [25, 25, 32]:
-    raise Exception("shape do not match")
+        ## 2D ========================================================================
 
-n = tl.layers.MeanPool2d(nin, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[1:4] != [25, 25, 32]:
-    raise Exception("shape do not match")
+        x_2 = tf.placeholder(tf.float32, (None, 100, 100, 3))
+        nin_2 = tl.layers.InputLayer(x_2, name='in2')
 
-n = tl.layers.GlobalMaxPool2d(nin, name='maxpool2d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[-1] != 32:
-    raise Exception("shape do not match")
+        n6 = tl.layers.Conv2d(nin_2, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='conv2d')
+        n7 = tl.layers.MaxPool2d(n6, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d')
+        n8 = tl.layers.MeanPool2d(n6, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d')
+        n9 = tl.layers.GlobalMaxPool2d(n6, name='maxpool2d')
+        n10 = tl.layers.GlobalMeanPool2d(n6, name='meanpool2d')
 
-n = tl.layers.GlobalMeanPool2d(nin, name='meanpool2d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape[-1] != 32:
-    raise Exception("shape do not match")
+        cls.n6_shape = n6.outputs.get_shape().as_list()
+        cls.n7_shape = n7.outputs.get_shape().as_list()
+        cls.n8_shape = n8.outputs.get_shape().as_list()
+        cls.n9_shape = n9.outputs.get_shape().as_list()
+        cls.n10_shape = n10.outputs.get_shape().as_list()
 
-## 3D ========================================================================
-x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-nin = tl.layers.InputLayer(x, name='in')
+        ## 3D ========================================================================
 
-n = tl.layers.MeanPool3d(nin, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='meanpool3d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape != [None, 50, 50, 50, 3]:
-    raise Exception("shape do not match")
+        x_3 = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
+        nin_3 = tl.layers.InputLayer(x_3, name='in')
 
-n = tl.layers.GlobalMaxPool3d(nin)
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape != [None, 3]:
-    raise Exception("shape do not match")
+        n11 = tl.layers.MeanPool3d(nin_3, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', name='meanpool3d')
+        n12 = tl.layers.GlobalMaxPool3d(nin_3)
+        n13 = tl.layers.GlobalMeanPool3d(nin_3)
 
-n = tl.layers.GlobalMeanPool3d(nin)
-print(n)
-shape = n.outputs.get_shape().as_list()
-if shape != [None, 3]:
-    raise Exception("shape do not match")
+        cls.n11_shape = n11.outputs.get_shape().as_list()
+        cls.n12_shape = n12.outputs.get_shape().as_list()
+        cls.n13_shape = n13.outputs.get_shape().as_list()
+
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_n1_shape(self):
+        self.assertEqual(self.n1_shape[1:3], [50, 32])
+
+    def test_n2_shape(self):
+        self.assertEqual(self.n2_shape[1:3], [25, 32])
+
+    def test_n3_shape(self):
+        self.assertEqual(self.n3_shape[1:3], [25, 32])
+
+    def test_n4_shape(self):
+        self.assertEqual(self.n4_shape[-1], 32)
+
+    def test_n5_shape(self):
+        self.assertEqual(self.n5_shape[-1], 32)
+
+    def test_n6_shape(self):
+        self.assertEqual(self.n6_shape[1:4], [50, 50, 32])
+
+    def test_n7_shape(self):
+        self.assertEqual(self.n7_shape[1:4], [25, 25, 32])
+
+    def test_n8_shape(self):
+        self.assertEqual(self.n8_shape[1:4], [25, 25, 32])
+
+    def test_n9_shape(self):
+        self.assertEqual(self.n9_shape[-1], 32)
+
+    def test_n10_shape(self):
+        self.assertEqual(self.n10_shape[-1], 32)
+
+    def test_n11_shape(self):
+        self.assertEqual(self.n11_shape, [None, 50, 50, 50, 3])
+
+    def test_n12_shape(self):
+        self.assertEqual(self.n12_shape, [None, 3])
+
+    def test_n13_shape(self):
+        self.assertEqual(self.n13_shape, [None, 3])
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()

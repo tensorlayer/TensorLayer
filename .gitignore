@@ -11,3 +11,4 @@ docs/_build
 tensorlayer.egg-info
 tensorlayer/__pacache__
 venv/
+.pytest_cache/
