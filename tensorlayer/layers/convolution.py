@@ -1521,7 +1521,6 @@ class Conv2d(Layer):
                 self.all_params.append(W)
 
 
-@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 class DeConv2d(Layer):
     """Simplified version of :class:`DeConv2dLayer`.
 
@@ -1557,6 +1556,7 @@ class DeConv2d(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
