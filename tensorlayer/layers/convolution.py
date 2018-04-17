@@ -1257,7 +1257,6 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     return bilinear_weights_init
 
 
-@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 class Conv1d(Layer):
     """Simplified version of :class:`Conv1dLayer`.
 
@@ -1309,7 +1308,7 @@ class Conv1d(Layer):
 
     """
 
-    # @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self,
                  prev_layer,
                  n_filter=32,
