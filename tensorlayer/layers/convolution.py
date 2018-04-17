@@ -1521,7 +1521,7 @@ class Conv2d(Layer):
                 self.all_params.append(W)
 
 
-# @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+@deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 class DeConv2d(Layer):
     """Simplified version of :class:`DeConv2dLayer`.
 
@@ -1588,8 +1588,6 @@ class DeConv2d(Layer):
         if tf.__version__ > '1.3':
             self.inputs = prev_layer.outputs
             # scope_name = tf.get_variable_scope().name
-            # net_new = Layer(prev_layer=layer, name=name)
-
             conv2d_transpose = tf.layers.Conv2DTranspose(
                 filters=n_filter,
                 kernel_size=filter_size,
@@ -1599,17 +1597,12 @@ class DeConv2d(Layer):
                 kernel_initializer=W_init,
                 bias_initializer=b_init,
                 name=name)
-            # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self.outputs = conv2d_transpose(self.inputs)
-            new_variables = conv2d_transpose.weights
-            # net_new.all_layers = list(prev_layer.all_layers)
-            # net_new.all_params = list(prev_layer.all_params)
-            # net_new.all_drop = dict(prev_layer.all_drop)
+            new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self.all_layers.append(self.outputs)
             self.all_params.extend(new_variables)
-            # return net_new
         else:
-            raise Exception("please update TF > 1.3 or downgrade TL < 1.8.4")
+            raise RuntimeError("please update TF > 1.3 or downgrade TL < 1.8.4")
             # if batch_size is None:
             #     #     batch_size = tf.shape(net.outputs)[0]
             #     fixed_batch_size = prev_layer.outputs.get_shape().with_rank_at_least(1)[0]
