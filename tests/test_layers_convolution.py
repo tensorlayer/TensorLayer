@@ -61,9 +61,17 @@ print(nin.outputs)
 n = tl.layers.DeConv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')
 print(n)
 shape = n.outputs.get_shape().as_list()
+print(shape[1:])
 # if (shape[1] != 200) or (shape[2] != 200) or (shape[3] != 32): # TODO: why [None None None 32] ?
-if (shape[3] != 32):
+if (shape[1:] != [200, 200, 32]):
     raise Exception("shape do not match")
+n = tl.layers.DeConv2d(n, n_filter=16, filter_size=(3, 3), strides=(2, 2), name='DeConv2d_2')
+print(n)
+shape = n.outputs.get_shape().as_list()
+if (shape[1:] != [400, 400, 16]):
+    raise Exception("shape do not match")
+if len(n.all_params) != 4:
+    raise Exception("params do not match")
 
 n = tl.layers.DepthwiseConv2d(nin, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise')
 print(n)

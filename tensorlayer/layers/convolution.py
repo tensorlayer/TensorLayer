@@ -1415,6 +1415,7 @@ class Conv2d(Layer):
             strides=(1, 1),
             act=tf.identity,
             padding='SAME',
+            dilation_rate=(1, 1),
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -1472,7 +1473,7 @@ class Conv2d(Layer):
                 strides=strides,
                 padding=padding,
                 data_format='channels_last',
-                dilation_rate=(1, 1),
+                dilation_rate=dilation_rate,
                 activation=act,
                 use_bias=(False if b_init is None else True),
                 kernel_initializer=W_init,  #None,
@@ -1520,20 +1521,8 @@ class Conv2d(Layer):
                 self.all_params.append(W)
 
 
-@deprecated_alias(layer='prev_layer', n_out_channel='n_filter', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-def deconv2d(prev_layer,
-             n_filter,
-             filter_size=(3, 3),
-             out_size=(30, 30),
-             strides=(2, 2),
-             padding='SAME',
-             batch_size=None,
-             act=tf.identity,
-             W_init=tf.truncated_normal_initializer(stddev=0.02),
-             b_init=tf.constant_initializer(value=0.0),
-             W_init_args=None,
-             b_init_args=None,
-             name='decnn2d'):
+# @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+class DeConv2d(Layer):
     """Simplified version of :class:`DeConv2dLayer`.
 
     Parameters
@@ -1550,8 +1539,8 @@ def deconv2d(prev_layer,
         The stride step (height, width).
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    batch_size : int
-        Require if TF version < 1.3, int or None.
+    batch_size : int or None
+        Require if TF < 1.3, int or None.
         If None, try to find the `batch_size` from the first dim of net.outputs (you should define the `batch_size` in the input placeholder).
     act : activation function
         The activation function of this layer.
@@ -1560,79 +1549,87 @@ def deconv2d(prev_layer,
     b_init : initializer or None
         The initializer for the bias vector. If None, skip biases.
     W_init_args : dictionary
-        The arguments for the weight matrix initializer.
+        The arguments for the weight matrix initializer (For TF < 1.3).
     b_init_args : dictionary
-        The arguments for the bias vector initializer.
+        The arguments for the bias vector initializer (For TF < 1.3).
     name : str
         A unique layer name.
 
-    Returns
-    -------
-    :class:`Layer`
-        A :class:`DeConv2dLayer` object.
-
     """
 
-    logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
+    def __init__(
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            out_size=(30, 30),  # remove
+            strides=(2, 2),
+            padding='SAME',
+            batch_size=None,  # remove
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,  # remove
+            b_init_args=None,  # remove
+            name='decnn2d'):
+        super(DeConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (name, str(n_filter), str(strides), padding, act.__name__))
 
-    if W_init_args is None:
-        W_init_args = {}
-    if b_init_args is None:
-        b_init_args = {}
-    if act is None:
-        act = tf.identity
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+        if act is None:
+            act = tf.identity
 
-    if len(strides) != 2:
-        raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
+        if len(strides) != 2:
+            raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
 
-    if tf.__version__ > '1.3':
-        inputs = prev_layer.outputs
-        scope_name = tf.get_variable_scope().name
-        # if scope_name:
-        #     whole_name = scope_name + '/' + name
-        # else:
-        #     whole_name = name
-        net_new = Layer(prev_layer=None, name=name)
-        # with tf.name_scope(name):
-        with tf.variable_scope(name) as vs:
-            net_new.outputs = tf.contrib.layers.conv2d_transpose(
-                inputs=inputs,
-                num_outputs=n_filter,
+        if tf.__version__ > '1.3':
+            self.inputs = prev_layer.outputs
+            # scope_name = tf.get_variable_scope().name
+            # net_new = Layer(prev_layer=layer, name=name)
+
+            conv2d_transpose = tf.layers.Conv2DTranspose(
+                filters=n_filter,
                 kernel_size=filter_size,
-                stride=strides,
+                strides=strides,
                 padding=padding,
-                activation_fn=act,
-                weights_initializer=W_init,
-                biases_initializer=b_init,
-                scope=name)
-            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        net_new.all_layers = list(prev_layer.all_layers)
-        net_new.all_params = list(prev_layer.all_params)
-        net_new.all_drop = dict(prev_layer.all_drop)
-        net_new.all_layers.extend([net_new.outputs])
-        net_new.all_params.extend(new_variables)
-        return net_new
-    else:
-        if batch_size is None:
-            #     batch_size = tf.shape(net.outputs)[0]
-            fixed_batch_size = prev_layer.outputs.get_shape().with_rank_at_least(1)[0]
-            if fixed_batch_size.value:
-                batch_size = fixed_batch_size.value
-            else:
-                from tensorflow.python.ops import array_ops
-                batch_size = array_ops.shape(prev_layer.outputs)[0]
-        return DeConv2dLayer(
-            prev_layer=prev_layer,
-            act=act,
-            shape=(filter_size[0], filter_size[1], n_filter, int(prev_layer.outputs.get_shape()[-1])),
-            output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
-            strides=(1, strides[0], strides[1], 1),
-            padding=padding,
-            W_init=W_init,
-            b_init=b_init,
-            W_init_args=W_init_args,
-            b_init_args=b_init_args,
-            name=name)
+                activation=act,
+                kernel_initializer=W_init,
+                bias_initializer=b_init,
+                name=name)
+            # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            self.outputs = conv2d_transpose(self.inputs)
+            new_variables = conv2d_transpose.weights
+            # net_new.all_layers = list(prev_layer.all_layers)
+            # net_new.all_params = list(prev_layer.all_params)
+            # net_new.all_drop = dict(prev_layer.all_drop)
+            self.all_layers.append(self.outputs)
+            self.all_params.extend(new_variables)
+            # return net_new
+        else:
+            raise Exception("please update TF > 1.3 or downgrade TL < 1.8.4")
+            # if batch_size is None:
+            #     #     batch_size = tf.shape(net.outputs)[0]
+            #     fixed_batch_size = prev_layer.outputs.get_shape().with_rank_at_least(1)[0]
+            #     if fixed_batch_size.value:
+            #         batch_size = fixed_batch_size.value
+            #     else:
+            #         from tensorflow.python.ops import array_ops
+            #         batch_size = array_ops.shape(prev_layer.outputs)[0]
+            # return DeConv2dLayer(
+            #     prev_layer=prev_layer,
+            #     act=act,
+            #     shape=(filter_size[0], filter_size[1], n_filter, int(prev_layer.outputs.get_shape()[-1])),
+            #     output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
+            #     strides=(1, strides[0], strides[1], 1),
+            #     padding=padding,
+            #     W_init=W_init,
+            #     b_init=b_init,
+            #     W_init_args=W_init_args,
+            #     b_init_args=b_init_args,
+            #     name=name)
 
 
 class DeConv3d(Layer):
@@ -2022,4 +2019,4 @@ class GroupConv2d(Layer):
 AtrousConv1dLayer = atrous_conv1d
 Conv1d = conv1d
 # Conv2d = conv2d
-DeConv2d = deconv2d
+# DeConv2d = deconv2d
