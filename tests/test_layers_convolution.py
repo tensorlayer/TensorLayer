@@ -1,129 +1,167 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
 import tensorflow as tf
 import tensorlayer as tl
 
-## 1D
-x = tf.placeholder(tf.float32, (None, 100, 1))
-nin = tl.layers.InputLayer(x, name='in1')
 
-n = tl.layers.Conv1dLayer(nin, shape=(5, 1, 32), stride=2)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 32):
-    raise Exception("shape do not match")
+class Layer_Convolution_Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        ############
+        #    1D    #
+        ############
 
-n = tl.layers.Conv1d(nin, n_filter=32, filter_size=5, stride=2)
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 32):
-    raise Exception("shape do not match")
+        x1 = tf.placeholder(tf.float32, (None, 100, 1))
+        nin1 = tl.layers.InputLayer(x1, name='in1')
 
-# AtrousConv1dLayer
+        n1 = tl.layers.Conv1dLayer(nin1, shape=(5, 1, 32), stride=2)
+        cls.shape_n1 = n1.outputs.get_shape().as_list()
 
-## 2D
-x = tf.placeholder(tf.float32, (None, 100, 100, 3))
-nin = tl.layers.InputLayer(x, name='in2')
-n = tl.layers.Conv2dLayer(
-    nin,
-    act=tf.nn.relu,
-    shape=(5, 5, 3, 32),
-    strides=(1, 2, 2, 1),
-    padding='SAME',
-    W_init=tf.truncated_normal_initializer(stddev=5e-2),
-    b_init=tf.constant_initializer(value=0.0),
-    name='conv2dlayer')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 32):
-    raise Exception("shape do not match")
+        n2 = tl.layers.Conv1d(nin1, n_filter=32, filter_size=5, stride=2)
+        cls.shape_n2 = n2.outputs.get_shape().as_list()
 
-n = tl.layers.Conv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d')
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 32):
-    raise Exception("shape do not match")
-n.print_params(False)
-if len(n.all_params) != 2:
-    raise Exception("params do not match")
+        ############
+        #    2D    #
+        ############
 
-n = tl.layers.Conv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 32):
-    raise Exception("shape do not match")
-if len(n.all_params) != 1:
-    raise Exception("params do not match")
+        x2 = tf.placeholder(tf.float32, (None, 100, 100, 3))
+        nin2 = tl.layers.InputLayer(x2, name='in2')
 
-n = tl.layers.DeConv2dLayer(nin, shape=(5, 5, 32, 3), output_shape=(100, 200, 200, 32), strides=(1, 2, 2, 1), name='deconv2dlayer')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 200) or (shape[2] != 200) or (shape[3] != 32):
-    raise Exception("shape do not match")
+        n3 = tl.layers.Conv2dLayer(
+            nin2,
+            act=tf.nn.relu,
+            shape=(5, 5, 3, 32),
+            strides=(1, 2, 2, 1),
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=5e-2),
+            b_init=tf.constant_initializer(value=0.0),
+            name='conv2dlayer')
+        cls.shape_n3 = n3.outputs.get_shape().as_list()
 
-print(nin.outputs)
-n = tl.layers.DeConv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')
-print(n)
-shape = n.outputs.get_shape().as_list()
-# if (shape[1] != 200) or (shape[2] != 200) or (shape[3] != 32): # TODO: why [None None None 32] ?
-if (shape[3] != 32):
-    raise Exception("shape do not match")
+        n4 = tl.layers.Conv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d')
+        cls.shape_n4 = n4.outputs.get_shape().as_list()
+        cls.n4_params = n4.all_params
 
-n = tl.layers.DepthwiseConv2d(nin, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 6):
-    raise Exception("shape do not match")
+        n5 = tl.layers.Conv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias')
+        cls.shape_n5 = n5.outputs.get_shape().as_list()
+        cls.n5_params = n5.all_params
 
-n = tl.layers.Conv2d(nin, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d2')
-n = tl.layers.GroupConv2d(n, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 25) or (shape[2] != 25) or (shape[3] != 32):
-    raise Exception("shape do not match")
+        n6 = tl.layers.DeConv2dLayer(nin2, shape=(5, 5, 32, 3), output_shape=(100, 200, 200, 32), strides=(1, 2, 2, 1), name='deconv2dlayer')
+        cls.shape_n6 = n6.outputs.get_shape().as_list()
 
-# n = UpSampling2dLayer
-# n = DownSampling2dLayer
+        n7 = tl.layers.DeConv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')
+        cls.shape_n7 = n7.outputs.get_shape().as_list()
 
-# offset1 = tl.layers.Conv2d(nin, 18, (3, 3), (1, 1), padding='SAME', name='offset1')
-# net = tl.layers.DeformableConv2d(nin, offset1, 32, (3, 3), name='deformable1')
-# offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), padding='SAME', name='offset2')
-# net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), name='deformable2')
-# net.print_layers()
-# net.print_params(False)
+        n8 = tl.layers.DepthwiseConv2d(nin2, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise')
+        cls.shape_n8 = n8.outputs.get_shape().as_list()
 
-# AtrousConv2dLayer
+        n9 = tl.layers.Conv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d2')
+        n9 = tl.layers.GroupConv2d(n9, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
+        cls.shape_n9 = n9.outputs.get_shape().as_list()
 
-n = tl.layers.SeparableConv2d(nin, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable1')
-n.print_layers()
-n.print_params(False)
+        n10 = tl.layers.SeparableConv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable1')
+        cls.shape_n10 = n10.outputs.get_shape().as_list()
+        cls.n10_all_layers = n10.all_layers
+        cls.n10_params = n10.all_params
+        cls.n10_count_params = n10.count_params()
 
-shape = n.outputs.get_shape().as_list()
-if shape[1:] != [98, 98, 32]:
-    raise Exception("shape do not match")
+        ############
+        #    3D    #
+        ############
 
-if len(n.all_layers) != 1:
-    raise Exception("layers do not match")
+        x3 = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
+        nin3 = tl.layers.InputLayer(x3, name='in3')
 
-if len(n.all_params) != 3:
-    raise Exception("params do not match")
+        n11 = tl.layers.Conv3dLayer(nin3, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
+        cls.shape_n11 = n11.outputs.get_shape().as_list()
 
-if n.count_params() != 155:
-    raise Exception("params do not match")
-# exit()
+        # n = tl.layers.DeConv3dLayer(nin, shape=(2, 2, 2, 128, 3), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1))
+        # print(n)
+        # shape = n.outputs.get_shape().as_list()
 
-## 3D
-x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-nin = tl.layers.InputLayer(x, name='in3')
+        n12 = tl.layers.DeConv3d(nin3, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
+        cls.shape_n12 = n12.outputs.get_shape().as_list()
 
-n = tl.layers.Conv3dLayer(nin, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
-print(n)
-shape = n.outputs.get_shape().as_list()
-if (shape[1] != 50) or (shape[2] != 50) or (shape[3] != 50) or (shape[4] != 32):
-    raise Exception("shape do not match")
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
 
-# n = tl.layers.DeConv3dLayer(nin, shape=(2, 2, 2, 128, 3), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1))
-# print(n)
-# shape = n.outputs.get_shape().as_list()
+    def test_shape_n1(self):
+        self.assertEqual(self.shape_n1[1], 50)
+        self.assertEqual(self.shape_n1[2], 32)
 
-n = tl.layers.DeConv3d(nin, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
-shape = n.outputs.get_shape().as_list()
-print(shape)
-if (shape[1] != 200) or (shape[2] != 200) or (shape[3] != 200) or (shape[4] != 32):
-    raise Exception("shape do not match")
+    def test_shape_n2(self):
+        self.assertEqual(self.shape_n2[1], 50)
+        self.assertEqual(self.shape_n2[2], 32)
+
+    def test_shape_n3(self):
+        self.assertEqual(self.shape_n3[1], 50)
+        self.assertEqual(self.shape_n3[2], 50)
+        self.assertEqual(self.shape_n3[3], 32)
+
+    def test_shape_n4(self):
+        self.assertEqual(self.shape_n4[1], 50)
+        self.assertEqual(self.shape_n4[2], 50)
+        self.assertEqual(self.shape_n4[3], 32)
+
+    def test_shape_n5(self):
+        self.assertEqual(self.shape_n5[1], 50)
+        self.assertEqual(self.shape_n5[2], 50)
+        self.assertEqual(self.shape_n5[3], 32)
+
+    def test_shape_n6(self):
+        self.assertEqual(self.shape_n6[1], 200)
+        self.assertEqual(self.shape_n6[2], 200)
+        self.assertEqual(self.shape_n6[3], 32)
+
+    def test_shape_n7(self):
+        #self.assertEqual(self.shape_n7[1], 200)  # TODO: why [None None None 32] ?
+        #self.assertEqual(self.shape_n7[2], 200)  # TODO: why [None None None 32] ?
+        self.assertEqual(self.shape_n7[3], 32)
+
+    def test_shape_n8(self):
+        self.assertEqual(self.shape_n8[1], 50)
+        self.assertEqual(self.shape_n8[2], 50)
+        self.assertEqual(self.shape_n8[3], 6)
+
+    def test_shape_n9(self):
+        self.assertEqual(self.shape_n9[1], 25)
+        self.assertEqual(self.shape_n9[2], 25)
+        self.assertEqual(self.shape_n9[3], 32)
+
+    def test_shape_n10(self):
+        self.assertEqual(self.shape_n10[1:], [98, 98, 32])
+
+    def test_shape_n11(self):
+        self.assertEqual(self.shape_n11[1], 50)
+        self.assertEqual(self.shape_n11[2], 50)
+        self.assertEqual(self.shape_n11[3], 50)
+        self.assertEqual(self.shape_n11[4], 32)
+
+    def test_shape_n12(self):
+        self.assertEqual(self.shape_n12[1], 200)
+        self.assertEqual(self.shape_n12[2], 200)
+        self.assertEqual(self.shape_n12[3], 200)
+        self.assertEqual(self.shape_n12[4], 32)
+
+    def test_params_n4(self):
+        self.assertEqual(len(self.n4_params), 2)
+
+    def test_params_n5(self):
+        self.assertEqual(len(self.n5_params), 1)
+
+    def test_params_n10(self):
+        self.assertEqual(len(self.n10_params), 3)
+        self.assertEqual(self.n10_count_params, 155)
+
+    def test_layers_n10(self):
+        self.assertEqual(len(self.n10_all_layers), 1)
+
+
+if __name__ == '__main__':
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()
