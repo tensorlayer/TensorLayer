@@ -9,6 +9,7 @@ import sys
 import tarfile
 import time
 import zipfile
+import progressbar
 
 import numpy as np
 import tensorflow as tf
@@ -2030,14 +2031,17 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
 
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
-        def _dlProgress(count, blockSize, totalSize):
+
+        progress_bar = progressbar.ProgressBar()
+
+        def _dlProgress(count, blockSize, totalSize, pbar=progress_bar):
             if (totalSize != 0):
-                totalBlocks = math.ceil(float(totalSize) / float(blockSize))
-                percent = float(count) / float(totalBlocks) * 100.0
-                # https://www.quora.com/How-can-I-delete-the-last-printed-line-in-Python-language
-                sys.stdout.write('\033[F')  # back to previous line
-                sys.stdout.write('\033[K')  # clear line
-                sys.stdout.write('Downloading %s...%g%%\n' % (filename, percent))
+
+                if not pbar.max_value:
+                    totalBlocks = math.ceil(float(totalSize) / float(blockSize))
+                    pbar.max_value = int(totalBlocks)
+
+                pbar.update(count, force=True)
 
         if sys.version_info[0] == 2:
             from urllib import urlretrieve
