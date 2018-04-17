@@ -71,7 +71,8 @@ class Conv1dLayer(Layer):
             stride=1,
             dilation_rate=1,
             padding='SAME',
-            data_format='NWC',
+            dilation_rate=1,
+            data_format='channels_last', #NWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -85,29 +86,32 @@ class Conv1dLayer(Layer):
 
         if act is None:
             act = tf.identity
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
-        with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            self.outputs = tf.nn.convolution(
-                self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ), data_format=data_format)  # 1.2
-            if b_init:
-                b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = self.outputs + b
-
-            self.outputs = act(self.outputs)
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
-        self.all_layers.append(self.outputs)
-        if b_init:
-            self.all_params.extend([W, b])
+        if tf.__version__ > '1.3':
+            con1d = tf.layers.Conv1D(filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding,
+                data_format=data_format, dilation_rate=dilation_rate, activation=act, use_bias=(True if b_init else False),
+                kernel_initializer=W_init, bias_initializer=b_init, name=name)
         else:
-            self.all_params.append(W)
+            if W_init_args is None:
+                W_init_args = {}
+            if b_init_args is None:
+                b_init_args = {}
+
+            with tf.variable_scope(name):
+                W = tf.get_variable(name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+                self.outputs = tf.nn.convolution(
+                    self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, ), data_format=data_format)  # 1.2
+                if b_init:
+                    b = tf.get_variable(name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    self.outputs = self.outputs + b
+
+                self.outputs = act(self.outputs)
+
+            self.all_layers.append(self.outputs)
+            if b_init:
+                self.all_params.extend([W, b])
+            else:
+                self.all_params.append(W)
 
 
 class Conv2dLayer(Layer):
