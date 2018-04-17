@@ -40,6 +40,8 @@ before_deploy:
   
   
 deploy:
+
+# Documentation: https://docs.travis-ci.com/user/deployment/pypi/
 - provider: pypi
   user: "$PYPI_USER"
   password: "$PYPI_PASSWORD"
@@ -48,6 +50,7 @@ deploy:
     tags: true
     python: '3.6'
 
+# Documentation: https://docs.travis-ci.com/user/deployment/releases/
 - provider: releases
   file:
     - dist/*
