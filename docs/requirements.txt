@@ -1,5 +1,6 @@
 matplotlib
 pymongo
+progressbar2==3.37.0
 scikit-image
 scipy
 sphinx==1.7.1
