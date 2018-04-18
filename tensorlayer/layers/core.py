@@ -862,7 +862,7 @@ class AverageEmbeddingInputlayer(Layer):
             sentence_lengths = tf.count_nonzero(
                 masks,
                 axis=1,
-                keep_dims=True,
+                keepdims=True,
                 # dtype=tf.float32,
                 dtype=LayersConfig.tf_dtype,
                 name='sentence_lengths',
