@@ -181,7 +181,8 @@ class MaxPool2d(Layer):
         if tf.__version__ > '1.5':
             self.outputs = tf.layers.max_pooling2d(self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
         else:
-            assert len(strides) == 2, "len(strides) should be 2."
+            if len(strides) == 2:
+                raise Exception("len(strides) should be 2.")
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]
             self.outputs = tf.nn.max_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
@@ -219,7 +220,8 @@ class MeanPool2d(Layer):
         if tf.__version__ > '1.5':
             self.outputs = tf.layers.average_pooling2d(self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
         else:
-            assert len(strides) == 2, "len(strides) should be 2."
+            if len(strides) == 2:
+                raise Exception("len(strides) should be 2.")
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]
             self.outputs = tf.nn.avg_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
