@@ -131,6 +131,8 @@ setup(
     # dependencies). You can install these using the following syntax,
     # $ pip install -e .[test]
     extras_require={
+        'dev': req_file("requirements_dev.txt"),
+        'doc': req_file("docs/requirements.txt"),
         'test': req_file("tests/requirements.txt")
     },
     scripts=[
