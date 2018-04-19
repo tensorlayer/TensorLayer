@@ -18,7 +18,8 @@ __all__ = [
 
 @deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
 def identity(x):
-    """The identity activation function.
+    """Identity activation function.
+
     Shortcut is ``linear``.
 
     Parameters
@@ -36,7 +37,7 @@ def identity(x):
 
 
 def ramp(x, v_min=0, v_max=1, name=None):
-    """The ramp activation function.
+    """Ramp activation function.
 
     Parameters
     ----------
@@ -59,7 +60,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
 
 
 def leaky_relu(x, alpha=0.1, name="lrelu"):
-    """The LeakyReLU, Shortcut is ``lrelu``.
+    """LeakyReLU, Shortcut is ``lrelu``.
 
     Modified version of ReLU, introducing a nonzero gradient for negative input.
 
@@ -96,7 +97,8 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
 
 def swish(x, name='swish'):
-    """The Swish function.
+    """Swish function.
+
      See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
 
     Parameters
@@ -193,6 +195,7 @@ def hard_tanh(x, name='htanh'):
 @deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
+
     Usually be used for image segmentation.
 
     Parameters
