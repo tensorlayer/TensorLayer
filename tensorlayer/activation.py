@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""A file containing various activation functions."""
+
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
@@ -16,7 +18,9 @@ __all__ = [
 ]
 
 
-@deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
+@deprecated(
+    "2018-06-30",
+    "This API will be deprecated soon as tf.identity can do the same thing.")
 def identity(x):
     """Identity activation function.
 
@@ -56,7 +60,11 @@ def ramp(x, v_min=0, v_max=1, name=None):
         A ``Tensor`` in the same type as ``x``.
 
     """
-    return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
+    return tf.clip_by_value(
+        x,
+        clip_value_min=v_min,
+        clip_value_max=v_max,
+        name=name)
 
 
 def leaky_relu(x, alpha=0.1, name="lrelu"):
@@ -85,7 +93,8 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
     References
     ------------
-    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)
+    <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
 
     """
     # with tf.name_scope(name) as scope:
@@ -127,7 +136,8 @@ def _sign_grad(unused_op, grad):
 def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36
     """Sign function.
 
-    Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for quantizing values in `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
+    Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for
+    quantizing values in `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
 
     Parameters
     ----------
@@ -141,7 +151,8 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 
     References
     -----------
-    - `AngusG/tensorflow-xnor-bnn <https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36>`__
+    - `AngusG/tensorflow-xnor-bnn
+    <https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36>`__
 
     """
     with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
@@ -151,7 +162,9 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 # if tf.__version__ > "1.7":
 #     @tf.custom_gradient
 #     def sign(x):  # https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page
-#         """Differentiable sign function using sigmoid as the derivation function, see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__ and `tf.custom_gradient <https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page>`__.
+#         """Differentiable sign function using sigmoid as the derivation function,
+#         see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__ and `tf.custom_gradient
+#         <https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page>`__.
 #
 #         Parameters
 #         ----------
@@ -192,7 +205,9 @@ def hard_tanh(x, name='htanh'):
     return tf.clip_by_value(x, -1, 1, name=name)
 
 
-@deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
+@deprecated(
+    "2018-06-30",
+    "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
 
