@@ -559,15 +559,15 @@ Pooling layer for any dimensions and any pooling functions.
 
 1D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad1d
+.. autoclass:: ZeroPad1d
 
 2D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad2d
+.. autoclass:: ZeroPad2d
 
 3D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad3d
+.. autoclass:: ZeroPad3d
 
 1D Max pooling
 ^^^^^^^^^^^^^^^^^^^
