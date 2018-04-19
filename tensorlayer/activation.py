@@ -75,8 +75,7 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
     Parameters
     ----------
     x : Tensor
-        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``,
-        ``int16``, or ``int8``.
+        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
     alpha : float
         Slope.
     name : str
@@ -92,9 +91,9 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
         A ``Tensor`` in the same type as ``x``.
 
     References
-    ------------
-    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)
-    <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
+       http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
 
     """
     # with tf.name_scope(name) as scope:
@@ -133,16 +132,20 @@ def _sign_grad(unused_op, grad):
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
 
-def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36
+def sign(x):
     """Sign function.
 
     Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for
-    quantizing values in `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
+    quantizing values in `Binarized Neural Networks`: https://arxiv.org/abs/1602.02830.
 
     Parameters
     ----------
     x : Tensor
         input.
+
+    Examples
+    --------
+    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------
@@ -150,9 +153,12 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
         A ``Tensor`` in the same type as ``x``.
 
     References
-    -----------
-    - `AngusG/tensorflow-xnor-bnn
-    <https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36>`__
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
+       http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
+
+    - `BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1, \
+       Courbariaux et al. (2016)` https://arxiv.org/abs/1602.02830
 
     """
     with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
@@ -186,7 +192,7 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 def hard_tanh(x, name='htanh'):
     """Hard tanh activation function.
 
-    Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is ``htanh`.
+    Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is `htanh`.
 
     Parameters
     ----------
