@@ -1,7 +1,7 @@
-keras==2.1.5
-pydocstyle==2.1.1
-pytest==3.4.1
-pytest-cache==1.0
-pytest-cov==2.5.1
-pytest-xdist==1.22.2
-yapf==0.20.2
+keras>=2.1,<2.2
+pydocstyle>=2.1,<2.2
+pytest>=3.4,<3.5
+pytest-cache>=1.0,<1.1
+pytest-cov>=2.5,<2.6
+pytest-xdist>=1.22,<1.23
+yapf>=0.20,<0.21
