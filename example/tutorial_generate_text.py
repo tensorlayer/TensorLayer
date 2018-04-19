@@ -155,7 +155,8 @@ def main_restore_embedding_layer():
 
     x = tf.placeholder(tf.int32, shape=[batch_size])
 
-    emb_net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=vocabulary_size, embedding_size=embedding_size, name='embedding_layer')
+    emb_net = tl.layers.EmbeddingInputlayer(
+        inputs=x, vocabulary_size=vocabulary_size, embedding_size=embedding_size, name='embedding_layer')
 
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
@@ -231,7 +232,8 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = EmbeddingInputlayer(inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=rnn_init, name='embedding')
+            network = EmbeddingInputlayer(
+                inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=rnn_init, name='embedding')
             network = RNNLayer(
                 network,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -246,7 +248,8 @@ def main_lstm_generate_text():
                 return_seq_2d=True,
                 name='lstm1')
             lstm1 = network
-            network = DenseLayer(network, n_units=vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output')
+            network = DenseLayer(
+                network, n_units=vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output')
         return network, lstm1
 
     # Inference for Training
@@ -267,7 +270,8 @@ def main_lstm_generate_text():
         # n_examples = batch_size * sequence_length
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example([outputs], [tf.reshape(targets, [-1])], [tf.ones([batch_size * sequence_length])])
+        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example([outputs], [tf.reshape(targets, [-1])],
+                                                                  [tf.ones([batch_size * sequence_length])])
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
@@ -307,7 +311,8 @@ def main_lstm_generate_text():
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, sequence_length)):
             _cost, state1, _ = sess.run(
-                [cost, lstm1.final_state, train_op], feed_dict={
+                [cost, lstm1.final_state, train_op],
+                feed_dict={
                     input_data: x,
                     targets: y,
                     lstm1.initial_state: state1,
@@ -344,7 +349,8 @@ def main_lstm_generate_text():
             for _ in range(print_length):
                 a_id = np.asarray(a_id).reshape(1, 1)
                 out, state1 = sess.run(
-                    [y_soft, lstm1_test.final_state], feed_dict={
+                    [y_soft, lstm1_test.final_state],
+                    feed_dict={
                         input_data_test: a_id,
                         lstm1_test.initial_state: state1,
                     })

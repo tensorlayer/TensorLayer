@@ -71,7 +71,11 @@ class TaskSpecDef(object):
             self.num_ps = len(self.ps_hosts)
             self.worker_hosts = worker_hosts if isinstance(worker_hosts, list) else worker_hosts.split(',')
             if master is not None and len(master) > 0:
-                self._cluster_spec = tf.train.ClusterSpec({'ps': self.ps_hosts, 'worker': self.worker_hosts, 'master': master})
+                self._cluster_spec = tf.train.ClusterSpec({
+                    'ps': self.ps_hosts,
+                    'worker': self.worker_hosts,
+                    'master': master
+                })
                 # master is a worker too
                 self.num_workers = len(self.worker_hosts) + 1
                 if self.type == 'worker':
@@ -104,7 +108,8 @@ class TaskSpecDef(object):
         """Returns the function with the specification to create the graph in this server"""
         current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
-        return tf.train.replica_device_setter(ps_device=ps_devices, worker_device=current_device, cluster=self._cluster_spec)
+        return tf.train.replica_device_setter(
+            ps_device=ps_devices, worker_device=current_device, cluster=self._cluster_spec)
 
     def create_server(self):
         if self._server is None and self.ps_hosts and self.worker_hosts and not self.is_evaluator():
@@ -132,7 +137,12 @@ class TaskSpecDef(object):
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
         return TaskSpecDef(
-            task_type=self.type, index=self._index, trial=self.trial, ps_hosts=self.ps_hosts, worker_hosts=self.worker_hosts[:-1], master=self.master)
+            task_type=self.type,
+            index=self._index,
+            trial=self.trial,
+            ps_hosts=self.ps_hosts,
+            worker_hosts=self.worker_hosts[:-1],
+            master=self.master)
 
 
 def create_task_spec_def():

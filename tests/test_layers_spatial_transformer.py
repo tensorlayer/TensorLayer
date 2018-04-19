@@ -26,8 +26,10 @@ def model(x, is_train, reuse):
         n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=[40, 40], name='spatial')
         s = n
         ## 3. Classifier
-        n = tl.layers.Conv2d(n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv1')
-        n = tl.layers.Conv2d(n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv2')
+        n = tl.layers.Conv2d(
+            n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv1')
+        n = tl.layers.Conv2d(
+            n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv2')
         n = tl.layers.FlattenLayer(n, name='flatten2')
         n = tl.layers.DenseLayer(n, n_units=1024, act=tf.nn.relu, name='out1')
         n = tl.layers.DenseLayer(n, n_units=10, act=tf.identity, name='out2')

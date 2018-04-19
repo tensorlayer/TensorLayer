@@ -1,6 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
 """A file containing various activation functions."""
 
 import tensorflow as tf
@@ -18,9 +17,7 @@ __all__ = [
 ]
 
 
-@deprecated(
-    "2018-06-30",
-    "This API will be deprecated soon as tf.identity can do the same thing.")
+@deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
 def identity(x):
     """Identity activation function.
 
@@ -60,11 +57,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
         A ``Tensor`` in the same type as ``x``.
 
     """
-    return tf.clip_by_value(
-        x,
-        clip_value_min=v_min,
-        clip_value_max=v_max,
-        name=name)
+    return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
 
 def leaky_relu(x, alpha=0.1, name="lrelu"):
@@ -211,9 +204,7 @@ def hard_tanh(x, name='htanh'):
     return tf.clip_by_value(x, -1, 1, name=name)
 
 
-@deprecated(
-    "2018-06-30",
-    "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
+@deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
 

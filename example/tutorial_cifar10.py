@@ -44,9 +44,15 @@ def model(x, y_, reuse):
         # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
         #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-        net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-        net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-        net = DenseLayer(net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output')  # output: (batch_size, 10)
+        net = DenseLayer(
+            net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2,
+            name='d1relu')  # output: (batch_size, 384)
+        net = DenseLayer(
+            net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2,
+            name='d2relu')  # output: (batch_size, 192)
+        net = DenseLayer(
+            net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
+            name='output')  # output: (batch_size, 10)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -89,9 +95,15 @@ def model_batch_norm(x, y_, reuse, is_train):
         #            padding='SAME', pool = tf.nn.max_pool, name ='pool2')  # output: (batch_size, 6, 6, 64)
 
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-        net = DenseLayer(net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')  # output: (batch_size, 384)
-        net = DenseLayer(net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')  # output: (batch_size, 192)
-        net = DenseLayer(net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output')  # output: (batch_size, 10)
+        net = DenseLayer(
+            net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2,
+            name='d1relu')  # output: (batch_size, 384)
+        net = DenseLayer(
+            net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2,
+            name='d2relu')  # output: (batch_size, 192)
+        net = DenseLayer(
+            net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
+            name='output')  # output: (batch_size, 10)
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -156,7 +168,9 @@ print_freq = 1
 batch_size = 128
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(
+        cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 

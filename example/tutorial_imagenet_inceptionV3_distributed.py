@@ -131,7 +131,8 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
         return image_bytes, one_hot_labels
 
     def _map_fn(example_serialized):
-        image_bytes, one_hot_labels = tf.py_func(_parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False)
+        image_bytes, one_hot_labels = tf.py_func(
+            _parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False)
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)
         image = tf.image.resize_images(image, size=[image_size, image_size])
@@ -158,10 +159,13 @@ def build_network(image_input, num_classes=1001, is_training=False):
     net_in = tl.layers.InputLayer(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
         network = tl.layers.SlimNetsLayer(
-            prev_layer=net_in, slim_layer=inception_v3, slim_args={
+            prev_layer=net_in,
+            slim_layer=inception_v3,
+            slim_args={
                 'num_classes': num_classes,
                 'is_training': is_training
-            }, name='InceptionV3')
+            },
+            name='InceptionV3')
 
     predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
     return network, predictions
@@ -363,14 +367,19 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             # metrics
             tf.summary.scalar('learning_rate/value', learning_rate)
             tf.summary.scalar('loss/logits', loss)
-            _, metrics_average_ops, metrics_ops = calculate_metrics(predicted_batch=predictions, real_batch=one_hot_classes, is_training=True)
+            _, metrics_average_ops, metrics_ops = calculate_metrics(
+                predicted_batch=predictions, real_batch=one_hot_classes, is_training=True)
             with tf.control_dependencies([train_op]):
                 train_op = tf.group(metrics_average_ops)
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
         with tl.distributed.DistributedSession(
-                task_spec=task_spec, hooks=hooks, checkpoint_dir=checkpoints_path, save_summaries_secs=None, save_summaries_steps=300,
+                task_spec=task_spec,
+                hooks=hooks,
+                checkpoint_dir=checkpoints_path,
+                save_summaries_secs=None,
+                save_summaries_steps=300,
                 save_checkpoint_secs=60 * 60) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
@@ -392,7 +401,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             current_epoch = '{:.3f}'.format(float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
-                            logging.info(m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics))
+                            logging.info(
+                                m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics))
             except OutOfRangeError:
                 pass
 

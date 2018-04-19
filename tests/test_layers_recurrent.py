@@ -30,14 +30,27 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
 
-        net1 = tl.layers.EmbeddingInputlayer(inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embed')
+        net1 = tl.layers.EmbeddingInputlayer(
+            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embed')
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
-        net1 = tl.layers.RNNLayer(net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, return_last=False, name='lstm1')
+        net1 = tl.layers.RNNLayer(
+            net1,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            name='lstm1')
 
         # lstm1 = net1
 
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop2')
-        net1 = tl.layers.RNNLayer(net1, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, return_last=True, name='lstm2')
+        net1 = tl.layers.RNNLayer(
+            net1,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=True,
+            name='lstm2')
 
         # lstm2 = net1
 
@@ -66,7 +79,13 @@ class Layer_Recurrent_Test(unittest.TestCase):
         net2 = tl.layers.ReshapeLayer(net2, shape=(-1, cls.num_steps, int(net2.outputs._shape[-1])))
 
         rnn = tl.layers.RNNLayer(
-            net2, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=200, n_steps=cls.num_steps, return_last=False, return_seq_2d=True, name='rnn')
+            net2,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=200,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=True,
+            name='rnn')
 
         net2 = tl.layers.DenseLayer(rnn, n_units=3, name='out')
 
@@ -82,9 +101,16 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
-        net3 = tl.layers.EmbeddingInputlayer(inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb')
+        net3 = tl.layers.EmbeddingInputlayer(
+            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb')
         net3 = tl.layers.BiRNNLayer(
-            net3, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.hidden_size, n_steps=cls.num_steps, return_last=False, return_seq_2d=False, name='birnn')
+            net3,
+            cell_fn=tf.contrib.rnn.BasicLSTMCell,
+            n_hidden=cls.hidden_size,
+            n_steps=cls.num_steps,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn')
 
         net3.print_layers()
         net3.print_params(False)
@@ -95,7 +121,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net3_n_params = net3.count_params()
 
         # n_layer=2
-        net4 = tl.layers.EmbeddingInputlayer(inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2')
+        net4 = tl.layers.EmbeddingInputlayer(
+            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2')
         net4 = tl.layers.BiRNNLayer(
             net4,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -134,7 +161,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         # =============================== Dynamic Synced input and output ===============================
 
         input_seqs = tf.placeholder(dtype=tf.int64, shape=[cls.net5_batch_size, None], name="input")
-        nin = tl.layers.EmbeddingInputlayer(inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding')
+        nin = tl.layers.EmbeddingInputlayer(
+            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding')
 
         rnn = tl.layers.DynamicRNNLayer(
             nin,
@@ -158,7 +186,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
         cls.net5_n_params = net5.count_params()
 
         # n_layer=3
-        nin = tl.layers.EmbeddingInputlayer(inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2')
+        nin = tl.layers.EmbeddingInputlayer(
+            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2')
         rnn = tl.layers.DynamicRNNLayer(
             nin,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -281,10 +310,12 @@ class Layer_Recurrent_Test(unittest.TestCase):
             # for translation, you may want to use 2 seperated embedding layers
 
             with tf.variable_scope("embedding") as vs:
-                net_encode = tl.layers.EmbeddingInputlayer(inputs=encode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
+                net_encode = tl.layers.EmbeddingInputlayer(
+                    inputs=encode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
                 vs.reuse_variables()
                 # tl.layers.set_name_reuse(True)
-                net_decode = tl.layers.EmbeddingInputlayer(inputs=decode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
+                net_decode = tl.layers.EmbeddingInputlayer(
+                    inputs=decode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
 
             net11 = tl.layers.Seq2Seq(
                 net_encode,

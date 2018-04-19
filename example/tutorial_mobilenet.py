@@ -13,7 +13,8 @@ import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
-from tensorlayer.layers import (BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer)
+from tensorlayer.layers import (BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer,
+                                ReshapeLayer)
 
 
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
@@ -36,7 +37,9 @@ def depthwise_conv_block(n, n_filter, strides=(1, 1), is_train=False, name="dept
 def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
     if tl.files.file_exists(fpath) is False:
-        raise Exception("{} / download imagenet_class_index.json from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data")
+        raise Exception(
+            "{} / download imagenet_class_index.json from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data"
+        )
     if isinstance(preds, np.ndarray) is False:
         preds = np.asarray(preds)
     if len(preds.shape) != 2 or preds.shape[1] != 1000:

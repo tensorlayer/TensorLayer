@@ -67,7 +67,8 @@ class PoolLayer(Layer):
             name='pool_layer',
     ):
         super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" % (name, str(ksize), str(strides), padding, pool.__name__))
+        logging.info("PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" % (name, str(ksize), str(strides),
+                                                                                 padding, pool.__name__))
 
         self.inputs = prev_layer.outputs
 
@@ -103,8 +104,10 @@ def maxpool1d(prev_layer, filter_size=3, strides=2, padding='valid', data_format
         A max pooling 1-D layer with a output rank as 3.
 
     """
-    logging.info("MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.max_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+    logging.info("MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides),
+                                                                         str(padding)))
+    outputs = tf.layers.max_pooling1d(
+        prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(prev_layer)
     net_new.outputs = outputs
@@ -140,8 +143,10 @@ def meanpool1d(prev_layer, filter_size=3, strides=2, padding='valid', data_forma
         A mean pooling 1-D layer with a output rank as 3.
 
     """
-    logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
-    outputs = tf.layers.average_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+    logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides),
+                                                                          str(padding)))
+    outputs = tf.layers.average_pooling1d(
+        prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
     net_new = copy.copy(prev_layer)
     net_new.outputs = outputs
@@ -175,7 +180,8 @@ def maxpool2d(prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', na
     if strides is None:
         strides = filter_size
     if tf.__version__ > '1.5':
-        outputs = tf.layers.max_pooling2d(prev_layer.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
+        outputs = tf.layers.max_pooling2d(
+            prev_layer.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
         net_new = copy.copy(prev_layer)
         net_new.outputs = outputs
         net_new.all_layers.extend([outputs])
@@ -185,7 +191,12 @@ def maxpool2d(prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', na
         assert len(strides) == 2, "len(strides) should be 2, MaxPool2d and PoolLayer are different."
 
         prev_layer = PoolLayer(
-            prev_layer, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.max_pool, name=name)
+            prev_layer,
+            ksize=[1, filter_size[0], filter_size[1], 1],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            pool=tf.nn.max_pool,
+            name=name)
 
         return prev_layer
 
@@ -216,7 +227,8 @@ def meanpool2d(prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', n
     if strides is None:
         strides = filter_size
     if tf.__version__ > '1.5':
-        outputs = tf.layers.average_pooling2d(prev_layer.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
+        outputs = tf.layers.average_pooling2d(
+            prev_layer.outputs, filter_size, strides, padding=padding, data_format='channels_last', name=name)
         net_new = copy.copy(prev_layer)
         net_new.outputs = outputs
         net_new.all_layers.extend([outputs])
@@ -226,7 +238,12 @@ def meanpool2d(prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', n
         assert len(strides) == 2, "len(strides) should be 2, MeanPool2d and PoolLayer are different."
 
         prev_layer = PoolLayer(
-            prev_layer, ksize=[1, filter_size[0], filter_size[1], 1], strides=[1, strides[0], strides[1], 1], padding=padding, pool=tf.nn.avg_pool, name=name)
+            prev_layer,
+            ksize=[1, filter_size[0], filter_size[1], 1],
+            strides=[1, strides[0], strides[1], 1],
+            padding=padding,
+            pool=tf.nn.avg_pool,
+            name=name)
         return prev_layer
 
 
@@ -260,14 +277,22 @@ class MaxPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
+    def __init__(self,
+                 prev_layer,
+                 filter_size=(3, 3, 3),
+                 strides=(2, 2, 2),
+                 padding='valid',
+                 data_format='channels_last',
+                 name='maxpool3d'):
 
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+        logging.info("MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides),
+                                                                             str(padding)))
 
         self.inputs = prev_layer.outputs
 
-        self.outputs = tf.layers.max_pooling3d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+        self.outputs = tf.layers.max_pooling3d(
+            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
         # update layer (customized)
         self.all_layers.append(self.outputs)
 
@@ -302,15 +327,23 @@ class MeanPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
+    def __init__(self,
+                 prev_layer,
+                 filter_size=(3, 3, 3),
+                 strides=(2, 2, 2),
+                 padding='valid',
+                 data_format='channels_last',
+                 name='meanpool3d'):
 
         super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding)))
+        logging.info("MeanPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides),
+                                                                              str(padding)))
 
         self.inputs = prev_layer.outputs
 
         # operation (customized)
-        self.outputs = tf.layers.average_pooling3d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
+        self.outputs = tf.layers.average_pooling3d(
+            prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
 
         # update layer (customized)
         self.all_layers.append(self.outputs)

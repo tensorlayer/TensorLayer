@@ -46,7 +46,8 @@ class YAPF_Style_Test(unittest.TestCase):
             for filename in self.files_badly_formated:
                 print('yapf -i %s' % filename)
 
-            raise Exception("Bad Coding Style: %d files need to be formatted, run the following commands to fix" % len(self.files_badly_formated))
+            raise Exception("Bad Coding Style: %d files need to be formatted, run the following commands to fix" % len(
+                self.files_badly_formated))
 
 
 if __name__ == '__main__':

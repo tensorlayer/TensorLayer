@@ -60,7 +60,8 @@ class PReluLayer(Layer):
 
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):
-            alphas = tf.get_variable(name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **a_init_args)
+            alphas = tf.get_variable(
+                name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **a_init_args)
             try:  # TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
             except Exception:  # TF 0.12

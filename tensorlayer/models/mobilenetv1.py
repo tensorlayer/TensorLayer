@@ -7,7 +7,8 @@ import os
 # import numpy as np
 import tensorflow as tf
 from .. import _logging as logging
-from ..layers import (Layer, BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer)
+from ..layers import (Layer, BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer,
+                      ReshapeLayer)
 from ..files import maybe_download_and_extract, assign_params, load_npz
 
 __all__ = [
@@ -151,7 +152,10 @@ class MobileNetV1(Layer):
     def restore_params(self, sess, path='models'):
         logging.info("Restore pre-trained parameters")
         maybe_download_and_extract(
-            'mobilenet.npz', path, 'https://github.com/tensorlayer/pretrained-models/raw/master/models/', expected_bytes=25600116)  # ls -al
+            'mobilenet.npz',
+            path,
+            'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
+            expected_bytes=25600116)  # ls -al
         params = load_npz(name=os.path.join(path, 'mobilenet.npz'))
         assign_params(sess, params[:len(self.net.all_params)], self.net)
         del params

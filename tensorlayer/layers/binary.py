@@ -80,7 +80,9 @@ def _compute_alpha(x):
     alpha1_temp2 = tf.where(tf.less(x, -threshold), x, tf.zeros_like(x, tf.float32))
     alpha_array = tf.add(alpha1_temp1, alpha1_temp2, name=None)
     alpha_array_abs = tf.abs(alpha_array)
-    alpha_array_abs1 = tf.where(tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, tf.float32), tf.zeros_like(alpha_array_abs, tf.float32))
+    alpha_array_abs1 = tf.where(
+        tf.greater(alpha_array_abs, 0), tf.ones_like(alpha_array_abs, tf.float32),
+        tf.zeros_like(alpha_array_abs, tf.float32))
     alpha_sum = tf.reduce_sum(alpha_array_abs)
     n = tf.reduce_sum(alpha_array_abs1)
     alpha = tf.div(alpha_sum, n)
@@ -159,14 +161,16 @@ class BinaryDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
             W = quantize(W)
             # W = tf.Variable(W)
             # print(W)
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
@@ -263,7 +267,9 @@ class BinaryConv2d(Layer):
             name='binary_cnn2d',
     ):
         super(BinaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+        logging.info("BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter,
+                                                                                               str(filter_size),
+                                                                                               str(strides), padding,
                                                                                                act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -287,14 +293,29 @@ class BinaryConv2d(Layer):
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             W = quantize(W)
             if b_init:
-                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                b = tf.get_variable(
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(
-                    tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format) + b)
             else:
-                self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+                self.outputs = act(
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format))
 
         self.all_layers.append(self.outputs)
         if b_init:
@@ -363,7 +384,8 @@ class TernaryDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
             alpha = _compute_alpha(W)
             W = _ternary_operation(W)
@@ -372,7 +394,8 @@ class TernaryDenseLayer(Layer):
             # print(W)
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
@@ -469,7 +492,9 @@ class TernaryConv2d(Layer):
             name='ternary_cnn2d',
     ):
         super(TernaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+        logging.info("TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter,
+                                                                                                str(filter_size),
+                                                                                                str(strides), padding,
                                                                                                 act.__name__))
 
         if W_init_args is None:
@@ -491,16 +516,31 @@ class TernaryConv2d(Layer):
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             alpha = _compute_alpha(W)
             W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
             if b_init:
-                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                b = tf.get_variable(
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(
-                    tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format) + b)
             else:
-                self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+                self.outputs = act(
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format))
 
         self.all_layers.append(self.outputs)
         if b_init:
@@ -576,7 +616,8 @@ class DorefaDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             # W = tl.act.sign(W)    # dont update ...
             W = _quantize_weight(W, bitW)
             self.inputs = _quantize_active(_cabs(self.inputs), bitA)
@@ -584,7 +625,8 @@ class DorefaDenseLayer(Layer):
             # print(W)
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
@@ -687,7 +729,9 @@ class DorefaConv2d(Layer):
             name='dorefa_cnn2d',
     ):
         super(DorefaConv2d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter, str(filter_size), str(strides), padding,
+        logging.info("DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (name, n_filter,
+                                                                                               str(filter_size),
+                                                                                               str(strides), padding,
                                                                                                act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -712,15 +756,30 @@ class DorefaConv2d(Layer):
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
             W = _quantize_weight(W, bitW)
             self.inputs = _quantize_active(_cabs(self.inputs), bitA)
             if b_init:
-                b = tf.get_variable(name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                b = tf.get_variable(
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(
-                    tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format) + b)
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format) + b)
             else:
-                self.outputs = act(tf.nn.conv2d(self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu, data_format=data_format))
+                self.outputs = act(
+                    tf.nn.conv2d(
+                        self.inputs,
+                        W,
+                        strides=strides,
+                        padding=padding,
+                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        data_format=data_format))
 
         self.all_layers.append(self.outputs)
         if b_init:

@@ -693,7 +693,8 @@ def build_words_dataset(words=None, vocabulary_size=50000, printable=True, unk_k
         logging.info('Limited vocabulary size {}'.format(vocabulary_size))
     if len(collections.Counter(words).keys()) < vocabulary_size:
         raise Exception(
-            "len(collections.Counter(words).keys()) >= vocabulary_size , the limited vocabulary_size must be less than or equal to the read vocabulary_size")
+            "len(collections.Counter(words).keys()) >= vocabulary_size , the limited vocabulary_size must be less than or equal to the read vocabulary_size"
+        )
     return data, count, dictionary, reverse_dictionary
 
 
@@ -863,7 +864,13 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
     return [w for w in words if w]
 
 
-def create_vocabulary(vocabulary_path, data_path, max_vocabulary_size, tokenizer=None, normalize_digits=True, _DIGIT_RE=re.compile(br"\d"), _START_VOCAB=None):
+def create_vocabulary(vocabulary_path,
+                      data_path,
+                      max_vocabulary_size,
+                      tokenizer=None,
+                      normalize_digits=True,
+                      _DIGIT_RE=re.compile(br"\d"),
+                      _START_VOCAB=None):
     """Create vocabulary file (if it does not exist yet) from data file.
 
     Data file is assumed to contain one sentence per line. Each sentence is
@@ -968,7 +975,12 @@ def initialize_vocabulary(vocabulary_path):
         raise ValueError("Vocabulary file %s not found.", vocabulary_path)
 
 
-def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
+def sentence_to_token_ids(sentence,
+                          vocabulary,
+                          tokenizer=None,
+                          normalize_digits=True,
+                          UNK_ID=3,
+                          _DIGIT_RE=re.compile(br"\d")):
     """Convert a string to list of integers representing token-ids.
 
     For example, a sentence "I have a dog" may become tokenized into
@@ -1002,7 +1014,13 @@ def sentence_to_token_ids(sentence, vocabulary, tokenizer=None, normalize_digits
     return [vocabulary.get(re.sub(_DIGIT_RE, b"0", w), UNK_ID) for w in words]
 
 
-def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")):
+def data_to_token_ids(data_path,
+                      target_path,
+                      vocabulary_path,
+                      tokenizer=None,
+                      normalize_digits=True,
+                      UNK_ID=3,
+                      _DIGIT_RE=re.compile(br"\d")):
     """Tokenize data file and turn into token-ids using given vocabulary file.
 
     This function loads data line-by-line from data_path, calls the above
@@ -1037,7 +1055,8 @@ def data_to_token_ids(data_path, target_path, vocabulary_path, tokenizer=None, n
                     counter += 1
                     if counter % 100000 == 0:
                         logging.info("  tokenizing line %d" % counter)
-                    token_ids = sentence_to_token_ids(line, vocab, tokenizer, normalize_digits, UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
+                    token_ids = sentence_to_token_ids(
+                        line, vocab, tokenizer, normalize_digits, UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE)
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
     else:
         logging.info("Target path %s exists" % target_path)
@@ -1077,7 +1096,8 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):
 
     # Get MOSES multi-bleu script
     try:
-        multi_bleu_path, _ = urllib.request.urlretrieve("https://raw.githubusercontent.com/moses-smt/mosesdecoder/" "master/scripts/generic/multi-bleu.perl")
+        multi_bleu_path, _ = urllib.request.urlretrieve("https://raw.githubusercontent.com/moses-smt/mosesdecoder/"
+                                                        "master/scripts/generic/multi-bleu.perl")
         os.chmod(multi_bleu_path, 0o755)
     except Exception:  # pylint: disable=W0702
         tf.logging.info("Unable to fetch multi-bleu.perl script, using local.")

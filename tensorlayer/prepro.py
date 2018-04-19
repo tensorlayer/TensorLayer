@@ -180,7 +180,8 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         results = [None] * thread_count
         threads = []
         for i in range(thread_count):
-            t = threading.Thread(name='threading_and_return', target=apply_fn, args=(results, i, data[divs[i]:divs[i + 1]], kwargs))
+            t = threading.Thread(
+                name='threading_and_return', target=apply_fn, args=(results, i, data[divs[i]:divs[i + 1]], kwargs))
             t.start()
             threads.append(t)
 
@@ -196,7 +197,15 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         return np.concatenate(results)
 
 
-def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def rotation(x,
+             rg=20,
+             is_random=False,
+             row_index=0,
+             col_index=1,
+             channel_index=2,
+             fill_mode='nearest',
+             cval=0.,
+             order=1):
     """Rotate an image randomly or non-randomly.
 
     Parameters
@@ -240,7 +249,15 @@ def rotation(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=
     return x
 
 
-def rotation_multi(x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def rotation_multi(x,
+                   rg=20,
+                   is_random=False,
+                   row_index=0,
+                   col_index=1,
+                   channel_index=2,
+                   fill_mode='nearest',
+                   cval=0.,
+                   order=1):
     """Rotate multiple images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -442,7 +459,16 @@ def flip_axis_multi(x, axis, is_random=False):
 
 
 # shift
-def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shift(x,
+          wrg=0.1,
+          hrg=0.1,
+          is_random=False,
+          row_index=0,
+          col_index=1,
+          channel_index=2,
+          fill_mode='nearest',
+          cval=0.,
+          order=1):
     """Shift an image randomly or non-randomly.
 
     Parameters
@@ -483,7 +509,16 @@ def shift(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channe
     return x
 
 
-def shift_multi(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shift_multi(x,
+                wrg=0.1,
+                hrg=0.1,
+                is_random=False,
+                row_index=0,
+                col_index=1,
+                channel_index=2,
+                fill_mode='nearest',
+                cval=0.,
+                order=1):
     """Shift images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -516,7 +551,15 @@ def shift_multi(x, wrg=0.1, hrg=0.1, is_random=False, row_index=0, col_index=1, 
 
 
 # shear
-def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shear(x,
+          intensity=0.1,
+          is_random=False,
+          row_index=0,
+          col_index=1,
+          channel_index=2,
+          fill_mode='nearest',
+          cval=0.,
+          order=1):
     """Shear an image randomly or non-randomly.
 
     Parameters
@@ -559,7 +602,15 @@ def shear(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_i
     return x
 
 
-def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shear_multi(x,
+                intensity=0.1,
+                is_random=False,
+                row_index=0,
+                col_index=1,
+                channel_index=2,
+                fill_mode='nearest',
+                cval=0.,
+                order=1):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -590,7 +641,15 @@ def shear_multi(x, intensity=0.1, is_random=False, row_index=0, col_index=1, cha
     return np.asarray(results)
 
 
-def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shear2(x,
+           shear=(0.1, 0.1),
+           is_random=False,
+           row_index=0,
+           col_index=1,
+           channel_index=2,
+           fill_mode='nearest',
+           cval=0.,
+           order=1):
     """Shear an image randomly or non-randomly.
 
     Parameters
@@ -620,7 +679,9 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
     - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`__
 
     """
-    assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+    assert len(
+        shear
+    ) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
@@ -633,7 +694,15 @@ def shear2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, chann
     return x
 
 
-def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def shear_multi2(x,
+                 shear=(0.1, 0.1),
+                 is_random=False,
+                 row_index=0,
+                 col_index=1,
+                 channel_index=2,
+                 fill_mode='nearest',
+                 cval=0.,
+                 order=1):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -650,7 +719,9 @@ def shear_multi2(x, shear=(0.1, 0.1), is_random=False, row_index=0, col_index=1,
         A list of processed images.
 
     """
-    assert len(shear) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
+    assert len(
+        shear
+    ) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
@@ -925,7 +996,15 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
 
 # zoom
-def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def zoom(x,
+         zoom_range=(0.9, 1.1),
+         is_random=False,
+         row_index=0,
+         col_index=1,
+         channel_index=2,
+         fill_mode='nearest',
+         cval=0.,
+         order=1):
     """Zoom in and out of a single image, randomly or non-randomly.
 
     Parameters
@@ -972,7 +1051,15 @@ def zoom(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, ch
     return x
 
 
-def zoom_multi(x, zoom_range=(0.9, 1.1), is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1):
+def zoom_multi(x,
+               zoom_range=(0.9, 1.1),
+               is_random=False,
+               row_index=0,
+               col_index=1,
+               channel_index=2,
+               fill_mode='nearest',
+               cval=0.,
+               order=1):
     """Zoom in and out of images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
 
@@ -1120,7 +1207,8 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
 
     if is_random:
         try:
-            assert len(gamma) == len(contrast) == len(saturation) == 2, "if is_random = True, the arguments are (min, max)"
+            assert len(gamma) == len(contrast) == len(
+                saturation) == 2, "if is_random = True, the arguments are (min, max)"
         except:
             raise Exception("if is_random = True, the arguments are (min, max)")
         ## random change brightness  # small --> brighter
@@ -1383,7 +1471,12 @@ def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
 
 
 # normailization
-def samplewise_norm(x, rescale=None, samplewise_center=False, samplewise_std_normalization=False, channel_index=2, epsilon=1e-7):
+def samplewise_norm(x,
+                    rescale=None,
+                    samplewise_center=False,
+                    samplewise_std_normalization=False,
+                    channel_index=2,
+                    epsilon=1e-7):
     """Normalize an image by rescale, samplewise centering and samplewise centering in order.
 
     Parameters
@@ -1717,14 +1810,24 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     final_affine_matrix = transform_matrix[:2, :2]
     final_offset = transform_matrix[:2, 2]
     channel_images = [
-        ndi.interpolation.affine_transform(x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval) for x_channel in x
+        ndi.interpolation.affine_transform(
+            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval) for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
     x = np.rollaxis(x, 0, channel_index + 1)
     return x
 
 
-def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False):
+def projective_transform_by_points(x,
+                                   src,
+                                   dst,
+                                   map_args=None,
+                                   output_shape=None,
+                                   order=1,
+                                   mode='constant',
+                                   cval=0.0,
+                                   clip=True,
+                                   preserve_range=False):
     """Projective transform by given coordinates, usually 4 coordinates.
 
     see `scikit-image <http://scikit-image.org/docs/dev/auto_examples/applications/plot_geometric.html>`__.
@@ -1791,7 +1894,16 @@ def projective_transform_by_points(x, src, dst, map_args=None, output_shape=None
 
     m = transform.ProjectiveTransform()
     m.estimate(dst, src)
-    warped = transform.warp(x, m, map_args=map_args, output_shape=output_shape, order=order, mode=mode, cval=cval, clip=clip, preserve_range=preserve_range)
+    warped = transform.warp(
+        x,
+        m,
+        map_args=map_args,
+        output_shape=output_shape,
+        order=order,
+        mode=mode,
+        cval=cval,
+        clip=clip,
+        preserve_range=preserve_range)
     return warped
 
 
@@ -1863,7 +1975,8 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
         Each contour is an ndarray of shape (n, 2), consisting of n (row, column) coordinates along the contour.
 
     """
-    return skimage.measure.find_contours(x, level, fully_connected=fully_connected, positive_orientation=positive_orientation)
+    return skimage.measure.find_contours(
+        x, level, fully_connected=fully_connected, positive_orientation=positive_orientation)
 
 
 def pt2map(list_points=None, size=(100, 100), val=1):
@@ -2455,7 +2568,16 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 # exit()
 
 
-def obj_box_crop(im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=False, is_center=False, is_random=False, thresh_wh=0.02, thresh_wh2=12.):
+def obj_box_crop(im,
+                 classes=None,
+                 coords=None,
+                 wrg=100,
+                 hrg=100,
+                 is_rescale=False,
+                 is_center=False,
+                 is_random=False,
+                 thresh_wh=0.02,
+                 thresh_wh2=12.):
     """Randomly or centrally crop an image, and compute the new bounding box coordinates.
     Objects outside the cropped image will be removed.
 
@@ -2565,7 +2687,8 @@ def obj_box_crop(im, classes=None, coords=None, wrg=100, hrg=100, is_rescale=Fal
             # logging.info('xx', w, h)
             return None
 
-        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
+        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
+                                                        thresh_wh):  # object shape strange: too narrow
             # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
@@ -2705,7 +2828,8 @@ def obj_box_shift(im,
             # logging.info('xx', w, h)
             return None
 
-        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
+        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
+                                                        thresh_wh):  # object shape strange: too narrow
             # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
@@ -2848,7 +2972,8 @@ def obj_box_zoom(im,
             # logging.info('xx', w, h)
             return None
 
-        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) < thresh_wh):  # object shape strange: too narrow
+        if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
+                                                        thresh_wh):  # object shape strange: too narrow
             # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
@@ -2948,7 +3073,8 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
         # check `trunc` has expected shape
         trunc = np.asarray(trunc, dtype=dtype)
         if trunc.shape[1:] != sample_shape:
-            raise ValueError('Shape of sample %s of sequence at position %s is different from expected shape %s' % (trunc.shape[1:], idx, sample_shape))
+            raise ValueError('Shape of sample %s of sequence at position %s is different from expected shape %s' %
+                             (trunc.shape[1:], idx, sample_shape))
 
         if padding == 'post':
             x[idx, :len(trunc)] = trunc

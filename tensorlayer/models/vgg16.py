@@ -63,7 +63,8 @@ class VGG16Base(object):
             strides=[1, 1, 1, 1],
             padding='SAME',
             name='conv1_2')
-        net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
+        net = PoolLayer(
+            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
 
         # conv2
         net = Conv2dLayer(
@@ -80,7 +81,8 @@ class VGG16Base(object):
             strides=[1, 1, 1, 1],
             padding='SAME',
             name='conv2_2')
-        net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
+        net = PoolLayer(
+            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
 
         # conv3
         net = Conv2dLayer(
@@ -104,7 +106,8 @@ class VGG16Base(object):
             strides=[1, 1, 1, 1],
             padding='SAME',
             name='conv3_3')
-        net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
+        net = PoolLayer(
+            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
 
         # conv4
         net = Conv2dLayer(
@@ -128,7 +131,8 @@ class VGG16Base(object):
             strides=[1, 1, 1, 1],
             padding='SAME',
             name='conv4_3')
-        net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
+        net = PoolLayer(
+            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
 
         # conv5
         net = Conv2dLayer(
@@ -152,7 +156,8 @@ class VGG16Base(object):
             strides=[1, 1, 1, 1],
             padding='SAME',
             name='conv5_3')
-        net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
+        net = PoolLayer(
+            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
         return net
 
     @staticmethod
@@ -216,7 +221,8 @@ class VGG16Base(object):
 
     def restore_params(self, sess):
         logging.info("Restore pre-trained parameters")
-        maybe_download_and_extract('vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134)
+        maybe_download_and_extract(
+            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134)
         npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
 
         params = []

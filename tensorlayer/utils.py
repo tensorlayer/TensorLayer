@@ -218,7 +218,8 @@ def fit(sess,
                 if acc is not None:
                     logging.info("   val acc: %f" % (val_acc / n_batch))
             else:
-                logging.info("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
+                logging.info("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time,
+                                                                   loss_ep))
     logging.info("Total training time: %fs" % (time.time() - start_time_begin))
 
 
@@ -568,7 +569,9 @@ def exit_tensorflow(sess=None, port=6006):
         _exit()
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
-        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
+        subprocess.Popen(
+            "lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
+            shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
     else:

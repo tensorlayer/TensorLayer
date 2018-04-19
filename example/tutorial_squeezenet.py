@@ -15,7 +15,9 @@ from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPoo
 def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
     if tl.files.file_exists(fpath) is False:
-        raise Exception("{} / download imagenet_class_index.json from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data")
+        raise Exception(
+            "{} / download imagenet_class_index.json from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data"
+        )
     if isinstance(preds, np.ndarray) is False:
         preds = np.asarray(preds)
     if len(preds.shape) != 2 or preds.shape[1] != 1000:
@@ -113,7 +115,8 @@ tl.layers.initialize_global_variables(sess)
 if tl.files.file_exists('squeezenet.npz'):
     tl.files.load_and_assign_npz(sess=sess, name='squeezenet.npz', network=n)
 else:
-    raise Exception("please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models")
+    raise Exception(
+        "please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models")
 
 img = tl.vis.read_image('data/tiger.jpeg', '')
 img = tl.prepro.imresize(img, (224, 224))
