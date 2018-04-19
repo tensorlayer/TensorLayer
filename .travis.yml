@@ -23,7 +23,7 @@ env:
 install:
   - pip install tensorflow
   - pip install -r requirements.txt
-  - pip install -e .[all]
+  - pip install -e .[dev,doc,test]
   
   
 script:
