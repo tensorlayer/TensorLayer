@@ -30,7 +30,7 @@ class DocTest(unittest.TestCase):
             self.output_dir,
             self.doctree_dir,
             buildername='text',
-            warningiserror=True,
+            warningiserror=False,
         )
         app.build(force_all=self.all_files)
         # TODO:  additional checks if needed
