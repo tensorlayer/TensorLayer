@@ -308,7 +308,10 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
 
     """
     h, w = x.shape[row_index], x.shape[col_index]
-    assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
+
+    if (h <= hrg) or (w <= wrg):
+        raise AssertionError("The size of cropping should smaller than the original image")
+
     if is_random:
         h_offset = int(np.random.uniform(0, h - hrg) - 1)
         w_offset = int(np.random.uniform(0, w - wrg) - 1)
@@ -345,7 +348,10 @@ def crop_multi(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
 
     """
     h, w = x[0].shape[row_index], x[0].shape[col_index]
-    assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
+
+    if (h <= hrg) or (w <= wrg):
+        raise AssertionError("The size of cropping should smaller than the original image")
+
     if is_random:
         h_offset = int(np.random.uniform(0, h - hrg) - 1)
         w_offset = int(np.random.uniform(0, w - wrg) - 1)
@@ -641,9 +647,11 @@ def shear2(
     - `Affine transformation <https://uk.mathworks.com/discovery/affine-transformation.html>`__
 
     """
-    assert len(
-        shear
-    ) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+    if len(shear) != 2:
+        raise AssertionError(
+            "shear should be tuple of 2 floats, or you want to use tl.prepro.shear rather than tl.prepro.shear2 ?"
+        )
+
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
@@ -676,9 +684,11 @@ def shear_multi2(
         A list of processed images.
 
     """
-    assert len(
-        shear
-    ) == 2, "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
+    if len(shear) != 2:
+        raise AssertionError(
+            "shear should be tuple of 2 floats, or you want to use tl.prepro.shear_multi rather than tl.prepro.shear_multi2 ?"
+        )
+
     if is_random:
         shear[0] = np.random.uniform(-shear[0], shear[0])
         shear[1] = np.random.uniform(-shear[1], shear[1])
@@ -744,7 +754,9 @@ def swirl(
     >>> x = tl.prepro.swirl(x, strength=4, radius=100)
 
     """
-    assert radius != 0, Exception("Invalid radius value")
+    if radius == 0:
+        raise AssertionError("Invalid radius value")
+
     rotation = np.pi / 180 * rotation
     if is_random:
         center_h = int(np.random.uniform(0, x.shape[0]))
@@ -786,7 +798,9 @@ def swirl_multi(
         A list of processed images.
 
     """
-    assert radius != 0, Exception("Invalid radius value")
+    if radius == 0:
+        raise AssertionError("Invalid radius value")
+
     rotation = np.pi / 180 * rotation
     if is_random:
         center_h = int(np.random.uniform(0, x[0].shape[0]))
@@ -856,7 +870,9 @@ def elastic_transform(x, alpha, sigma, mode="constant", cval=0, is_random=False)
         is_3d = True
     elif len(x.shape) == 3 and x.shape[-1] != 1:
         raise Exception("Only support greyscale image")
-    assert len(x.shape) == 2, "input should be grey-scale image"
+
+    if len(x.shape) != 2:
+        raise AssertionError("input should be grey-scale image")
 
     shape = x.shape
 
@@ -905,7 +921,9 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
             is_3d = True
         elif len(data.shape) == 3 and data.shape[-1] != 1:
             raise Exception("Only support greyscale image")
-        assert len(data.shape) == 2, "input should be grey-scale image"
+
+        if len(data.shape) != 2:
+            raise AssertionError("input should be grey-scale image")
 
         dx = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
         dy = gaussian_filter((new_shape * 2 - 1), sigma, mode=mode, cval=cval) * alpha
@@ -2046,7 +2064,10 @@ def obj_box_coords_rescale(coords=None, shape=None):
     imw = imw * 1.0
     coords_new = list()
     for coord in coords:
-        assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+        if len(coord) != 4:
+            raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
         x = coord[0] / imw
         y = coord[1] / imh
         w = coord[2] / imw
@@ -2151,7 +2172,10 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
     ... [20, 30, 40, 50]
 
     """
-    assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+    if len(coord) != 4:
+        raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
     x_center, y_center, w, h = coord
     x = x_center - w / 2.
     y = y_center - h / 2.
@@ -2183,7 +2207,8 @@ def obj_box_coord_upleft_butright_to_centroid(coord):
         New bounding box.
 
     """
-    assert len(coord) == 4, "coordinate should be 4 values : [x1, y1, x2, y2]"
+    if len(coord) != 4:
+        raise AssertionError("coordinate should be 4 values : [x1, y1, x2, y2]")
     x1, y1, x2, y2 = coord
     w = x2 - x1
     h = y2 - y1
@@ -2207,7 +2232,9 @@ def obj_box_coord_centroid_to_upleft(coord):
         New bounding box.
 
     """
-    assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+    if len(coord) != 4:
+        raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
     x_center, y_center, w, h = coord
     x = x_center - w / 2.
     y = y_center - h / 2.
@@ -2229,7 +2256,9 @@ def obj_box_coord_upleft_to_centroid(coord):
         New bounding box.
 
     """
-    assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+    if len(coord) != 4:
+        raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
     x, y, w, h = coord
     x_center = x + w / 2.
     y_center = y + h / 2.
@@ -2340,7 +2369,10 @@ def obj_box_horizontal_flip(im, coords=None, is_rescale=False, is_center=False, 
         coords_new = list()
 
         for coord in coords:
-            assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+            if len(coord) != 4:
+                raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
             if is_rescale:
                 if is_center:
                     # x_center' = 1 - x
@@ -2436,8 +2468,12 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 
     if is_rescale is False:
         coords_new = list()
+
         for coord in coords:
-            assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+            if len(coord) != 4:
+                raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
             # x' = x * (imw'/imw)
             x = int(coord[0] * (size[1] / imw))
             # y' = y * (imh'/imh)
@@ -2511,7 +2547,10 @@ def obj_box_crop(
         coords = []
 
     h, w = im.shape[0], im.shape[1]
-    assert (h > hrg) and (w > wrg), "The size of cropping should smaller than the original image"
+
+    if (h <= hrg) or (w <= wrg):
+        raise AssertionError("The size of cropping should smaller than the original image")
+
     if is_random:
         h_offset = int(np.random.uniform(0, h - hrg) - 1)
         w_offset = int(np.random.uniform(0, w - wrg) - 1)
@@ -2599,7 +2638,10 @@ def obj_box_crop(
     classes_new = list()
     for i, _ in enumerate(coords):
         coord = coords[i]
-        assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+        if len(coord) != 4:
+            raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
         if is_rescale:
             # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
@@ -2658,7 +2700,10 @@ def obj_box_shift(
         coords = []
 
     imh, imw = im.shape[row_index], im.shape[col_index]
-    assert (hrg < 1.0) and (hrg > 0.) and (wrg < 1.0) and (wrg > 0.), "shift range should be (0, 1)"
+
+    if (hrg >= 1.0) and (hrg <= 0.) and (wrg >= 1.0) and (wrg <= 0.):
+        raise AssertionError("shift range should be (0, 1)")
+
     if is_random:
         tx = np.random.uniform(-hrg, hrg) * imh
         ty = np.random.uniform(-wrg, wrg) * imw
@@ -2727,8 +2772,10 @@ def obj_box_shift(
     coords_new = list()
     classes_new = list()
     for i, _ in enumerate(coords):
-        coord = coords[i]
-        assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+        if len(coord) != 4:
+            raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
         if is_rescale:
             # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
@@ -2861,8 +2908,10 @@ def obj_box_zoom(
     coords_new = list()
     classes_new = list()
     for i, _ in enumerate(coords):
-        coord = coords[i]
-        assert len(coord) == 4, "coordinate should be 4 values : [x, y, w, h]"
+
+        if len(coord) != 4:
+            raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
+
         if is_rescale:
             # for scaled coord, upscaled before process and scale back in the end.
             coord = obj_box_coord_scale_to_pixelunit(coord, im.shape)
