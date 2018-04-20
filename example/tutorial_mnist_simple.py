@@ -7,8 +7,7 @@ import tensorlayer as tl
 sess = tf.InteractiveSession()
 
 # prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                                tl.files.load_mnist_dataset(shape=(-1, 784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 # define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
@@ -44,8 +43,7 @@ network.print_params()
 network.print_layers()
 
 # train the network
-tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, \
-    n_epoch=500, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
+tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, n_epoch=500, print_freq=5, X_val=X_val, y_val=y_val, eval_train=False)
 
 # evaluation
 tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)

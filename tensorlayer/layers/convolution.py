@@ -1493,8 +1493,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
         center = scale_factor - 0.5
     for x in range(filter_size):
         for y in range(filter_size):
-            bilinear_kernel[x, y] = (1 - abs(x - center) / scale_factor) * \
-                                    (1 - abs(y - center) / scale_factor)
+            bilinear_kernel[x, y] = (1 - abs(x - center) / scale_factor) * (1 - abs(y - center) / scale_factor)
     weights = np.zeros((filter_size, filter_size, num_out_channels, num_in_channels))
     for i in range(num_out_channels):
         weights[:, :, i, i] = bilinear_kernel

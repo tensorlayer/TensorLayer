@@ -237,8 +237,7 @@ def main_lstm_generate_text():
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
             net = EmbeddingInputlayer(x, vocab_size, hidden_size, rnn_init, name='embedding')
-            net = RNNLayer(net, tf.contrib.rnn.BasicLSTMCell, {'forget_bias': 0.0, 'state_is_tuple': True}, \
-                hidden_size, rnn_init, n_steps=sequence_length, return_last=False, return_seq_2d=True, name='lstm1')
+            net = RNNLayer(net, tf.contrib.rnn.BasicLSTMCell, {'forget_bias': 0.0, 'state_is_tuple': True}, hidden_size, rnn_init, n_steps=sequence_length, return_last=False, return_seq_2d=True, name='lstm1')
             lstm1 = net
             net = DenseLayer(net, vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output')
         return net, lstm1
@@ -311,8 +310,7 @@ def main_lstm_generate_text():
             iters += sequence_length
 
             if step % (epoch_size // 10) == 1:
-                print("%.3f perplexity: %.3f speed: %.0f wps" % (step * 1.0 / epoch_size, np.exp(costs / iters), \
-                     iters * batch_size / (time.time() - start_time)))
+                print("%.3f perplexity: %.3f speed: %.0f wps" % (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time)))
         train_perplexity = np.exp(costs / iters)
         # print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))

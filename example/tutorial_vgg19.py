@@ -104,8 +104,7 @@ def Vgg19(rgb):
     # input layer
     net_in = InputLayer(bgr, name='input')
     # conv1
-    net = Conv2dLayer(net_in, act=tf.nn.relu, shape=[3, 3, 3, 64], \
-        strides=[1, 1, 1, 1], padding='SAME', name='conv1_1')
+    net = Conv2dLayer(net_in, act=tf.nn.relu, shape=[3, 3, 3, 64], strides=[1, 1, 1, 1], padding='SAME', name='conv1_1')
     net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding='SAME', name='conv1_2')
     net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
     # conv2

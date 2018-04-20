@@ -25,8 +25,7 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
 from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
-from tensorflow.python.training.monitored_session import \
-    SingularMonitoredSession
+from tensorflow.python.training.monitored_session import SingularMonitoredSession
 
 import tensorlayer as tl
 
@@ -298,16 +297,14 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
 def run_evaluator(task_spec, checkpoints_path, batch_size=32):
     with tf.Graph().as_default():
         # load dataset
-        images_input, one_hot_classes, num_classes, _dataset_size = \
-            load_data(file=VAL_FILE,
+        images_input, one_hot_classes, num_classes, _dataset_size = load_data(file=VAL_FILE,
                       task_spec=task_spec,
                       batch_size=batch_size,
                       epochs=1)
         _network, predictions = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
-        metrics_init_ops, _, metrics_ops = \
-            calculate_metrics(predicted_batch=predictions,
+        metrics_init_ops, _, metrics_ops = calculate_metrics(predicted_batch=predictions,
                               real_batch=one_hot_classes,
                               is_training=False)
         # tensorboard summary
@@ -342,8 +339,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
         global_step = tf.train.get_or_create_global_step()
         with tf.device(device_fn):
             # load dataset
-            images_input, one_hot_classes, num_classes, dataset_size = \
-                load_data(file=TRAIN_FILE,
+            images_input, one_hot_classes, num_classes, dataset_size = load_data(file=TRAIN_FILE,
                           task_spec=task_spec,
                           batch_size=batch_size,
                           epochs=epochs,
@@ -401,8 +397,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 last_log_time = time.time()
                 next_log_time = last_log_time + 60
                 while not sess.should_stop():
-                    step, loss_val, learning_rate_val, _, metrics = \
-                        sess.run([global_step, loss, learning_rate, train_op, metrics_ops])
+                    step, loss_val, learning_rate_val, _, metrics = sess.run([global_step, loss, learning_rate, train_op, metrics_ops])
                     if task_spec is None or task_spec.is_master():
                         now = time.time()
                         if now > next_log_time:

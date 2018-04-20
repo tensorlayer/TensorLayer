@@ -8,8 +8,7 @@ from keras import backend as K
 from keras.layers import *
 from tensorlayer.layers import *
 
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                tl.files.load_mnist_dataset(shape=(-1, 784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 sess = tf.InteractiveSession()
 

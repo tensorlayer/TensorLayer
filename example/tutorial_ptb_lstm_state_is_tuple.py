@@ -194,8 +194,7 @@ def main(_):
         print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
         initializer = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = tl.layers.EmbeddingInputlayer(x, vocabulary_size=vocab_size, embedding_size=hidden_size, \
-                E_init=initializer, name='embedding')
+            network = tl.layers.EmbeddingInputlayer(x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding')
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(
                 network,
@@ -310,8 +309,7 @@ def main(_):
             }
             # For training, enable dropout
             feed_dict.update(network.all_drop)
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost,
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run([cost,
                                             lstm1.final_state.c,
                                             lstm1.final_state.h,
                                             lstm2.final_state.c,
@@ -351,8 +349,7 @@ def main(_):
                 lstm2_val.initial_state.c: state2[0],
                 lstm2_val.initial_state.h: state2[1],
             }
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost_val,
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run([cost_val,
                                             lstm1_val.final_state.c,
                                             lstm1_val.final_state.h,
                                             lstm2_val.final_state.c,
@@ -385,8 +382,7 @@ def main(_):
             lstm2_test.initial_state.c: state2[0],
             lstm2_test.initial_state.h: state2[1],
         }
-        _cost, state1_c, state1_h, state2_c, state2_h = \
-                                sess.run([cost_test,
+        _cost, state1_c, state1_h, state2_c, state2_h = sess.run([cost_test,
                                         lstm1_test.final_state.c,
                                         lstm1_test.final_state.h,
                                         lstm2_test.final_state.c,
