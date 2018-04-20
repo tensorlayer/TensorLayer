@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Flow_Control_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         x = tf.placeholder(tf.float32, shape=(None, 784), name='x')

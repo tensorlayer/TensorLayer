@@ -54,6 +54,7 @@ method, this part of the documentation is for you.
   modules/activation
   modules/models
   modules/distributed
+  modules/db
 
 
 Command-line Reference

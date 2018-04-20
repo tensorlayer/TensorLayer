@@ -138,7 +138,8 @@ class SlimNetsLayer(Layer):
         if slim_variables == []:
             logging.info(
                 "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details"
-                % name)
+                % name
+            )
 
         self.outputs = net
 

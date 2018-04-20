@@ -19,6 +19,7 @@ slim = tf.contrib.slim
 
 
 class Layer_Importer_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 
@@ -41,6 +42,7 @@ class Layer_Importer_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_lambda_layer(self):
+
         def keras_block(x):
             x = k.layers.Dropout(0.8)(x)
             x = k.layers.Dense(100, activation='relu')(x)

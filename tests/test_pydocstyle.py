@@ -22,6 +22,7 @@ def lookup_error_params(code):
 
 
 class PyDOC_Style_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 

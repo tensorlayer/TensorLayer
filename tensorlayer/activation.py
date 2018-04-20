@@ -1,5 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""A file containing various activation functions."""
 
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
@@ -18,7 +19,8 @@ __all__ = [
 
 @deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
 def identity(x):
-    """The identity activation function.
+    """Identity activation function.
+
     Shortcut is ``linear``.
 
     Parameters
@@ -36,7 +38,7 @@ def identity(x):
 
 
 def ramp(x, v_min=0, v_max=1, name=None):
-    """The ramp activation function.
+    """Ramp activation function.
 
     Parameters
     ----------
@@ -59,15 +61,14 @@ def ramp(x, v_min=0, v_max=1, name=None):
 
 
 def leaky_relu(x, alpha=0.1, name="lrelu"):
-    """The LeakyReLU, Shortcut is ``lrelu``.
+    """LeakyReLU, Shortcut is ``lrelu``.
 
     Modified version of ReLU, introducing a nonzero gradient for negative input.
 
     Parameters
     ----------
     x : Tensor
-        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``,
-        ``int16``, or ``int8``.
+        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
     alpha : float
         Slope.
     name : str
@@ -83,8 +84,9 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
         A ``Tensor`` in the same type as ``x``.
 
     References
-    ------------
-    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
+       http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
 
     """
     # with tf.name_scope(name) as scope:
@@ -96,7 +98,8 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
 
 def swish(x, name='swish'):
-    """The Swish function.
+    """Swish function.
+
      See `Swish: a Self-Gated Activation Function <https://arxiv.org/abs/1710.05941>`__.
 
     Parameters
@@ -122,15 +125,20 @@ def _sign_grad(unused_op, grad):
     return tf.clip_by_value(tf.identity(grad), -1, 1)
 
 
-def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36
+def sign(x):
     """Sign function.
 
-    Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for quantizing values in `Binarized Neural Networks <https://arxiv.org/abs/1602.02830>`__.
+    Clip and binarize tensor using the straight through estimator (STE) for the gradient, usually be used for
+    quantizing values in `Binarized Neural Networks`: https://arxiv.org/abs/1602.02830.
 
     Parameters
     ----------
     x : Tensor
         input.
+
+    Examples
+    --------
+    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
     -------
@@ -138,8 +146,12 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
         A ``Tensor`` in the same type as ``x``.
 
     References
-    -----------
-    - `AngusG/tensorflow-xnor-bnn <https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L36>`__
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
+       http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
+
+    - `BinaryNet: Training Deep Neural Networks with Weights and Activations Constrained to +1 or -1, \
+       Courbariaux et al. (2016)` https://arxiv.org/abs/1602.02830
 
     """
     with tf.get_default_graph().gradient_override_map({"sign": "QuantizeGrad"}):
@@ -149,7 +161,9 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 # if tf.__version__ > "1.7":
 #     @tf.custom_gradient
 #     def sign(x):  # https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page
-#         """Differentiable sign function using sigmoid as the derivation function, see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__ and `tf.custom_gradient <https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page>`__.
+#         """Differentiable sign function using sigmoid as the derivation function,
+#         see `tf.sign <https://www.tensorflow.org/api_docs/python/tf/sign>`__ and `tf.custom_gradient
+#         <https://www.tensorflow.org/versions/master/api_docs/python/tf/custom_gradient?hl=ES#top_of_page>`__.
 #
 #         Parameters
 #         ----------
@@ -171,7 +185,7 @@ def sign(x):  # https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models
 def hard_tanh(x, name='htanh'):
     """Hard tanh activation function.
 
-    Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is ``htanh`.
+    Which is a ramp function with low bound of -1 and upper bound of 1, shortcut is `htanh`.
 
     Parameters
     ----------
@@ -193,6 +207,7 @@ def hard_tanh(x, name='htanh'):
 @deprecated("2018-06-30", "This API will be deprecated soon as tf.nn.softmax can do the same thing.")
 def pixel_wise_softmax(x, name='pixel_wise_softmax'):
     """Return the softmax outputs of images, every pixels have multiple label, the sum of a pixel is 1.
+
     Usually be used for image segmentation.
 
     Parameters

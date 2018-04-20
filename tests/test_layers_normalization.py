@@ -19,6 +19,7 @@ def model(x, is_train=True, reuse=False):
 
 
 class Layer_Normalization_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 
