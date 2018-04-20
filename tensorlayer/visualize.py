@@ -134,10 +134,9 @@ def save_images(images, size, image_path='_temp.png'):
     def imsave(images, size, path):
         return scipy.misc.imsave(path, merge(images, size))
 
-    assert len(images) <= size[0] * size[1
-                                        ], "number of images should be equal or less than size[0] * size[1] {}".format(
-                                            len(images)
-                                        )
+    if len(images) > size[0] * size[1]:
+        raise AssertionError("number of images should be equal or less than size[0] * size[1] {}".format(len(images)))
+
     return imsave(images, size, image_path)
 
 
@@ -182,11 +181,13 @@ def draw_boxes_and_labels_to_image(
     - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`__.
 
     """
-    assert len(coords) == len(classes), "number of coordinates and classes are equal"
-    if len(scores) > 0:
-        assert len(scores) == len(classes), "number of scores and classes are equal"
+    if len(coords) != len(classes):
+        raise AssertionError("number of coordinates and classes are equal")
 
-    import cv2
+    if len(scores) > 0 and len(scores) != len(classes):
+        raise AssertionError("number of scores and classes are equal")
+
+    import cv2  # TODO: OpenCV is not in the requirements.
 
     # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
     image = image.copy()
@@ -554,15 +555,21 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
     import matplotlib.pyplot as plt
 
     def plot_with_labels(low_dim_embs, labels, figsize=(18, 18), second=5, saveable=True, name='tsne', fig_idx=9862):
-        assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+
+        if low_dim_embs.shape[0] < len(labels):
+            raise AssertionError("More labels than embeddings")
+
         if saveable is False:
             plt.ion()
             plt.figure(fig_idx)
+
         plt.figure(figsize=figsize)  #in inches
+
         for i, label in enumerate(labels):
             x, y = low_dim_embs[i, :]
             plt.scatter(x, y)
             plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
+
         if saveable:
             plt.savefig(name + '.pdf', format='pdf')
         else:
