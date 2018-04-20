@@ -136,8 +136,8 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
             end_seq_idx = start_seq_idx + seq_length
             seq_inputs[b_idx] = inputs[start_seq_idx:end_seq_idx]
             seq_targets[b_idx] = targets[start_seq_idx:end_seq_idx]
-        flatten_inputs = seq_inputs.reshape((-1,) + inputs.shape[1:])
-        flatten_targets = seq_targets.reshape((-1,) + targets.shape[1:])
+        flatten_inputs = seq_inputs.reshape((-1, ) + inputs.shape[1:])
+        flatten_targets = seq_targets.reshape((-1, ) + targets.shape[1:])
         yield flatten_inputs, flatten_targets
 
 

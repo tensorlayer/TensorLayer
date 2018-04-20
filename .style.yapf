@@ -47,7 +47,7 @@ split_arguments_when_comma_terminated = False
 split_before_expression_after_opening_paren = False
 
 # Insert a space between the ending comma and closing bracket of a list, etc.
-space_between_ending_comma_and_closing_bracket = False
+space_between_ending_comma_and_closing_bracket = True
 
 # Allow splits before the dictionary value.
 allow_split_before_dict_value = True

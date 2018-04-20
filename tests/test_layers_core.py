@@ -63,7 +63,7 @@ class Layer_Core_Test(unittest.TestCase):
 
         # ============== EmbeddingInputlayer ==============
 
-        x4 = tf.placeholder(tf.int32, shape=(cls.batch_size,))
+        x4 = tf.placeholder(tf.int32, shape=(cls.batch_size, ))
         net4 = tl.layers.EmbeddingInputlayer(inputs=x4, vocabulary_size=1000, embedding_size=50, name='embed')
 
         net4.print_layers()

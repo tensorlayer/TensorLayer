@@ -55,7 +55,7 @@ class PReluLayer(Layer):
         self.inputs = prev_layer.outputs
 
         if channel_shared:
-            w_shape = (1,)
+            w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
