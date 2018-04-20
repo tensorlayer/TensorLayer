@@ -1,0 +1,64 @@
+[style]
+based_on_style=pep8
+
+# The column limit.
+column_limit=119
+
+# Align closing bracket with visual indentation.
+align_closing_bracket_with_visual_indent=False
+
+# Put closing brackets on a separate line, dedented, if the bracketed
+# expression can't fit in a single line. Applies to all kinds of brackets,
+# including function definitions and calls. For example:
+#
+#   config = {
+#       'key1': 'value1',
+#       'key2': 'value2',
+#   }        # <--- this bracket is dedented and on a separate line
+#
+#   time_series = self.remote_client.query_entity_counters(
+#       entity='dev3246.region1',
+#       key='dns.query_latency_tcp',
+#       transform=Transformation.AVERAGE(window=timedelta(seconds=60)),
+#       start_ts=now()-timedelta(days=3),
+#       end_ts=now(),
+#   )        # <--- this bracket is dedented and on a separate line
+dedent_closing_brackets=True
+
+# Insert a space between the ending comma and closing bracket of a list,
+# etc.
+space_between_ending_comma_and_closing_bracket=False
+
+# Split after the opening paren which surrounds an expression if it doesn't
+# fit on a single line.
+split_before_expression_after_opening_paren=True
+
+# Set to True to split list comprehensions and generators that have
+# non-trivial expressions and multiple clauses before each of these
+# clauses. For example:
+#
+#   result = [
+#       a_long_var + 100 for a_long_var in xrange(1000)
+#       if a_long_var % 10]
+#
+# would reformat to something like:
+#
+#   result = [
+#       a_long_var + 100
+#       for a_long_var in xrange(1000)
+#       if a_long_var % 10]
+split_complex_comprehension=True
+
+# Insert a blank line before a 'def' or 'class' immediately nested
+# within another 'def' or 'class'. For example:
+#
+#   class Foo:
+#                      # <------ this blank line
+#     def method():
+#       ...
+blank_line_before_nested_class_or_def=True
+
+# The i18n function call names. The presence of this function stops
+# reformattting on that line, because the string it has cannot be moved
+# away from the i18n comment.
+i18n_function_call=['_']
