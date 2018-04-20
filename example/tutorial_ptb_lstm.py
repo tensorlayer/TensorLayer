@@ -194,7 +194,9 @@ def main(_):
         print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
         initializer = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding')
+            network = tl.layers.EmbeddingInputlayer(
+                inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding'
+            )
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(
                 network,
@@ -204,7 +206,8 @@ def main(_):
                 initializer=initializer,
                 n_steps=num_steps,
                 return_last=False,
-                name='basic_lstm_layer1')
+                name='basic_lstm_layer1'
+            )
             lstm1 = network
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
             network = tl.layers.RNNLayer(
@@ -216,14 +219,17 @@ def main(_):
                 n_steps=num_steps,
                 return_last=False,
                 return_seq_2d=True,
-                name='basic_lstm_layer2')
+                name='basic_lstm_layer2'
+            )
             lstm2 = network
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
             # network = tl.layers.ReshapeLayer(network,
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            network = tl.layers.DenseLayer(network, n_units=vocab_size, W_init=initializer, b_init=initializer, act=tf.identity, name='output')
+            network = tl.layers.DenseLayer(
+                network, n_units=vocab_size, W_init=initializer, b_init=initializer, act=tf.identity, name='output'
+            )
         return network, lstm1, lstm2
 
     # Inference for Training
@@ -299,13 +305,17 @@ def main(_):
             }
             # For training, enable dropout
             feed_dict.update(network.all_drop)
-            _cost, state1, state2, _ = sess.run([cost, lstm1.final_state, lstm2.final_state, train_op], feed_dict=feed_dict)
+            _cost, state1, state2, _ = sess.run(
+                [cost, lstm1.final_state, lstm2.final_state, train_op], feed_dict=feed_dict
+            )
             costs += _cost
             iters += num_steps
 
             if step % (epoch_size // 10) == 10:
-                print("%.3f perplexity: %.3f speed: %.0f wps" % (step * 1.0 / epoch_size, np.exp(costs / iters),
-                                                                 iters * batch_size / (time.time() - start_time)))
+                print(
+                    "%.3f perplexity: %.3f speed: %.0f wps" %
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
+                )
         train_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
 
@@ -323,7 +333,10 @@ def main(_):
                 lstm1_val.initial_state: state1,
                 lstm2_val.initial_state: state2,
             }
-            _cost, state1, state2, _ = sess.run([cost_val, lstm1_val.final_state, lstm2_val.final_state, tf.no_op()], feed_dict=feed_dict)
+            _cost, state1, state2, _ = sess.run(
+                [cost_val, lstm1_val.final_state, lstm2_val.final_state,
+                 tf.no_op()], feed_dict=feed_dict
+            )
             costs += _cost
             iters += num_steps
         valid_perplexity = np.exp(costs / iters)
@@ -345,7 +358,9 @@ def main(_):
             lstm1_test.initial_state: state1,
             lstm2_test.initial_state: state2,
         }
-        _cost, state1, state2 = sess.run([cost_test, lstm1_test.final_state, lstm2_test.final_state], feed_dict=feed_dict)
+        _cost, state1, state2 = sess.run(
+            [cost_test, lstm1_test.final_state, lstm2_test.final_state], feed_dict=feed_dict
+        )
         costs += _cost
         iters += 1
     test_perplexity = np.exp(costs / iters)

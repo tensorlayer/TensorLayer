@@ -134,11 +134,15 @@ def save_images(images, size, image_path='_temp.png'):
     def imsave(images, size, path):
         return scipy.misc.imsave(path, merge(images, size))
 
-    assert len(images) <= size[0] * size[1], "number of images should be equal or less than size[0] * size[1] {}".format(len(images))
+    if len(images) > size[0] * size[1]:
+        raise AssertionError("number of images should be equal or less than size[0] * size[1] {}".format(len(images)))
+
     return imsave(images, size, image_path)
 
 
-def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None):
+def draw_boxes_and_labels_to_image(
+        image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
+):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
@@ -177,11 +181,13 @@ def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list,
     - `scikit-image <http://scikit-image.org/docs/dev/api/skimage.draw.html#skimage.draw.rectangle>`__.
 
     """
-    assert len(coords) == len(classes), "number of coordinates and classes are equal"
-    if len(scores) > 0:
-        assert len(scores) == len(classes), "number of scores and classes are equal"
+    if len(coords) != len(classes):
+        raise AssertionError("number of coordinates and classes are equal")
 
-    import cv2
+    if len(scores) > 0 and len(scores) != len(classes):
+        raise AssertionError("number of scores and classes are equal")
+
+    import cv2  # TODO: OpenCV is not in the requirements.
 
     # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
     image = image.copy()
@@ -203,7 +209,8 @@ def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list,
             (int(x), int(y)),
             (int(x2), int(y2)),  # up-left and botton-right
             [0, 255, 0],
-            thick)
+            thick
+        )
 
         cv2.putText(
             image,
@@ -212,7 +219,8 @@ def draw_boxes_and_labels_to_image(image, classes, coords, scores, classes_list,
             0,
             1.5e-3 * imh,  # bigger = larger font
             [0, 0, 256],  # self.meta['colors'][max_indx],
-            int(thick / 2) + 1)  # bold
+            int(thick / 2) + 1
+        )  # bold
 
     if save_name is not None:
         # cv2.imwrite('_my.png', image)
@@ -313,7 +321,8 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
                     (int(joint_pos[start][0]), int(joint_pos[start][1])),
                     (int(joint_pos[end][0]), int(joint_pos[end][1])),  # up-left and botton-right
                     line[1],
-                    thick)
+                    thick
+                )
                 # rr, cc, val = skimage.draw.line_aa(int(joint_pos[start][1]), int(joint_pos[start][0]), int(joint_pos[end][1]), int(joint_pos[end][0]))
                 # image[rr, cc] = line[1]
         # draw circles
@@ -332,7 +341,8 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
                 (int(head_rect[0]), int(head_rect[1])),
                 (int(head_rect[2]), int(head_rect[3])),  # up-left and botton-right
                 [0, 180, 0],
-                thick)
+                thick
+            )
 
     if save_name is not None:
         # cv2.imwrite(save_name, image)
@@ -434,7 +444,9 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
             if n_color == 1:
                 plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col)), cmap='gray', interpolation="nearest")
             elif n_color == 3:
-                plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest")
+                plt.imshow(
+                    np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest"
+                )
             else:
                 raise Exception("Unknown n_color")
             plt.gca().xaxis.set_major_locator(plt.NullLocator())  # distable tick
@@ -543,15 +555,21 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
     import matplotlib.pyplot as plt
 
     def plot_with_labels(low_dim_embs, labels, figsize=(18, 18), second=5, saveable=True, name='tsne', fig_idx=9862):
-        assert low_dim_embs.shape[0] >= len(labels), "More labels than embeddings"
+
+        if low_dim_embs.shape[0] < len(labels):
+            raise AssertionError("More labels than embeddings")
+
         if saveable is False:
             plt.ion()
             plt.figure(fig_idx)
+
         plt.figure(figsize=figsize)  #in inches
+
         for i, label in enumerate(labels):
             x, y = low_dim_embs[i, :]
             plt.scatter(x, y)
             plt.annotate(label, xy=(x, y), xytext=(5, 2), textcoords='offset points', ha='right', va='bottom')
+
         if saveable:
             plt.savefig(name + '.pdf', format='pdf')
         else:
@@ -623,7 +641,8 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             #     feature = np.zeros_like(feature)
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
-            plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray', interpolation="nearest")  #, vmin=np.min(feature), vmax=np.max(feature))
+            plt.imshow(np.reshape(feature, (shape[0], shape[1])), cmap='gray',
+                       interpolation="nearest")  #, vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")

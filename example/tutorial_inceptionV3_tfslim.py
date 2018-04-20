@@ -41,7 +41,9 @@ slim = tf.contrib.slim
 try:
     from data.imagenet_classes import *
 except Exception as e:
-    raise Exception("{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
+    raise Exception(
+        "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
+    )
 
 
 def load_image(path):
@@ -122,7 +124,9 @@ network.print_params(False)
 
 saver = tf.train.Saver()
 if not os.path.isfile("inception_v3.ckpt"):
-    raise Exception("Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/research/slim")
+    raise Exception(
+        "Please download inception_v3 ckpt from : https://github.com/tensorflow/models/tree/master/research/slim"
+    )
 
 try:  # TF12+
     saver.restore(sess, "./inception_v3.ckpt")
@@ -132,7 +136,9 @@ print("Model Restored")
 
 y = network.outputs
 probs = tf.nn.softmax(y)
-img1 = load_image("data/puzzle.jpeg")  # test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data
+img1 = load_image(
+    "data/puzzle.jpeg"
+)  # test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data
 img1 = img1.reshape((1, 299, 299, 3))
 
 prob = sess.run(probs, feed_dict={x: img1})  # the 1st time need time to compile

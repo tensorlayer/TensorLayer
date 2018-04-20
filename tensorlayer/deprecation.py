@@ -8,7 +8,9 @@ from . import _logging as logging
 
 
 def deprecated_alias(end_support_version, **aliases):
+
     def deco(f):
+
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
 
@@ -36,7 +38,9 @@ def rename_kwargs(kwargs, aliases, end_support_version, func_name):
                 raise TypeError('{}() received both {} and {}'.format(func_name, alias, new))
 
             warnings.warn('{}() - {} is deprecated; use {}'.format(func_name, alias, new), DeprecationWarning)
-            logging.warning("DeprecationWarning: {}(): "
-                            "`{}` argument is deprecated and will be removed in version {}, "
-                            "please change for `{}.`".format(func_name, alias, end_support_version, new))
+            logging.warning(
+                "DeprecationWarning: {}(): "
+                "`{}` argument is deprecated and will be removed in version {}, "
+                "please change for `{}.`".format(func_name, alias, end_support_version, new)
+            )
             kwargs[new] = kwargs.pop(alias)

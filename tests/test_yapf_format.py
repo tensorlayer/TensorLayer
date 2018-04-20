@@ -6,8 +6,10 @@ import unittest
 
 try:
     import tests.testing as testing
+    from tests.unittests_helper import CustomTestCase
 except ImportError:
     import testing
+    from unittests_helper import CustomTestCase
 
 from yapf.yapflib.yapf_api import FormatCode
 
@@ -21,32 +23,42 @@ def _read_utf_8_file(filename):
             return f.read()
 
 
-class YAPF_Style_Test(unittest.TestCase):
+class YAPF_Style_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 
-        cls.files_badly_formated = list()
+        cls.badly_formatted_files = list()
+        cls.files_2_test = testing.list_all_py_files()
 
-        for filename in testing.list_all_py_files():
+    def test_files_format(self):
 
-            print(filename)
-            code = _read_utf_8_file(filename)
+        for file in testing.list_all_py_files():
+
+            print(file)
+            code = _read_utf_8_file(file)
 
             # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
-            diff, changed = FormatCode(code, filename=filename, style_config='.style.yapf', print_diff=True)
+            diff, changed = FormatCode(code, filename=file, style_config='.style.yapf', print_diff=True)
 
             if changed:
                 print(diff)
-                cls.files_badly_formated.append(filename)
+                self.badly_formatted_files.append(file)
 
-    def test_unformated_files(self):
-        if self.files_badly_formated:
-            print()
+        with self.assertNotRaises(Exception):
 
-            for filename in self.files_badly_formated:
-                print('yapf -i %s' % filename)
+            str_err = ""
 
-            raise Exception("Bad Coding Style: %d files need to be formatted, run the following commands to fix" % len(self.files_badly_formated))
+            if self.badly_formatted_files:
+                for filename in self.badly_formatted_files:
+                    str_err += 'yapf -i --style=.style.yapf %s\n' % filename
+
+                str_err = "\n======================================================================================\n" \
+                          "Bad Coding Style: %d file(s) need to be formatted, run the following commands to fix: \n%s" \
+                          "======================================================================================" % (
+                    len(self.badly_formatted_files), str_err)
+
+                raise Exception(str_err)
 
 
 if __name__ == '__main__':

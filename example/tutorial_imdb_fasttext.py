@@ -139,7 +139,8 @@ def train_test_and_save_model():
                     classifier.train_op, feed_dict={
                         classifier.inputs: tl.prepro.pad_sequences(X_batch),
                         classifier.labels: y_batch,
-                    })
+                    }
+                )
 
             print("     took %.5fs" % (time.time() - start_time))
 
@@ -147,7 +148,8 @@ def train_test_and_save_model():
             classifier.accuracy, feed_dict={
                 classifier.inputs: tl.prepro.pad_sequences(X_test),
                 classifier.labels: y_test,
-            })
+            }
+        )
         print('Test accuracy: %.5f' % test_accuracy)
 
         classifier.save(sess, MODEL_FILE_PATH)

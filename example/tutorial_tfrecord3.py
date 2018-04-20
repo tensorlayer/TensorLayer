@@ -90,10 +90,11 @@ for idx in range(len(caption_data['images'])):
     context = tf.train.Features(feature={  #  Non-serial data uses Feature
         "image/img_raw": _bytes_feature(img_raw),
     })
-    feature_lists = tf.train.FeatureLists(feature_list={  # Serial data uses FeatureLists
-        "image/caption": _bytes_feature_list(img_capt_b),
-        "image/caption_ids": _int64_feature_list(img_capt_ids)
-    })
+    feature_lists = tf.train.FeatureLists(
+        feature_list={  # Serial data uses FeatureLists
+            "image/caption": _bytes_feature_list(img_capt_b),
+            "image/caption_ids": _int64_feature_list(img_capt_ids)
+        })
     sequence_example = tf.train.SequenceExample(context=context, feature_lists=feature_lists)
     writer.write(sequence_example.SerializeToString())  # Serialize To String
 writer.close()
@@ -104,14 +105,13 @@ reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)  # return the file and the name of file
 # features, sequence_features = tf.parse_single_example(serialized_example,  # see parse_single_sequence_example for sequence example
 features, sequence_features = tf.parse_single_sequence_example(
-    serialized_example,
-    context_features={
+    serialized_example, context_features={
         'image/img_raw': tf.FixedLenFeature([], tf.string),
-    },
-    sequence_features={
+    }, sequence_features={
         "image/caption": tf.FixedLenSequenceFeature([], dtype=tf.string),
         "image/caption_ids": tf.FixedLenSequenceFeature([], dtype=tf.int64),
-    })
+    }
+)
 c = tf.contrib.learn.run_n(features, n=1, feed_dict=None)
 im = Image.frombytes('RGB', (299, 299), c[0]['image/img_raw'])
 tl.visualize.frame(np.asarray(im), second=1, saveable=False, name='frame', fig_idx=1236)
@@ -230,15 +230,10 @@ def distort_image(image, thread_id):
 #   return image
 
 
-def prefetch_input_data(reader,
-                        file_pattern,
-                        is_training,
-                        batch_size,
-                        values_per_shard,
-                        input_queue_capacity_factor=16,
-                        num_reader_threads=1,
-                        shard_queue_name="filename_queue",
-                        value_queue_name="input_queue"):
+def prefetch_input_data(
+        reader, file_pattern, is_training, batch_size, values_per_shard, input_queue_capacity_factor=16,
+        num_reader_threads=1, shard_queue_name="filename_queue", value_queue_name="input_queue"
+):
     """Prefetches string values from disk into an input queue.
 
   In training the capacity of the queue is important because a larger queue
@@ -276,7 +271,10 @@ def prefetch_input_data(reader,
         filename_queue = tf.train.string_input_producer(data_files, shuffle=True, capacity=16, name=shard_queue_name)
         min_queue_examples = values_per_shard * input_queue_capacity_factor
         capacity = min_queue_examples + 100 * batch_size
-        values_queue = tf.RandomShuffleQueue(capacity=capacity, min_after_dequeue=min_queue_examples, dtypes=[tf.string], name="random_" + value_queue_name)
+        values_queue = tf.RandomShuffleQueue(
+            capacity=capacity, min_after_dequeue=min_queue_examples, dtypes=[tf.string],
+            name="random_" + value_queue_name
+        )
     else:
         print("   is_training == False : FIFOQueue")
         filename_queue = tf.train.string_input_producer(data_files, shuffle=False, capacity=1, name=shard_queue_name)
@@ -289,7 +287,10 @@ def prefetch_input_data(reader,
         enqueue_ops.append(values_queue.enqueue([value]))
     tf.train.queue_runner.add_queue_runner(tf.train.queue_runner.QueueRunner(values_queue, enqueue_ops))
 
-    tf.summary.scalar("queue/%s/fraction_of_%d_full" % (values_queue.name, capacity), tf.cast(values_queue.size(), tf.float32) * (1. / capacity))
+    tf.summary.scalar(
+        "queue/%s/fraction_of_%d_full" % (values_queue.name, capacity),
+        tf.cast(values_queue.size(), tf.float32) * (1. / capacity)
+    )
 
     return values_queue
 
@@ -311,12 +312,12 @@ input_queue = prefetch_input_data(
 serialized_sequence_example = input_queue.dequeue()
 # serialized_sequence_example = tf.train.string_input_producer(["train.cat_caption"])   # don't work
 context, sequence = tf.parse_single_sequence_example(
-    serialized=serialized_sequence_example,
-    context_features={"image/img_raw": tf.FixedLenFeature([], dtype=tf.string)},
+    serialized=serialized_sequence_example, context_features={"image/img_raw": tf.FixedLenFeature([], dtype=tf.string)},
     sequence_features={
         "image/caption": tf.FixedLenSequenceFeature([], dtype=tf.string),
         "image/caption_ids": tf.FixedLenSequenceFeature([], dtype=tf.int64),
-    })
+    }
+)
 
 img = tf.decode_raw(context["image/img_raw"], tf.uint8)
 img = tf.reshape(img, [height, width, 3])
@@ -327,7 +328,9 @@ try:
     img = tf.image.resize_images(img, size=(resize_height, resize_width), method=tf.image.ResizeMethod.BILINEAR)
 except Exception:
     # for TensorFlow 0.10
-    img = tf.image.resize_images(img, new_height=resize_height, new_width=resize_width, method=tf.image.ResizeMethod.BILINEAR)
+    img = tf.image.resize_images(
+        img, new_height=resize_height, new_width=resize_width, method=tf.image.ResizeMethod.BILINEAR
+    )
 # Crop to final dimensions.
 if is_training:
     img = tf.random_crop(img, [height, width, 3])
@@ -347,7 +350,8 @@ img_batch, img_cap_batch, img_cap_ids_batch = tf.train.batch(
     batch_size=4,
     capacity=50000,
     dynamic_pad=True,  # string list pad with '', int list pad with 0
-    num_threads=4)
+    num_threads=4
+)
 sess = tf.Session()
 # sess.run(tf.initialize_all_variables())
 tl.layers.initialize_global_variables(sess)
@@ -429,7 +433,8 @@ def batch_with_dynamic_pad(images_and_captions, batch_size, queue_capacity, add_
         enqueue_list.append([image, input_seq, target_seq, indicator])
 
     images, input_seqs, target_seqs, mask = tf.train.batch_join(
-        enqueue_list, batch_size=batch_size, capacity=queue_capacity, dynamic_pad=True, name="batch_and_pad")
+        enqueue_list, batch_size=batch_size, capacity=queue_capacity, dynamic_pad=True, name="batch_and_pad"
+    )
 
     if add_summaries:
         lengths = tf.add(tf.reduce_sum(mask, 1), 1)
@@ -440,7 +445,9 @@ def batch_with_dynamic_pad(images_and_captions, batch_size, queue_capacity, add_
     return images, input_seqs, target_seqs, mask
 
 
-images, input_seqs, target_seqs, input_mask = (batch_with_dynamic_pad(images_and_captions=[[img, img_cap]], batch_size=4, queue_capacity=50000))
+images, input_seqs, target_seqs, input_mask = (
+    batch_with_dynamic_pad(images_and_captions=[[img, img_cap]], batch_size=4, queue_capacity=50000)
+)
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())
 coord = tf.train.Coordinator()
