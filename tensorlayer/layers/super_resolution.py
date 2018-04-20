@@ -70,7 +70,9 @@ class SubpixelConv2d(Layer):
         _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
         super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
+        logging.info(
+            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__)
+        )
 
         def _PS(X, r, n_out_channels):
             if n_out_channels >= 1:
@@ -132,6 +134,7 @@ class SubpixelConv1d(Layer):
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'):
+
         def _PS(I, r):
             X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
             X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
