@@ -46,7 +46,8 @@ try:
     from data.imagenet_classes import *
 except Exception as e:
     raise Exception(
-        "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e))
+        "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
+    )
 
 
 def conv_layers(net_in):
@@ -64,16 +65,24 @@ def conv_layers(net_in):
         shape=[3, 3, 3, 64],  # 64 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv1_1')
+        name='conv1_1'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 64, 64],  # 64 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv1_2')
+        name='conv1_2'
+    )
     network = PoolLayer(
-        network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
+        network,
+        ksize=[1, 2, 2, 1],
+        strides=[1, 2, 2, 1],
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool1'
+    )
 
     # conv2
     network = Conv2dLayer(
@@ -82,16 +91,24 @@ def conv_layers(net_in):
         shape=[3, 3, 64, 128],  # 128 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv2_1')
+        name='conv2_1'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 128, 128],  # 128 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv2_2')
+        name='conv2_2'
+    )
     network = PoolLayer(
-        network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
+        network,
+        ksize=[1, 2, 2, 1],
+        strides=[1, 2, 2, 1],
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool2'
+    )
 
     # conv3
     network = Conv2dLayer(
@@ -100,23 +117,32 @@ def conv_layers(net_in):
         shape=[3, 3, 128, 256],  # 256 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv3_1')
+        name='conv3_1'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv3_2')
+        name='conv3_2'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv3_3')
+        name='conv3_3'
+    )
     network = PoolLayer(
-        network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
+        network,
+        ksize=[1, 2, 2, 1],
+        strides=[1, 2, 2, 1],
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool3'
+    )
 
     # conv4
     network = Conv2dLayer(
@@ -125,23 +151,32 @@ def conv_layers(net_in):
         shape=[3, 3, 256, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv4_1')
+        name='conv4_1'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv4_2')
+        name='conv4_2'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv4_3')
+        name='conv4_3'
+    )
     network = PoolLayer(
-        network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
+        network,
+        ksize=[1, 2, 2, 1],
+        strides=[1, 2, 2, 1],
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool4'
+    )
 
     # conv5
     network = Conv2dLayer(
@@ -150,23 +185,32 @@ def conv_layers(net_in):
         shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv5_1')
+        name='conv5_1'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv5_2')
+        name='conv5_2'
+    )
     network = Conv2dLayer(
         network,
         act=tf.nn.relu,
         shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
         strides=[1, 1, 1, 1],
         padding='SAME',
-        name='conv5_3')
+        name='conv5_3'
+    )
     network = PoolLayer(
-        network, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
+        network,
+        ksize=[1, 2, 2, 1],
+        strides=[1, 2, 2, 1],
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool5'
+    )
     return network
 
 
@@ -180,43 +224,134 @@ def conv_layers_simple_api(net_in):
 
     # conv1
     network = Conv2d(
-        net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
+        net_in,
+        n_filter=64,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv1_1'
+    )
     network = Conv2d(
-        network, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
+        network,
+        n_filter=64,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv1_2'
+    )
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')
 
     # conv2
     network = Conv2d(
-        network, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
+        network,
+        n_filter=128,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv2_1'
+    )
     network = Conv2d(
-        network, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
+        network,
+        n_filter=128,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv2_2'
+    )
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2')
 
     # conv3
     network = Conv2d(
-        network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
+        network,
+        n_filter=256,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv3_1'
+    )
     network = Conv2d(
-        network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
+        network,
+        n_filter=256,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv3_2'
+    )
     network = Conv2d(
-        network, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
+        network,
+        n_filter=256,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv3_3'
+    )
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3')
 
     # conv4
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv4_1'
+    )
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv4_2'
+    )
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv4_3'
+    )
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4')
 
     # conv5
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv5_1'
+    )
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv5_2'
+    )
     network = Conv2d(
-        network, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3')
+        network,
+        n_filter=512,
+        filter_size=(3, 3),
+        strides=(1, 1),
+        act=tf.nn.relu,
+        padding='SAME',
+        name='conv5_3'
+    )
     network = MaxPool2d(network, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5')
     return network
 

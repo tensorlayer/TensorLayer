@@ -430,7 +430,15 @@ class Layer(object):
                     val = p.eval(session=session)
                     logging.info(
                         "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()))
+                            i,
+                            p.name,
+                            str(val.shape),
+                            p.dtype.name,
+                            val.mean(),
+                            np.median(val),
+                            val.std()
+                        )
+                    )
                 except Exception as e:
                     logging.info(str(e))
                     raise Exception(
@@ -444,8 +452,12 @@ class Layer(object):
         """Print all info of layers in the network"""
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
-            logging.info("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()),
-                                                                  layer.dtype.name))
+            logging.info(
+                "  layer {:3}: {:20} {:15}    {}".format(i,
+                                                         layer.name,
+                                                         str(layer.get_shape()),
+                                                         layer.dtype.name)
+            )
 
     def count_params(self):
         """Return the number of parameters in the network"""
@@ -688,7 +700,8 @@ class Word2vecEmbeddingInputlayer(Layer):
                 shape=(vocabulary_size, embedding_size),
                 initializer=E_init,
                 dtype=LayersConfig.tf_dtype,
-                **E_init_args)
+                **E_init_args
+            )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(
@@ -696,13 +709,15 @@ class Word2vecEmbeddingInputlayer(Layer):
                 shape=(vocabulary_size, embedding_size),
                 initializer=nce_W_init,
                 dtype=LayersConfig.tf_dtype,
-                **nce_W_init_args)
+                **nce_W_init_args
+            )
             nce_biases = tf.get_variable(
                 name='nce_biases',
                 shape=(vocabulary_size),
                 initializer=nce_b_init,
                 dtype=LayersConfig.tf_dtype,
-                **nce_b_init_args)
+                **nce_b_init_args
+            )
 
             # Compute the average NCE loss for the batch.
             # tf.nce_loss automatically draws a new sample of the negative labels
@@ -715,7 +730,9 @@ class Word2vecEmbeddingInputlayer(Layer):
                     labels=train_labels,
                     num_sampled=num_sampled,
                     num_classes=vocabulary_size,
-                    **nce_loss_args))
+                    **nce_loss_args
+                )
+            )
 
             self.outputs = embed
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
@@ -786,7 +803,8 @@ class EmbeddingInputlayer(Layer):
                 shape=(vocabulary_size, embedding_size),
                 initializer=E_init,
                 dtype=LayersConfig.tf_dtype,
-                **E_init_args)
+                **E_init_args
+            )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -892,7 +910,8 @@ class AverageEmbeddingInputlayer(Layer):
             sentence_embeddings = tf.divide(
                 sum_word_embeddings,
                 sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
-                name='sentence_embeddings')
+                name='sentence_embeddings'
+            )
 
         self.outputs = sentence_embeddings
         self.all_layers = [self.outputs]
@@ -973,11 +992,21 @@ class DenseLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+                name='W',
+                shape=(n_in, n_units),
+                initializer=W_init,
+                dtype=LayersConfig.tf_dtype,
+                **W_init_args
+            )
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                        name='b',
+                        shape=(n_units),
+                        initializer=b_init,
+                        dtype=LayersConfig.tf_dtype,
+                        **b_init_args
+                    )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
@@ -1088,7 +1117,8 @@ class ReconLayer(DenseLayer):
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
         L1_a = 0.001 * tf.reduce_mean(
-            activation_out)  # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
+            activation_out
+        )  # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
         # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, 0) )         # <haodong>: some neuron are broken, white and black
         # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, 1) )   # <haodong>: some neuron are broken, white and black
         # KL Divergence
@@ -1096,11 +1126,13 @@ class ReconLayer(DenseLayer):
         rho = 0.15
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
         try:  # TF1.0
-            KLD = beta * tf.reduce_sum(rho * tf.log(tf.divide(rho, p_hat)) +
-                                       (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat))))
+            KLD = beta * tf.reduce_sum(
+                rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
+            )
         except Exception:  # TF0.12
-            KLD = beta * tf.reduce_sum(rho * tf.log(tf.div(rho, p_hat)) +
-                                       (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat))))
+            KLD = beta * tf.reduce_sum(
+                rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat)))
+            )
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
         # Total cost
@@ -1129,21 +1161,29 @@ class ReconLayer(DenseLayer):
             raise Exception("Don't support the given reconstruct activation function")
 
         self.train_op = tf.train.AdamOptimizer(
-            learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(
-                self.cost, var_list=self.train_params)
+            learning_rate,
+            beta1=0.9,
+            beta2=0.999,
+            epsilon=1e-08,
+            use_locking=False
+        ).minimize(
+            self.cost, var_list=self.train_params
+        )
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
-    def pretrain(self,
-                 sess,
-                 x,
-                 X_train,
-                 X_val,
-                 denoise_name=None,
-                 n_epoch=100,
-                 batch_size=128,
-                 print_freq=10,
-                 save=True,
-                 save_name='w1pre_'):
+    def pretrain(
+            self,
+            sess,
+            x,
+            X_train,
+            X_val,
+            denoise_name=None,
+            n_epoch=100,
+            batch_size=128,
+            print_freq=10,
+            save=True,
+            save_name='w1pre_'
+    ):
         # ====================================================
         #
         # You need to modify the cost function in __init__() so as to
@@ -1196,7 +1236,8 @@ class ReconLayer(DenseLayer):
                             saveable=True,
                             shape=[28, 28],
                             name=save_name + str(epoch + 1),
-                            fig_idx=2012)
+                            fig_idx=2012
+                        )
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:
                         raise Exception(
@@ -1452,9 +1493,19 @@ class DropconnectDenseLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+                name='W',
+                shape=(n_in, n_units),
+                initializer=W_init,
+                dtype=LayersConfig.tf_dtype,
+                **W_init_args
+            )
             b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                name='b',
+                shape=(n_units),
+                initializer=b_init,
+                dtype=LayersConfig.tf_dtype,
+                **b_init_args
+            )
             # self.outputs = act(tf.matmul(self.inputs, W) + b)
 
             LayersConfig.set_keep[name] = tf.placeholder(tf.float32)

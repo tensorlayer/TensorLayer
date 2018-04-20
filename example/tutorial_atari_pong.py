@@ -133,8 +133,9 @@ with tf.Session() as sess:
             prev_x = None
 
         if reward != 0:
-            print(('episode %d: game %d took %.5fs, reward: %f' %
-                   (episode_number, game_number, time.time() - start_time, reward)), (''
-                                                                                      if reward == -1 else ' !!!!!!!!'))
+            print((
+                'episode %d: game %d took %.5fs, reward: %f' %
+                (episode_number, game_number, time.time() - start_time, reward)
+            ), ('' if reward == -1 else ' !!!!!!!!'))
             start_time = time.time()
             game_number += 1

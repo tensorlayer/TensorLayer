@@ -135,7 +135,10 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
             #  grid = np.vstack([x_t.flatten(), y_t.flatten(), ones])
             x_t = tf.matmul(
                 tf.ones(shape=tf.stack([height, 1])),
-                tf.transpose(tf.expand_dims(tf.linspace(-1.0, 1.0, width), 1), [1, 0]))
+                tf.transpose(tf.expand_dims(tf.linspace(-1.0,
+                                                        1.0,
+                                                        width), 1), [1, 0])
+            )
             y_t = tf.matmul(tf.expand_dims(tf.linspace(-1.0, 1.0, height), 1), tf.ones(shape=tf.stack([1, width])))
 
             x_t_flat = tf.reshape(x_t, (1, -1))
@@ -245,8 +248,10 @@ class SpatialTransformer2dAffineLayer(Layer):
         if out_size is None:
             out_size = [40, 40]
 
-        logging.info("SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" %
-                     (name, self.inputs.get_shape().as_list(), out_size))
+        logging.info(
+            "SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" %
+            (name, self.inputs.get_shape().as_list(), out_size)
+        )
 
         with tf.variable_scope(name) as vs:
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.

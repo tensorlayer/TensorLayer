@@ -50,9 +50,19 @@ def main_test_layers(model='relu'):
     elif model == 'dropconnect':
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropconnectDenseLayer(
-            network, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect_relu1')
+            network,
+            keep=0.8,
+            n_units=800,
+            act=tf.nn.relu,
+            name='dropconnect_relu1'
+        )
         network = tl.layers.DropconnectDenseLayer(
-            network, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect_relu2')
+            network,
+            keep=0.5,
+            n_units=800,
+            act=tf.nn.relu,
+            name='dropconnect_relu2'
+        )
         network = tl.layers.DropconnectDenseLayer(network, keep=0.5, n_units=10, act=tf.identity, name='output')
 
     # To print all attributes of a Layer.
@@ -200,7 +210,8 @@ def main_test_denoise_AE(model='relu'):
         batch_size=128,
         print_freq=10,
         save=True,
-        save_name='w1pre_')
+        save_name='w1pre_'
+    )
     # You can also disable denoisong by setting denoise_name=None.
     # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
     #                           denoise_name=None, n_epoch=500, batch_size=128,
@@ -280,7 +291,8 @@ def main_test_stacked_denoise_AE(model='relu'):
         batch_size=128,
         print_freq=10,
         save=True,
-        save_name='w1pre_')
+        save_name='w1pre_'
+    )
     print("\nPre-train Layer 2")
     recon_layer2.pretrain(
         sess,
@@ -291,7 +303,8 @@ def main_test_stacked_denoise_AE(model='relu'):
         n_epoch=100,
         batch_size=128,
         print_freq=10,
-        save=False)
+        save=False
+    )
     print("\nAll Network Params after pre-train")
     network.print_params()
 

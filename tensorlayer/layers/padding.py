@@ -52,7 +52,8 @@ class PadLayer(Layer):
 
         if padding is None:
             raise Exception(
-                "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad")
+                "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
+            )
 
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
         self.all_layers.append(self.outputs)

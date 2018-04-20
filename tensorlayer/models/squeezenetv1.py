@@ -164,7 +164,8 @@ class SqueezeNetV1(Layer):
             'squeezenet.npz',
             path,
             'https://github.com/tensorlayer/pretrained-models/raw/master/models/',
-            expected_bytes=7405613)  # ls -al
+            expected_bytes=7405613
+        )  # ls -al
         params = load_npz(name=os.path.join(path, 'squeezenet.npz'))
         assign_params(sess, params[:len(self.net.all_params)], self.net)
         del params

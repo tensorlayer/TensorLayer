@@ -49,7 +49,8 @@ class Layer_Core_Test(unittest.TestCase):
             vocabulary_size=1000,
             embedding_size=200,
             num_sampled=64,
-            name='word2vec')
+            name='word2vec'
+        )
 
         net3.print_layers()
         net3.print_params(False)

@@ -59,8 +59,15 @@ class TensorDB(object):
     - You may like to install MongoChef or Mongo Management Studo APP for visualizing or testing your MongoDB.
     """
 
-    def __init__(self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password',
-                 studyID=None):
+    def __init__(
+            self,
+            ip='localhost',
+            port=27017,
+            db_name='db_name',
+            user_name=None,
+            password='password',
+            studyID=None
+    ):
         ## connect mongodb
         client = MongoClient(ip, port)
         self.db = client[db_name]

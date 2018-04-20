@@ -43,7 +43,8 @@ class PReluLayer(Layer):
             a_init=tf.constant_initializer(value=0.0),
             a_init_args=None,
             # restore = True,
-            name="prelu_layer"):
+            name="prelu_layer"
+    ):
 
         if a_init_args is None:
             a_init_args = {}
@@ -61,7 +62,12 @@ class PReluLayer(Layer):
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):
             alphas = tf.get_variable(
-                name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **a_init_args)
+                name='alphas',
+                shape=w_shape,
+                initializer=a_init,
+                dtype=LayersConfig.tf_dtype,
+                **a_init_args
+            )
             try:  # TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
             except Exception:  # TF 0.12

@@ -21,10 +21,12 @@ def decode_predictions(preds, top=5):  # keras.applications.resnet50
     if isinstance(preds, np.ndarray) is False:
         preds = np.asarray(preds)
     if len(preds.shape) != 2 or preds.shape[1] != 1000:
-        raise ValueError('`decode_predictions` expects '
-                         'a batch of predictions '
-                         '(i.e. a 2D array of shape (samples, 1000)). '
-                         'Found array with shape: ' + str(preds.shape))
+        raise ValueError(
+            '`decode_predictions` expects '
+            'a batch of predictions '
+            '(i.e. a 2D array of shape (samples, 1000)). '
+            'Found array with shape: ' + str(preds.shape)
+        )
     with open(fpath) as f:
         CLASS_INDEX = json.load(f)
     results = []
@@ -116,7 +118,8 @@ if tl.files.file_exists('squeezenet.npz'):
     tl.files.load_and_assign_npz(sess=sess, name='squeezenet.npz', network=n)
 else:
     raise Exception(
-        "please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models")
+        "please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models"
+    )
 
 img = tl.vis.read_image('data/tiger.jpeg', '')
 img = tl.prepro.imresize(img, (224, 224))

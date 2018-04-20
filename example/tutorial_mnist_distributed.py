@@ -84,7 +84,8 @@ with tf.device(device_fn):
             print_freq=print_freq,
             X_val=X_val,
             y_val=y_val,
-            eval_train=eval_train)
+            eval_train=eval_train
+        )
 
         if task_spec.is_master():
             # evaluation

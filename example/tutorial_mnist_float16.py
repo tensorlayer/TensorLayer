@@ -62,8 +62,10 @@ train_op = tf.train.AdamOptimizer(
     beta2=0.999,
     # epsilon=1e-08,    # for float32 as default
     epsilon=1e-4,  # for float16, see https://stackoverflow.com/questions/42064941/tensorflow-float16-support-is-broken
-    use_locking=False).minimize(
-        cost, var_list=train_params)
+    use_locking=False
+).minimize(
+    cost, var_list=train_params
+)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)

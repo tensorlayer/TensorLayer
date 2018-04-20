@@ -124,8 +124,9 @@ class ElementwiseLayer(Layer):
     ):
 
         super(ElementwiseLayer, self).__init__(prev_layer=layers, name=name)
-        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(),
-                                                             combine_fn.__name__))
+        logging.info(
+            "ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
+        )
 
         self.outputs = layers[0].outputs
 

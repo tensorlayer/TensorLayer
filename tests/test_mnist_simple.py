@@ -83,11 +83,19 @@ class Simple_MNIST_Test(CustomTestCase):
                     print_freq=1,
                     X_val=X_val,
                     y_val=y_val,
-                    eval_train=False)
+                    eval_train=False
+                )
 
                 # evaluation
                 tl.utils.test(
-                    sess, self.network, self.acc, X_test, y_test, self.x, self.y_, batch_size=None, cost=self.cost)
+                    sess, self.network, self.acc,
+                    X_test,
+                    y_test,
+                    self.x,
+                    self.y_,
+                    batch_size=None,
+                    cost=self.cost
+                )
 
                 # save the network to .npz file
                 tl.files.save_npz(self.network.all_params, name='model.npz')

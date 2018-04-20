@@ -52,7 +52,9 @@ for index, img in enumerate(X_train):
             feature={
                 "label": tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
                 'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw])),
-            }))
+            }
+        )
+    )
     writer.write(example.SerializeToString())  # Serialize To String
 writer.close()
 
@@ -67,7 +69,8 @@ def read_and_decode(filename):
         features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
-        })
+        }
+    )
     # You can do more image distortion here for training data
     img = tf.decode_raw(features['img_raw'], tf.float32)
     img = tf.reshape(img, [32, 32, 3])
@@ -81,7 +84,12 @@ img, label = read_and_decode("train.cifar10")
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
 img_batch, label_batch = tf.train.shuffle_batch(
-    [img, label], batch_size=4, capacity=50000, min_after_dequeue=10000, num_threads=1)
+    [img, label],
+    batch_size=4,
+    capacity=50000,
+    min_after_dequeue=10000,
+    num_threads=1
+)
 
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
