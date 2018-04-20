@@ -39,11 +39,11 @@ class PadLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding=None,
-            mode='CONSTANT',
-            name='pad_layer',
+        self,
+        prev_layer,
+        padding=None,
+        mode='CONSTANT',
+        name='pad_layer',
     ):
         super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("PadLayer   %s: padding:%s mode:%s" % (name, list(padding), mode))
@@ -77,10 +77,10 @@ class ZeroPad1d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad1d',
+        self,
+        prev_layer,
+        padding,
+        name='zeropad1d',
     ):
         super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ZeroPad1d   %s: padding:%s" % (name, str(padding)))
@@ -113,10 +113,10 @@ class ZeroPad2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad2d',
+        self,
+        prev_layer,
+        padding,
+        name='zeropad2d',
     ):
         super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ZeroPad2d   %s: padding:%s" % (name, str(padding)))
@@ -148,10 +148,10 @@ class ZeroPad3d(Layer):
     """
 
     def __init__(
-            self,
-            prev_layer,
-            padding,
-            name='zeropad3d',
+        self,
+        prev_layer,
+        padding,
+        name='zeropad3d',
     ):
         super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ZeroPad3d   %s: padding:%s" % (name, str(padding)))

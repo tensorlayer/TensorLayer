@@ -233,11 +233,11 @@ class SpatialTransformer2dAffineLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            theta_layer,
-            out_size=None,
-            name='spatial_trans_2d_affine',
+        self,
+        prev_layer,
+        theta_layer,
+        out_size=None,
+        name='spatial_trans_2d_affine',
     ):
 
         super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)

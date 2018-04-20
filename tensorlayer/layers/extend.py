@@ -37,10 +37,10 @@ class ExpandDimsLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            axis,
-            name='expand_dims',
+        self,
+        prev_layer,
+        axis,
+        name='expand_dims',
     ):
         super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ExpandDimsLayer  %s: axis:%d" % (name, axis))

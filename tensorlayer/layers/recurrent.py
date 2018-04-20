@@ -134,17 +134,17 @@ class RNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,
-            cell_init_args=None,
-            n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            initial_state=None,
-            return_last=False,
-            return_seq_2d=False,
-            name='rnn',
+        self,
+        prev_layer,
+        cell_fn,
+        cell_init_args=None,
+        n_hidden=100,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        initial_state=None,
+        return_last=False,
+        return_seq_2d=False,
+        name='rnn',
     ):
         super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -329,20 +329,20 @@ class BiRNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            cell_fn,
-            cell_init_args=None,
-            n_hidden=100,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            fw_initial_state=None,
-            bw_initial_state=None,
-            dropout=None,
-            n_layer=1,
-            return_last=False,
-            return_seq_2d=False,
-            name='birnn',
+        self,
+        prev_layer,
+        cell_fn,
+        cell_init_args=None,
+        n_hidden=100,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        fw_initial_state=None,
+        bw_initial_state=None,
+        dropout=None,
+        n_layer=1,
+        return_last=False,
+        return_seq_2d=False,
+        name='birnn',
     ):
         super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -556,14 +556,14 @@ class BasicConvLSTMCell(ConvRNNCell):
     """
 
     def __init__(
-            self,
-            shape,
-            filter_size,
-            num_features,
-            forget_bias=1.0,
-            input_size=None,
-            state_is_tuple=False,
-            act=tf.nn.tanh
+        self,
+        shape,
+        filter_size,
+        num_features,
+        forget_bias=1.0,
+        input_size=None,
+        state_is_tuple=False,
+        act=tf.nn.tanh
     ):
         """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:
@@ -732,18 +732,18 @@ class ConvLSTMLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            cell_shape=None,
-            feature_map=1,
-            filter_size=(3, 3),
-            cell_fn=BasicConvLSTMCell,
-            initializer=tf.random_uniform_initializer(-0.1, 0.1),
-            n_steps=5,
-            initial_state=None,
-            return_last=False,
-            return_seq_2d=False,
-            name='convlstm',
+        self,
+        prev_layer,
+        cell_shape=None,
+        feature_map=1,
+        filter_size=(3, 3),
+        cell_fn=BasicConvLSTMCell,
+        initializer=tf.random_uniform_initializer(-0.1, 0.1),
+        n_steps=5,
+        initial_state=None,
+        return_last=False,
+        return_seq_2d=False,
+        name='convlstm',
     ):
         super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 

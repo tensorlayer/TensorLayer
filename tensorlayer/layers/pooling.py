@@ -58,13 +58,13 @@ class PoolLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            ksize=(1, 2, 2, 1),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            pool=tf.nn.max_pool,
-            name='pool_layer',
+        self,
+        prev_layer,
+        ksize=(1, 2, 2, 1),
+        strides=(1, 2, 2, 1),
+        padding='SAME',
+        pool=tf.nn.max_pool,
+        name='pool_layer',
     ):
         super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -317,13 +317,13 @@ class MaxPool3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='valid',
-            data_format='channels_last',
-            name='maxpool3d'
+        self,
+        prev_layer,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='valid',
+        data_format='channels_last',
+        name='maxpool3d'
     ):
 
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
@@ -379,13 +379,13 @@ class MeanPool3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='valid',
-            data_format='channels_last',
-            name='meanpool3d'
+        self,
+        prev_layer,
+        filter_size=(3, 3, 3),
+        strides=(2, 2, 2),
+        padding='valid',
+        data_format='channels_last',
+        name='meanpool3d'
     ):
 
         super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)

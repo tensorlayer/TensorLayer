@@ -192,17 +192,17 @@ def create_task_spec_def():
 
 
 def create_distributed_session(
-        task_spec=None,
-        checkpoint_dir=None,
-        scaffold=None,
-        hooks=None,
-        chief_only_hooks=None,
-        save_checkpoint_secs=600,
-        save_summaries_steps=object(),
-        save_summaries_secs=object(),
-        config=None,
-        stop_grace_period_secs=120,
-        log_step_count_steps=100
+    task_spec=None,
+    checkpoint_dir=None,
+    scaffold=None,
+    hooks=None,
+    chief_only_hooks=None,
+    save_checkpoint_secs=600,
+    save_summaries_steps=object(),
+    save_summaries_secs=object(),
+    config=None,
+    stop_grace_period_secs=120,
+    log_step_count_steps=100
 ):
     """Creates a distributed session.
 

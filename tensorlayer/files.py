@@ -499,15 +499,15 @@ def load_matt_mahoney_text8_dataset(path='data'):
 
 
 def load_imdb_dataset(
-        path='data',
-        nb_words=None,
-        skip_top=0,
-        maxlen=None,
-        test_split=0.2,
-        seed=113,
-        start_char=1,
-        oov_char=2,
-        index_from=3
+    path='data',
+    nb_words=None,
+    skip_top=0,
+    maxlen=None,
+    test_split=0.2,
+    seed=113,
+    start_char=1,
+    oov_char=2,
+    index_from=3
 ):
     """Load IMDB dataset.
 
@@ -958,11 +958,12 @@ def download_file_from_google_drive(ID, destination):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
             for chunk in tqdm(
-                    response.iter_content(chunk_size),
-                    total=total_size,
-                    unit='B',
-                    unit_scale=True,
-                    desc=destination):
+                response.iter_content(chunk_size),
+                total=total_size,
+                unit='B',
+                unit_scale=True,
+                desc=destination
+            ):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
 
@@ -1475,11 +1476,12 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                 head_x2s = anno['annorect']['x2'][0]
                 head_y2s = anno['annorect']['y2'][0]
                 for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(
-                        annopoints,
-                        head_x1s,
-                        head_y1s,
-                        head_x2s,
-                        head_y2s):
+                    annopoints,
+                    head_x1s,
+                    head_y1s,
+                    head_x2s,
+                    head_y2s
+                ):
                     if annopoint != []:
                         head_rect = [
                             float(head_x1[0, 0]),
@@ -1831,12 +1833,12 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 
 
 def save_ckpt(
-        sess=None,
-        mode_name='model.ckpt',
-        save_dir='checkpoint',
-        var_list=None,
-        global_step=None,
-        printable=False
+    sess=None,
+    mode_name='model.ckpt',
+    save_dir='checkpoint',
+    var_list=None,
+    global_step=None,
+    printable=False
 ):
     """Save parameters into `ckpt` file.
 
