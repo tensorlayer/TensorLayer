@@ -1399,7 +1399,9 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                 head_x2s = anno['annorect']['x2'][0]
                 head_y2s = anno['annorect']['y2'][0]
                 for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(annopoints, head_x1s, head_y1s, head_x2s, head_y2s):
-                    if annopoint != []:
+                    # if annopoint != []:
+                    # if len(annopoint) != 0:
+                    if annopoint.size:
                         head_rect = [float(head_x1[0, 0]), float(head_y1[0, 0]), float(head_x2[0, 0]), float(head_y2[0, 0])]
 
                         # joint coordinates
