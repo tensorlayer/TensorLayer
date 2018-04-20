@@ -49,12 +49,7 @@ tf.reset_default_graph()
 inputs = tf.placeholder(shape=[1, 16], dtype=tf.float32)
 net = InputLayer(inputs, name='observation')
 net = DenseLayer(
-    net,
-    n_units=4,
-    act=tf.identity,
-    W_init=tf.random_uniform_initializer(0, 0.01),
-    b_init=None,
-    name='q_a_s'
+    net, n_units=4, act=tf.identity, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s'
 )
 y = net.outputs  # action-value / rewards of 4 actions
 predict = tf.argmax(
@@ -110,10 +105,5 @@ with tf.Session() as sess:
         running_reward = rAll if running_reward is None else running_reward * 0.99 + rAll * 0.01
         print(
             "Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" %
-            (i,
-             num_episodes,
-             rAll,
-             running_reward,
-             time.time() - episode_time,
-             '' if rAll == 0 else ' !!!!!!!!')
+            (i, num_episodes, rAll, running_reward, time.time() - episode_time, '' if rAll == 0 else ' !!!!!!!!')
         )

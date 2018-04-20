@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Convolution_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         ############
@@ -46,28 +47,13 @@ class Layer_Convolution_Test(unittest.TestCase):
         cls.n4_params = n4.all_params
 
         n5 = tl.layers.Conv2d(
-            nin2,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(2, 2),
-            act=tf.nn.relu,
-            b_init=None,
-            name='conv2d_no_bias'
+            nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias'
         )
         cls.shape_n5 = n5.outputs.get_shape().as_list()
         cls.n5_params = n5.all_params
 
         n6 = tl.layers.DeConv2dLayer(
-            nin2, shape=(5,
-                         5,
-                         32,
-                         3), output_shape=(100,
-                                           200,
-                                           200,
-                                           32), strides=(1,
-                                                         2,
-                                                         2,
-                                                         1), name='deconv2dlayer'
+            nin2, shape=(5, 5, 32, 3), output_shape=(100, 200, 200, 32), strides=(1, 2, 2, 1), name='deconv2dlayer'
         )
         cls.shape_n6 = n6.outputs.get_shape().as_list()
 
@@ -75,12 +61,7 @@ class Layer_Convolution_Test(unittest.TestCase):
         cls.shape_n7 = n7.outputs.get_shape().as_list()
 
         n8 = tl.layers.DepthwiseConv2d(
-            nin2,
-            shape=(3, 3),
-            strides=(2, 2),
-            act=tf.nn.relu,
-            depth_multiplier=2,
-            name='depthwise'
+            nin2, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
         )
         cls.shape_n8 = n8.outputs.get_shape().as_list()
 
@@ -89,12 +70,7 @@ class Layer_Convolution_Test(unittest.TestCase):
         cls.shape_n9 = n9.outputs.get_shape().as_list()
 
         n10 = tl.layers.SeparableConv2d(
-            nin2,
-            n_filter=32,
-            filter_size=(3, 3),
-            strides=(1, 1),
-            act=tf.nn.relu,
-            name='seperable1'
+            nin2, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable1'
         )
         cls.shape_n10 = n10.outputs.get_shape().as_list()
         cls.n10_all_layers = n10.all_layers

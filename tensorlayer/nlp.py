@@ -978,12 +978,7 @@ def initialize_vocabulary(vocabulary_path):
 
 
 def sentence_to_token_ids(
-    sentence,
-    vocabulary,
-    tokenizer=None,
-    normalize_digits=True,
-    UNK_ID=3,
-    _DIGIT_RE=re.compile(br"\d")
+    sentence, vocabulary, tokenizer=None, normalize_digits=True, UNK_ID=3, _DIGIT_RE=re.compile(br"\d")
 ):
     """Convert a string to list of integers representing token-ids.
 
@@ -1062,12 +1057,7 @@ def data_to_token_ids(
                     if counter % 100000 == 0:
                         logging.info("  tokenizing line %d" % counter)
                     token_ids = sentence_to_token_ids(
-                        line,
-                        vocab,
-                        tokenizer,
-                        normalize_digits,
-                        UNK_ID=UNK_ID,
-                        _DIGIT_RE=_DIGIT_RE
+                        line, vocab, tokenizer, normalize_digits, UNK_ID=UNK_ID, _DIGIT_RE=_DIGIT_RE
                     )
                     tokens_file.write(" ".join([str(tok) for tok in token_ids]) + "\n")
     else:

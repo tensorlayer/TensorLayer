@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Special_Activation_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 

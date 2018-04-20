@@ -45,27 +45,13 @@ def model(x, y_, reuse):
         #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
         net = DenseLayer(
-            net,
-            n_units=384,
-            act=tf.nn.relu,
-            W_init=W_init2,
-            b_init=b_init2,
-            name='d1relu'
+            net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu'
         )  # output: (batch_size, 384)
         net = DenseLayer(
-            net,
-            n_units=192,
-            act=tf.nn.relu,
-            W_init=W_init2,
-            b_init=b_init2,
-            name='d2relu'
+            net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu'
         )  # output: (batch_size, 192)
         net = DenseLayer(
-            net,
-            n_units=10,
-            act=tf.identity,
-            W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
-            name='output'
+            net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output'
         )  # output: (batch_size, 10)
         y = net.outputs
 
@@ -110,27 +96,13 @@ def model_batch_norm(x, y_, reuse, is_train):
 
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
         net = DenseLayer(
-            net,
-            n_units=384,
-            act=tf.nn.relu,
-            W_init=W_init2,
-            b_init=b_init2,
-            name='d1relu'
+            net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu'
         )  # output: (batch_size, 384)
         net = DenseLayer(
-            net,
-            n_units=192,
-            act=tf.nn.relu,
-            W_init=W_init2,
-            b_init=b_init2,
-            name='d2relu'
+            net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu'
         )  # output: (batch_size, 192)
         net = DenseLayer(
-            net,
-            n_units=10,
-            act=tf.identity,
-            W_init=tf.truncated_normal_initializer(stddev=1 / 192.0),
-            name='output'
+            net, n_units=10, act=tf.identity, W_init=tf.truncated_normal_initializer(stddev=1 / 192.0), name='output'
         )  # output: (batch_size, 10)
         y = net.outputs
 
@@ -176,14 +148,8 @@ def distort_fn(x, is_train=False):
     return x
 
 
-x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3], name='x')
-y_ = tf.placeholder(
-    tf.int64,
-    shape=[
-        None,
-    ],
-    name='y_'
-)
+x = tf.placeholder(dtype=tf.float32, shape=[None, 24, 24, 3], name='x')
+y_ = tf.placeholder(dtype=tf.int64, shape=[None], name='y_')
 
 ## using local response normalization
 # network, cost, _ = model(x, y_, False)
@@ -200,11 +166,7 @@ batch_size = 128
 
 train_params = network.all_params
 train_op = tf.train.AdamOptimizer(
-    learning_rate,
-    beta1=0.9,
-    beta2=0.999,
-    epsilon=1e-08,
-    use_locking=False
+    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
 ).minimize(
     cost, var_list=train_params
 )

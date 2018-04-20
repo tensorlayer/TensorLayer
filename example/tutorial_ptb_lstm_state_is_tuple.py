@@ -195,11 +195,7 @@ def main(_):
         initializer = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
             network = tl.layers.EmbeddingInputlayer(
-                inputs=x,
-                vocabulary_size=vocab_size,
-                embedding_size=hidden_size,
-                E_init=initializer,
-                name='embedding'
+                inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding'
             )
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
             network = tl.layers.RNNLayer(
@@ -238,12 +234,7 @@ def main(_):
             #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
             network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
             network = tl.layers.DenseLayer(
-                network,
-                n_units=vocab_size,
-                W_init=initializer,
-                b_init=initializer,
-                act=tf.identity,
-                name='output'
+                network, n_units=vocab_size, W_init=initializer, b_init=initializer, act=tf.identity, name='output'
             )
         return network, lstm1, lstm2
 
@@ -340,9 +331,7 @@ def main(_):
             if step % (epoch_size // 10) == 10:
                 print(
                     "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size,
-                     np.exp(costs / iters),
-                     iters * batch_size / (time.time() - start_time))
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
                 )
         train_perplexity = np.exp(costs / iters)
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))

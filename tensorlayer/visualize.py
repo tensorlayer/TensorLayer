@@ -135,21 +135,14 @@ def save_images(images, size, image_path='_temp.png'):
         return scipy.misc.imsave(path, merge(images, size))
 
     assert len(images) <= size[0] * size[1
-                                         ], "number of images should be equal or less than size[0] * size[1] {}".format(
-                                             len(images)
-                                         )
+                                        ], "number of images should be equal or less than size[0] * size[1] {}".format(
+                                            len(images)
+                                        )
     return imsave(images, size, image_path)
 
 
 def draw_boxes_and_labels_to_image(
-    image,
-    classes,
-    coords,
-    scores,
-    classes_list,
-    is_center=True,
-    is_rescale=True,
-    save_name=None
+    image, classes, coords, scores, classes_list, is_center=True, is_rescale=True, save_name=None
 ):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
@@ -317,9 +310,7 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
             [(12, 8), [255, 0, 255]],  # right hand
             [(8, 13), [0, 255, 255]],
             [(13, 14), [100, 255, 255]],
-            [(14, 15), [200,
-                        255,
-                        255]]  # left hand
+            [(14, 15), [200, 255, 255]]  # left hand
         ]
         for line in lines:
             start, end = line[0]
@@ -453,10 +444,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
                 plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col)), cmap='gray', interpolation="nearest")
             elif n_color == 3:
                 plt.imshow(
-                    np.reshape(CNN[:, :, :, count - 1],
-                               (n_row, n_col, n_color)),
-                    cmap='gray',
-                    interpolation="nearest"
+                    np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest"
                 )
             else:
                 raise Exception("Unknown n_color")
@@ -647,9 +635,7 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
             plt.imshow(
-                np.reshape(feature, (shape[0], shape[1])),
-                cmap='gray',
-                interpolation="nearest"
+                np.reshape(feature, (shape[0], shape[1])), cmap='gray', interpolation="nearest"
             )  #, vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------

@@ -221,10 +221,7 @@ def fit(
                     logging.info("   val acc: %f" % (val_acc / n_batch))
             else:
                 logging.info(
-                    "Epoch %d of %d took %fs, loss %f" % (epoch + 1,
-                                                          n_epoch,
-                                                          time.time() - start_time,
-                                                          loss_ep)
+                    "Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)
                 )
     logging.info("Total training time: %fs" % (time.time() - start_time_begin))
 

@@ -5,6 +5,7 @@ from contextlib import contextmanager
 
 
 class CustomTestCase(unittest.TestCase):
+
     @contextmanager
     def assertNotRaises(self, exc_type):
         try:

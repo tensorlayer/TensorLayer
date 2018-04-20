@@ -179,17 +179,12 @@ with tf.device('/cpu:0'):
     x_test_, y_test_ = read_and_decode("test.cifar10", False)
 
     x_train_batch, y_train_batch = tf.train.shuffle_batch(
-        [x_train_, y_train_],
-        batch_size=batch_size,
-        capacity=2000,
-        min_after_dequeue=1000,
-        num_threads=32
+        [x_train_, y_train_], batch_size=batch_size, capacity=2000, min_after_dequeue=1000, num_threads=32
     )  # set the number of threads here
     # for testing, uses batch instead of shuffle_batch
-    x_test_batch, y_test_batch = tf.train.batch([x_test_, y_test_],
-                                                batch_size=batch_size,
-                                                capacity=50000,
-                                                num_threads=32)
+    x_test_batch, y_test_batch = tf.train.batch(
+        [x_test_, y_test_], batch_size=batch_size, capacity=50000, num_threads=32
+    )
 
     def model(x_crop, y_, reuse):
         """ For more simplified CNN APIs, check tensorlayer.org """
@@ -221,27 +216,13 @@ with tf.device('/cpu:0'):
             #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
             net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
             net = DenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
+                net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu'
             )  # output: (batch_size, 384)
             net = DenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
+                net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu'
             )  # output: (batch_size, 192)
             net = DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
+                net, n_units=10, act=tf.identity, W_init=W_init2, name='output'
             )  # output: (batch_size, 10)
             y = net.outputs
 
@@ -286,27 +267,13 @@ with tf.device('/cpu:0'):
 
             net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
             net = DenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
+                net, n_units=384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu'
             )  # output: (batch_size, 384)
             net = DenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
+                net, n_units=192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu'
             )  # output: (batch_size, 192)
             net = DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
+                net, n_units=10, act=tf.identity, W_init=W_init2, name='output'
             )  # output: (batch_size, 10)
             y = net.outputs
 
@@ -379,11 +346,7 @@ with tf.device('/cpu:0'):
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print(
                 "Epoch %d : Step %d-%d of %d took %fs" %
-                (epoch,
-                 step,
-                 step + n_step_epoch,
-                 n_step,
-                 time.time() - start_time)
+                (epoch, step, step + n_step_epoch, n_step, time.time() - start_time)
             )
             print("   train loss: %f" % (train_loss / n_batch))
             print("   train acc: %f" % (train_acc / n_batch))

@@ -71,11 +71,13 @@ class TaskSpecDef(object):
             self.num_ps = len(self.ps_hosts)
             self.worker_hosts = worker_hosts if isinstance(worker_hosts, list) else worker_hosts.split(',')
             if master is not None and len(master) > 0:
-                self._cluster_spec = tf.train.ClusterSpec({
-                    'ps': self.ps_hosts,
-                    'worker': self.worker_hosts,
-                    'master': master
-                })
+                self._cluster_spec = tf.train.ClusterSpec(
+                    {
+                        'ps': self.ps_hosts,
+                        'worker': self.worker_hosts,
+                        'master': master
+                    }
+                )
                 # master is a worker too
                 self.num_workers = len(self.worker_hosts) + 1
                 if self.type == 'worker':
@@ -109,9 +111,7 @@ class TaskSpecDef(object):
         current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
         return tf.train.replica_device_setter(
-            ps_device=ps_devices,
-            worker_device=current_device,
-            cluster=self._cluster_spec
+            ps_device=ps_devices, worker_device=current_device, cluster=self._cluster_spec
         )
 
     def create_server(self):
@@ -167,16 +167,10 @@ def create_task_spec_def():
         return TaskSpecDef(
             task_type=task_data['type'],
             index=task_data['index'],
-            trial=task_data['trial'] if
-            'trial' in task_data
-            else
-            None,
+            trial=task_data['trial'] if 'trial' in task_data else None,
             ps_hosts=cluster_data['ps'],
             worker_hosts=cluster_data['worker'],
-            master=cluster_data['master'] if
-            'master' in cluster_data
-            else
-            None
+            master=cluster_data['master'] if 'master' in cluster_data else None
         )
     elif 'JOB_NAME' in os.environ:
         # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort

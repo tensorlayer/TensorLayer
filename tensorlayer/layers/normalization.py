@@ -51,11 +51,7 @@ class LocalResponseNormLayer(Layer):
         super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
             "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
-            (name,
-             str(depth_radius),
-             str(bias),
-             str(alpha),
-             str(beta))
+            (name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
         self.inputs = prev_layer.outputs
@@ -119,11 +115,7 @@ class BatchNormLayer(Layer):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (name,
-             decay,
-             epsilon,
-             act.__name__,
-             is_train)
+            (name, decay, epsilon, act.__name__, is_train)
         )
 
         self.inputs = prev_layer.outputs
@@ -141,11 +133,7 @@ class BatchNormLayer(Layer):
                 if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                     beta_init = beta_init()
                 beta = tf.get_variable(
-                    'beta',
-                    shape=params_shape,
-                    initializer=beta_init,
-                    dtype=LayersConfig.tf_dtype,
-                    trainable=is_train
+                    'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
                 )
                 variables.append(beta)
             else:
@@ -169,11 +157,7 @@ class BatchNormLayer(Layer):
             else:
                 moving_mean_init = tf.zeros_initializer
             moving_mean = tf.get_variable(
-                'moving_mean',
-                params_shape,
-                initializer=moving_mean_init,
-                dtype=LayersConfig.tf_dtype,
-                trainable=False
+                'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
             moving_variance = tf.get_variable(
                 'moving_variance',
@@ -188,16 +172,10 @@ class BatchNormLayer(Layer):
             mean, variance = tf.nn.moments(self.inputs, axis)
             try:  # TF12
                 update_moving_mean = moving_averages.assign_moving_average(
-                    moving_mean,
-                    mean,
-                    decay,
-                    zero_debias=False
+                    moving_mean, mean, decay, zero_debias=False
                 )  # if zero_debias=True, has bias
                 update_moving_variance = moving_averages.assign_moving_average(
-                    moving_variance,
-                    variance,
-                    decay,
-                    zero_debias=False
+                    moving_variance, variance, decay, zero_debias=False
                 )  # if zero_debias=True, has bias
                 # logging.info("TF12 moving")
             except Exception:  # TF11
@@ -214,12 +192,7 @@ class BatchNormLayer(Layer):
                 self.outputs = act(tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon))
             else:
                 self.outputs = act(
-                    tf.nn.batch_normalization(self.inputs,
-                                              moving_mean,
-                                              moving_variance,
-                                              beta,
-                                              gamma,
-                                              epsilon)
+                    tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
                 )
 
             variables.extend([moving_mean, moving_variance])

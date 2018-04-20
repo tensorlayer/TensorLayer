@@ -399,9 +399,9 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
     # except:
     #     sequence_loss_by_example_fn = tf.nn.seq2seq.sequence_loss_by_example
 
-    loss = sequence_loss_by_example_fn([logits],
-                                       [tf.reshape(target_seqs, [-1])],
-                                       [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)])
+    loss = sequence_loss_by_example_fn(
+        [logits], [tf.reshape(target_seqs, [-1])], [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)]
+    )
     # [tf.ones([batch_size * num_steps])])
     cost = tf.reduce_sum(loss)  #/ batch_size
     if batch_size is not None:
@@ -703,9 +703,7 @@ def maxnorm_o_regularizer(scale):
             else:
                 standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale,
-                standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)),
-                name=scope
+                my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope
             )
 
     return mn_o
@@ -755,9 +753,7 @@ def maxnorm_i_regularizer(scale):
             else:
                 standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale,
-                standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)),
-                name=scope
+                my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope
             )
 
     return mn_i

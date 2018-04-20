@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Recurrent_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 
@@ -31,10 +32,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
         input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
 
         net1 = tl.layers.EmbeddingInputlayer(
-            inputs=input_data,
-            vocabulary_size=cls.vocab_size,
-            embedding_size=cls.hidden_size,
-            name='embed'
+            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embed'
         )
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
         net1 = tl.layers.RNNLayer(
@@ -109,10 +107,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
         net3 = tl.layers.EmbeddingInputlayer(
-            inputs=x3,
-            vocabulary_size=cls.vocab_size,
-            embedding_size=cls.hidden_size,
-            name='emb'
+            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb'
         )
         net3 = tl.layers.BiRNNLayer(
             net3,
@@ -134,10 +129,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         # n_layer=2
         net4 = tl.layers.EmbeddingInputlayer(
-            inputs=x3,
-            vocabulary_size=cls.vocab_size,
-            embedding_size=cls.hidden_size,
-            name='emb2'
+            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2'
         )
         net4 = tl.layers.BiRNNLayer(
             net4,
@@ -179,10 +171,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         input_seqs = tf.placeholder(dtype=tf.int64, shape=[cls.net5_batch_size, None], name="input")
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs,
-            vocabulary_size=cls.vocab_size,
-            embedding_size=cls.embedding_size,
-            name='seq_embedding'
+            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding'
         )
 
         rnn = tl.layers.DynamicRNNLayer(
@@ -209,10 +198,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         # n_layer=3
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs,
-            vocabulary_size=cls.vocab_size,
-            embedding_size=cls.embedding_size,
-            name='seq_embedding2'
+            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2'
         )
         rnn = tl.layers.DynamicRNNLayer(
             nin,
@@ -343,18 +329,12 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
             with tf.variable_scope("embedding") as vs:
                 net_encode = tl.layers.EmbeddingInputlayer(
-                    inputs=encode_seqs,
-                    vocabulary_size=10000,
-                    embedding_size=200,
-                    name='seq_embed'
+                    inputs=encode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed'
                 )
                 vs.reuse_variables()
                 # tl.layers.set_name_reuse(True)
                 net_decode = tl.layers.EmbeddingInputlayer(
-                    inputs=decode_seqs,
-                    vocabulary_size=10000,
-                    embedding_size=200,
-                    name='seq_embed'
+                    inputs=decode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed'
                 )
 
             net11 = tl.layers.Seq2Seq(

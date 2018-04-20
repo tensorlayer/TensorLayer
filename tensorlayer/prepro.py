@@ -181,12 +181,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
         threads = []
         for i in range(thread_count):
             t = threading.Thread(
-                name='threading_and_return',
-                target=apply_fn,
-                args=(results,
-                      i,
-                      data[divs[i]:divs[i + 1]],
-                      kwargs)
+                name='threading_and_return', target=apply_fn, args=(results, i, data[divs[i]:divs[i + 1]], kwargs)
             )
             t.start()
             threads.append(t)
@@ -204,15 +199,7 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
 
 def rotation(
-    x,
-    rg=20,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+    x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Rotate an image randomly or non-randomly.
 
@@ -258,15 +245,7 @@ def rotation(
 
 
 def rotation_multi(
-    x,
-    rg=20,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+    x, rg=20, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Rotate multiple images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -566,15 +545,7 @@ def shift_multi(
 
 # shear
 def shear(
-    x,
-    intensity=0.1,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+    x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Shear an image randomly or non-randomly.
 
@@ -619,15 +590,7 @@ def shear(
 
 
 def shear_multi(
-    x,
-    intensity=0.1,
-    is_random=False,
-    row_index=0,
-    col_index=1,
-    channel_index=2,
-    fill_mode='nearest',
-    cval=0.,
-    order=1
+    x, intensity=0.1, is_random=False, row_index=0, col_index=1, channel_index=2, fill_mode='nearest', cval=0., order=1
 ):
     """Shear images with the same arguments, randomly or non-randomly.
     Usually be used for image segmentation which x=[X, Y], X and Y should be matched.
@@ -1238,11 +1201,10 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     from PIL import Image, ImageEnhance
 
     if is_random:
-        try:
-            assert len(gamma) == len(contrast
-                                     ) == len(saturation) == 2, "if is_random = True, the arguments are (min, max)"
-        except:
-            raise Exception("if is_random = True, the arguments are (min, max)")
+
+        if not (len(gamma) == len(contrast) == len(saturation) == 2):
+            raise AssertionError("if is_random = True, the arguments are (min, max)")
+
         ## random change brightness  # small --> brighter
         illum_settings = np.random.randint(0, 3)  # 0-brighter, 1-darker, 2 keep normal
 
@@ -1504,12 +1466,7 @@ def pixel_value_scale(im, val=0.9, clip=(-np.inf, np.inf), is_random=False):
 
 # normailization
 def samplewise_norm(
-    x,
-    rescale=None,
-    samplewise_center=False,
-    samplewise_std_normalization=False,
-    channel_index=2,
-    epsilon=1e-7
+    x, rescale=None, samplewise_center=False, samplewise_std_normalization=False, channel_index=2, epsilon=1e-7
 ):
     """Normalize an image by rescale, samplewise centering and samplewise centering in order.
 
@@ -1845,12 +1802,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
     final_offset = transform_matrix[:2, 2]
     channel_images = [
         ndi.interpolation.affine_transform(
-            x_channel,
-            final_affine_matrix,
-            final_offset,
-            order=order,
-            mode=fill_mode,
-            cval=cval
+            x_channel, final_affine_matrix, final_offset, order=order, mode=fill_mode, cval=cval
         ) for x_channel in x
     ]
     x = np.stack(channel_images, axis=0)
@@ -1859,16 +1811,7 @@ def apply_transform(x, transform_matrix, channel_index=2, fill_mode='nearest', c
 
 
 def projective_transform_by_points(
-    x,
-    src,
-    dst,
-    map_args=None,
-    output_shape=None,
-    order=1,
-    mode='constant',
-    cval=0.0,
-    clip=True,
-    preserve_range=False
+    x, src, dst, map_args=None, output_shape=None, order=1, mode='constant', cval=0.0, clip=True, preserve_range=False
 ):
     """Projective transform by given coordinates, usually 4 coordinates.
 
@@ -2019,10 +1962,7 @@ def find_contours(x, level=0.8, fully_connected='low', positive_orientation='low
 
     """
     return skimage.measure.find_contours(
-        x,
-        level,
-        fully_connected=fully_connected,
-        positive_orientation=positive_orientation
+        x, level, fully_connected=fully_connected, positive_orientation=positive_orientation
     )
 
 
@@ -3128,9 +3068,7 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
         if trunc.shape[1:] != sample_shape:
             raise ValueError(
                 'Shape of sample %s of sequence at position %s is different from expected shape %s' %
-                (trunc.shape[1:],
-                 idx,
-                 sample_shape)
+                (trunc.shape[1:], idx, sample_shape)
             )
 
         if padding == 'post':

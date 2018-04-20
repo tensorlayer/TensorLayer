@@ -8,14 +8,7 @@ import os
 import tensorflow as tf
 from .. import _logging as logging
 from ..layers import (
-    Layer,
-    BatchNormLayer,
-    Conv2d,
-    DepthwiseConv2d,
-    FlattenLayer,
-    GlobalMeanPool2d,
-    InputLayer,
-    ReshapeLayer
+    Layer, BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
 )
 from ..files import maybe_download_and_extract, assign_params, load_npz
 

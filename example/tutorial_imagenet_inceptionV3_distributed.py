@@ -132,10 +132,7 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
     def _map_fn(example_serialized):
         image_bytes, one_hot_labels = tf.py_func(
-            _parse_example_fn,
-            [example_serialized],
-            [tf.string, tf.float32],
-            stateful=False
+            _parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False
         )
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)
@@ -180,11 +177,13 @@ def build_network(image_input, num_classes=1001, is_training=False):
 
 
 class EvaluatorStops(Exception):
+
     def __init__(self, message):
         super(EvaluatorStops, self).__init__(message)
 
 
 class EvaluatorHook(session_run_hook.SessionRunHook):
+
     def __init__(self, checkpoints_path, saver):
         self.checkpoints_path = checkpoints_path
         self.summary_writer = tf.summary.FileWriter(os.path.join(checkpoints_path, 'validation'))
@@ -374,9 +373,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             tf.summary.scalar('learning_rate/value', learning_rate)
             tf.summary.scalar('loss/logits', loss)
             _, metrics_average_ops, metrics_ops = calculate_metrics(
-                predicted_batch=predictions,
-                real_batch=one_hot_classes,
-                is_training=True
+                predicted_batch=predictions, real_batch=one_hot_classes, is_training=True
             )
             with tf.control_dependencies([train_op]):
                 train_op = tf.group(metrics_average_ops)
@@ -412,13 +409,7 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
                             logging.info(
-                                m.format(current_epoch,
-                                         epochs,
-                                         step,
-                                         max_steps,
-                                         loss_val,
-                                         learning_rate_val,
-                                         metrics)
+                                m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics)
                             )
             except OutOfRangeError:
                 pass

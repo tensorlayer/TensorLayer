@@ -341,10 +341,7 @@ try:
 except Exception:
     # for TensorFlow 0.10
     img = tf.image.resize_images(
-        img,
-        new_height=resize_height,
-        new_width=resize_width,
-        method=tf.image.ResizeMethod.BILINEAR
+        img, new_height=resize_height, new_width=resize_width, method=tf.image.ResizeMethod.BILINEAR
     )
 # Crop to final dimensions.
 if is_training:
@@ -448,11 +445,7 @@ def batch_with_dynamic_pad(images_and_captions, batch_size, queue_capacity, add_
         enqueue_list.append([image, input_seq, target_seq, indicator])
 
     images, input_seqs, target_seqs, mask = tf.train.batch_join(
-        enqueue_list,
-        batch_size=batch_size,
-        capacity=queue_capacity,
-        dynamic_pad=True,
-        name="batch_and_pad"
+        enqueue_list, batch_size=batch_size, capacity=queue_capacity, dynamic_pad=True, name="batch_and_pad"
     )
 
     if add_summaries:
@@ -465,9 +458,7 @@ def batch_with_dynamic_pad(images_and_captions, batch_size, queue_capacity, add_
 
 
 images, input_seqs, target_seqs, input_mask = (
-    batch_with_dynamic_pad(images_and_captions=[[img, img_cap]],
-                           batch_size=4,
-                           queue_capacity=50000)
+    batch_with_dynamic_pad(images_and_captions=[[img, img_cap]], batch_size=4, queue_capacity=50000)
 )
 sess = tf.Session()
 sess.run(tf.initialize_all_variables())

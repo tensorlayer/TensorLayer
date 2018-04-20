@@ -12,6 +12,7 @@ import tensorlayer as tl
 
 
 class Simple_MNIST_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 
@@ -88,13 +89,7 @@ class Simple_MNIST_Test(CustomTestCase):
 
                 # evaluation
                 tl.utils.test(
-                    sess, self.network, self.acc,
-                    X_test,
-                    y_test,
-                    self.x,
-                    self.y_,
-                    batch_size=None,
-                    cost=self.cost
+                    sess, self.network, self.acc, X_test, y_test, self.x, self.y_, batch_size=None, cost=self.cost
                 )
 
                 # save the network to .npz file

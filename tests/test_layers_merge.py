@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Merge_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 

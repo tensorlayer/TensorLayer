@@ -430,13 +430,7 @@ class Layer(object):
                     val = p.eval(session=session)
                     logging.info(
                         "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                            i,
-                            p.name,
-                            str(val.shape),
-                            p.dtype.name,
-                            val.mean(),
-                            np.median(val),
-                            val.std()
+                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
                         )
                     )
                 except Exception as e:
@@ -453,10 +447,7 @@ class Layer(object):
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
             logging.info(
-                "  layer {:3}: {:20} {:15}    {}".format(i,
-                                                         layer.name,
-                                                         str(layer.get_shape()),
-                                                         layer.dtype.name)
+                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
             )
 
     def count_params(self):
@@ -992,20 +983,12 @@ class DenseLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W',
-                shape=(n_in, n_units),
-                initializer=W_init,
-                dtype=LayersConfig.tf_dtype,
-                **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b',
-                        shape=(n_units),
-                        initializer=b_init,
-                        dtype=LayersConfig.tf_dtype,
-                        **b_init_args
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
@@ -1161,11 +1144,7 @@ class ReconLayer(DenseLayer):
             raise Exception("Don't support the given reconstruct activation function")
 
         self.train_op = tf.train.AdamOptimizer(
-            learning_rate,
-            beta1=0.9,
-            beta2=0.999,
-            epsilon=1e-08,
-            use_locking=False
+            learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
         ).minimize(
             self.cost, var_list=self.train_params
         )
@@ -1493,18 +1472,10 @@ class DropconnectDenseLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W',
-                shape=(n_in, n_units),
-                initializer=W_init,
-                dtype=LayersConfig.tf_dtype,
-                **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             b = tf.get_variable(
-                name='b',
-                shape=(n_units),
-                initializer=b_init,
-                dtype=LayersConfig.tf_dtype,
-                **b_init_args
+                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
             )
             # self.outputs = act(tf.matmul(self.inputs, W) + b)
 

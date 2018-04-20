@@ -108,10 +108,7 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1, 28, 28, 1))
     """
     return _load_mnist_dataset(
-        shape,
-        path,
-        name='fashion_mnist',
-        url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/'
+        shape, path, name='fashion_mnist', url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/'
     )
 
 
@@ -817,16 +814,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
-        'images0.zip',
-        'images1.zip',
-        'images2.zip',
-        'images3.zip',
-        'images4.zip',
-        'images5.zip',
-        'images6.zip',
-        'images7.zip',
-        'images8.zip',
-        'images9.zip'
+        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip',
+        'images7.zip', 'images8.zip', 'images9.zip'
     ]
     tag_zip = 'tags.zip'
     url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
@@ -958,11 +947,7 @@ def download_file_from_google_drive(ID, destination):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
             for chunk in tqdm(
-                response.iter_content(chunk_size),
-                total=total_size,
-                unit='B',
-                unit_scale=True,
-                desc=destination
+                response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True, desc=destination
             ):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
@@ -1185,26 +1170,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
             del_folder(os.path.join(path, 'VOCdevkit'))
     # object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = [
-        "aeroplane",
-        "bicycle",
-        "bird",
-        "boat",
-        "bottle",
-        "bus",
-        "car",
-        "cat",
-        "chair",
-        "cow",
-        "diningtable",
-        "dog",
-        "horse",
-        "motorbike",
-        "person",
-        "pottedplant",
-        "sheep",
-        "sofa",
-        "train",
-        "tvmonitor"
+        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog",
+        "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"
     ]
     if contain_classes_in_person:
         classes_in_person = ["head", "hand", "foot"]
@@ -1221,9 +1188,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
-    imgs_file_list.sort(
-        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-    )  # 2007_000027.jpg --> 2007000027
+
+    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                       )  # 2007_000027.jpg --> 2007000027
+
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     if dataset != "2012test":
@@ -1232,9 +1200,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_semseg_file_list.sort(
-            key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-        )  # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         ##======== 3. instance segmentation maps path list
@@ -1242,9 +1209,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_insseg_file_list.sort(
-            key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-        )  # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1257,9 +1223,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     logging.info(
         "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
     )
-    imgs_ann_file_list.sort(
-        key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-    )  # 2007_000027.xml --> 2007000027
+    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                           )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1312,9 +1277,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
             cls_id = classes.index(cls)
             xmlbox = obj.find('bndbox')
             b = (
-                float(xmlbox.find('xmin').text),
-                float(xmlbox.find('xmax').text),
-                float(xmlbox.find('ymin').text),
+                float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text),
                 float(xmlbox.find('ymax').text)
             )
             bb = convert((w, h), b)
@@ -1329,10 +1292,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     cls_id = classes.index(cls)
                     xmlbox = part.find('bndbox')
                     b = (
-                        float(xmlbox.find('xmin').text),
-                        float(xmlbox.find('xmax').text),
-                        float(xmlbox.find('ymin').text),
-                        float(xmlbox.find('ymax').text)
+                        float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text),
+                        float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text)
                     )
                     bb = convert((w, h), b)
                     # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
@@ -1443,10 +1404,11 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
         # fp = open(joint_data_fn, 'w')
         mat = sio.loadmat(os.path.join(path, extracted_filename, "mpii_human_pose_v1_u12_1.mat"))
 
-        for _, (anno, train_flag) in enumerate(  # all images
-                zip(
-                    mat['RELEASE']['annolist'][0, 0][0],
-                    mat['RELEASE']['img_train'][0, 0][0])):
+        for _, (
+            anno, train_flag
+        ) in enumerate(  # all images
+            zip(mat['RELEASE']['annolist'][0, 0][0], mat['RELEASE']['img_train'][0, 0][0])
+        ):
 
             img_fn = anno['image']['name'][0, 0][0]
             train_flag = int(train_flag)
@@ -1462,10 +1424,10 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
 
             head_rect = []
             if 'x1' in str(anno['annorect'].dtype):
-                head_rect = zip([x1[0, 0] for x1 in anno['annorect']['x1'][0]],
-                                [y1[0, 0] for y1 in anno['annorect']['y1'][0]],
-                                [x2[0, 0] for x2 in anno['annorect']['x2'][0]],
-                                [y2[0, 0] for y2 in anno['annorect']['y2'][0]])
+                head_rect = zip(
+                    [x1[0, 0] for x1 in anno['annorect']['x1'][0]], [y1[0, 0] for y1 in anno['annorect']['y1'][0]],
+                    [x2[0, 0] for x2 in anno['annorect']['x2'][0]], [y2[0, 0] for y2 in anno['annorect']['y2'][0]]
+                )
             else:
                 head_rect = []  # TODO
 
@@ -1477,11 +1439,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                 head_y2s = anno['annorect']['y2'][0]
 
                 for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(
-                    annopoints,
-                    head_x1s,
-                    head_y1s,
-                    head_x2s,
-                    head_y2s
+                    annopoints, head_x1s, head_y1s, head_x2s, head_y2s
                 ):
                     # if annopoint != []:
                     # if len(annopoint) != 0:
@@ -1836,12 +1794,7 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
 
 
 def save_ckpt(
-    sess=None,
-    mode_name='model.ckpt',
-    save_dir='checkpoint',
-    var_list=None,
-    global_step=None,
-    printable=False
+    sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
 ):
     """Save parameters into `ckpt` file.
 

@@ -50,18 +50,10 @@ def main_test_layers(model='relu'):
     elif model == 'dropconnect':
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropconnectDenseLayer(
-            network,
-            keep=0.8,
-            n_units=800,
-            act=tf.nn.relu,
-            name='dropconnect_relu1'
+            network, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect_relu1'
         )
         network = tl.layers.DropconnectDenseLayer(
-            network,
-            keep=0.5,
-            n_units=800,
-            act=tf.nn.relu,
-            name='dropconnect_relu2'
+            network, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect_relu2'
         )
         network = tl.layers.DropconnectDenseLayer(network, keep=0.5, n_units=10, act=tf.identity, name='output')
 

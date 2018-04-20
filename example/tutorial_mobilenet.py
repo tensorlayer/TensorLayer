@@ -14,13 +14,7 @@ import tensorflow as tf
 
 import tensorlayer as tl
 from tensorlayer.layers import (
-    BatchNormLayer,
-    Conv2d,
-    DepthwiseConv2d,
-    FlattenLayer,
-    GlobalMeanPool2d,
-    InputLayer,
-    ReshapeLayer
+    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
 )
 
 
@@ -61,7 +55,7 @@ def decode_predictions(preds, top=5):  # keras.applications.resnet50
     results = []
     for pred in preds:
         top_indices = pred.argsort()[-top:][::-1]
-        result = [tuple(CLASS_INDEX[str(i)]) + (pred[i], ) for i in top_indices]
+        result = [tuple(CLASS_INDEX[str(i)]) + (pred[i],) for i in top_indices]
         result.sort(key=lambda x: x[2], reverse=True)
         results.append(result)
     return results
