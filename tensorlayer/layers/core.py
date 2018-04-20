@@ -348,13 +348,16 @@ class Layer(object):
 
     Examples
     ---------
-    Define model
+
+    - Define model
+
     >>> x = tf.placeholder("float32", [None, 100])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.DenseLayer(n, 80, name='d1')
     >>> n = tl.layers.DenseLayer(n, 80, name='d2')
 
-    Get information
+    - Get information
+
     >>> print(n)
     ... Last layer is: DenseLayer (d2) [None, 80]
     >>> n.print_layers()
@@ -369,12 +372,14 @@ class Layer(object):
     >>> n.count_params()
     ... 14560
 
-    Slicing the outputs
+    - Slicing the outputs
+
     >>> n2 = n[:, :30]
     >>> print(n2)
     ... Last layer is: Layer (d2) [None, 30]
 
-    Iterating the outputs
+    - Iterating the outputs
+
     >>> for l in n:
     >>>    print(l)
     ... Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)
