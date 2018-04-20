@@ -519,11 +519,11 @@ Super-Resolution layer
 
 1D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv1d
+.. autoclass:: SubpixelConv1d
 
 2D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv2d
+.. autoclass:: SubpixelConv2d
 
 
 Spatial Transformer
