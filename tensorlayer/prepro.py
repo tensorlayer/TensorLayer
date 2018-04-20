@@ -2772,6 +2772,7 @@ def obj_box_shift(
     coords_new = list()
     classes_new = list()
     for i, _ in enumerate(coords):
+        coord = coords[i]
 
         if len(coord) != 4:
             raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
@@ -2908,6 +2909,7 @@ def obj_box_zoom(
     coords_new = list()
     classes_new = list()
     for i, _ in enumerate(coords):
+        coord = coords[i]
 
         if len(coord) != 4:
             raise AssertionError("coordinate should be 4 values : [x, y, w, h]")
