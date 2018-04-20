@@ -31,13 +31,8 @@ class Layer_Convolution_Test(unittest.TestCase):
         nin2 = tl.layers.InputLayer(x2, name='in2')
 
         n3 = tl.layers.Conv2dLayer(
-            nin2,
-            act=tf.nn.relu,
-            shape=(5, 5, 3, 32),
-            strides=(1, 2, 2, 1),
-            padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=5e-2),
-            b_init=tf.constant_initializer(value=0.0),
+            nin2, act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=5e-2), b_init=tf.constant_initializer(value=0.0),
             name='conv2dlayer'
         )
         cls.shape_n3 = n3.outputs.get_shape().as_list()

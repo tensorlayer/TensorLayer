@@ -35,22 +35,16 @@ coalesce_brackets = False
 align_closing_bracket_with_visual_indent = False
 
 # Split named assignments onto individual lines.
-split_before_named_assigns = True
+split_before_named_assigns = False
 
 # If an argument / parameter list is going to be split, then split before the first argument.
-split_before_first_argument = False
+split_before_first_argument = True
 
 # Split before arguments if the argument list is terminated by a comma.
 split_arguments_when_comma_terminated = False
 
-# Split after the opening paren which surrounds an expression if it doesn't fit on a single line.
-split_before_expression_after_opening_paren = False
-
 # Insert a space between the ending comma and closing bracket of a list, etc.
 space_between_ending_comma_and_closing_bracket = True
-
-# Allow splits before the dictionary value.
-allow_split_before_dict_value = True
 
 # Join short lines into one line. E.g., single line if statements.
 join_multiple_lines = True

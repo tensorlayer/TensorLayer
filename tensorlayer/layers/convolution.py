@@ -64,19 +64,19 @@ class Conv1dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        shape=(5, 1, 5),
-        stride=1,
-        dilation_rate=1,
-        padding='SAME',
-        data_format='NWC',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='cnn1d',
+            self,
+            prev_layer,
+            act=tf.identity,
+            shape=(5, 1, 5),
+            stride=1,
+            dilation_rate=1,
+            padding='SAME',
+            data_format='NWC',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='cnn1d',
     ):
         super(Conv1dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -185,19 +185,19 @@ class Conv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        shape=(5, 5, 1, 100),
-        strides=(1, 1, 1, 1),
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        name='cnn_layer',
+            self,
+            prev_layer,
+            act=tf.identity,
+            shape=(5, 5, 1, 100),
+            strides=(1, 1, 1, 1),
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            name='cnn_layer',
     ):
         super(Conv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -224,22 +224,14 @@ class Conv2dLayer(Layer):
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     ) + b
                 )
             else:
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     )
                 )
@@ -330,18 +322,18 @@ class DeConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        shape=(3, 3, 128, 256),
-        output_shape=(1, 256, 256, 128),
-        strides=(1, 2, 2, 1),
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='decnn2d_layer',
+            self,
+            prev_layer,
+            act=tf.identity,
+            shape=(3, 3, 128, 256),
+            output_shape=(1, 256, 256, 128),
+            strides=(1, 2, 2, 1),
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='decnn2d_layer',
     ):
         super(DeConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -365,11 +357,7 @@ class DeConv2dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_deconv2d',
-                    shape=(shape[-2]),
-                    initializer=b_init,
-                    dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
@@ -428,17 +416,17 @@ class Conv3dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        shape=(2, 2, 2, 3, 32),
-        strides=(1, 2, 2, 2, 1),
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='cnn3d_layer',
+            self,
+            prev_layer,
+            act=tf.identity,
+            shape=(2, 2, 2, 3, 32),
+            strides=(1, 2, 2, 2, 1),
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='cnn3d_layer',
     ):
         super(Conv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -514,18 +502,18 @@ class DeConv3dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        shape=(2, 2, 2, 128, 256),
-        output_shape=(1, 12, 32, 32, 128),
-        strides=(1, 2, 2, 2, 1),
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='decnn3d_layer',
+            self,
+            prev_layer,
+            act=tf.identity,
+            shape=(2, 2, 2, 128, 256),
+            output_shape=(1, 12, 32, 32, 128),
+            strides=(1, 2, 2, 2, 1),
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='decnn3d_layer',
     ):
         super(DeConv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -548,11 +536,7 @@ class DeConv3dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_deconv3d',
-                    shape=(shape[-2]),
-                    initializer=b_init,
-                    dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
@@ -599,13 +583,13 @@ class UpSampling2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        size,
-        is_scale=True,
-        method=0,
-        align_corners=False,
-        name='upsample2d_layer',
+            self,
+            prev_layer,
+            size,
+            is_scale=True,
+            method=0,
+            align_corners=False,
+            name='upsample2d_layer',
     ):
         super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -675,13 +659,13 @@ class DownSampling2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        size,
-        is_scale=True,
-        method=0,
-        align_corners=False,
-        name='downsample2d_layer',
+            self,
+            prev_layer,
+            size,
+            is_scale=True,
+            method=0,
+            align_corners=False,
+            name='downsample2d_layer',
     ):
         super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -773,18 +757,18 @@ class DeformableConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        offset_layer=None,
-        # shape=(3, 3, 1, 100),
-        n_filter=32,
-        filter_size=(3, 3),
-        act=tf.identity,
-        name='deformable_conv_2d',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None
+            self,
+            prev_layer,
+            offset_layer=None,
+            # shape=(3, 3, 1, 100),
+            n_filter=32,
+            filter_size=(3, 3),
+            act=tf.identity,
+            name='deformable_conv_2d',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None
     ):
 
         if tf.__version__ < "1.4":
@@ -916,8 +900,7 @@ class DeformableConv2d(Layer):
                 [
                     tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
                     tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))
-                ],
-                axis=-1
+                ], axis=-1
             )
             coords = tf.tile(coords, [channel, 1, 1, 1, 1])
 
@@ -963,8 +946,7 @@ class DeformableConv2d(Layer):
             initial_offsets = tf.cast(initial_offsets, 'float32')
             grid = tf.meshgrid(
                 tf.range(-int((shape[0] - 1) / 2.0), int(input_h - int((shape[0] - 1) / 2.0)), 1),
-                tf.range(-int((shape[1] - 1) / 2.0), int(input_w - int((shape[1] - 1) / 2.0)), 1),
-                indexing='ij'
+                tf.range(-int((shape[1] - 1) / 2.0), int(input_w - int((shape[1] - 1) / 2.0)), 1), indexing='ij'
             )
 
             grid = tf.stack(grid, axis=-1)
@@ -976,19 +958,13 @@ class DeformableConv2d(Layer):
             input_deform = _tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(
-                name='W_deformableconv2d',
-                shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]],
-                initializer=W_init,
-                dtype=LayersConfig.tf_dtype,
-                **W_init_args
+                name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
+                dtype=LayersConfig.tf_dtype, **W_init_args
             )
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_deformableconv2d',
-                    shape=(shape[-1]),
-                    initializer=b_init,
-                    dtype=LayersConfig.tf_dtype,
+                    name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **b_init_args
                 )
                 tf.reshape()
@@ -1025,19 +1001,19 @@ class DeformableConv2d(Layer):
 
 @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
 def atrous_conv1d(
-    prev_layer,
-    n_filter=32,
-    filter_size=2,
-    stride=1,
-    dilation=1,
-    act=tf.identity,
-    padding='SAME',
-    data_format='NWC',
-    W_init=tf.truncated_normal_initializer(stddev=0.02),
-    b_init=tf.constant_initializer(value=0.0),
-    W_init_args=None,
-    b_init_args=None,
-    name='conv1d',
+        prev_layer,
+        n_filter=32,
+        filter_size=2,
+        stride=1,
+        dilation=1,
+        act=tf.identity,
+        padding='SAME',
+        data_format='NWC',
+        W_init=tf.truncated_normal_initializer(stddev=0.02),
+        b_init=tf.constant_initializer(value=0.0),
+        W_init_args=None,
+        b_init_args=None,
+        name='conv1d',
 ):
     """Simplified version of :class:`AtrousConv1dLayer`.
 
@@ -1133,18 +1109,9 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        rate=2,
-        act=tf.identity,
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='atrou2d'
+            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=tf.identity, padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None, b_init_args=None, name='atrou2d'
     ):
 
         super(AtrousConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -1241,25 +1208,10 @@ class _SeparableConv2dLayer(Layer):  # TODO
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter,
-        filter_size=5,
-        strides=(1, 1),
-        padding='valid',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        act=tf.identity,
-        use_bias=True,
-        depthwise_initializer=None,
-        pointwise_initializer=None,
-        bias_initializer=tf.zeros_initializer,
-        depthwise_regularizer=None,
-        pointwise_regularizer=None,
-        bias_regularizer=None,
-        activity_regularizer=None,
-        name='atrou2d'
+            self, prev_layer, n_filter, filter_size=5, strides=(1, 1), padding='valid', data_format='channels_last',
+            dilation_rate=(1, 1), depth_multiplier=1, act=tf.identity, use_bias=True, depthwise_initializer=None,
+            pointwise_initializer=None, bias_initializer=tf.zeros_initializer, depthwise_regularizer=None,
+            pointwise_regularizer=None, bias_regularizer=None, activity_regularizer=None, name='atrou2d'
     ):
 
         super(_SeparableConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -1430,20 +1382,9 @@ class Conv1d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=5,
-        stride=1,
-        dilation_rate=1,
-        act=tf.identity,
-        padding='SAME',
-        data_format="channels_last",
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='conv1d'
+            self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=tf.identity, padding='SAME',
+            data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
     ):
 
         super(Conv1d, self).__init__(prev_layer=prev_layer, name=name)
@@ -1455,17 +1396,9 @@ class Conv1d(Layer):
         self.inputs = prev_layer.outputs
         if tf.__version__ > '1.3':
             con1d = tf.layers.Conv1D(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=stride,
-                padding=padding,
-                data_format=data_format,
-                dilation_rate=dilation_rate,
-                activation=act,
-                use_bias=(True if b_init else False),
-                kernel_initializer=W_init,
-                bias_initializer=b_init,
-                name=name
+                filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
+                dilation_rate=dilation_rate, activation=act, use_bias=(True if b_init else False),
+                kernel_initializer=W_init, bias_initializer=b_init, name=name
             )
             # con1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
             self.outputs = con1d(self.inputs)
@@ -1552,21 +1485,21 @@ class Conv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        dilation_rate=(1, 1),
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        name='conv2d',
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            dilation_rate=(1, 1),
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            name='conv2d',
     ):
         # if W_init_args is None:
         #     W_init_args = {}
@@ -1659,30 +1592,19 @@ class Conv2d(Layer):
                 )
                 if b_init:
                     b = tf.get_variable(
-                        name='b_conv2d',
-                        shape=(shape[-1]),
-                        initializer=b_init,
-                        dtype=LayersConfig.tf_dtype,
+                        name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                         **b_init_args
                     )
                     self.outputs = act(
                         tf.nn.conv2d(
-                            self.inputs,
-                            W,
-                            strides=strides,
-                            padding=padding,
-                            use_cudnn_on_gpu=use_cudnn_on_gpu,
+                            self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                             data_format=data_format
                         ) + b
                     )
                 else:
                     self.outputs = act(
                         tf.nn.conv2d(
-                            self.inputs,
-                            W,
-                            strides=strides,
-                            padding=padding,
-                            use_cudnn_on_gpu=use_cudnn_on_gpu,
+                            self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                             data_format=data_format
                         )
                     )
@@ -1733,20 +1655,20 @@ class DeConv2d(Layer):
         layer='prev_layer', n_out_channel='n_filter', end_support_version=1.9
     )  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        out_size=(30, 30),  # remove
-        strides=(2, 2),
-        padding='SAME',
-        batch_size=None,  # remove
-        act=tf.identity,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,  # remove
-        b_init_args=None,  # remove
-        name='decnn2d'
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            out_size=(30, 30),  # remove
+            strides=(2, 2),
+            padding='SAME',
+            batch_size=None,  # remove
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,  # remove
+            b_init_args=None,  # remove
+            name='decnn2d'
     ):
         super(DeConv2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -1768,14 +1690,8 @@ class DeConv2d(Layer):
             self.inputs = prev_layer.outputs
             # scope_name = tf.get_variable_scope().name
             conv2d_transpose = tf.layers.Conv2DTranspose(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                activation=act,
-                kernel_initializer=W_init,
-                bias_initializer=b_init,
-                name=name
+                filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=act,
+                kernel_initializer=W_init, bias_initializer=b_init, name=name
             )
             self.outputs = conv2d_transpose(self.inputs)
             new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -1833,16 +1749,9 @@ class DeConv3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3, 3),
-        strides=(2, 2, 2),
-        padding='SAME',
-        act=tf.identity,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        name='decnn3d'
+            self, prev_layer, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            name='decnn3d'
     ):
 
         super(DeConv3d, self).__init__(prev_layer=prev_layer, name=name)
@@ -1931,19 +1840,19 @@ class DepthwiseConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        shape=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='depthwise_conv2d',
+            self,
+            prev_layer,
+            shape=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            dilation_rate=(1, 1),
+            depth_multiplier=1,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='depthwise_conv2d',
     ):
         super(DepthwiseConv2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -1979,11 +1888,8 @@ class DepthwiseConv2d(Layer):
             )  # [filter_height, filter_width, in_channels, depth_multiplier]
             if b_init:
                 b = tf.get_variable(
-                    name='b_depthwise2d',
-                    shape=(pre_channel * depth_multiplier),
-                    initializer=b_init,
-                    dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init,
+                    dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate) + b
@@ -2040,32 +1946,32 @@ class SeparableConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=100,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='valid',
-        data_format='channels_last',
-        dilation_rate=(1, 1),
-        depth_multiplier=1,
-        # activation=None,
-        # use_bias=True,
-        depthwise_init=None,
-        pointwise_init=None,
-        b_init=tf.zeros_initializer(),
-        # depthwise_regularizer=None,
-        # pointwise_regularizer=None,
-        # bias_regularizer=None,
-        # activity_regularizer=None,
-        # depthwise_constraint=None,
-        # pointwise_constraint=None,
-        # W_init=tf.truncated_normal_initializer(stddev=0.1),
-        # b_init=tf.constant_initializer(value=0.0),
-        # W_init_args=None,
-        # b_init_args=None,
-        name='seperable',
+            self,
+            prev_layer,
+            n_filter=100,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='valid',
+            data_format='channels_last',
+            dilation_rate=(1, 1),
+            depth_multiplier=1,
+            # activation=None,
+            # use_bias=True,
+            depthwise_init=None,
+            pointwise_init=None,
+            b_init=tf.zeros_initializer(),
+            # depthwise_regularizer=None,
+            # pointwise_regularizer=None,
+            # bias_regularizer=None,
+            # activity_regularizer=None,
+            # depthwise_constraint=None,
+            # pointwise_constraint=None,
+            # W_init=tf.truncated_normal_initializer(stddev=0.1),
+            # b_init=tf.constant_initializer(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            name='seperable',
     ):
         # if W_init_args is None:
         #     W_init_args = {}
@@ -2144,19 +2050,19 @@ class GroupConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        n_group=2,
-        act=tf.identity,
-        padding='SAME',
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='groupconv',
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(2, 2),
+            n_group=2,
+            act=tf.identity,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='groupconv',
     ):  # Windaway
 
         super(GroupConv2d, self).__init__(prev_layer=prev_layer, name=name)
@@ -2177,20 +2083,12 @@ class GroupConv2d(Layer):
 
         with tf.variable_scope(name):
             We = tf.get_variable(
-                name='W',
-                shape=[filter_size[0], filter_size[1], channels / n_group, n_filter],
-                initializer=W_init,
-                dtype=LayersConfig.tf_dtype,
-                trainable=True,
-                **W_init_args
+                name='W', shape=[filter_size[0], filter_size[1], channels / n_group, n_filter], initializer=W_init,
+                dtype=LayersConfig.tf_dtype, trainable=True, **W_init_args
             )
             if b_init:
                 bi = tf.get_variable(
-                    name='b',
-                    shape=n_filter,
-                    initializer=b_init,
-                    dtype=LayersConfig.tf_dtype,
-                    trainable=True,
+                    name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True,
                     **b_init_args
                 )
             if n_group == 1:

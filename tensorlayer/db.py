@@ -61,7 +61,7 @@ class TensorDB(object):
     """
 
     def __init__(
-        self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None
+            self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None
     ):
         ## connect mongodb
         client = MongoClient(ip, port)

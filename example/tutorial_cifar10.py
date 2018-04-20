@@ -165,11 +165,8 @@ print_freq = 1
 batch_size = 128
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(
-    learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
-).minimize(
-    cost, var_list=train_params
-)
+train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
+                                  use_locking=False).minimize(cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 

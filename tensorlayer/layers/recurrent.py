@@ -134,17 +134,17 @@ class RNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        cell_fn,
-        cell_init_args=None,
-        n_hidden=100,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        n_steps=5,
-        initial_state=None,
-        return_last=False,
-        return_seq_2d=False,
-        name='rnn',
+            self,
+            prev_layer,
+            cell_fn,
+            cell_init_args=None,
+            n_hidden=100,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            n_steps=5,
+            initial_state=None,
+            return_last=False,
+            return_seq_2d=False,
+            name='rnn',
     ):
         super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -324,20 +324,20 @@ class BiRNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        cell_fn,
-        cell_init_args=None,
-        n_hidden=100,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        n_steps=5,
-        fw_initial_state=None,
-        bw_initial_state=None,
-        dropout=None,
-        n_layer=1,
-        return_last=False,
-        return_seq_2d=False,
-        name='birnn',
+            self,
+            prev_layer,
+            cell_fn,
+            cell_init_args=None,
+            n_hidden=100,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            n_steps=5,
+            fw_initial_state=None,
+            bw_initial_state=None,
+            dropout=None,
+            n_layer=1,
+            return_last=False,
+            return_seq_2d=False,
+            name='birnn',
     ):
         super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -547,7 +547,8 @@ class BasicConvLSTMCell(ConvRNNCell):
     """
 
     def __init__(
-        self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False, act=tf.nn.tanh
+            self, shape, filter_size, num_features, forget_bias=1.0, input_size=None, state_is_tuple=False,
+            act=tf.nn.tanh
     ):
         """Initialize the basic Conv LSTM cell."""
         # if not state_is_tuple:
@@ -711,18 +712,18 @@ class ConvLSTMLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        cell_shape=None,
-        feature_map=1,
-        filter_size=(3, 3),
-        cell_fn=BasicConvLSTMCell,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        n_steps=5,
-        initial_state=None,
-        return_last=False,
-        return_seq_2d=False,
-        name='convlstm',
+            self,
+            prev_layer,
+            cell_shape=None,
+            feature_map=1,
+            filter_size=(3, 3),
+            cell_fn=BasicConvLSTMCell,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            n_steps=5,
+            initial_state=None,
+            return_last=False,
+            return_seq_2d=False,
+            name='convlstm',
     ):
         super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -1053,20 +1054,20 @@ class DynamicRNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-        cell_init_args=None,
-        n_hidden=256,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        sequence_length=None,
-        initial_state=None,
-        dropout=None,
-        n_layer=1,
-        return_last=None,
-        return_seq_2d=False,
-        dynamic_rnn_init_args=None,
-        name='dyrnn',
+            self,
+            prev_layer,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
+            cell_init_args=None,
+            n_hidden=256,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            sequence_length=None,
+            initial_state=None,
+            dropout=None,
+            n_layer=1,
+            return_last=None,
+            return_seq_2d=False,
+            dynamic_rnn_init_args=None,
+            name='dyrnn',
     ):
         super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -1319,21 +1320,21 @@ class BiDynamicRNNLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-        cell_init_args=None,
-        n_hidden=256,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        sequence_length=None,
-        fw_initial_state=None,
-        bw_initial_state=None,
-        dropout=None,
-        n_layer=1,
-        return_last=False,
-        return_seq_2d=False,
-        dynamic_rnn_init_args=None,
-        name='bi_dyrnn_layer',
+            self,
+            prev_layer,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
+            cell_init_args=None,
+            n_hidden=256,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            sequence_length=None,
+            fw_initial_state=None,
+            bw_initial_state=None,
+            dropout=None,
+            n_layer=1,
+            return_last=False,
+            return_seq_2d=False,
+            dynamic_rnn_init_args=None,
+            name='bi_dyrnn_layer',
     ):
         super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -1436,28 +1437,18 @@ class BiDynamicRNNLayer(Layer):
                     self.bw_cell = [cell_creator() for _ in range(n_layer)]
                 from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
-                    cells_fw=self.fw_cell,
-                    cells_bw=self.bw_cell,
-                    inputs=self.inputs,
-                    sequence_length=sequence_length,
-                    initial_states_fw=self.fw_initial_state,
-                    initial_states_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype,
-                    **dynamic_rnn_init_args
+                    cells_fw=self.fw_cell, cells_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
+                    initial_states_fw=self.fw_initial_state, initial_states_bw=self.bw_initial_state,
+                    dtype=LayersConfig.tf_dtype, **dynamic_rnn_init_args
                 )
 
             else:
                 self.fw_cell = cell_creator()
                 self.bw_cell = cell_creator()
                 outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
-                    cell_fw=self.fw_cell,
-                    cell_bw=self.bw_cell,
-                    inputs=self.inputs,
-                    sequence_length=sequence_length,
-                    initial_state_fw=self.fw_initial_state,
-                    initial_state_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype,
-                    **dynamic_rnn_init_args
+                    cell_fw=self.fw_cell, cell_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
+                    initial_state_fw=self.fw_initial_state, initial_state_bw=self.bw_initial_state,
+                    dtype=LayersConfig.tf_dtype, **dynamic_rnn_init_args
                 )
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -1617,21 +1608,21 @@ class Seq2Seq(Layer):
     """
 
     def __init__(
-        self,
-        net_encode_in,
-        net_decode_in,
-        cell_fn,  #tf.nn.rnn_cell.LSTMCell,
-        cell_init_args=None,
-        n_hidden=256,
-        initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        encode_sequence_length=None,
-        decode_sequence_length=None,
-        initial_state_encode=None,
-        initial_state_decode=None,
-        dropout=None,
-        n_layer=1,
-        return_seq_2d=False,
-        name='seq2seq',
+            self,
+            net_encode_in,
+            net_decode_in,
+            cell_fn,  #tf.nn.rnn_cell.LSTMCell,
+            cell_init_args=None,
+            n_hidden=256,
+            initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            encode_sequence_length=None,
+            decode_sequence_length=None,
+            initial_state_encode=None,
+            initial_state_decode=None,
+            dropout=None,
+            n_layer=1,
+            return_seq_2d=False,
+            name='seq2seq',
     ):
         super(Seq2Seq, self).__init__(prev_layer=None, name=name)
 
@@ -1655,34 +1646,18 @@ class Seq2Seq(Layer):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
             network_encode = DynamicRNNLayer(
-                net_encode_in,
-                cell_fn=cell_fn,
-                cell_init_args=cell_init_args,
-                n_hidden=n_hidden,
-                initializer=initializer,
-                initial_state=initial_state_encode,
-                dropout=dropout,
-                n_layer=n_layer,
-                sequence_length=encode_sequence_length,
-                return_last=False,
-                return_seq_2d=True,
-                name='encode'
+                net_encode_in, cell_fn=cell_fn, cell_init_args=cell_init_args, n_hidden=n_hidden,
+                initializer=initializer, initial_state=initial_state_encode, dropout=dropout, n_layer=n_layer,
+                sequence_length=encode_sequence_length, return_last=False, return_seq_2d=True, name='encode'
             )
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(
-                net_decode_in,
-                cell_fn=cell_fn,
-                cell_init_args=cell_init_args,
-                n_hidden=n_hidden,
+                net_decode_in, cell_fn=cell_fn, cell_init_args=cell_init_args, n_hidden=n_hidden,
                 initializer=initializer,
-                initial_state=(network_encode.final_state if initial_state_decode is None else initial_state_decode),
-                dropout=dropout,
-                n_layer=n_layer,
-                sequence_length=decode_sequence_length,
-                return_last=False,
-                return_seq_2d=return_seq_2d,
-                name='decode'
+                initial_state=(network_encode.final_state if initial_state_decode is None else
+                               initial_state_decode), dropout=dropout, n_layer=n_layer,
+                sequence_length=decode_sequence_length, return_last=False, return_seq_2d=return_seq_2d, name='decode'
             )
             self.outputs = network_decode.outputs
 

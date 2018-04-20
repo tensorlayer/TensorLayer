@@ -70,21 +70,8 @@ with tf.device(device_fn):
 
         # train the network
         tl.utils.fit(
-            sess,
-            network,
-            train_op,
-            cost,
-            X_train,
-            y_train,
-            x,
-            y_,
-            acc=acc,
-            batch_size=500,
-            n_epoch=500,
-            print_freq=print_freq,
-            X_val=X_val,
-            y_val=y_val,
-            eval_train=eval_train
+            sess, network, train_op, cost, X_train, y_train, x, y_, acc=acc, batch_size=500, n_epoch=500,
+            print_freq=print_freq, X_val=X_val, y_val=y_val, eval_train=eval_train
         )
 
         if task_spec.is_master():

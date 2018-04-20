@@ -649,20 +649,20 @@ class Word2vecEmbeddingInputlayer(Layer):
     """
 
     def __init__(
-        self,
-        inputs=None,
-        train_labels=None,
-        vocabulary_size=80000,
-        embedding_size=200,
-        num_sampled=64,
-        nce_loss_args=None,
-        E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
-        E_init_args=None,
-        nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
-        nce_W_init_args=None,
-        nce_b_init=tf.constant_initializer(value=0.0),
-        nce_b_init_args=None,
-        name='word2vec',
+            self,
+            inputs=None,
+            train_labels=None,
+            vocabulary_size=80000,
+            embedding_size=200,
+            num_sampled=64,
+            nce_loss_args=None,
+            E_init=tf.random_uniform_initializer(minval=-1.0, maxval=1.0),
+            E_init_args=None,
+            nce_W_init=tf.truncated_normal_initializer(stddev=0.03),
+            nce_W_init_args=None,
+            nce_b_init=tf.constant_initializer(value=0.0),
+            nce_b_init_args=None,
+            name='word2vec',
     ):
         if nce_loss_args is None:
             nce_loss_args = {}
@@ -687,26 +687,17 @@ class Word2vecEmbeddingInputlayer(Layer):
         # row vector with 'embedding_size' values.
         with tf.variable_scope(name):
             embeddings = tf.get_variable(
-                name='embeddings',
-                shape=(vocabulary_size, embedding_size),
-                initializer=E_init,
-                dtype=LayersConfig.tf_dtype,
-                **E_init_args
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
+                dtype=LayersConfig.tf_dtype, **E_init_args
             )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(
-                name='nce_weights',
-                shape=(vocabulary_size, embedding_size),
-                initializer=nce_W_init,
-                dtype=LayersConfig.tf_dtype,
-                **nce_W_init_args
+                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init,
+                dtype=LayersConfig.tf_dtype, **nce_W_init_args
             )
             nce_biases = tf.get_variable(
-                name='nce_biases',
-                shape=(vocabulary_size),
-                initializer=nce_b_init,
-                dtype=LayersConfig.tf_dtype,
+                name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=LayersConfig.tf_dtype,
                 **nce_b_init_args
             )
 
@@ -715,13 +706,8 @@ class Word2vecEmbeddingInputlayer(Layer):
             # each time we evaluate the loss.
             self.nce_cost = tf.reduce_mean(
                 tf.nn.nce_loss(
-                    weights=nce_weights,
-                    biases=nce_biases,
-                    inputs=embed,
-                    labels=train_labels,
-                    num_sampled=num_sampled,
-                    num_classes=vocabulary_size,
-                    **nce_loss_args
+                    weights=nce_weights, biases=nce_biases, inputs=embed, labels=train_labels, num_sampled=num_sampled,
+                    num_classes=vocabulary_size, **nce_loss_args
                 )
             )
 
@@ -772,13 +758,13 @@ class EmbeddingInputlayer(Layer):
     """
 
     def __init__(
-        self,
-        inputs=None,
-        vocabulary_size=80000,
-        embedding_size=200,
-        E_init=tf.random_uniform_initializer(-0.1, 0.1),
-        E_init_args=None,
-        name='embedding',
+            self,
+            inputs=None,
+            vocabulary_size=80000,
+            embedding_size=200,
+            E_init=tf.random_uniform_initializer(-0.1, 0.1),
+            E_init_args=None,
+            name='embedding',
     ):
         if E_init_args is None:
             E_init_args = {}
@@ -790,11 +776,8 @@ class EmbeddingInputlayer(Layer):
 
         with tf.variable_scope(name):
             embeddings = tf.get_variable(
-                name='embeddings',
-                shape=(vocabulary_size, embedding_size),
-                initializer=E_init,
-                dtype=LayersConfig.tf_dtype,
-                **E_init_args
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
+                dtype=LayersConfig.tf_dtype, **E_init_args
             )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
@@ -843,14 +826,14 @@ class AverageEmbeddingInputlayer(Layer):
     """
 
     def __init__(
-        self,
-        inputs,
-        vocabulary_size,
-        embedding_size,
-        pad_value=0,
-        embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
-        embeddings_kwargs=None,
-        name='average_embedding',
+            self,
+            inputs,
+            vocabulary_size,
+            embedding_size,
+            pad_value=0,
+            embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
+            embeddings_kwargs=None,
+            name='average_embedding',
     ):
 
         super(AverageEmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
@@ -866,9 +849,7 @@ class AverageEmbeddingInputlayer(Layer):
 
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
-                name='embeddings',
-                shape=(vocabulary_size, embedding_size),
-                initializer=embeddings_initializer,
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=embeddings_initializer,
                 dtype=LayersConfig.tf_dtype,
                 **(embeddings_kwargs or {})
                 # **embeddings_kwargs
@@ -954,15 +935,15 @@ class DenseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_units=100,
-        act=tf.identity,
-        W_init=tf.truncated_normal_initializer(stddev=0.1),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='dense',
+            self,
+            prev_layer,
+            n_units=100,
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='dense',
     ):
 
         super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -1051,12 +1032,12 @@ class ReconLayer(DenseLayer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        x_recon=None,
-        n_units=784,
-        act=tf.nn.softplus,
-        name='recon',
+            self,
+            prev_layer,
+            x_recon=None,
+            n_units=784,
+            act=tf.nn.softplus,
+            name='recon',
     ):
         super(ReconLayer, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
 
@@ -1143,25 +1124,13 @@ class ReconLayer(DenseLayer):
         else:
             raise Exception("Don't support the given reconstruct activation function")
 
-        self.train_op = tf.train.AdamOptimizer(
-            learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False
-        ).minimize(
-            self.cost, var_list=self.train_params
-        )
+        self.train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
+                                               use_locking=False).minimize(self.cost, var_list=self.train_params)
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
     def pretrain(
-        self,
-        sess,
-        x,
-        X_train,
-        X_val,
-        denoise_name=None,
-        n_epoch=100,
-        batch_size=128,
-        print_freq=10,
-        save=True,
-        save_name='w1pre_'
+            self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True,
+            save_name='w1pre_'
     ):
         # ====================================================
         #
@@ -1210,12 +1179,8 @@ class ReconLayer(DenseLayer):
                 if save:
                     try:
                         visualize.draw_weights(
-                            self.train_params[0].eval(),
-                            second=10,
-                            saveable=True,
-                            shape=[28, 28],
-                            name=save_name + str(epoch + 1),
-                            fig_idx=2012
+                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28],
+                            name=save_name + str(epoch + 1), fig_idx=2012
                         )
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:
@@ -1284,13 +1249,13 @@ class DropoutLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        keep=0.5,
-        is_fix=False,
-        is_train=True,
-        seed=None,
-        name='dropout_layer',
+            self,
+            prev_layer,
+            keep=0.5,
+            is_fix=False,
+            is_train=True,
+            seed=None,
+            name='dropout_layer',
     ):
         super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
@@ -1369,13 +1334,13 @@ class GaussianNoiseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        mean=0.0,
-        stddev=1.0,
-        is_train=True,
-        seed=None,
-        name='gaussian_noise_layer',
+            self,
+            prev_layer,
+            mean=0.0,
+            stddev=1.0,
+            is_train=True,
+            seed=None,
+            name='gaussian_noise_layer',
     ):
         super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -1444,16 +1409,16 @@ class DropconnectDenseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        keep=0.5,
-        n_units=100,
-        act=tf.identity,
-        W_init=tf.truncated_normal_initializer(stddev=0.1),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='dropconnect_layer',
+            self,
+            prev_layer,
+            keep=0.5,
+            n_units=100,
+            act=tf.identity,
+            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='dropconnect_layer',
     ):
         super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))

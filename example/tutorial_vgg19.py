@@ -94,13 +94,11 @@ def Vgg19(rgb):
             red - VGG_MEAN[2],
         ])
     else:
-        bgr = tf.concat(
-            [
-                blue - VGG_MEAN[0],
-                green - VGG_MEAN[1],
-                red - VGG_MEAN[2],
-            ], axis=3
-        )
+        bgr = tf.concat([
+            blue - VGG_MEAN[0],
+            green - VGG_MEAN[1],
+            red - VGG_MEAN[2],
+        ], axis=3)
     if bgr.get_shape().as_list()[1:] != [224, 224, 3]:
         raise Exception("image size unmatch")
     # input layer
@@ -212,13 +210,11 @@ def Vgg19_simple_api(rgb):
             red - VGG_MEAN[2],
         ])
     else:
-        bgr = tf.concat(
-            [
-                blue - VGG_MEAN[0],
-                green - VGG_MEAN[1],
-                red - VGG_MEAN[2],
-            ], axis=3
-        )
+        bgr = tf.concat([
+            blue - VGG_MEAN[0],
+            green - VGG_MEAN[1],
+            red - VGG_MEAN[2],
+        ], axis=3)
     if bgr.get_shape().as_list()[1:] != [224, 224, 3]:
         raise Exception("image size unmatch")
     # input layer

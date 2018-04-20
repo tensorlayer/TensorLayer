@@ -160,13 +160,10 @@ def build_network(image_input, num_classes=1001, is_training=False):
     net_in = tl.layers.InputLayer(image_input, name='input_layer')
     with slim.arg_scope(inception_v3_arg_scope()):
         network = tl.layers.SlimNetsLayer(
-            prev_layer=net_in,
-            slim_layer=inception_v3,
-            slim_args={
+            prev_layer=net_in, slim_layer=inception_v3, slim_args={
                 'num_classes': num_classes,
                 'is_training': is_training
-            },
-            name='InceptionV3'
+            }, name='InceptionV3'
         )
 
     predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
@@ -380,14 +377,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
-        with tl.distributed.DistributedSession(
-            task_spec=task_spec,
-            hooks=hooks,
-            checkpoint_dir=checkpoints_path,
-            save_summaries_secs=None,
-            save_summaries_steps=300,
-            save_checkpoint_secs=60 * 60
-        ) as sess:
+        with tl.distributed.DistributedSession(task_spec=task_spec, hooks=hooks, checkpoint_dir=checkpoints_path,
+                                               save_summaries_secs=None, save_summaries_steps=300,
+                                               save_checkpoint_secs=60 * 60) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)

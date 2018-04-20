@@ -40,13 +40,13 @@ class LocalResponseNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        depth_radius=None,
-        bias=None,
-        alpha=None,
-        beta=None,
-        name='lrn_layer',
+            self,
+            prev_layer,
+            depth_radius=None,
+            bias=None,
+            alpha=None,
+            beta=None,
+            name='lrn_layer',
     ):
         super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -102,15 +102,15 @@ class BatchNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        decay=0.9,
-        epsilon=0.00001,
-        act=tf.identity,
-        is_train=False,
-        beta_init=tf.zeros_initializer,
-        gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
-        name='batchnorm_layer',
+            self,
+            prev_layer,
+            decay=0.9,
+            epsilon=0.00001,
+            act=tf.identity,
+            is_train=False,
+            beta_init=tf.zeros_initializer,
+            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
+            name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -227,11 +227,11 @@ class InstanceNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        epsilon=1e-5,
-        name='instan_norm',
+            self,
+            prev_layer,
+            act=tf.identity,
+            epsilon=1e-5,
+            name='instan_norm',
     ):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
@@ -242,12 +242,10 @@ class InstanceNormLayer(Layer):
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
             scale = tf.get_variable(
                 'scale', [self.inputs.get_shape()[-1]],
-                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02),
-                dtype=LayersConfig.tf_dtype
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
             )
             offset = tf.get_variable(
-                'offset', [self.inputs.get_shape()[-1]],
-                initializer=tf.constant_initializer(0.0),
+                'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
                 dtype=LayersConfig.tf_dtype
             )
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
@@ -278,18 +276,8 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        center=True,
-        scale=True,
-        act=tf.identity,
-        reuse=None,
-        variables_collections=None,
-        outputs_collections=None,
-        trainable=True,
-        begin_norm_axis=1,
-        begin_params_axis=-1,
-        name='layernorm'
+            self, prev_layer, center=True, scale=True, act=tf.identity, reuse=None, variables_collections=None,
+            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, name=name)

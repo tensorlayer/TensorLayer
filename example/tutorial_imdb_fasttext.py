@@ -136,8 +136,7 @@ def train_test_and_save_model():
             print('Epoch %d/%d' % (epoch + 1, N_EPOCH))
             for X_batch, y_batch in tl.iterate.minibatches(X_train, y_train, batch_size=BATCH_SIZE, shuffle=True):
                 sess.run(
-                    classifier.train_op,
-                    feed_dict={
+                    classifier.train_op, feed_dict={
                         classifier.inputs: tl.prepro.pad_sequences(X_batch),
                         classifier.labels: y_batch,
                     }
@@ -146,8 +145,7 @@ def train_test_and_save_model():
             print("     took %.5fs" % (time.time() - start_time))
 
         test_accuracy = sess.run(
-            classifier.accuracy,
-            feed_dict={
+            classifier.accuracy, feed_dict={
                 classifier.inputs: tl.prepro.pad_sequences(X_test),
                 classifier.labels: y_test,
             }

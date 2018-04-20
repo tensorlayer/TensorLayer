@@ -36,12 +36,12 @@ class ROIPoolingLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        rois,
-        pool_height=2,
-        pool_width=2,
-        name='roipooling_layer',
+            self,
+            prev_layer,
+            rois,
+            pool_height=2,
+            pool_width=2,
+            name='roipooling_layer',
     ):
         super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ROIPoolingLayer %s: (%d, %d)" % (name, pool_height, pool_width))

@@ -131,16 +131,16 @@ class BinaryDenseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_units=100,
-        act=tf.identity,
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.1),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='binary_dense',
+            self,
+            prev_layer,
+            n_units=100,
+            act=tf.identity,
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='binary_dense',
     ):
         super(BinaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("BinaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
@@ -243,31 +243,31 @@ class BinaryConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        # act=tf.identity,
-        # shape=(5, 5, 1, 100),
-        # strides=(1, 1, 1, 1),
-        # padding='SAME',
-        # W_init=tf.truncated_normal_initializer(stddev=0.02),
-        # b_init=tf.constant_initializer(value=0.0),
-        # W_init_args=None,
-        # b_init_args=None,
-        # use_cudnn_on_gpu=None,
-        # data_format=None,
-        name='binary_cnn2d',
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            # act=tf.identity,
+            # shape=(5, 5, 1, 100),
+            # strides=(1, 1, 1, 1),
+            # padding='SAME',
+            # W_init=tf.truncated_normal_initializer(stddev=0.02),
+            # b_init=tf.constant_initializer(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            # use_cudnn_on_gpu=None,
+            # data_format=None,
+            name='binary_cnn2d',
     ):
         super(BinaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -306,22 +306,14 @@ class BinaryConv2d(Layer):
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     ) + b
                 )
             else:
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     )
                 )
@@ -363,16 +355,16 @@ class TernaryDenseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_units=100,
-        act=tf.identity,
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.1),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='ternary_dense',
+            self,
+            prev_layer,
+            n_units=100,
+            act=tf.identity,
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='ternary_dense',
     ):
         super(TernaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
@@ -476,31 +468,31 @@ class TernaryConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        # act=tf.identity,
-        # shape=(5, 5, 1, 100),
-        # strides=(1, 1, 1, 1),
-        # padding='SAME',
-        # W_init=tf.truncated_normal_initializer(stddev=0.02),
-        # b_init=tf.constant_initializer(value=0.0),
-        # W_init_args=None,
-        # b_init_args=None,
-        # use_cudnn_on_gpu=None,
-        # data_format=None,
-        name='ternary_cnn2d',
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            # act=tf.identity,
+            # shape=(5, 5, 1, 100),
+            # strides=(1, 1, 1, 1),
+            # padding='SAME',
+            # W_init=tf.truncated_normal_initializer(stddev=0.02),
+            # b_init=tf.constant_initializer(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            # use_cudnn_on_gpu=None,
+            # data_format=None,
+            name='ternary_cnn2d',
     ):
         super(TernaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -539,22 +531,14 @@ class TernaryConv2d(Layer):
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     ) + b
                 )
             else:
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     )
                 )
@@ -601,18 +585,18 @@ class DorefaDenseLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        bitW=1,
-        bitA=3,
-        n_units=100,
-        act=tf.identity,
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.1),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        name='dorefa_dense',
+            self,
+            prev_layer,
+            bitW=1,
+            bitA=3,
+            n_units=100,
+            act=tf.identity,
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.1),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='dorefa_dense',
     ):
         super(DorefaDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("DorefaDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
@@ -719,33 +703,33 @@ class DorefaConv2d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        bitW=1,
-        bitA=3,
-        n_filter=32,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.identity,
-        padding='SAME',
-        use_gemm=False,
-        W_init=tf.truncated_normal_initializer(stddev=0.02),
-        b_init=tf.constant_initializer(value=0.0),
-        W_init_args=None,
-        b_init_args=None,
-        use_cudnn_on_gpu=None,
-        data_format=None,
-        # act=tf.identity,
-        # shape=(5, 5, 1, 100),
-        # strides=(1, 1, 1, 1),
-        # padding='SAME',
-        # W_init=tf.truncated_normal_initializer(stddev=0.02),
-        # b_init=tf.constant_initializer(value=0.0),
-        # W_init_args=None,
-        # b_init_args=None,
-        # use_cudnn_on_gpu=None,
-        # data_format=None,
-        name='dorefa_cnn2d',
+            self,
+            prev_layer,
+            bitW=1,
+            bitA=3,
+            n_filter=32,
+            filter_size=(3, 3),
+            strides=(1, 1),
+            act=tf.identity,
+            padding='SAME',
+            use_gemm=False,
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            use_cudnn_on_gpu=None,
+            data_format=None,
+            # act=tf.identity,
+            # shape=(5, 5, 1, 100),
+            # strides=(1, 1, 1, 1),
+            # padding='SAME',
+            # W_init=tf.truncated_normal_initializer(stddev=0.02),
+            # b_init=tf.constant_initializer(value=0.0),
+            # W_init_args=None,
+            # b_init_args=None,
+            # use_cudnn_on_gpu=None,
+            # data_format=None,
+            name='dorefa_cnn2d',
     ):
         super(DorefaConv2d, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
@@ -786,22 +770,14 @@ class DorefaConv2d(Layer):
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     ) + b
                 )
             else:
                 self.outputs = act(
                     tf.nn.conv2d(
-                        self.inputs,
-                        W,
-                        strides=strides,
-                        padding=padding,
-                        use_cudnn_on_gpu=use_cudnn_on_gpu,
+                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                         data_format=data_format
                     )
                 )
@@ -827,9 +803,9 @@ class SignLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        name='sign',
+            self,
+            prev_layer,
+            name='sign',
     ):
         super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -860,10 +836,10 @@ class ScaleLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        init_scale=0.05,
-        name='scale',
+            self,
+            prev_layer,
+            init_scale=0.05,
+            name='scale',
     ):
         super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("ScaleLayer  %s: init_scale: %f" % (name, init_scale))

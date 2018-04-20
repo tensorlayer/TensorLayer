@@ -550,8 +550,7 @@ def li_regularizer(scale, scope=None):
             # else:
             standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale,
-                standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
+                my_scale, standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
                 name=scope
             )
 
@@ -602,8 +601,7 @@ def lo_regularizer(scale):
             # else:
             standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale,
-                standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
+                my_scale, standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
                 name=scope
             )
 

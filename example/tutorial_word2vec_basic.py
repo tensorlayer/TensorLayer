@@ -200,11 +200,8 @@ def main_word2vec_basic():
     cost = emb_net.nce_cost
     train_params = emb_net.all_params
     # train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
-    train_op = tf.train.AdagradOptimizer(
-        learning_rate, initial_accumulator_value=0.1, use_locking=False
-    ).minimize(
-        cost, var_list=train_params
-    )
+    train_op = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=0.1,
+                                         use_locking=False).minimize(cost, var_list=train_params)
 
     # Compute the cosine similarity between minibatch examples and all embeddings.
     # For simple visualization of validation set.
@@ -280,8 +277,7 @@ def main_word2vec_basic():
                     'count': count,
                     'dictionary': dictionary,
                     'reverse_dictionary': reverse_dictionary
-                },
-                name=model_file_name + '.npy'
+                }, name=model_file_name + '.npy'
             )
 
         # if step == num_steps-1:

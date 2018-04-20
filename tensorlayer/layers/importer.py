@@ -57,11 +57,11 @@ class LambdaLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        fn,
-        fn_args=None,
-        name='lambda_layer',
+            self,
+            prev_layer,
+            fn,
+            fn_args=None,
+            name='lambda_layer',
     ):
 
         super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -111,11 +111,11 @@ class SlimNetsLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        slim_layer,
-        slim_args=None,
-        name='tfslim_layer',
+            self,
+            prev_layer,
+            slim_layer,
+            slim_args=None,
+            name='tfslim_layer',
     ):
 
         super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -177,11 +177,11 @@ class KerasLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        keras_layer,
-        keras_args=None,
-        name='keras_layer',
+            self,
+            prev_layer,
+            keras_layer,
+            keras_args=None,
+            name='keras_layer',
     ):
 
         super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -227,11 +227,11 @@ class EstimatorLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        model_fn,
-        args=None,
-        name='estimator_layer',
+            self,
+            prev_layer,
+            model_fn,
+            args=None,
+            name='estimator_layer',
     ):
         super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("EstimatorLayer %s: %s" % (name, model_fn))
