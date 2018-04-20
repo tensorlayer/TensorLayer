@@ -7,6 +7,7 @@ import tensorlayer as tl
 
 
 class Layer_Extend_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 

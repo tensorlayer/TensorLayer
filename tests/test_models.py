@@ -12,6 +12,7 @@ import tensorlayer as tl
 
 
 class VGG_Model_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 

@@ -14,11 +14,17 @@ import tensorlayer as tl
 def model(x, is_train=True, reuse=False, name_scope="env1"):
     with tf.variable_scope(name_scope, reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.TimeDistributedLayer(net, layer_class=tl.layers.DenseLayer, args={'n_units': 50, 'name': 'dense'}, name='time_dense')
+        net = tl.layers.TimeDistributedLayer(
+            net, layer_class=tl.layers.DenseLayer, args={
+                'n_units': 50,
+                'name': 'dense'
+            }, name='time_dense'
+        )
     return net
 
 
 class Layer_Time_Distributed_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 
