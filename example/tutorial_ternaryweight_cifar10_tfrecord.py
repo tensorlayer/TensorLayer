@@ -164,64 +164,18 @@ with tf.device('/cpu:0'):
 
     def model(x_crop, y_, reuse):
         """ For more simplified CNN APIs, check tensorlayer.org """
-        W_init = tf.truncated_normal_initializer(stddev=5e-2)
-        W_init2 = tf.truncated_normal_initializer(stddev=0.04)
-        b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = tl.layers.LocalResponseNormLayer(
-                net,
-                depth_radius=4,
-                bias=1.0,
-                alpha=0.001 / 9.0,
-                beta=0.75,
-                name='norm1'
-            )
-            net = tl.layers.TernaryConv2d(
-                net,
-                64,
-                (5, 5),
-                (1, 1),
-                act=tf.nn.relu,
-                padding='SAME',
-                W_init=W_init,
-                name='cnn2'
-            )
-            net = tl.layers.LocalResponseNormLayer(
-                net,
-                depth_radius=4,
-                bias=1.0,
-                alpha=0.001 / 9.0,
-                beta=0.75,
-                name='norm2'
-            )
+            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm1')
+            net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
+            net = tl.layers.LocalResponseNormLayer(net, 4, 1.0, 0.001 / 9.0, 0.75, name='norm2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = tl.layers.TernaryDenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
-            )  # output: (batch_size, 384)
-            net = tl.layers.TernaryDenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
-            )  # output: (batch_size, 192)
-            net = tl.layers.DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
-            )  # output: (batch_size, 10)
+            net = tl.layers.TernaryDenseLayer(net, 384, act=tf.nn.relu, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.TernaryDenseLayer(net, 192, act=tf.nn.relu, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')  # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -239,41 +193,18 @@ with tf.device('/cpu:0'):
 
     def model_batch_norm(x_crop, y_, reuse, is_train):
         """ Batch normalization should be placed before rectifier. """
-        W_init = tf.truncated_normal_initializer(stddev=5e-2)
-        W_init2 = tf.truncated_normal_initializer(stddev=0.04)
-        b_init2 = tf.constant_initializer(value=0.1)
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn1')
             net = tl.layers.BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
+            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', b_init=None, name='cnn2')
             net = tl.layers.BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = tl.layers.DenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
-            )  # output: (batch_size, 384)
-            net = tl.layers.DenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
-            )  # output: (batch_size, 192)
-            net = tl.layers.DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
-            )  # output: (batch_size, 10)
+            net = tl.layers.DenseLayer(net, 384, act=tf.nn.relu, name='d1relu')  # output: (batch_size, 384)
+            net = tl.layers.DenseLayer(net, 192, act=tf.nn.relu, name='d2relu')  # output: (batch_size, 192)
+            net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')  # output: (batch_size, 10)
             y = net.outputs
             ce = tl.cost.cross_entropy(y, y_, name='cost')
             # L2 for the MLP, without this, the accuracy will be reduced by 15%.
@@ -342,14 +273,8 @@ with tf.device('/cpu:0'):
             n_batch += 1
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print(
-                "Epoch %d : Step %d-%d of %d took %fs" %
-                (epoch,
-                 step,
-                 step + n_step_epoch,
-                 n_step,
-                 time.time() - start_time)
-            )
+            print("Epoch %d : Step %d-%d of %d took %fs" % (epoch, step, \
+                 step + n_step_epoch, n_step, time.time() - start_time))
             print("   train loss: %f" % (train_loss / n_batch))
             print("   train acc: %f" % (train_acc / n_batch))
 

@@ -148,11 +148,8 @@ class Critic(object):
 sess = tf.Session()
 
 actor = Actor(sess, n_features=N_F, n_actions=N_A, lr=LR_A)
-critic = Critic(
-    sess,
-    n_features=N_F,
-    lr=LR_C
-)  # we need a good teacher, so the teacher should learn faster than the actor
+# we need a good teacher, so the teacher should learn faster than the actor
+critic = Critic(sess, n_features=N_F, lr=LR_C)
 
 tl.layers.initialize_global_variables(sess)
 

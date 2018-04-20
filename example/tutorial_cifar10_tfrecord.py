@@ -220,29 +220,12 @@ with tf.device('/cpu:0'):
             # net = PoolLayer(net, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1],
             #             padding='SAME', pool = tf.nn.max_pool, name ='pool2') # output: (batch_size, 6, 6, 64)
             net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = DenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
-            )  # output: (batch_size, 384)
-            net = DenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
-            )  # output: (batch_size, 192)
-            net = DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
-            )  # output: (batch_size, 10)
+            net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
+            # output: (batch_size, 384)
+            net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
+            # output: (batch_size, 192)
+            net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
+            # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -285,29 +268,12 @@ with tf.device('/cpu:0'):
             #            padding='SAME', pool = tf.nn.max_pool, name ='pool2')  # output: (batch_size, 6, 6, 64)
 
             net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
-            net = DenseLayer(
-                net,
-                n_units=384,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d1relu'
-            )  # output: (batch_size, 384)
-            net = DenseLayer(
-                net,
-                n_units=192,
-                act=tf.nn.relu,
-                W_init=W_init2,
-                b_init=b_init2,
-                name='d2relu'
-            )  # output: (batch_size, 192)
-            net = DenseLayer(
-                net,
-                n_units=10,
-                act=tf.identity,
-                W_init=W_init2,
-                name='output'
-            )  # output: (batch_size, 10)
+            net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
+            # output: (batch_size, 384)
+            net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
+            # output: (batch_size, 192)
+            net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
+            # output: (batch_size, 10)
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -377,14 +343,8 @@ with tf.device('/cpu:0'):
             n_batch += 1
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print(
-                "Epoch %d : Step %d-%d of %d took %fs" %
-                (epoch,
-                 step,
-                 step + n_step_epoch,
-                 n_step,
-                 time.time() - start_time)
-            )
+            print("Epoch %d : Step %d-%d of %d took %fs" % (epoch, step,
+                 step + n_step_epoch, n_step, time.time() - start_time))
             print("   train loss: %f" % (train_loss / n_batch))
             print("   train acc: %f" % (train_acc / n_batch))
 

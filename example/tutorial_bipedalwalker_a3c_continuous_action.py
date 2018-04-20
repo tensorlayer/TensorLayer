@@ -209,13 +209,9 @@ class Worker(object):
                         buffer_v_target.append(v_s_)
                     buffer_v_target.reverse()
 
-                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a
-                                                                                         ), np.vstack(buffer_v_target)
-                    feed_dict = {
-                        self.AC.s: buffer_s,
-                        self.AC.a_his: buffer_a,
-                        self.AC.v_target: buffer_v_target,
-                    }
+                    buffer_s, buffer_a, buffer_v_target = \
+                            np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
+                    feed_dict = {self.AC.s: buffer_s, self.AC.a_his: buffer_a, self.AC.v_target: buffer_v_target}
                     # update gradients on global network
                     self.AC.update_global(feed_dict)
                     buffer_s, buffer_a, buffer_r = [], [], []
