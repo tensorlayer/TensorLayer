@@ -50,11 +50,11 @@ class TimeDistributedLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            layer_class=None,
-            args=None,
-            name='time_distributed',
+        self,
+        prev_layer,
+        layer_class=None,
+        args=None,
+        name='time_distributed',
     ):
         super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))

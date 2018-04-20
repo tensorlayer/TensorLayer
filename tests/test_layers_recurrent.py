@@ -31,7 +31,11 @@ class Layer_Recurrent_Test(unittest.TestCase):
         input_data = tf.placeholder(tf.int32, [cls.net1_batch_size, cls.num_steps])
 
         net1 = tl.layers.EmbeddingInputlayer(
-            inputs=input_data, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='embed')
+            inputs=input_data,
+            vocabulary_size=cls.vocab_size,
+            embedding_size=cls.hidden_size,
+            name='embed'
+        )
         net1 = tl.layers.DropoutLayer(net1, keep=cls.keep_prob, is_fix=True, is_train=cls.is_train, name='drop1')
         net1 = tl.layers.RNNLayer(
             net1,
@@ -39,7 +43,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_hidden=cls.hidden_size,
             n_steps=cls.num_steps,
             return_last=False,
-            name='lstm1')
+            name='lstm1'
+        )
 
         # lstm1 = net1
 
@@ -50,7 +55,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_hidden=cls.hidden_size,
             n_steps=cls.num_steps,
             return_last=True,
-            name='lstm2')
+            name='lstm2'
+        )
 
         # lstm2 = net1
 
@@ -85,7 +91,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_steps=cls.num_steps,
             return_last=False,
             return_seq_2d=True,
-            name='rnn')
+            name='rnn'
+        )
 
         net2 = tl.layers.DenseLayer(rnn, n_units=3, name='out')
 
@@ -102,7 +109,11 @@ class Layer_Recurrent_Test(unittest.TestCase):
         x3 = tf.placeholder(tf.int32, [cls.net3_batch_size, cls.num_steps])
 
         net3 = tl.layers.EmbeddingInputlayer(
-            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb')
+            inputs=x3,
+            vocabulary_size=cls.vocab_size,
+            embedding_size=cls.hidden_size,
+            name='emb'
+        )
         net3 = tl.layers.BiRNNLayer(
             net3,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -110,7 +121,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_steps=cls.num_steps,
             return_last=False,
             return_seq_2d=False,
-            name='birnn')
+            name='birnn'
+        )
 
         net3.print_layers()
         net3.print_params(False)
@@ -122,7 +134,11 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         # n_layer=2
         net4 = tl.layers.EmbeddingInputlayer(
-            inputs=x3, vocabulary_size=cls.vocab_size, embedding_size=cls.hidden_size, name='emb2')
+            inputs=x3,
+            vocabulary_size=cls.vocab_size,
+            embedding_size=cls.hidden_size,
+            name='emb2'
+        )
         net4 = tl.layers.BiRNNLayer(
             net4,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -131,7 +147,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=2,
             return_last=False,
             return_seq_2d=False,
-            name='birnn2')
+            name='birnn2'
+        )
 
         net4.print_layers()
         net4.print_params(False)
@@ -162,7 +179,11 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         input_seqs = tf.placeholder(dtype=tf.int64, shape=[cls.net5_batch_size, None], name="input")
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding')
+            inputs=input_seqs,
+            vocabulary_size=cls.vocab_size,
+            embedding_size=cls.embedding_size,
+            name='seq_embedding'
+        )
 
         rnn = tl.layers.DynamicRNNLayer(
             nin,
@@ -172,7 +193,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
             return_last=False,
             return_seq_2d=True,
-            name='dynamicrnn')
+            name='dynamicrnn'
+        )
 
         net5 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o")
 
@@ -187,7 +209,11 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
         # n_layer=3
         nin = tl.layers.EmbeddingInputlayer(
-            inputs=input_seqs, vocabulary_size=cls.vocab_size, embedding_size=cls.embedding_size, name='seq_embedding2')
+            inputs=input_seqs,
+            vocabulary_size=cls.vocab_size,
+            embedding_size=cls.embedding_size,
+            name='seq_embedding2'
+        )
         rnn = tl.layers.DynamicRNNLayer(
             nin,
             cell_fn=tf.contrib.rnn.BasicLSTMCell,
@@ -197,7 +223,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=3,
             return_last=False,
             return_seq_2d=True,
-            name='dynamicrnn2')
+            name='dynamicrnn2'
+        )
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o2")
 
@@ -210,7 +237,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=3,
             return_last=False,
             return_seq_2d=False,
-            name='dynamicrnn3')
+            name='dynamicrnn3'
+        )
 
         # net6 = tl.layers.DenseLayer(rnn, n_units=vocab_size, name="o3")
 
@@ -229,7 +257,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=1,
             return_last=True,
             return_seq_2d=False,
-            name='dynamicrnn4')
+            name='dynamicrnn4'
+        )
 
         net7.print_layers()
         net7.print_params(False)
@@ -245,7 +274,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=1,
             return_last=True,
             return_seq_2d=True,
-            name='dynamicrnn5')
+            name='dynamicrnn5'
+        )
 
         net8.print_layers()
         net8.print_params(False)
@@ -262,7 +292,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
             return_last=False,
             return_seq_2d=True,
-            name='bidynamicrnn')
+            name='bidynamicrnn'
+        )
 
         net9 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o4")
 
@@ -285,7 +316,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
             n_layer=2,
             return_last=False,
             return_seq_2d=True,
-            name='bidynamicrnn2')
+            name='bidynamicrnn2'
+        )
 
         net10 = tl.layers.DenseLayer(rnn, n_units=cls.vocab_size, name="o5")
 
@@ -311,11 +343,19 @@ class Layer_Recurrent_Test(unittest.TestCase):
 
             with tf.variable_scope("embedding") as vs:
                 net_encode = tl.layers.EmbeddingInputlayer(
-                    inputs=encode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
+                    inputs=encode_seqs,
+                    vocabulary_size=10000,
+                    embedding_size=200,
+                    name='seq_embed'
+                )
                 vs.reuse_variables()
                 # tl.layers.set_name_reuse(True)
                 net_decode = tl.layers.EmbeddingInputlayer(
-                    inputs=decode_seqs, vocabulary_size=10000, embedding_size=200, name='seq_embed')
+                    inputs=decode_seqs,
+                    vocabulary_size=10000,
+                    embedding_size=200,
+                    name='seq_embed'
+                )
 
             net11 = tl.layers.Seq2Seq(
                 net_encode,
@@ -329,7 +369,8 @@ class Layer_Recurrent_Test(unittest.TestCase):
                 dropout=None,
                 n_layer=2,
                 return_seq_2d=True,
-                name='Seq2seq')
+                name='Seq2seq'
+            )
 
         net11 = tl.layers.DenseLayer(net11, n_units=10000, act=tf.identity, name='oo')
 

@@ -134,20 +134,23 @@ def save_images(images, size, image_path='_temp.png'):
     def imsave(images, size, path):
         return scipy.misc.imsave(path, merge(images, size))
 
-    assert len(
-        images) <= size[0] * size[1], "number of images should be equal or less than size[0] * size[1] {}".format(
-            len(images))
+    assert len(images) <= size[0] * size[1
+                                         ], "number of images should be equal or less than size[0] * size[1] {}".format(
+                                             len(images)
+                                         )
     return imsave(images, size, image_path)
 
 
-def draw_boxes_and_labels_to_image(image,
-                                   classes,
-                                   coords,
-                                   scores,
-                                   classes_list,
-                                   is_center=True,
-                                   is_rescale=True,
-                                   save_name=None):
+def draw_boxes_and_labels_to_image(
+    image,
+    classes,
+    coords,
+    scores,
+    classes_list,
+    is_center=True,
+    is_rescale=True,
+    save_name=None
+):
     """Draw bboxes and class labels on image. Return or save the image with bboxes, example in the docs of ``tl.prepro``.
 
     Parameters
@@ -212,7 +215,8 @@ def draw_boxes_and_labels_to_image(image,
             (int(x), int(y)),
             (int(x2), int(y2)),  # up-left and botton-right
             [0, 255, 0],
-            thick)
+            thick
+        )
 
         cv2.putText(
             image,
@@ -221,7 +225,8 @@ def draw_boxes_and_labels_to_image(image,
             0,
             1.5e-3 * imh,  # bigger = larger font
             [0, 0, 256],  # self.meta['colors'][max_indx],
-            int(thick / 2) + 1)  # bold
+            int(thick / 2) + 1
+        )  # bold
 
     if save_name is not None:
         # cv2.imwrite('_my.png', image)
@@ -312,7 +317,9 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
             [(12, 8), [255, 0, 255]],  # right hand
             [(8, 13), [0, 255, 255]],
             [(13, 14), [100, 255, 255]],
-            [(14, 15), [200, 255, 255]]  # left hand
+            [(14, 15), [200,
+                        255,
+                        255]]  # left hand
         ]
         for line in lines:
             start, end = line[0]
@@ -322,7 +329,8 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
                     (int(joint_pos[start][0]), int(joint_pos[start][1])),
                     (int(joint_pos[end][0]), int(joint_pos[end][1])),  # up-left and botton-right
                     line[1],
-                    thick)
+                    thick
+                )
                 # rr, cc, val = skimage.draw.line_aa(int(joint_pos[start][1]), int(joint_pos[start][0]), int(joint_pos[end][1]), int(joint_pos[end][0]))
                 # image[rr, cc] = line[1]
         # draw circles
@@ -341,7 +349,8 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
                 (int(head_rect[0]), int(head_rect[1])),
                 (int(head_rect[2]), int(head_rect[3])),  # up-left and botton-right
                 [0, 180, 0],
-                thick)
+                thick
+            )
 
     if save_name is not None:
         # cv2.imwrite(save_name, image)
@@ -444,7 +453,11 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
                 plt.imshow(np.reshape(CNN[:, :, :, count - 1], (n_row, n_col)), cmap='gray', interpolation="nearest")
             elif n_color == 3:
                 plt.imshow(
-                    np.reshape(CNN[:, :, :, count - 1], (n_row, n_col, n_color)), cmap='gray', interpolation="nearest")
+                    np.reshape(CNN[:, :, :, count - 1],
+                               (n_row, n_col, n_color)),
+                    cmap='gray',
+                    interpolation="nearest"
+                )
             else:
                 raise Exception("Unknown n_color")
             plt.gca().xaxis.set_major_locator(plt.NullLocator())  # distable tick
@@ -634,8 +647,10 @@ def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig
             # if np.mean(feature) < -0.015:      # condition threshold
             #     feature = np.zeros_like(feature)
             plt.imshow(
-                np.reshape(feature, (shape[0], shape[1])), cmap='gray',
-                interpolation="nearest")  #, vmin=np.min(feature), vmax=np.max(feature))
+                np.reshape(feature, (shape[0], shape[1])),
+                cmap='gray',
+                interpolation="nearest"
+            )  #, vmin=np.min(feature), vmax=np.max(feature))
             # plt.title(name)
             # ------------------------------------------------------------
             # plt.imshow(np.reshape(W[:,count-1] ,(np.sqrt(size),np.sqrt(size))), cmap='gray', interpolation="nearest")

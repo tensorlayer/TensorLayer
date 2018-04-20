@@ -49,11 +49,17 @@ tf.reset_default_graph()
 inputs = tf.placeholder(shape=[1, 16], dtype=tf.float32)
 net = InputLayer(inputs, name='observation')
 net = DenseLayer(
-    net, n_units=4, act=tf.identity, W_init=tf.random_uniform_initializer(0, 0.01), b_init=None, name='q_a_s')
+    net,
+    n_units=4,
+    act=tf.identity,
+    W_init=tf.random_uniform_initializer(0, 0.01),
+    b_init=None,
+    name='q_a_s'
+)
 y = net.outputs  # action-value / rewards of 4 actions
 predict = tf.argmax(
-    y,
-    1)  # chose action greedily with reward. in Q-Learning, policy is greedy, so we use "max" to select the next action.
+    y, 1
+)  # chose action greedily with reward. in Q-Learning, policy is greedy, so we use "max" to select the next action.
 
 ## Below we obtain the loss by taking the sum of squares difference between the target and prediction Q values.
 nextQ = tf.placeholder(shape=[1, 4], dtype=tf.float32)
@@ -96,12 +102,18 @@ with tf.Session() as sess:
             rAll += r
             s = s1
             ## Reduce chance of random action if an episode is done.
-            if d == True:
+            if d ==True:
                 e = 1. / ((i / 50) + 10)  # reduce e, GLIE: Greey in the limit with infinite Exploration
                 break
 
         ## Note that, the rewards here with random action
         running_reward = rAll if running_reward is None else running_reward * 0.99 + rAll * 0.01
-        print("Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" % (i, num_episodes, rAll, running_reward,
-                                                                                 time.time() - episode_time, ''
-                                                                                 if rAll == 0 else ' !!!!!!!!'))
+        print(
+            "Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" %
+            (i,
+             num_episodes,
+             rAll,
+             running_reward,
+             time.time() - episode_time,
+             '' if rAll == 0 else ' !!!!!!!!')
+        )

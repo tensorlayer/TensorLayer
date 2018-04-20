@@ -109,7 +109,10 @@ class TaskSpecDef(object):
         current_device = '/job:{}/task:{}'.format(self.type, self._index)
         ps_devices = '/job:ps'
         return tf.train.replica_device_setter(
-            ps_device=ps_devices, worker_device=current_device, cluster=self._cluster_spec)
+            ps_device=ps_devices,
+            worker_device=current_device,
+            cluster=self._cluster_spec
+        )
 
     def create_server(self):
         if self._server is None and self.ps_hosts and self.worker_hosts and not self.is_evaluator():
@@ -136,13 +139,15 @@ class TaskSpecDef(object):
         """
         if self.num_workers <= 1:
             raise Exception('You need more than one worker instance to use one as evaluator')
+
         return TaskSpecDef(
             task_type=self.type,
             index=self._index,
             trial=self.trial,
             ps_hosts=self.ps_hosts,
             worker_hosts=self.worker_hosts[:-1],
-            master=self.master)
+            master=self.master
+        )
 
 
 def create_task_spec_def():
@@ -162,10 +167,17 @@ def create_task_spec_def():
         return TaskSpecDef(
             task_type=task_data['type'],
             index=task_data['index'],
-            trial=task_data['trial'] if 'trial' in task_data else None,
+            trial=task_data['trial'] if
+            'trial' in task_data
+            else
+            None,
             ps_hosts=cluster_data['ps'],
             worker_hosts=cluster_data['worker'],
-            master=cluster_data['master'] if 'master' in cluster_data else None)
+            master=cluster_data['master'] if
+            'master' in cluster_data
+            else
+            None
+        )
     elif 'JOB_NAME' in os.environ:
         # JOB_NAME, TASK_INDEX, PS_HOSTS, WORKER_HOSTS and MASTER_HOST are used in TensorPort
         return TaskSpecDef(
@@ -173,22 +185,25 @@ def create_task_spec_def():
             index=os.environ['TASK_INDEX'],
             ps_hosts=os.environ.get('PS_HOSTS', None),
             worker_hosts=os.environ.get('WORKER_HOSTS', None),
-            master=os.environ.get('MASTER_HOST', None))
+            master=os.environ.get('MASTER_HOST', None)
+        )
     else:
         raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
-def create_distributed_session(task_spec=None,
-                               checkpoint_dir=None,
-                               scaffold=None,
-                               hooks=None,
-                               chief_only_hooks=None,
-                               save_checkpoint_secs=600,
-                               save_summaries_steps=object(),
-                               save_summaries_secs=object(),
-                               config=None,
-                               stop_grace_period_secs=120,
-                               log_step_count_steps=100):
+def create_distributed_session(
+    task_spec=None,
+    checkpoint_dir=None,
+    scaffold=None,
+    hooks=None,
+    chief_only_hooks=None,
+    save_checkpoint_secs=600,
+    save_summaries_steps=object(),
+    save_summaries_secs=object(),
+    config=None,
+    stop_grace_period_secs=120,
+    log_step_count_steps=100
+):
     """Creates a distributed session.
 
     It calls `MonitoredTrainingSession` to create a :class:`MonitoredSession` for distributed training.
@@ -284,7 +299,8 @@ def create_distributed_session(task_spec=None,
         stop_grace_period_secs=stop_grace_period_secs,
         config=config,
         hooks=hooks,
-        chief_only_hooks=chief_only_hooks)
+        chief_only_hooks=chief_only_hooks
+    )
 
 
 class StopAtTimeHook(session_run_hook.SessionRunHook):

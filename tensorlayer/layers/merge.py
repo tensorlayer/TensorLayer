@@ -50,10 +50,10 @@ class ConcatLayer(Layer):
     """
 
     def __init__(
-            self,
-            layers,
-            concat_dim=-1,
-            name='concat_layer',
+        self,
+        layers,
+        concat_dim=-1,
+        name='concat_layer',
     ):
 
         super(ConcatLayer, self).__init__(prev_layer=layers, name=name)
@@ -116,16 +116,17 @@ class ElementwiseLayer(Layer):
     """
 
     def __init__(
-            self,
-            layers,
-            combine_fn=tf.minimum,
-            act=None,
-            name='elementwise_layer',
+        self,
+        layers,
+        combine_fn=tf.minimum,
+        act=None,
+        name='elementwise_layer',
     ):
 
         super(ElementwiseLayer, self).__init__(prev_layer=layers, name=name)
-        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(),
-                                                             combine_fn.__name__))
+        logging.info(
+            "ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
+        )
 
         self.outputs = layers[0].outputs
 

@@ -100,7 +100,8 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     #         target = ops.convert_to_tensor(targets, name="target")
     with tf.name_scope(name):
         return tf.reduce_mean(
-            tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1))
+            tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1)
+        )
 
     # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
     #
@@ -398,7 +399,8 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
     # except:
     #     sequence_loss_by_example_fn = tf.nn.seq2seq.sequence_loss_by_example
 
-    loss = sequence_loss_by_example_fn([logits], [tf.reshape(target_seqs, [-1])],
+    loss = sequence_loss_by_example_fn([logits],
+                                       [tf.reshape(target_seqs, [-1])],
                                        [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)])
     # [tf.ones([batch_size * num_steps])])
     cost = tf.reduce_sum(loss)  #/ batch_size
@@ -462,7 +464,8 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     loss = tf.divide(
         tf.reduce_sum(losses),  # loss from mask. reduce_sum before element-wise mul with mask !!
         tf.reduce_sum(weights),
-        name="seq_loss_with_mask")
+        name="seq_loss_with_mask"
+    )
     # except: ## TF0.12
     #     loss = tf.div(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
     #                     tf.reduce_sum(weights),
@@ -493,7 +496,8 @@ def cosine_similarity(v1, v2):
     """
     # try: ## TF1.0
     cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (
-        tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1)))
+        tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1))
+    )
     # except: ## TF0.12
     #     cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
     return cost
@@ -548,7 +552,8 @@ def li_regularizer(scale, scope=None):
             return standard_ops_fn(
                 my_scale,
                 standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 1))),
-                name=scope)
+                name=scope
+            )
 
     return li
 
@@ -599,7 +604,8 @@ def lo_regularizer(scale):
             return standard_ops_fn(
                 my_scale,
                 standard_ops.reduce_sum(standard_ops.sqrt(standard_ops.reduce_sum(tf.square(weights), 0))),
-                name=scope)
+                name=scope
+            )
 
     return lo
 
@@ -697,7 +703,10 @@ def maxnorm_o_regularizer(scale):
             else:
                 standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)), name=scope)
+                my_scale,
+                standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 0)),
+                name=scope
+            )
 
     return mn_o
 
@@ -746,6 +755,9 @@ def maxnorm_i_regularizer(scale):
             else:
                 standard_ops_fn = standard_ops.multiply
             return standard_ops_fn(
-                my_scale, standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)), name=scope)
+                my_scale,
+                standard_ops.reduce_sum(standard_ops.reduce_max(standard_ops.abs(weights), 1)),
+                name=scope
+            )
 
     return mn_i

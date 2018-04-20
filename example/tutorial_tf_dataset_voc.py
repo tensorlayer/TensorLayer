@@ -51,9 +51,22 @@ def _data_aug_fn(im, ann):
     tmp0 = random.randint(1, int(im_size[0] * jitter))
     tmp1 = random.randint(1, int(im_size[1] * jitter))
     im, coords = tl.prepro.obj_box_imresize(
-        im, coords, [im_size[0] + tmp0, im_size[1] + tmp1], is_rescale=True, interp='bicubic')
+        im,
+        coords,
+        [im_size[0] + tmp0, im_size[1] + tmp1],
+        is_rescale=True,
+        interp='bicubic'
+    )
     im, clas, coords = tl.prepro.obj_box_crop(
-        im, clas, coords, wrg=im_size[1], hrg=im_size[0], is_rescale=True, is_center=True, is_random=True)
+        im,
+        clas,
+        coords,
+        wrg=im_size[1],
+        hrg=im_size[0],
+        is_rescale=True,
+        is_center=True,
+        is_random=True
+    )
     ## value [0, 255] to [-1, 1] (optional)
     # im = im / 127.5 - 1
     ## value [0, 255] to [0, 1] (optional)
@@ -100,4 +113,11 @@ for a in annbyte:
 ## save all images
 for i in range(len(im)):
     tl.vis.draw_boxes_and_labels_to_image(
-        im[i] * 255, ann[i][0], ann[i][1], [], classes, True, save_name='_bbox_vis_%d.png' % i)
+        im[i] * 255,
+        ann[i][0],
+        ann[i][1],
+        [],
+        classes,
+        True,
+        save_name='_bbox_vis_%d.png' % i
+    )

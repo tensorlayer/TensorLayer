@@ -1,4 +1,5 @@
 keras>=2.1,<2.2
+pycodestyle<2.4.0,>=2.0.0
 pydocstyle>=2.1,<2.2
 pytest>=3.4,<3.5
 pytest-cache>=1.0,<1.1

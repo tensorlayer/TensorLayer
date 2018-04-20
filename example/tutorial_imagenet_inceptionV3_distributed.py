@@ -132,7 +132,11 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
 
     def _map_fn(example_serialized):
         image_bytes, one_hot_labels = tf.py_func(
-            _parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False)
+            _parse_example_fn,
+            [example_serialized],
+            [tf.string, tf.float32],
+            stateful=False
+        )
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)
         image = tf.image.resize_images(image, size=[image_size, image_size])
@@ -165,7 +169,8 @@ def build_network(image_input, num_classes=1001, is_training=False):
                 'num_classes': num_classes,
                 'is_training': is_training
             },
-            name='InceptionV3')
+            name='InceptionV3'
+        )
 
     predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
     return network, predictions
@@ -354,7 +359,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 decay_steps=steps_per_epoch * 2,  # 2 epochs
                 decay_rate=0.94,
                 staircase=True,
-                name='learning_rate')
+                name='learning_rate'
+            )
             optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=0.9, epsilon=1.0)
             # clip and apply gradients
             gvs = optimizer.compute_gradients(loss=loss, var_list=network.all_params)
@@ -368,19 +374,23 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             tf.summary.scalar('learning_rate/value', learning_rate)
             tf.summary.scalar('loss/logits', loss)
             _, metrics_average_ops, metrics_ops = calculate_metrics(
-                predicted_batch=predictions, real_batch=one_hot_classes, is_training=True)
+                predicted_batch=predictions,
+                real_batch=one_hot_classes,
+                is_training=True
+            )
             with tf.control_dependencies([train_op]):
                 train_op = tf.group(metrics_average_ops)
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
         with tl.distributed.DistributedSession(
-                task_spec=task_spec,
-                hooks=hooks,
-                checkpoint_dir=checkpoints_path,
-                save_summaries_secs=None,
-                save_summaries_steps=300,
-                save_checkpoint_secs=60 * 60) as sess:
+            task_spec=task_spec,
+            hooks=hooks,
+            checkpoint_dir=checkpoints_path,
+            save_summaries_secs=None,
+            save_summaries_steps=300,
+            save_checkpoint_secs=60 * 60
+        ) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
@@ -402,7 +412,14 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
                             logging.info(
-                                m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics))
+                                m.format(current_epoch,
+                                         epochs,
+                                         step,
+                                         max_steps,
+                                         loss_val,
+                                         learning_rate_val,
+                                         metrics)
+                            )
             except OutOfRangeError:
                 pass
 

@@ -81,7 +81,8 @@ def read_and_decode(filename):
         features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
-        })
+        }
+    )
     # You can do more image distortion here for training data
     img = tf.decode_raw(features['img_raw'], tf.uint8)
     img = tf.reshape(img, [224, 224, 3])
@@ -95,7 +96,12 @@ img, label = read_and_decode("train.tfrecords")
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
 img_batch, label_batch = tf.train.shuffle_batch(
-    [img, label], batch_size=4, capacity=2000, min_after_dequeue=1000, num_threads=16)
+    [img, label],
+    batch_size=4,
+    capacity=2000,
+    min_after_dequeue=1000,
+    num_threads=16
+)
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
 # init = tf.initialize_all_variables()

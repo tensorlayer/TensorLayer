@@ -55,16 +55,24 @@ class VGG16Base(object):
             shape=[3, 3, 3, 64],  # 64 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv1_1')
+            name='conv1_1'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 64, 64],  # 64 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv1_2')
+            name='conv1_2'
+        )
         net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
+            net,
+            ksize=[1, 2, 2, 1],
+            strides=[1, 2, 2, 1],
+            padding='SAME',
+            pool=tf.nn.max_pool,
+            name='pool1'
+        )
 
         # conv2
         net = Conv2dLayer(
@@ -73,16 +81,24 @@ class VGG16Base(object):
             shape=[3, 3, 64, 128],  # 128 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv2_1')
+            name='conv2_1'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 128, 128],  # 128 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv2_2')
+            name='conv2_2'
+        )
         net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
+            net,
+            ksize=[1, 2, 2, 1],
+            strides=[1, 2, 2, 1],
+            padding='SAME',
+            pool=tf.nn.max_pool,
+            name='pool2'
+        )
 
         # conv3
         net = Conv2dLayer(
@@ -91,23 +107,32 @@ class VGG16Base(object):
             shape=[3, 3, 128, 256],  # 256 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv3_1')
+            name='conv3_1'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv3_2')
+            name='conv3_2'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv3_3')
+            name='conv3_3'
+        )
         net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
+            net,
+            ksize=[1, 2, 2, 1],
+            strides=[1, 2, 2, 1],
+            padding='SAME',
+            pool=tf.nn.max_pool,
+            name='pool3'
+        )
 
         # conv4
         net = Conv2dLayer(
@@ -116,23 +141,32 @@ class VGG16Base(object):
             shape=[3, 3, 256, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv4_1')
+            name='conv4_1'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv4_2')
+            name='conv4_2'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv4_3')
+            name='conv4_3'
+        )
         net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
+            net,
+            ksize=[1, 2, 2, 1],
+            strides=[1, 2, 2, 1],
+            padding='SAME',
+            pool=tf.nn.max_pool,
+            name='pool4'
+        )
 
         # conv5
         net = Conv2dLayer(
@@ -141,23 +175,32 @@ class VGG16Base(object):
             shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv5_1')
+            name='conv5_1'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv5_2')
+            name='conv5_2'
+        )
         net = Conv2dLayer(
             net,
             act=tf.nn.relu,
             shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
             strides=[1, 1, 1, 1],
             padding='SAME',
-            name='conv5_3')
+            name='conv5_3'
+        )
         net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
+            net,
+            ksize=[1, 2, 2, 1],
+            strides=[1, 2, 2, 1],
+            padding='SAME',
+            pool=tf.nn.max_pool,
+            name='pool5'
+        )
         return net
 
     @staticmethod
@@ -179,31 +222,57 @@ class VGG16Base(object):
 
         layers = [
             # conv1
-            lambda net: Conv2d(net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'),
-            lambda net: Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2'),
+            lambda net: Conv2d(
+                net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2'
+            ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1'),
 
             # conv2
-            lambda net: Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1'),
-            lambda net: Conv2d(net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2'),
+            lambda net: Conv2d(
+                net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=128, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2'
+            ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool2'),
 
             # conv3
-            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1'),
-            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2'),
-            lambda net: Conv2d(net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3'),
+            lambda net: Conv2d(
+                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=256, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3'
+            ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool3'),
 
             # conv4
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1'),
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2'),
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3'),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv4_3'
+            ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool4'),
 
             # conv5
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1'),
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2'),
-            lambda net: Conv2d(net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_1'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_2'
+            ),
+            lambda net: Conv2d(
+                net, n_filter=512, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv5_3'
+            ),
             lambda net: MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool5'),
             lambda net: FlattenLayer(net, name='flatten'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
@@ -222,7 +291,11 @@ class VGG16Base(object):
     def restore_params(self, sess):
         logging.info("Restore pre-trained parameters")
         maybe_download_and_extract(
-            'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134)
+            'vgg16_weights.npz',
+            'models',
+            'http://www.cs.toronto.edu/~frossard/vgg16/',
+            expected_bytes=553436134
+        )
         npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
 
         params = []

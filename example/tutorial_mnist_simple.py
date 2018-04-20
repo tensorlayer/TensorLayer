@@ -59,7 +59,8 @@ tl.utils.fit(
     print_freq=5,
     X_val=X_val,
     y_val=y_val,
-    eval_train=False)
+    eval_train=False
+)
 
 # evaluation
 tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)

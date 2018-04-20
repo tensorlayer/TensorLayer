@@ -48,12 +48,18 @@ for i in range(num_episodes):
         Q[s, a] = Q[s, a] + lr * (r + lambd * np.max(Q[s1, :]) - Q[s, a])
         rAll += r
         s = s1
-        if d == True:
+        if d ==True:
             break
     rList.append(rAll)
     running_reward = r if running_reward is None else running_reward * 0.99 + r * 0.01
-    print("Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" % (i, num_episodes, rAll, running_reward,
-                                                                             time.time() - episode_time, ''
-                                                                             if rAll == 0 else ' !!!!!!!!'))
+    print(
+        "Episode [%d/%d] sum reward:%f running reward:%f took:%.5fs %s" %
+        (i,
+         num_episodes,
+         rAll,
+         running_reward,
+         time.time() - episode_time,
+         '' if rAll == 0 else ' !!!!!!!!')
+    )
 
 print("Final Q-Table Values:/n %s" % Q)
