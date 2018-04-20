@@ -412,15 +412,13 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
                             logging.info(
-                                m.format(
-                                    current_epoch,
-                                    epochs,
-                                    step,
-                                    max_steps,
-                                    loss_val,
-                                    learning_rate_val,
-                                    metrics
-                                )
+                                m.format(current_epoch,
+                                         epochs,
+                                         step,
+                                         max_steps,
+                                         loss_val,
+                                         learning_rate_val,
+                                         metrics)
                             )
             except OutOfRangeError:
                 pass

@@ -356,15 +356,13 @@ def main_lstm_generate_text():
             # feed the seed to initialize the state for generation.
             for ids in outs_id[:-1]:
                 a_id = np.asarray(ids).reshape(1, 1)
-                state1 = sess.run(
-                    [
-                        lstm1_test.final_state,
-                    ],
-                    feed_dict={
-                        input_data_test: a_id,
-                        lstm1_test.initial_state: state1,
-                    }
-                )
+                state1 = sess.run([
+                    lstm1_test.final_state,
+                ],
+                                  feed_dict={
+                                      input_data_test: a_id,
+                                      lstm1_test.initial_state: state1,
+                                  })
             # feed the last word in seed, and start to generate sentence.
             a_id = outs_id[-1]
             for _ in range(print_length):

@@ -1081,13 +1081,17 @@ class DeformableConv2d(Layer):
                     dtype=LayersConfig.tf_dtype,
                     **b_init_args
                 )
+                tf.reshape()
                 self.outputs = tf.reshape(
-                    act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
-                    (tf.shape(self.inputs)[0], input_h, input_w, shape[-1])
+                    tensor=act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
+                    shape=(tf.shape(self.inputs)[0],
+                           input_h,
+                           input_w,
+                           shape[-1])
                 )
             else:
                 self.outputs = tf.reshape(
-                    act(tf.nn.conv3d(
+                    tensor=act(tf.nn.conv3d(
                         input_deform,
                         W,
                         strides=[
@@ -1099,7 +1103,11 @@ class DeformableConv2d(Layer):
                         ],
                         padding='VALID',
                         name=None
-                    )), (tf.shape(self.inputs)[0], input_h, input_w, shape[-1])
+                    )),
+                    shape=[tf.shape(self.inputs)[0],
+                           input_h,
+                           input_w,
+                           shape[-1]]
                 )
 
         # fixed
