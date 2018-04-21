@@ -14,7 +14,6 @@
 import time
 
 import tensorflow as tf
-
 import tensorlayer as tl
 
 
@@ -48,8 +47,8 @@ def main_test_layers(model='relu'):
         net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, name='output')
     elif model == 'dropconnect':
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect_relu1')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect_relu2')
+        net = tl.layers.DropconnectDenseLayer(net, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect1')
+        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect2')
         net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=10, act=tf.identity, name='output')
 
     # To print all attributes of a Layer.

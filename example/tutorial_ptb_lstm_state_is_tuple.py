@@ -191,7 +191,7 @@ def main(_):
         Note :
         - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
-        print("nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
+        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
         init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')

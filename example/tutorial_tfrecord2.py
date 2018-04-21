@@ -80,9 +80,8 @@ img, label = read_and_decode("train.cifar10")
 
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
-img_batch, label_batch = tf.train.shuffle_batch(
-    [img, label], batch_size=4, capacity=50000, min_after_dequeue=10000, num_threads=1
-)
+img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=50000, \
+    min_after_dequeue=10000, num_threads=1)
 
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
