@@ -5,11 +5,11 @@
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
-The batch_size can be seem as how many concurrent computations.\n
-As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
-The second batch learn the sequence information by using 10 to 19.\n
-So it ignores the information from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
+The batch_size can be seem as how many concurrent computations.n
+As the following example shows, the first batch learn the sequence information by using 0 to 9.n
+The second batch learn the sequence information by using 10 to 19.n
+So it ignores the information from 9 to 10 !n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.n
 
 The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
 batch_size reflects how many examples we consider in each iteration, while in
@@ -24,12 +24,12 @@ In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segmen
 At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
 segments, then go through 20 segments separately.
 
-The training data will be generated as follow:\n
+The training data will be generated as follow:n
 
 >>> train_data = [i for i in range(20)]
 >>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
 >>>     x, y = batch
->>>     print(x, '\n',y)
+>>>     print(x, 'n',y)
 ... [[ 0  1  2] <---x                       1st subset/ iteration
 ...  [10 11 12]]
 ... [[ 1  2  3] <---y
@@ -282,7 +282,7 @@ def main(_):
     net.print_layers()
     tl.layers.print_all_variables()
 
-    print("\nStart learning a language model by using PTB dataset")
+    print("nStart learning a language model by using PTB dataset")
     for i in range(max_max_epoch):
         # decreases the initial learning rate after several
         # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
@@ -309,15 +309,10 @@ def main(_):
             }
             # For training, enable dropout
             feed_dict.update(net.all_drop)
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost,
-                                            lstm1.final_state.c,
-                                            lstm1.final_state.h,
-                                            lstm2.final_state.c,
-                                            lstm2.final_state.h,
-                                            train_op],
-                                            feed_dict=feed_dict
-                                            )
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [cost, lstm1.final_state.c, lstm1.final_state.h, lstm2.final_state.c, lstm2.final_state.h, train_op],
+                feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
 
@@ -348,15 +343,13 @@ def main(_):
                 lstm2_val.initial_state.c: state2[0],
                 lstm2_val.initial_state.h: state2[1],
             }
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost_val,
-                                            lstm1_val.final_state.c,
-                                            lstm1_val.final_state.h,
-                                            lstm2_val.final_state.c,
-                                            lstm2_val.final_state.h,
-                                            tf.no_op()],
-                                            feed_dict=feed_dict
-                                            )
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [
+                    cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
+                    lstm2_val.final_state.h,
+                    tf.no_op()
+                ], feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
             costs += _cost
@@ -382,15 +375,15 @@ def main(_):
             lstm2_test.initial_state.c: state2[0],
             lstm2_test.initial_state.h: state2[1],
         }
-        _cost, state1_c, state1_h, state2_c, state2_h = \
-                                sess.run([cost_test,
-                                        lstm1_test.final_state.c,
-                                        lstm1_test.final_state.h,
-                                        lstm2_test.final_state.c,
-                                        lstm2_test.final_state.h,
-                                        ],
-                                        feed_dict=feed_dict
-                                        )
+        _cost, state1_c, state1_h, state2_c, state2_h = sess.run(
+            [
+                cost_test,
+                lstm1_test.final_state.c,
+                lstm1_test.final_state.h,
+                lstm2_test.final_state.c,
+                lstm2_test.final_state.h,
+            ], feed_dict=feed_dict
+        )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)
         costs += _cost

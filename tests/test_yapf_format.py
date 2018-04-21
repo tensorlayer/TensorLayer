@@ -39,7 +39,7 @@ class YAPF_Style_Test(CustomTestCase):
             code = _read_utf_8_file(file)
 
             # https://pypi.python.org/pypi/yapf/0.20.2#example-as-a-module
-            diff, changed = FormatCode(code, filename=file, style_config='.style.yapf', print_diff=True)
+            diff, changed = FormatCode(code, filename=file, style_config='setup.cfg', print_diff=True)
 
             if changed:
                 print(diff)
@@ -51,7 +51,7 @@ class YAPF_Style_Test(CustomTestCase):
 
             if self.badly_formatted_files:
                 for filename in self.badly_formatted_files:
-                    str_err += 'yapf -i --style=.style.yapf %s\n' % filename
+                    str_err += 'yapf -i --style=setup.cfg %s\n' % filename
 
                 str_err = "\n======================================================================================\n" \
                           "Bad Coding Style: %d file(s) need to be formatted, run the following commands to fix: \n%s" \

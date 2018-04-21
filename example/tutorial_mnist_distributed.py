@@ -22,8 +22,7 @@ task_spec.create_server()
 device_fn = task_spec.device_fn() if task_spec is not None else None
 
 # prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-    tl.files.load_mnist_dataset(shape=(-1,784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 # create graph
 with tf.device(device_fn):

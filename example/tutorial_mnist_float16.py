@@ -8,8 +8,7 @@ from tensorlayer.layers import *
 
 LayersConfig.tf_dtype = tf.float16  # tf.float32  tf.float16
 
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
 sess = tf.InteractiveSession()
 
@@ -58,8 +57,8 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, LayersConfig.tf_dtype))
 train_params = tl.layers.get_variables_with_name('model', train_only=True, printable=False)
 # for float16 epsilon=1e-4 see https://stackoverflow.com/questions/42064941/tensorflow-float16-support-is-broken
 # for float32 epsilon=1e-08
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999, \
-    epsilon=1e-4, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999, epsilon=1e-4,
+                                  use_locking=False).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)

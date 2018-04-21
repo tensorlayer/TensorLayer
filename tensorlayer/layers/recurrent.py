@@ -391,10 +391,9 @@ class BiRNNLayer(Layer):
                     DropoutWrapper_fn = tf.contrib.rnn.DropoutWrapper
                 except Exception:
                     DropoutWrapper_fn = tf.nn.rnn_cell.DropoutWrapper
-                cell_creator = lambda is_last=True: \
-                    DropoutWrapper_fn(rnn_creator(),
-                                      input_keep_prob=in_keep_prob,
-                                      output_keep_prob=out_keep_prob if is_last else 1.0)
+                cell_creator = lambda is_last=True: DropoutWrapper_fn(
+                    rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=out_keep_prob if is_last else 1.0
+                )
             else:
                 cell_creator = rnn_creator
             self.fw_cell = cell_creator()
@@ -1134,10 +1133,9 @@ class DynamicRNNLayer(Layer):
             #                     cell_instance_fn1(),
             #                     input_keep_prob=in_keep_prob,
             #                     output_keep_prob=out_keep_prob)
-            cell_creator = lambda is_last=True: \
-                    DropoutWrapper_fn(rnn_creator(),
-                                      input_keep_prob=in_keep_prob,
-                                      output_keep_prob=out_keep_prob if is_last else 1.0)
+            cell_creator = lambda is_last=True: DropoutWrapper_fn(
+                rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=out_keep_prob if is_last else 1.0
+            )
         else:
             cell_creator = rnn_creator
         self.cell = cell_creator()
@@ -1400,10 +1398,9 @@ class BiDynamicRNNLayer(Layer):
                     #                     cell_instance_fn1(),
                     #                     input_keep_prob=in_keep_prob,
                     #                     output_keep_prob=out_keep_prob)
-                cell_creator = lambda is_last=True: \
-                    DropoutWrapper_fn(rnn_creator(),
-                                      input_keep_prob=in_keep_prob,
-                                      output_keep_prob=out_keep_prob if is_last else 1.0)
+                cell_creator = lambda is_last=True: DropoutWrapper_fn(
+                    rnn_creator(), input_keep_prob=in_keep_prob, output_keep_prob=out_keep_prob if is_last else 1.0
+                )
             else:
                 cell_creator = rnn_creator
 

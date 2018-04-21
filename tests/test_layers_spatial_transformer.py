@@ -29,6 +29,7 @@ def model(x, is_train, reuse):
         n = tl.layers.Conv2d(
             n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv1'
         )
+
         n = tl.layers.Conv2d(
             n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv2'
         )
