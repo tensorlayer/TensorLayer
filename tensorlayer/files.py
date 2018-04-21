@@ -1308,9 +1308,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         data = _recursive_parse_xml_to_dict(xml)['annotation']
         objs_info_dicts.update({imgs_file_list[idx]: data})
 
-    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
-        classes, classes_in_person, classes_dict,\
-        n_objs_list, objs_info_list, objs_info_dicts
+    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, classes, classes_in_person, classes_dict, n_objs_list, objs_info_list, objs_info_dicts
 
 
 def load_mpii_pose_dataset(path='data', is_16_pos_only=False):

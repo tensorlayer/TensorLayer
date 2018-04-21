@@ -5,8 +5,7 @@ import tensorlayer as tl
 sess = tf.InteractiveSession()
 
 # prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                                tl.files.load_mnist_dataset(shape=(-1,784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 # define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
@@ -41,8 +40,7 @@ acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # define the optimizer
 train_params = tl.layers.get_variables_with_name('MLP', train_only=True, printable=False)
-train_op = tf.train.AdamOptimizer(learning_rate=0.0001, beta1=0.9, beta2=0.999, epsilon=1e-08,
-                                  use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)

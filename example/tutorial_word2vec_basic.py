@@ -133,8 +133,7 @@ def main_word2vec_basic():
         dictionary = all_var['dictionary']
         reverse_dictionary = all_var['reverse_dictionary']
     else:
-        data, count, dictionary, reverse_dictionary = \
-                tl.nlp.build_words_dataset(words, vocabulary_size, True, _UNK)
+        data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True, _UNK)
 
     print('Most 5 common words (+UNK)',
           count[:5])  # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
@@ -293,8 +292,7 @@ def main_word2vec_basic():
     print()
 
     #  from tensorflow/models/embedding/word2vec.py
-    analogy_questions = tl.nlp.read_analogies_file( \
-                eval_file='questions-words.txt', word2id=dictionary)
+    analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
     # The eval feeds three vectors of word ids for a, b, c, each of
     # which is of size N, where N is the number of analogies we want to
     # evaluate in one batch.
@@ -341,8 +339,10 @@ def main_word2vec_basic():
                 # if one of the top 4 answers in correct, win !
                 if idx[question, j] == sub[question, 3]:
                     # Bingo! We predicted correctly. E.g., [italy, rome, france, paris].
-                    print(j+1, tl.nlp.word_ids_to_words([idx[question, j]], reverse_dictionary) \
-                        , ':', tl.nlp.word_ids_to_words(sub[question, :], reverse_dictionary))
+                    print(
+                        j + 1, tl.nlp.word_ids_to_words([idx[question, j]], reverse_dictionary), ':',
+                        tl.nlp.word_ids_to_words(sub[question, :], reverse_dictionary)
+                    )
                     correct += 1
                     break
                 elif idx[question, j] in sub[question, :3]:
