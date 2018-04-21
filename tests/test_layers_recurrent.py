@@ -222,7 +222,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
         rnn = tl.layers.BiDynamicRNNLayer(
             nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob
-                     if cls.is_train else None, ), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
             return_last=False, return_seq_2d=True, name='bidynamicrnn'
         )
 
@@ -241,7 +241,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
         rnn = tl.layers.BiDynamicRNNLayer(
             nin, cell_fn=tf.contrib.rnn.BasicLSTMCell, n_hidden=cls.embedding_size,
             dropout=(cls.keep_prob
-                     if cls.is_train else None, ), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
+                     if cls.is_train else None), sequence_length=tl.layers.retrieve_seq_length_op2(input_seqs),
             n_layer=2, return_last=False, return_seq_2d=True, name='bidynamicrnn2'
         )
 
