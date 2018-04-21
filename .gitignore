@@ -12,3 +12,5 @@ tensorlayer.egg-info
 tensorlayer/__pacache__
 venv/
 .pytest_cache/
+update_tl.bat
+update_tl.py

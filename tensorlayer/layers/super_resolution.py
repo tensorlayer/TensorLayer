@@ -13,8 +13,7 @@ __all__ = [
 ]
 
 
-@deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-def subpixel_conv2d(prev_layer, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+class SubpixelConv2d(Layer):
     """It is a 2D sub-pixel up-sampling layer, usually be used
     for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`__ for example.
 
@@ -32,11 +31,6 @@ def subpixel_conv2d(prev_layer, scale=2, n_out_channel=None, act=tf.identity, na
         The activation function of this layer.
     name : str
         A unique layer name.
-
-    Returns
-    -------
-    :class:`Layer`
-        A 2D sub-pixel up-sampling layer
 
     Examples
     ---------
@@ -71,51 +65,43 @@ def subpixel_conv2d(prev_layer, scale=2, n_out_channel=None, act=tf.identity, na
 
     """
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
+    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
+        _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
 
-    _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+        super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info(
+            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__)
+        )
 
-    # scope_name = tf.get_variable_scope().name
-    # if scope_name:
-    #     whole_name = scope_name + '/' + name
-    # else:
-    #     whole_name = name
+        def _PS(X, r, n_out_channels):
+            if n_out_channels >= 1:
+                if int(X.get_shape()[-1]) != (r**2) * n_out_channels:
+                    raise Exception(_err_log)
+                # bsize, a, b, c = X.get_shape().as_list()
+                # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
+                # Xs=tf.split(X,r,3) #b*h*w*r*r
+                # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
+                # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
 
-    def _PS(X, r, n_out_channels):
-        if n_out_channels >= 1:
-            assert int(X.get_shape()[-1]) == (r**2) * n_out_channels, _err_log
+                X = tf.depth_to_space(X, r)
+            else:
+                logging.info(_err_log)
+            return X
 
-            # bsize, a, b, c = X.get_shape().as_list()
-            # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
-            # Xs=tf.split(X,r,3) #b*h*w*r*r
-            # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
-            # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
+        self.inputs = prev_layer.outputs
+        if n_out_channel is None:
+            if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
+                raise Exception(_err_log)
+            n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
 
-            X = tf.depth_to_space(X, r)
-        else:
-            logging.info(_err_log)
-        return X
+        with tf.variable_scope(name):
+            self.outputs = act(_PS(self.inputs, r=scale, n_out_channels=n_out_channel))
 
-    inputs = prev_layer.outputs
-    if n_out_channel is None:
-        assert int(inputs.get_shape()[-1]) / (scale**2) % 1 == 0, _err_log
-        n_out_channel = int(int(inputs.get_shape()[-1]) / (scale**2))
-
-    logging.info("SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__))
-
-    net_new = Layer(prev_layer=prev_layer, name=name)
-    # with tf.name_scope(name):
-    with tf.variable_scope(name):
-        net_new.outputs = act(_PS(inputs, r=scale, n_out_channels=n_out_channel))
-
-    # net_new.all_layers = list(prev_layer.all_layers)
-    # net_new.all_params = list(prev_layer.all_params)
-    # net_new.all_drop = dict(prev_layer.all_drop)
-    net_new.all_layers.append(net_new.outputs)
-    return net_new
+        self.all_layers.append(self.outputs)
 
 
-@deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-def subpixel_conv1d(prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'):
+class SubpixelConv1d(Layer):
     """It is a 1D sub-pixel up-sampling layer.
 
     Calls a TensorFlow function that directly implements this functionality.
@@ -132,11 +118,6 @@ def subpixel_conv1d(prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'
     name : str
         A unique layer name.
 
-    Returns
-    -------
-    :class:`Layer`
-        A 1D sub-pixel up-sampling layer
-
     Examples
     ----------
     >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
@@ -151,26 +132,25 @@ def subpixel_conv1d(prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'
 
     """
 
-    def _PS(I, r):
-        X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
-        X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
-        X = tf.transpose(X, [2, 1, 0])
-        return X
+    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'):
 
-    logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
+        def _PS(I, r):
+            X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
+            X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
+            X = tf.transpose(X, [2, 1, 0])
+            return X
 
-    inputs = prev_layer.outputs
-    net_new = Layer(prev_layer=prev_layer, name=name)
-    with tf.name_scope(name):
-        net_new.outputs = act(_PS(inputs, r=scale))
+        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
-    # net_new.all_layers = list(prev_layer.all_layers)
-    # net_new.all_params = list(prev_layer.all_params)
-    # net_new.all_drop = dict(prev_layer.all_drop)
-    net_new.all_layers.append(net_new.outputs)
-    return net_new
+        self.inputs = prev_layer.outputs
+        with tf.name_scope(name):
+            self.outputs = act(_PS(self.inputs, r=scale))
+
+        self.all_layers.append(self.outputs)
 
 
 # Alias
-SubpixelConv2d = subpixel_conv2d
-SubpixelConv1d = subpixel_conv1d
+# SubpixelConv2d = subpixel_conv2d
+# SubpixelConv1d = subpixel_conv1d

@@ -519,11 +519,11 @@ Super-Resolution layer
 
 1D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv1d
+.. autoclass:: SubpixelConv1d
 
 2D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv2d
+.. autoclass:: SubpixelConv2d
 
 
 Spatial Transformer
@@ -571,19 +571,19 @@ Pooling layer for any dimensions and any pooling functions.
 
 1D Max pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool1d
+.. autoclass:: MaxPool1d
 
 1D Mean pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool1d
+.. autoclass:: MeanPool1d
 
 2D Max pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool2d
+.. autoclass:: MaxPool2d
 
 2D Mean pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool2d
+.. autoclass:: MeanPool2d
 
 3D Max pooling
 ^^^^^^^^^^^^^^^^^^^

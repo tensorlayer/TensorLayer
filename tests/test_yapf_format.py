@@ -24,6 +24,7 @@ def _read_utf_8_file(filename):
 
 
 class YAPF_Style_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 

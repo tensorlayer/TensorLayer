@@ -67,6 +67,7 @@ A_BOUND = [env.action_space.low, env.action_space.high]
 
 
 class ACNet(object):
+
     def __init__(self, scope, globalAC=None):
         self.scope = scope
         if scope == GLOBAL_NET_SCOPE:
@@ -158,10 +159,7 @@ class ACNet(object):
     def save_ckpt(self):
         tl.files.exists_or_mkdir(self.scope)
         tl.files.save_ckpt(
-            sess=sess,
-            mode_name='model.ckpt',
-            var_list=self.a_params + self.c_params,
-            save_dir=self.scope,
+            sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope,
             printable=True
         )
 
@@ -171,6 +169,7 @@ class ACNet(object):
 
 
 class Worker(object):
+
     def __init__(self, name, globalAC):
         self.env = gym.make(GAME)
         self.name = name
@@ -213,9 +212,7 @@ class Worker(object):
                     buffer_v_target.reverse()
 
                     buffer_s, buffer_a, buffer_v_target = (
-                        np.vstack(buffer_s),
-                        np.vstack(buffer_a),
-                        np.vstack(buffer_v_target)
+                        np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
                     )
                     feed_dict = {self.AC.s: buffer_s, self.AC.a_his: buffer_a, self.AC.v_target: buffer_v_target}
                     # update gradients on global network

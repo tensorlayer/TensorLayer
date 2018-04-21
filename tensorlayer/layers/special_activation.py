@@ -37,13 +37,13 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        channel_shared=False,
-        a_init=tf.constant_initializer(value=0.0),
-        a_init_args=None,
-        # restore = True,
-        name="prelu_layer"
+            self,
+            prev_layer,
+            channel_shared=False,
+            a_init=tf.constant_initializer(value=0.0),
+            a_init_args=None,
+            # restore = True,
+            name="prelu_layer"
     ):
 
         if a_init_args is None:
@@ -62,11 +62,7 @@ class PReluLayer(Layer):
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):
             alphas = tf.get_variable(
-                name='alphas',
-                shape=w_shape,
-                initializer=a_init,
-                dtype=LayersConfig.tf_dtype,
-                **a_init_args
+                name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **a_init_args
             )
             try:  # TF 1.0
                 self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5

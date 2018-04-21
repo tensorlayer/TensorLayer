@@ -21,6 +21,7 @@ def mlp(x, is_train=True, reuse=False):
 
 
 class MLP_Reuse_Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
 

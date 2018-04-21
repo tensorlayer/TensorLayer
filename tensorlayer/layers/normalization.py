@@ -40,22 +40,18 @@ class LocalResponseNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        depth_radius=None,
-        bias=None,
-        alpha=None,
-        beta=None,
-        name='lrn_layer',
+            self,
+            prev_layer,
+            depth_radius=None,
+            bias=None,
+            alpha=None,
+            beta=None,
+            name='lrn_layer',
     ):
         super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
             "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
-            (name,
-             str(depth_radius),
-             str(bias),
-             str(alpha),
-             str(beta))
+            (name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
         self.inputs = prev_layer.outputs
@@ -106,24 +102,20 @@ class BatchNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        decay=0.9,
-        epsilon=0.00001,
-        act=tf.identity,
-        is_train=False,
-        beta_init=tf.zeros_initializer,
-        gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
-        name='batchnorm_layer',
+            self,
+            prev_layer,
+            decay=0.9,
+            epsilon=0.00001,
+            act=tf.identity,
+            is_train=False,
+            beta_init=tf.zeros_initializer,
+            gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
+            name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (name,
-             decay,
-             epsilon,
-             act.__name__,
-             is_train)
+            (name, decay, epsilon, act.__name__, is_train)
         )
 
         self.inputs = prev_layer.outputs
@@ -141,11 +133,7 @@ class BatchNormLayer(Layer):
                 if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
                     beta_init = beta_init()
                 beta = tf.get_variable(
-                    'beta',
-                    shape=params_shape,
-                    initializer=beta_init,
-                    dtype=LayersConfig.tf_dtype,
-                    trainable=is_train
+                    'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
                 )
                 variables.append(beta)
             else:
@@ -169,11 +157,7 @@ class BatchNormLayer(Layer):
             else:
                 moving_mean_init = tf.zeros_initializer
             moving_mean = tf.get_variable(
-                'moving_mean',
-                params_shape,
-                initializer=moving_mean_init,
-                dtype=LayersConfig.tf_dtype,
-                trainable=False
+                'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
             moving_variance = tf.get_variable(
                 'moving_variance',
@@ -188,16 +172,10 @@ class BatchNormLayer(Layer):
             mean, variance = tf.nn.moments(self.inputs, axis)
             try:  # TF12
                 update_moving_mean = moving_averages.assign_moving_average(
-                    moving_mean,
-                    mean,
-                    decay,
-                    zero_debias=False
+                    moving_mean, mean, decay, zero_debias=False
                 )  # if zero_debias=True, has bias
                 update_moving_variance = moving_averages.assign_moving_average(
-                    moving_variance,
-                    variance,
-                    decay,
-                    zero_debias=False
+                    moving_variance, variance, decay, zero_debias=False
                 )  # if zero_debias=True, has bias
                 # logging.info("TF12 moving")
             except Exception:  # TF11
@@ -214,12 +192,7 @@ class BatchNormLayer(Layer):
                 self.outputs = act(tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon))
             else:
                 self.outputs = act(
-                    tf.nn.batch_normalization(self.inputs,
-                                              moving_mean,
-                                              moving_variance,
-                                              beta,
-                                              gamma,
-                                              epsilon)
+                    tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
                 )
 
             variables.extend([moving_mean, moving_variance])
@@ -254,11 +227,11 @@ class InstanceNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=tf.identity,
-        epsilon=1e-5,
-        name='instan_norm',
+            self,
+            prev_layer,
+            act=tf.identity,
+            epsilon=1e-5,
+            name='instan_norm',
     ):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
@@ -269,12 +242,10 @@ class InstanceNormLayer(Layer):
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
             scale = tf.get_variable(
                 'scale', [self.inputs.get_shape()[-1]],
-                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02),
-                dtype=LayersConfig.tf_dtype
+                initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
             )
             offset = tf.get_variable(
-                'offset', [self.inputs.get_shape()[-1]],
-                initializer=tf.constant_initializer(0.0),
+                'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
                 dtype=LayersConfig.tf_dtype
             )
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
@@ -305,18 +276,8 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        center=True,
-        scale=True,
-        act=tf.identity,
-        reuse=None,
-        variables_collections=None,
-        outputs_collections=None,
-        trainable=True,
-        begin_norm_axis=1,
-        begin_params_axis=-1,
-        name='layernorm'
+            self, prev_layer, center=True, scale=True, act=tf.identity, reuse=None, variables_collections=None,
+            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, name=name)

@@ -110,13 +110,9 @@ def distort_fn(x, is_train=False):
 
 
 x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3], name='x')
-y_ = tf.placeholder(
-    tf.int64,
-    shape=[
-        None,
-    ],
-    name='y_'
-)
+y_ = tf.placeholder(tf.int64, shape=[
+    None,
+], name='y_')
 
 ## using local response normalization
 # network, cost, _ = model(x, y_, False)
@@ -132,15 +128,8 @@ print_freq = 1
 batch_size = 128
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(
-    learning_rate,
-    beta1=0.9,
-    beta2=0.999,
-    epsilon=1e-08,
-    use_locking=False
-).minimize(
-    cost, var_list=train_params
-)
+train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
+                                  use_locking=False).minimize(cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 

@@ -69,6 +69,7 @@ print("num of actions: %d" % N_A)  # 2 : left or right
 
 
 class Actor(object):
+
     def __init__(self, sess, n_features, n_actions, lr=0.001):
         self.sess = sess
         self.s = tf.placeholder(tf.float32, [1, n_features], "state")
@@ -86,10 +87,7 @@ class Actor(object):
         # Hao Dong
         with tf.variable_scope('loss'):
             self.exp_v = tl.rein.cross_entropy_reward_loss(
-                logits=self.acts_logits,
-                actions=self.a,
-                rewards=self.td_error,
-                name='actor_weighted_loss'
+                logits=self.acts_logits, actions=self.a, rewards=self.td_error, name='actor_weighted_loss'
             )
 
         with tf.variable_scope('train'):
@@ -118,6 +116,7 @@ class Actor(object):
 
 
 class Critic(object):
+
     def __init__(self, sess, n_features, lr=0.01):
         self.sess = sess
         self.s = tf.placeholder(tf.float32, [1, n_features], "state")
@@ -195,10 +194,7 @@ for i_episode in range(MAX_EPISODE):
             # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
             print(
                 "Episode: %d reward: %f running_reward %f took: %.5f" %
-                (i_episode,
-                 ep_rs_sum,
-                 running_reward,
-                 time.time() - episode_time)
+                (i_episode, ep_rs_sum, running_reward, time.time() - episode_time)
             )
 
             # Early Stopping for quick check

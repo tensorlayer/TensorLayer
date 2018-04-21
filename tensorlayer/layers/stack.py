@@ -39,10 +39,10 @@ class StackLayer(Layer):
     """
 
     def __init__(
-        self,
-        layers,
-        axis=1,
-        name='stack',
+            self,
+            layers,
+            axis=1,
+            name='stack',
     ):
 
         super(StackLayer, self).__init__(prev_layer=layers, name=name)

@@ -179,13 +179,7 @@ def Vgg19_simple_api(rgb):
     net_in = InputLayer(bgr, name='input')
     # conv1
     net = Conv2d(
-        net_in,
-        n_filter=64,
-        filter_size=(3, 3),
-        strides=(1, 1),
-        act=tf.nn.relu,
-        padding='SAME',
-        name='conv1_1'
+        net_in, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1'
     )
     net = Conv2d(net, n_filter=64, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
     net = MaxPool2d(net, filter_size=(2, 2), strides=(2, 2), padding='SAME', name='pool1')

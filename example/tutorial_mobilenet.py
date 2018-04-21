@@ -13,7 +13,9 @@ import numpy as np
 import tensorflow as tf
 
 import tensorlayer as tl
-from tensorlayer.layers import (BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer)
+from tensorlayer.layers import (
+    BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
+)
 
 
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):

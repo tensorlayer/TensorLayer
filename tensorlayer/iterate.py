@@ -60,8 +60,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         else:
             excerpt = slice(start_idx, start_idx + batch_size)
         if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle ==True):
-            yield [inputs[i] for i in excerpt], [targets[i]
-                                                 for i in excerpt]  # zsdonghao: for list indexing when shuffle==True
+            # zsdonghao: for list indexing when shuffle==True
+            yield [inputs[i] for i in excerpt], [targets[i] for i in excerpt]
         else:
             yield inputs[excerpt], targets[excerpt]
 
