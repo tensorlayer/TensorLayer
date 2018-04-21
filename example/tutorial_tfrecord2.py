@@ -12,12 +12,10 @@ More:
 """
 
 import os
-
 import numpy as np
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
-
 import tensorlayer as tl
 
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
@@ -82,9 +80,8 @@ img, label = read_and_decode("train.cifar10")
 
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
-img_batch, label_batch = tf.train.shuffle_batch(
-    [img, label], batch_size=4, capacity=50000, min_after_dequeue=10000, num_threads=1
-)
+img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=50000, \
+    min_after_dequeue=10000, num_threads=1)
 
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
@@ -98,7 +95,6 @@ with tf.Session() as sess:
     for i in range(3):  # number of mini-batch (step)
         print("Step %d" % i)
         val, l = sess.run([img_batch, label_batch])
-        # exit()
         print(val.shape, l)
         tl.visualize.images2d(val, second=1, saveable=False, name='batch' + str(i), dtype=np.uint8, fig_idx=2020121)
         tl.vis.save_images(val, [2, 2], '_batch_%d.png' % i)
