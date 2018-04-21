@@ -5,11 +5,11 @@
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
-The batch_size can be seem as how many concurrent computations.\n
-As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
-The second batch learn the sequence information by using 10 to 19.\n
-So it ignores the information from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
+The batch_size can be seem as how many concurrent computations.n
+As the following example shows, the first batch learn the sequence information by using 0 to 9.n
+The second batch learn the sequence information by using 10 to 19.n
+So it ignores the information from 9 to 10 !n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.n
 
 The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
 batch_size reflects how many examples we consider in each iteration, while in
@@ -24,12 +24,12 @@ In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segmen
 At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
 segments, then go through 20 segments separately.
 
-The training data will be generated as follow:\n
+The training data will be generated as follow:n
 
 >>> train_data = [i for i in range(20)]
 >>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
 >>>     x, y = batch
->>>     print(x, '\n',y)
+>>>     print(x, 'n',y)
 ... [[ 0  1  2] <---x                       1st subset/ iteration
 ...  [10 11 12]]
 ... [[ 1  2  3] <---y
@@ -124,7 +124,7 @@ def main(_):
 
     if FLAGS.model == "small":
         init_scale = 0.1
-        learning_rate = 1.0
+        learning_rate = 1.
         max_grad_norm = 5
         num_steps = 20
         hidden_size = 200
@@ -191,51 +191,55 @@ def main(_):
         Note :
         - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
-        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
-        initializer = tf.random_uniform_initializer(-init_scale, init_scale)
+        print("nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
+        init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = tl.layers.EmbeddingInputlayer(
-                x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding'
-            )
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
-            network = tl.layers.RNNLayer(
-                network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
-                    'forget_bias': 0.0,
-                    'state_is_tuple': True
-                }, n_hidden=hidden_size, initializer=initializer, n_steps=num_steps, return_last=False,
-                name='basic_lstm1'
-            )
-            lstm1 = network
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
-            network = tl.layers.RNNLayer(
-                network,
+            net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
+            net = tl.layers.RNNLayer(
+                net,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={
                     'forget_bias': 0.0,
                     'state_is_tuple': True
                 },
                 n_hidden=hidden_size,
-                initializer=initializer,
+                initializer=init,
+                n_steps=num_steps,
+                return_last=False,
+                name='basic_lstm1'
+            )
+            lstm1 = net
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
+            net = tl.layers.RNNLayer(
+                net,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_init_args={
+                    'forget_bias': 0.0,
+                    'state_is_tuple': True
+                },
+                n_hidden=hidden_size,
+                initializer=init,
                 n_steps=num_steps,
                 return_last=False,
                 return_seq_2d=True,
                 name='basic_lstm2'
             )
-            lstm2 = network
+            lstm2 = net
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
-            # network = tl.layers.ReshapeLayer(network,
-            #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            network = tl.layers.DenseLayer(network, vocab_size, W_init=initializer, b_init=initializer, name='output')
-        return network, lstm1, lstm2
+            # net = tl.layers.ReshapeLayer(net,
+            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
+            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=tf.identity, name='output')
+        return net, lstm1, lstm2
 
     # Inference for Training
-    network, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
+    net, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
     # Inference for Validating
-    network_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
+    net_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
     # Inference for Testing (Evaluation)
-    network_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
+    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
 
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
@@ -257,11 +261,11 @@ def main(_):
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets, batch_size)
+    cost = loss_fn(net.outputs, targets, batch_size)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets, batch_size)
+    cost_val = loss_fn(net_val.outputs, targets, batch_size)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(network_test.outputs, targets_test, 1)
+    cost_test = loss_fn(net_test.outputs, targets_test, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -274,11 +278,11 @@ def main(_):
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
 
-    network.print_params()
-    network.print_layers()
+    net.print_params()
+    net.print_layers()
     tl.layers.print_all_variables()
 
-    print("\nStart learning a language model by using PTB dataset")
+    print("nStart learning a language model by using PTB dataset")
     for i in range(max_max_epoch):
         # decreases the initial learning rate after several
         # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
@@ -304,11 +308,16 @@ def main(_):
                 lstm2.initial_state.h: state2[1],
             }
             # For training, enable dropout
-            feed_dict.update(network.all_drop)
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
-                [cost, lstm1.final_state.c, lstm1.final_state.h, lstm2.final_state.c, lstm2.final_state.h, train_op],
-                feed_dict=feed_dict
-            )
+            feed_dict.update(net.all_drop)
+            _cost, state1_c, state1_h, state2_c, state2_h, _ =
+                                    sess.run([cost,
+                                            lstm1.final_state.c,
+                                            lstm1.final_state.h,
+                                            lstm2.final_state.c,
+                                            lstm2.final_state.h,
+                                            train_op],
+                                            feed_dict=feed_dict
+                                            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
 
@@ -339,13 +348,15 @@ def main(_):
                 lstm2_val.initial_state.c: state2[0],
                 lstm2_val.initial_state.h: state2[1],
             }
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
-                [
-                    cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
-                    lstm2_val.final_state.h,
-                    tf.no_op()
-                ], feed_dict=feed_dict
-            )
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = 
+                                    sess.run([cost_val,
+                                            lstm1_val.final_state.c,
+                                            lstm1_val.final_state.h,
+                                            lstm2_val.final_state.c,
+                                            lstm2_val.final_state.h,
+                                            tf.no_op()],
+                                            feed_dict=feed_dict
+                                            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
             costs += _cost
@@ -371,15 +382,15 @@ def main(_):
             lstm2_test.initial_state.c: state2[0],
             lstm2_test.initial_state.h: state2[1],
         }
-        _cost, state1_c, state1_h, state2_c, state2_h = sess.run(
-            [
-                cost_test,
-                lstm1_test.final_state.c,
-                lstm1_test.final_state.h,
-                lstm2_test.final_state.c,
-                lstm2_test.final_state.h,
-            ], feed_dict=feed_dict
-        )
+        _cost, state1_c, state1_h, state2_c, state2_h =
+                                sess.run([cost_test,
+                                        lstm1_test.final_state.c,
+                                        lstm1_test.final_state.h,
+                                        lstm2_test.final_state.c,
+                                        lstm2_test.final_state.h,
+                                        ],
+                                        feed_dict=feed_dict
+                                        )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)
         costs += _cost

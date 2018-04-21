@@ -584,8 +584,7 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         # plot_only = 500
         low_dim_embs = tsne.fit_transform(embeddings[:plot_only, :])
         labels = [reverse_dictionary[i] for i in xrange(plot_only)]
-        plot_with_labels(low_dim_embs, labels, second=second, saveable=saveable, \
-                                                    name=name, fig_idx=fig_idx)
+        plot_with_labels(low_dim_embs, labels, second=second, saveable=saveable, name=name, fig_idx=fig_idx)
     except ImportError:
         logging.info("Please install sklearn and matplotlib to visualize embeddings.")
 

@@ -192,10 +192,7 @@ for i_episode in range(MAX_EPISODE):
                 running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
             # start rending if running_reward greater than a threshold
             # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-            print(
-                "Episode: %d reward: %f running_reward %f took: %.5f" %
-                (i_episode, ep_rs_sum, running_reward, time.time() - episode_time)
-            )
+            print("Episode: %d reward: %f running_reward %f took: %.5f" % (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
 
             # Early Stopping for quick check
             if t >= MAX_EP_STEPS:

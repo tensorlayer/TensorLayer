@@ -1,13 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-# tl.prepro for data augmentation
-
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
 
@@ -25,14 +21,15 @@ def model(x, y_, reuse):
         net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn1')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
         net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm1')
+
         net = Conv2d(net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', W_init=W_init, name='cnn2')
         net = LocalResponseNormLayer(net, depth_radius=4, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name='norm2')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
-        net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
+
+        net = FlattenLayer(net, name='flatten')
         net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
         net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=tf.identity, name='output')
-
+        net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -58,13 +55,15 @@ def model_batch_norm(x, y_, reuse, is_train):
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn1')
         net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch1')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
+
         net = Conv2d(net, 64, (5, 5), (1, 1), padding='SAME', W_init=W_init, b_init=None, name='cnn2')
         net = BatchNormLayer(net, is_train, act=tf.nn.relu, name='batch2')
         net = MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
+
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
         net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
         net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=tf.identity, name='output')
+        net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -109,10 +108,8 @@ def distort_fn(x, is_train=False):
     return x
 
 
-x = tf.placeholder(tf.float32, shape=[None, 24, 24, 3], name='x')
-y_ = tf.placeholder(tf.int64, shape=[
-    None,
-], name='y_')
+x = tf.placeholder(dtype=tf.float32, shape=[None, 24, 24, 3], name='x')
+y_ = tf.placeholder(dtype=tf.int64, shape=[None], name='y_')
 
 ## using local response normalization
 # network, cost, _ = model(x, y_, False)

@@ -19,7 +19,7 @@ import tensorlayer as tl
 
 
 def main_test_layers(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
 
     print('X_train.shape', X_train.shape)
     print('y_train.shape', y_train.shape)
@@ -157,16 +157,7 @@ def main_test_layers(model='relu'):
 
 
 def main_test_denoise_AE(model='relu'):
-
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
-
-    print('X_train.shape', X_train.shape)
-    print('y_train.shape', y_train.shape)
-    print('X_val.shape', X_val.shape)
-    print('y_val.shape', y_val.shape)
-    print('X_test.shape', X_test.shape)
-    print('y_test.shape', y_test.shape)
-    print('X %s   y %s' % (X_test.dtype, y_test.dtype))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
 
     sess = tf.InteractiveSession()
 
@@ -195,10 +186,7 @@ def main_test_denoise_AE(model='relu'):
 
     ## pretrain
     print("Pre-train Layer 1")
-    recon_layer1.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10,
-        save=True, save_name='w1pre_'
-    )
+    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=200, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
     # You can also disable denoisong by setting denoise_name=None.
     # recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val,
     #                           denoise_name=None, n_epoch=500, batch_size=128,
@@ -214,7 +202,7 @@ def main_test_denoise_AE(model='relu'):
 
 
 def main_test_stacked_denoise_AE(model='relu'):
-    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
+    X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
 
     sess = tf.InteractiveSession()
 
@@ -267,15 +255,9 @@ def main_test_stacked_denoise_AE(model='relu'):
     print("\nAll net Params before pre-train")
     net.print_params()
     print("\nPre-train Layer 1")
-    recon_layer1.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10,
-        save=True, save_name='w1pre_'
-    )
+    recon_layer1.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_')
     print("\nPre-train Layer 2")
-    recon_layer2.pretrain(
-        sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100, batch_size=128, print_freq=10,
-        save=False
-    )
+    recon_layer2.pretrain(sess, x=x, X_train=X_train, X_val=X_val, denoise_name='denoising1', n_epoch=100,batch_size=128, print_freq=10, save=False)
     print("\nAll net Params after pre-train")
     net.print_params()
 
