@@ -192,52 +192,48 @@ def main(_):
         - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
         print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
-        initializer = tf.random_uniform_initializer(-init_scale, init_scale)
+        init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = tl.layers.EmbeddingInputlayer(
-                inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=initializer, name='embedding'
-            )
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
-            network = tl.layers.RNNLayer(
-                network,
+            net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
+            net = tl.layers.RNNLayer(
+                net,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
                 n_hidden=hidden_size,
-                initializer=initializer,
+                initializer=init,
                 n_steps=num_steps,
                 return_last=False,
                 name='basic_lstm_layer1'
             )
-            lstm1 = network
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
-            network = tl.layers.RNNLayer(
-                network,
+            lstm1 = net
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
+            net = tl.layers.RNNLayer(
+                net,
                 cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
                 cell_init_args={'forget_bias': 0.0},  # 'state_is_tuple': True},
                 n_hidden=hidden_size,
-                initializer=initializer,
+                initializer=init,
                 n_steps=num_steps,
                 return_last=False,
                 return_seq_2d=True,
                 name='basic_lstm_layer2'
             )
-            lstm2 = network
+            lstm2 = net
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
-            # network = tl.layers.ReshapeLayer(network,
-            #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            network = tl.layers.DenseLayer(
-                network, n_units=vocab_size, W_init=initializer, b_init=initializer, act=tf.identity, name='output'
-            )
-        return network, lstm1, lstm2
+            # net = tl.layers.ReshapeLayer(net,
+            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
+            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=tf.identity, name='output')
+        return net, lstm1, lstm2
 
     # Inference for Training
-    network, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
+    net, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
     # Inference for Validating
-    network_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
+    net_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
     # Inference for Testing (Evaluation)
-    network_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
+    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
 
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
@@ -259,11 +255,11 @@ def main(_):
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets)  #, batch_size, num_steps)
+    cost = loss_fn(net.outputs, targets)  #, batch_size, num_steps)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets)  #, batch_size, num_steps)
+    cost_val = loss_fn(net_val.outputs, targets)  #, batch_size, num_steps)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(network_test.outputs, targets_test)  #, 1, 1)
+    cost_test = loss_fn(net_test.outputs, targets_test)  #, 1, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
@@ -276,8 +272,8 @@ def main(_):
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
 
-    network.print_params()
-    network.print_layers()
+    net.print_params()
+    net.print_layers()
     tl.layers.print_all_variables()
 
     print("\nStart learning a language model by using PTB dataset")
@@ -304,7 +300,7 @@ def main(_):
                 lstm2.initial_state: state2,
             }
             # For training, enable dropout
-            feed_dict.update(network.all_drop)
+            feed_dict.update(net.all_drop)
             _cost, state1, state2, _ = sess.run(
                 [cost, lstm1.final_state, lstm2.final_state, train_op], feed_dict=feed_dict
             )

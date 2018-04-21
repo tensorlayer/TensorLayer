@@ -24,11 +24,9 @@ Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
 
 import re
 import time
-
+import nltk
 import numpy as np
 import tensorflow as tf
-
-import nltk
 import tensorlayer as tl
 from tensorlayer.layers import *
 
@@ -155,9 +153,7 @@ def main_restore_embedding_layer():
 
     x = tf.placeholder(tf.int32, shape=[batch_size])
 
-    emb_net = tl.layers.EmbeddingInputlayer(
-        inputs=x, vocabulary_size=vocabulary_size, embedding_size=embedding_size, name='embedding_layer'
-    )
+    emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
 
     # sess.run(tf.initialize_all_variables())
     tl.layers.initialize_global_variables(sess)
@@ -233,20 +229,13 @@ def main_lstm_generate_text():
         print("\nsequence_length: %d, is_train: %s, reuse: %s" % (sequence_length, is_train, reuse))
         rnn_init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            network = EmbeddingInputlayer(
-                inputs=x, vocabulary_size=vocab_size, embedding_size=hidden_size, E_init=rnn_init, name='embedding'
-            )
-            network = RNNLayer(
-                network, cell_fn=tf.contrib.rnn.BasicLSTMCell, cell_init_args={
-                    'forget_bias': 0.0,
-                    'state_is_tuple': True
-                }, n_hidden=hidden_size, initializer=rnn_init, n_steps=sequence_length, return_last=False,
-                return_seq_2d=True, name='lstm1'
-            )
+            network = EmbeddingInputlayer(x, vocab_size, hidden_size, rnn_init, name='embedding')
+            network = RNNLayer(network, cell_fn=tf.contrib.rnn.BasicLSTMCell, \
+                cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True}, \
+                n_hidden=hidden_size, initializer=rnn_init, n_steps=sequence_length, return_last=False,
+                return_seq_2d=True, name='lstm1')
             lstm1 = network
-            network = DenseLayer(
-                network, n_units=vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output'
-            )
+            network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output')
         return network, lstm1
 
     # Inference for Training
@@ -308,21 +297,14 @@ def main_lstm_generate_text():
         ## reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, sequence_length)):
-            _cost, state1, _ = sess.run(
-                [cost, lstm1.final_state, train_op], feed_dict={
-                    input_data: x,
-                    targets: y,
-                    lstm1.initial_state: state1,
-                }
-            )
+            _cost, state1, _ = sess.run([cost, lstm1.final_state, train_op], \
+                feed_dict={input_data: x, targets: y, lstm1.initial_state: state1})
             costs += _cost
             iters += sequence_length
 
             if step % (epoch_size // 10) == 1:
-                print(
-                    "%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
-                )
+                print("%.3f perplexity: %.3f speed: %.0f wps" % \
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time)))
         train_perplexity = np.exp(costs / iters)
         # print("Epoch: %d Train Perplexity: %.3f" % (i + 1, train_perplexity))
         print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
@@ -337,24 +319,14 @@ def main_lstm_generate_text():
             # feed the seed to initialize the state for generation.
             for ids in outs_id[:-1]:
                 a_id = np.asarray(ids).reshape(1, 1)
-                state1 = sess.run(
-                    [
-                        lstm1_test.final_state,
-                    ], feed_dict={
-                        input_data_test: a_id,
-                        lstm1_test.initial_state: state1,
-                    }
-                )
+                state1 = sess.run([lstm1_test.final_state], \
+                    feed_dict={input_data_test: a_id, lstm1_test.initial_state: state1})
             # feed the last word in seed, and start to generate sentence.
             a_id = outs_id[-1]
             for _ in range(print_length):
                 a_id = np.asarray(a_id).reshape(1, 1)
-                out, state1 = sess.run(
-                    [y_soft, lstm1_test.final_state], feed_dict={
-                        input_data_test: a_id,
-                        lstm1_test.initial_state: state1,
-                    }
-                )
+                out, state1 = sess.run([y_soft, lstm1_test.final_state], \
+                    feed_dict={input_data_test: a_id, lstm1_test.initial_state: state1})
                 ## Without sampling
                 # a_id = np.argmax(out[0])
                 ## Sample from all words, if vocab_size is large,
