@@ -138,24 +138,21 @@ def main_word2vec_basic():
 
     print('Most 5 common words (+UNK)',
           count[:5])  # [['UNK', 418391], (b'the', 1061396), (b'of', 593677), (b'and', 416629), (b'one', 411764)]
-    print(
-        'Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]]
-    )  # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
+    print('Sample data', data[:10], [reverse_dictionary[i] for i in data[:10]])
+    # [5243, 3081, 12, 6, 195, 2, 3135, 46, 59, 156] [b'anarchism', b'originated', b'as', b'a', b'term', b'of', b'abuse', b'first', b'used', b'against']
 
     del words  # Hint to reduce memory.
 
     # Step 3: Function to generate a training batch for the Skip-Gram model.
     print()
 
-    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
-        data=data, batch_size=8, num_skips=4, skip_window=2, data_index=0
-    )
+    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
+        batch_size=8, num_skips=4, skip_window=2, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
-    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(
-        data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0
-    )
+    batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
+        batch_size=8, num_skips=2, skip_window=1, data_index=0)
     for i in range(8):
         print(batch[i], reverse_dictionary[batch[i]], '->', labels[i, 0], reverse_dictionary[labels[i, 0]])
 
@@ -234,9 +231,8 @@ def main_word2vec_basic():
     print_freq = 2000
     while step < num_steps:
         start_time = time.time()
-        batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(
-            data=data, batch_size=batch_size, num_skips=num_skips, skip_window=skip_window, data_index=data_index
-        )
+        batch_inputs, batch_labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, \
+            batch_size=batch_size, num_skips=num_skips, skip_window=skip_window, data_index=data_index)
         feed_dict = {train_inputs: batch_inputs, train_labels: batch_labels}
         # We perform one update step by evaluating the train_op (including it
         # in the list of returned values for sess.run()
@@ -246,10 +242,8 @@ def main_word2vec_basic():
         if step % print_freq == 0:
             if step > 0:
                 average_loss /= print_freq
-            print(
-                "Average loss at step %d/%d. loss:%f took:%fs" %
-                (step, num_steps, average_loss, time.time() - start_time)
-            )
+            print("Average loss at step %d/%d. loss:%f took:%fs" % \
+                (step, num_steps, average_loss, time.time() - start_time))
             average_loss = 0
         # Prints out nearby words given a list of words.
         # Note that this is expensive (~20% slowdown if computed every 500 steps)
@@ -292,9 +286,8 @@ def main_word2vec_basic():
     print()
 
     final_embeddings = sess.run(normalized_embeddings)  #.eval()
-    tl.visualize.tsne_embedding(
-        final_embeddings, reverse_dictionary, plot_only=500, second=5, saveable=False, name='word2vec_basic'
-    )
+    tl.visualize.tsne_embedding(final_embeddings, reverse_dictionary, plot_only=500, \
+        second=5, saveable=False, name='word2vec_basic')
 
     # Step 7: Evaluate by analogy questions. see tensorflow/models/embedding/word2vec_optimized.py
     print()
