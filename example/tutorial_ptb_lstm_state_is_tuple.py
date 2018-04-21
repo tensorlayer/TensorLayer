@@ -309,14 +309,10 @@ def main(_):
             }
             # For training, enable dropout
             feed_dict.update(net.all_drop)
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run([cost,
-                                            lstm1.final_state.c,
-                                            lstm1.final_state.h,
-                                            lstm2.final_state.c,
-                                            lstm2.final_state.h,
-                                            train_op],
-                                            feed_dict=feed_dict
-                                            )
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [cost, lstm1.final_state.c, lstm1.final_state.h, lstm2.final_state.c, lstm2.final_state.h, train_op],
+                feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
 
@@ -347,14 +343,13 @@ def main(_):
                 lstm2_val.initial_state.c: state2[0],
                 lstm2_val.initial_state.h: state2[1],
             }
-            _cost, state1_c, state1_h, state2_c, state2_h, _ =  sess.run([cost_val,
-                                            lstm1_val.final_state.c,
-                                            lstm1_val.final_state.h,
-                                            lstm2_val.final_state.c,
-                                            lstm2_val.final_state.h,
-                                            tf.no_op()],
-                                            feed_dict=feed_dict
-                                            )
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [
+                    cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
+                    lstm2_val.final_state.h,
+                    tf.no_op()
+                ], feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
             costs += _cost
@@ -380,14 +375,15 @@ def main(_):
             lstm2_test.initial_state.c: state2[0],
             lstm2_test.initial_state.h: state2[1],
         }
-        _cost, state1_c, state1_h, state2_c, state2_h = sess.run([cost_test,
-                                        lstm1_test.final_state.c,
-                                        lstm1_test.final_state.h,
-                                        lstm2_test.final_state.c,
-                                        lstm2_test.final_state.h,
-                                        ],
-                                        feed_dict=feed_dict
-                                        )
+        _cost, state1_c, state1_h, state2_c, state2_h = sess.run(
+            [
+                cost_test,
+                lstm1_test.final_state.c,
+                lstm1_test.final_state.h,
+                lstm2_test.final_state.c,
+                lstm2_test.final_state.h,
+            ], feed_dict=feed_dict
+        )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)
         costs += _cost

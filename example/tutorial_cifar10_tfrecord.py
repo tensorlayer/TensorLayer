@@ -307,7 +307,10 @@ with tf.device('/cpu:0'):
             n_batch += 1
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
-            print("Epoch %d : Step %d-%d of %d took %fs" % (epoch, step, step + n_step_epoch, n_step, time.time() - start_time))
+            print(
+                "Epoch %d : Step %d-%d of %d took %fs" %
+                (epoch, step, step + n_step_epoch, n_step, time.time() - start_time)
+            )
             print("   train loss: %f" % (train_loss / n_batch))
             print("   train acc: %f" % (train_acc / n_batch))
 
