@@ -12,8 +12,7 @@ import multiprocessing, random, json, time
 import tensorflow as tf
 import tensorlayer as tl
 
-imgs_file_list, _, _, _, classes, _, _,
-    _, objs_info_list, _ = tl.files.load_voc_dataset(dataset="2007")
+imgs_file_list, _, _, _, classes, _, _, _, objs_info_list, _ = tl.files.load_voc_dataset(dataset="2007")
 
 ann_list = []
 for info in objs_info_list:
