@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import six
 import time
 from abc import ABCMeta, abstractmethod
 
@@ -39,7 +40,9 @@ __all__ = [
 ]
 
 
-class LayersConfig(metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class LayersConfig(object):
+
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
 
