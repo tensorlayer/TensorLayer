@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import tensorflow as tf
@@ -38,9 +39,13 @@ __all__ = [
 ]
 
 
-class LayersConfig:
+class LayersConfig(metaclass=ABCMeta):
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
+
+    @abstractmethod
+    def __init__(self):
+        pass
 
 
 try:  # For TF12 and later
