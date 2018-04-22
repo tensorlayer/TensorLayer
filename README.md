@@ -12,7 +12,8 @@
 	<img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
 </div>
 </a>
- 
+
+[![PyPI version](https://badge.fury.io/py/tensorlayer.svg)](https://badge.fury.io/py/tensorlayer)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9)](https://app.codacy.com/app/tensorlayer/tensorlayer?utm_source=github.com&utm_medium=referral&utm_content=tensorlayer/tensorlayer&utm_campaign=badger)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
