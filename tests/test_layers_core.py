@@ -6,6 +6,16 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
+class Core_Helpers_Test(unittest.TestCase):
+
+    def test_LayersConfig(self):
+        with self.assertRaises(TypeError):
+            tl.layers.LayersConfig()
+
+        self.assertIsInstance(tl.layers.LayersConfig.tf_dtype, tf.DType)
+        self.assertIsInstance(tl.layers.LayersConfig.set_keep, dict)
+
+
 class Layer_Core_Test(unittest.TestCase):
 
     @classmethod
