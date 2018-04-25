@@ -24,8 +24,18 @@
 
 TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
-- Discussion: talk to a wide community by creating your [Github Issues](https://github.com/tensorlayer/tensorlayer/issues) and joining in the [Slack Channel](https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc)
-- Useful links: [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
+<br/>
+
+<a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+	<div align="center">
+		<img src="img/join_slack.png" width="50%" height="30%"/>
+	</div>
+</a>
+
+<br/>
+
+- **You have found a bug**: Please open a [Github Issues](https://github.com/tensorlayer/tensorlayer/issues)
+- **Useful links:** [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
 
 # News
 * [10 Apr] Load and visualize MPII dataset in one line of code.
@@ -49,14 +59,14 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 
 # Installation
 
-TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. 
-The simplest way to install TensorLayer is: 
+TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required.
+The simplest way to install TensorLayer is:
 
 ```bash
 # for master version (Recommended)
-$ pip install git+https://github.com/tensorlayer/tensorlayer.git 
+$ pip install git+https://github.com/tensorlayer/tensorlayer.git
 
-# for stable version 
+# for stable version
 $ pip install tensorlayer
 ```
 
@@ -67,10 +77,10 @@ Dockerfile is supplied to build images, build as usual
 $ docker build -t tensorlayer:latest .
 
 # for GPU version
-$ docker build -t tensorlayer:latest-gpu -f Dockerfile.gpu . 
+$ docker build -t tensorlayer:latest-gpu -f Dockerfile.gpu .
 ```
 
-Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions. 
+Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions.
 
 
 # Examples and Tutorials
@@ -142,10 +152,10 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 
 ## Notes
 TensorLayer provides two set of Convolutional layer APIs, see [(Advanced)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-pro) and [(Basic)](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#convolutional-layer-simplified) on readthedocs website.
-<!-- 
+<!--
 * If you get into trouble, you can start a discussion on [Slack](https://join.slack.com/t/tensorlayer/shared_invite/MjI1NjQ5NTUxOTY5LTE1MDI3MDYwNTItYzYwNmFiZmZkOA), [Gitter](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>),
 [Help Wanted Issues](https://waffle.io/zsdonghao/tensorlayer),
-[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md). 
+[QQ group](https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png) and [Wechat group](https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md).
 -->
 
 
@@ -174,11 +184,11 @@ on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
 ## Compared with Keras and TFLearn
 
 Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
-These libraries are comfortable to start with. They provide high-level abstractions; 
-but mask the underlying engine from users. It is thus hard to 
-customize model behaviors and touch the essential features of TensorFlow. 
+These libraries are comfortable to start with. They provide high-level abstractions;
+but mask the underlying engine from users. It is thus hard to
+customize model behaviors and touch the essential features of TensorFlow.
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
-Users often find it easy to start with the examples and tutorials of TensorLayer, and 
+Users often find it easy to start with the examples and tutorials of TensorLayer, and
 then dive into the TensorFlow low-level APIs only if need.
 TensorLayer does not create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into
 a TensorLayer environment.
@@ -186,7 +196,7 @@ a TensorLayer environment.
 
 # Documentation
 
-The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems. 
+The documentation [[Online]](http://tensorlayer.readthedocs.io/en/latest/) [[PDF]](https://media.readthedocs.org/pdf/tensorlayer/latest/tensorlayer.pdf) [[Epub]](http://readthedocs.org/projects/tensorlayer/downloads/epub/latest/) [[HTML]](http://readthedocs.org/projects/tensorlayer/downloads/htmlzip/latest/) describes the usages of TensorLayer APIs. It is also a self-contained document that walks through different types of deep neural networks, reinforcement learning and their applications in Natural Language Processing (NLP) problems.
 
 We have included the corresponding modularized implementations of Google TensorFlow Deep Learning tutorial, so you can read the TensorFlow tutorial [[en]](https://www.tensorflow.org/versions/master/tutorials/index.html) [[cn]](http://wiki.jikexueyuan.com/project/tensorflow-zh/) along with our document.
 [Chinese documentation](http://tensorlayercn.readthedocs.io/zh/latest/) is also available.
@@ -221,7 +231,7 @@ network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
 # speed up computation, so we use identity here.
 # see tf.nn.sparse_softmax_cross_entropy_with_logits()
 network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-                                
+
 # Define cost function and metric.
 y = network.outputs
 cost = tl.cost.cross_entropy(y, y_, 'cost')
@@ -262,9 +272,9 @@ We provide many helper functions (like `fit()` , `test()`) that is similar to Ke
 
 # Academic and Industry Users
 
-TensorLayer has an open and fast growing community. 
-It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
-Tsinghua University, UCLA, Linköping University and etc., 
+TensorLayer has an open and fast growing community.
+It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University,
+Tsinghua University, UCLA, Linköping University and etc.,
 as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
 
 - 🇬🇧 If you have any question, we suggest to create an issue to discuss with us.
