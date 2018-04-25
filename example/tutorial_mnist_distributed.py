@@ -22,8 +22,7 @@ task_spec.create_server()
 device_fn = task_spec.device_fn() if task_spec is not None else None
 
 # prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-    tl.files.load_mnist_dataset(shape=(-1,784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 # create graph
 with tf.device(device_fn):
@@ -69,22 +68,9 @@ with tf.device(device_fn):
         #tl.layers.initialize_global_variables(sess)
 
         # train the network
-        tl.utils.fit(
-            sess,
-            network,
-            train_op,
-            cost,
-            X_train,
-            y_train,
-            x,
-            y_,
-            acc=acc,
-            batch_size=500,
-            n_epoch=500,
-            print_freq=print_freq,
-            X_val=X_val,
-            y_val=y_val,
-            eval_train=eval_train)
+        tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, \
+            acc=acc, batch_size=500, n_epoch=500, print_freq=print_freq, \
+            X_val=X_val, y_val=y_val, eval_train=eval_train)
 
         if task_spec.is_master():
             # evaluation

@@ -25,8 +25,7 @@ from tensorflow.contrib.slim.python.slim.nets.inception_v3 import (inception_v3,
 from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
-from tensorflow.python.training.monitored_session import \
-    SingularMonitoredSession
+from tensorflow.python.training.monitored_session import SingularMonitoredSession
 
 import tensorlayer as tl
 
@@ -131,7 +130,9 @@ def load_data(file, task_spec=None, batch_size=16, epochs=1, shuffle_size=0):
         return image_bytes, one_hot_labels
 
     def _map_fn(example_serialized):
-        image_bytes, one_hot_labels = tf.py_func(_parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False)
+        image_bytes, one_hot_labels = tf.py_func(
+            _parse_example_fn, [example_serialized], [tf.string, tf.float32], stateful=False
+        )
 
         image = tf.image.decode_jpeg(image_bytes, channels=3)
         image = tf.image.resize_images(image, size=[image_size, image_size])
@@ -161,7 +162,8 @@ def build_network(image_input, num_classes=1001, is_training=False):
             prev_layer=net_in, slim_layer=inception_v3, slim_args={
                 'num_classes': num_classes,
                 'is_training': is_training
-            }, name='InceptionV3')
+            }, name='InceptionV3'
+        )
 
     predictions = tf.nn.sigmoid(network.outputs, name='Predictions')
     return network, predictions
@@ -171,11 +173,13 @@ def build_network(image_input, num_classes=1001, is_training=False):
 
 
 class EvaluatorStops(Exception):
+
     def __init__(self, message):
         super(EvaluatorStops, self).__init__(message)
 
 
 class EvaluatorHook(session_run_hook.SessionRunHook):
+
     def __init__(self, checkpoints_path, saver):
         self.checkpoints_path = checkpoints_path
         self.summary_writer = tf.summary.FileWriter(os.path.join(checkpoints_path, 'validation'))
@@ -289,18 +293,15 @@ def calculate_metrics(predicted_batch, real_batch, threshold=0.5, is_training=Fa
 def run_evaluator(task_spec, checkpoints_path, batch_size=32):
     with tf.Graph().as_default():
         # load dataset
-        images_input, one_hot_classes, num_classes, _dataset_size = \
-            load_data(file=VAL_FILE,
-                      task_spec=task_spec,
-                      batch_size=batch_size,
-                      epochs=1)
+        images_input, one_hot_classes, num_classes, _dataset_size = load_data(
+            file=VAL_FILE, task_spec=task_spec, batch_size=batch_size, epochs=1
+        )
         _network, predictions = build_network(images_input, num_classes=num_classes, is_training=False)
         saver = tf.train.Saver()
         # metrics
-        metrics_init_ops, _, metrics_ops = \
-            calculate_metrics(predicted_batch=predictions,
-                              real_batch=one_hot_classes,
-                              is_training=False)
+        metrics_init_ops, _, metrics_ops = calculate_metrics(
+            predicted_batch=predictions, real_batch=one_hot_classes, is_training=False
+        )
         # tensorboard summary
         summary_op = tf.summary.merge_all()
         # session hook
@@ -333,12 +334,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
         global_step = tf.train.get_or_create_global_step()
         with tf.device(device_fn):
             # load dataset
-            images_input, one_hot_classes, num_classes, dataset_size = \
-                load_data(file=TRAIN_FILE,
-                          task_spec=task_spec,
-                          batch_size=batch_size,
-                          epochs=epochs,
-                          shuffle_size=10000)
+            images_input, one_hot_classes, num_classes, dataset_size = load_data(
+                file=TRAIN_FILE, task_spec=task_spec, batch_size=batch_size, epochs=epochs, shuffle_size=10000
+            )
             # network
             network, predictions = build_network(images_input, num_classes=num_classes, is_training=True)
             # training operations
@@ -350,7 +348,8 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 decay_steps=steps_per_epoch * 2,  # 2 epochs
                 decay_rate=0.94,
                 staircase=True,
-                name='learning_rate')
+                name='learning_rate'
+            )
             optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=0.9, epsilon=1.0)
             # clip and apply gradients
             gvs = optimizer.compute_gradients(loss=loss, var_list=network.all_params)
@@ -363,15 +362,17 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
             # metrics
             tf.summary.scalar('learning_rate/value', learning_rate)
             tf.summary.scalar('loss/logits', loss)
-            _, metrics_average_ops, metrics_ops = calculate_metrics(predicted_batch=predictions, real_batch=one_hot_classes, is_training=True)
+            _, metrics_average_ops, metrics_ops = calculate_metrics(
+                predicted_batch=predictions, real_batch=one_hot_classes, is_training=True
+            )
             with tf.control_dependencies([train_op]):
                 train_op = tf.group(metrics_average_ops)
 
         # start training
         hooks = [StopAtStepHook(last_step=steps_per_epoch * epochs)]
-        with tl.distributed.DistributedSession(
-                task_spec=task_spec, hooks=hooks, checkpoint_dir=checkpoints_path, save_summaries_secs=None, save_summaries_steps=300,
-                save_checkpoint_secs=60 * 60) as sess:
+        with tl.distributed.DistributedSession(task_spec=task_spec, hooks=hooks, checkpoint_dir=checkpoints_path,
+                                               save_summaries_secs=None, save_summaries_steps=300,
+                                               save_checkpoint_secs=60 * 60) as sess:
             # print network information
             if task_spec is None or task_spec.is_master():
                 network.print_params(False, session=sess)
@@ -382,8 +383,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                 last_log_time = time.time()
                 next_log_time = last_log_time + 60
                 while not sess.should_stop():
-                    step, loss_val, learning_rate_val, _, metrics = \
-                        sess.run([global_step, loss, learning_rate, train_op, metrics_ops])
+                    step, loss_val, learning_rate_val, _, metrics = sess.run(
+                        [global_step, loss, learning_rate, train_op, metrics_ops]
+                    )
                     if task_spec is None or task_spec.is_master():
                         now = time.time()
                         if now > next_log_time:
@@ -392,7 +394,9 @@ def run_worker(task_spec, checkpoints_path, batch_size=32, epochs=10):
                             current_epoch = '{:.3f}'.format(float(step) / steps_per_epoch)
                             max_steps = epochs * steps_per_epoch
                             m = 'Epoch: {}/{} Steps: {}/{} Loss: {} Learning rate: {} Metrics: {}'
-                            logging.info(m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics))
+                            logging.info(
+                                m.format(current_epoch, epochs, step, max_steps, loss_val, learning_rate_val, metrics)
+                            )
             except OutOfRangeError:
                 pass
 

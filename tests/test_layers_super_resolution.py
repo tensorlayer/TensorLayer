@@ -1,48 +1,74 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
 import tensorflow as tf
-from tensorlayer.layers import SubpixelConv1d, SubpixelConv2d, InputLayer, Conv1d, Conv2d
+import tensorlayer as tl
 
-## 1D
-t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-n = InputLayer(t_signal, name='in')
-n = Conv1d(n, 32, 3, 1, padding='SAME', name='conv1d')
-n = SubpixelConv1d(n, scale=2, name='subpixel')
-print(n.outputs.shape)
-# ... (10, 200, 2)
-n.print_layers()
-n.print_params(False)
 
-shape = n.outputs.get_shape().as_list()
-if shape != [10, 200, 16]:
-    raise Exception("shape dont match")
+class Layer_Super_Resolution_Test(unittest.TestCase):
 
-if len(n.all_layers) != 2:
-    raise Exception("layers dont match")
+    @classmethod
+    def setUpClass(cls):
+        t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
+        n = tl.layers.InputLayer(t_signal, name='in')
+        n = tl.layers.Conv1d(n, n_filter=32, filter_size=3, stride=1, padding='SAME', name='conv1d')
+        net1 = tl.layers.SubpixelConv1d(n, scale=2, name='subpixel')
 
-if len(n.all_params) != 2:
-    raise Exception("params dont match")
+        net1.print_layers()
+        net1.print_params(False)
 
-if n.count_params() != 416:
-    raise Exception("params dont match")
+        cls.net1_shape = net1.outputs.get_shape().as_list()
+        cls.net1_layers = net1.all_layers
+        cls.net1_params = net1.all_params
+        cls.net1_n_params = net1.count_params()
 
-## 2D
-x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
-n = InputLayer(x, name='in')
-n = Conv2d(n, 32, (3, 2), (1, 1), padding='SAME', name='conv2d')
-n = SubpixelConv2d(n, scale=2, name='subpixel2d')
-print(n.outputs.shape)
+        ## 2D
+        x = tf.placeholder('float32', [10, 100, 100, 3], name='x')
+        n = tl.layers.InputLayer(x, name='in')
+        n = tl.layers.Conv2d(n, n_filter=32, filter_size=(3, 2), strides=(1, 1), padding='SAME', name='conv2d')
+        net2 = tl.layers.SubpixelConv2d(n, scale=2, name='subpixel2d')
 
-n.print_layers()
-n.print_params(False)
+        net2.print_layers()
+        net2.print_params(False)
 
-shape = n.outputs.get_shape().as_list()
-if shape != [10, 200, 200, 8]:
-    raise Exception("shape dont match")
+        cls.net2_shape = net2.outputs.get_shape().as_list()
+        cls.net2_layers = net2.all_layers
+        cls.net2_params = net2.all_params
+        cls.net2_n_params = net2.count_params()
 
-if len(n.all_layers) != 2:
-    raise Exception("layers dont match")
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
 
-if len(n.all_params) != 2:
-    raise Exception("params dont match")
+    def test_net1_shape(self):
+        self.assertEqual(self.net1_shape, [10, 200, 16])
 
-if n.count_params() != 608:
-    raise Exception("params dont match")
+    def test_net1_layers(self):
+        self.assertEqual(len(self.net1_layers), 2)
+
+    def test_net1_params(self):
+        self.assertEqual(len(self.net1_params), 2)
+
+    def test_net1_n_params(self):
+        self.assertEqual(self.net1_n_params, 416)
+
+    def test_net2_shape(self):
+        self.assertEqual(self.net2_shape, [10, 200, 200, 8])
+
+    def test_net2_layers(self):
+        self.assertEqual(len(self.net2_layers), 2)
+
+    def test_net2_params(self):
+        self.assertEqual(len(self.net2_params), 2)
+
+    def test_net2_n_params(self):
+        self.assertEqual(self.net2_n_params, 608)
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()

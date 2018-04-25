@@ -67,6 +67,7 @@ A_BOUND = [env.action_space.low, env.action_space.high]
 
 
 class ACNet(object):
+
     def __init__(self, scope, globalAC=None):
         self.scope = scope
         if scope == GLOBAL_NET_SCOPE:
@@ -144,7 +145,8 @@ class ACNet(object):
             self.v = v.outputs
 
     def update_global(self, feed_dict):  # run by a local
-        _, _, t = sess.run([self.update_a_op, self.update_c_op, self.test], feed_dict)  # local grads applies to global net
+        _, _, t = sess.run([self.update_a_op, self.update_c_op, self.test],
+                           feed_dict)  # local grads applies to global net
         return t
 
     def pull_global(self):  # run by a local
@@ -156,7 +158,10 @@ class ACNet(object):
 
     def save_ckpt(self):
         tl.files.exists_or_mkdir(self.scope)
-        tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope, printable=True)
+        tl.files.save_ckpt(
+            sess=sess, mode_name='model.ckpt', var_list=self.a_params + self.c_params, save_dir=self.scope,
+            printable=True
+        )
 
     def load_ckpt(self):
         tl.files.load_ckpt(sess=sess, var_list=self.a_params + self.c_params, save_dir=self.scope, printable=True)
@@ -164,6 +169,7 @@ class ACNet(object):
 
 
 class Worker(object):
+
     def __init__(self, name, globalAC):
         self.env = gym.make(GAME)
         self.name = name
@@ -192,22 +198,23 @@ class Worker(object):
                 buffer_r.append(r)
 
                 if total_step % UPDATE_GLOBAL_ITER == 0 or done:  # update global and assign to local net
+
                     if done:
                         v_s_ = 0  # terminal
                     else:
                         v_s_ = sess.run(self.AC.v, {self.AC.s: s_[np.newaxis, :]})[0, 0]
+
                     buffer_v_target = []
+
                     for r in buffer_r[::-1]:  # reverse buffer r
                         v_s_ = r + GAMMA * v_s_
                         buffer_v_target.append(v_s_)
                     buffer_v_target.reverse()
 
-                    buffer_s, buffer_a, buffer_v_target = np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
-                    feed_dict = {
-                        self.AC.s: buffer_s,
-                        self.AC.a_his: buffer_a,
-                        self.AC.v_target: buffer_v_target,
-                    }
+                    buffer_s, buffer_a, buffer_v_target = (
+                        np.vstack(buffer_s), np.vstack(buffer_a), np.vstack(buffer_v_target)
+                    )
+                    feed_dict = {self.AC.s: buffer_s, self.AC.a_his: buffer_a, self.AC.v_target: buffer_v_target}
                     # update gradients on global network
                     self.AC.update_global(feed_dict)
                     buffer_s, buffer_a, buffer_r = [], [], []

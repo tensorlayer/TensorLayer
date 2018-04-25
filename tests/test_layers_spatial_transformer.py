@@ -1,47 +1,85 @@
-import tensorflow as tf
-from tensorlayer.layers import InputLayer, FlattenLayer, DenseLayer, DropoutLayer, SpatialTransformer2dAffineLayer, Conv2d
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
 
-x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
+try:
+    from tests.unittests_helper import CustomTestCase
+except ImportError:
+    from unittests_helper import CustomTestCase
+
+import tensorflow as tf
+import tensorlayer as tl
 
 
 def model(x, is_train, reuse):
     with tf.variable_scope("STN", reuse=reuse):
-        nin = InputLayer(x, name='in')
+        nin = tl.layers.InputLayer(x, name='in')
         ## 1. Localisation network
         # use MLP as the localisation net
-        nt = FlattenLayer(nin, name='flatten')
-        nt = DenseLayer(nt, n_units=20, act=tf.nn.tanh, name='dense1')
-        nt = DropoutLayer(nt, 0.8, True, is_train, name='drop1')
+        nt = tl.layers.FlattenLayer(nin, name='flatten')
+        nt = tl.layers.DenseLayer(nt, n_units=20, act=tf.nn.tanh, name='dense1')
+        nt = tl.layers.DropoutLayer(nt, keep=0.8, is_fix=True, is_train=is_train, name='drop1')
         # you can also use CNN instead for MLP as the localisation net
         # nt = Conv2d(nin, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc1')
         # nt = Conv2d(nt, 8, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='tc2')
         ## 2. Spatial transformer module (sampler)
-        n = SpatialTransformer2dAffineLayer(nin, nt, out_size=[40, 40], name='spatial')
+        n = tl.layers.SpatialTransformer2dAffineLayer(nin, theta_layer=nt, out_size=[40, 40], name='spatial')
         s = n
         ## 3. Classifier
-        n = Conv2d(n, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='conv1')
-        n = Conv2d(n, 16, (3, 3), (2, 2), act=tf.nn.relu, padding='SAME', name='conv2')
-        n = FlattenLayer(n, name='flatten2')
-        n = DenseLayer(n, n_units=1024, act=tf.nn.relu, name='out1')
-        n = DenseLayer(n, n_units=10, act=tf.identity, name='out2')
+        n = tl.layers.Conv2d(
+            n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv1'
+        )
+
+        n = tl.layers.Conv2d(
+            n, n_filter=16, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, padding='SAME', name='conv2'
+        )
+        n = tl.layers.FlattenLayer(n, name='flatten2')
+        n = tl.layers.DenseLayer(n, n_units=1024, act=tf.nn.relu, name='out1')
+        n = tl.layers.DenseLayer(n, n_units=10, act=tf.identity, name='out2')
     return n, s
 
 
-net, s = model(x, is_train=True, reuse=False)
-_, _ = model(x, is_train=False, reuse=True)
+class Layer_Spatial_Transformer_Test(CustomTestCase):
 
-net.print_layers()
-net.print_params(False)
+    @classmethod
+    def setUpClass(cls):
+        cls.x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
 
-shape = s.outputs.get_shape().as_list()
-if shape[1:] != [40, 40, 1]:
-    raise Exception("shape dont match")
+        net, s = model(cls.x, is_train=True, reuse=False)
 
-if len(net.all_layers) != 9:
-    raise Exception("layers dont match")
+        net.print_layers()
+        net.print_params(False)
 
-if len(net.all_params) != 12:
-    raise Exception("params dont match")
+        cls.s_shape = s.outputs.get_shape().as_list()
+        cls.net_layers = net.all_layers
+        cls.net_params = net.all_params
+        cls.net_n_params = net.count_params()
 
-if net.count_params() != 1667980:
-    raise Exception("params dont match")
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_reuse(self):
+
+        with self.assertNotRaises(Exception):
+            _, _ = model(self.x, is_train=True, reuse=True)
+
+    def test_net_shape(self):
+        self.assertEqual(self.s_shape[1:], [40, 40, 1])
+
+    def test_net_layers(self):
+        self.assertEqual(len(self.net_layers), 9)
+
+    def test_net_params(self):
+        self.assertEqual(len(self.net_params), 12)
+
+    def test_net_n_params(self):
+        self.assertEqual(self.net_n_params, 1667980)
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()

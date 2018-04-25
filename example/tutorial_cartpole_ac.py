@@ -69,6 +69,7 @@ print("num of actions: %d" % N_A)  # 2 : left or right
 
 
 class Actor(object):
+
     def __init__(self, sess, n_features, n_actions, lr=0.001):
         self.sess = sess
         self.s = tf.placeholder(tf.float32, [1, n_features], "state")
@@ -85,7 +86,9 @@ class Actor(object):
 
         # Hao Dong
         with tf.variable_scope('loss'):
-            self.exp_v = tl.rein.cross_entropy_reward_loss(logits=self.acts_logits, actions=self.a, rewards=self.td_error, name='actor_weighted_loss')
+            self.exp_v = tl.rein.cross_entropy_reward_loss(
+                logits=self.acts_logits, actions=self.a, rewards=self.td_error, name='actor_weighted_loss'
+            )
 
         with tf.variable_scope('train'):
             self.train_op = tf.train.AdamOptimizer(lr).minimize(self.exp_v)
@@ -113,6 +116,7 @@ class Actor(object):
 
 
 class Critic(object):
+
     def __init__(self, sess, n_features, lr=0.01):
         self.sess = sess
         self.s = tf.placeholder(tf.float32, [1, n_features], "state")
@@ -143,7 +147,8 @@ class Critic(object):
 sess = tf.Session()
 
 actor = Actor(sess, n_features=N_F, n_actions=N_A, lr=LR_A)
-critic = Critic(sess, n_features=N_F, lr=LR_C)  # we need a good teacher, so the teacher should learn faster than the actor
+# we need a good teacher, so the teacher should learn faster than the actor
+critic = Critic(sess, n_features=N_F, lr=LR_C)
 
 tl.layers.initialize_global_variables(sess)
 
@@ -187,7 +192,8 @@ for i_episode in range(MAX_EPISODE):
                 running_reward = running_reward * 0.95 + ep_rs_sum * 0.05
             # start rending if running_reward greater than a threshold
             # if running_reward > DISPLAY_REWARD_THRESHOLD: RENDER = True
-            print("Episode: %d reward: %f running_reward %f took: %.5f" % (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
+            print("Episode: %d reward: %f running_reward %f took: %.5f" % \
+                (i_episode, ep_rs_sum, running_reward, time.time() - episode_time))
 
             # Early Stopping for quick check
             if t >= MAX_EP_STEPS:

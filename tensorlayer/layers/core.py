@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import six
 import time
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import tensorflow as tf
@@ -8,6 +10,8 @@ from tensorflow.python.util.deprecation import deprecated
 
 from .. import _logging as logging
 from .. import files, iterate, utils, visualize
+
+from ..deprecation import deprecated_alias
 
 __all__ = [
     'LayersConfig',
@@ -36,9 +40,15 @@ __all__ = [
 ]
 
 
-class LayersConfig:
+@six.add_metaclass(ABCMeta)
+class LayersConfig(object):
+
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
+
+    @abstractmethod
+    def __init__(self):
+        pass
 
 
 try:  # For TF12 and later
@@ -346,13 +356,16 @@ class Layer(object):
 
     Examples
     ---------
-    Define model
+
+    - Define model
+
     >>> x = tf.placeholder("float32", [None, 100])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.DenseLayer(n, 80, name='d1')
     >>> n = tl.layers.DenseLayer(n, 80, name='d2')
 
-    Get information
+    - Get information
+
     >>> print(n)
     ... Last layer is: DenseLayer (d2) [None, 80]
     >>> n.print_layers()
@@ -367,20 +380,30 @@ class Layer(object):
     >>> n.count_params()
     ... 14560
 
-    Slicing the outputs
+    - Slicing the outputs
+
     >>> n2 = n[:, :30]
     >>> print(n2)
     ... Last layer is: Layer (d2) [None, 30]
 
-    Iterating the outputs
+    - Iterating the outputs
+
     >>> for l in n:
     >>>    print(l)
     ... Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)
     ... Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
+    # Added to allow auto-completion
+    inputs = None
+    outputs = None
+    all_layers = []
+    all_params = []
+    all_drop = {}
 
-    def __init__(self, prev_layer=None, name=None):
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, name=None):
+
         if name is None:
             raise ValueError('Layer must have a name.')
 
@@ -397,13 +420,16 @@ class Layer(object):
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
+
         elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
             self.prev_layers = list(prev_layer)
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
+
         elif isinstance(prev_layer, tf.Tensor):
             raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
+
         elif prev_layer is not None:  # tl.models
             self.prev_layers = []  # TODO: use last layer of model as prev_layer
             self.all_layers = list(prev_layer.all_layers)
@@ -418,11 +444,16 @@ class Layer(object):
                 try:
                     # logging.info("  param {:3}: {:15} (mean: {:<18}, median: {:<18}, std: {:<18})   {}".format(i, str(p.eval().shape), p.eval().mean(), np.median(p.eval()), p.eval().std(), p.name))
                     val = p.eval(session=session)
-                    logging.info("  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
-                        i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()))
+                    logging.info(
+                        "  param {:3}: {:20} {:15}    {} (mean: {:<18}, median: {:<18}, std: {:<18})   ".format(
+                            i, p.name, str(val.shape), p.dtype.name, val.mean(), np.median(val), val.std()
+                        )
+                    )
                 except Exception as e:
                     logging.info(str(e))
-                    raise Exception("Hint: print params details after tl.layers.initialize_global_variables(sess) or use network.print_params(False).")
+                    raise Exception(
+                        "Hint: print params details after tl.layers.initialize_global_variables(sess) or use network.print_params(False)."
+                    )
             else:
                 logging.info("  param {:3}: {:20} {:15}    {}".format(i, p.name, str(p.get_shape()), p.dtype.name))
         logging.info("  num of params: %d" % self.count_params())
@@ -431,7 +462,9 @@ class Layer(object):
         """Print all info of layers in the network"""
         for i, layer in enumerate(self.all_layers):
             # logging.info("  layer %d: %s" % (i, str(layer)))
-            logging.info("  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name))
+            logging.info(
+                "  layer {:3}: {:20} {:15}    {}".format(i, layer.name, str(layer.get_shape()), layer.dtype.name)
+            )
 
     def count_params(self):
         """Return the number of parameters in the network"""
@@ -453,7 +486,7 @@ class Layer(object):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
 
     def __getitem__(self, key):
-        net_new = Layer(name=self.name)
+        net_new = Layer(prev_layer=None, name=self.name)
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
 
@@ -492,8 +525,10 @@ class InputLayer(Layer):
     """
 
     def __init__(self, inputs=None, name='input'):
-        Layer.__init__(self, name=name)
+
+        super(InputLayer, self).__init__(prev_layer=None, name=name)
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+
         self.outputs = inputs
         self.prev_layers = []
         self.all_layers = []
@@ -531,8 +566,10 @@ class OneHotInputLayer(Layer):
     """
 
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
-        Layer.__init__(self, name=name)
+
+        super(OneHotInputLayer, self).__init__(prev_layer=None, name=name)
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
+
         # assert depth != None, "depth is not given"
         if depth is None:
             logging.info("  [*] depth == None the number of output units is undefined")
@@ -653,9 +690,10 @@ class Word2vecEmbeddingInputlayer(Layer):
         if nce_b_init_args is None:
             nce_b_init_args = {}
 
-        Layer.__init__(self, name=name)
-        self.inputs = inputs
+        super(Word2vecEmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
         logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
+        self.inputs = inputs
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -666,25 +704,29 @@ class Word2vecEmbeddingInputlayer(Layer):
         # row vector with 'embedding_size' values.
         with tf.variable_scope(name):
             embeddings = tf.get_variable(
-                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.tf_dtype, **E_init_args)
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
+                dtype=LayersConfig.tf_dtype, **E_init_args
+            )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = tf.get_variable(
-                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init, dtype=LayersConfig.tf_dtype, **nce_W_init_args)
-            nce_biases = tf.get_variable(name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=LayersConfig.tf_dtype, **nce_b_init_args)
+                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init,
+                dtype=LayersConfig.tf_dtype, **nce_W_init_args
+            )
+            nce_biases = tf.get_variable(
+                name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=LayersConfig.tf_dtype,
+                **nce_b_init_args
+            )
 
             # Compute the average NCE loss for the batch.
             # tf.nce_loss automatically draws a new sample of the negative labels
             # each time we evaluate the loss.
             self.nce_cost = tf.reduce_mean(
                 tf.nn.nce_loss(
-                    weights=nce_weights,
-                    biases=nce_biases,
-                    inputs=embed,
-                    labels=train_labels,
-                    num_sampled=num_sampled,
-                    num_classes=vocabulary_size,
-                    **nce_loss_args))
+                    weights=nce_weights, biases=nce_biases, inputs=embed, labels=train_labels, num_sampled=num_sampled,
+                    num_classes=vocabulary_size, **nce_loss_args
+                )
+            )
 
             self.outputs = embed
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
@@ -744,13 +786,16 @@ class EmbeddingInputlayer(Layer):
         if E_init_args is None:
             E_init_args = {}
 
-        Layer.__init__(self, name=name)
-        self.inputs = inputs
+        super(EmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
         logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+
+        self.inputs = inputs
 
         with tf.variable_scope(name):
             embeddings = tf.get_variable(
-                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init, dtype=LayersConfig.tf_dtype, **E_init_args)
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
+                dtype=LayersConfig.tf_dtype, **E_init_args
+            )
             embed = tf.nn.embedding_lookup(embeddings, self.inputs)
 
         self.outputs = embed
@@ -807,8 +852,9 @@ class AverageEmbeddingInputlayer(Layer):
             embeddings_kwargs=None,
             name='average_embedding',
     ):
-        # super().__init__(name=name) # dont work for py2
-        Layer.__init__(self, name=name)
+
+        super(AverageEmbeddingInputlayer, self).__init__(prev_layer=None, name=name)
+        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
 
         # if embeddings_kwargs is None:
         #     embeddings_kwargs = {}
@@ -818,12 +864,9 @@ class AverageEmbeddingInputlayer(Layer):
 
         self.inputs = inputs
 
-        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
         with tf.variable_scope(name):
             self.embeddings = tf.get_variable(
-                name='embeddings',
-                shape=(vocabulary_size, embedding_size),
-                initializer=embeddings_initializer,
+                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=embeddings_initializer,
                 dtype=LayersConfig.tf_dtype,
                 **(embeddings_kwargs or {})
                 # **embeddings_kwargs
@@ -847,7 +890,7 @@ class AverageEmbeddingInputlayer(Layer):
             sentence_lengths = tf.count_nonzero(
                 masks,
                 axis=1,
-                keep_dims=True,
+                keepdims=True,
                 # dtype=tf.float32,
                 dtype=LayersConfig.tf_dtype,
                 name='sentence_lengths',
@@ -856,7 +899,8 @@ class AverageEmbeddingInputlayer(Layer):
             sentence_embeddings = tf.divide(
                 sum_word_embeddings,
                 sentence_lengths + 1e-8,  # Add epsilon to avoid dividing by 0
-                name='sentence_embeddings')
+                name='sentence_embeddings'
+            )
 
         self.outputs = sentence_embeddings
         self.all_layers = [self.outputs]
@@ -869,7 +913,7 @@ class DenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     n_units : int
         The number of units of this layer.
@@ -906,6 +950,7 @@ class DenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -917,24 +962,32 @@ class DenseLayer(Layer):
             b_init_args=None,
             name='dense',
     ):
+
+        super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+
+        self.inputs = prev_layer.outputs
+        self.n_units = n_units
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
-        self.inputs = prev_layer.outputs
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs.get_shape()[-1])
-        self.n_units = n_units
-        logging.info("DenseLayer  %s: %d %s" % (self.name, self.n_units, act.__name__))
+
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
+            W = tf.get_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+            )
             if b_init is not None:
                 try:
-                    b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
                 self.outputs = act(tf.matmul(self.inputs, W) + b)
@@ -955,7 +1008,7 @@ class ReconLayer(DenseLayer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     x_recon : placeholder or tensor
         The target for reconstruction.
@@ -994,6 +1047,7 @@ class ReconLayer(DenseLayer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1002,8 +1056,9 @@ class ReconLayer(DenseLayer):
             act=tf.nn.softplus,
             name='recon',
     ):
-        DenseLayer.__init__(self, prev_layer=prev_layer, n_units=n_units, act=act, name=name)
-        logging.info("%s is a ReconLayer" % self.name)
+        super(ReconLayer, self).__init__(prev_layer=prev_layer, n_units=n_units, act=act, name=name)
+
+        logging.info("ReconLayer %s" % self.name)
 
         # y : reconstruction outputs; train_params : parameters to train
         # Note that: train_params = [W_encoder, b_encoder, W_decoder, b_encoder]
@@ -1031,8 +1086,9 @@ class ReconLayer(DenseLayer):
         # ce = cost.cross_entropy(y, x_recon)                                               # <haodong>: list , list , Error (only be used for softmax output)
         # ce = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, x_recon))          # <haodong>: list , list , Error (only be used for softmax output)
         # ce = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, x_recon))   # <haodong>: list , index , Error (only be used for softmax output)
-        L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[0]) \
-                + tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[2])           # faster than the code below
+        L2_w = tf.contrib.layers.l2_regularizer(lambda_l2_w)(
+            self.train_params[0]
+        ) + tf.contrib.layers.l2_regularizer(lambda_l2_w)(self.train_params[2])  # faster than the code below
         # L2_w = lambda_l2_w * tf.reduce_mean(tf.square(self.train_params[0])) + lambda_l2_w * tf.reduce_mean( tf.square(self.train_params[2]))
 
         # DropNeuro
@@ -1042,7 +1098,9 @@ class ReconLayer(DenseLayer):
 
         # L1 of activation outputs
         activation_out = self.all_layers[-2]
-        L1_a = 0.001 * tf.reduce_mean(activation_out)  # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
+        L1_a = 0.001 * tf.reduce_mean(
+            activation_out
+        )  # <haodong>:  theano: T.mean( self.a[i] )         # some neuron are broken, white and black
         # L1_a = 0.001 * tf.reduce_mean( tf.reduce_sum(activation_out, 0) )         # <haodong>: some neuron are broken, white and black
         # L1_a = 0.001 * 100 * tf.reduce_mean( tf.reduce_sum(activation_out, 1) )   # <haodong>: some neuron are broken, white and black
         # KL Divergence
@@ -1050,9 +1108,13 @@ class ReconLayer(DenseLayer):
         rho = 0.15
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
         try:  # TF1.0
-            KLD = beta * tf.reduce_sum(rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat))))
+            KLD = beta * tf.reduce_sum(
+                rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
+            )
         except Exception:  # TF0.12
-            KLD = beta * tf.reduce_sum(rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat))))
+            KLD = beta * tf.reduce_sum(
+                rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat)))
+            )
             # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
             # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
         # Total cost
@@ -1080,12 +1142,14 @@ class ReconLayer(DenseLayer):
         else:
             raise Exception("Don't support the given reconstruct activation function")
 
-        self.train_op = tf.train.AdamOptimizer(
-            learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(
-                self.cost, var_list=self.train_params)
+        self.train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08,
+                                               use_locking=False).minimize(self.cost, var_list=self.train_params)
         # self.train_op = tf.train.GradientDescentOptimizer(1.0).minimize(self.cost, var_list=self.train_params)
 
-    def pretrain(self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True, save_name='w1pre_'):
+    def pretrain(
+            self, sess, x, X_train, X_val, denoise_name=None, n_epoch=100, batch_size=128, print_freq=10, save=True,
+            save_name='w1pre_'
+    ):
         # ====================================================
         #
         # You need to modify the cost function in __init__() so as to
@@ -1133,11 +1197,14 @@ class ReconLayer(DenseLayer):
                 if save:
                     try:
                         visualize.draw_weights(
-                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28], name=save_name + str(epoch + 1), fig_idx=2012)
+                            self.train_params[0].eval(), second=10, saveable=True, shape=[28, 28],
+                            name=save_name + str(epoch + 1), fig_idx=2012
+                        )
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:
                         raise Exception(
-                            "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset")
+                            "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset"
+                        )
 
 
 class DropoutLayer(Layer):
@@ -1147,7 +1214,7 @@ class DropoutLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     keep : float
         The keeping probability.
@@ -1198,6 +1265,7 @@ class DropoutLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1207,7 +1275,9 @@ class DropoutLayer(Layer):
             seed=None,
             name='dropout_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
+
         if is_train is False:
             logging.info("  skip DropoutLayer")
             self.outputs = prev_layer.outputs
@@ -1216,14 +1286,13 @@ class DropoutLayer(Layer):
             # self.all_drop = dict(layer.all_drop)
         else:
             self.inputs = prev_layer.outputs
-            logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
             # The name of placeholder for keep_prob is the same with the name
             # of the Layer.
             if is_fix:
                 self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
             else:
-                LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+                LayersConfig.set_keep[name] = tf.placeholder(LayersConfig.tf_dtype)
                 self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
 
             # self.all_layers = list(layer.all_layers)
@@ -1258,7 +1327,7 @@ class GaussianNoiseLayer(Layer):
 
     Parameters
     ------------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     mean : float
         The mean. Default is 0.
@@ -1281,6 +1350,7 @@ class GaussianNoiseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1290,7 +1360,8 @@ class GaussianNoiseLayer(Layer):
             seed=None,
             name='gaussian_noise_layer',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
             self.outputs = prev_layer.outputs
@@ -1318,7 +1389,7 @@ class DropconnectDenseLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         Previous layer.
     keep : float
         The keeping probability.
@@ -1354,6 +1425,7 @@ class DropconnectDenseLayer(Layer):
 
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -1366,22 +1438,28 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
+        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
+
         if W_init_args is None:
             W_init_args = {}
         if b_init_args is None:
             b_init_args = {}
 
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
         self.inputs = prev_layer.outputs
+
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
-        logging.info("DropconnectDenseLayer %s: %d %s" % (self.name, self.n_units, act.__name__))
 
         with tf.variable_scope(name):
-            W = tf.get_variable(name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args)
-            b = tf.get_variable(name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+            W = tf.get_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+            )
+            b = tf.get_variable(
+                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+            )
             # self.outputs = act(tf.matmul(self.inputs, W) + b)
 
             LayersConfig.set_keep[name] = tf.placeholder(tf.float32)

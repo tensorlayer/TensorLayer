@@ -260,6 +260,7 @@ Layer list
    DeConv2d
    DeConv3d
    DepthwiseConv2d
+   SeparableConv1d
    SeparableConv2d
    DeformableConv2d
    GroupConv2d
@@ -484,7 +485,7 @@ APIs may better for you.
 
 1D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: Conv1d
+.. autoclass:: Conv1d
 
 2D Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -492,7 +493,7 @@ APIs may better for you.
 
 2D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: DeConv2d
+.. autoclass:: DeConv2d
 
 3D Deconvolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -501,6 +502,10 @@ APIs may better for you.
 2D Depthwise Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DepthwiseConv2d
+
+1D Depthwise Separable Conv
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: SeparableConv1d
 
 2D Depthwise Separable Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -519,11 +524,11 @@ Super-Resolution layer
 
 1D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv1d
+.. autoclass:: SubpixelConv1d
 
 2D Subpixel Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: SubpixelConv2d
+.. autoclass:: SubpixelConv2d
 
 
 Spatial Transformer
@@ -559,31 +564,31 @@ Pooling layer for any dimensions and any pooling functions.
 
 1D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad1d
+.. autoclass:: ZeroPad1d
 
 2D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad2d
+.. autoclass:: ZeroPad2d
 
 3D Zero padding
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: ZeroPad3d
+.. autoclass:: ZeroPad3d
 
 1D Max pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool1d
+.. autoclass:: MaxPool1d
 
 1D Mean pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool1d
+.. autoclass:: MeanPool1d
 
 2D Max pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MaxPool2d
+.. autoclass:: MaxPool2d
 
 2D Mean pooling
 ^^^^^^^^^^^^^^^^^^^
-.. autofunction:: MeanPool2d
+.. autoclass:: MeanPool2d
 
 3D Max pooling
 ^^^^^^^^^^^^^^^^^^^

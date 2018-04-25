@@ -13,6 +13,7 @@ to visualize the model, activations etc. Here we provide more functions for data
    save_image
    save_images
    draw_boxes_and_labels_to_image
+   draw_mpii_pose_to_image
    draw_weights
    CNN2d
    frame
@@ -44,6 +45,9 @@ Save image for object detection
 .. autofunction:: draw_boxes_and_labels_to_image
 
 
+Save image for pose estimation (MPII)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: draw_mpii_pose_to_image
 
 Visualize model parameters
 ------------------------------

@@ -5,6 +5,8 @@ import tensorflow as tf
 from .. import _logging as logging
 from .core import *
 
+from ..deprecation import deprecated_alias
+
 __all__ = [
     'ExpandDimsLayer',
     'TileLayer',
@@ -18,7 +20,7 @@ class ExpandDimsLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     axis : int
         The dimension index at which to expand the shape of input.
@@ -33,16 +35,18 @@ class ExpandDimsLayer(Layer):
     ... [None, 100, 1]
     """
 
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
             axis,
             name='expand_dims',
     ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+        super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("ExpandDimsLayer  %s: axis:%d" % (name, axis))
+
         self.inputs = prev_layer.outputs
 
-        logging.info("ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
         with tf.variable_scope(name):
             try:  # TF12 TF1.0
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
@@ -62,7 +66,7 @@ class TileLayer(Layer):
 
     Parameters
     ----------
-    layer : :class:`Layer`
+    prev_layer : :class:`Layer`
         The previous layer.
     multiples: tensor
         Must be one of the following types: int32, int64.
@@ -80,16 +84,13 @@ class TileLayer(Layer):
     ... [None, 100, 3]
     """
 
-    def __init__(
-            self,
-            prev_layer=None,
-            multiples=None,
-            name='tile',
-    ):
-        Layer.__init__(self, prev_layer=prev_layer, name=name)
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, multiples=None, name='tile'):
+        super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info("TileLayer  %s: multiples:%s" % (name, multiples))
+
         self.inputs = prev_layer.outputs
 
-        logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))
         with tf.variable_scope(name):
             self.outputs = tf.tile(self.inputs, multiples=multiples)
         # self.all_layers = list(layer.all_layers)

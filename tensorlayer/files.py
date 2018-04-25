@@ -1,36 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-A collections of helper functions to work with dataset.
-
-Load benchmark dataset, save and restore model, save and load variables.
-TensorFlow provides ``.ckpt`` file format to save and restore the models, while
-we suggest to use standard python file format ``.npz`` to save models for the
-sake of cross-platform.
-
-.. code-block:: python
-
-  ## save model as .ckpt
-  saver = tf.train.Saver()
-  save_path = saver.save(sess, "model.ckpt")
-  # restore model from .ckpt
-  saver = tf.train.Saver()
-  saver.restore(sess, "model.ckpt")
-
-  ## save model as .npz
-  tl.files.save_npz(network.all_params , name='model.npz')
-  # restore model from .npz (method 1)
-  load_params = tl.files.load_npz(name='model.npz')
-  tl.files.assign_params(sess, load_params, network)
-  # restore model from .npz (method 2)
-  tl.files.load_and_assign_npz(sess=sess, name='model.npz', network=network)
-
-  ## you can assign the pre-trained parameters as follow
-  # 1st parameter
-  tl.files.assign_params(sess, [load_params[0]], network)
-  # the first three parameters
-  tl.files.assign_params(sess, load_params[:3], network)
-
-"""
 
 import gzip
 import math
@@ -41,6 +9,7 @@ import sys
 import tarfile
 import time
 import zipfile
+import progressbar
 
 import numpy as np
 import tensorflow as tf
@@ -65,6 +34,7 @@ __all__ = [
     'download_file_from_google_drive',
     'load_celebA_dataset',
     'load_voc_dataset',
+    'load_mpii_pose_dataset',
     'save_npz',
     'load_npz',
     'assign_params',
@@ -137,7 +107,9 @@ def load_fashion_mnist_dataset(shape=(-1, 784), path='data'):
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1,784), path='datasets')
     >>> X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_fashion_mnist_dataset(shape=(-1, 28, 28, 1))
     """
-    return _load_mnist_dataset(shape, path, name='fashion_mnist', url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/')
+    return _load_mnist_dataset(
+        shape, path, name='fashion_mnist', url='http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/'
+    )
 
 
 def _load_mnist_dataset(shape, path, name='mnist', url='http://yann.lecun.com/exdb/mnist/'):
@@ -523,7 +495,10 @@ def load_matt_mahoney_text8_dataset(path='data'):
     return word_list
 
 
-def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2, index_from=3):
+def load_imdb_dataset(
+        path='data', nb_words=None, skip_top=0, maxlen=None, test_split=0.2, seed=113, start_char=1, oov_char=2,
+        index_from=3
+):
     """Load IMDB dataset.
 
     Parameters
@@ -593,7 +568,10 @@ def load_imdb_dataset(path='data', nb_words=None, skip_top=0, maxlen=None, test_
         X = new_X
         labels = new_labels
     if not X:
-        raise Exception('After filtering for sequences shorter than maxlen=' + str(maxlen) + ', no sequence was kept. ' 'Increase maxlen.')
+        raise Exception(
+            'After filtering for sequences shorter than maxlen=' + str(maxlen) + ', no sequence was kept. '
+            'Increase maxlen.'
+        )
     if not nb_words:
         nb_words = max([max(x) for x in X])
 
@@ -829,7 +807,8 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
     images_zip = [
-        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip', 'images7.zip', 'images8.zip', 'images9.zip'
+        'images0.zip', 'images1.zip', 'images2.zip', 'images3.zip', 'images4.zip', 'images5.zip', 'images6.zip',
+        'images7.zip', 'images8.zip', 'images9.zip'
     ]
     tag_zip = 'tags.zip'
     url = 'http://press.liacs.nl/mirflickr/mirflickr1m/'
@@ -960,7 +939,8 @@ def download_file_from_google_drive(ID, destination):
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
         with open(destination, "wb") as f:
-            for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True, desc=destination):
+            for chunk in tqdm(response.iter_content(chunk_size), total=total_size, unit='B', unit_scale=True,
+                              desc=destination):
                 if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
 
@@ -1127,7 +1107,9 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     elif dataset == "2012test":
         extracted_filename = "VOC2012test"  #"VOCdevkit/VOC2012"
         logging.info("    [============= VOC 2012 Test Set =============]")
-        logging.info("    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n")
+        logging.info(
+            "    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n"
+        )
         import time
         time.sleep(3)
         if os.path.isdir(os.path.join(path, extracted_filename)) is False:
@@ -1180,8 +1162,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
             del_folder(os.path.join(path, 'VOCdevkit'))
     # object classes(labels)  NOTE: YOU CAN CUSTOMIZE THIS LIST
     classes = [
-        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person",
-        "pottedplant", "sheep", "sofa", "train", "tvmonitor"
+        "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog",
+        "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"
     ]
     if contain_classes_in_person:
         classes_in_person = ["head", "hand", "foot"]
@@ -1198,7 +1180,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     folder_imgs = os.path.join(path, extracted_filename, "JPEGImages")
     imgs_file_list = load_file_list(path=folder_imgs, regx='\\.jpg', printable=False)
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
-    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.jpg --> 2007000027
+
+    imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                       )  # 2007_000027.jpg --> 2007000027
+
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     if dataset != "2012test":
@@ -1207,7 +1192,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
+        imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         ##======== 3. instance segmentation maps path list
@@ -1215,7 +1201,8 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
-        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000032.png --> 2007000032
+        imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                                  )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1225,8 +1212,11 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     # folder_ann = path+"/"+extracted_filename+"/Annotations/"
     folder_ann = os.path.join(path, extracted_filename, "Annotations")
     imgs_ann_file_list = load_file_list(path=folder_ann, regx='\\.xml', printable=False)
-    logging.info("[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list)))
-    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2]))  # 2007_000027.xml --> 2007000027
+    logging.info(
+        "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
+    )
+    imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
+                           )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1278,7 +1268,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     continue
             cls_id = classes.index(cls)
             xmlbox = obj.find('bndbox')
-            b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+            b = (
+                float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text),
+                float(xmlbox.find('ymax').text)
+            )
             bb = convert((w, h), b)
 
             out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
@@ -1290,7 +1283,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                         continue
                     cls_id = classes.index(cls)
                     xmlbox = part.find('bndbox')
-                    b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
+                    b = (
+                        float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text),
+                        float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text)
+                    )
                     bb = convert((w, h), b)
                     # out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
                     out_file += str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n'
@@ -1312,9 +1308,250 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         data = _recursive_parse_xml_to_dict(xml)['annotation']
         objs_info_dicts.update({imgs_file_list[idx]: data})
 
-    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, \
-        classes, classes_in_person, classes_dict,\
-        n_objs_list, objs_info_list, objs_info_dicts
+    return imgs_file_list, imgs_semseg_file_list, imgs_insseg_file_list, imgs_ann_file_list, classes, classes_in_person, classes_dict, n_objs_list, objs_info_list, objs_info_dicts
+
+
+def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
+    """Load MPII Human Pose Dataset.
+
+    Parameters
+    -----------
+    path : str
+        The path that the data is downloaded to.
+    is_16_pos_only : boolean
+        If True, only return the peoples contain 16 pose keypoints. (Usually be used for single person pose estimation)
+
+    Returns
+    ----------
+    img_train_list : list of str
+        The image directories of training data.
+    ann_train_list : list of dict
+        The annotations of training data.
+    img_test_list : list of str
+        The image directories of testing data.
+    ann_test_list : list of dict
+        The annotations of testing data.
+
+    Examples
+    --------
+    >>> import pprint
+    >>> import tensorlayer as tl
+    >>> img_train_list, ann_train_list, img_test_list, ann_test_list = tl.files.load_mpii_pose_dataset()
+    >>> image = tl.vis.read_image(img_train_list[0])
+    >>> tl.vis.draw_mpii_pose_to_image(image, ann_train_list[0], 'image.png')
+    >>> pprint.pprint(ann_train_list[0])
+
+    References
+    -----------
+    - `MPII Human Pose Dataset. CVPR 14 <http://human-pose.mpi-inf.mpg.de>`__
+    - `MPII Human Pose Models. CVPR 16 <http://pose.mpi-inf.mpg.de>`__
+    - `MPII Human Shape, Poselet Conditioned Pictorial Structures and etc <http://pose.mpi-inf.mpg.de/#related>`__
+    - `MPII Keyponts and ID <http://human-pose.mpi-inf.mpg.de/#download>`__
+    """
+    path = os.path.join(path, 'mpii_human_pose')
+    logging.info("Load or Download MPII Human Pose > {}".format(path))
+
+    # annotation
+    url = "http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/"
+    tar_filename = "mpii_human_pose_v1_u12_2.zip"
+    extracted_filename = "mpii_human_pose_v1_u12_2"
+    if folder_exists(os.path.join(path, extracted_filename)) is False:
+        logging.info("[MPII] (annotation) {} is nonexistent in {}".format(extracted_filename, path))
+        maybe_download_and_extract(tar_filename, path, url, extract=True)
+        del_file(os.path.join(path, tar_filename))
+
+    # images
+    url = "http://datasets.d2.mpi-inf.mpg.de/andriluka14cvpr/"
+    tar_filename = "mpii_human_pose_v1.tar.gz"
+    extracted_filename2 = "images"
+    if folder_exists(os.path.join(path, extracted_filename2)) is False:
+        logging.info("[MPII] (images) {} is nonexistent in {}".format(extracted_filename, path))
+        maybe_download_and_extract(tar_filename, path, url, extract=True)
+        del_file(os.path.join(path, tar_filename))
+
+    # parse annotation, format see http://human-pose.mpi-inf.mpg.de/#download
+    import scipy.io as sio
+    logging.info("reading annotations from mat file ...")
+    # mat = sio.loadmat(os.path.join(path, extracted_filename, "mpii_human_pose_v1_u12_1.mat"))
+
+    # def fix_wrong_joints(joint):    # https://github.com/mitmul/deeppose/blob/master/datasets/mpii_dataset.py
+    #     if '12' in joint and '13' in joint and '2' in joint and '3' in joint:
+    #         if ((joint['12'][0] < joint['13'][0]) and
+    #                 (joint['3'][0] < joint['2'][0])):
+    #             joint['2'], joint['3'] = joint['3'], joint['2']
+    #         if ((joint['12'][0] > joint['13'][0]) and
+    #                 (joint['3'][0] > joint['2'][0])):
+    #             joint['2'], joint['3'] = joint['3'], joint['2']
+    #     return joint
+
+    ann_train_list = []
+    ann_test_list = []
+    img_train_list = []
+    img_test_list = []
+
+    def save_joints():
+        # joint_data_fn = os.path.join(path, 'data.json')
+        # fp = open(joint_data_fn, 'w')
+        mat = sio.loadmat(os.path.join(path, extracted_filename, "mpii_human_pose_v1_u12_1.mat"))
+
+        for _, (anno, train_flag) in enumerate(  # all images
+                zip(mat['RELEASE']['annolist'][0, 0][0], mat['RELEASE']['img_train'][0, 0][0])):
+
+            img_fn = anno['image']['name'][0, 0][0]
+            train_flag = int(train_flag)
+
+            # print(i, img_fn, train_flag) # DEBUG print all images
+
+            if train_flag:
+                img_train_list.append(img_fn)
+                ann_train_list.append([])
+            else:
+                img_test_list.append(img_fn)
+                ann_test_list.append([])
+
+            head_rect = []
+            if 'x1' in str(anno['annorect'].dtype):
+                head_rect = zip(
+                    [x1[0, 0] for x1 in anno['annorect']['x1'][0]], [y1[0, 0] for y1 in anno['annorect']['y1'][0]],
+                    [x2[0, 0] for x2 in anno['annorect']['x2'][0]], [y2[0, 0] for y2 in anno['annorect']['y2'][0]]
+                )
+            else:
+                head_rect = []  # TODO
+
+            if 'annopoints' in str(anno['annorect'].dtype):
+                annopoints = anno['annorect']['annopoints'][0]
+                head_x1s = anno['annorect']['x1'][0]
+                head_y1s = anno['annorect']['y1'][0]
+                head_x2s = anno['annorect']['x2'][0]
+                head_y2s = anno['annorect']['y2'][0]
+
+                for annopoint, head_x1, head_y1, head_x2, head_y2 in zip(annopoints, head_x1s, head_y1s, head_x2s,
+                                                                         head_y2s):
+                    # if annopoint != []:
+                    # if len(annopoint) != 0:
+                    if annopoint.size:
+                        head_rect = [
+                            float(head_x1[0, 0]),
+                            float(head_y1[0, 0]),
+                            float(head_x2[0, 0]),
+                            float(head_y2[0, 0])
+                        ]
+
+                        # joint coordinates
+                        annopoint = annopoint['point'][0, 0]
+                        j_id = [str(j_i[0, 0]) for j_i in annopoint['id'][0]]
+                        x = [x[0, 0] for x in annopoint['x'][0]]
+                        y = [y[0, 0] for y in annopoint['y'][0]]
+                        joint_pos = {}
+                        for _j_id, (_x, _y) in zip(j_id, zip(x, y)):
+                            joint_pos[int(_j_id)] = [float(_x), float(_y)]
+                        # joint_pos = fix_wrong_joints(joint_pos)
+
+                        # visiblity list
+                        if 'is_visible' in str(annopoint.dtype):
+                            vis = [v[0] if v else [0] for v in annopoint['is_visible'][0]]
+                            vis = dict([(k, int(v[0])) if len(v) > 0 else v for k, v in zip(j_id, vis)])
+                        else:
+                            vis = None
+
+                        # if len(joint_pos) == 16:
+                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                            # only use image with 16 key points / or use all
+                            data = {
+                                'filename': img_fn,
+                                'train': train_flag,
+                                'head_rect': head_rect,
+                                'is_visible': vis,
+                                'joint_pos': joint_pos
+                            }
+                            # print(json.dumps(data), file=fp)  # py3
+                            if train_flag:
+                                ann_train_list[-1].append(data)
+                            else:
+                                ann_test_list[-1].append(data)
+
+    # def write_line(datum, fp):
+    #     joints = sorted([[int(k), v] for k, v in datum['joint_pos'].items()])
+    #     joints = np.array([j for i, j in joints]).flatten()
+    #
+    #     out = [datum['filename']]
+    #     out.extend(joints)
+    #     out = [str(o) for o in out]
+    #     out = ','.join(out)
+    #
+    #     print(out, file=fp)
+
+    # def split_train_test():
+    #     # fp_test = open('data/mpii/test_joints.csv', 'w')
+    #     fp_test = open(os.path.join(path, 'test_joints.csv'), 'w')
+    #     # fp_train = open('data/mpii/train_joints.csv', 'w')
+    #     fp_train = open(os.path.join(path, 'train_joints.csv'), 'w')
+    #     # all_data = open('data/mpii/data.json').readlines()
+    #     all_data = open(os.path.join(path, 'data.json')).readlines()
+    #     N = len(all_data)
+    #     N_test = int(N * 0.1)
+    #     N_train = N - N_test
+    #
+    #     print('N:{}'.format(N))
+    #     print('N_train:{}'.format(N_train))
+    #     print('N_test:{}'.format(N_test))
+    #
+    #     np.random.seed(1701)
+    #     perm = np.random.permutation(N)
+    #     test_indices = perm[:N_test]
+    #     train_indices = perm[N_test:]
+    #
+    #     print('train_indices:{}'.format(len(train_indices)))
+    #     print('test_indices:{}'.format(len(test_indices)))
+    #
+    #     for i in train_indices:
+    #         datum = json.loads(all_data[i].strip())
+    #         write_line(datum, fp_train)
+    #
+    #     for i in test_indices:
+    #         datum = json.loads(all_data[i].strip())
+    #         write_line(datum, fp_test)
+
+    save_joints()
+    # split_train_test()  #
+
+    ## read images dir
+    logging.info("reading images list ...")
+    img_dir = os.path.join(path, extracted_filename2)
+    _img_list = load_file_list(path=os.path.join(path, extracted_filename2), regx='\\.jpg', printable=False)
+    # ann_list = json.load(open(os.path.join(path, 'data.json')))
+    for i, im in enumerate(img_train_list):
+        if im not in _img_list:
+            print('missing training image {} in {} (remove from img(ann)_train_list)'.format(im, img_dir))
+            # img_train_list.remove(im)
+            del img_train_list[i]
+            del ann_train_list[i]
+    for i, im in enumerate(img_test_list):
+        if im not in _img_list:
+            print('missing testing image {} in {} (remove from img(ann)_test_list)'.format(im, img_dir))
+            # img_test_list.remove(im)
+            del img_train_list[i]
+            del ann_train_list[i]
+
+    ## check annotation and images
+    n_train_images = len(img_train_list)
+    n_test_images = len(img_test_list)
+    n_images = n_train_images + n_test_images
+    logging.info("n_images: {} n_train_images: {} n_test_images: {}".format(n_images, n_train_images, n_test_images))
+    n_train_ann = len(ann_train_list)
+    n_test_ann = len(ann_test_list)
+    n_ann = n_train_ann + n_test_ann
+    logging.info("n_ann: {} n_train_ann: {} n_test_ann: {}".format(n_ann, n_train_ann, n_test_ann))
+    n_train_people = len(sum(ann_train_list, []))
+    n_test_people = len(sum(ann_test_list, []))
+    n_people = n_train_people + n_test_people
+    logging.info("n_people: {} n_train_people: {} n_test_people: {}".format(n_people, n_train_people, n_test_people))
+    # add path to all image file name
+    for i, value in enumerate(img_train_list):
+        img_train_list[i] = os.path.join(img_dir, value)
+    for i, value in enumerate(img_test_list):
+        img_test_list[i] = os.path.join(img_dir, value)
+    return img_train_list, ann_train_list, img_test_list, ann_test_list
 
 
 def save_npz(save_list=None, name='model.npz', sess=None):
@@ -1363,7 +1600,9 @@ def save_npz(save_list=None, name='model.npz', sess=None):
         try:
             save_list_var.extend([v.eval() for v in save_list])
         except Exception:
-            logging.info(" Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)")
+            logging.info(
+                " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
+            )
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
@@ -1540,7 +1779,9 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     logging.info("[*] Model restored from npz_dict %s" % name)
 
 
-def save_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False):
+def save_ckpt(
+        sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list=None, global_step=None, printable=False
+):
     """Save parameters into `ckpt` file.
 
     Parameters
@@ -1835,14 +2076,17 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
 
     # We first define a download function, supporting both Python 2 and 3.
     def _download(filename, working_directory, url_source):
-        def _dlProgress(count, blockSize, totalSize):
+
+        progress_bar = progressbar.ProgressBar()
+
+        def _dlProgress(count, blockSize, totalSize, pbar=progress_bar):
             if (totalSize != 0):
-                totalBlocks = math.ceil(float(totalSize) / float(blockSize))
-                percent = float(count) / float(totalBlocks) * 100.0
-                # https://www.quora.com/How-can-I-delete-the-last-printed-line-in-Python-language
-                sys.stdout.write('\033[F')  # back to previous line
-                sys.stdout.write('\033[K')  # clear line
-                sys.stdout.write('Downloading %s...%g%%\n' % (filename, percent))
+
+                if not pbar.max_value:
+                    totalBlocks = math.ceil(float(totalSize) / float(blockSize))
+                    pbar.max_value = int(totalBlocks)
+
+                pbar.update(count, force=True)
 
         if sys.version_info[0] == 2:
             from urllib import urlretrieve

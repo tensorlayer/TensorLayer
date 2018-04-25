@@ -32,25 +32,11 @@ __all__ = [
 ]
 
 
-def fit(sess,
-        network,
-        train_op,
-        cost,
-        X_train,
-        y_train,
-        x,
-        y_,
-        acc=None,
-        batch_size=100,
-        n_epoch=100,
-        print_freq=5,
-        X_val=None,
-        y_val=None,
-        eval_train=True,
-        tensorboard=False,
-        tensorboard_epoch_freq=5,
-        tensorboard_weight_histograms=True,
-        tensorboard_graph_vis=True):
+def fit(
+        sess, network, train_op, cost, X_train, y_train, x, y_, acc=None, batch_size=100, n_epoch=100, print_freq=5,
+        X_val=None, y_val=None, eval_train=True, tensorboard=False, tensorboard_epoch_freq=5,
+        tensorboard_weight_histograms=True, tensorboard_graph_vis=True
+):
     """Training a given non time-series network by the given cost function, training data, batch_size, n_epoch etc.
 
     - MNIST example click `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py>`_.
@@ -218,7 +204,9 @@ def fit(sess,
                 if acc is not None:
                     logging.info("   val acc: %f" % (val_acc / n_batch))
             else:
-                logging.info("Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep))
+                logging.info(
+                    "Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)
+                )
     logging.info("Total training time: %fs" % (time.time() - start_time_begin))
 
 
@@ -568,7 +556,8 @@ def exit_tensorflow(sess=None, port=6006):
         _exit()
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
-        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill", shell=True)  # kill tensorboard
+        subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
+                         shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
     else:
@@ -597,8 +586,8 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
         subprocess.Popen(
-            sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port),
-            shell=True)  # open tensorboard in localhost:6006/ or whatever port you chose
+            sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port), shell=True
+        )  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
     else:

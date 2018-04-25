@@ -1,14 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import unittest
+
 import tensorflow as tf
 import tensorlayer as tl
-
-sess = tf.InteractiveSession()
-
-# prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                                tl.files.load_mnist_dataset(shape=(-1,784))
-# define placeholder
-x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
 
 # define the network
@@ -25,16 +20,31 @@ def mlp(x, is_train=True, reuse=False):
     return network
 
 
-# define inferences
-net_train = mlp(x, is_train=True, reuse=False)
-net_test = mlp(x, is_train=False, reuse=True)
+class MLP_Reuse_Test(unittest.TestCase):
 
-try:
-    is_except = False
-    net_test = mlp(x, is_train=False, reuse=False)
-except Exception as e:
-    is_except = True
-    print(e)
+    @classmethod
+    def setUpClass(cls):
 
-if is_except == False:
-    raise Exception("it should not be success")
+        # define placeholder
+        cls.x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
+
+        # define inferences
+        mlp(cls.x, is_train=True, reuse=False)
+        mlp(cls.x, is_train=False, reuse=True)
+
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_reuse(self):
+
+        with self.assertRaises(Exception):
+            mlp(self.x, is_train=False, reuse=False)  # Already defined model with the same var_scope
+
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()

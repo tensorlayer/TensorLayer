@@ -81,13 +81,11 @@ Some of the code in this package are borrowed from Keras.
    parse_darknet_ann_str_to_list
    parse_darknet_ann_list_to_cls_box
 
-   obj_box_left_right_flip
+   obj_box_horizontal_flip
    obj_box_imresize
    obj_box_crop
    obj_box_shift
    obj_box_zoom
-
-
 
    pad_sequences
    remove_pad_sequences
@@ -270,7 +268,7 @@ Hi, here is an example for image augmentation on VOC dataset.
        ann_list[idx][1], [], classes, True, save_name='_im_original.png')
 
   # left right flip
-  im_flip, coords = tl.prepro.obj_box_left_right_flip(image,
+  im_flip, coords = tl.prepro.obj_box_horizontal_flip(image,
           ann_list[idx][1], is_rescale=True, is_center=True, is_random=False)
   tl.vis.draw_boxes_and_labels_to_image(im_flip, ann_list[idx][0],
           coords, [], classes, True, save_name='_im_flip.png')
@@ -321,7 +319,7 @@ In practice, you may want to use threading method to process a batch of images a
       im = tl.prepro.illumination(im, gamma=(0.5, 1.5),
                contrast=(0.5, 1.5), saturation=(0.5, 1.5), is_random=True)
       ## flip randomly
-      im, coords = tl.prepro.obj_box_left_right_flip(im, coords,
+      im, coords = tl.prepro.obj_box_horizontal_flip(im, coords,
                is_rescale=True, is_center=True, is_random=True)
       ## randomly resize and crop image, it can have same effect as random zoom
       tmp0 = random.randint(1, int(im_size[0]*jitter))
@@ -357,6 +355,10 @@ In practice, you may want to use threading method to process a batch of images a
                b_ann[i][0], b_ann[i][1], [], classes, True,
                save_name='_bbox_vis_%d.png' % i)
 
+Image Aug with TF Dataset API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Example code for VOC `here <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_tf_dataset_voc.py>`__.
 
 Coordinate pixel unit to percentage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -396,7 +398,7 @@ Darknet format split class and coordinate
 
 Image Aug - Flip
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: obj_box_left_right_flip
+.. autofunction:: obj_box_horizontal_flip
 
 Image Aug - Resize
 ^^^^^^^^^^^^^^^^^^^^^^^^^

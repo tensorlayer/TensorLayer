@@ -55,7 +55,9 @@ class ConcatLayer(Layer):
             concat_dim=-1,
             name='concat_layer',
     ):
-        Layer.__init__(self, prev_layer=layers, name=name)
+
+        super(ConcatLayer, self).__init__(prev_layer=layers, name=name)
+
         self.inputs = []
         for l in layers:
             self.inputs.append(l.outputs)
@@ -120,9 +122,11 @@ class ElementwiseLayer(Layer):
             act=None,
             name='elementwise_layer',
     ):
-        Layer.__init__(self, prev_layer=layers, name=name)
 
-        logging.info("ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__))
+        super(ElementwiseLayer, self).__init__(prev_layer=layers, name=name)
+        logging.info(
+            "ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
+        )
 
         self.outputs = layers[0].outputs
 

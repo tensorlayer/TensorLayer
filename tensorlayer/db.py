@@ -1,10 +1,5 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-Experimental Database Management System.
-
-Latest Version
-"""
 
 import inspect
 import pickle
@@ -12,11 +7,16 @@ import time
 import uuid
 from datetime import datetime
 
-import gridfs
-from pymongo import MongoClient
+try:
+    import gridfs
+    from pymongo import MongoClient
+except ImportError:
+    install_instr = "Please make sure you install PyMongo with the command: pip install pymongo."
+    raise ImportError("__init__.py : Could not import PyMongo." + install_instr)
 
 
 def AutoFill(func):
+
     def func_wrapper(self, *args, **kwargs):
         d = inspect.getcallargs(func, self, *args, **kwargs)
         d['args'].update({"studyID": self.studyID})
@@ -60,7 +60,9 @@ class TensorDB(object):
     - You may like to install MongoChef or Mongo Management Studo APP for visualizing or testing your MongoDB.
     """
 
-    def __init__(self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None):
+    def __init__(
+            self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None
+    ):
         ## connect mongodb
         client = MongoClient(ip, port)
         self.db = client[db_name]
@@ -418,7 +420,14 @@ class TensorDB(object):
 
         _ms, mid = self.load_model_architecture(margs)
         _weight, wid = self.find_one_params(wargs)
-        args = {"weight": wid, "model": mid, "dargs": dargs, "epoch": epoch, "time": datetime.utcnow(), "Running": False}
+        args = {
+            "weight": wid,
+            "model": mid,
+            "dargs": dargs,
+            "epoch": epoch,
+            "time": datetime.utcnow(),
+            "Running": False
+        }
         self.__autofill(args)
         self.db.JOBS.insert_one(args)
 

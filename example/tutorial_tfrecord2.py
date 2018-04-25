@@ -12,12 +12,10 @@ More:
 """
 
 import os
-
 import numpy as np
 # import matplotlib
 # matplotlib.use('GTK')
 import tensorflow as tf
-
 import tensorlayer as tl
 
 ## Download data, and convert to TFRecord format, see ```tutorial_tfrecord.py```
@@ -48,10 +46,13 @@ for index, img in enumerate(X_train):
     # image = image.reshape([32, 32, 3])
     # tl.visualize.frame(np.asarray(image, dtype=np.uint8), second=1, saveable=False, name='frame', fig_idx=1236)
     example = tf.train.Example(
-        features=tf.train.Features(feature={
-            "label": tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
-            'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw])),
-        }))
+        features=tf.train.Features(
+            feature={
+                "label": tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
+                'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw])),
+            }
+        )
+    )
     writer.write(example.SerializeToString())  # Serialize To String
 writer.close()
 
@@ -65,7 +66,8 @@ def read_and_decode(filename):
         serialized_example, features={
             'label': tf.FixedLenFeature([], tf.int64),
             'img_raw': tf.FixedLenFeature([], tf.string),
-        })
+        }
+    )
     # You can do more image distortion here for training data
     img = tf.decode_raw(features['img_raw'], tf.float32)
     img = tf.reshape(img, [32, 32, 3])
@@ -78,7 +80,8 @@ img, label = read_and_decode("train.cifar10")
 
 ## Use shuffle_batch or batch
 # see https://www.tensorflow.org/versions/master/api_docs/python/io_ops.html#shuffle_batch
-img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=50000, min_after_dequeue=10000, num_threads=1)
+img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capacity=50000, \
+    min_after_dequeue=10000, num_threads=1)
 
 print("img_batch   : %s" % img_batch._shape)
 print("label_batch : %s" % label_batch._shape)
@@ -92,7 +95,6 @@ with tf.Session() as sess:
     for i in range(3):  # number of mini-batch (step)
         print("Step %d" % i)
         val, l = sess.run([img_batch, label_batch])
-        # exit()
         print(val.shape, l)
         tl.visualize.images2d(val, second=1, saveable=False, name='batch' + str(i), dtype=np.uint8, fig_idx=2020121)
         tl.vis.save_images(val, [2, 2], '_batch_%d.png' % i)

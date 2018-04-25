@@ -8,11 +8,11 @@ For deep learning, this tutorial will walk you through building handwritten
 digits classifiers using the MNIST dataset, arguably the "Hello World" of neural
 networks. For reinforcement learning, we will let computer learns to play Pong
 game from the original screen inputs. For nature language processing, we start
-from word embedding, and then describe language modeling and machine
+from word embedding and then describe language modeling and machine
 translation.
 
 This tutorial includes all modularized implementation of Google TensorFlow Deep
-Learning tutorial, so you could read TensorFlow Deep Learning tutorial as the same time
+Learning tutorial, so you could read TensorFlow Deep Learning tutorial at the same time
 `[en] <https://www.tensorflow.org/versions/master/tutorials/index.html>`_ `[cn] <http://wiki.jikexueyuan.com/project/tensorflow-zh/>`_ .
 
 .. note::
@@ -26,7 +26,7 @@ Before we start
 
 The tutorial assumes that you are somewhat familiar with neural networks and
 TensorFlow (the library which `TensorLayer`_ is built on top of). You can try to learn
-the basic of neural network from the `Deeplearning Tutorial`_.
+the basics of a neural network from the `Deeplearning Tutorial`_.
 
 For a more slow-paced introduction to artificial neural networks, we recommend
 `Convolutional Neural Networks for Visual Recognition`_ by Andrej Karpathy et
@@ -117,9 +117,9 @@ Run the MNIST example
   :align: center
 
 In the first part of the tutorial, we will just run the MNIST example that's
-included in the source distribution of `TensorLayer`_. MNIST dataset contains 60000
-handwritten digits that is commonly used for training various
-image processing systems, each of digit has 28x28 pixels.
+included in the source distribution of `TensorLayer`_. The MNIST dataset contains 60000
+handwritten digits that are commonly used for training various
+image processing systems. Each digit is 28x28 pixels in size.
 
 We assume that you have already run through the :ref:`installation`. If you
 haven't done so already, get a copy of the source tree of TensorLayer, and navigate
@@ -265,7 +265,7 @@ For Convolutional Neural Network example, the MNIST can be load as 4D version as
               tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 
 ``X_train.shape`` is ``(50000, 28, 28, 1)`` which represents 50,000 images with 1 channel, 28 rows and 28 columns each.
-Channel one is because it is a grey scale image, every pixel have only one value.
+Channel one is because it is a grey scale image, every pixel has only one value.
 
 Building the model
 ------------------
@@ -280,10 +280,10 @@ As mentioned above, ``tutorial_mnist.py`` supports four types of models, and we
 implement that via easily exchangeable functions of the same interface.
 First, we'll define a function that creates a Multi-Layer Perceptron (MLP) of
 a fixed architecture, explaining all the steps in detail. We'll then implement
-a Denosing Autoencoder (DAE), after that we will then stack all Denoising Autoencoder and
+a Denoising Autoencoder (DAE), after that we will then stack all Denoising Autoencoder and
 supervised fine-tune them. Finally, we'll show how to create a
 Convolutional Neural Network (CNN). In addition, a simple example for MNIST
-dataset in ``tutorial_mnist_simple.py``, a CNN example for CIFAR-10 dataset in
+dataset in ``tutorial_mnist_simple.py``, a CNN example for the CIFAR-10 dataset in
 ``tutorial_cifar10_tfrecord.py``.
 
 
@@ -295,9 +295,9 @@ The first script, ``main_test_layers()``, creates an MLP of two hidden layers of
 dropout to the input data and 50% dropout to the hidden layers.
 
 To feed data into the network, TensofFlow placeholders need to be defined as follow.
-The ``None`` here means the network will accept input data of arbitrary batchsize after compilation.
+The ``None`` here means the network will accept input data of arbitrary batch size after compilation.
 The ``x`` is used to hold the ``X_train`` data and ``y_`` is used to hold the ``y_train`` data.
-If you know the batchsize beforehand and do not need this flexibility, you should give the batchsize
+If you know the batch size beforehand and do not need this flexibility, you should give the batch size
 here -- especially for convolutional layers, this can allow TensorFlow to apply
 some optimizations.
 
@@ -369,14 +369,14 @@ need the output layer(s) to access a network in TensorLayer:
     cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
 
 Here, ``network.outputs`` is the 10 identity outputs from the network (in one hot format), ``y_op`` is the integer
-output represents the class index. While ``cost`` is the cross-entropy between target and predicted labels.
+output represents the class index. While ``cost`` is the cross-entropy between the target and the predicted labels.
 
 Denoising Autoencoder (DAE)
 --------------------------------------
 
 Autoencoder is an unsupervised learning model which is able to extract representative features,
 it has become more widely used for learning generative models of data and Greedy layer-wise pre-train.
-For vanilla Autoencoder see `Deeplearning Tutorial`_.
+For vanilla Autoencoder, see `Deeplearning Tutorial`_.
 
 The script ``main_test_denoise_AE()`` implements a Denoising Autoencoder with corrosion rate of 50%.
 The Autoencoder can be defined as follow, where an Autoencoder is represented by a ``DenseLayer``:
@@ -395,9 +395,9 @@ The Autoencoder can be defined as follow, where an Autoencoder is represented by
 To train the ``DenseLayer``, simply run ``ReconLayer.pretrain()``, if using denoising Autoencoder, the name of
 corrosion layer (a ``DropoutLayer``) need to be specified as follow. To save the feature images, set ``save`` to ``True``.
 There are many kinds of pre-train metrices according to different architectures and applications. For sigmoid activation,
-the Autoencoder can be implemented by using KL divergence, while for rectifer, L1 regularization of activation outputs
+the Autoencoder can be implemented by using KL divergence, while for rectifier, L1 regularization of activation outputs
 can make the output to be sparse. So the default behaviour of ``ReconLayer`` only provide KLD and cross-entropy for sigmoid
-activation function and L1 of activation outputs and mean-squared-error for rectifing activation function.
+activation function and L1 of activation outputs and mean-squared-error for rectifying activation function.
 We recommend you to modify ``ReconLayer`` to achieve your own pre-train metrice.
 
 .. code-block:: python
@@ -486,7 +486,7 @@ see :mod:`tensorlayer.cost` for more.
 Apart from using ``network.all_params`` to get the variables, we can also use ``tl.layers.get_variables_with_name`` to get the specific variables by string name.
 
 Having the model and the loss function here, we create update expression/operation
-for training the network. TensorLayer do not provide many optimizers, we used TensorFlow's
+for training the network. TensorLayer does not provide many optimizers, we used TensorFlow's
 optimizer instead:
 
 .. code-block:: python
@@ -505,7 +505,7 @@ For training the network, we fed data and the keeping probabilities to the ``fee
     sess.run(train_op, feed_dict=feed_dict)
 
 While, for validation and testing, we use slightly different way. All
-Dropout, Dropconnect, Corrosion layers need to be disable.
+Dropout, Dropconnect, Corrosion layers need to be disabled.
 We use ``tl.utils.dict_to_one`` to set all ``network.all_drop`` to 1.
 
 .. code-block:: python
@@ -593,9 +593,9 @@ If everything is set up correctly, you will get an output like the following:
   episode 1: game 5 took 0.17348s, reward: -1.000000
   episode 1: game 6 took 0.09415s, reward: -1.000000
 
-This example allow neural network to learn how to play Pong game from the screen inputs,
+This example allows the neural network to learn how to play Pong game from the screen inputs,
 just like human behavior.
-The neural network will play with a fake AI player, and lean to beat it.
+The neural network will play with a fake AI player and learn to beat it.
 After training for 15,000 episodes, the neural network can
 win 20% of the games. The neural network win 35% of the games at 20,000 episode,
 we can seen the neural network learn faster and faster as it has more winning data to
@@ -994,7 +994,7 @@ Understand LSTM
 Recurrent Neural Network
 -------------------------
 
-We personally think Andrey Karpathy's blog is the best material to
+We personally think Andrej Karpathy's blog is the best material to
 `Understand Recurrent Neural Network`_ , after reading that, Colah's blog can
 help you to `Understand LSTM Network`_ `[chinese] <http://dataunion.org/9331.html>`_
 which can solve The Problem of Long-Term
@@ -1003,7 +1003,7 @@ before you go on.
 
 .. image:: my_figs/karpathy_rnn.jpeg
 
-Image by Andrey Karpathy
+Image by Andrej Karpathy
 
 
 Synced sequence input and output
@@ -1283,7 +1283,7 @@ In Example page, we provide many examples include Seq2seq, different type of Adv
   This script is going to training a neural network to translate English to French.
   If everything is correct, you will see.
 
-  - Download WMT English-to-French translation data, includes training and testing data.
+  - Download the WMT English-to-French translation data, it includes both the training and the testing data.
   - Create vocabulary files for English and French from training data.
   - Create the tokenized training and testing data from original training and
     testing data.
@@ -1706,7 +1706,7 @@ In Example page, we provide many examples include Seq2seq, different type of Adv
   ---------
 
   Sequence to sequence model is commonly be used to translate a language to another.
-  Actually it can do many thing you can't imagine, we can translate
+  Actually, it can do many thing you can't imagine, we can translate
   a long sentence into short and simple sentence, for example, translation going
   from Shakespeare to modern English.
   With CNN, we can also translate a video into a sentence, i.e. video captioning.
@@ -1807,7 +1807,7 @@ In Example page, we provide many examples include Seq2seq, different type of Adv
 
     buckets = [(5, 10), (10, 15), (20, 25), (40, 50)]
 
-  If the input is an English sentence with ``3`` tokens, and the corresponding
+  If the input is an English sentence with ``3`` tokens and the corresponding
   output is a French sentence with ``6`` tokens, then they will be put in the
   first bucket and padded to length ``5`` for encoder inputs (English sentence),
   and length ``10`` for decoder inputs.

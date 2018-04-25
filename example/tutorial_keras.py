@@ -8,8 +8,7 @@ from keras import backend as K
 from keras.layers import *
 from tensorlayer.layers import *
 
-X_train, y_train, X_val, y_val, X_test, y_test = \
-                tl.files.load_mnist_dataset(shape=(-1, 784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 sess = tf.InteractiveSession()
 
@@ -43,7 +42,7 @@ n_epoch = 200
 learning_rate = 0.0001
 
 train_params = network.all_params
-train_op = tf.train.AdamOptimizer(learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-08, use_locking=False).minimize(cost, var_list=train_params)
+train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost, var_list=train_params)
 
 tl.layers.initialize_global_variables(sess)
 

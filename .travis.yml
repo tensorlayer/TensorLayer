@@ -1,40 +1,63 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
+
 python:
   - "2.7"
   - "3.5"
-  # - "3.6"  # TODO: make it work: https://github.com/tensorlayer/tensorlayer/issues/291
+  - "3.6" 
+  
+env:
+  global:
+  
+  - PYPI_USER='jonathandekhtiar'
+
+  ### == PYPI_PASSWORD === ###
+  ## To update: travis encrypt PYPI_PASSWORD=################################
+  - secure: "fGIRDjfzzP9DhdDshgh/+bWTZ5Y0jTD4aR+gsT1TyAyc6N4f3RRlx70xZZwYMdQ+XC3no/q4na8UzhhuSM0hCCM1EaQ78WF1c6+FBScf4vYGoYgyJ1am+4gu54JXt+4f0bd+s6jyYBafJALUJp5fqHoxCUXqzjrOqGBBU2+JbL71Aaj8yhQuK0VPPABexsQPQM312Gvzg7hy9dh63J0Q02PqINn+CTcwq3gLH9Oua58zWQ7TaT0cdy/hzAc6Yxy3ajo2W5NU+nKROaaG9W57sa7K/v1dshDFFFST2DdGxm9i7vvfPsq0OWM6qWLsec/4mXJWsmai2ygZEv+IhaABb10c7spd2nl7oHFj2UGmldtO5W0zLb1KkCPWDPilFt3lvHM+OS/YaibquL5/5+yGj0LsRJrVyWoMBA8idcQeH4dvTAfySeFpO42VNwW5ez9JaEOh7bBp7naAA8c/fbNJJ5YEW4MEmOZ9dwFTohNNDiN+oITSrcXBS+jukbfTOmtCeYNUker+4G2YwII9cxHXbZeIMrTq9AqTfOVTAYCFaFHKbpSc1+HCyF7n5ZfNC00kBaw93XUnLRzSNKe5Ir791momYL8HecMN3OAI77bz26/pHSfzJnLntq9qx2nLBTnqDuSq5/pHvdZ8hyt+hTDxvF7HJIVMhbnkjoLPxmn4k/I="
+
+  ### === GITHUB_PERSONAL_TOKEN === ###
+  ## To update: travis encrypt GITHUB_PERSONAL_TOKEN=################################
+  - secure: "GmdokEVWFS4LlSIdhfYvET+53hcuN9gN5gbhYduWkvyqvCJnP5PENzxdDz6Y3EJCSXxfKTT+jBLmJkgOElgeWxyAEa+wGj3jJzpjFD8BEcxIf5mNsyJ2LryzecFoKjcCR7viid14GDEYSeA3UB0MgKgitm9rMmcQ2W9RLJfAmTfGRQ+kMwhM7GTeFc5c99YL7DW7AUFSbiAac/k50AMx2j9KNT1JAGhDoc5yVTdVvtKrdtuCZUa82q4Cm/h4IEd6BbNrcImYyxQ814LHCrHWBi9jmuc+UxqvsTH1ErNapIObz490ri3DmZg+LUrH5dIuhSa5HGqZjob6tKG6XCKFWOuv9E73+URDitJllXHc1qSP/K61SMmsQrE2FnaxVjxpQCOcqueRMKszwH5/k3UoGbUPWsBFwbBznXrnHO/DNHAgL9XwOFP6biPP8TKp2ReX41YwcU6sbiYb7naGWo3Dhe+yEB9wBGOwuGHipDQm9R4SSIJgjpdc642KjcEMQqb3yL7DWpOmItXMxoGNM+X93kU4u4u1tGgq1yxnhEk6VG2l/yI6A2QOVIPyOu+L9FkZL3mrl9mbUeBKr/SHX4CTFODi5io8D0lqwNSRZrmi/GGWh2glbNnTapD67UnTnsh/6LE2YiSqGteH47EByb9V4ykrjfdv5EZhyJNwI7jYPDw="
+  
+  
 install:
   - pip install tensorflow
-  - pip install -r tests/requirements.txt
-  - pip install .
+  - pip install -r requirements.txt
+  - pip install -e .[dev,doc,test]
+  
+  
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  # TODO: make it work
-  # - pytest
+  - pytest
+  
+ 
+before_deploy:
+  - python setup.py sdist
+  - python setup.py bdist_wheel
+  - python setup.py bdist_wheel --universal
+  - python setup.py egg_info
+  
+  
+deploy:
 
-  # smoke tests
-  # - make test  # TODO: make it use python3 by default
-  - python tests/test_yapf_format.py
-  - python tests/test_pydocstyle.py
-  - python tests/test_mnist_simple.py
-  - python tests/test_reuse_mlp.py
-  - python tests/test_layers_basic.py
-  - python tests/test_layers_convolution.py
-  - python tests/test_layers_core.py
-  - python tests/test_layers_extend.py
-  - python tests/test_layers_flow_control.py
-  - python tests/test_layers_importer.py
-  - python tests/test_layers_merge.py
-  - python tests/test_layers_normalization.py
-  - python tests/test_layers_padding.py
-  - python tests/test_layers_pooling.py
-  - python tests/test_layers_recurrent.py
-  - python tests/test_layers_shape.py
-  - python tests/test_layers_spatial_transformer.py
-  - python tests/test_layers_special_activation.py
-  - python tests/test_layers_stack.py
-  - python tests/test_layers_super_resolution.py
-  - python tests/test_layers_time_distributed.py
-  - python tests/test_models.py
+# Documentation: https://docs.travis-ci.com/user/deployment/pypi/
+- provider: pypi
+  user: "$PYPI_USER"
+  password: "$PYPI_PASSWORD"
+  skip_cleanup: true
+  on:
+    tags: true
+    python: '3.6'
+
+# Documentation: https://docs.travis-ci.com/user/deployment/releases/
+- provider: releases
+  file:
+    - dist/*
+    - tensorlayer.egg-info/PKG-INFO
+  file_glob: true
+  skip_cleanup: true
+  api_key: "$GITHUB_PERSONAL_TOKEN"
+  on:
+    tags: true
+    python: '3.6'
