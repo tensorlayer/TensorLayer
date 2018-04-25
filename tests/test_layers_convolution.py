@@ -23,6 +23,14 @@ class Layer_Convolution_Test(unittest.TestCase):
         n2 = tl.layers.Conv1d(nin1, n_filter=32, filter_size=5, stride=2)
         cls.shape_n2 = n2.outputs.get_shape().as_list()
 
+        n2_1 = tl.layers.SeparableConv1d(
+            nin1, n_filter=32, filter_size=3, strides=1, padding='VALID', act=tf.nn.relu, name='seperable1d1'
+        )
+        cls.shape_n2_1 = n2_1.outputs.get_shape().as_list()
+        cls.n2_1_all_layers = n2_1.all_layers
+        cls.n2_1_params = n2_1.all_params
+        cls.n2_1_count_params = n2_1.count_params()
+
         ############
         #    2D    #
         ############
@@ -65,7 +73,7 @@ class Layer_Convolution_Test(unittest.TestCase):
         cls.shape_n9 = n9.outputs.get_shape().as_list()
 
         n10 = tl.layers.SeparableConv2d(
-            nin2, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable1'
+            nin2, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable2d1'
         )
         cls.shape_n10 = n10.outputs.get_shape().as_list()
         cls.n10_all_layers = n10.all_layers
@@ -100,6 +108,10 @@ class Layer_Convolution_Test(unittest.TestCase):
     def test_shape_n2(self):
         self.assertEqual(self.shape_n2[1], 50)
         self.assertEqual(self.shape_n2[2], 32)
+
+    def test_shape_n2_1(self):
+        self.assertEqual(self.shape_n2_1[1], 98)
+        self.assertEqual(self.shape_n2_1[2], 32)
 
     def test_shape_n3(self):
         self.assertEqual(self.shape_n3[1], 50)
@@ -151,6 +163,9 @@ class Layer_Convolution_Test(unittest.TestCase):
         self.assertEqual(self.shape_n12[3], 200)
         self.assertEqual(self.shape_n12[4], 32)
 
+    def test_params_n2_1(self):
+        self.assertEqual(len(self.n2_1_params), 3)
+
     def test_params_n4(self):
         self.assertEqual(len(self.n4_params), 2)
 
@@ -160,6 +175,9 @@ class Layer_Convolution_Test(unittest.TestCase):
     def test_params_n10(self):
         self.assertEqual(len(self.n10_params), 3)
         self.assertEqual(self.n10_count_params, 155)
+
+    def test_layers_n2_1(self):
+        self.assertEqual(len(self.n2_1_all_layers), 1)
 
     def test_layers_n10(self):
         self.assertEqual(len(self.n10_all_layers), 1)
