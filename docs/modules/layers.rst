@@ -260,6 +260,7 @@ Layer list
    DeConv2d
    DeConv3d
    DepthwiseConv2d
+   SeparableConv1d
    SeparableConv2d
    DeformableConv2d
    GroupConv2d
@@ -501,6 +502,10 @@ APIs may better for you.
 2D Depthwise Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DepthwiseConv2d
+
+1D Depthwise Separable Conv
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: SeparableConv1d
 
 2D Depthwise Separable Conv
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
