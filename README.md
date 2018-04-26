@@ -28,7 +28,7 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 
 <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
 	<div align="center">
-		<img src="img/join_slack.png" width="50%" height="30%"/>
+		<img src="img/join_slack.png" width="40%"/>
 	</div>
 </a>
 
