@@ -1,0 +1,10 @@
+# Keep this file in sync with requirements.txt, except tensorflow
+
+flake8-docstrings>=1.3,<1.4
+matplotlib>=2.2,<2.3
+pymongo>=3.6,<3.7
+progressbar2>=3.37,<3.38
+scikit-image>=0.13,<0.14
+scipy>=1.0,<1.1
+sphinx>=1.7,<1.8
+tensorflow==1.5.0  # DO NOT MODIFY: https://github.com/tensorflow/tensorflow/issues/17441
