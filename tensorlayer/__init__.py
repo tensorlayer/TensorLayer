@@ -6,14 +6,13 @@ from __future__ import absolute_import
 import pkg_resources
 installed_packages = [d for d in pkg_resources.working_set]
 
-tensorlayer_pkg = next(filter(lambda x: x.project_name == 'tensorlayer', installed_packages))
+TF_is_installed = False
+for package in installed_packages:
+    if 'tensorflow' in package.project_name:
+        TF_is_installed = True
 
-if 'site-packages' in tensorlayer_pkg.location:  # The tensorlayer package is installed
-    try:
-        import tensorflow
-    except ImportError:
-        install_instr = "Please make sure you install a recent enough version of TensorFlow."
-        raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
+if TF_is_installed:  # The tensorlayer package is installed
+    import tensorflow
 
     from . import activation
     from . import cost
