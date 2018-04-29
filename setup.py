@@ -41,7 +41,6 @@ if os.path.exists('README.rst'):
 else:
     long_description = 'See ' + __homepage__
 
-
 # ======================= Reading Requirements files as TXT files =======================
 
 def req_file(filename):
@@ -50,8 +49,8 @@ def req_file(filename):
     # you may also want to remove whitespace characters
     # Example: `\n` at the end of each line
     return [x.strip() for x in content]
-	
-# ===================
+
+# ======================= Defining the requirements var =======================
 
 install_requires = req_file("requirements.txt")
 
@@ -67,7 +66,7 @@ extras_require = {
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
 
-# ===================
+# ======================= Define the package setup =======================
 
 setup(
     name=__package_name__,
