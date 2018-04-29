@@ -7,4 +7,4 @@ progressbar2>=3.37,<3.38
 scikit-image>=0.13,<0.14
 scipy>=1.0,<1.1
 sphinx>=1.7,<1.8
-tensorflow>=1.7,<1.8
+tensorflow>=1.8,<1.9
