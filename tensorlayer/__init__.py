@@ -37,11 +37,10 @@ if TF_is_installed:  # The tensorlayer package is installed
 
     global_flag = {}
     global_dict = {}
-    
+
 elif TL_is_installed:
     install_instr = "Please make sure you install a recent enough version of TensorFlow."
     raise ImportError("__init__.py : Could not import TensorFlow. {}".format(install_instr))
-
 
 # Use the following formating: (major, minor, patch, prerelease)
 VERSION = (1, 8, 5, 'rc2')
