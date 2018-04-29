@@ -66,8 +66,38 @@ The simplest way to install TensorLayer is:
 # for master version (Recommended)
 $ pip install git+https://github.com/tensorlayer/tensorlayer.git
 
-# for stable version
+# for last stable version
 $ pip install tensorlayer
+
+# for latest release candidate
+$ pip install --pre tensorlayer
+```
+
+If you prefer to build from sources in a development objective
+```bash
+# First clone the repository
+$ git clone https://github.com/tensorlayer/tensorlayer.git
+$ cd tensorlayer
+
+# Install virtualenv if necessary
+$ pip install virtualenv
+
+# Then create a virtualenv called venv inside
+$ virtualenv venv
+
+# Activate the virtualenv  
+
+# Linux:
+$ source venv/bin/activate
+
+# Windows:
+$ venv\Scripts\activate.bat
+
+# for a machine **without** an NVIDIA GPU
+$ pip install -e .[tf_cpu,dev,test,doc]
+
+# for a machine **with** an NVIDIA GPU
+$ pip install -e .[tf_gpu,dev,test,doc]
 ```
 
 Dockerfile is supplied to build images, build as usual
@@ -78,6 +108,12 @@ $ docker build -t tensorlayer:latest .
 
 # for GPU version
 $ docker build -t tensorlayer:latest-gpu -f Dockerfile.gpu .
+```
+
+Launching the unittest:
+
+```bash
+$ pytest
 ```
 
 Please check [documentation](http://tensorlayer.readthedocs.io/en/latest/user/installation.html) for detailed instructions.
