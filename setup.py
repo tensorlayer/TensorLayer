@@ -50,6 +50,24 @@ def req_file(filename):
     # you may also want to remove whitespace characters
     # Example: `\n` at the end of each line
     return [x.strip() for x in content]
+	
+# ===================
+
+install_requires = req_file("requirements.txt")
+
+extras_require = {
+    'tf_cpu': ['tensorflow>=1.8.0,<1.9'],
+    'tf_gpu': ['tensorflow-gpu>=1.8.0,<1.9'],
+	'dev': req_file("requirements_dev.txt"),
+	'doc': req_file("docs/requirements.txt"),
+	'test': req_file("tests/requirements.txt")
+}
+
+# Readthedocs requires TF 1.5.0 to build properly
+if os.environ.get('READTHEDOCS', None) == 'True':
+    install_requires.append("tensorflow==1.5.0")
+
+# ===================
 
 setup(
     name=__package_name__,
@@ -125,16 +143,12 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=req_file("requirements.txt"),
+    install_requires=install_requires,
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # $ pip install -e .[test]
-    extras_require={
-        'dev': req_file("requirements_dev.txt"),
-        'doc': req_file("docs/requirements.txt"),
-        'test': req_file("tests/requirements.txt")
-    },
+    extras_require=extras_require,
     scripts=[
         'tl',
     ],

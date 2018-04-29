@@ -3,28 +3,37 @@
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 from __future__ import absolute_import
 
-try:
-    import tensorflow
-except ImportError:
-    install_instr = "Please make sure you install a recent enough version of TensorFlow."
-    raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
+import pkg_resources
+installed_packages = [d for d in pkg_resources.working_set]
 
-from . import activation
-from . import cost
-from . import files
-from . import iterate
-from . import layers
-from . import models
-from . import utils
-from . import visualize
-from . import prepro
-from . import nlp
-from . import rein
-from . import distributed
+tensorlayer_pkg = next(filter(lambda x: x.project_name == 'tensorlayer', installed_packages))
 
-# alias
-act = activation
-vis = visualize
+if 'site-packages' in tensorlayer_pkg.location:  # The tensorlayer package is installed
+    try:
+        import tensorflow
+    except ImportError:
+        install_instr = "Please make sure you install a recent enough version of TensorFlow."
+        raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
+
+    from . import activation
+    from . import cost
+    from . import files
+    from . import iterate
+    from . import layers
+    from . import models
+    from . import utils
+    from . import visualize
+    from . import prepro
+    from . import nlp
+    from . import rein
+    from . import distributed
+
+    # alias
+    act = activation
+    vis = visualize
+
+    global_flag = {}
+    global_dict = {}
 
 # Use the following formating: (major, minor, patch, prerelease)
 VERSION = (1, 8, 5, 'rc2')
@@ -40,6 +49,3 @@ __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
 __keywords__ = 'deep learning, machine learning, computer vision, nlp, supervised learning, unsupervised learning, reinforcement learning, tensorflow'
-
-global_flag = {}
-global_dict = {}
