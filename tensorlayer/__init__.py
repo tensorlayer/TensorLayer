@@ -3,28 +3,44 @@
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 from __future__ import absolute_import
 
-try:
+import pkg_resources
+installed_packages = [d for d in pkg_resources.working_set]
+
+TF_is_installed = False
+TL_is_installed = False
+
+for package in installed_packages:
+    if 'tensorflow' in package.project_name:
+        TF_is_installed = True
+    if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
+        TL_is_installed = True
+
+if TF_is_installed:  # The tensorlayer package is installed
     import tensorflow
-except ImportError:
+
+    from . import activation
+    from . import cost
+    from . import files
+    from . import iterate
+    from . import layers
+    from . import models
+    from . import utils
+    from . import visualize
+    from . import prepro
+    from . import nlp
+    from . import rein
+    from . import distributed
+
+    # alias
+    act = activation
+    vis = visualize
+
+    global_flag = {}
+    global_dict = {}
+
+elif TL_is_installed:
     install_instr = "Please make sure you install a recent enough version of TensorFlow."
-    raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
-
-from . import activation
-from . import cost
-from . import files
-from . import iterate
-from . import layers
-from . import models
-from . import utils
-from . import visualize
-from . import prepro
-from . import nlp
-from . import rein
-from . import distributed
-
-# alias
-act = activation
-vis = visualize
+    raise ImportError("__init__.py : Could not import TensorFlow. {}".format(install_instr))
 
 # Use the following formating: (major, minor, patch, prerelease)
 VERSION = (1, 8, 5, 'rc2')
@@ -40,6 +56,3 @@ __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
 __keywords__ = 'deep learning, machine learning, computer vision, nlp, supervised learning, unsupervised learning, reinforcement learning, tensorflow'
-
-global_flag = {}
-global_dict = {}

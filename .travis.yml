@@ -21,9 +21,7 @@ env:
   
   
 install:
-  - pip install tensorflow
-  - pip install -r requirements.txt
-  - pip install -e .[dev,doc,test]
+  - pip install -e .[tf_cpu,dev,test,doc]
   
   
 script:
