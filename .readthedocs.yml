@@ -3,7 +3,7 @@ formats:
     - pdf
 
 python:
-    version: 3.6
+    version: 3.5
     pip_install: true
     extra_requirements:
         - doc
