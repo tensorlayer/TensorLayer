@@ -76,12 +76,12 @@ Pretrained Models
  - SqueezeNet (ImageNet). Model compression, see `tl.models.SqueezeNetV1 <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_models_squeezenetv1.py>`__ or `tutorial_squeezenet.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_squeezenet.py>`_.
  - MobileNet (ImageNet). Model compression, see `tl.models.MobileNetV1 <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_models_mobilenetv1.py>`__ or `tutorial_mobilenet.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mobilenet.py>`__.
  - More CNN implementations of `TF-Slim <https://github.com/tensorflow/models/tree/master/research/slim>`_ can be connected to TensorLayer via SlimNetsLayer.
- - All pretrained models in `here <https://github.com/tensorlayer/pretrained-models>`_.
+ - All pretrained models in `pretrained-models <https://github.com/tensorlayer/pretrained-models>`_.
 
 Miscellaneous
 =================
 
- - TensorDB by `fangde <https://github.com/fangde>`_ see `here <https://github.com/akaraspt/tl_paper>`_.
+ - TensorDB by `fangde <https://github.com/fangde>`_ see `tl_paper <https://github.com/akaraspt/tl_paper>`_.
  - A simple web service - `TensorFlask <https://github.com/JoelKronander/TensorFlask>`_ by `JoelKronander <https://github.com/JoelKronander>`__.
 
 ..
