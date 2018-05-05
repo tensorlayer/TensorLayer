@@ -22,13 +22,13 @@ in this website, you will find the abstract methods are very simple for everyone
 Reading the source codes helps you to better understand TensorFlow and allows
 you to implement your own methods easily. For discussion, we recommend
 `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_,
-`Help Wanted Issues <https://waffle.io/zsdonghao/tensorlayer>`_,
+`Help Wanted Issues <https://waffle.io/tensorlayer/tensorlayer>`_,
 `QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_
 and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`_.
 
 Beginner
 ^^^^^^^^^^^^^^
-For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/zsdonghao/tensorlayer>`_ , then implement an example from scratch.
+For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/tensorlayer/tensorlayer>`_ , then implement an example from scratch.
 
 Engineer
 ^^^^^^^^^^^^^
