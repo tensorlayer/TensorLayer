@@ -3,7 +3,7 @@
 import os
 
 import numpy as np
-import scipy.misc  # save/read image(s)
+import imageio  # save/read image(s)
 
 from . import _logging as logging
 from . import prepro
@@ -44,7 +44,7 @@ def read_image(image, path=''):
         The image.
 
     """
-    return scipy.misc.imread(os.path.join(path, image))
+    return imageio.imread(os.path.join(path, image))
 
 
 def read_images(img_list, path='', n_threads=10, printable=True):
@@ -90,9 +90,9 @@ def save_image(image, image_path='_temp.png'):
 
     """
     try:  # RGB
-        scipy.misc.imsave(image_path, image)
+        imageio.imwrite(image_path, image)
     except Exception:  # Greyscale
-        scipy.misc.imsave(image_path, image[:, :, 0])
+        imageio.imwrite(image_path, image[:, :, 0])
 
 
 def save_images(images, size, image_path='_temp.png'):
@@ -108,11 +108,6 @@ def save_images(images, size, image_path='_temp.png'):
     image_path : str
         save path
 
-    Returns
-    -------
-    numpy.array
-        The image.
-
     Examples
     ---------
     >>> images = np.random.rand(64, 100, 100, 3)
@@ -124,7 +119,7 @@ def save_images(images, size, image_path='_temp.png'):
 
     def merge(images, size):
         h, w = images.shape[1], images.shape[2]
-        img = np.zeros((h * size[0], w * size[1], 3))
+        img = np.zeros((h * size[0], w * size[1], 3), dtype=images.dtype)
         for idx, image in enumerate(images):
             i = idx % size[1]
             j = idx // size[1]
@@ -132,7 +127,7 @@ def save_images(images, size, image_path='_temp.png'):
         return img
 
     def imsave(images, size, path):
-        return scipy.misc.imsave(path, merge(images, size))
+        return imageio.imwrite(path, merge(images, size))
 
     if len(images) > size[0] * size[1]:
         raise AssertionError("number of images should be equal or less than size[0] * size[1] {}".format(len(images)))
