@@ -6,16 +6,7 @@ from __future__ import absolute_import
 import pkg_resources
 installed_packages = [d for d in pkg_resources.working_set]
 
-TF_is_installed = False
-TL_is_installed = False
-
-for package in installed_packages:
-    if 'tensorflow' in package.project_name:
-        TF_is_installed = True
-    if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
-        TL_is_installed = True
-
-if TF_is_installed:  # The tensorlayer package is installed
+try:
     import tensorflow
 
     from . import activation
@@ -38,9 +29,11 @@ if TF_is_installed:  # The tensorlayer package is installed
     global_flag = {}
     global_dict = {}
 
-elif TL_is_installed:
-    install_instr = "Please make sure you install a recent enough version of TensorFlow."
-    raise ImportError("__init__.py : Could not import TensorFlow. {}".format(install_instr))
+except Exception as e:
+    if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
+        raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
+    else:
+        pass
 
 # Use the following formating: (major, minor, patch, prerelease)
 VERSION = (1, 8, 5, 'rc2')

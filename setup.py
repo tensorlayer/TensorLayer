@@ -57,6 +57,7 @@ install_requires = req_file("requirements.txt")
 extras_require = {
     'tf_cpu': ['tensorflow>=1.8.0,<1.9'],
     'tf_gpu': ['tensorflow-gpu>=1.8.0,<1.9'],
+	'db': req_file("requirements_db.txt"),
 	'dev': req_file("requirements_dev.txt"),
 	'doc': req_file("docs/requirements.txt"),
 	'test': req_file("tests/requirements.txt")
