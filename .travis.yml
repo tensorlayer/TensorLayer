@@ -4,11 +4,11 @@ language: python
 python:
   - "2.7"
   - "3.5"
-  - "3.6" 
-  
+  - "3.6"
+
 env:
   global:
-  
+
   - PYPI_USER='jonathandekhtiar'
 
   ### == PYPI_PASSWORD === ###
@@ -18,25 +18,25 @@ env:
   ### === GITHUB_PERSONAL_TOKEN === ###
   ## To update: travis encrypt GITHUB_PERSONAL_TOKEN=################################
   - secure: "GmdokEVWFS4LlSIdhfYvET+53hcuN9gN5gbhYduWkvyqvCJnP5PENzxdDz6Y3EJCSXxfKTT+jBLmJkgOElgeWxyAEa+wGj3jJzpjFD8BEcxIf5mNsyJ2LryzecFoKjcCR7viid14GDEYSeA3UB0MgKgitm9rMmcQ2W9RLJfAmTfGRQ+kMwhM7GTeFc5c99YL7DW7AUFSbiAac/k50AMx2j9KNT1JAGhDoc5yVTdVvtKrdtuCZUa82q4Cm/h4IEd6BbNrcImYyxQ814LHCrHWBi9jmuc+UxqvsTH1ErNapIObz490ri3DmZg+LUrH5dIuhSa5HGqZjob6tKG6XCKFWOuv9E73+URDitJllXHc1qSP/K61SMmsQrE2FnaxVjxpQCOcqueRMKszwH5/k3UoGbUPWsBFwbBznXrnHO/DNHAgL9XwOFP6biPP8TKp2ReX41YwcU6sbiYb7naGWo3Dhe+yEB9wBGOwuGHipDQm9R4SSIJgjpdc642KjcEMQqb3yL7DWpOmItXMxoGNM+X93kU4u4u1tGgq1yxnhEk6VG2l/yI6A2QOVIPyOu+L9FkZL3mrl9mbUeBKr/SHX4CTFODi5io8D0lqwNSRZrmi/GGWh2glbNnTapD67UnTnsh/6LE2YiSqGteH47EByb9V4ykrjfdv5EZhyJNwI7jYPDw="
-  
-  
+
+
 install:
-  - pip install -e .[tf_cpu,dev,test,doc]
-  
-  
+  - pip install -e .[tf_cpu,db,dev,test,doc]
+
+
 script:
   # units test
   # https://docs.pytest.org/en/latest/
   - pytest
-  
- 
+
+
 before_deploy:
   - python setup.py sdist
   - python setup.py bdist_wheel
   - python setup.py bdist_wheel --universal
   - python setup.py egg_info
-  
-  
+
+
 deploy:
 
 # Documentation: https://docs.travis-ci.com/user/deployment/pypi/
