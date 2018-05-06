@@ -29,12 +29,12 @@ try:
 
 except Exception as e:
 
-	import pkg_resources
-	installed_packages = [d for d in pkg_resources.working_set]
+    import pkg_resources
+    installed_packages = [d for d in pkg_resources.working_set]
 
-	for package in installed_packages:
-		if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
-			raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
+    for package in installed_packages:
+        if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
+            raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
     
     pass
 
