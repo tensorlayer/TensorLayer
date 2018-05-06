@@ -94,10 +94,10 @@ $ source venv/bin/activate
 $ venv\Scripts\activate.bat
 
 # for a machine **without** an NVIDIA GPU
-$ pip install -e .[tf_cpu,dev,test,doc]
+$ pip install -e .[tf_cpu,db,dev,test,doc]
 
 # for a machine **with** an NVIDIA GPU
-$ pip install -e .[tf_gpu,dev,test,doc]
+$ pip install -e .[tf_gpu,db,dev,test,doc]
 ```
 
 Dockerfile is supplied to build images, build as usual
@@ -137,7 +137,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
  - Data augmentation with TensorLayer, see [tutorial\_image_preprocess.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_image_preprocess.py).
  - Float 16 half-precision model, see [tutorial\_mnist_float16.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_float16.py)
  - Distributed Training. [mnist](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py) and [imagenet](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_imagenet_inceptionV3_distributed.py) by [jorgemf](https://github.com/jorgemf).
- 
+
 ## Vision
  - ArcFace: Additive Angular Margin Loss for Deep Face Recognition, see [InsignFace](https://github.com/auroua/InsightFace_TF).
  - BinaryNet. Model acceleration, see [mnist](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_mnist_cnn.py) [cifar10](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_binarynet_cifar10_tfrecord.py).
@@ -159,7 +159,7 @@ Examples can be found [in this folder](https://github.com/zsdonghao/tensorlayer/
 - [Super Resolution GAN](https://arxiv.org/abs/1609.04802) by [zsdonghao](https://github.com/zsdonghao/SRGAN).
 - [BEGAN: Boundary Equilibrium Generative Adversarial Networks](http://arxiv.org/abs/1703.10717) by [2wins](https://github.com/2wins/BEGAN-tensorlayer).
 - [DAGAN: Fast Compressed Sensing MRI Reconstruction](https://github.com/nebulaV/DAGAN) by [nebulaV](https://github.com/nebulaV/DAGAN).
-  
+
 ## Natural Language Processing
  - Recurrent Neural Network (LSTM). Apply multiple LSTM to PTB dataset for language modeling, see [tutorial_ptb_lstm.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm.py) and [tutorial\_ptb\_lstm\_state\_is_tuple.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_ptb_lstm_state_is_tuple.py).
  - Word Embedding (Word2vec). Train a word embedding matrix, see [tutorial\_word2vec_basic.py](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial\_word2vec_basic.py).
