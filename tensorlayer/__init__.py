@@ -3,7 +3,6 @@
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
 from __future__ import absolute_import
 
-
 try:
     import tensorflow
 
@@ -35,8 +34,6 @@ except Exception as e:
     for package in installed_packages:
         if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
             raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
-    
-    pass
 
 # Use the following formating: (major, minor, patch, prerelease)
 VERSION = (1, 8, 5, 'rc2')
