@@ -36,7 +36,7 @@ except Exception as e:
             raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
 
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 8, 5, 'rc2')
+VERSION = (1, 8, 5)
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
