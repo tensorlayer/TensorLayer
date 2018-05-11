@@ -31,7 +31,8 @@ install:
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  - pytest
+  - pytest  
+  - if [ "$TRAVIS_PYTHON_VERSION" == '3.6' ] && [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then bundle install && bundle exec danger; fi
 
 before_deploy:
   - python setup.py sdist
