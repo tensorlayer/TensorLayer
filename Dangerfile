@@ -4,9 +4,10 @@ if !git.modified_files.include?("CHANGELOG.md")
     message "Note, we hard-wrap at 80 chars and use 2 spaces after the last line."
 end
 
-# Look for prose issues
-prose.lint_files markdown_files
-
-# Look for spelling issues
-prose.ignored_words = ["orta", "artsy", "cocoapods"]
-prose.check_spelling markdown_files
+# Add ability to modify PR rather than just add comments
+# https://github.com/danger/danger/issues/825#issuecomment-303691442
+github.api.update_pull_request(
+    github.pr_json.base.repo.full_name,
+    github.pr_json.number,
+    {:body => github.pr_body + "Some new text"}
+)
