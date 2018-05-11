@@ -42,10 +42,6 @@ before_deploy:
 
 
 deploy:
-- provider: script
-    script: bundle install && bundle exec danger
-    on:
-      python: '3.6'
 
 # Documentation: https://docs.travis-ci.com/user/deployment/pypi/
 - provider: pypi
