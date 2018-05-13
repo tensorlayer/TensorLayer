@@ -39,7 +39,10 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-- Danger CI has been added to enforce the update of the changelog by @lgarithm and @DEKHTIARJonathan
+- Repository:
+  - Danger CI has been added to enforce the update of the changelog by @lgarithm and @DEKHTIARJonathan
+- Tutorials:
+  - `tutorial_tfslim` added by @2wins.
 
 ### Changed
 
@@ -52,7 +55,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Contributors
-
+@lgarithm @DEKHTIARJonathan @2wins
 
 
 ## [1.8.5] - 2018-05-09
