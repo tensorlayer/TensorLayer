@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `Removed` for now removed features.
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
+* `Contributors` to thank the contributors that worked on this PR.
 
 ============== How To Update The Changelog for a New Release ==============
 
@@ -36,6 +37,23 @@ To release a new version, please update the changelog as followed:
 -->
 
 ## [Unreleased]
+
+### Added
+- Danger CI has been added to enforce the update of the changelog by @lgarithm and @DEKHTIARJonathan
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+### Contributors
+
+
 
 ## [1.8.5] - 2018-05-09
 
@@ -50,6 +68,9 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 
 ### Security
+
+### Contributors
+@zsdonghao @luomai @DEKHTIARJonathan @2wins @auroua
 
 [Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/1.8.5...master
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
