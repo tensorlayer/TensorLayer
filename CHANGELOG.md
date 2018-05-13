@@ -129,5 +129,5 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/1.8.5...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
