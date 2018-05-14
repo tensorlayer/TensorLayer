@@ -77,14 +77,14 @@ To release a new version, please update the changelog as followed:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins).
 
 ### Changed
-- Util:
-  - `predict` function modified to fix #565 (by @2wins).
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Util:
+  - `predict` function modified to fix #565 (by @2wins).
 
 ### Security
 
