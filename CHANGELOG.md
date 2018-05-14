@@ -74,11 +74,11 @@ To release a new version, please update the changelog as followed:
 - Tutorials:
   - `tutorial_tfslim` added (by @2wins).
 - Tests:
-  - `test_utils_predict.py` added (by @2wins).
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins).
 
 ### Changed
 - Util:
-  - `predict` function updated (by @2wins).
+  - `predict` function modified to fix #565 (by @2wins).
 
 ### Deprecated
 
