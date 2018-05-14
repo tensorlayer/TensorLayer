@@ -34,14 +34,18 @@ class Util_Predict_Test(CustomTestCase):
     def test_case1(self):
         with self.assertNotRaises(Exception):
             with tf.Session() as sess:
-                n, y, y_op = test_model(self.x1)
+                n = tl.layers.InputLayer(self.x1)
+                y = n.outputs
+                y_op = tf.nn.softmax(y)
                 res = tl.utils.predict(sess, n, self.X1, self.x1, y_op, batch_size=self.batch_size)
                 sess.close()
 
     def test_case2(self):
         with self.assertNotRaises(Exception):
             with tf.Session() as sess:
-                n, y, y_op = test_model(self.x2)
+                n = tl.layers.InputLayer(self.x2)
+                y = n.outputs
+                y_op = tf.nn.softmax(y)
                 res = tl.utils.predict(sess, n, self.X2, self.x2, y_op, batch_size=self.batch_size)
                 sess.close()
 
@@ -51,4 +55,3 @@ if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.DEBUG)
 
     unittest.main()
-    
