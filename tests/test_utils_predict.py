@@ -42,6 +42,7 @@ class Util_Predict_Test(CustomTestCase):
                 tl.utils.predict(sess, n, self.X2, self.x2, y_op, batch_size=self.batch_size)
                 sess.close()
 
+
 if __name__ == '__main__':
 
     # tf.logging.set_verbosity(tf.logging.INFO)
