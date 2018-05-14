@@ -4,12 +4,14 @@ language: python
 python:
   - "2.7"
   - "3.5"
-  - "3.6" 
-  
+  - "3.6"
+
 env:
   global:
-  
+
   - PYPI_USER='jonathandekhtiar'
+
+  # See https://docs.travis-ci.com/user/encryption-keys/ for more details about secure keys.
 
   ### == PYPI_PASSWORD === ###
   ## To update: travis encrypt PYPI_PASSWORD=################################
@@ -17,26 +19,34 @@ env:
 
   ### === GITHUB_PERSONAL_TOKEN === ###
   ## To update: travis encrypt GITHUB_PERSONAL_TOKEN=################################
-  - secure: "GmdokEVWFS4LlSIdhfYvET+53hcuN9gN5gbhYduWkvyqvCJnP5PENzxdDz6Y3EJCSXxfKTT+jBLmJkgOElgeWxyAEa+wGj3jJzpjFD8BEcxIf5mNsyJ2LryzecFoKjcCR7viid14GDEYSeA3UB0MgKgitm9rMmcQ2W9RLJfAmTfGRQ+kMwhM7GTeFc5c99YL7DW7AUFSbiAac/k50AMx2j9KNT1JAGhDoc5yVTdVvtKrdtuCZUa82q4Cm/h4IEd6BbNrcImYyxQ814LHCrHWBi9jmuc+UxqvsTH1ErNapIObz490ri3DmZg+LUrH5dIuhSa5HGqZjob6tKG6XCKFWOuv9E73+URDitJllXHc1qSP/K61SMmsQrE2FnaxVjxpQCOcqueRMKszwH5/k3UoGbUPWsBFwbBznXrnHO/DNHAgL9XwOFP6biPP8TKp2ReX41YwcU6sbiYb7naGWo3Dhe+yEB9wBGOwuGHipDQm9R4SSIJgjpdc642KjcEMQqb3yL7DWpOmItXMxoGNM+X93kU4u4u1tGgq1yxnhEk6VG2l/yI6A2QOVIPyOu+L9FkZL3mrl9mbUeBKr/SHX4CTFODi5io8D0lqwNSRZrmi/GGWh2glbNnTapD67UnTnsh/6LE2YiSqGteH47EByb9V4ykrjfdv5EZhyJNwI7jYPDw="
-  
-  
+  - secure: "kMxg4WfTwhnYMD7WjYk71vgw7XlShPpANauKzfTL6oawDrpQRkBUai4uQwiL3kXVBuVv9rKKKZxxnyAm05iB5wGasPDhlFA1DPF0IbyU3pwQKlw2Xo5qtHdgxBnbms6JJ9z5b+hHCVg+LXYYeUw5qG01Osg5Ue6j1g2juQQHCod00FNuo3fe8ah/Y10Rem6CigH8ofosCrTvN2w1GaetJwVehRYf8JkPC6vQ+Yk8IIjHn2CaVJALbhuchVblxwH0NXXRen915BVBwWRQtsrvEVMXKu7A8sMHmvPz1u3rhXQfjpF2KeVOfy1ZnyiHcLE2HgAPuAGh4kxZAAA8ovmcaCbv8m64bm72BrQApSbt6OEtR9L1UeUwdEgi54FH1XFOHQ9dA6CpiGCyk3wAJZqO0/PkNYVLfb4gPLvnvBRwYBaPgUPvVNhidFu/oODENZmcf8g9ChtuC1GT70EYlVwhgDGqUY7/USZCEvIPe81UToqtIKgcgA+Is51XindumJVMiqTsjgdqeC/wZcw+y37TAjIvvXbtYxeqIKv9zh1JuZppqUhnf+OhI+HHFaY4iu7lQTs3C0WmoLskZAp9srwRtifnVFFkdYzngmPaSjWyko2qiS0cTdFJQB/ljqmnJdksacbv5OOa0Q4qZef/hW774nVx105FlkAIk70D2b5l2pA="
+
+  ### === DANGER_GITHUB_API_TOKEN === ###
+  ## To update: travis encrypt DANGER_GITHUB_API_TOKEN=################################
+  - secure: "T7uFuuOYciFHnz+5C+XhN7yhCc56tyC9a9eaiaZQExEO7UGazkGUU+S9OsJdfktnQuhoKPs+x7tCSDi+HXcEtjPOeKCgCGaC45LDEpeTm4emuRY93wXF9zOmwBMipsKOac/XGYtnrXwnlFLvkJo79TlPMPFNMeSvoubNjZhtc7bIXcsi7BxG89D/k3RPxXotGHy/bKHums7td8McwXrdbUSSLXBzydrzmFuo4b2DLpKmD/BSHkiHAFqxO5GwZQ/FFUdnaFwAkTJnpk6WBTlhfY0FyrmqthFKgdJtsvuFYIarSifyo1+lHo502tBYlinRJ3h8gh56TtgRyD4sqRRCv9JgjjzU378TO3ylmCcVxxvp4Xb0c45I1gLoZPdMUZMuCCrpT73bR/cJi1BNpYxWnKEDmRJpV92hr4QAIvJI4v2m9/lE44kESdKGw9c4P8TxaTtWSf+0w3kbJSJTzhgAJubYRLTQV/lTg/KY6zHBDRq5Mnv3+96XpQQldZbVrrCoiisR5wbdMfIk/1DJkHaYNFVGQy+RT6IG2fuPTSdRuO56NiCcnH6SVqDtGkjVbGynw2/2KlPvi/heuDW/g+OVtkZ0Hcfm+ntJT89GE0CeUPvaactJe11N+UuJo3150fu9zaOLBGtghgQe+u9cwjb4YA4Y/6yJSk0ZzbgxwE5C1Rc="
+
+
 install:
-  - pip install -e .[tf_cpu,dev,test,doc]
-  
-  
+  - pip install -e .[tf_cpu,db,dev,test,doc]
+
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  - pytest
+  - pytest  
   
- 
+  # Only run under the following conditions:
+  # - Python is version 3.6 => Do not run it 3 three times for each build
+  # - It is a PR build, not necessary in Push Commits.
+  # - Make sure the variable `DANGER_GITHUB_API_TOKEN` is defined, when a PR is sent from a fork, encrypted vars are not defined, thus the build would be failing.
+  - if [ "$TRAVIS_PYTHON_VERSION" == '3.6' ] && [ "$TRAVIS_EVENT_TYPE" = "pull_request" ] && [ "$DANGER_GITHUB_API_TOKEN" ]; then bundle install && bundle exec danger; fi
+
 before_deploy:
   - python setup.py sdist
   - python setup.py bdist_wheel
   - python setup.py bdist_wheel --universal
   - python setup.py egg_info
-  
-  
+
+
 deploy:
 
 # Documentation: https://docs.travis-ci.com/user/deployment/pypi/
