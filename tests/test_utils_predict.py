@@ -1,31 +1,58 @@
+import unittest
+
+try:
+    from tests.unittests_helper import CustomTestCase
+except ImportError:
+    from unittests_helper import CustomTestCase
+
 import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
 
-sess = tf.InteractiveSession()
+def test_model(x):
+    n = tl.layers.InputLayer(x)
+    y = n.outputs
+    y_op = tf.nn.softmax(y)
 
-# case 1: No. of examples is not divisible by batch_size but the input placeholder's first dim is None.
-x = tf.placeholder(tf.float32, [None, 5, 5, 3])
-X = np.ones([127, 5, 5, 3])
-net = tl.layers.InputLayer(x)
-y = net.outputs
-y_op = tf.nn.softmax(y)
-result = tl.utils.predict(sess, net, X, x, y_op, batch_size=8)
+    return n, y, y_op
 
-# case 2: No. of examples > batch_size & not divisible by batch_size
-# ValueError: Cannot feed value of shape (7, 5, 5, 3) for Tensor 'Placeholder_1:0', which has shape '(8, 5, 5, 3)'
-# x = tf.placeholder(tf.float32, [8, 5, 5, 3])
-# X = np.ones([127, 5, 5, 3])
-# net = tl.layers.InputLayer(x)
-# y = net.outputs
-# y_op = tf.nn.softmax(y)
-# result = tl.utils.predict(sess, net, X, x, y_op, batch_size=8)
+class Util_Predict_Test(CustomTestCase):
 
-# case 3: No. of examples < batch_size (actually same with the last mini-batch in case 2)
-# ValueError: Cannot feed value of shape (7, 5, 5, 3) for Tensor 'Placeholder_2:0', which has shape '(8, 5, 5, 3)'
-# x = tf.placeholder(tf.float32, [8, 5, 5, 3])
-# X = np.ones([7, 5, 5, 3])
-# net = tl.layers.InputLayer(x)
-# y = net.outputs
-# y_op = tf.nn.softmax(y)
-# result = tl.utils.predict(sess, net, X, x, y_op, batch_size=8)
+    @classmethod
+    def setUpClass(cls):
+        cls.x1 = tf.placeholder(tf.float32, [None, 5, 5, 3])
+        cls.x2 = tf.placeholder(tf.float32, [8, 5, 5, 3])
+        cls.X1 = np.ones([127, 5, 5, 3])
+        cls.X2 = np.ones([7, 5, 5, 3])
+        cls.batch_size = 8
+
+        # n2 = tl.layers.InputLayer(x2)
+        # y2 = n1.outputs
+        # y_op2 = tf.nn.softmax(y2)
+        # res2 = tl.utils.predict(tf.get_default_session(), n2, cls.X2, x2, y_op2, batch_size=8)
+
+
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_case1(self):
+        with self.assertNotRaises(Exception):
+            with tf.Session() as sess:
+                n, y, y_op = test_model(self.x1)
+                res = tl.utils.predict(sess, n, self.X1, self.x1, y_op, batch_size=self.batch_size)
+                sess.close()
+
+    def test_case2(self):
+        with self.assertNotRaises(Exception):
+            with tf.Session() as sess:
+                n, y, y_op = test_model(self.x2)
+                res = tl.utils.predict(sess, n, self.X2, self.x2, y_op, batch_size=self.batch_size)
+                sess.close()
+
+if __name__ == '__main__':
+
+    # tf.logging.set_verbosity(tf.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+
+    unittest.main()
