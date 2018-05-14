@@ -9,6 +9,7 @@ import tensorflow as tf
 import tensorlayer as tl
 import numpy as np
 
+
 def test_model(x):
     n = tl.layers.InputLayer(x)
     y = n.outputs
@@ -25,12 +26,6 @@ class Util_Predict_Test(CustomTestCase):
         cls.X1 = np.ones([127, 5, 5, 3])
         cls.X2 = np.ones([7, 5, 5, 3])
         cls.batch_size = 8
-
-        # n2 = tl.layers.InputLayer(x2)
-        # y2 = n1.outputs
-        # y_op2 = tf.nn.softmax(y2)
-        # res2 = tl.utils.predict(tf.get_default_session(), n2, cls.X2, x2, y_op2, batch_size=8)
-
 
     @classmethod
     def tearDownClass(cls):

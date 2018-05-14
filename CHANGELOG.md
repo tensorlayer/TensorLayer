@@ -72,19 +72,18 @@ To release a new version, please update the changelog as followed:
 - Repository:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
 - Tutorials:
-  - `tutorial_tfslim` added (by @2wins).
+  - `tutorial_tfslim` added (by @2wins)
 - Tests:
-  - `test_utils_predict.py` added (by @2wins).
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins)
 
 ### Changed
-- Util:
-  - `predict` function updated (by @2wins).
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `dim=1` (by @2wins)
 
 ### Security
 
