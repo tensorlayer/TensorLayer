@@ -72,9 +72,13 @@ To release a new version, please update the changelog as followed:
 - Repository:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
 - Tutorials:
-  - `tutorial_tfslim` added by (@2wins).
+  - `tutorial_tfslim` added (by @2wins).
+- Tests:
+  - `test_utils_predict.py` added (by @2wins).
 
 ### Changed
+- Util:
+  - `predict` function updated (by @2wins).
 
 ### Deprecated
 
