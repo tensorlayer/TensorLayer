@@ -10,13 +10,6 @@ import tensorlayer as tl
 import numpy as np
 
 
-def test_model(x):
-    n = tl.layers.InputLayer(x)
-    y = n.outputs
-    y_op = tf.nn.softmax(y)
-
-    return n, y, y_op
-
 class Util_Predict_Test(CustomTestCase):
 
     @classmethod
