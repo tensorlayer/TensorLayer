@@ -3,6 +3,7 @@
 import inspect
 
 import tensorflow as tf
+from tensorflow.python.util.tf_inspect import getfullargspec
 
 from .. import _logging as logging
 from .core import *
@@ -204,7 +205,7 @@ class RNNLayer(Layer):
         #           for input_ in tf.split(1, num_steps, inputs)]
         # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
         outputs = []
-        if 'reuse' in inspect.getargspec(cell_fn.__init__).args:
+        if 'reuse' in getfullargspec(cell_fn.__init__).args:
             self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **cell_init_args)
         else:
             self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
