@@ -69,13 +69,12 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-- Repository:
-  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 - Test:
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
 - CI Tool:
+  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
 
 ### Changed
