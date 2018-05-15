@@ -81,6 +81,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 
 ### Security
 
