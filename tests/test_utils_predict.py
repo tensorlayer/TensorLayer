@@ -34,7 +34,7 @@ class Util_Predict_Test(CustomTestCase):
                 sess.close()
 
     def test_case2(self):
-        with self.assertNotRaises(Exception):
+        with self.assertRaises(Exception):
             with tf.Session() as sess:
                 n = tl.layers.InputLayer(self.x2)
                 y = n.outputs
