@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 - Test:
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)  
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
 - CI Tool:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
