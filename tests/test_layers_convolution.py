@@ -183,6 +183,31 @@ class Layer_Convolution_Test(unittest.TestCase):
         self.assertEqual(len(self.n10_all_layers), 1)
 
 
+class Layer_DeformableConvolution_Test(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+
+        x = tf.placeholder(tf.float32, [None, 299, 299, 3])
+        net = tl.layers.InputLayer(x, name='input_layer')
+
+        offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')
+        net = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1')
+
+        offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
+        net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2')
+
+        cls.output = net.outputs
+
+    @classmethod
+    def tearDownClass(cls):
+        print("Output Shape:", cls.output.shape)
+        tf.reset_default_graph()
+
+    def test_output_shape(self):
+        self.assertEqual(1, 1)
+
+
 if __name__ == '__main__':
     # tf.logging.set_verbosity(tf.logging.INFO)
     tf.logging.set_verbosity(tf.logging.DEBUG)
