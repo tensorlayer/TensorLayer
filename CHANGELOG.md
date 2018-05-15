@@ -69,21 +69,28 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-- Repository:
-  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
 - Tutorials:
-  - `tutorial_tfslim` added (by @2wins)
-- Tests:
-  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins)
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
+- Test:
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)  
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
+- CI Tool:
+  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
+  - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
+>>>>>>> master
 
 ### Changed
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `dim=1` (by @2wins)
+- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
+- Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `dim=1` (by @2wins in #566)
 
 ### Security
 
