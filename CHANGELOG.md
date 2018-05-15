@@ -70,9 +70,11 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - Repository:
-  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
+  - Danger CI has been added in #563 to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
 - Tutorials:
-  - `tutorial_tfslim` added by (@2wins).
+  - `tutorial_tfslim` added in #560 by (@2wins).
+- Test:
+  - `Layer_DeformableConvolution_Test` added in #573 to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan)
 
 ### Changed
 
@@ -81,6 +83,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
+- Issue #572 with deformable convolution fixed in #573 (by @DEKHTIARJonathan)
 
 ### Security
 

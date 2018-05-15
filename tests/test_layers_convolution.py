@@ -192,20 +192,20 @@ class Layer_DeformableConvolution_Test(unittest.TestCase):
         net = tl.layers.InputLayer(x, name='input_layer')
 
         offset1 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset1')
-        net = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1')
+        cls.net1 = tl.layers.DeformableConv2d(net, offset1, 32, (3, 3), act=tf.nn.relu, name='deformable1')
 
-        offset2 = tl.layers.Conv2d(net, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
-        net = tl.layers.DeformableConv2d(net, offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2')
-
-        cls.output = net.outputs
+        offset2 = tl.layers.Conv2d(cls.net1, 18, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='offset2')
+        cls.net2 = tl.layers.DeformableConv2d(cls.net1, offset2, 64, (3, 3), act=tf.nn.relu, name='deformable2')
 
     @classmethod
     def tearDownClass(cls):
-        print("Output Shape:", cls.output.shape)
         tf.reset_default_graph()
 
-    def test_output_shape(self):
-        self.assertEqual(1, 1)
+    def test_net1_shape(self):
+        self.assertEqual(self.net1.outputs.shape[1:], [299, 299, 32])
+
+    def test_net2_shape(self):
+        self.assertEqual(self.net2.outputs.shape[1:], [299, 299, 64])
 
 
 if __name__ == '__main__':
