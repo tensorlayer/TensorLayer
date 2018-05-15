@@ -70,11 +70,11 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - Repository:
-  - Danger CI has been added in #563 to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan)
+  - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
 - Tutorials:
-  - `tutorial_tfslim` added in #560 by (@2wins).
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 - Test:
-  - `Layer_DeformableConvolution_Test` added in #573 to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
 
 ### Changed
 
@@ -83,7 +83,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
-- Issue #572 with deformable convolution fixed in #573 (by @DEKHTIARJonathan)
+- Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
 
 ### Security
 
