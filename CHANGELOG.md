@@ -83,6 +83,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 - Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
 
 ### Security
