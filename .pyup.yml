@@ -36,6 +36,12 @@ requirements:
     # Requirements for the development
     - requirements_dev.txt
 
+    # Requirements for the development
+    - requirements_tf_cpu.txt
+
+    # Requirements for the development
+    - requirements_tf_gpu.txt
+
     # Requirements for running unittests
     - tests/requirements.txt
 
