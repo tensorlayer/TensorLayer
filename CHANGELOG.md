@@ -81,7 +81,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
-- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` #574 (by @DEKHTIARJonathan)
+- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 
 ### Security
 
