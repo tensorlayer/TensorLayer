@@ -77,6 +77,7 @@ To release a new version, please update the changelog as followed:
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
 
 ### Changed
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
 
 ### Deprecated
 
