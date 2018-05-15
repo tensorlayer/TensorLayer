@@ -1447,9 +1447,9 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             joint_pos[int(_j_id)] = [float(_x), float(_y)]
                         # joint_pos = fix_wrong_joints(joint_pos)
 
-                        # visiblity list
+                        # visibility list
                         if 'is_visible' in str(annopoint.dtype):
-                            vis = [v[0] if v else [0] for v in annopoint['is_visible'][0]]
+                            vis = [v[0] if v.size > 0 else [0] for v in annopoint['is_visible'][0]]
                             vis = dict([(k, int(v[0])) if len(v) > 0 else v for k, v in zip(j_id, vis)])
                         else:
                             vis = None
