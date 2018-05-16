@@ -152,6 +152,7 @@ class ElementwiseLayer(Layer):
 
         self.all_layers.append(self.outputs)
 
+
 class ElementwiseLambdaLayer(Layer):
     """A layer uses a custom function to join multiple layer inputs.
 
@@ -190,8 +191,7 @@ class ElementwiseLambdaLayer(Layer):
             name='elementwiselambda_layer',
     ):
 
-        super(ElementwiseLambdaLayer, self).__init__(
-            prev_layer=layers, name=name)
+        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
 
         if fn_args is None:
@@ -200,8 +200,7 @@ class ElementwiseLambdaLayer(Layer):
         self.inputs = [layer.outputs for layer in layers]
         with tf.variable_scope(name) as vs:
             self.outputs = fn(*self.inputs, **fn_args)
-            variables = tf.get_collection(
-                TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
