@@ -82,7 +82,6 @@ To release a new version, please update the changelog as followed:
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
-- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in @588)
 
 ### Deprecated
 
@@ -92,6 +91,7 @@ To release a new version, please update the changelog as followed:
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 - Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
+- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 
 ### Security
 
