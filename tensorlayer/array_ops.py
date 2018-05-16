@@ -20,17 +20,23 @@ def alphas(shape, alpha_value, name=None):
     """Creates a tensor with all elements set to `alpha_value`.
     This operation returns a tensor of type `dtype` with shape `shape` and all
     elements set to alpha.
-    For example:
-    ```python
-    tl.alphas([2, 3], tf.int32)  # [[alpha, alpha, alpha], [alpha, alpha, alpha]]
-    ```
-    Args:
-    shape: A list of integers, a tuple of integers, or a 1-D `Tensor` of type
-      `int32`.
-    alpha_value: The value used to fill the resulting `Tensor`.
-    name: A name for the operation (optional).
-    Returns:
+
+    Parameters
+    ----------
+    shape: A list of integers, a tuple of integers, or a 1-D `Tensor` of type `int32`.
+        The shape of the desired tensor
+    alpha_value: `float32`, `float64`, `int8`, `uint8`, `int16`, `uint16`, int32`, `int64`
+        The value used to fill the resulting `Tensor`.
+    name: str
+        A name for the operation (optional).
+
+    Returns
+    -------
     A `Tensor` with all elements set to alpha.
+
+    Examples
+    --------
+    >>> tl.alphas([2, 3], tf.int32)  # [[alpha, alpha, alpha], [alpha, alpha, alpha]]
     """
 
     with ops.name_scope(name, "alphas", [shape]) as name:
@@ -61,24 +67,30 @@ def alphas(shape, alpha_value, name=None):
 
 def alphas_like(tensor, alpha_value, name=None, optimize=True):
     """Creates a tensor with all elements set to `alpha_value`.
-  Given a single tensor (`tensor`), this operation returns a tensor of the same
-  type and shape as `tensor` with all elements set to `alpha_value`.
-  For example:
-  ```python
-  tensor = tf.constant([[1, 2, 3], [4, 5, 6]])
-  tl.alphas_like(tensor, 0.5)  # [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
-  ```
-  Args:
-    tensor: A `Tensor`.
-    alpha_value: A type for the returned `Tensor`. Must be `float32`, `float64`,
-      `int8`, `uint8`, `int16`, `uint16`, int32`, `int64`,
-      `complex64`, `complex128` or `bool`.
-    name: A name for the operation (optional).
-    optimize: if true, attempt to statically determine the shape of 'tensor'
-    and encode it as a constant.
-  Returns:
+    Given a single tensor (`tensor`), this operation returns a tensor of the same
+    type and shape as `tensor` with all elements set to `alpha_value`.
+
+    Parameters
+    ----------
+    tensor: tf.Tensor
+        The Tensorflow Tensor that will be used as a template.
+    alpha_value: `float32`, `float64`, `int8`, `uint8`, `int16`, `uint16`, int32`, `int64`
+        The value used to fill the resulting `Tensor`.
+    name: str
+        A name for the operation (optional).
+    optimize: bool
+        if true, attempt to statically determine the shape of 'tensor' and encode it as a constant.
+
+    Returns
+    -------
     A `Tensor` with all elements set to `alpha_value`.
-  """
+
+    Examples
+    --------
+    >>> tensor = tf.constant([[1, 2, 3], [4, 5, 6]])
+    >>> tl.alphas_like(tensor, 0.5)  # [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+    """
+
     with ops.name_scope(name, "alphas_like", [tensor]) as name:
         tensor = ops.convert_to_tensor(tensor, name="tensor")
 
