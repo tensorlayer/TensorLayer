@@ -43,6 +43,18 @@ class Layer_Merge_Test(unittest.TestCase):
         cls.data["net_vector2"]["layers"] = net_v2.all_layers
         cls.data["net_vector2"]["params"] = net_v2.all_params
         cls.data["net_vector2"]["n_params"] = net_v2.count_params()
+        
+        net_v3_1 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_a')
+        net_v3_2 = tl.layers.DenseLayer(inputs, n_units=100, act=tf.nn.relu, name='net_b')
+        net_v3 = tl.layers.ElementwiseLambdaLayer([net_v3_1, net_v3_2], fn=lambda a, b: a * b, name='multiply')
+
+        net_v3.print_params(False)
+        net_v3.print_layers()
+
+        cls.data["net_vector3"] = dict()
+        cls.data["net_vector3"]["layers"] = net_v3.all_layers
+        cls.data["net_vector3"]["params"] = net_v3.all_params
+        cls.data["net_vector3"]["n_params"] = net_v3.count_params()
 
         #############
         #   Image   #
@@ -74,6 +86,17 @@ class Layer_Merge_Test(unittest.TestCase):
         cls.data["net_image2"]["layers"] = net_im2.all_layers
         cls.data["net_image2"]["params"] = net_im2.all_params
         cls.data["net_image2"]["n_params"] = net_im2.count_params()
+        
+        net_im3 = tl.layers.ElementwiseLambdaLayer([net_im1_1, net_im1_2], fn=lambda a, b: a * b, name='multiply2')
+
+        net_im3.print_params(False)
+        net_im3.print_layers()
+
+        cls.data["net_image3"] = dict()
+        cls.data["net_image3"]["shape"] = net_im3.outputs.get_shape().as_list()
+        cls.data["net_image3"]["layers"] = net_im3.all_layers
+        cls.data["net_image3"]["params"] = net_im3.all_params
+        cls.data["net_image3"]["n_params"] = net_im3.count_params()
 
     @classmethod
     def tearDownClass(cls):
@@ -88,6 +111,11 @@ class Layer_Merge_Test(unittest.TestCase):
         self.assertEqual(len(self.data["net_vector2"]["layers"]), 3)
         self.assertEqual(len(self.data["net_vector2"]["params"]), 4)
         self.assertEqual(self.data["net_vector2"]["n_params"], 157000)
+        
+    def test_net_vector3(self):
+        self.assertEqual(len(self.data["net_vector3"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_vector3"]["params"]), 4)
+        self.assertEqual(self.data["net_vector3"]["n_params"], 157000)
 
     def test_net_image1(self):
         self.assertEqual(self.data["net_image1"]["shape"][1:], [50, 50, 64])
@@ -100,6 +128,12 @@ class Layer_Merge_Test(unittest.TestCase):
         self.assertEqual(len(self.data["net_image2"]["layers"]), 3)
         self.assertEqual(len(self.data["net_image2"]["params"]), 4)
         self.assertEqual(self.data["net_image2"]["n_params"], 1792)
+        
+    def test_net_image3(self):
+        self.assertEqual(self.data["net_image3"]["shape"][1:], [50, 50, 32])
+        self.assertEqual(len(self.data["net_image3"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_image3"]["params"]), 4)
+        self.assertEqual(self.data["net_image3"]["n_params"], 1792)
 
 
 if __name__ == '__main__':
