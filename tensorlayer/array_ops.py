@@ -17,17 +17,17 @@ __all__ = ['alphas', 'alphas_like']
 
 
 def alphas(shape, alpha_value, name=None):
-    """Creates a tensor with all elements set to alpha.
+    """Creates a tensor with all elements set to `alpha_value`.
     This operation returns a tensor of type `dtype` with shape `shape` and all
     elements set to alpha.
     For example:
     ```python
-    tf.alphas([2, 3], tf.int32)  # [[alpha, alpha, alpha], [alpha, alpha, alpha]]
+    tl.alphas([2, 3], tf.int32)  # [[alpha, alpha, alpha], [alpha, alpha, alpha]]
     ```
     Args:
     shape: A list of integers, a tuple of integers, or a 1-D `Tensor` of type
       `int32`.
-    dtype: The type of an element in the resulting `Tensor`.
+    alpha_value: The value used to fill the resulting `Tensor`.
     name: A name for the operation (optional).
     Returns:
     A `Tensor` with all elements set to alpha.
@@ -61,12 +61,11 @@ def alphas(shape, alpha_value, name=None):
 def alphas_like(tensor, alpha_value, name=None, optimize=True):
     """Creates a tensor with all elements set to `alpha_value`.
   Given a single tensor (`tensor`), this operation returns a tensor of the same
-  type and shape as `tensor` with all elements set to 1. Optionally, you can
-  specify a new type (`dtype`) for the returned tensor.
+  type and shape as `tensor` with all elements set to `alpha_value`.
   For example:
   ```python
   tensor = tf.constant([[1, 2, 3], [4, 5, 6]])
-  tf.ones_like(tensor)  # [[1, 1, 1], [1, 1, 1]]
+  tl.alphas_like(tensor, 0.5)  # [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
   ```
   Args:
     tensor: A `Tensor`.
@@ -77,7 +76,7 @@ def alphas_like(tensor, alpha_value, name=None, optimize=True):
     optimize: if true, attempt to statically determine the shape of 'tensor'
     and encode it as a constant.
   Returns:
-    A `Tensor` with all elements set to 1.
+    A `Tensor` with all elements set to `alpha_value`.
   """
     with ops.name_scope(name, "alphas_like", [tensor]) as name:
         tensor = ops.convert_to_tensor(tensor, name="tensor")
