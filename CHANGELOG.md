@@ -91,6 +91,7 @@ To release a new version, please update the changelog as followed:
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 - Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
+- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 
 ### Security
 
