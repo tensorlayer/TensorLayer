@@ -15,10 +15,7 @@ from tensorflow.python.ops.array_ops import shape_internal
 from tensorflow.python.ops.gen_array_ops import fill
 from tensorflow.python.ops.gen_array_ops import reshape
 
-__all__ = [
-    'alphas',
-    'alphas_like'
-]
+__all__ = ['alphas', 'alphas_like']
 
 
 def alphas(shape, alpha_value, name=None):
@@ -52,9 +49,8 @@ def alphas(shape, alpha_value, name=None):
         if not shape._shape_tuple():
             shape = reshape(shape, [-1])  # Ensure it's a vector
 
-
         try:
-          output = constant(alpha_value, shape=shape, dtype=alpha_dtype, name=name)
+            output = constant(alpha_value, shape=shape, dtype=alpha_dtype, name=name)
 
         except (TypeError, ValueError) as e:
             output = fill(shape, constant(alpha_value, dtype=alpha_dtype), name=name)
@@ -65,7 +61,7 @@ def alphas(shape, alpha_value, name=None):
 
 
 def alphas_like(tensor, alpha_value, name=None, optimize=True):
-  """Creates a tensor with all elements set to `alpha_value`.
+    """Creates a tensor with all elements set to `alpha_value`.
   Given a single tensor (`tensor`), this operation returns a tensor of the same
   type and shape as `tensor` with all elements set to 1. Optionally, you can
   specify a new type (`dtype`) for the returned tensor.
@@ -85,34 +81,26 @@ def alphas_like(tensor, alpha_value, name=None, optimize=True):
   Returns:
     A `Tensor` with all elements set to 1.
   """
-  with ops.name_scope(name, "alphas_like", [tensor]) as name:
-    tensor = ops.convert_to_tensor(tensor, name="tensor")
+    with ops.name_scope(name, "alphas_like", [tensor]) as name:
+        tensor = ops.convert_to_tensor(tensor, name="tensor")
 
-    if context.in_eager_mode():    #and dtype is not None and dtype != tensor.dtype:
-        ret = alphas(
-            shape_internal(tensor, optimize=optimize),
-            alpha_value=alpha_value,
-            name=name
-        )
+        if context.in_eager_mode():  #and dtype is not None and dtype != tensor.dtype:
+            ret = alphas(shape_internal(tensor, optimize=optimize), alpha_value=alpha_value, name=name)
 
-    else: # if context.in_graph_mode():
+        else:  # if context.in_graph_mode():
 
-        # For now, variant types must be created via zeros_like; as we need to
-        # pass the input variant object to the proper zeros callback.
+            # For now, variant types must be created via zeros_like; as we need to
+            # pass the input variant object to the proper zeros callback.
 
-        if (optimize and tensor.shape.is_fully_defined()):
-            # We can produce a zeros tensor independent of the value of 'tensor',
-            # since the shape is known statically.
-            ret = alphas(tensor.shape, alpha_value=alpha_value, name=name)
+            if (optimize and tensor.shape.is_fully_defined()):
+                # We can produce a zeros tensor independent of the value of 'tensor',
+                # since the shape is known statically.
+                ret = alphas(tensor.shape, alpha_value=alpha_value, name=name)
 
-        # elif dtype is not None and dtype != tensor.dtype and dtype != dtypes.variant:
-        else:
-            ret = alphas(
-                shape_internal(tensor, optimize=optimize),
-                alpha_value=alpha_value,
-                name=name
-            )
+            # elif dtype is not None and dtype != tensor.dtype and dtype != dtypes.variant:
+            else:
+                ret = alphas(shape_internal(tensor, optimize=optimize), alpha_value=alpha_value, name=name)
 
-        ret.set_shape(tensor.get_shape())
+            ret.set_shape(tensor.get_shape())
 
-    return ret
+        return ret
