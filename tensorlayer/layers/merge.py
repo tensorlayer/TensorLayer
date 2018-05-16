@@ -154,7 +154,7 @@ class ElementwiseLayer(Layer):
 
 
 class ElementwiseLambdaLayer(Layer):
-    """A layer uses a custom function to join multiple layer inputs.
+    """A layer that use a custom function to combine multiple :class:Layer inputs.
 
     Parameters
     ----------
@@ -164,6 +164,8 @@ class ElementwiseLambdaLayer(Layer):
         The function that applies to the outputs of previous layer.
     fn_args : dictionary or None
         The arguments for the function (option).
+    act : activation function
+        The activation function of this layer.
     name : str
         A unique layer name.
 
