@@ -78,6 +78,8 @@ To release a new version, please update the changelog as followed:
 - CI Tool:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
+- Layer:
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
@@ -96,7 +98,7 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan @2wins
+@lgarithm @DEKHTIARJonathan @2wins @One-sixth
 
 
 ## [1.8.5] - 2018-05-09

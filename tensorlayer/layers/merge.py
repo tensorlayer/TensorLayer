@@ -8,6 +8,7 @@ from .core import *
 __all__ = [
     'ConcatLayer',
     'ElementwiseLayer',
+    'ElementwiseLambdaLayer',
 ]
 
 
@@ -150,3 +151,62 @@ class ElementwiseLayer(Layer):
         # # self.all_drop = list_remove_repeat(self.all_drop)
 
         self.all_layers.append(self.outputs)
+
+
+class ElementwiseLambdaLayer(Layer):
+    """A layer that use a custom function to combine multiple :class:Layer inputs.
+
+    Parameters
+    ----------
+    layers : list of :class:`Layer`
+        The list of layers to combine.
+    fn : function
+        The function that applies to the outputs of previous layer.
+    fn_args : dictionary or None
+        The arguments for the function (option).
+    act : activation function
+        The activation function of this layer.
+    name : str
+        A unique layer name.
+
+    Examples
+    --------
+    z = mean + noise * tf.exp(std * 0.5)
+
+    >>> def func(noise, mean, std):
+    >>>     return mean + noise * tf.exp(std * 0.5)
+    >>> x = tf.placeholder(tf.float32, [None, 200])
+    >>> noise_tensor = tf.random_normal(tf.stack([tf.shape(x)[0], 200]))
+    >>> noise = tl.layers.InputLayer(noise_tensor)
+    >>> net = tl.layers.InputLayer(x)
+    >>> net = tl.layers.DenseLayer(net, n_units=200, act=tf.nn.relu, name='dense1')
+    >>> mean = tl.layers.DenseLayer(net, n_units=200, name='mean')
+    >>> std = tl.layers.DenseLayer(net, n_units=200, name='std')
+    >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
+    """
+
+    def __init__(
+            self,
+            layers,
+            fn,
+            fn_args=None,
+            act=None,
+            name='elementwiselambda_layer',
+    ):
+
+        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, name=name)
+        logging.info("ElementwiseLambdaLayer %s" % self.name)
+
+        if fn_args is None:
+            fn_args = {}
+
+        self.inputs = [layer.outputs for layer in layers]
+
+        with tf.variable_scope(name) as vs:
+            self.outputs = fn(*self.inputs, **fn_args)
+            if act:
+                self.outputs = act(self.outputs)
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self.all_layers.append(self.outputs)
+        self.all_params.extend(variables)
