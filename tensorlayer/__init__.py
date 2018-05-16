@@ -7,6 +7,7 @@ try:
     import tensorflow
 
     from . import activation
+    from .array_ops import alphas, alphas_like
     from . import cost
     from . import files
     from . import iterate

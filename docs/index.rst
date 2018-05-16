@@ -42,18 +42,19 @@ method, this part of the documentation is for you.
 .. toctree::
   :maxdepth: 2
 
-  modules/layers
-  modules/cost
-  modules/prepro
-  modules/iterate
-  modules/utils
-  modules/nlp
-  modules/rein
-  modules/files
-  modules/visualize
   modules/activation
-  modules/models
+  modules/array_ops
+  modules/cost
   modules/distributed
+  modules/files
+  modules/iterate
+  modules/models
+  modules/nlp
+  modules/layers
+  modules/prepro
+  modules/rein
+  modules/utils
+  modules/visualize
   modules/db
 
 
