@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """A file containing functions related to array manipulation."""
 
-import tensorflow as tf
-
 from tensorflow.python.eager import context
 from tensorflow.python.framework import constant_op
 from tensorflow.python.framework import dtypes
@@ -52,7 +50,7 @@ def alphas(shape, alpha_value, name=None):
         try:
             output = constant(alpha_value, shape=shape, dtype=alpha_dtype, name=name)
 
-        except (TypeError, ValueError) as e:
+        except (TypeError, ValueError):
             output = fill(shape, constant(alpha_value, dtype=alpha_dtype), name=name)
 
         assert output.dtype.base_dtype == alpha_dtype
