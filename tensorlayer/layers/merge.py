@@ -188,6 +188,7 @@ class ElementwiseLambdaLayer(Layer):
             layers,
             fn,
             fn_args=None,
+            act=None,
             name='elementwiselambda_layer',
     ):
 
@@ -198,8 +199,11 @@ class ElementwiseLambdaLayer(Layer):
             fn_args = {}
 
         self.inputs = [layer.outputs for layer in layers]
+
         with tf.variable_scope(name) as vs:
             self.outputs = fn(*self.inputs, **fn_args)
+            if act:
+                self.outputs = act(self.outputs)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers.append(self.outputs)
