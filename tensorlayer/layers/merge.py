@@ -154,7 +154,7 @@ class ElementwiseLayer(Layer):
 
 
 class ElementwiseLambdaLayer(Layer):
-    """A layer that use a custom function to combine multiple :class:Layer inputs.
+    """A layer that use a custom function to combine multiple :class:`Layer` inputs.
 
     Parameters
     ----------
