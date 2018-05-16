@@ -53,7 +53,8 @@ def alphas(shape, alpha_value, name=None):
         except (TypeError, ValueError):
             output = fill(shape, constant(alpha_value, dtype=alpha_dtype), name=name)
 
-        assert output.dtype.base_dtype == alpha_dtype
+        if output.dtype.base_dtype != alpha_dtype:
+            raise AssertionError("Dtypes do not corresponds: %s and %s" % (output.dtype.base_dtype, alpha_dtype))
 
         return output
 
