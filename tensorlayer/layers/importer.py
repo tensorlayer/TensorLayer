@@ -17,7 +17,7 @@ __all__ = [
 
 
 class LambdaLayer(Layer):
-    """A layer that takes a user-defined function using TensorFlow Lambda.
+    """A layer that takes a user-defined function using TensorFlow Lambda, for multiple inputs see :class:`ElementwiseLambdaLayer`.
 
     Parameters
     ----------

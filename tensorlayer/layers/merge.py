@@ -13,7 +13,7 @@ __all__ = [
 
 
 class ConcatLayer(Layer):
-    """A layer that concats multiple tensors according to given axis..
+    """A layer that concats multiple tensors according to given axis.
 
     Parameters
     ----------

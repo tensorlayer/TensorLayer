@@ -81,6 +81,7 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
 
 ### Deprecated
 
@@ -96,7 +97,7 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan @2wins @One-sixth
+@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
 
 
 ## [1.8.5] - 2018-05-09
