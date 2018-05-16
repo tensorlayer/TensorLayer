@@ -194,9 +194,6 @@ class ElementwiseLambdaLayer(Layer):
             prev_layer=layers, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
 
-        assert layers is not None
-        assert fn is not None
-
         if fn_args is None:
             fn_args = {}
 
