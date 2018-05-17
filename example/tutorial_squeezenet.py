@@ -11,6 +11,7 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPool2d, InputLayer, MaxPool2d)
 
+MODEL_PATH = os.path.join("models", "squeezenet.npz")
 
 def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
@@ -114,8 +115,8 @@ n.print_params(False)
 sess = tf.InteractiveSession()
 tl.layers.initialize_global_variables(sess)
 
-if tl.files.file_exists('squeezenet.npz'):
-    tl.files.load_and_assign_npz(sess=sess, name='squeezenet.npz', network=n)
+if tl.files.file_exists(MODEL_PATH):
+    tl.files.load_and_assign_npz(sess=sess, name=MODEL_PATH, network=n)
 else:
     raise Exception(
         "please download the pre-trained squeezenet.npz from https://github.com/tensorlayer/pretrained-models"
@@ -129,4 +130,4 @@ prob = sess.run(softmax, feed_dict={x: [img]})[0]
 print("  End time : %.5ss" % (time.time() - start_time))
 
 print('Predicted:', decode_predictions([prob], top=3)[0])
-tl.files.save_npz(n.all_params, name='squeezenet.npz', sess=sess)
+tl.files.save_npz(n.all_params, name=MODEL_PATH, sess=sess)
