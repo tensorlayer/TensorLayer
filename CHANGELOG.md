@@ -95,6 +95,9 @@ To release a new version, please update the changelog as followed:
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 - Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
+- Tutorial:
+  - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
+  - `tf.flags` API changed for `tf.app.flags` (by @DEKHTIARJonathan in #635)
 
 ### Security
 
