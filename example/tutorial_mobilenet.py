@@ -19,6 +19,7 @@ from tensorlayer.layers import (
 
 MODEL_PATH = os.path.join("models", "mobilenet.npz")
 
+
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
     # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
     with tf.variable_scope(name):

@@ -13,6 +13,7 @@ from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPoo
 
 MODEL_PATH = os.path.join("models", "squeezenet.npz")
 
+
 def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
     if tl.files.file_exists(fpath) is False:
