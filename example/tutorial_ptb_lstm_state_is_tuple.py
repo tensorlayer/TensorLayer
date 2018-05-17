@@ -101,6 +101,7 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 """
 
+import sys
 import time
 
 import numpy as np
