@@ -98,9 +98,8 @@ img, label = read_and_decode("train.tfrecords")
 img_batch, label_batch = tf.train.shuffle_batch(
     [img, label], batch_size=4, capacity=2000, min_after_dequeue=1000, num_threads=16
 )
-print("img_batch   : %s" % img_batch._shape)
-print("label_batch : %s" % label_batch._shape)
-# init = tf.initialize_all_variables()
+print("img_batch   : %s" % img_batch.shape)
+print("label_batch : %s" % label_batch.shape)
 with tf.Session() as sess:
     # sess.run(init)
     tl.layers.initialize_global_variables(sess)
