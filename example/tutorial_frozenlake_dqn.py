@@ -26,6 +26,7 @@ of 1 if you reach the goal, and zero otherwise.
 
 """
 
+import time
 import gym
 import numpy as np
 
