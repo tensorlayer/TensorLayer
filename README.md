@@ -7,7 +7,7 @@
     </div>
 </div>
 -->
-<a href="http://tensorlayer.readthedocs.io">
+<a href="https://tensorlayer.readthedocs.io/">
 <div align="center">
 	<img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
 </div>
@@ -17,7 +17,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9)](https://app.codacy.com/app/tensorlayer/tensorlayer?utm_source=github.com&utm_medium=referral&utm_content=tensorlayer/tensorlayer&utm_campaign=badger)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Build Status](https://travis-ci.org/tensorlayer/tensorlayer.svg?branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
-[![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=latest)](http://tensorlayer.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/tensorlayer/badge/?version=stable)](https://tensorlayer.readthedocs.io/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
 [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/)
 [![Python 3](https://pyup.io/repos/github/tensorlayer/tensorlayer/python-3-shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/)
@@ -35,23 +35,30 @@ TensorLayer is a deep learning and reinforcement learning library on top of [Ten
 <br/>
 
 - **You have found a bug**: Please open a [Github Issues](https://github.com/tensorlayer/tensorlayer/issues)
-- **Useful links:** [Documentation](http://tensorlayer.readthedocs.io), [Examples](http://tensorlayer.readthedocs.io/en/latest/user/example.html), [中文文档](https://tensorlayercn.readthedocs.io), [中文书](http://www.broadview.com.cn/book/5059)
+
+- **Useful links (EN):** 
+  - [Documentation](https://tensorlayer.readthedocs.io/)
+  - [Examples](https://tensorlayer.readthedocs.io/en/stable/user/example.html)
+  
+- **Useful links (CN):** 
+  - [中文文档](https://tensorlayercn.readthedocs.io)
+  - [中文书](http://www.broadview.com.cn/book/5059)
 
 # News
 * [10 Apr] Load and visualize MPII dataset in one line of code.
-* [05 Apr] Release [models APIs](http://tensorlayer.readthedocs.io/en/latest/modules/models.html#) for well-known pretained networks.
+* [05 Apr] Release [models APIs](https://tensorlayer.readthedocs.io/en/stable/modules/models.html) for well-known pretained networks.
 * [18 Mar] Release experimental APIs for binary networks.
 * [18 Jan] [《深度学习：一起玩转TensorLayer》](http://www.broadview.com.cn/book/5059) (Deep Learning using TensorLayer)
 * [17 Dec] Release experimental APIs for distributed training (by [TensorPort](https://tensorport.com)). See [tiny example](https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py).
-* [17 Nov] Release data augmentation APIs for object detection, see [tl.prepro](http://tensorlayer.readthedocs.io/en/latest/modules/prepro.html#object-detection).
-* [17 Nov] Support [Convolutional LSTM](https://arxiv.org/abs/1506.04214), see [ConvLSTMLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#conv-lstm-layer).
-* [17 Nov] Support [Deformable Convolution](https://arxiv.org/abs/1703.06211), see [DeformableConv2dLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#d-deformable-conv).
-* [17 Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq).
+* [17 Nov] Release data augmentation APIs for object detection, see [tl.prepro](https://tensorlayer.readthedocs.io/en/stable/modules/prepro.html#object-detection).
+* [17 Nov] Support [Convolutional LSTM](https://arxiv.org/abs/1506.04214), see [ConvLSTMLayer](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#conv-lstm-layer).
+* [17 Nov] Support [Deformable Convolution](https://arxiv.org/abs/1703.06211), see [DeformableConv2dLayer](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#d-deformable-conv).
+* [17 Sep] New example [Chatbot in 200 lines of code](https://github.com/zsdonghao/seq2seq-chatbot) for [Seq2Seq](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#simple-seq2seq).
 <!--
-* [17 Nov] Download [VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) in one line, see [load\_voc_dataset](http://tensorlayer.readthedocs.io/en/latest/modules/files.html#voc-2007-2012).
-* [17 Sep] Release [ROI layer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#roi-layer) for Object Detection.
-* [17 Jun] Release [SpatialTransformer2dAffineLayer](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
-* [17 Jun] Release [Sub-pixel Convolution 2D](http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
+* [17 Nov] Download [VOC dataset](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) in one line, see [load\_voc_dataset](https://tensorlayer.readthedocs.io/en/stable/modules/files.html#voc-2007-2012).
+* [17 Sep] Release [ROI layer](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#roi-layer) for Object Detection.
+* [17 Jun] Release [SpatialTransformer2dAffineLayer](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#spatial-transformer) for [Spatial Transformer Networks](https://github.com/zsdonghao/Spatial-Transformer-Nets) see [example code](https://github.com/zsdonghao/Spatial-Transformer-Nets).
+* [17 Jun] Release [Sub-pixel Convolution 2D](https://tensorlayer.readthedocs.io/en/stable/modules/layers.html#super-resolution-layer) for Super-resolution see [SRGAN code](https://github.com/zsdonghao/SRGAN).
 * [17 May] You can now use TensorLayer with [TFSlim](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py) and [Keras](https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py) together!
 -->
 
