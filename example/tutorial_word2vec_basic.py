@@ -226,8 +226,7 @@ def main_word2vec_basic():
         # Load from ckpt or npz file
         # saver = tf.train.Saver()
         # saver.restore(sess, model_file_name+'.ckpt')
-        load_params = tl.files.load_npz(name=model_file_name + '.npz')
-        tl.files.assign_params(sess, load_params, emb_net)
+        tl.files.load_and_assign_npz_dict(name=model_file_name + '.npz', sess=sess)
 
     emb_net.print_params(False)
     emb_net.print_layers()
@@ -273,7 +272,7 @@ def main_word2vec_basic():
             # Save to ckpt or npz file
             # saver = tf.train.Saver()
             # save_path = saver.save(sess, model_file_name+'.ckpt')
-            tl.files.save_npz(emb_net.all_params, name=model_file_name + '.npz', sess=sess)
+            tl.files.save_npz_dict(emb_net.all_params, name=model_file_name + '.npz', sess=sess)
             tl.files.save_any_to_npy(
                 save_dict={
                     'data': data,
