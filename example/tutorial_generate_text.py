@@ -155,7 +155,7 @@ def main_restore_embedding_layer():
 
     emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
     tl.files.assign_params(sess, [load_params[0]], emb_net)

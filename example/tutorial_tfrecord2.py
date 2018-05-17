@@ -85,6 +85,7 @@ img_batch, label_batch = tf.train.shuffle_batch([img, label], batch_size=4, capa
 
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)
+# init = tf.global_variables_initializer()
 with tf.Session() as sess:
     # sess.run(init)
     tl.layers.initialize_global_variables(sess)

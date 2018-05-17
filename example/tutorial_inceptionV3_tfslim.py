@@ -89,7 +89,7 @@ def print_prob(prob):
 #                                     name='alexnet_v2'  # <-- the name should be the same with the ckpt model
 #                                     )
 # sess = tf.InteractiveSession()
-# # sess.run(tf.initialize_all_variables())
+# # sess.run(tf.global_variables_initializer())
 # tl.layers.initialize_global_variables(sess)
 # network.print_params()
 

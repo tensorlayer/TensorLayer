@@ -100,6 +100,7 @@ img_batch, label_batch = tf.train.shuffle_batch(
 )
 print("img_batch   : %s" % img_batch.shape)
 print("label_batch : %s" % label_batch.shape)
+# init = tf.global_variables_initializer()
 with tf.Session() as sess:
     # sess.run(init)
     tl.layers.initialize_global_variables(sess)
@@ -115,5 +116,3 @@ with tf.Session() as sess:
     coord.request_stop()
     coord.join(threads)
     sess.close()
-
-#
