@@ -107,9 +107,18 @@ import tensorflow as tf
 
 import tensorlayer as tl
 
-flags = tf.flags
+flags = tf.app.flags
+
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
+
+if (tf.VERSION >= '1.5'):
+    # parse flags
+    flags.FLAGS(sys.argv, known_only=True)
+    flags.ArgumentParser()
+
 FLAGS = flags.FLAGS
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
 def main(_):
