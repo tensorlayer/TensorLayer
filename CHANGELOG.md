@@ -97,7 +97,7 @@ To release a new version, please update the changelog as followed:
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
-  - `tf.flags` API changed for `tf.app.flags` (by @DEKHTIARJonathan in #635)
+  - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
 
 ### Security
 
