@@ -37,17 +37,25 @@ following snippet:
 """
 
 import os
+import time
+
+import numpy as np
 from scipy.misc import imread, imresize
+
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
     )
+
+MODEL_DIR = "models"
+MODEL_NAME = "vgg16.npy"
+MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 
 def conv_layers(net_in):
@@ -155,10 +163,10 @@ tl.layers.initialize_global_variables(sess)
 net.print_params()
 net.print_layers()
 
-if not os.path.isfile("vgg16_weights.npz"):
-    print("Please download vgg16_weights.npz from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
+if not os.path.isfile(MODEL_PATH):
+    print("Please download vgg16.npy from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
     exit()
-npz = np.load('vgg16_weights.npz')
+npz = np.load(MODEL_PATH)
 
 params = []
 for val in sorted(npz.items()):
