@@ -85,6 +85,7 @@ To release a new version, please update the changelog as followed:
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
+- RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
 
 ### Deprecated
 
