@@ -23,7 +23,7 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
