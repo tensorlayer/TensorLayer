@@ -369,5 +369,3 @@ if __name__ == '__main__':
 
     # How to generate text from a given context
     main_lstm_generate_text()
-
-#

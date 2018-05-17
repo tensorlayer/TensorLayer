@@ -38,12 +38,13 @@ import tensorlayer as tl
 
 slim = tf.contrib.slim
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
     )
 
+MODEL_PATH = os.path.join("models", 'inception_v3.ckpt')
 
 def load_image(path):
     # load image
@@ -122,15 +123,15 @@ sess = tf.InteractiveSession()
 network.print_params(False)
 
 saver = tf.train.Saver()
-if not os.path.isfile("inception_v3.ckpt"):
+if not os.path.isfile(MODEL_PATH):
     raise Exception(
         "Please download inception_v3 ckpt from https://github.com/tensorflow/models/tree/master/research/slim"
     )
 
 try:  # TF12+
-    saver.restore(sess, "./inception_v3.ckpt")
+    saver.restore(sess, MODEL_PATH)
 except Exception:  # TF11
-    saver.restore(sess, "inception_v3.ckpt")
+    saver.restore(sess, MODEL_PATH)
 print("Model Restored")
 
 y = network.outputs
