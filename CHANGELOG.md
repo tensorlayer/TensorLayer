@@ -81,6 +81,8 @@ To release a new version, please update the changelog as followed:
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+- Documentation:
+  - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
