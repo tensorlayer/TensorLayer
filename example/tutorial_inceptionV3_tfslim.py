@@ -46,6 +46,7 @@ except Exception as e:
 
 MODEL_PATH = os.path.join("models", 'inception_v3.ckpt')
 
+
 def load_image(path):
     # load image
     img = skimage.io.imread(path)
