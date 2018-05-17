@@ -69,17 +69,23 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
+- API:
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
 - CI Tool:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
+- Layer:
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
 
 ### Deprecated
 
@@ -88,15 +94,16 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
-- Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
+- Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
+- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 
 ### Security
 
 ### Dependencies Update
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan @2wins
+@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
 
 
 ## [1.8.5] - 2018-05-09
