@@ -85,6 +85,8 @@ To release a new version, please update the changelog as followed:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
+  - Optimizers page added (by @DEKHTIARJonathan in #636)
+  - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 
