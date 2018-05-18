@@ -1,0 +1,6 @@
+filename: CHANGELOG.md
+include:
+  - /^tensorlayer\//
+  - /^tests\//
+  - /^docs\//
+  - /^example\//
