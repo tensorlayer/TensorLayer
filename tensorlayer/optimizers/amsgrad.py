@@ -14,6 +14,7 @@ from tensorflow.python.training import optimizer
 
 
 class AMSGrad(optimizer.Optimizer):
+
     def __init__(self, learning_rate=0.01, beta1=0.9, beta2=0.99, epsilon=1e-8, use_locking=False, name="AMSGrad"):
         super(AMSGrad, self).__init__(use_locking, name)
         self._lr = learning_rate
@@ -41,7 +42,7 @@ class AMSGrad(optimizer.Optimizer):
                 self._beta1_power = variable_scope.variable(self._beta1, name="beta1_power", trainable=False)
                 self._beta2_power = variable_scope.variable(self._beta2, name="beta2_power", trainable=False)
         # Create slots for the first and second moments.
-        for v in var_list :
+        for v in var_list:
             self._zeros_slot(v, "m", self._name)
             self._zeros_slot(v, "v", self._name)
             self._zeros_slot(v, "vhat", self._name)
@@ -142,28 +143,30 @@ class AMSGrad(optimizer.Optimizer):
 
     def _apply_sparse(self, grad, var):
         return self._apply_sparse_shared(
-            grad.values, var, grad.indices,
-            lambda x, i, v: state_ops.scatter_add(  # pylint: disable=g-long-lambda
-                x, i, v, use_locking=self._use_locking))
+            grad.values,
+            var,
+            grad.indices,
+            lambda x, i, v: state_ops.
+            scatter_add(  # pylint: disable=g-long-lambda
+                x, i, v, use_locking=self._use_locking
+            )
+        )
 
     def _resource_scatter_add(self, x, i, v):
-        with ops.control_dependencies(
-                [resource_variable_ops.resource_scatter_add(x.handle, i, v)]):
+        with ops.control_dependencies([resource_variable_ops.resource_scatter_add(x.handle, i, v)]):
             return x.value()
 
     def _resource_apply_sparse(self, grad, var, indices):
-        return self._apply_sparse_shared(
-            grad, var, indices, self._resource_scatter_add)
+        return self._apply_sparse_shared(grad, var, indices, self._resource_scatter_add)
 
     def _finish(self, update_ops, name_scope):
         # Update the power accumulators.
         with ops.control_dependencies(update_ops):
             with ops.colocate_with(self._beta1_power):
                 update_beta1 = self._beta1_power.assign(
-                    self._beta1_power * self._beta1_t,
-                    use_locking=self._use_locking)
+                    self._beta1_power * self._beta1_t, use_locking=self._use_locking
+                )
                 update_beta2 = self._beta2_power.assign(
-                    self._beta2_power * self._beta2_t,
-                    use_locking=self._use_locking)
-        return control_flow_ops.group(*update_ops + [update_beta1, update_beta2],
-                                      name=name_scope)
+                    self._beta2_power * self._beta2_t, use_locking=self._use_locking
+                )
+        return control_flow_ops.group(*update_ops + [update_beta1, update_beta2], name=name_scope)
