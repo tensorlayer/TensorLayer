@@ -77,7 +77,7 @@ To release a new version, please update the changelog as followed:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
-  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #???)
+  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
 - CI Tool:
   - Danger CI has been added to enforce the update of the changelog (by @lgarithm and @DEKHTIARJonathan in #563)
   - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
@@ -86,7 +86,7 @@ To release a new version, please update the changelog as followed:
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
 - Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #???)
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
