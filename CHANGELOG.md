@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 - Test:
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
 - CI Tool:
@@ -93,7 +94,8 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
-- Issue #572 with deformable convolution fixed (by @DEKHTIARJonathan in #573)
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
+- Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
