@@ -14,8 +14,33 @@ from tensorflow.python.training import optimizer
 
 
 class AMSGrad(optimizer.Optimizer):
+    """Implementation of the AMSGrad optimization algorithm.\n
+    See: `On the Convergence of Adam and Beyond - [Reddi et al., 2018] <https://openreview.net/pdf?id=ryQu7f-RZ>`__.
+
+    Parameters
+    ----------
+    learning_rate: float
+        A Tensor or a floating point value.  The learning rate.
+    beta1: float
+        A float value or a constant float tensor.
+        The exponential decay rate for the 1st moment estimates.
+    beta2: float
+        A float value or a constant float tensor.
+        The exponential decay rate for the 2nd moment estimates.
+    epsilon: float
+        A small constant for numerical stability.
+        This epsilon is "epsilon hat" in the Kingma and Ba paper
+        (in the formula just before Section 2.1), not the epsilon in Algorithm 1 of the paper.
+    use_locking: bool
+        If True use locks for update operations.
+    name: str
+        Optional name for the operations created when applying gradients.
+        Defaults to "AMSGrad".
+    """
 
     def __init__(self, learning_rate=0.01, beta1=0.9, beta2=0.99, epsilon=1e-8, use_locking=False, name="AMSGrad"):
+        """Construct a new Adam optimizer.
+        """
         super(AMSGrad, self).__init__(use_locking, name)
         self._lr = learning_rate
         self._beta1 = beta1
