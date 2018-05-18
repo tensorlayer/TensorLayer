@@ -7,23 +7,28 @@ try:
     import tensorflow
 
     from . import activation
-    from .array_ops import alphas, alphas_like
+    from . import array_ops
     from . import cost
+    from . import distributed
     from . import files
     from . import iterate
     from . import layers
     from . import models
+    from . import nlp
+    from . import optimizers
+    from . import prepro
+    from . import rein
     from . import utils
     from . import visualize
-    from . import prepro
-    from . import nlp
-    from . import rein
-    from . import distributed
 
     # alias
     act = activation
     vis = visualize
 
+    alphas = array_ops.alphas
+    alphas_like = array_ops.alphas_like
+
+    # global vars
     global_flag = {}
     global_dict = {}
 

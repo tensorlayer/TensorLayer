@@ -53,6 +53,7 @@ method, this part of the documentation is for you.
   modules/models
   modules/nlp
   modules/layers
+  modules/optimizers
   modules/prepro
   modules/rein
   modules/utils
