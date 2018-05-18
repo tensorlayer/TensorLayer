@@ -53,10 +53,6 @@ except Exception as e:
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
     )
 
-MODEL_DIR = "models"
-MODEL_NAME = "vgg16.npy"
-MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
-
 
 def conv_layers(net_in):
     with tf.name_scope('preprocess'):
@@ -163,14 +159,14 @@ tl.layers.initialize_global_variables(sess)
 net.print_params()
 net.print_layers()
 
-if not os.path.isfile(MODEL_PATH):
-    print("Please download vgg16.npy from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
-    exit()
-npz = np.load(MODEL_PATH)
+tl.files.maybe_download_and_extract(
+    'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
+)
+npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
 
 params = []
 for val in sorted(npz.items()):
-    print("  Loading %s" % str(val[1].shape))
+    print("  Loading params %s" % str(val[1].shape))
     params.append(val[1])
 
 tl.files.assign_params(sess, params, net)
