@@ -35,7 +35,6 @@ class Layer_Pooling_Test(CustomTestCase):
         correct_prediction = tf.equal(tf.argmax(cls.y, 1), cls.y_)
 
         cls.acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        y_op = tf.argmax(tf.nn.softmax(cls.y), 1)
 
         # define the optimizer
         train_params = cls.network.all_params
@@ -50,7 +49,7 @@ class Layer_Pooling_Test(CustomTestCase):
 
         with self.assertNotRaises(Exception):
 
-            X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
+            X_train, y_train, X_val, y_val, _, _ = tl.files.load_mnist_dataset(shape=(-1, 784))
 
             with tf.Session() as sess:
                 # initialize all variables in the session
