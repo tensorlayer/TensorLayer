@@ -9,5 +9,5 @@ end
 github.api.update_pull_request(
     github.pr_json.base.repo.full_name,
     github.pr_json.number,
-    {:body => github.pr_body + "Some new text"}
+    {:body => github.pr_body}
 )
