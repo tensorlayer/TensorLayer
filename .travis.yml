@@ -21,11 +21,6 @@ env:
   ## To update: travis encrypt GITHUB_PERSONAL_TOKEN=################################
   - secure: "kMxg4WfTwhnYMD7WjYk71vgw7XlShPpANauKzfTL6oawDrpQRkBUai4uQwiL3kXVBuVv9rKKKZxxnyAm05iB5wGasPDhlFA1DPF0IbyU3pwQKlw2Xo5qtHdgxBnbms6JJ9z5b+hHCVg+LXYYeUw5qG01Osg5Ue6j1g2juQQHCod00FNuo3fe8ah/Y10Rem6CigH8ofosCrTvN2w1GaetJwVehRYf8JkPC6vQ+Yk8IIjHn2CaVJALbhuchVblxwH0NXXRen915BVBwWRQtsrvEVMXKu7A8sMHmvPz1u3rhXQfjpF2KeVOfy1ZnyiHcLE2HgAPuAGh4kxZAAA8ovmcaCbv8m64bm72BrQApSbt6OEtR9L1UeUwdEgi54FH1XFOHQ9dA6CpiGCyk3wAJZqO0/PkNYVLfb4gPLvnvBRwYBaPgUPvVNhidFu/oODENZmcf8g9ChtuC1GT70EYlVwhgDGqUY7/USZCEvIPe81UToqtIKgcgA+Is51XindumJVMiqTsjgdqeC/wZcw+y37TAjIvvXbtYxeqIKv9zh1JuZppqUhnf+OhI+HHFaY4iu7lQTs3C0WmoLskZAp9srwRtifnVFFkdYzngmPaSjWyko2qiS0cTdFJQB/ljqmnJdksacbv5OOa0Q4qZef/hW774nVx105FlkAIk70D2b5l2pA="
 
-  ### === DANGER_GITHUB_API_TOKEN === ###
-  ## To update: travis encrypt DANGER_GITHUB_API_TOKEN=################################
-  - secure: "T7uFuuOYciFHnz+5C+XhN7yhCc56tyC9a9eaiaZQExEO7UGazkGUU+S9OsJdfktnQuhoKPs+x7tCSDi+HXcEtjPOeKCgCGaC45LDEpeTm4emuRY93wXF9zOmwBMipsKOac/XGYtnrXwnlFLvkJo79TlPMPFNMeSvoubNjZhtc7bIXcsi7BxG89D/k3RPxXotGHy/bKHums7td8McwXrdbUSSLXBzydrzmFuo4b2DLpKmD/BSHkiHAFqxO5GwZQ/FFUdnaFwAkTJnpk6WBTlhfY0FyrmqthFKgdJtsvuFYIarSifyo1+lHo502tBYlinRJ3h8gh56TtgRyD4sqRRCv9JgjjzU378TO3ylmCcVxxvp4Xb0c45I1gLoZPdMUZMuCCrpT73bR/cJi1BNpYxWnKEDmRJpV92hr4QAIvJI4v2m9/lE44kESdKGw9c4P8TxaTtWSf+0w3kbJSJTzhgAJubYRLTQV/lTg/KY6zHBDRq5Mnv3+96XpQQldZbVrrCoiisR5wbdMfIk/1DJkHaYNFVGQy+RT6IG2fuPTSdRuO56NiCcnH6SVqDtGkjVbGynw2/2KlPvi/heuDW/g+OVtkZ0Hcfm+ntJT89GE0CeUPvaactJe11N+UuJo3150fu9zaOLBGtghgQe+u9cwjb4YA4Y/6yJSk0ZzbgxwE5C1Rc="
-
-
 install:
   - pip install -e .[tf_cpu,db,dev,test,doc]
 
@@ -33,12 +28,7 @@ script:
   # units test
   # https://docs.pytest.org/en/latest/
   - pytest  
-  
-  # Only run under the following conditions:
-  # - Python is version 3.6 => Do not run it 3 three times for each build
-  # - It is a PR build, not necessary in Push Commits.
-  # - Make sure the variable `DANGER_GITHUB_API_TOKEN` is defined, when a PR is sent from a fork, encrypted vars are not defined, thus the build would be failing.
-  - if [ "$TRAVIS_PYTHON_VERSION" == '3.6' ] && [ "$TRAVIS_EVENT_TYPE" = "pull_request" ] && [ "$DANGER_GITHUB_API_TOKEN" ]; then bundle install && bundle exec danger; fi
+
 
 before_deploy:
   - python setup.py sdist
