@@ -70,9 +70,8 @@ class Conv1dLayer(Layer):
             act=tf.identity,
             shape=(5, 1, 5),
             stride=1,
-            dilation_rate=1,
             padding='SAME',
-            data_format='NWC',
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -94,12 +93,22 @@ class Conv1dLayer(Layer):
         if b_init_args is None:
             b_init_args = {}
 
+        if self.inputs.shape[1:] == shape[1:]:
+            raise ValueError("Put a valid `shape` argument.")
+
+        if data_format in [None, 'NWC', 'channels_last']:
+            channel_size = shape[-1]
+        elif data_format in ['NCW', 'channels_first']:
+            channel_size = shape[1]
+        else:
+            raise ValueError("`data_format` should be among 'NWC', 'channels_last', 'NCW', 'channels_first'")
+
         with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
-            self.outputs = tf.nn.convolution(
-                self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, )
+            self.outputs = tf.nn.conv1d(
+                self.inputs, W, stride=stride, padding=padding
             )  # 1.2
             if b_init:
                 b = tf.get_variable(
@@ -215,13 +224,21 @@ class Conv2dLayer(Layer):
         if act is None:
             act = tf.identity
 
+        # dic = {'channels_last': 'NHWC', 'channels_first': 'NCHW'}
+        if data_format in [None, 'NHWC', 'channels_last']:
+            channel_size = shape[-1] 
+        elif data_format in ['NCHW', 'channels_first']:
+            channel_size = shape[1]
+        else:
+            raise ValueError("'data_format' must be among 'NHWC', 'channels_last', 'NCHW', 'channels_first'.")
+
         with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv2d', shape=(channel_size), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
@@ -423,6 +440,7 @@ class Conv3dLayer(Layer):
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -444,6 +462,13 @@ class Conv3dLayer(Layer):
         if act is None:
             act = tf.identity
 
+        if data_format in [None, 'NDHWC', 'channels_last']:
+            channel_size = shape[-1] 
+        elif data_format in ['NCDHW', 'channels_first']:
+            channel_size = shape[1]
+        else:
+            raise ValueError("'data_format' must be one of 'channels_last', 'channels_first'.")
+
         with tf.variable_scope(name):
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
             # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
@@ -452,11 +477,11 @@ class Conv3dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv3d', shape=(channel_size), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b)
+                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, data_format=data_format, name=None) + b)
             else:
-                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None))
+                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, data_format=data_format, name=None))
 
         # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
 
@@ -1470,7 +1495,12 @@ class Conv2d(Layer):
                 pre_channel = 1
                 logging.info("[warnings] unknow input channels, set to 1")
             shape = (filter_size[0], filter_size[1], pre_channel, n_filter)  # 32 features for each 5x5 patch
-            strides = (1, strides[0], strides[1], 1)
+            if data_format in [None, 'NHWC', 'channels_last']:
+                strides = (1, strides[0], strides[1], 1)
+            elif data_format in ['NCHW', 'channels']:
+                strides = (1, 1, strides[0], strides[1])
+            else:
+                raise ValueError("`data_format` should be among 'NHWC', 'channels_last', 'NCHW', 'channels_first'.")
 
             logging.info(
                 "Conv2d %s: shape:%s strides:%s pad:%s act:%s" %
