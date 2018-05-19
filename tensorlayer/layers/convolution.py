@@ -93,14 +93,7 @@ class Conv1dLayer(Layer):
         if b_init_args is None:
             b_init_args = {}
 
-        if self.inputs.shape[1:] == shape[1:]:
-            raise ValueError("Put a valid `shape` argument.")
-
-        if data_format in [None, 'NWC', 'channels_last']:
-            channel_size = shape[-1]
-        elif data_format in ['NCW', 'channels_first']:
-            channel_size = shape[1]
-        else:
+        if data_format not in [None, 'NWC', 'channels_last', 'NCW', 'channels_first']:
             raise ValueError("`data_format` should be among 'NWC', 'channels_last', 'NCW', 'channels_first'")
 
         with tf.variable_scope(name):
@@ -110,7 +103,8 @@ class Conv1dLayer(Layer):
             self.outputs = tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding)  # 1.2
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **b_init_args
                 )
                 self.outputs = self.outputs + b
 
@@ -223,11 +217,7 @@ class Conv2dLayer(Layer):
             act = tf.identity
 
         # dic = {'channels_last': 'NHWC', 'channels_first': 'NCHW'}
-        if data_format in [None, 'NHWC', 'channels_last']:
-            channel_size = shape[-1]
-        elif data_format in ['NCHW', 'channels_first']:
-            channel_size = shape[1]
-        else:
+        if data_format not in [None, 'NHWC', 'channels_last', 'NCHW', 'channels_first']:
             raise ValueError("'data_format' must be among 'NHWC', 'channels_last', 'NCHW', 'channels_first'.")
 
         with tf.variable_scope(name):
@@ -236,7 +226,7 @@ class Conv2dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(channel_size), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **b_init_args
                 )
                 self.outputs = act(
@@ -461,11 +451,7 @@ class Conv3dLayer(Layer):
         if act is None:
             act = tf.identity
 
-        if data_format in [None, 'NDHWC', 'channels_last']:
-            channel_size = shape[-1]
-        elif data_format in ['NCDHW', 'channels_first']:
-            channel_size = shape[1]
-        else:
+        if data_format not in [None, 'NDHWC', 'channels_last', 'NCDHW', 'channels_first']:
             raise ValueError("'data_format' must be one of 'channels_last', 'channels_first'.")
 
         with tf.variable_scope(name):
@@ -476,7 +462,7 @@ class Conv3dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv3d', shape=(channel_size), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **b_init_args
                 )
                 self.outputs = act(

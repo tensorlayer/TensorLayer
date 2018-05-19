@@ -29,7 +29,7 @@ class Layer_Data_Format_Test(CustomTestCase):
         x_2d_tr = tf.transpose(x_2d, [0, 3, 1, 2])
         cls.input_2d_tr = tl.layers.InputLayer(x_2d_tr)
 
-        x_3d = tf.placeholder(tf.float32, [None, 5, 6, 3, 3])
+        x_3d = tf.placeholder(tf.float32, [None, 5, 6, 7, 3])
         cls.input_3d = tl.layers.InputLayer(x_3d)
 
         x_3d_tr = tf.transpose(x_3d, [0, 4, 1, 2, 3])
@@ -40,9 +40,9 @@ class Layer_Data_Format_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_Conv1dLayer_NCW(self):
-        with self.assertNotRaises(Exception):
+        with self.assertRaises(Exception):
             with tf.variable_scope('test_Conv1dLayer_NCW', reuse=False):
-                tl.layers.Conv1dLayer(self.input_1d_tr, shape=(5, 5, 1), data_format="channels_first")
+                tl.layers.Conv1dLayer(self.input_1d_tr, data_format="channels_first")
 
     def test_Conv1d_NCW(self):
         with self.assertNotRaises(Exception):
@@ -60,7 +60,7 @@ class Layer_Data_Format_Test(CustomTestCase):
                 tl.layers.Conv1d(self.input_1d, data_format="channels_last")
 
     def test_Conv2dLayer_NCHW(self):
-        with self.assertNotRaises(Exception):
+        with self.assertRaises(Exception):
             with tf.variable_scope('test_Conv2dLayer_NCHW', reuse=False):
                 tl.layers.Conv2dLayer(self.input_2d_tr, data_format="NCHW")
 
@@ -85,7 +85,7 @@ class Layer_Data_Format_Test(CustomTestCase):
                 tl.layers.Conv3dLayer(self.input_3d, data_format="NDHWC")
 
     def test_Conv3dLayer_2(self):
-        with self.assertNotRaises(Exception):
+        with self.assertRaises(Exception):
             with tf.variable_scope('test_Conv3dLayer_2', reuse=False):
                 tl.layers.Conv3dLayer(self.input_3d_tr, data_format="NCDHW")
 
