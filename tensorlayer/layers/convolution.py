@@ -103,8 +103,7 @@ class Conv1dLayer(Layer):
             self.outputs = tf.nn.conv1d(self.inputs, W, stride=stride, padding=padding)  # 1.2
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = self.outputs + b
 
@@ -226,8 +225,7 @@ class Conv2dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.conv2d(
@@ -462,8 +460,7 @@ class Conv3dLayer(Layer):
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **b_init_args
+                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(
                     tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, data_format=data_format, name=None) +
