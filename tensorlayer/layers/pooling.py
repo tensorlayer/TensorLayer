@@ -201,7 +201,7 @@ class MaxPool2d(Layer):
                 self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
             )
         else:
-            if len(strides) == 2:
+            if len(strides) != 2:
                 raise Exception("len(strides) should be 2.")
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]
@@ -245,7 +245,7 @@ class MeanPool2d(Layer):
                 self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
             )
         else:
-            if len(strides) == 2:
+            if len(strides) != 2:
                 raise Exception("len(strides) should be 2.")
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]

@@ -5,30 +5,53 @@ from __future__ import absolute_import
 
 try:
     import tensorflow
-except ImportError:
-    install_instr = "Please make sure you install a recent enough version of TensorFlow."
-    raise ImportError("__init__.py : Could not import TensorFlow." + install_instr)
+    
+    if tensorflow.__version__ < "1.6.0":
+        raise RuntimeError(
+            "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
+            "Please update Tensorflow with:\n"
+            " - `pip install --upgrade tensorflow`\n"
+            " - `pip install --upgrade tensorflow-gpu`"
+        )
 
-from . import activation
-from . import cost
-from . import files
-from . import graph
-from . import iterate
-from . import layers
-from . import models
-from . import utils
-from . import visualize
-from . import prepro
-from . import nlp
-from . import rein
-from . import distributed
+    from . import activation
+    from . import array_ops
+    from . import cost
+    from . import distributed
+    from . import files
+    from . import graph
+    from . import iterate
+    from . import layers
+    from . import models
+    from . import nlp
+    from . import optimizers
+    from . import prepro
+    from . import rein
+    from . import utils
+    from . import visualize
 
-# alias
-act = activation
-vis = visualize
+    # alias
+    act = activation
+    vis = visualize
+
+    alphas = array_ops.alphas
+    alphas_like = array_ops.alphas_like
+
+    # global vars
+    global_flag = {}
+    global_dict = {}
+
+except Exception as e:
+
+    import pkg_resources
+    installed_packages = [d for d in pkg_resources.working_set]
+
+    for package in installed_packages:
+        if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
+            raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
 
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 8, 5, 'rc2')
+VERSION = (1, 8, 5)
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
@@ -41,6 +64,3 @@ __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
 __keywords__ = 'deep learning, machine learning, computer vision, nlp, supervised learning, unsupervised learning, reinforcement learning, tensorflow'
-
-global_flag = {}
-global_dict = {}

@@ -1,0 +1,12 @@
+formats:
+    - epub
+    - pdf
+
+python:
+    version: 3.5
+    pip_install: true
+    extra_requirements:
+        - db
+        - dev
+        - doc
+        - test

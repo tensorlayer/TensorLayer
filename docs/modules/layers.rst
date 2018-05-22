@@ -324,6 +324,7 @@ Layer list
 
    ConcatLayer
    ElementwiseLayer
+   ElementwiseLambdaLayer
 
    ExpandDimsLayer
    TileLayer
@@ -781,6 +782,11 @@ Concat layer
 Element-wise layer
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: ElementwiseLayer
+
+
+Element-wise lambda layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ElementwiseLambdaLayer
 
 
 Extend layer

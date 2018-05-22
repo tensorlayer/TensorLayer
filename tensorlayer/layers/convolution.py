@@ -968,7 +968,7 @@ class DeformableConv2d(Layer):
                     name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **b_init_args
                 )
-                tf.reshape()
+
                 self.outputs = tf.reshape(
                     tensor=act(tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None) + b),
                     shape=(tf.shape(self.inputs)[0], input_h, input_w, shape[-1])
