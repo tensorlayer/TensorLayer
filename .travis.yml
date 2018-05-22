@@ -57,12 +57,13 @@ deploy:
 
 # Documentation: https://docs.travis-ci.com/user/deployment/pypi/
 - provider: pypi
-  user: "$PYPI_USER"
-  password: "$PYPI_PASSWORD"
+  user: '$PYPI_USER'
+  password: '$PYPI_PASSWORD'
   skip_cleanup: true
   on:
     tags: true
     python: '3.6'
+    condition: '$_TF_VERSION = 1.8.0'
 
 # Documentation: https://docs.travis-ci.com/user/deployment/releases/
 - provider: releases
@@ -71,7 +72,8 @@ deploy:
     - tensorlayer.egg-info/PKG-INFO
   file_glob: true
   skip_cleanup: true
-  api_key: "$GITHUB_PERSONAL_TOKEN"
+  api_key: '$GITHUB_PERSONAL_TOKEN'
   on:
     tags: true
     python: '3.6'
+    condition: '$_TF_VERSION = 1.8.0'
