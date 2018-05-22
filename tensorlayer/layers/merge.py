@@ -2,7 +2,7 @@
 
 import tensorflow as tf
 
-from .. import _logging as logging
+from .. import tl_logging as logging
 from .core import *
 
 __all__ = [

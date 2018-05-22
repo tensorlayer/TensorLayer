@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .. import _logging as logging
+from .. import tl_logging as logging
 from .core import *
 
 from ..deprecation import deprecated_alias

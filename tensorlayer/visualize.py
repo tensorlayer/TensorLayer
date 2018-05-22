@@ -5,7 +5,7 @@ import os
 import numpy as np
 import imageio  # save/read image(s)
 
-from . import _logging as logging
+from . import tl_logging as logging
 from . import prepro
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable

@@ -78,6 +78,7 @@ To release a new version, please update the changelog as followed:
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
+  - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -97,6 +98,7 @@ To release a new version, please update the changelog as followed:
 - RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
 - Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
+- TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
 
 ### Deprecated
 
