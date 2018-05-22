@@ -27,7 +27,7 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 import numpy as np
 import tensorflow as tf
-from .. import _logging as logging
+from .. import tl_logging as logging
 from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer, MaxPool2d, PoolLayer)
 from ..files import maybe_download_and_extract, assign_params
 

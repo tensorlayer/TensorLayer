@@ -13,7 +13,7 @@ import tensorflow as tf
 from six.moves import urllib, xrange
 from tensorflow.python.platform import gfile
 
-from . import _logging as logging
+from . import tl_logging as logging
 
 __all__ = [
     'generate_skip_gram_batch',

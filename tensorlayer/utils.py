@@ -12,7 +12,7 @@ import tensorflow as tf
 
 import tensorlayer as tl
 
-from . import _logging as logging
+from . import tl_logging as logging
 from . import iterate
 
 __all__ = [
