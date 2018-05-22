@@ -6,7 +6,7 @@ MobileNet for ImageNet.
 import os
 # import numpy as np
 import tensorflow as tf
-from .. import _logging as logging
+from .. import tl_logging as logging
 from ..layers import (
     Layer, BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
 )

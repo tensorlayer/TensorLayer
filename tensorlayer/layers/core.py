@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
-from .. import _logging as logging
+from .. import tl_logging as logging
 from .. import files, iterate, utils, visualize
 
 from ..deprecation import deprecated_alias
