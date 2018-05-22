@@ -6,6 +6,14 @@ from __future__ import absolute_import
 try:
     import tensorflow
 
+    if tensorflow.__version__ < "1.6.0":
+        raise RuntimeError(
+            "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
+            "Please update Tensorflow with:\n"
+            " - `pip install --upgrade tensorflow`\n"
+            " - `pip install --upgrade tensorflow-gpu`"
+        )
+
     from . import activation
     from . import array_ops
     from . import cost
