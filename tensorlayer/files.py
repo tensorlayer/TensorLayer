@@ -16,7 +16,7 @@ import tensorflow as tf
 from six.moves import cPickle, zip
 from tensorflow.python.platform import gfile
 
-from . import _logging as logging
+from . import tl_logging as logging
 from . import nlp, utils, visualize
 
 __all__ = [

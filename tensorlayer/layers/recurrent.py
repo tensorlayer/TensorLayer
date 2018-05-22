@@ -5,7 +5,7 @@ import inspect
 import tensorflow as tf
 from tensorflow.python.util.tf_inspect import getfullargspec
 
-from .. import _logging as logging
+from .. import tl_logging as logging
 from .core import *
 
 from ..deprecation import deprecated_alias
