@@ -96,6 +96,7 @@ To release a new version, please update the changelog as followed:
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
 - RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
+- Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
 
 ### Deprecated
 
