@@ -2,6 +2,8 @@
 import os
 import codecs
 
+os.environ['TENSORLAYER_PACKAGE_BUILDING'] = 'True'
+
 try:
     from setuptools import (
         setup,
