@@ -2,7 +2,9 @@
 
 
 class Graph(object):
+
     class Node(object):
+
         def __init__(self, layer):
             self.name = layer.name
             self.out_shape = layer.outputs.shape
@@ -23,6 +25,7 @@ class Graph(object):
             return ''.join(l + '\\l' for l in lines)
 
     class Edge(object):
+
         def __init__(self, src, dst):
             self.src = src
             self.dst = dst
