@@ -6,7 +6,7 @@ SqueezeNet for ImageNet.
 import os
 # import numpy as np
 import tensorflow as tf
-from .. import _logging as logging
+from .. import tl_logging as logging
 from ..layers import (Layer, Conv2d, InputLayer, MaxPool2d, ConcatLayer, DropoutLayer, GlobalMeanPool2d)
 from ..files import maybe_download_and_extract, assign_params, load_npz
 
