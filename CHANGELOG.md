@@ -79,8 +79,9 @@ To release a new version, please update the changelog as followed:
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
 - CI Tool:
-  - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
-  - Changelog Probot Configuration added (by @DEKHTIARJonathan in #637)
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Documentation:
