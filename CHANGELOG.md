@@ -114,6 +114,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
+- Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
 
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
