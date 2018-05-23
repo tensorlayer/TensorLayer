@@ -1,7 +1,7 @@
 keras>=2.1,<2.2
 pycodestyle>=2.4,<2.5
 pydocstyle>=2.1,<2.2
-pytest>=3.5,<3.6
+pytest==3.6.0
 pytest-cache>=1.0,<1.1
 pytest-cov>=2.5,<2.6
 pytest-xdist>=1.22,<1.23
