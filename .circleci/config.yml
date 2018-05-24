@@ -9,6 +9,12 @@ jobs:
       - setup_remote_docker:
           reusable: true
           exclusive: true
+
+      - run:
+          name: Connection to Docker Hub
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
       - run:
           name: Build Containers
           command: |
@@ -20,10 +26,10 @@ jobs:
             docker build -t tensorlayer_py2_gpu python2/gpu
             docker build -t tensorlayer_py3_cpu python3/cpu
             docker build -t tensorlayer_py3_gpu python3/gpu
-      - deploy:
-          command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
 
+      - run:
+          name: Deploy Containers
+          command: |
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
 
