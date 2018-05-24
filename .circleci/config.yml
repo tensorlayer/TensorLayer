@@ -13,7 +13,7 @@ jobs:
       - run:
           name: Connect to Docker Hub
           command: |
-            if [[ ! -z $CIRCLE_TAG || (! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master') ]];
+            if [ ! -z $CIRCLE_TAG ] || { [ ! -z $CIRCLE_BRANCH ] && [ $CIRCLE_BRANCH == 'master' ]; };
             then
               cd docker
               apk add --update py-pip
