@@ -13,6 +13,7 @@ jobs:
           name: Build Containers
           command: |
             cd docker
+            apk add --update py-pip
             python -m pip install --upgrade pip
 
             docker build -t tensorlayer_py2_cpu python2/cpu
