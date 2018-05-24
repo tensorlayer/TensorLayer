@@ -9,42 +9,83 @@ jobs:
       - setup_remote_docker:
           reusable: true
           exclusive: true
+              fi
 
       - run:
-          name: Connection to Docker Hub
+          name: Connect to Docker Hub
           command: |
-            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+            if [[ ! -z $CIRCLE_TAG || (! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master') ]]; then
+              cd docker
+              apk add --update py-pip
+              python -m pip install --upgrade pip
+
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
+              TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+              TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
+            else
+              echo "Not a Release nor a Commit on Master, skipping build"
+            fi
 
       - run:
-          name: Build Containers
+          name: Build Release Containers
           command: |
-            cd docker
-            apk add --update py-pip
-            python -m pip install --upgrade pip
 
-            docker build -t tensorlayer_py2_cpu python2/cpu
-            docker build -t tensorlayer_py2_gpu python2/gpu
-            docker build -t tensorlayer_py3_cpu python3/cpu
-            docker build -t tensorlayer_py3_gpu python3/gpu
+            if [[ ! -z $CIRCLE_TAG ]] ;
+            then
+              docker build -t latest_py2_cpu python2/cpu
+              docker build -t latest_py2_gpu python2/gpu
+              docker build -t latest_py3_cpu python3/cpu
+              docker build -t latest_py3_gpu python3/gpu
+            else
+              echo "Not a Release, skipping build"
+            fi
 
       - run:
-          name: Deploy Containers
+          name: Deploy Release Containers
           command: |
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
-            TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
 
-            CONTAINER_TAG="nightly-py2-cpu"
-            docker tag tensorlayer_py2_cpu:latest tensorlayer/tensorlayer:$CONTAINER_TAG
-            docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+            if [[ ! -z $CIRCLE_TAG ]] ;
+            then
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:latest
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:latest-cpu
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:latest-cpu-py2
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:$TL_VERSION
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:$TL_VERSION-cpu
+              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:$TL_VERSION-cpu-py2
+              docker push tensorlayer/tensorlayer:latest
+              docker push tensorlayer/tensorlayer:latest-cpu
+              docker push tensorlayer/tensorlayer:latest-cpu-py2
+              docker push tensorlayer/tensorlayer:$TL_VERSION
+              docker push tensorlayer/tensorlayer:$TL_VERSION-cpu
+              docker push tensorlayer/tensorlayer:$TL_VERSION-cpu-py2
 
-            CONTAINER_TAG="nightly-py2-gpu"
-            docker tag tensorlayer_py2_gpu:latest tensorlayer/tensorlayer:$CONTAINER_TAG
-            docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:latest-gpu
+              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:latest-gpu-py2
+              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:$TL_VERSION-gpu
+              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:$TL_VERSION-gpu-py2
+              docker push tensorlayer/tensorlayer:latest-gpu
+              docker push tensorlayer/tensorlayer:latest-gpu-py2
+              docker push tensorlayer/tensorlayer:$TL_VERSION-gpu
+              docker push tensorlayer/tensorlayer:$TL_VERSION-gpu-py2
 
-            CONTAINER_TAG="nightly-py3-cpu"
-            docker tag tensorlayer_py3_cpu:latest tensorlayer/tensorlayer:$CONTAINER_TAG
-            docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+              docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:latest-cpu-py3
+              docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:$TL_VERSION-cpu-py3
+              docker push tensorlayer/tensorlayer:$CONTAINER_TAG
 
-            CONTAINER_TAG="nightly-py3-gpu"
-            docker tag tensorlayer_py3_gpu:latest tensorlayer/tensorlayer:$CONTAINER_TAG
-            docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+              docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:latest-gpu-py3
+              docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:$TL_VERSION-gpu-py3
+              docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+            else
+              echo "Not a Release, skipping build"
+            fi
+
+
+#if [[ ! -z $CIRCLE_PULL_REQUEST ]] ;
+#if [[ ! -z $CIRCLE_TAG ]] ;
+#if [[ ! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master']] ;
+#then
+#  ...
+#else
+#  echo "Not a release, skipping build"
+#fi
