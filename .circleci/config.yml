@@ -9,12 +9,12 @@ jobs:
       - setup_remote_docker:
           reusable: true
           exclusive: true
-              fi
 
       - run:
           name: Connect to Docker Hub
           command: |
-            if [[ ! -z $CIRCLE_TAG || (! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master') ]]; then
+            if [[ ! -z $CIRCLE_TAG || (! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master') ]];
+            then
               cd docker
               apk add --update py-pip
               python -m pip install --upgrade pip
