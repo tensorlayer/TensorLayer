@@ -1,0 +1,71 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+version: 2
+
+jobs:
+    build:
+        docker:
+            - image: docker:18.05.0-ce-git
+
+            # Specify service dependencies here if necessary
+            # CircleCI maintains a library of pre-built images
+            # documented at https://circleci.com/docs/2.0/circleci-images/
+            # - image: circleci/postgres:9.4
+
+        working_directory: ~/build
+
+        steps:
+            - checkout
+            - setup_remote_docker:
+                reusable: true
+                exclusive: true
+
+        - run: |
+            cd docker
+            python -m pip install --upgrade pip
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+            TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
+
+        - run:
+            name: Build image NIGHTLY_PY2_CPU
+            command: |
+                CONTAINER_TAG="nightly-py2-cpu"
+
+                docker build -t tensorlayer python2/cpu
+                docker tag tensorlayer:latest tensorlayer/tensorlayer:$CONTAINER_TAG
+
+                docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+
+        - run:
+            name: Build image NIGHTLY_PY2_GPU
+            command: |
+                CONTAINER_TAG="nightly-py2-gpu"
+
+                docker build -t tensorlayer python2/gpu
+                docker tag tensorlayer:latest tensorlayer/tensorlayer:$CONTAINER_TAG
+
+                docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+
+        - run:
+            name: Build image NIGHTLY_PY3_CPU
+            command: |
+                CONTAINER_TAG="nightly-py3-cpu"
+
+                docker build -t tensorlayer python3/cpu
+                docker tag tensorlayer:latest tensorlayer/tensorlayer:$CONTAINER_TAG
+
+                docker push tensorlayer/tensorlayer:$CONTAINER_TAG
+
+        - run:
+            name: Build image NIGHTLY_PY3_GPU
+            command: |
+                CONTAINER_TAG="nightly-py3-gpu"
+
+                docker build -t tensorlayer python3/gpu
+                docker tag tensorlayer:latest tensorlayer/tensorlayer:$CONTAINER_TAG
+
+                docker push tensorlayer/tensorlayer:$CONTAINER_TAG
