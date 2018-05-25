@@ -16,8 +16,11 @@ jobs:
             if [ ! -z $CIRCLE_TAG ] || { [ ! -z $CIRCLE_BRANCH ] && [ $CIRCLE_BRANCH == 'master' ]; };
             then
               cd docker
+              
               apk add --update py-pip
-              python -m pip install --upgrade pip requests
+
+              python -m pip install --upgrade pip
+              pip install --upgrade requests
 
               docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
