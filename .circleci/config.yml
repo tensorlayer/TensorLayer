@@ -140,8 +140,8 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
-            TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
-            echo TF_VERSION="$TF_VERSION"
+            #TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
+            #echo TF_VERSION="$TF_VERSION"
 
       - run:
           name: TEST - Build Release Containers
@@ -157,7 +157,7 @@ jobs:
           command: |
 
             # ============== Python2 CPU Container ==============
-            
+
             CONTAINER_TAG=latest
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:$CONTAINER_TAG
             docker push tensorlayer/tensorlayer:$CONTAINER_TAG
