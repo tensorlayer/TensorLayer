@@ -146,10 +146,10 @@ jobs:
       - run:
           name: TEST - Build Release Containers
           command: |
-            docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_cpu docker/python2/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_gpu docker/python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_cpu docker/python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_gpu docker/python3/gpu --build-arg TL_VERSION="$TL_VERSION"
 
       - run:
           name: TEST - Deploy Release Containers
