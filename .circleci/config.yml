@@ -17,7 +17,7 @@ jobs:
             then
               cd docker
               apk add --update py-pip
-              python -m pip install --upgrade pip
+              python -m pip install --upgrade pip requests
 
               docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
@@ -127,7 +127,7 @@ jobs:
           command: |
             cd docker
             apk add --update py-pip
-            python -m pip install --upgrade pip
+            python -m pip install --upgrade pip requests
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
