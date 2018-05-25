@@ -22,7 +22,7 @@ jobs:
               python -m pip install --upgrade pip
               pip install --upgrade requests
 
-              docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+              echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
               TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
               TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
@@ -135,23 +135,13 @@ jobs:
             python -m pip install --upgrade pip
             pip install --upgrade requests
 
-            # docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
-
-            echo $(python pypi_list.py --package tensorlayer --nth_last_version 1)
-
-            python pypi_list.py --package tensorlayer --nth_last_version 1
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
             TF_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
-            echo TL_VERSION="TF_VERSION"
-
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
-            TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
-
-            echo TL_VERSION="$TL_VERSION"
-            echo TF_VERSION="TF_VERSION"
+            echo TF_VERSION="$TF_VERSION"
 
       - run:
           name: TEST - Build Release Containers
