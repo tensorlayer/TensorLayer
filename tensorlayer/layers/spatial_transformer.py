@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from six.moves import xrange
 
-from .. import _logging as logging
+from .. import tl_logging as logging
 from .core import *
 
 from ..deprecation import deprecated_alias

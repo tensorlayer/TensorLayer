@@ -78,9 +78,11 @@ To release a new version, please update the changelog as followed:
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
+  - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
 - CI Tool:
-  - https://github.com/apps/stale/ added to clean stale issues (by @DEKHTIARJonathan in #573)
-  - Changelog Probot Configuration added (by @DEKHTIARJonathan in #637)
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Documentation:
@@ -94,6 +96,9 @@ To release a new version, please update the changelog as followed:
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
 - RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
+- TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
+- Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
+- TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
 
 ### Deprecated
 
@@ -109,6 +114,7 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
+- Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
 
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
