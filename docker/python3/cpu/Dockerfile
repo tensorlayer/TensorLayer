@@ -1,4 +1,11 @@
-# https://store.docker.com/community/images/tensorflow/tensorflow
 FROM tensorflow/tensorflow:latest-py3
 
-RUN pip install --upgrade tensorlayer
+LABEL version="1.0" maintainer="Jonathan DEKHTIAR <contact@jonathandekhtiar.eu>"
+
+ARG TL_VERSION=false
+
+RUN if [ "$argname" = "false" ] ; then
+        echo 'Not Building with release'
+    else
+        pip install tensorlayer=="$TL_VERSION"
+    fi
