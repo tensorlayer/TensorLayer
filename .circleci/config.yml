@@ -16,7 +16,7 @@ jobs:
             if [ ! -z $CIRCLE_TAG ] || { [ ! -z $CIRCLE_BRANCH ] && [ $CIRCLE_BRANCH == 'master' ]; };
             then
               cd docker
-              
+
               apk add --update py-pip
 
               python -m pip install --upgrade pip
@@ -129,10 +129,13 @@ jobs:
           name: TEST - Connect to Docker Hub
           command: |
             cd docker
-            apk add --update py-pip
-            python -m pip install --upgrade pip requests
 
-            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
 
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
