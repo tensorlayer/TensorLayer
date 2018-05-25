@@ -139,10 +139,16 @@ jobs:
 
             echo $(python pypi_list.py --package tensorlayer --nth_last_version 1)
 
+            python pypi_list.py --package tensorlayer --nth_last_version 1
+
+            test="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+            echo test="$test"
+
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
 
-            echo "$TL_VERSION"
+            echo TL_VERSION="$TL_VERSION"
+            echo TF_VERSION="TF_VERSION"
 
       - run:
           name: TEST - Build Release Containers
