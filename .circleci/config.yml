@@ -2,11 +2,11 @@ version: 2
 
 jobs:
 
-###################################################################################
-#           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
-###################################################################################
+  ###################################################################################
+  #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
+  ###################################################################################
 
-  nightly_pypi_py2_cpu:
+  test_sources_py2_cpu:
     working_directory: ~/build
     docker:
       - image: docker:git
@@ -20,11 +20,74 @@ jobs:
           name: NIGHTLY BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
           command: |
             cd docker
+            docker build -t latest_py2_cpu python2/cpu
 
-            apk add --update py-pip
+  test_sources_py2_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
 
-            python -m pip install --upgrade pip
-            pip install --upgrade requests
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py2_gpu python2/gpu
+
+  test_sources_py3_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py3_cpu python3/cpu
+
+  test_sources_py3_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
+          command: |
+            cd docker
+            docker build -t latest_py3_gpu python3/gpu
+
+  ###################################################################################
+  #           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
+  ###################################################################################
+
+  nightly_sources_py2_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: NIGHTLY BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
+          command: |
+            cd docker
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
@@ -51,7 +114,7 @@ jobs:
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
-  nightly_pypi_py2_gpu:
+  nightly_sources_py2_gpu:
     working_directory: ~/build
     docker:
       - image: docker:git
@@ -65,11 +128,6 @@ jobs:
           name: NIGHTLY BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
           command: |
             cd docker
-
-            apk add --update py-pip
-
-            python -m pip install --upgrade pip
-            pip install --upgrade requests
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
@@ -88,7 +146,7 @@ jobs:
             docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
-  nightly_pypi_py3_cpu:
+  nightly_sources_py3_cpu:
     working_directory: ~/build
     docker:
       - image: docker:git
@@ -102,11 +160,6 @@ jobs:
           name: NIGHTLY BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
           command: |
             cd docker
-
-            apk add --update py-pip
-
-            python -m pip install --upgrade pip
-            pip install --upgrade requests
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
@@ -125,8 +178,7 @@ jobs:
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
-
-  nightly_pypi_py3_gpu:
+  nightly_sources_py3_gpu:
     working_directory: ~/build
     docker:
       - image: docker:git
@@ -141,11 +193,6 @@ jobs:
           command: |
             cd docker
 
-            apk add --update py-pip
-
-            python -m pip install --upgrade pip
-            pip install --upgrade requests
-
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
             VERSION_PREFIX="nightly"
@@ -159,9 +206,9 @@ jobs:
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
-###################################################################################
-#                 TAGS BUILDS with TensorLayer installed from PyPI                #
-###################################################################################
+  ###################################################################################
+  #                 TAGS BUILDS with TensorLayer installed from PyPI                #
+  ###################################################################################
 
   build_pypi_py2_cpu:
     working_directory: ~/build
@@ -329,7 +376,6 @@ jobs:
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
-
   build_pypi_py3_gpu:
     working_directory: ~/build
     docker:
@@ -372,43 +418,90 @@ jobs:
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+###################################################################################
+###################################################################################
+###################################################################################
+#                               CircleCI WORKFLOWS                                #
+###################################################################################
+###################################################################################
+###################################################################################
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - nightly_pypi_py2_cpu:
+
+      ###################################################################################
+      #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
+      ###################################################################################
+
+      - test_sources_py2_cpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              #only: master
+              ignore: master
               only: /.*/
 
-      - nightly_pypi_py2_gpu:
+      - test_sources_py2_gpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              #only: master
+              ignore: master
               only: /.*/
 
-      - nightly_pypi_py3_cpu:
+      - test_sources_py3_cpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              #only: master
+              ignore: master
               only: /.*/
 
-      - nightly_pypi_py3_gpu:
+      - test_sources_py3_gpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              #only: master
+              ignore: master
               only: /.*/
 
+      ###################################################################################
+      #           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
+      ###################################################################################
+
+      - nightly_sources_py2_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py2_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py3_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      - nightly_sources_py3_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: master
+
+      ###################################################################################
+      #                 TAGS BUILDS with TensorLayer installed from PyPI                #
+      ###################################################################################
 
       - build_pypi_py2_cpu:
           filters:
@@ -431,12 +524,12 @@ workflows:
             branches:
               ignore: /.*/
 
-#      - build_pypi_py3_gpu:
-#          filters:
-#            tags:
-#              only: /.*/
-#            branches:
-#              ignore: /.*/
+      - build_pypi_py3_gpu:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
 
 
 #if [[ ! -z $CIRCLE_PULL_REQUEST ]] ;
