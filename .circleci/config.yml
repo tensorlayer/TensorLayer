@@ -27,7 +27,7 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
             echo TL_VERSION="$TL_VERSION"
 
-            if [[ $TL_VERSION = *"rc"* ]] || [[ $TL_VERSION = *"a"* ]] || [[ $TL_VERSION = *"b"* ]] ; then VERSION_PREFIX='latest-dev'; else VERSION_PREFIX='latest'; fi
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
             docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
@@ -93,7 +93,7 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
             echo TL_VERSION="$TL_VERSION"
 
-            if [[ $TL_VERSION = *"rc"* ]] || [[ $TL_VERSION = *"a"* ]] || [[ $TL_VERSION = *"b"* ]] ; then VERSION_PREFIX='latest-dev'; else VERSION_PREFIX='latest'; fi
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
             docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
@@ -143,7 +143,7 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
             echo TL_VERSION="$TL_VERSION"
 
-            if [[ $TL_VERSION = *"rc"* ]] || [[ $TL_VERSION = *"a"* ]] || [[ $TL_VERSION = *"b"* ]] ; then VERSION_PREFIX='latest-dev'; else VERSION_PREFIX='latest'; fi
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
             docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
@@ -194,7 +194,7 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
             echo TL_VERSION="$TL_VERSION"
 
-            if [[ $TL_VERSION = *"rc"* ]] || [[ $TL_VERSION = *"a"* ]] || [[ $TL_VERSION = *"b"* ]] ; then VERSION_PREFIX='latest-dev'; else VERSION_PREFIX='latest'; fi
+            VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
             docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"

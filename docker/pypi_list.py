@@ -6,7 +6,7 @@ import pip._internal
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Get the nth version of a given package')
     parser.add_argument('--package', type=str, required=True, help='The PyPI you want to inspect')
     parser.add_argument('--nth_last_version', type=int, default=1, help='The nth last package will be retrieved')
     parser.add_argument('--prerelease', help='Get PreRelease Package Version', action='store_true')
