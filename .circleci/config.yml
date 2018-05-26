@@ -435,18 +435,7 @@ workflows:
       #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
       ###################################################################################
 
-      - hold_2:
-          type: approval
-          filters:
-            tags:
-              ignore: /.*/
-            branches:
-              ignore: master
-              only: /.*/
-
       - test_sources_py2_cpu:
-          requires:
-            - hold_2
           filters:
             tags:
               ignore: /.*/
@@ -455,8 +444,6 @@ workflows:
               only: /.*/
 
       - test_sources_py2_gpu:
-          requires:
-            - hold_2
           filters:
             tags:
               ignore: /.*/
@@ -465,8 +452,6 @@ workflows:
               only: /.*/
 
       - test_sources_py3_cpu:
-          requires:
-            - hold_2
           filters:
             tags:
               ignore: /.*/
@@ -475,8 +460,6 @@ workflows:
               only: /.*/
 
       - test_sources_py3_gpu:
-          requires:
-            - hold_2
           filters:
             tags:
               ignore: /.*/
@@ -519,6 +502,7 @@ workflows:
       ###################################################################################
       #                 TAGS BUILDS with TensorLayer installed from PyPI                #
       ###################################################################################
+      
       - hold:
           type: approval
           filters:
