@@ -17,7 +17,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: NIGHTLY BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
+          name: TEST BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
           command: |
             cd docker
             docker build -t latest_py2_cpu python2/cpu
@@ -33,7 +33,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: NIGHTLY BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
+          name: TEST BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
           command: |
             cd docker
             docker build -t latest_py2_gpu python2/gpu
@@ -49,7 +49,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: NIGHTLY BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
+          name: TEST BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
           command: |
             cd docker
             docker build -t latest_py3_cpu python3/cpu
@@ -65,7 +65,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: NIGHTLY BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
+          name: TEST BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
           command: |
             cd docker
             docker build -t latest_py3_gpu python3/gpu
