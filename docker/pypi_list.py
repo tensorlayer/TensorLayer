@@ -53,14 +53,16 @@ if __name__ == "__main__":
     while True:
         fetched_version = versions[pos]
 
-        if args.prerelease:
-            break
-        elif "rc" in fetched_version or "a" in fetched_version or "b" in fetched_version:
-            pos -= 1
-        elif nth_version == args.nth_last_version:
-            break
-        else:
-            pos -= 1
-            nth_version += 1
+        logger.debug("Version: %s" % fetched_version)
+
+        if nth_version == args.nth_last_version:
+            if args.prerelease or not ("rc" in fetched_version or "a" in fetched_version or "b" in fetched_version):
+                break
+            else:
+                pos -= 1
+                continue
+
+        pos -= 1
+        nth_version += 1
 
     print(fetched_version)
