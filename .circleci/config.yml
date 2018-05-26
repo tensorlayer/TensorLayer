@@ -502,8 +502,17 @@ workflows:
       ###################################################################################
       #                 TAGS BUILDS with TensorLayer installed from PyPI                #
       ###################################################################################
+      - hold:
+          type: approval
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
 
       - build_pypi_py2_cpu:
+          requires:
+            - hold
           filters:
             tags:
               only: /.*/
@@ -511,6 +520,8 @@ workflows:
               ignore: /.*/
 
       - build_pypi_py2_gpu:
+          requires:
+            - hold
           filters:
             tags:
               only: /.*/
@@ -518,6 +529,8 @@ workflows:
               ignore: /.*/
 
       - build_pypi_py3_cpu:
+          requires:
+            - hold
           filters:
             tags:
               only: /.*/
@@ -525,6 +538,8 @@ workflows:
               ignore: /.*/
 
       - build_pypi_py3_gpu:
+          requires:
+            - hold
           filters:
             tags:
               only: /.*/
