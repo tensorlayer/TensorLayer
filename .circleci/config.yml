@@ -7,6 +7,7 @@ jobs:
     docker:
       - image: docker:git
     steps:
+      - checkout
       - setup_remote_docker:
           reusable: true
           exclusive: true
@@ -61,6 +62,7 @@ jobs:
     docker:
       - image: docker:git
     steps:
+      - checkout
       - setup_remote_docker:
           reusable: true
           exclusive: true
@@ -107,6 +109,7 @@ jobs:
     docker:
       - image: docker:git
     steps:
+      - checkout
       - setup_remote_docker:
           reusable: true
           exclusive: true
@@ -154,6 +157,7 @@ jobs:
     docker:
       - image: docker:git
     steps:
+      - checkout
       - setup_remote_docker:
           reusable: true
           exclusive: true
