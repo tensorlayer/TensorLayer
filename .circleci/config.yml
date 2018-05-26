@@ -435,7 +435,18 @@ workflows:
       #  TEST BUILDS with TensorLayer installed from Source - NOT PUSHED TO DOCKER HUB  #
       ###################################################################################
 
+      - hold:
+          type: approval
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              ignore: master
+              only: /.*/
+
       - test_sources_py2_cpu:
+          requires:
+            - hold
           filters:
             tags:
               ignore: /.*/
@@ -444,6 +455,8 @@ workflows:
               only: /.*/
 
       - test_sources_py2_gpu:
+          requires:
+            - hold
           filters:
             tags:
               ignore: /.*/
@@ -452,6 +465,8 @@ workflows:
               only: /.*/
 
       - test_sources_py3_cpu:
+          requires:
+            - hold
           filters:
             tags:
               ignore: /.*/
@@ -460,6 +475,8 @@ workflows:
               only: /.*/
 
       - test_sources_py3_gpu:
+          requires:
+            - hold
           filters:
             tags:
               ignore: /.*/
@@ -545,13 +562,3 @@ workflows:
               only: /.*/
             branches:
               ignore: /.*/
-
-
-#if [[ ! -z $CIRCLE_PULL_REQUEST ]] ;
-#if [[ ! -z $CIRCLE_TAG ]] ;
-#if [[ ! -z $CIRCLE_BRANCH && $CIRCLE_BRANCH == 'master']] ;
-#then
-#  ...
-#else
-#  echo "Not a release, skipping build"
-#fi
