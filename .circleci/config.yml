@@ -28,13 +28,10 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
-            echo TL_VERSION="$TL_VERSION"
-
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_cpu nightly_build/python2/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_cpu python2/cpu
 
             # ============== Nightly Python2 CPU Containers ==============
 
@@ -76,13 +73,10 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
-            echo TL_VERSION="$TL_VERSION"
-
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_gpu nightly_build/python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_gpu python2/gpu
 
             # ============== Nightly Python2 GPU Containers ==============
 
@@ -116,13 +110,10 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
-            echo TL_VERSION="$TL_VERSION"
-
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_cpu nightly_build/python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_cpu python3/cpu
 
             # ============== Nightly Python3 CPU Containers ==============
 
@@ -157,13 +148,10 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
-            echo TL_VERSION="$TL_VERSION"
-
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_gpu nightly_build/python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_gpu python3/gpu
 
             # ============== Nightly Python3 GPU Containers ==============
 
@@ -203,7 +191,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_cpu tag_build/python2/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Latest Python2 CPU Containers ==============
 
@@ -269,7 +257,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_gpu tag_build/python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Latest Python2 GPU Containers ==============
 
@@ -319,7 +307,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_cpu tag_build/python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Latest Python3 CPU Containers ==============
 
@@ -370,7 +358,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_gpu tag_build/python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Latest Python3 GPU Containers ==============
 
