@@ -24,7 +24,7 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
@@ -90,7 +90,7 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
@@ -140,7 +140,7 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
@@ -191,7 +191,7 @@ jobs:
 
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 2)"
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --prerelease --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
