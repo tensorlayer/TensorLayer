@@ -34,7 +34,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_cpu tag_build/python2/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_cpu nightly_build/python2/cpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Nightly Python2 CPU Containers ==============
 
@@ -82,7 +82,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_gpu tag_build/python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_gpu nightly_build/python2/gpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Nightly Python2 GPU Containers ==============
 
@@ -122,7 +122,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_cpu tag_build/python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_cpu nightly_build/python3/cpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Nightly Python3 CPU Containers ==============
 
@@ -163,7 +163,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_gpu tag_build/python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_gpu nightly_build/python3/gpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Nightly Python3 GPU Containers ==============
 
