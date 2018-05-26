@@ -1,132 +1,18 @@
 version: 2
+
 jobs:
-  build:
+
+  build_pypi_py2_cpu:
     working_directory: ~/build
     docker:
       - image: docker:git
     steps:
-      - checkout
       - setup_remote_docker:
           reusable: true
           exclusive: true
 
       - run:
-          name: Connect to Docker Hub
-          command: |
-            if [ ! -z $CIRCLE_TAG ] || { [ ! -z $CIRCLE_BRANCH ] && [ $CIRCLE_BRANCH == 'master' ]; };
-            then
-              cd docker
-
-              apk add --update py-pip
-
-              python -m pip install --upgrade pip
-              pip install --upgrade requests
-
-              echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-
-              TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
-              TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
-            else
-              echo "Not a Release nor a Commit on Master, skipping build"
-            fi
-
-      - run:
-          name: Build Release Containers
-          command: |
-
-            if [[ ! -z $CIRCLE_TAG ]] ;
-            then
-              docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
-              docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
-              docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
-              docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
-            else
-              echo "Not a Release, skipping build"
-            fi
-
-      - run:
-          name: Deploy Release Containers
-          command: |
-
-            if [[ ! -z $CIRCLE_TAG ]] ;
-            then
-              # ============== Python2 CPU Container ==============
-
-              CONTAINER_TAG=latest
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG=latest-cpu
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG=latest-cpu-py2
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-cpu
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-cpu-py2
-              docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-              # ============== Python2 GPU Container ==============
-
-              CONTAINER_TAG=latest-gpu
-              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG=latest-gpu-py2
-              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-gpu
-              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-gpu-py2
-              docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-              # ============== Python3 CPU Container ==============
-
-              CONTAINER_TAG=latest-py3
-              docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG=latest-cpu-py3
-              docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-cpu-py3
-              docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-              # ============== Python3 GPU Container ==============
-
-              CONTAINER_TAG=latest-gpu-py3
-              docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-              CONTAINER_TAG="$TL_VERSION"-gpu-py3
-              docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-              docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-            else
-              echo "Not a Release, skipping build"
-            fi
-
-      - run:
-          name: TEST - Connect to Docker Hub
+          name: Build Docker Image Python 2 CPU from PYPI
           command: |
             cd docker
 
@@ -140,13 +26,7 @@ jobs:
             TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
             echo TL_VERSION="$TL_VERSION"
 
-            #TF_VERSION="$(python pypi_list.py --package tensorflow --nth_last_version 1)"
-            #echo TF_VERSION="$TF_VERSION"
-
             docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
-            docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
 
             # ============== Latest Python2 CPU Containers ==============
 
@@ -160,35 +40,6 @@ jobs:
 
             CONTAINER_TAG=latest-cpu-py2
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-            # ============== Latest Python2 GPU Containers ==============
-
-            CONTAINER_TAG=latest-gpu
-            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-            CONTAINER_TAG=latest-gpu-py2
-            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-            # ============== Latest Python3 CPU Containers ==============
-
-            CONTAINER_TAG=latest-py3
-            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-            CONTAINER_TAG=latest-cpu-py3
-            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-
-
-            # ============== Latest Python3 GPU Containers ==============
-
-            CONTAINER_TAG=latest-gpu-py3
-            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             # ============== Tag Python2 CPU Containers ==============
@@ -205,6 +56,41 @@ jobs:
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+  build_pypi_py2_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: Build Docker Image Python 2 GPU from PYPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+
+            # ============== Latest Python2 GPU Containers ==============
+
+            CONTAINER_TAG=latest-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG=latest-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             # ============== Tag Python2 GPU Containers ==============
 
@@ -216,6 +102,41 @@ jobs:
             docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+  build_pypi_py3_cpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: Build Docker Image Python 3 CPU from PYPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+
+            # ============== Latest Python3 CPU Containers ==============
+
+            CONTAINER_TAG=latest-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG=latest-cpu-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             # ============== Tag Python3 CPU Containers ==============
 
@@ -228,11 +149,106 @@ jobs:
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
 
+  build_pypi_py3_gpu:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: Build Docker Image Python 3 GPU from PYPI
+          command: |
+            cd docker
+
+            apk add --update py-pip
+
+            python -m pip install --upgrade pip
+            pip install --upgrade requests
+
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+
+            TL_VERSION="$(python pypi_list.py --package tensorlayer --nth_last_version 1)"
+            echo TL_VERSION="$TL_VERSION"
+
+            docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+
+            # ============== Latest Python3 GPU Containers ==============
+
+            CONTAINER_TAG=latest-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
             # ============== Tag Python3 GPU Containers ==============
 
             CONTAINER_TAG="$TL_VERSION"-gpu-py3
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build_pypi_py2_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: /.*/
+
+      - build_pypi_py2_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: /.*/
+
+      - build_pypi_py3_cpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: /.*/
+
+      - build_pypi_py3_gpu:
+          filters:
+            tags:
+              ignore: /.*/
+            branches:
+              only: /.*/
+
+
+#      - build_pypi_py2_cpu:
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              ignore: /.*/
+
+#      - build_pypi_py2_gpu:
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              ignore: /.*/
+
+#      - build_pypi_py3_cpu:
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              ignore: /.*/
+
+#      - build_pypi_py3_gpu:
+#          filters:
+#            tags:
+#              only: /.*/
+#            branches:
+#              ignore: /.*/
+
 
 #if [[ ! -z $CIRCLE_PULL_REQUEST ]] ;
 #if [[ ! -z $CIRCLE_TAG ]] ;
