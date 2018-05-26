@@ -17,7 +17,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 2 CPU from PYPI
+          name: NIGHTLY BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
           command: |
             cd docker
 
@@ -83,7 +83,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 2 GPU from PYPI
+          name: NIGHTLY BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
           command: |
             cd docker
 
@@ -133,7 +133,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 3 CPU from PYPI
+          name: NIGHTLY BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
           command: |
             cd docker
 
@@ -184,7 +184,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 3 GPU from PYPI
+          name: NIGHTLY BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
           command: |
             cd docker
 
@@ -230,7 +230,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 2 CPU from PYPI
+          name: RELEASE BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from PyPI
           command: |
             cd docker
 
@@ -296,7 +296,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 2 GPU from PYPI
+          name: RELEASE BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from PyPI
           command: |
             cd docker
 
@@ -346,7 +346,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 3 CPU from PYPI
+          name: RELEASE BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from PyPI
           command: |
             cd docker
 
@@ -397,7 +397,7 @@ jobs:
           exclusive: true
 
       - run:
-          name: Build Docker Image Python 3 GPU from PYPI
+          name: RELEASE BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from PyPI
           command: |
             cd docker
 
