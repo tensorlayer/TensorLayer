@@ -438,28 +438,32 @@ workflows:
             tags:
               ignore: /.*/
             branches:
-              only: master
+              #only: master
+              only: /.*/
 
       - nightly_pypi_py2_gpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              only: master
+              #only: master
+              only: /.*/
 
       - nightly_pypi_py3_cpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              only: master
+              #only: master
+              only: /.*/
 
       - nightly_pypi_py3_gpu:
           filters:
             tags:
               ignore: /.*/
             branches:
-              only: master
+              #only: master
+              only: /.*/
 
 
       - build_pypi_py2_cpu:
