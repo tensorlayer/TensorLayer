@@ -441,7 +441,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore: master
-              only: /.*/
 
       - test_sources_py2_gpu:
           filters:
@@ -449,7 +448,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore: master
-              only: /.*/
 
       - test_sources_py3_cpu:
           filters:
@@ -457,7 +455,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore: master
-              only: /.*/
 
       - test_sources_py3_gpu:
           filters:
@@ -465,7 +462,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore: master
-              only: /.*/
 
       ###################################################################################
       #           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
