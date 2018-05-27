@@ -71,26 +71,30 @@ To release a new version, please update the changelog as followed:
 ### Added
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
-- Tutorials:
-  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
+- CI Tool:
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
+- Docker:
+  - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
+  - Containers built in the following configurations: py2+cpu, py2+gpu, py3+cpu, and py3+gpu (by @DEKHTIARJonathan in #648)
+- Documentation:
+  - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
+  - Optimizers page added (by @DEKHTIARJonathan in #636)
+  - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
+- Layer:
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+- Optimizer:
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
   - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
-- CI Tool:
-  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
-  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
-  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
-- Layer:
-  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
-- Documentation:
-  - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
-  - Optimizers page added (by @DEKHTIARJonathan in #636)
-  - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
-- Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
+- Tutorials:
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
