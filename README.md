@@ -167,7 +167,7 @@ docker pull tensorlayer/tensorlayer:latest-gpu
 nvidia-docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:latest-gpu
 
 # for GPU version and Python 3
-docker pull tensorlayer/tensorlayer:latest-py3
+docker pull tensorlayer/tensorlayer:latest-gpu-py3
 nvidia-docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:latest-gpu-py3
 ```
 
