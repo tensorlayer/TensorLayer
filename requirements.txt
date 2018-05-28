@@ -1,6 +1,6 @@
 matplotlib>=2.2,<2.3
 numpy>=1.14,<1.15
-progressbar2>=3.37,<3.38
+progressbar2>=3.38,<3.39
 scikit-image>=0.13,<0.14
 scipy>=1.1,<1.2
 imageio>=2.3,<2.4

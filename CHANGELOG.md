@@ -119,6 +119,7 @@ To release a new version, please update the changelog as followed:
 
 ### Dependencies Update
 - Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
+- Update progressbar2 from 3.37.1 to 3.38.0 (by @DEKHTIARJonathan and @pyup-bot in #651)
 
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
