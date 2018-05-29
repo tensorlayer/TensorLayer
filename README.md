@@ -129,7 +129,7 @@ nvidia-docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:lat
 
 # Contribute to TensorLayer
 
-Please read the [Contribution Guideline](https://github.com/tensorlayer/tensorlayer/blob/rearrange-readme/CONTRIBUTING.md) before submitting your PRs.
+Please read the [Contributor Guideline](https://github.com/tensorlayer/tensorlayer/blob/rearrange-readme/CONTRIBUTING.md) before submitting your PRs.
 
 # Citation
 If you find this project useful, we would be grateful if you cite the TensorLayer paper：
