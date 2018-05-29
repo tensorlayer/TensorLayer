@@ -514,7 +514,7 @@ def save_npz(save_list=[], name='model.npz', sess=None):
     ----------
     save_list : a list
         Parameters want to be saved.
-    name : a string or None
+    name : a string or None or a file object
         The name of the .npz file.
     sess : None or Session
 
@@ -593,7 +593,10 @@ def load_npz(path='', name='model.npz'):
     #     print('Loading %s, %s' % (key, str(val.shape)))
     # return params
     ## if save_npz save params into a list
-    d = np.load( path+name )
+    if type(name)==str:
+        d = np.load( path+name )
+    else:
+        d=np.load(name)
     # for val in sorted( d.items() ):
     #     params = val
     #     return params
