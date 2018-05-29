@@ -83,7 +83,6 @@ To release a new version, please update the changelog as followed:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
   - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
-  - Rearrange README and examples. (#639)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Optimizer:
@@ -104,6 +103,7 @@ To release a new version, please update the changelog as followed:
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
 - Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
 - TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
+- README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
 
 ### Deprecated
 
