@@ -5,10 +5,10 @@ import inspect
 import tensorflow as tf
 from tensorflow.python.util.tf_inspect import getfullargspec
 
-from .. import tl_logging as logging
-from .core import *
+from tensorlayer import tl_logging as logging
+from tensorlayer.layers.core import *
 
-from ..deprecation import deprecated_alias
+from tensorlayer.deprecation import deprecated_alias
 
 __all__ = [
     'RNNLayer',
