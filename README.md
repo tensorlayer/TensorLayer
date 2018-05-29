@@ -56,7 +56,7 @@ production deployment. TensorLayer is a novel library that aims to satisfy these
 
 It has three key features:
 
-- ***Simplicity*** : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to *high-level* layers. It also provides users with massive examples and tutorials to minimize learning barrier.
+- ***Simplicity*** : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to *high-level* layers. It also provides users with [rich examples](https://github.com/tensorlayer/awesome-tensorlayer) to minimize learning barrier.
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that support diverse *low-level tuning*.
 - ***Zero-cost Abstraction*** : TensorLayer has negligible overheads and can thus achieve the *full performance* of TensorFlow.
 
