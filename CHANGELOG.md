@@ -83,6 +83,7 @@ To release a new version, please update the changelog as followed:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
   - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
+  - Rearrange README and examples. (#639)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Optimizer:
