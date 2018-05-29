@@ -20,27 +20,13 @@ from . import tl_logging as logging
 from . import nlp, utils, visualize
 
 __all__ = [
-    'load_mnist_dataset',
-    'load_fashion_mnist_dataset',
-    'load_cifar10_dataset',
-    'load_ptb_dataset',
-    'load_matt_mahoney_text8_dataset',
-    'load_imdb_dataset',
-    'load_nietzsche_dataset',
-    'load_wmt_en_fr_dataset',
-    'load_flickr25k_dataset',
-    'load_flickr1M_dataset',
-    'load_cyclegan_dataset',
-    'download_file_from_google_drive',
-    'load_celebA_dataset',
-    'load_voc_dataset',
-    'load_mpii_pose_dataset',
     'save_npz',
     'load_npz',
-    'assign_params',
     'load_and_assign_npz',
     'save_npz_dict',
     'load_and_assign_npz_dict',
+    'npz_to_W_pdf',
+    'assign_params',
     'save_ckpt',
     'load_ckpt',
     'save_any_to_npy',
@@ -54,8 +40,8 @@ __all__ = [
     'load_folder_list',
     'exists_or_mkdir',
     'maybe_download_and_extract',
+    'download_file_from_google_drive',
     'natural_keys',
-    'npz_to_W_pdf',
 ]
 
 
