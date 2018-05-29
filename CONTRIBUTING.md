@@ -45,7 +45,7 @@ venv\Scripts\activate.bat
 pip install -e .[tf_cpu,db,dev,doc,extra,test]
 
 # for a machine **with** an NVIDIA GPU
-pip install -e .[tf_gpu,db,dev,extra,test]
+pip install -e .[tf_gpu,db,dev,doc,extra,test]
 ```
 
 Launching the unittest:
