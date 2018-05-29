@@ -2,8 +2,8 @@
 
 import tensorflow as tf
 
-from .. import tl_logging as logging
-from .core import *
+from tensorlayer import tl_logging as logging
+from tensorlayer.layers.core import *
 
 __all__ = [
     'MultiplexerLayer',
