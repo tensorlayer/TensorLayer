@@ -60,6 +60,17 @@ It has three key features:
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that support diverse *low-level tuning*.
 - ***Zero-cost Abstraction*** : TensorLayer has negligible overheads and can thus achieve the *full performance* of TensorFlow.
 
+## Negligible overhead
+
+To show the overhead, we train classic deep learning models using TensorLayer and native TensorFlow
+on a Titan X Pascal GPU.
+
+|             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
+|-------------	|---------------	|---------------	|---------------	|
+| TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
+| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
+
+
 ## Why using TensorLayer instead of Keras or TFLearn
 
 Similar to TensorLayer, Keras and TFLearn are also popular TensorFlow wrapper libraries.
