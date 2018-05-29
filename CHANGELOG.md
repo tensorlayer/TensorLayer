@@ -103,6 +103,10 @@ To release a new version, please update the changelog as followed:
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
 - Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
 - TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
+- Relative Imports changed for absolute imports (by @DEKHTIARJonathan in #657)
+- `tl.files` refactored into a directory with numerous files (by @DEKHTIARJonathan in #657)
+- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (by @DEKHTIARJonathan in #657)
+- extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
 
 ### Deprecated
 
