@@ -42,10 +42,10 @@ source venv/bin/activate
 venv\Scripts\activate.bat
 
 # for a machine **without** an NVIDIA GPU
-pip install -e .[tf_cpu,db,dev,test,doc]
+pip install -e .[tf_cpu,db,dev,doc,extra,test]
 
 # for a machine **with** an NVIDIA GPU
-pip install -e .[tf_gpu,db,dev,test,doc]
+pip install -e .[tf_gpu,db,dev,extra,test]
 ```
 
 Launching the unittest:
