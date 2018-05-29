@@ -43,9 +43,9 @@
 
 TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
-# Why another Deep Learning Library: TensorLayer
+# Why another deep learning library: TensorLayer
 
-## Design Philosophy
+## Features
 
 As TensorFlow users, we have been looking for a library that can serve for various development
  phases. This library is easy for beginners by providing rich neural network implementations,
@@ -78,7 +78,7 @@ and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, Xiaomi,
 
 # Installation
 
-## As a TensorLayer User
+## As a TensorLayer user
 
 TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required.
 
@@ -99,7 +99,7 @@ Alternatively, you can install the development version by directly pulling from 
 pip install git+https://github.com/tensorlayer/tensorlayer.git
 ```
 
-## As a TensorLayer Contributor
+## As a TensorLayer contributor
 
 If you prefer to build from sources in a development objective
 
@@ -135,11 +135,11 @@ Launching the unittest:
 $ pytest
 ```
 
-## Using Docker, a ready to use environment
+## Using Docker - a ready-to-use environment
 
 The [TensorLayer containers](https://hub.docker.com/r/tensorlayer/tensorlayer/) are built on top of the official [TensorFlow containers](https://hub.docker.com/r/tensorflow/tensorflow/):
 
-### Containers with CPU Support
+### Containers with CPU support
 
 ```bash
 # for CPU version and Python 2
@@ -151,7 +151,7 @@ docker pull tensorlayer/tensorlayer:latest-py3
 docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:latest-py3
 ```
 
-### Containers with GPU Support
+### Containers with GPU support
 
 NVIDIA-Docker is required for these containers to work: [Project Link](https://github.com/NVIDIA/nvidia-docker)
 
