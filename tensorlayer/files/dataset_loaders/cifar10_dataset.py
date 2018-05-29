@@ -114,7 +114,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
                     # plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation='nearest')
                 else:
                     raise Exception("Do not support the given 'shape' to plot the image examples")
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())  # 不显示刻度(tick)
+                plt.gca().xaxis.set_major_locator(plt.NullLocator())
                 plt.gca().yaxis.set_major_locator(plt.NullLocator())
                 count = count + 1
         plt.draw()  # interactive mode
