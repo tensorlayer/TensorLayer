@@ -24,7 +24,8 @@ from .dataset_loaders.wmt_en_fr_dataset import *
 
 from .utils import *
 
-__dataset_loaders__ = [
+__all__ = [
+    # Dataset Loaders
     'load_celebA_dataset',
     'load_cifar10_dataset',
     'load_cyclegan_dataset',
@@ -39,9 +40,8 @@ __dataset_loaders__ = [
     'load_ptb_dataset',
     'load_voc_dataset',
     'load_wmt_en_fr_dataset',
-]
 
-__utils__ = [
+    # Util Functions
     'assign_params',
     'del_file',
     'del_folder',
@@ -66,5 +66,3 @@ __utils__ = [
     'save_npz',
     'save_npz_dict',
 ]
-
-__all__ = __dataset_loaders__ + __utils__
