@@ -30,7 +30,6 @@ from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
 
-
 __all__ = [
     'assign_params',
     'del_file',
