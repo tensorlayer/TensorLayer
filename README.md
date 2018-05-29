@@ -58,18 +58,7 @@ It has three key features:
 
 - ***Simplicity*** : TensorLayer lifts the low-level dataflow abstraction of TensorFlow to *high-level* layers. It also provides users with massive examples and tutorials to minimize learning barrier.
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that support diverse *low-level tuning*.
-- ***Zero-cost Abstraction*** : TensorLayer is able to achieve the *full performance* of TensorFlow.
-
-## Negligible Overhead
-
-TensorLayer has negligible performance overhead. We benchmark classic deep learning
-models using TensorLayer and native TensorFlow
-on a Titan X Pascal GPU. Here are the training speeds of respective tasks:
-
-|             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
-|-------------	|---------------	|---------------	|---------------	|
-| TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
-| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
+- ***Zero-cost Abstraction*** : TensorLayer has negligible overheads and can thus achieve the *full performance* of TensorFlow.
 
 ## Why using TensorLayer instead of Keras or TFLearn
 
@@ -81,6 +70,11 @@ and touch the essential features of TensorFlow.
 Without compromise in simplicity, TensorLayer APIs are generally more flexible and transparent.
 Users often find it easy to start with the examples and tutorials of TensorLayer, and then dive
 into the TensorFlow low-level APIs only if need. TensorLayer does not create library lock-in. Users can easily import models from Keras, TFSlim and TFLearn into a TensorLayer environment.
+
+TensorLayer has a fast growing usage in academic and industry organizations. It is used by researchers from
+Imperial College London, Carnegie Mellon University, Stanford University, 
+University of Technology of Compiegne (UTC), Tsinghua University, UCLA,
+and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, Xiaomi, Penguins Innovate, Bloomberg and many others.
 
 # Installation
 
@@ -170,13 +164,6 @@ nvidia-docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:lat
 docker pull tensorlayer/tensorlayer:latest-gpu-py3
 nvidia-docker run -it --rm -p 8008:8008 -p 6006:6006 tensorlayer/tensorlayer:latest-gpu-py3
 ```
-
-# Academic and Industry Users
-
-TensorLayer has an open and fast growing community. It has been widely used by researchers from Imperial College London, Carnegie Mellon University, Stanford University, 
-University of Technology of Compiegne (UTC), Tsinghua University, UCLA, Linköping University 
-and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, Penguins Innovate, ReFULE4, Bloomberg, GoodAILab and many others.
-
 
 # Citation
 If you find this project useful, we would be grateful if you cite the TensorLayer paper：
