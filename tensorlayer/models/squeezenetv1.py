@@ -18,7 +18,7 @@ from tensorlayer.layers import DropoutLayer
 from tensorlayer.layers import GlobalMeanPool2d
 
 from tensorlayer.files import maybe_download_and_extract
-from tensorlayer.files import assign_params, load_npz
+from tensorlayer.files import assign_params
 from tensorlayer.files import load_npz
 
 __all__ = [

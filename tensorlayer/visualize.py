@@ -4,7 +4,7 @@ import os
 
 try:
     import cv2
-except:
+except ImportError:
     import warnings
     warnings.simplefilter('default', ImportWarning)
     warnings.warn(

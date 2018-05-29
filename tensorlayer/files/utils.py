@@ -13,7 +13,11 @@ import tarfile
 import time
 import zipfile
 
-from six.moves import cPickle, zip
+from six.moves import cPickle
+# from six.moves import zip
+
+from lxml import etree
+import xml.etree.ElementTree as ET
 
 import numpy as np
 
@@ -21,7 +25,11 @@ import tensorflow as tf
 from tensorflow.python.platform import gfile
 
 from tensorlayer import tl_logging as logging
+
+from tensorlayer import nlp
+from tensorlayer import utils
 from tensorlayer import visualize
+
 
 __all__ = [
     'assign_params',
@@ -1086,9 +1094,6 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                     result[child.tag] = []
                 result[child.tag].append(child_result[child.tag])
         return {xml.tag: result}
-
-    from lxml import etree  # pip install lxml
-    import xml.etree.ElementTree as ET
 
     if dataset == "2012":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
