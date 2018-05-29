@@ -12,7 +12,7 @@ RUN if [ -z "$TL_VERSION" ]; then \
         && cd /tensorlayer_dist/ \
         && git clone https://github.com/tensorlayer/tensorlayer.git \
         && cd tensorlayer \
-        && pip install -e .[db,dev,test,doc] \
+        && pip install -e .[db,dev,doc,extra,test] \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         echo "Building Tag Release:" "$TL_VERSION" \
