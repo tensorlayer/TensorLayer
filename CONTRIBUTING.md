@@ -1,4 +1,4 @@
-# Contributing to TensorLayer
+# TensorLayer Contributor Guideline
 
 ## Continuous integration
 
