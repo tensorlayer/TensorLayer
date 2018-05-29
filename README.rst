@@ -5,18 +5,49 @@
            <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
        </div>
    </a>
-
-`Build Status`_ `PyPI version`_ `Github commits (since latest release)`_
-`PyPI - Python Version`_ `Supported TF Version`_ `Codacy Badge`_
-
-`CircleCI`_ `Docker Pulls`_ `Documentation Status`_ `PyUP Updates`_
-`Gitter`_
+   
+.. image:: https://img.shields.io/travis/tensorlayer/tensorlayer.svg?label=Travis&branch=master
+    :target: https://travis-ci.org/tensorlayer/tensorlayer
+   
+.. image:: https://badge.fury.io/py/tensorlayer.svg
+    :target: https://pypi.org/project/tensorlayer/
+   
+.. image:: https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
+   
+.. image:: https://img.shields.io/pypi/pyversions/tensorlayer.svg
+    :target: https://pypi.org/project/tensorlayer/
+   
+.. image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
+    :target: https://github.com/tensorflow/tensorflow/releases
+   
+.. image:: https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9
+    :target: https://app.codacy.com/app/tensorlayer/tensorlayer 
 
 .. raw:: html
 
    <br/>
 
 .. raw:: html
+
+.. image:: https://img.shields.io/circleci/project/github/tensorlayer/tensorlayer.svg?label=Docker%20Build&branch=master
+    :target: https://circleci.com/gh/tensorlayer/tensorlayer/tree/master
+
+.. image:: https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800
+    :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
+
+.. image:: https://img.shields.io/readthedocs/tensorlayer/stable.svg?label=ReadTheDocs
+    :target: https://tensorlayer.readthedocs.io/
+
+.. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
+    :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
+
+.. image:: https://badges.gitter.im/Join%20Chat.svg
+    :target: https://gitter.im/tensorlayer/Lobby
+
+.. raw:: html
+
+   <br/>
 
    <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
        <div align="center">
@@ -24,12 +55,21 @@
        </div>
    </a>
 
-.. raw:: html
-
    <br/>
 
-`Mentioned in Awesome TensorLayer`_ `English Documentation`_ `Chinese
-Documentation`_ `Chinese Book`_
+.. raw:: html
+
+.. image:: https://awesome.re/mentioned-badge.svg
+    :target: https://github.com/tensorlayer/awesome-tensorlayer
+    
+.. image:: http://img.shields.io/badge/documentation-enlish-blue.svg
+    :target: https://tensorlayer.readthedocs.io/
+    
+.. image:: http://img.shields.io/badge/documentation-中文-blue.svg
+    :target: https://tensorlayercn.readthedocs.io/
+    
+.. image:: http://img.shields.io/badge/book-中文-blue.svg
+    :target: http://www.broadview.com.cn/book/5059/
 
 TensorLayer is a deep learning and reinforcement learning library on top
 of `TensorFlow`_. It provides rich neural layers and utility functions
@@ -193,20 +233,10 @@ TensorLayer is released under the Apache 2.0 license.
 
 .. _rich examples: https://github.com/tensorlayer/awesome-tensorlayer
 
-.. _Build Status: https://travis-ci.org/tensorlayer/tensorlayer
-.. _PyPI version: https://pypi.org/project/tensorlayer/
-.. _Github commits (since latest release): https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-.. _PyPI - Python Version: https://pypi.org/project/tensorlayer/
-.. _Supported TF Version: https://github.com/tensorflow/tensorflow/releases
-.. _Codacy Badge: https://app.codacy.com/app/tensorlayer/tensorlayer
-.. _CircleCI: https://circleci.com/gh/tensorlayer/tensorlayer/tree/master
-.. _Docker Pulls: https://hub.docker.com/r/tensorlayer/tensorlayer/
-.. _Documentation Status: https://tensorlayer.readthedocs.io/
-.. _PyUP Updates: https://pyup.io/repos/github/tensorlayer/tensorlayer/
-.. _Gitter: https://gitter.im/tensorlayer/Lobby
 .. _Mentioned in Awesome TensorLayer: https://github.com/tensorlayer/awesome-tensorlayer
 .. _English Documentation: https://tensorlayer.readthedocs.io/
 .. _Chinese Documentation: https://tensorlayercn.readthedocs.io/
 .. _Chinese Book: http://www.broadview.com.cn/book/5059/
+
 .. _TensorFlow: https://www.tensorflow.org
 .. _ACM Multimedia Society: http://www.acmmm.org/2017/mm-2017-awardees/
