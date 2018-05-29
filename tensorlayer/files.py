@@ -1562,7 +1562,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     save_list : list of tensor
         A list of parameters (tensor) to be saved.
     name : str
-        The name of the `.npz` file.
+        The name of the `.npz` file. or an file object
     sess : None or Session
         Session may be required in some case.
 
@@ -1618,6 +1618,7 @@ def load_npz(path='', name='model.npz'):
         Folder path to `.npz` file.
     name : str
         The name of the `.npz` file.
+        or an file like object
 
     Returns
     --------
@@ -1633,7 +1634,11 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    d = np.load(path + name)
+    if type(name)==str:
+        d = np.load(path + name)
+    else:
+        d=np.load(name)
+        
     return d['params']
 
 
