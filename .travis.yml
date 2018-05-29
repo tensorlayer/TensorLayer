@@ -1,6 +1,10 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
 
+addons:
+  apt:
+    update: false
+
 branches:
   only:
     - master
