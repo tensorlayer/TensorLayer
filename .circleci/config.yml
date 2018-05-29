@@ -71,7 +71,7 @@ jobs:
             docker build -t latest_py3_gpu python3/gpu
 
   ###################################################################################
-  #           MASTER BRANCH BUILDS with TensorLayer installed from Source           #
+  #       NIGHTLY BUILDS from TensorLayer Master Branch installed from Source       #
   ###################################################################################
 
   nightly_sources_py2_cpu:
@@ -114,6 +114,10 @@ jobs:
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
   nightly_sources_py2_gpu:
     working_directory: ~/build
     docker:
@@ -143,6 +147,10 @@ jobs:
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             CONTAINER_TAG="$VERSION_PREFIX"-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-gpu
             docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
@@ -178,6 +186,10 @@ jobs:
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-cpu
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
   nightly_sources_py3_gpu:
     working_directory: ~/build
     docker:
@@ -203,6 +215,10 @@ jobs:
             # ============== Nightly Python3 GPU Containers ==============
 
             CONTAINER_TAG="$VERSION_PREFIX"-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-gpu
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
@@ -258,6 +274,10 @@ jobs:
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-cpu
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
             # ============== Tag Python2 CPU Containers ==============
 
             CONTAINER_TAG="$TL_VERSION"
@@ -273,6 +293,10 @@ jobs:
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             CONTAINER_TAG="$TL_VERSION"-cpu-py2
+            docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py2-cpu
             docker tag latest_py2_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
@@ -316,6 +340,10 @@ jobs:
             docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py2-gpu
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
             # ============== Tag Python2 GPU Containers ==============
 
             CONTAINER_TAG="$TL_VERSION"-gpu
@@ -323,6 +351,10 @@ jobs:
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             CONTAINER_TAG="$TL_VERSION"-gpu-py2
+            docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+            CONTAINER_TAG="$TL_VERSION"-py2-gpu
             docker tag latest_py2_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
@@ -366,6 +398,10 @@ jobs:
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-cpu
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
             # ============== Tag Python3 CPU Containers ==============
 
             CONTAINER_TAG="$TL_VERSION"-py3
@@ -373,6 +409,10 @@ jobs:
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
             CONTAINER_TAG="$TL_VERSION"-cpu-py3
+            docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            
+            CONTAINER_TAG="$TL_VERSION"-py3-cpu
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
@@ -412,9 +452,17 @@ jobs:
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
+            CONTAINER_TAG="$VERSION_PREFIX"-py3-gpu
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
             # ============== Tag Python3 GPU Containers ==============
 
             CONTAINER_TAG="$TL_VERSION"-gpu-py3
+            docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+            
+            CONTAINER_TAG="$TL_VERSION"-py3-gpu
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
 
