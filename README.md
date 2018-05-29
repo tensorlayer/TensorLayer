@@ -78,8 +78,6 @@ and etc., as well as engineers from Google, Microsoft, Alibaba, Tencent, Xiaomi,
 
 # Installation
 
-## As a TensorLayer user
-
 TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required.
 
 The simplest way to install TensorLayer is to use the Python Package Index (PyPI):
@@ -97,42 +95,6 @@ Alternatively, you can install the development version by directly pulling from 
 
 ```bash
 pip install git+https://github.com/tensorlayer/tensorlayer.git
-```
-
-## As a TensorLayer contributor
-
-If you prefer to build from sources in a development objective
-
-```bash
-# First clone the repository
-git clone https://github.com/tensorlayer/tensorlayer.git
-cd tensorlayer
-
-# Install virtualenv if necessary
-pip install virtualenv
-
-# Then create a virtualenv called venv inside
-virtualenv venv
-
-# Activate the virtualenv  
-
-# Linux:
-source venv/bin/activate
-
-# Windows:
-venv\Scripts\activate.bat
-
-# for a machine **without** an NVIDIA GPU
-pip install -e .[tf_cpu,db,dev,test,doc]
-
-# for a machine **with** an NVIDIA GPU
-pip install -e .[tf_gpu,db,dev,test,doc]
-```
-
-Launching the unittest:
-
-```bash
-$ pytest
 ```
 
 ## Using Docker - a ready-to-use environment
