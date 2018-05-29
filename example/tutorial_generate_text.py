@@ -120,7 +120,7 @@ def customized_clean_str(string):
 
 
 def customized_read_words(input_fpath):  #, dictionary):
-    with open(input_fpath, "r") as f:
+    with open(input_fpath, "r", encoding="utf8") as f:
         words = f.read()
     # Clean the data
     words = customized_clean_str(words)
