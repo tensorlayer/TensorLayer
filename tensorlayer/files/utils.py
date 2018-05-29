@@ -1,47 +1,52 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+
 import gzip
 import math
-import os
 import pickle
+import progressbar
 import re
-import sys
+import shutil
 import tarfile
 import time
 import zipfile
-import progressbar
+
+from six.moves import cPickle, zip
 
 import numpy as np
+
 import tensorflow as tf
-from six.moves import cPickle, zip
 from tensorflow.python.platform import gfile
 
-from . import tl_logging as logging
-from . import nlp, utils, visualize
+from tensorlayer import tl_logging as logging
+from tensorlayer import visualize
 
 __all__ = [
-    'save_npz',
-    'load_npz',
-    'load_and_assign_npz',
-    'save_npz_dict',
-    'load_and_assign_npz_dict',
-    'npz_to_W_pdf',
     'assign_params',
-    'save_ckpt',
-    'load_ckpt',
-    'save_any_to_npy',
-    'load_npy_to_any',
-    'file_exists',
-    'folder_exists',
     'del_file',
     'del_folder',
-    'read_file',
+    'download_file_from_google_drive',
+    'exists_or_mkdir',
+    'file_exists',
+    'folder_exists',
+    'load_and_assign_npz',
+    'load_and_assign_npz_dict',
+    'load_ckpt',
+    'load_cropped_svhn',
     'load_file_list',
     'load_folder_list',
-    'exists_or_mkdir',
+    'load_npy_to_any',
+    'load_npz',
     'maybe_download_and_extract',
-    'download_file_from_google_drive',
     'natural_keys',
+    'npz_to_W_pdf',
+    'read_file',
+    'save_any_to_npy',
+    'save_ckpt',
+    'save_npz',
+    'save_npz_dict',
 ]
 
 
@@ -1936,7 +1941,7 @@ def del_file(filepath):
 
 def del_folder(folderpath):
     """Delete a folder by given folder path."""
-    os.rmdir(folderpath)
+    shutil.rmtree(folderpath)
 
 
 def read_file(filepath):
