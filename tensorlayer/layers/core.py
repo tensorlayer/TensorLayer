@@ -8,10 +8,14 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
-from .. import tl_logging as logging
-from .. import files, iterate, utils, visualize
+from tensorlayer import tl_logging as logging
 
-from ..deprecation import deprecated_alias
+from tensorlayer import files
+from tensorlayer import iterate
+from tensorlayer import utils
+from tensorlayer import visualize
+
+from tensorlayer.deprecation import deprecated_alias
 
 __all__ = [
     'LayersConfig',
