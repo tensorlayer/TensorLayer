@@ -188,6 +188,9 @@ To release a new version, please update the changelog as followed:
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
 - Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
+- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
+- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
+- All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
 
 ### Dependencies Update
 - Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
