@@ -5,24 +5,24 @@
            <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
        </div>
    </a>
-   
+
 .. image:: https://img.shields.io/travis/tensorlayer/tensorlayer.svg?label=Travis&branch=master
     :target: https://travis-ci.org/tensorlayer/tensorlayer
-   
+
 .. image:: https://badge.fury.io/py/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/
-   
+
 .. image:: https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg
-    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-   
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc0...master
+
 .. image:: https://img.shields.io/pypi/pyversions/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/
-   
+
 .. image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
     :target: https://github.com/tensorflow/tensorflow/releases
-   
+
 .. image:: https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9
-    :target: https://app.codacy.com/app/tensorlayer/tensorlayer 
+    :target: https://app.codacy.com/app/tensorlayer/tensorlayer
 
 .. raw:: html
 
@@ -61,13 +61,13 @@
 
 .. image:: https://awesome.re/mentioned-badge.svg
     :target: https://github.com/tensorlayer/awesome-tensorlayer
-    
+
 .. image:: http://img.shields.io/badge/documentation-enlish-blue.svg
     :target: https://tensorlayer.readthedocs.io/
-    
+
 .. image:: http://img.shields.io/badge/documentation-中文-blue.svg
     :target: https://tensorlayercn.readthedocs.io/
-    
+
 .. image:: http://img.shields.io/badge/book-中文-blue.svg
     :target: http://www.broadview.com.cn/book/5059/
 

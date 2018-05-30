@@ -133,8 +133,68 @@ To release a new version, please update the changelog as followed:
 - Update scikit-image from 0.13.1 to 0.14.0 (by @DEKHTIARJonathan and @pyup-bot in #656)
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao
+@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
 
+## [1.8.6] - 2018-05-30
+
+### Added
+- API:
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
+- CI Tool:
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
+- Docker:
+  - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
+  - Containers built in the following configurations: py2+cpu, py2+gpu, py3+cpu, and py3+gpu (by @DEKHTIARJonathan in #648)
+- Documentation:
+  - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
+  - Optimizers page added (by @DEKHTIARJonathan in #636)
+  - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
+- Layer:
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+- Optimizer:
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
+- Test:
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
+  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
+  - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
+- Tutorials:
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
+
+### Changed
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
+- RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
+- TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
+- Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
+- TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
+- Relative Imports changed for absolute imports (by @DEKHTIARJonathan in #657)
+- `tl.files` refactored into a directory with numerous files (by @DEKHTIARJonathan in #657)
+- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (by @DEKHTIARJonathan in #657)
+- extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
+- requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657)
+- README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
+- Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
+- Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
+
+### Fixed
+- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
+- Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
+- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
+
+### Dependencies Update
+- Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
+- Update progressbar2 from 3.37.1 to 3.38.0 (by @DEKHTIARJonathan and @pyup-bot in #651)
+- Update scikit-image from 0.13.1 to 0.14.0 (by @DEKHTIARJonathan and @pyup-bot in #656)
+
+### Contributors
+@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
 
 ## [1.8.5] - 2018-05-09
 
