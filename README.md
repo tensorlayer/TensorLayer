@@ -28,7 +28,7 @@
 <br/>
 
 [![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
-[![English Documentation](http://img.shields.io/badge/documentation-enlish-blue.svg)](https://tensorlayer.readthedocs.io/)
+[![English Documentation](http://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
 [![Chinese Documentation](http://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
 [![Chinese Book](http://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
 

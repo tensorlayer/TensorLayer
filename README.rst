@@ -62,7 +62,7 @@
 .. image:: https://awesome.re/mentioned-badge.svg
     :target: https://github.com/tensorlayer/awesome-tensorlayer
 
-.. image:: http://img.shields.io/badge/documentation-enlish-blue.svg
+.. image:: http://img.shields.io/badge/documentation-english-blue.svg
     :target: https://tensorlayer.readthedocs.io/
 
 .. image:: http://img.shields.io/badge/documentation-中文-blue.svg
