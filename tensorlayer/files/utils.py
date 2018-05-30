@@ -2087,7 +2087,9 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
                 pbar.update(count, force=True)
 
         filepath = os.path.join(working_directory, filename)
-        sys.stdout.write('Downloading %s...\n' % filename)
+
+        logging.info('Downloading %s...\n' % filename)
+
         urlretrieve(url_source + filename, filepath, reporthook=_dlProgress)
 
     exists_or_mkdir(working_directory, verbose=False)
