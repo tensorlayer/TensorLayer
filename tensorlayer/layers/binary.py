@@ -408,7 +408,7 @@ class TernaryDenseLayer(Layer):
                 # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
 
         self.all_layers.append(self.outputs)
-        
+
         if b_init is not None:
             self.all_params.extend([W, b])
         else:
