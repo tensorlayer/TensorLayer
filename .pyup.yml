@@ -31,22 +31,25 @@ search: False
 # allowed: list
 requirements:
     # Requirements for the library
-    - requirements.txt
+    - requirements/requirements.txt
 
     # Requirements for the development
-    - requirements_dev.txt
+    - requirements/requirements_tf_cpu.txt
 
     # Requirements for the development
-    - requirements_tf_cpu.txt
+    - requirements/requirements_tf_gpu.txt
 
     # Requirements for the development
-    - requirements_tf_gpu.txt
-
-    # Requirements for running unittests
-    - tests/requirements.txt
+    - requirements/requirements_dev.txt
 
     # Requirements for building docs
-    - docs/requirements.txt
+    - requirements/requirements_doc.txt
+
+    # Not necessary, but recommended libraries
+    - requirements/requirements_extra.txt
+
+    # Requirements for running unittests
+    - requirements/requirements_test.txt
 
 # add a label to pull requests, default is not set
 # requires private repo permissions, even on public repos
