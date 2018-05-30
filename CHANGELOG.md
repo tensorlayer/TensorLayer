@@ -109,6 +109,8 @@ To release a new version, please update the changelog as followed:
 - extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
 - requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657) 
 - README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
+- Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
+- Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
 
 ### Deprecated
 
@@ -120,6 +122,8 @@ To release a new version, please update the changelog as followed:
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
 - Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
+- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
+- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 
 ### Security
 

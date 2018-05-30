@@ -6,181 +6,208 @@ import tensorflow as tf
 import tensorlayer as tl
 
 
-class Layer_Convolution_Test(unittest.TestCase):
+class Layer_Convolution_1D_Test(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        ############
-        #    1D    #
-        ############
 
-        x1 = tf.placeholder(tf.float32, (None, 100, 1))
-        nin1 = tl.layers.InputLayer(x1, name='in1')
+        x = tf.placeholder(tf.float32, (None, 100, 1))
 
-        n1 = tl.layers.Conv1dLayer(nin1, shape=(5, 1, 32), stride=2)
-        cls.shape_n1 = n1.outputs.get_shape().as_list()
+        cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
 
-        n2 = tl.layers.Conv1d(nin1, n_filter=32, filter_size=5, stride=2)
-        cls.shape_n2 = n2.outputs.get_shape().as_list()
+        cls.n1 = tl.layers.Conv1dLayer(cls.input_layer, shape=(5, 1, 32), stride=2)
 
-        n2_1 = tl.layers.SeparableConv1d(
-            nin1, n_filter=32, filter_size=3, strides=1, padding='VALID', act=tf.nn.relu, name='seperable1d1'
+        cls.n2 = tl.layers.Conv1d(cls.n1, n_filter=32, filter_size=5, stride=2)
+
+        cls.n3 = tl.layers.SeparableConv1d(
+            cls.n2, n_filter=32, filter_size=3, strides=1, padding='VALID', act=tf.nn.relu, name='separable_1d'
         )
-        cls.shape_n2_1 = n2_1.outputs.get_shape().as_list()
-        cls.n2_1_all_layers = n2_1.all_layers
-        cls.n2_1_params = n2_1.all_params
-        cls.n2_1_count_params = n2_1.count_params()
-
-        ############
-        #    2D    #
-        ############
-
-        x2 = tf.placeholder(tf.float32, (None, 100, 100, 3))
-        nin2 = tl.layers.InputLayer(x2, name='in2')
-
-        n3 = tl.layers.Conv2dLayer(
-            nin2, act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=5e-2), b_init=tf.constant_initializer(value=0.0),
-            name='conv2dlayer'
-        )
-        cls.shape_n3 = n3.outputs.get_shape().as_list()
-
-        n4 = tl.layers.Conv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d')
-        cls.shape_n4 = n4.outputs.get_shape().as_list()
-        cls.n4_params = n4.all_params
-
-        n5 = tl.layers.Conv2d(
-            nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias'
-        )
-        cls.shape_n5 = n5.outputs.get_shape().as_list()
-        cls.n5_params = n5.all_params
-
-        n6 = tl.layers.DeConv2dLayer(
-            nin2, shape=(5, 5, 32, 3), output_shape=(100, 200, 200, 32), strides=(1, 2, 2, 1), name='deconv2dlayer'
-        )
-        cls.shape_n6 = n6.outputs.get_shape().as_list()
-
-        n7 = tl.layers.DeConv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')
-        cls.shape_n7 = n7.outputs.get_shape().as_list()
-
-        n8 = tl.layers.DepthwiseConv2d(
-            nin2, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
-        )
-        cls.shape_n8 = n8.outputs.get_shape().as_list()
-
-        n9 = tl.layers.Conv2d(nin2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d2')
-        n9 = tl.layers.GroupConv2d(n9, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
-        cls.shape_n9 = n9.outputs.get_shape().as_list()
-
-        n10 = tl.layers.SeparableConv2d(
-            nin2, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable2d1'
-        )
-        cls.shape_n10 = n10.outputs.get_shape().as_list()
-        cls.n10_all_layers = n10.all_layers
-        cls.n10_params = n10.all_params
-        cls.n10_count_params = n10.count_params()
-
-        ############
-        #    3D    #
-        ############
-
-        x3 = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
-        nin3 = tl.layers.InputLayer(x3, name='in3')
-
-        n11 = tl.layers.Conv3dLayer(nin3, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
-        cls.shape_n11 = n11.outputs.get_shape().as_list()
-
-        # n = tl.layers.DeConv3dLayer(nin, shape=(2, 2, 2, 128, 3), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1))
-        # print(n)
-        # shape = n.outputs.get_shape().as_list()
-
-        n12 = tl.layers.DeConv3d(nin3, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
-        cls.shape_n12 = n12.outputs.get_shape().as_list()
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_shape_n1(self):
-        self.assertEqual(self.shape_n1[1], 50)
-        self.assertEqual(self.shape_n1[2], 32)
+    def test_layer_n1(self):
 
-    def test_shape_n2(self):
-        self.assertEqual(self.shape_n2[1], 50)
-        self.assertEqual(self.shape_n2[2], 32)
+        self.assertEqual(len(self.n1.all_layers), 1)
+        self.assertEqual(len(self.n1.all_params), 2)
+        self.assertEqual(self.n1.count_params(), 192)
+        self.assertEqual(self.n1.outputs.get_shape().as_list()[1:], [50, 32])
 
-    def test_shape_n2_1(self):
-        self.assertEqual(self.shape_n2_1[1], 98)
-        self.assertEqual(self.shape_n2_1[2], 32)
+    def test_layer_n2(self):
 
-    def test_shape_n3(self):
-        self.assertEqual(self.shape_n3[1], 50)
-        self.assertEqual(self.shape_n3[2], 50)
-        self.assertEqual(self.shape_n3[3], 32)
+        self.assertEqual(len(self.n2.all_layers), 2)
+        self.assertEqual(len(self.n2.all_params), 4)
+        self.assertEqual(self.n2.count_params(), 5344)
+        self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [25, 32])
 
-    def test_shape_n4(self):
-        self.assertEqual(self.shape_n4[1], 50)
-        self.assertEqual(self.shape_n4[2], 50)
-        self.assertEqual(self.shape_n4[3], 32)
+    def test_layer_n3(self):
 
-    def test_shape_n5(self):
-        self.assertEqual(self.shape_n5[1], 50)
-        self.assertEqual(self.shape_n5[2], 50)
-        self.assertEqual(self.shape_n5[3], 32)
+        self.assertEqual(len(self.n3.all_layers), 3)
+        self.assertEqual(len(self.n3.all_params), 7)
+        self.assertEqual(self.n3.count_params(), 6496)
+        self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [23, 32])
 
-    def test_shape_n6(self):
-        self.assertEqual(self.shape_n6[1], 200)
-        self.assertEqual(self.shape_n6[2], 200)
-        self.assertEqual(self.shape_n6[3], 32)
 
-    def test_shape_n7(self):
-        #self.assertEqual(self.shape_n7[1], 200)  # TODO: why [None None None 32] ?
-        #self.assertEqual(self.shape_n7[2], 200)  # TODO: why [None None None 32] ?
-        self.assertEqual(self.shape_n7[3], 32)
+class Layer_Convolution_2D_Test(unittest.TestCase):
 
-    def test_shape_n8(self):
-        self.assertEqual(self.shape_n8[1], 50)
-        self.assertEqual(self.shape_n8[2], 50)
-        self.assertEqual(self.shape_n8[3], 6)
+    @classmethod
+    def setUpClass(cls):
 
-    def test_shape_n9(self):
-        self.assertEqual(self.shape_n9[1], 25)
-        self.assertEqual(self.shape_n9[2], 25)
-        self.assertEqual(self.shape_n9[3], 32)
+        x = tf.placeholder(tf.float32, (None, 100, 100, 3))
 
-    def test_shape_n10(self):
-        self.assertEqual(self.shape_n10[1:], [98, 98, 32])
+        cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
 
-    def test_shape_n11(self):
-        self.assertEqual(self.shape_n11[1], 50)
-        self.assertEqual(self.shape_n11[2], 50)
-        self.assertEqual(self.shape_n11[3], 50)
-        self.assertEqual(self.shape_n11[4], 32)
+        cls.n1 = tl.layers.Conv2dLayer(
+            cls.input_layer, act=tf.nn.relu, shape=(5, 5, 3, 32), strides=(1, 2, 2, 1), padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=5e-2), b_init=tf.constant_initializer(value=0.0),
+            name='conv2dlayer'
+        )
 
-    def test_shape_n12(self):
-        self.assertEqual(self.shape_n12[1], 200)
-        self.assertEqual(self.shape_n12[2], 200)
-        self.assertEqual(self.shape_n12[3], 200)
-        self.assertEqual(self.shape_n12[4], 32)
+        cls.n2 = tl.layers.Conv2d(cls.n1, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=None, name='conv2d')
 
-    def test_params_n2_1(self):
-        self.assertEqual(len(self.n2_1_params), 3)
+        cls.n3 = tl.layers.Conv2d(
+            cls.n2, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, b_init=None, name='conv2d_no_bias'
+        )
 
-    def test_params_n4(self):
-        self.assertEqual(len(self.n4_params), 2)
+        cls.n4 = tl.layers.DeConv2dLayer(
+            cls.n3, shape=(5, 5, 32, 32), output_shape=(100, 200, 200, 32), strides=(1, 2, 2, 1), name='deconv2dlayer'
+        )
 
-    def test_params_n5(self):
-        self.assertEqual(len(self.n5_params), 1)
+        cls.n5 = tl.layers.DeConv2d(cls.n4, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='DeConv2d')
 
-    def test_params_n10(self):
-        self.assertEqual(len(self.n10_params), 3)
-        self.assertEqual(self.n10_count_params, 155)
+        cls.n6 = tl.layers.DepthwiseConv2d(
+            cls.n5, shape=(3, 3), strides=(2, 2), act=tf.nn.relu, depth_multiplier=2, name='depthwise'
+        )
 
-    def test_layers_n2_1(self):
-        self.assertEqual(len(self.n2_1_all_layers), 1)
+        cls.n7 = tl.layers.Conv2d(
+            cls.n6, n_filter=32, filter_size=(3, 3), strides=(2, 2), act=tf.nn.relu, name='conv2d2'
+        )
 
-    def test_layers_n10(self):
-        self.assertEqual(len(self.n10_all_layers), 1)
+        cls.n8 = tl.layers.GroupConv2d(cls.n7, n_filter=32, filter_size=(3, 3), strides=(2, 2), name='group')
+
+        cls.n9 = tl.layers.SeparableConv2d(
+            cls.n8, n_filter=32, filter_size=(3, 3), strides=(1, 1), act=tf.nn.relu, name='seperable2d1'
+        )
+
+        cls.n10 = tl.layers.TernaryConv2d(cls.n9, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
+
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_layer_n1(self):
+
+        self.assertEqual(len(self.n1.all_layers), 1)
+        self.assertEqual(len(self.n1.all_params), 2)
+        self.assertEqual(self.n1.count_params(), 2432)
+        self.assertEqual(self.n1.outputs.get_shape().as_list()[1:], [50, 50, 32])
+
+    def test_layer_n2(self):
+
+        self.assertEqual(len(self.n2.all_layers), 2)
+        self.assertEqual(len(self.n2.all_params), 4)
+        self.assertEqual(self.n2.count_params(), 11680)
+        self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [25, 25, 32])
+
+    def test_layer_n3(self):
+
+        self.assertEqual(len(self.n3.all_layers), 3)
+        self.assertEqual(len(self.n3.all_params), 5)
+        self.assertEqual(self.n3.count_params(), 20896)
+        self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [13, 13, 32])
+
+    def test_layer_n4(self):
+
+        self.assertEqual(len(self.n4.all_layers), 4)
+        self.assertEqual(len(self.n4.all_params), 7)
+        self.assertEqual(self.n4.count_params(), 46528)
+        self.assertEqual(self.n4.outputs.get_shape().as_list()[1:], [200, 200, 32])
+
+    def test_layer_n5(self):
+
+        self.assertEqual(len(self.n5.all_layers), 5)
+        self.assertEqual(len(self.n5.all_params), 9)
+        self.assertEqual(self.n5.count_params(), 55776)
+        self.assertEqual(self.n5.outputs.get_shape().as_list()[1:], [400, 400, 32])
+
+    def test_layer_n6(self):
+
+        self.assertEqual(len(self.n6.all_layers), 6)
+        self.assertEqual(len(self.n6.all_params), 11)
+        self.assertEqual(self.n6.count_params(), 56416)
+        self.assertEqual(self.n6.outputs.get_shape().as_list()[1:], [200, 200, 64])
+
+    def test_layer_n7(self):
+
+        self.assertEqual(len(self.n7.all_layers), 7)
+        self.assertEqual(len(self.n7.all_params), 13)
+        self.assertEqual(self.n7.count_params(), 74880)
+        self.assertEqual(self.n7.outputs.get_shape().as_list()[1:], [100, 100, 32])
+
+    def test_layer_n8(self):
+
+        self.assertEqual(len(self.n8.all_layers), 8)
+        self.assertEqual(len(self.n8.all_params), 15)
+        self.assertEqual(self.n8.count_params(), 79520)
+        self.assertEqual(self.n8.outputs.get_shape().as_list()[1:], [50, 50, 32])
+
+    def test_layer_n9(self):
+
+        self.assertEqual(len(self.n9.all_layers), 9)
+        self.assertEqual(len(self.n9.all_params), 18)
+        self.assertEqual(self.n9.count_params(), 80864)
+        self.assertEqual(self.n9.outputs.get_shape().as_list()[1:], [48, 48, 32])
+
+    def test_layer_n10(self):
+
+        self.assertEqual(len(self.n10.all_layers), 10)
+        self.assertEqual(len(self.n10.all_params), 20)
+        self.assertEqual(self.n10.count_params(), 132128)
+        self.assertEqual(self.n10.outputs.get_shape().as_list()[1:], [48, 48, 64])
+
+
+class Layer_Convolution_3D_Test(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+
+        x = tf.placeholder(tf.float32, (None, 100, 100, 100, 3))
+
+        cls.input_layer = tl.layers.InputLayer(x, name='input_layer')
+
+        cls.n1 = tl.layers.Conv3dLayer(cls.input_layer, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1))
+
+        cls.n2 = tl.layers.DeConv3dLayer(
+            cls.n1, shape=(2, 2, 2, 128, 32), output_shape=(100, 12, 32, 32, 128), strides=(1, 2, 2, 2, 1)
+        )
+
+        cls.n3 = tl.layers.DeConv3d(cls.n2, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2))
+
+    @classmethod
+    def tearDownClass(cls):
+        tf.reset_default_graph()
+
+    def test_layer_n1(self):
+
+        self.assertEqual(len(self.n1.all_layers), 1)
+        self.assertEqual(len(self.n1.all_params), 2)
+        self.assertEqual(self.n1.count_params(), 800)
+        self.assertEqual(self.n1.outputs.get_shape().as_list()[1:], [50, 50, 50, 32])
+
+    def test_layer_n2(self):
+
+        self.assertEqual(len(self.n2.all_layers), 2)
+        self.assertEqual(len(self.n2.all_params), 4)
+        self.assertEqual(self.n2.count_params(), 33696)
+        self.assertEqual(self.n2.outputs.get_shape().as_list()[1:], [12, 32, 32, 128])
+
+    def test_layer_n3(self):
+
+        self.assertEqual(len(self.n3.all_layers), 3)
+        self.assertEqual(len(self.n3.all_params), 6)
+        self.assertEqual(self.n3.count_params(), 144320)
+        self.assertEqual(self.n3.outputs.get_shape().as_list()[1:], [24, 64, 64, 32])
 
 
 class Layer_DeformableConvolution_Test(unittest.TestCase):
@@ -201,11 +228,19 @@ class Layer_DeformableConvolution_Test(unittest.TestCase):
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_net1_shape(self):
-        self.assertEqual(self.net1.outputs.shape[1:], [299, 299, 32])
+    def test_layer_n1(self):
 
-    def test_net2_shape(self):
-        self.assertEqual(self.net2.outputs.shape[1:], [299, 299, 64])
+        self.assertEqual(len(self.net1.all_layers), 1)
+        self.assertEqual(len(self.net1.all_params), 2)
+        self.assertEqual(self.net1.count_params(), 896)
+        self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [299, 299, 32])
+
+    def test_layer_n2(self):
+
+        self.assertEqual(len(self.net2.all_layers), 2)
+        self.assertEqual(len(self.net2.all_params), 4)
+        self.assertEqual(self.net2.count_params(), 19392)
+        self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [299, 299, 64])
 
 
 if __name__ == '__main__':
