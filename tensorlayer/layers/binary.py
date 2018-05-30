@@ -408,6 +408,7 @@ class TernaryDenseLayer(Layer):
                 # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
 
         self.all_layers.append(self.outputs)
+        
         if b_init is not None:
             self.all_params.extend([W, b])
         else:
@@ -500,31 +501,43 @@ class TernaryConv2d(Layer):
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
         )
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
+        if len(strides) != 2:
+            raise ValueError("len(strides) should be 2.")
+
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
-        if len(strides) != 2:
-            raise ValueError("len(strides) should be 2.")
+        if W_init_args is None:
+            W_init_args = {}
+
+        if b_init_args is None:
+            b_init_args = {}
+
+        if act is None:
+            act = tf.identity
+
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
+
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
+
+        self.inputs = prev_layer.outputs
+
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             alpha = _compute_alpha(W)
+
             W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
