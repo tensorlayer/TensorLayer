@@ -86,24 +86,24 @@ def debug(msg, *args, **kwargs):
     _get_logger().debug(msg, *args, **kwargs)
 
 
-def error(msg, *args, **kwargs):
-    _get_logger().error(msg, *args, **kwargs)
-
-
-def fatal(msg, *args, **kwargs):
-    _get_logger().fatal(msg, *args, **kwargs)
-
-
 def info(msg, *args, **kwargs):
     _get_logger().info(msg, *args, **kwargs)
 
 
+def error(msg, *args, **kwargs):
+    _get_logger().error("ERROR: %s" % msg, *args, **kwargs)
+
+
+def fatal(msg, *args, **kwargs):
+    _get_logger().fatal("FATAL: %s" % msg, *args, **kwargs)
+
+
 def warn(msg, *args, **kwargs):
-    _get_logger().warning(msg, *args, **kwargs)
+    warning(msg, *args, **kwargs)
 
 
 def warning(msg, *args, **kwargs):
-    _get_logger().warning(msg, *args, **kwargs)
+    _get_logger().warning("WARNING: %s" % msg, *args, **kwargs)
 
 
 # Mask to convert integer thread ids to unsigned quantities for logging
