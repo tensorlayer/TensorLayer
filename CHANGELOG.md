@@ -108,6 +108,7 @@ To release a new version, please update the changelog as followed:
 - `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (by @DEKHTIARJonathan in #657)
 - extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
 - requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657) 
+- Python 3.7 compilation test added in Travis (by @DEKHTIARJonathan in #658) 
 
 ### Deprecated
 
