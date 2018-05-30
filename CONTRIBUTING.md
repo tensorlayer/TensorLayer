@@ -1,4 +1,6 @@
-# Contributing to TensorLayer
+# TensorLayer Contributor Guideline
+
+## Continuous integration
 
 We appreciate contributions
 either by adding / improving examples or extending / fixing the core library. 
@@ -17,3 +19,37 @@ make format
 ```
 
 to apply those tools before submitting your PR.
+
+## Build from sources
+
+```bash
+# First clone the repository
+git clone https://github.com/tensorlayer/tensorlayer.git
+cd tensorlayer
+
+# Install virtualenv if necessary
+pip install virtualenv
+
+# Then create a virtualenv called venv inside
+virtualenv venv
+
+# Activate the virtualenv  
+
+# Linux:
+source venv/bin/activate
+
+# Windows:
+venv\Scripts\activate.bat
+
+# for a machine **without** an NVIDIA GPU
+pip install -e .[tf_cpu,db,dev,doc,extra,test]
+
+# for a machine **with** an NVIDIA GPU
+pip install -e .[tf_gpu,db,dev,doc,extra,test]
+```
+
+Launching the unittest:
+
+```bash
+$ pytest
+```
