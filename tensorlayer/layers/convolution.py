@@ -18,6 +18,7 @@ __all__ = [
     'DeformableConv2d',
     'AtrousConv1dLayer',
     'AtrousConv2dLayer',
+    'AtrousConv2dTransLayer',
     'deconv2d_bilinear_upsampling_initializer',
     'Conv1d',
     'Conv2d',
@@ -1151,7 +1152,87 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend([filters, b])
         else:
             self.all_params.append(filters)
+            
+            
+class AtrousConv2dTransLayer(Layer):
+    """The :class:`AtrousConv2dTransLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
+    n_filter : int
+        The number of filters.
+    filter_size : tuple of int
+        The filter size: (height, width).
+    output_shape : tuple of int
+        Output shape of the deconvolution.
+    rate : int
+        The stride that we sample input values in the height and width dimensions.
+        This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
+        In the literature, this parameter is sometimes mentioned as input stride or dilation.
+    act : activation function
+        The activation function of this layer.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self, prev_layer, filter_size=(3, 3), output_shape=(1, 256, 256, 32), rate=2, act=tf.identity, padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None, b_init_args=None, name='atrou2dtrans'
+    ):
+
+        super(AtrousConv2dTransLayer, self).__init__(prev_layer=prev_layer, name=name)
+        logging.info(
+            "AtrousConv2dTransLayer %s: filter_size:%s out_shape:%s rate:%d pad:%s act:%s" %
+            (name, filter_size, out_shape, rate, padding, act.__name__)
+        )
+
+        self.inputs = prev_layer.outputs
+
+        if W_init_args is None:
+            W_init_args = {}
+        if b_init_args is None:
+            b_init_args = {}
+        if act is None:
+            act = tf.identity
+
+        with tf.variable_scope(name):
+            n_filter = output_shape[-1]
+            shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
+            filters = tf.get_variable(
+                name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+            )
+            if b_init:
+                b = tf.get_variable(
+                    name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                )
+                self.outputs = act(tf.nn.atrous_conv2d_transpose(self.inputs, filters, output_shape, rate, padding) + b)
+            else:
+                self.outputs = act(tf.nn.atrous_conv2d_transpose(self.inputs, filters, output_shape, rate, padding))
+
+        # self.all_layers = list(layer.all_layers)
+        # self.all_params = list(layer.all_params)
+        # self.all_drop = dict(layer.all_drop)
+        self.all_layers.append(self.outputs)
+        if b_init:
+            self.all_params.extend([filters, b])
+        else:
+            self.all_params.append(filters)
+            
 
 def deconv2d_bilinear_upsampling_initializer(shape):
     """Returns the initializer that can be passed to DeConv2dLayer for initializ ingthe
