@@ -1,6 +1,10 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
 
+addons:
+  apt:
+    update: false
+
 branches:
   only:
     - master
@@ -42,7 +46,7 @@ env:
 
 install:
   - pip install tensorflow==$_TF_VERSION
-  - pip install -e .[db,dev,test,doc]
+  - pip install -e .[db,dev,doc,extra,test]
 
 script:
   # units test

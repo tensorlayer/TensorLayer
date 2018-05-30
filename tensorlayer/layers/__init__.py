@@ -9,7 +9,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .binary import *
 from .convolution import *
-from .core import *
+from tensorlayer.layers.core import *
 from .extend import *
 from .flow_control import *
 from .importer import *

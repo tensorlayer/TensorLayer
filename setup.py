@@ -45,14 +45,16 @@ else:
 
 # ======================= Reading Requirements files as TXT files =======================
 
-def req_file(filename):
-    with open(filename) as f:
+def req_file(filename, folder="requirements"):
+    with open(os.path.join(folder, filename)) as f:
         content = f.readlines()
     # you may also want to remove whitespace characters
     # Example: `\n` at the end of each line
     return [x.strip() for x in content]
 
 # ======================= Defining the requirements var =======================
+
+
 
 install_requires = req_file("requirements.txt")
 
@@ -61,8 +63,9 @@ extras_require = {
     'tf_gpu': req_file("requirements_tf_gpu.txt"),
 	'db': req_file("requirements_db.txt"),
 	'dev': req_file("requirements_dev.txt"),
-	'doc': req_file("docs/requirements.txt"),
-	'test': req_file("tests/requirements.txt")
+	'doc': req_file("requirements_doc.txt"),
+	'extra': req_file("requirements_extra.txt"),
+	'test': req_file("requirements_test.txt")
 }
 
 # Readthedocs requires TF 1.5.0 to build properly
