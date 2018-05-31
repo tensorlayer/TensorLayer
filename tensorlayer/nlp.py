@@ -273,8 +273,8 @@ class Vocabulary(object):
 
     def __init__(self, vocab_file, start_word="<S>", end_word="</S>", unk_word="<UNK>", pad_word="<PAD>"):
         if not tf.gfile.Exists(vocab_file):
-            tf.logging.fatal("Vocab file %s not found." % vocab_file)
-        tf.logging.info("Initializing vocabulary from file: %s" % vocab_file)
+            tl.logging.fatal("Vocab file %s not found." % vocab_file)
+        tl.logging.info("Initializing vocabulary from file: %s" % vocab_file)
 
         with tf.gfile.GFile(vocab_file, mode="r") as f:
             reverse_vocab = list(f.readlines())
@@ -294,7 +294,7 @@ class Vocabulary(object):
 
         logging.info("Vocabulary from %s : %s %s %s" % (vocab_file, start_word, end_word, unk_word))
         logging.info("    vocabulary with %d words (includes start_word, end_word, unk_word)" % len(vocab))
-        # tf.logging.info("     vocabulary with %d words" % len(vocab))
+        # tl.logging.info("     vocabulary with %d words" % len(vocab))
 
         self.vocab = vocab  # vocab[word] = id
         self.reverse_vocab = reverse_vocab  # reverse_vocab[id] = word
@@ -1094,7 +1094,7 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):
         )
         os.chmod(multi_bleu_path, 0o755)
     except Exception:  # pylint: disable=W0702
-        tf.logging.info("Unable to fetch multi-bleu.perl script, using local.")
+        tl.logging.info("Unable to fetch multi-bleu.perl script, using local.")
         metrics_dir = os.path.dirname(os.path.realpath(__file__))
         bin_dir = os.path.abspath(os.path.join(metrics_dir, "..", "..", "bin"))
         multi_bleu_path = os.path.join(bin_dir, "tools/multi-bleu.perl")
@@ -1122,8 +1122,8 @@ def moses_multi_bleu(hypotheses, references, lowercase=False):
             bleu_score = float(bleu_score)
         except subprocess.CalledProcessError as error:
             if error.output is not None:
-                tf.logging.warning("multi-bleu.perl script returned non-zero exit code")
-                tf.logging.warning(error.output)
+                tl.logging.warning("multi-bleu.perl script returned non-zero exit code")
+                tl.logging.warning(error.output)
             bleu_score = np.float32(0.0)
 
     # Close temp files
