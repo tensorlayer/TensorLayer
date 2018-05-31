@@ -92,6 +92,10 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
 
         cls.n10 = tl.layers.TernaryConv2d(cls.n9, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
 
+        cls.n11 = tl.layers.AtrousConv2dTransLayer(
+            cls.n10, shape=(3, 3, 32, 64), output_shape=(100, 96, 96, 32), rate=2, act=tf.nn.relu, name='atroustrans1'
+        )
+
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
@@ -165,6 +169,13 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
         self.assertEqual(len(self.n10.all_params), 20)
         self.assertEqual(self.n10.count_params(), 132128)
         self.assertEqual(self.n10.outputs.get_shape().as_list()[1:], [48, 48, 64])
+
+    def test_layer_n11(self):
+
+        self.assertEqual(len(self.n11.all_layers), 11)
+        self.assertEqual(len(self.n11.all_params), 22)
+        self.assertEqual(self.n11.count_params(), 150592)
+        self.assertEqual(self.n11.outputs.get_shape().as_list()[1:], [96, 96, 32])
 
 
 class Layer_Convolution_3D_Test(unittest.TestCase):

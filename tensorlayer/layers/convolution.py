@@ -1163,8 +1163,8 @@ class AtrousConv2dTransLayer(Layer):
         Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
     n_filter : int
         The number of filters.
-    filter_size : tuple of int
-        The filter size: (height, width).
+    shape : tuple of int
+        The shape of the filters: (filter_height, filter_width, in_channels, out_channels).
     output_shape : tuple of int
         Output shape of the deconvolution.
     rate : int
@@ -1190,15 +1190,15 @@ class AtrousConv2dTransLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, filter_size=(3, 3), output_shape=(1, 256, 256, 32), rate=2, act=tf.identity, padding='SAME',
+            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=tf.identity, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
             W_init_args=None, b_init_args=None, name='atrou2dtrans'
     ):
 
         super(AtrousConv2dTransLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
-            "AtrousConv2dTransLayer %s: filter_size:%s out_shape:%s rate:%d pad:%s act:%s" %
-            (name, filter_size, out_shape, rate, padding, act.__name__)
+            "AtrousConv2dTransLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" %
+            (name, shape, output_shape, rate, padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
@@ -1211,14 +1211,12 @@ class AtrousConv2dTransLayer(Layer):
             act = tf.identity
 
         with tf.variable_scope(name):
-            n_filter = output_shape[-1]
-            shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(
                 name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = act(tf.nn.atrous_conv2d_transpose(self.inputs, filters, output_shape, rate, padding) + b)
             else:
