@@ -13,7 +13,8 @@
 
 [![CircleCI](https://img.shields.io/circleci/project/github/tensorlayer/tensorlayer.svg?label=Docker%20Build&branch=master)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master)
 [![Docker Pulls](https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800)](https://hub.docker.com/r/tensorlayer/tensorlayer/)
-[![Documentation Status](https://img.shields.io/readthedocs/tensorlayer/stable.svg?label=ReadTheDocs)](https://tensorlayer.readthedocs.io/)
+[![Documentation Status](https://img.shields.io/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN)](https://tensorlayer.readthedocs.io/)
+[![Documentation Status](https://img.shields.io/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN)](https://tensorlayercn.readthedocs.io/)
 [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby)
 

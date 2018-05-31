@@ -36,8 +36,11 @@
 .. image:: https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800
     :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
 
-.. image:: https://img.shields.io/readthedocs/tensorlayer/stable.svg?label=ReadTheDocs
+.. image:: https://img.shields.io/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN
     :target: https://tensorlayer.readthedocs.io/
+
+.. image:: https://img.shields.io/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN
+    :target: https://tensorlayercn.readthedocs.io/
 
 .. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
     :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
