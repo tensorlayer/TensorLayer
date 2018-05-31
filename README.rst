@@ -62,13 +62,13 @@
 .. image:: https://awesome.re/mentioned-badge.svg
     :target: https://github.com/tensorlayer/awesome-tensorlayer
 
-.. image:: http://img.shields.io/badge/documentation-english-blue.svg
+.. image:: https://img.shields.io/badge/documentation-english-blue.svg
     :target: https://tensorlayer.readthedocs.io/
 
-.. image:: http://img.shields.io/badge/documentation-中文-blue.svg
+.. image:: https://img.shields.io/badge/documentation-中文-blue.svg
     :target: https://tensorlayercn.readthedocs.io/
 
-.. image:: http://img.shields.io/badge/book-中文-blue.svg
+.. image:: https://img.shields.io/badge/book-中文-blue.svg
     :target: http://www.broadview.com.cn/book/5059/
 
 TensorLayer is a deep learning and reinforcement learning library on top

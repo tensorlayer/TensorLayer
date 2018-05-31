@@ -28,9 +28,9 @@
 <br/>
 
 [![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
-[![English Documentation](http://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-[![Chinese Documentation](http://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
-[![Chinese Book](http://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
+[![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
+[![Chinese Documentation](https://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
+[![Chinese Book](https://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
 TensorLayer is a deep learning and reinforcement learning library on top of [TensorFlow](https://www.tensorflow.org). It provides rich neural layers and utility functions to help researchers and engineers build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the prestigious [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
 
