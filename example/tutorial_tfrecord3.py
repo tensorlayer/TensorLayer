@@ -260,9 +260,9 @@ def prefetch_input_data(
     for pattern in file_pattern.split(","):
         data_files.extend(tf.gfile.Glob(pattern))
     if not data_files:
-        tf.logging.fatal("Found no input files matching %s", file_pattern)
+        tl.logging.fatal("Found no input files matching %s", file_pattern)
     else:
-        tf.logging.info("Prefetching values from %d files matching %s", len(data_files), file_pattern)
+        tl.logging.info("Prefetching values from %d files matching %s", len(data_files), file_pattern)
 
     if is_training:
         print("   is_training == True : RandomShuffleQueue")
