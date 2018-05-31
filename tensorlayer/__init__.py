@@ -16,7 +16,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if tensorflow.__version__ < "1.6.0":
+    if tensorflow.__version__ < "1.6.0" and os.environ.get('READTHEDOCS', None) != 'True':
         raise RuntimeError(
             "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
             "Please update Tensorflow with:\n"
