@@ -1152,8 +1152,8 @@ class AtrousConv2dLayer(Layer):
             self.all_params.extend([filters, b])
         else:
             self.all_params.append(filters)
-            
-            
+
+
 class AtrousConv2dTransLayer(Layer):
     """The :class:`AtrousConv2dTransLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
@@ -1161,10 +1161,8 @@ class AtrousConv2dTransLayer(Layer):
     ----------
     prev_layer : :class:`Layer`
         Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
-    n_filter : int
-        The number of filters.
     shape : tuple of int
-        The shape of the filters: (filter_height, filter_width, in_channels, out_channels).
+        The shape of the filters: (filter_height, filter_width, out_channels, in_channels).
     output_shape : tuple of int
         Output shape of the deconvolution.
     rate : int
@@ -1190,9 +1188,9 @@ class AtrousConv2dTransLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=tf.identity, padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, name='atrou2dtrans'
+            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=tf.identity,
+            padding='SAME', W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='atrou2dtrans'
     ):
 
         super(AtrousConv2dTransLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -1230,7 +1228,7 @@ class AtrousConv2dTransLayer(Layer):
             self.all_params.extend([filters, b])
         else:
             self.all_params.append(filters)
-            
+
 
 def deconv2d_bilinear_upsampling_initializer(shape):
     """Returns the initializer that can be passed to DeConv2dLayer for initializ ingthe
