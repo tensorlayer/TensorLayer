@@ -191,14 +191,7 @@ class BatchNormLayer(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            self.outputs = tf.nn.batch_normalization(
-                self.inputs,
-                mean,
-                var,
-                beta,
-                gamma,
-                epsilon
-            )
+            self.outputs = tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -277,18 +270,8 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            center=True,
-            scale=True,
-            act=None,
-            reuse=None,
-            variables_collections=None,
-            outputs_collections=None,
-            trainable=True,
-            begin_norm_axis=1,
-            begin_params_axis=-1,
-            name='layernorm'
+            self, prev_layer, center=True, scale=True, act=None, reuse=None, variables_collections=None,
+            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)

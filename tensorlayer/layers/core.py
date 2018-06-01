@@ -426,17 +426,8 @@ class Layer(object):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-        self,
-        prev_layer,
-        act=None,
-        W_init_args=None,
-        b_init_args=None,
-        dynamic_rnn_init_args=None,
-        cell_init_args=None,
-        a_init_args=None,
-        layer_args=None,
-        fn_args=None,
-        name=None
+            self, prev_layer, act=None, W_init_args=None, b_init_args=None, dynamic_rnn_init_args=None,
+            cell_init_args=None, a_init_args=None, layer_args=None, fn_args=None, name=None
     ):
 
         if name is None:
@@ -536,7 +527,7 @@ class Layer(object):
         net_new.all_layers.append(net_new.outputs)
         net_new.all_params = list(self.all_params)
         net_new.all_drop = dict(self.all_drop)
-        
+
         return net_new
 
     def __setitem__(self, key, item):
@@ -580,11 +571,7 @@ class InputLayer(Layer):
 
     """
 
-    def __init__(
-        self,
-        inputs=None,
-        name='input'
-    ):
+    def __init__(self, inputs=None, name='input'):
 
         super(InputLayer, self).__init__(prev_layer=None, name=name)
 
@@ -626,16 +613,7 @@ class OneHotInputLayer(Layer):
 
     """
 
-    def __init__(
-        self,
-        inputs=None,
-        depth=None,
-        on_value=None,
-        off_value=None,
-        axis=None,
-        dtype=None,
-        name='input'
-    ):
+    def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         super(OneHotInputLayer, self).__init__(prev_layer=None, name=name)
 
@@ -1035,9 +1013,8 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
-        super(DenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -1504,9 +1481,8 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DropconnectDenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
 

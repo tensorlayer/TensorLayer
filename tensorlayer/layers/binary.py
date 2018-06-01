@@ -142,9 +142,8 @@ class BinaryDenseLayer(Layer):
             b_init_args=None,
             name='binary_dense',
     ):
-        super(BinaryDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(BinaryDenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info("BinaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -271,9 +270,8 @@ class BinaryConv2d(Layer):
             # data_format=None,
             name='binary_cnn2d',
     ):
-        super(BinaryConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(BinaryConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
@@ -368,9 +366,8 @@ class TernaryDenseLayer(Layer):
             b_init_args=None,
             name='ternary_dense',
     ):
-        super(TernaryDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(TernaryDenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
@@ -501,9 +498,8 @@ class TernaryConv2d(Layer):
             # data_format=None,
             name='ternary_cnn2d',
     ):
-        super(TernaryConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(TernaryConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
@@ -609,9 +605,8 @@ class DorefaDenseLayer(Layer):
             b_init_args=None,
             name='dorefa_dense',
     ):
-        super(DorefaDenseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DorefaDenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info("DorefaDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -745,9 +740,8 @@ class DorefaConv2d(Layer):
             # data_format=None,
             name='dorefa_cnn2d',
     ):
-        super(DorefaConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DorefaConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)

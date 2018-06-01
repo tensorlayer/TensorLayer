@@ -153,11 +153,7 @@ class MeanPool1d(Layer):
     # return net_new
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            filter_size=3,
-            strides=2,
-            padding='valid', data_format='channels_last', name='meanpool1d'
+            self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='meanpool1d'
     ):
         super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
@@ -192,14 +188,7 @@ class MaxPool2d(Layer):
     """
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        padding='SAME',
-        name='maxpool2d'
-    ):
+    def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'):
         if strides is None:
             strides = filter_size
 
@@ -244,14 +233,7 @@ class MeanPool2d(Layer):
     """
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        filter_size=(3, 3),
-        strides=(2, 2),
-        padding='SAME',
-        name='meanpool2d'
-    ):
+    def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'):
 
         if strides is None:
             strides = filter_size
@@ -309,12 +291,7 @@ class MaxPool3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='valid',
-            data_format='channels_last',
+            self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
             name='maxpool3d'
     ):
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
@@ -362,12 +339,7 @@ class MeanPool3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            filter_size=(3, 3, 3),
-            strides=(2, 2, 2),
-            padding='valid',
-            data_format='channels_last',
+            self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
             name='meanpool3d'
     ):
 
@@ -406,11 +378,7 @@ class GlobalMaxPool1d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmaxpool1d'
-    ):
+    def __init__(self, prev_layer, name='globalmaxpool1d'):
         super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool1d %s" % name)
@@ -441,11 +409,7 @@ class GlobalMeanPool1d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmeanpool1d'
-    ):
+    def __init__(self, prev_layer, name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool1d %s" % name)
@@ -476,11 +440,7 @@ class GlobalMaxPool2d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmaxpool2d'
-    ):
+    def __init__(self, prev_layer, name='globalmaxpool2d'):
         super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMaxPool2d %s" % name)
@@ -511,11 +471,7 @@ class GlobalMeanPool2d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmeanpool2d'
-    ):
+    def __init__(self, prev_layer, name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool2d %s" % name)
@@ -546,11 +502,7 @@ class GlobalMaxPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmaxpool3d'
-    ):
+    def __init__(self, prev_layer, name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
@@ -581,11 +533,7 @@ class GlobalMeanPool3d(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='globalmeanpool3d'
-    ):
+    def __init__(self, prev_layer, name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("GlobalMeanPool3d %s" % name)

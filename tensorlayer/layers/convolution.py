@@ -80,9 +80,8 @@ class Conv1dLayer(Layer):
             b_init_args=None,
             name='cnn1d',
     ):
-        super(Conv1dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(Conv1dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (name, str(shape), str(stride), padding, act.__name__)
@@ -201,9 +200,8 @@ class Conv2dLayer(Layer):
             data_format=None,
             name='cnn_layer',
     ):
-        super(Conv2dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(Conv2dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
@@ -330,9 +328,8 @@ class DeConv2dLayer(Layer):
             b_init_args=None,
             name='decnn2d_layer',
     ):
-        super(DeConv2dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DeConv2dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(output_shape), str(strides), padding, act.__name__)
@@ -347,10 +344,7 @@ class DeConv2dLayer(Layer):
             )
 
             self.outputs = tf.nn.conv2d_transpose(
-                self.inputs,
-                W, output_shape=output_shape,
-                strides=strides,
-                padding=padding
+                self.inputs, W, output_shape=output_shape, strides=strides, padding=padding
             )
 
             if b_init:
@@ -416,9 +410,8 @@ class Conv3dLayer(Layer):
             b_init_args=None,
             name='cnn3d_layer',
     ):
-        super(Conv3dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(Conv3dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" %
@@ -498,9 +491,8 @@ class DeConv3dLayer(Layer):
             b_init_args=None,
             name='decnn3d_layer',
     ):
-        super(DeConv3dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DeConv3dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(output_shape), str(strides), padding, act.__name__)
@@ -515,11 +507,7 @@ class DeConv3dLayer(Layer):
             )
 
             self.outputs = tf.nn.conv3d_transpose(
-                self.inputs,
-                W,
-                output_shape=output_shape,
-                strides=strides,
-                padding=padding
+                self.inputs, W, output_shape=output_shape, strides=strides, padding=padding
             )
 
             if b_init:
@@ -756,9 +744,8 @@ class DeformableConv2d(Layer):
                 "Deformable CNN layer requires tensrflow 1.4 or higher version | current version %s" % tf.__version__
             )
 
-        super(DeformableConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DeformableConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" %
@@ -862,7 +849,10 @@ class DeformableConv2d(Layer):
 
     @private_method
     def _get_vals_by_coords(self, inputs, coords, idx, out_shape):
-        indices = tf.stack([idx, self.tf_flatten(coords[:, :, :, :, 0]), self.tf_flatten(coords[:, :, :, :, 1])], axis=-1)
+        indices = tf.stack(
+            [idx, self.tf_flatten(coords[:, :, :, :, 0]),
+             self.tf_flatten(coords[:, :, :, :, 1])], axis=-1
+        )
         vals = tf.gather_nd(inputs, indices)
         vals = tf.reshape(vals, out_shape)
         return vals
@@ -1095,9 +1085,8 @@ class AtrousConv2dLayer(Layer):
             W_init_args=None, b_init_args=None, name='atrou2d'
     ):
 
-        super(AtrousConv2dLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(AtrousConv2dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" %
@@ -1253,9 +1242,8 @@ class Conv1d(Layer):
             b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
     ):
 
-        super(Conv1d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(Conv1d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "Conv1d %s: n_filter:%d filter_size:%s stride:%d pad:%s act:%s dilation_rate:%d" %
             (name, n_filter, filter_size, stride, padding, act.__name__, dilation_rate)
@@ -1265,17 +1253,9 @@ class Conv1d(Layer):
 
         if tf.__version__ > '1.3':
             _conv1d = tf.layers.Conv1d(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=stride,
-                padding=padding,
-                data_format=data_format,
-                dilation_rate=dilation_rate,
-                activation=self.act,
-                use_bias=(True if b_init else False),
-                kernel_initializer=W_init,
-                bias_initializer=b_init,
-                name=name
+                filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
+                dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
+                kernel_initializer=W_init, bias_initializer=b_init, name=name
             )
 
             # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
@@ -1388,9 +1368,8 @@ class Conv2d(Layer):
         #     data_format=data_format,
         #     name=name)
 
-        super(Conv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(Conv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -1524,9 +1503,8 @@ class DeConv2d(Layer):
             b_init_args=None,  # remove
             name='decnn2d'
     ):
-        super(DeConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DeConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" %
             (name, str(n_filter), str(strides), padding, act.__name__)
@@ -1540,14 +1518,8 @@ class DeConv2d(Layer):
             self.inputs = prev_layer.outputs
 
             conv2d_transpose = tf.layers.Conv2DTranspose(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                activation=self.act,
-                kernel_initializer=W_init,
-                bias_initializer=b_init,
-                name=name
+                filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
+                kernel_initializer=W_init, bias_initializer=b_init, name=name
             )
 
             self.outputs = conv2d_transpose(self.inputs)
@@ -1613,9 +1585,8 @@ class DeConv3d(Layer):
             name='decnn3d'
     ):
 
-        super(DeConv3d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DeConv3d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" %
             (name, str(n_filter), str(strides), padding, act.__name__)
@@ -1717,9 +1688,8 @@ class DepthwiseConv2d(Layer):
             b_init_args=None,
             name='depthwise_conv2d',
     ):
-        super(DepthwiseConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(DepthwiseConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
@@ -1748,13 +1718,7 @@ class DepthwiseConv2d(Layer):
                 name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
-            self.outputs = tf.nn.depthwise_conv2d(
-                self.inputs,
-                W,
-                strides=strides,
-                padding=padding,
-                rate=dilation_rate
-            )
+            self.outputs = tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate)
 
             if b_init:
                 b = tf.get_variable(
@@ -1838,9 +1802,8 @@ class SeparableConv1d(Layer):
             name='seperable1d',
     ):
 
-        super(SeparableConv1d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(SeparableConv1d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "SeparableConv1d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" %
@@ -1950,9 +1913,8 @@ class SeparableConv2d(Layer):
         # if b_init_args is None:
         #     b_init_args = {}
 
-        super(SeparableConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(SeparableConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "SeparableConv2d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" %
             (self.name, n_filter, str(filter_size), str(strides), depth_multiplier, act.__name__)
@@ -2040,9 +2002,8 @@ class GroupConv2d(Layer):
             name='groupconv',
     ):  # Windaway
 
-        super(GroupConv2d, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(GroupConv2d, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
             "GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" %

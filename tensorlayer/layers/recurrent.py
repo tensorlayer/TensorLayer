@@ -151,9 +151,7 @@ class RNNLayer(Layer):
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
 
-        super(RNNLayer, self).__init__(
-            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
-        )
+        super(RNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -344,9 +342,7 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
-        super(BiRNNLayer, self).__init__(
-            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
-        )
+        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -733,9 +729,7 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        super(ConvLSTMLayer, self).__init__(
-            prev_layer=prev_layer, name=name
-        )
+        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
 
@@ -1080,10 +1074,7 @@ class DynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
 
         super(DynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer,
-            cell_init_args=cell_init_args,
-            dynamic_rnn_init_args=dynamic_rnn_init_args,
-            name=name
+            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
 
         self.inputs = prev_layer.outputs
@@ -1345,10 +1336,7 @@ class BiDynamicRNNLayer(Layer):
             name='bi_dyrnn_layer',
     ):
         super(BiDynamicRNNLayer, self).__init__(
-            prev_layer=prev_layer,
-            cell_init_args=cell_init_args,
-            dynamic_rnn_init_args=dynamic_rnn_init_args,
-            name=name
+            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
 
         self.inputs = prev_layer.outputs

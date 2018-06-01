@@ -48,7 +48,9 @@ class TimeDistributedLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', args="layer_args", end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', args="layer_args", end_support_version=1.9
+    )  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
@@ -58,7 +60,10 @@ class TimeDistributedLayer(Layer):
     ):
         super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
-        logging.info("TimeDistributedLayer %s: layer_class:%s layer_args:%s" % (self.name, layer_class.__name__, self.layer_args))
+        logging.info(
+            "TimeDistributedLayer %s: layer_class:%s layer_args:%s" %
+            (self.name, layer_class.__name__, self.layer_args)
+        )
 
         self.inputs = prev_layer.outputs
 

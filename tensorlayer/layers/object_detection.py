@@ -53,7 +53,9 @@ class ROIPoolingLayer(Layer):
             from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
         except Exception as e:
             logging.error(e)
-            logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
+            logging.error(
+                "HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling"
+            )
 
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 

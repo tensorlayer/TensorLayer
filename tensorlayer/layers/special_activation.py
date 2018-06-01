@@ -37,17 +37,11 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            channel_shared=False,
-            a_init=tf.constant_initializer(value=0.0),
-            a_init_args=None,
+            self, prev_layer, channel_shared=False, a_init=tf.constant_initializer(value=0.0), a_init_args=None,
             name="prelu_layer"
     ):
 
-        super(PReluLayer, self).__init__(
-            prev_layer=prev_layer, a_init_args=a_init_args, name=name
-        )
+        super(PReluLayer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
 
         logging.info("PReluLayer %s: channel_shared:%s" % (name, channel_shared))
 

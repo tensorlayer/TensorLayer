@@ -52,17 +52,13 @@ class MultiplexerLayer(Layer):
 
     """
 
-    def __init__(
-        self,
-        layers,
-        name='mux_layer'
-    ):
+    def __init__(self, layers, name='mux_layer'):
         super(MultiplexerLayer, self).__init__(prev_layer=layers, name=name)
 
         self.n_inputs = len(layers)
 
         self.inputs = []
-        
+
         for l in layers:
             self.inputs.append(l.outputs)
 

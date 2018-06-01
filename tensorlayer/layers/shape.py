@@ -37,11 +37,7 @@ class FlattenLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        name='flatten'
-    ):
+    def __init__(self, prev_layer, name='flatten'):
         super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
@@ -76,12 +72,7 @@ class ReshapeLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        shape,
-        name='reshape'
-    ):
+    def __init__(self, prev_layer, shape, name='reshape'):
         super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         self.inputs = prev_layer.outputs
@@ -119,12 +110,7 @@ class TransposeLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-        self,
-        prev_layer,
-        perm,
-        name='transpose'
-    ):
+    def __init__(self, prev_layer, perm, name='transpose'):
 
         super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
