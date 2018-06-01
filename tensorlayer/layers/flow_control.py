@@ -48,17 +48,24 @@ class MultiplexerLayer(Layer):
     >>> network = tl.layers.ReshapeLayer(net_mux, shape=(-1, 800), name='reshape')
     >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
     >>> # output layer
-    >>> network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
+    >>> network = tl.layers.DenseLayer(network, n_units=10, act=None, name='output')
 
     """
 
-    def __init__(self, layers, name='mux_layer'):
+    def __init__(
+        self,
+        layers,
+        name='mux_layer'
+    ):
         super(MultiplexerLayer, self).__init__(prev_layer=layers, name=name)
+
         self.n_inputs = len(layers)
 
         self.inputs = []
+        
         for l in layers:
             self.inputs.append(l.outputs)
+
         try:  # TF1.0
             all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
         except Exception:

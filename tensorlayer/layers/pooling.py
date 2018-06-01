@@ -279,7 +279,6 @@ class MeanPool2d(Layer):
         self.all_layers.append(self.outputs)
 
 
-# def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
 class MaxPool3d(Layer):
     """Max pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
@@ -323,7 +322,7 @@ class MaxPool3d(Layer):
         logging.info(
             "MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
-        # operation (customized)
+
         self.inputs = prev_layer.outputs
 
         self.outputs = tf.layers.max_pooling3d(
@@ -333,7 +332,6 @@ class MaxPool3d(Layer):
         self.all_layers.append(self.outputs)
 
 
-# def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
 class MeanPool3d(Layer):
     """Mean pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 

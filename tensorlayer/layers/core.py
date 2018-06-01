@@ -328,7 +328,9 @@ def initialize_global_variables(sess):
         TensorFlow session.
 
     """
-    assert sess is not None
+    if sess is None:
+        raise AssertionError('The session must be defined')
+
     # try:    # TF12+
     sess.run(tf.global_variables_initializer())
     # except: # TF11
@@ -347,8 +349,20 @@ class Layer(object):
     ----------
     prev_layer : :class:`Layer` or None
         Previous layer (optional), for adding all properties of previous layer(s) to this layer.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    dynamic_rnn_init_args : dictionary
+        The arguments for ``tf.nn.bidirectional_dynamic_rnn``.
+    cell_init_args : dictionary
+        The arguments for the RNN cell initializer.
     a_init_args : dictionary
         The arguments for initializing a custom activation
+    layer_args : dictionary
+        The arguments for the RNN cell initializer.
+    fn_args : dictionary or None
+        The arguments for the lambda function.
     name : str or None
         A unique layer name.
 
@@ -415,9 +429,11 @@ class Layer(object):
         act=None,
         W_init_args=None,
         b_init_args=None,
+        dynamic_rnn_init_args=None,
         cell_init_args=None,
         a_init_args=None,
         layer_args=None,
+        fn_args=None,
         name=None
     ):
 
@@ -426,9 +442,11 @@ class Layer(object):
 
         self.W_init_args = self._argument_dict_checkup(W_init_args)
         self.b_init_args = self._argument_dict_checkup(b_init_args)
+        self.dynamic_rnn_init_args = self._argument_dict_checkup(dynamic_rnn_init_args)
         self.cell_init_args = self._argument_dict_checkup(cell_init_args)
         self.a_init_args = self._argument_dict_checkup(a_init_args)
         self.layer_args = self._argument_dict_checkup(layer_args)
+        self.fn_args = self._argument_dict_checkup(fn_args)
 
         self.act = act if act not in [None, tf.identity] else None
 
@@ -535,7 +553,7 @@ class Layer(object):
     @private_method
     def _apply_activation(self, logits):
         return self.act(logits) if self.act is not None else logits
-        
+
     @private_method
     def _argument_dict_checkup(self, args):
         if not isinstance(args, dict):
@@ -559,12 +577,18 @@ class InputLayer(Layer):
 
     """
 
-    def __init__(self, inputs=None, name='input'):
+    def __init__(
+        self,
+        inputs=None,
+        name='input'
+    ):
 
         super(InputLayer, self).__init__(prev_layer=None, name=name)
+
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
 
         self.outputs = inputs
+
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
@@ -599,15 +623,26 @@ class OneHotInputLayer(Layer):
 
     """
 
-    def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
+    def __init__(
+        self,
+        inputs=None,
+        depth=None,
+        on_value=None,
+        off_value=None,
+        axis=None,
+        dtype=None,
+        name='input'
+    ):
 
         super(OneHotInputLayer, self).__init__(prev_layer=None, name=name)
+
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
 
-        # assert depth != None, "depth is not given"
         if depth is None:
-            logging.info("  [*] depth == None the number of output units is undefined")
+            logging.error("  [*] depth == None the number of output units is undefined")
+
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
+
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
@@ -989,7 +1024,7 @@ class DenseLayer(Layer):
             self,
             prev_layer,
             n_units=100,
-            act=tf.identity,
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -1388,16 +1423,12 @@ class GaussianNoiseLayer(Layer):
             seed=None,
             name='gaussian_noise_layer',
     ):
-        super(GaussianNoiseLayer, self).__init__(
-            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
-        )
+        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
             self.outputs = prev_layer.outputs
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
         else:
             self.inputs = prev_layer.outputs
             logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
@@ -1405,9 +1436,7 @@ class GaussianNoiseLayer(Layer):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
                 self.outputs = self.inputs + noise
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
             self.all_layers.append(self.outputs)
 
 
@@ -1461,7 +1490,7 @@ class DropconnectDenseLayer(Layer):
             prev_layer,
             keep=0.5,
             n_units=100,
-            act=tf.identity,
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,

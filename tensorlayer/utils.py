@@ -104,7 +104,8 @@ def fit(
     thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
 
     """
-    assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
+    if X_train.shape[0] < batch_size:
+        raise AssertionError("Number of training examples should be bigger than the batch size")
 
     if (tensorboard):
         logging.info("Setting up tensorboard ...")

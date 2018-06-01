@@ -68,7 +68,7 @@ class Conv1dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             shape=(5, 1, 5),
             stride=1,
             dilation_rate=1,
@@ -183,7 +183,7 @@ class Conv2dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             shape=(5, 5, 1, 100),
             strides=(1, 1, 1, 1),
             padding='SAME',
@@ -292,7 +292,7 @@ class DeConv2dLayer(Layer):
     ...                            shape=(5, 5, 256, 512),
     ...                            output_shape=(batch_size, 8, 8, 256),
     ...                            strides=(1, 2, 2, 1),
-    ...                            act=tf.identity, name='g/h1/decon2d')
+    ...                            act=None, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
     >>> print(net_h1.outputs._shape)
     ... (64, 8, 8, 256)
@@ -315,7 +315,7 @@ class DeConv2dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             shape=(3, 3, 128, 256),
             output_shape=(1, 256, 256, 128),
             strides=(1, 2, 2, 1),
@@ -354,10 +354,8 @@ class DeConv2dLayer(Layer):
                     tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
                 )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -404,7 +402,7 @@ class Conv3dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
@@ -417,6 +415,7 @@ class Conv3dLayer(Layer):
         super(Conv3dLayer, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
@@ -425,11 +424,11 @@ class Conv3dLayer(Layer):
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name):
-            # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
-            # b = tf.Variable(b_init(shape=[shape[-1]], **b_init_args), name='b_conv')
+
             W = tf.get_variable(
                 name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
@@ -438,12 +437,8 @@ class Conv3dLayer(Layer):
             else:
                 self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None))
 
-        # self.outputs = act( tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b )
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -485,7 +480,7 @@ class DeConv3dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             shape=(2, 2, 2, 128, 256),
             output_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
@@ -507,9 +502,11 @@ class DeConv3dLayer(Layer):
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
@@ -523,10 +520,8 @@ class DeConv3dLayer(Layer):
                     tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
                 )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -604,9 +599,6 @@ class UpSampling2dLayer(Layer):
                     self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
                 )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -681,9 +673,6 @@ class DownSampling2dLayer(Layer):
                     self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
                 )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -743,7 +732,7 @@ class DeformableConv2d(Layer):
             # shape=(3, 3, 1, 100),
             n_filter=32,
             filter_size=(3, 3),
-            act=tf.identity,
+            act=None,
             name='deformable_conv_2d',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -759,6 +748,7 @@ class DeformableConv2d(Layer):
         super(DeformableConv2d, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" %
             (name, n_filter, str(filter_size), act.__name__)
@@ -777,7 +767,9 @@ class DeformableConv2d(Layer):
 
         with tf.variable_scope(name):
             offset = self.offset_layer.outputs
-            assert offset.get_shape()[-1] == 2 * shape[0] * shape[1]
+
+            if offset.get_shape()[-1] != 2 * shape[0] * shape[1]
+                raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * shape[0] * shape[1])
 
             # Grid initialisation
             input_h = int(self.inputs.get_shape()[1])
@@ -824,11 +816,6 @@ class DeformableConv2d(Layer):
                     shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
                 )
 
-        # fixed
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
-
         # add offset_layer properties
         # offset_params = [osparam for osparam in offset_layer.all_params if osparam not in layer.all_params]
         # offset_layers = [oslayer for oslayer in offset_layer.all_layers if oslayer not in layer.all_layers]
@@ -837,7 +824,6 @@ class DeformableConv2d(Layer):
         # self.all_layers.extend(list(offset_layers))
         # self.all_drop.update(dict(offset_layer.all_drop))
 
-        # this layer
         self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([W, b])
@@ -874,7 +860,9 @@ class DeformableConv2d(Layer):
     def _tf_repeat(self, a, repeats):
         """Tensorflow version of np.repeat for 1D"""
         # https://github.com/tensorflow/tensorflow/issues/8521
-        assert len(a.get_shape()) == 1
+        
+        if len(a.get_shape()) != 1:
+            raise AssertionError("This is not a 1D Tensor")
 
         a = tf.expand_dims(a, -1)
         a = tf.tile(a, [1, repeats])
@@ -988,7 +976,7 @@ def atrous_conv1d(
         filter_size=2,
         stride=1,
         dilation=1,
-        act=tf.identity,
+        act=None,
         padding='SAME',
         data_format='NWC',
         W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -1091,7 +1079,7 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=tf.identity, padding='SAME',
+            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=None, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
             W_init_args=None, b_init_args=None, name='atrou2d'
     ):
@@ -1099,6 +1087,7 @@ class AtrousConv2dLayer(Layer):
         super(AtrousConv2dLayer, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" %
             (name, n_filter, filter_size, rate, padding, act.__name__)
@@ -1119,10 +1108,8 @@ class AtrousConv2dLayer(Layer):
             else:
                 self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([filters, b])
         else:
@@ -1163,7 +1150,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     ...                    strides=(1, rescale_factor, rescale_factor, 1),
     ...                    W_init=bilinear_init,
     ...                    padding='SAME',
-    ...                    act=tf.identity, name='g/h1/decon2d')
+    ...                    act=None, name='g/h1/decon2d')
 
     """
     if shape[0] != shape[1]:
@@ -1249,7 +1236,7 @@ class Conv1d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=tf.identity, padding='SAME',
+            self, prev_layer, n_filter=32, filter_size=5, stride=1, dilation_rate=1, act=None, padding='SAME',
             data_format="channels_last", W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
     ):
@@ -1359,7 +1346,7 @@ class Conv2d(Layer):
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
-            act=tf.identity,
+            act=None,
             padding='SAME',
             dilation_rate=(1, 1),
             W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -1527,7 +1514,7 @@ class DeConv2d(Layer):
             strides=(2, 2),
             padding='SAME',
             batch_size=None,  # remove
-            act=tf.identity,
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,  # remove
@@ -1608,7 +1595,7 @@ class DeConv3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=tf.identity,
+            self, prev_layer, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
             name='decnn3d'
     ):
@@ -1705,7 +1692,7 @@ class DepthwiseConv2d(Layer):
             prev_layer,
             shape=(3, 3),
             strides=(1, 1),
-            act=tf.identity,
+            act=None,
             padding='SAME',
             dilation_rate=(1, 1),
             depth_multiplier=1,
@@ -1718,6 +1705,7 @@ class DepthwiseConv2d(Layer):
         super(DepthwiseConv2d, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
@@ -1736,12 +1724,15 @@ class DepthwiseConv2d(Layer):
         if len(strides) == 2:
             strides = [1, strides[0], strides[1], 1]
 
-        assert len(strides) == 4, "len(strides) should be 4."
+        if len(strides) != 4:
+            raise AssertionError("len(strides) should be 4.")
 
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )  # [filter_height, filter_width, in_channels, depth_multiplier]
+
             if b_init:
                 b = tf.get_variable(
                     name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init,
@@ -1755,10 +1746,8 @@ class DepthwiseConv2d(Layer):
                     tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate)
                 )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -1806,7 +1795,7 @@ class SeparableConv1d(Layer):
             n_filter=100,
             filter_size=3,
             strides=1,
-            act=tf.identity,
+            act=None,
             padding='valid',
             data_format='channels_last',
             dilation_rate=1,
@@ -1916,7 +1905,7 @@ class SeparableConv2d(Layer):
             n_filter=100,
             filter_size=(3, 3),
             strides=(1, 1),
-            act=tf.identity,
+            act=None,
             padding='valid',
             data_format='channels_last',
             dilation_rate=(1, 1),
@@ -2024,7 +2013,7 @@ class GroupConv2d(Layer):
             filter_size=(3, 3),
             strides=(2, 2),
             n_group=2,
-            act=tf.identity,
+            act=None,
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
@@ -2036,6 +2025,7 @@ class GroupConv2d(Layer):
         super(GroupConv2d, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), n_group, padding, act.__name__)
@@ -2051,11 +2041,13 @@ class GroupConv2d(Layer):
                 name='W', shape=[filter_size[0], filter_size[1], channels / n_group, n_filter], initializer=W_init,
                 dtype=LayersConfig.tf_dtype, trainable=True, **W_init_args
             )
+
             if b_init:
                 bi = tf.get_variable(
                     name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True,
                     **b_init_args
                 )
+
             if n_group == 1:
                 conv = groupConv(self.inputs, We)
             else:
@@ -2063,14 +2055,14 @@ class GroupConv2d(Layer):
                 weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
                 convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
                 conv = tf.concat(axis=3, values=convGroups)
+
             if b_init:
                 conv = tf.add(conv, bi, name='add')
 
             self.outputs = act(conv)
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([We, bi])
         else:

@@ -72,7 +72,7 @@ class SubpixelConv2d(Layer):
         prev_layer,
         scale=2,
         n_out_channel=None,
-        act=tf.identity,
+        act=None,
         name='subpixel_conv2d'
     ):
 
@@ -149,7 +149,7 @@ class SubpixelConv1d(Layer):
         self,
         prev_layer,
         scale=2,
-        act=tf.identity,
+        act=None,
         name='subpixel_conv1d'
     ):
 

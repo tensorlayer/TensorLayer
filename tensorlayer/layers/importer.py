@@ -64,20 +64,17 @@ class LambdaLayer(Layer):
             name='lambda_layer',
     ):
 
-        super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(LambdaLayer, self).__init__(prev_layer=prev_layer, fn_args=fn_args, name=name)
 
         logging.info("LambdaLayer  %s" % name)
 
         self.inputs = prev_layer.outputs
 
-        if fn_args is None:
-            fn_args = {}
-
-        assert prev_layer is not None
-        assert fn is not None
+        if fn is None:
+            raise AssertionError("The `fn` argument cannot be None")
 
         with tf.variable_scope(name) as vs:
-            self.outputs = fn(self.inputs, **fn_args)
+            self.outputs = fn(self.inputs, **self.fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers.append(self.outputs)

@@ -104,7 +104,7 @@ class BatchNormLayer(Layer):
             prev_layer,
             decay=0.9,
             epsilon=0.00001,
-            act=tf.identity,
+            act=None,
             is_train=False,
             beta_init=tf.zeros_initializer,
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
@@ -220,32 +220,34 @@ class InstanceNormLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             epsilon=1e-5,
             name='instan_norm',
     ):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
         logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
 
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+
             scale = tf.get_variable(
                 'scale', [self.inputs.get_shape()[-1]],
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
             )
+
             offset = tf.get_variable(
                 'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
                 dtype=LayersConfig.tf_dtype
             )
+
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
-            self.outputs = act(self.outputs)
+            self.outputs = self.act(self.outputs)
+
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -271,7 +273,7 @@ class LayerNormLayer(Layer):
             prev_layer,
             center=True,
             scale=True,
-            act=tf.identity,
+            act=None,
             reuse=None,
             variables_collections=None,
             outputs_collections=None,
@@ -281,9 +283,7 @@ class LayerNormLayer(Layer):
             name='layernorm'
     ):
 
-        super(LayerNormLayer, self).__init__(
-            prev_layer=prev_layer, act=act, name=name
-        )
+        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info("LayerNormLayer %s: act:%s" % (name, act.__name__))
 
@@ -321,10 +321,8 @@ class LayerNormLayer(Layer):
                     begin_params_axis=begin_params_axis,
                     scope='var',
                 )
+
                 variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
