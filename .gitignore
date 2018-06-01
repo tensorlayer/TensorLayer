@@ -1,6 +1,7 @@
 *.gz
 *.npz
 *.pyc
+*.swp
 *~
 
 .DS_Store

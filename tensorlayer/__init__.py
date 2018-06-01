@@ -29,6 +29,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from . import cost
     from . import distributed
     from . import files
+    from . import graph
     from . import iterate
     from . import layers
     from . import tl_logging as logging
