@@ -14,6 +14,7 @@ except ImportError:
 
 
 class Layer_Pooling_Test(CustomTestCase):
+
     @classmethod
     def setUpClass(cls):
 
