@@ -210,9 +210,9 @@ class RNNLayer(Layer):
         outputs = []
 
         if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **cell_init_args)
+            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args)
         else:
-            self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
+            self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
 
         if initial_state is None:
             self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)  #dtype=tf.float32)  # 1.2.3
@@ -1116,7 +1116,7 @@ class DynamicRNNLayer(Layer):
         self.batch_size = batch_size
 
         # Creats the cell function
-        # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args) # HanSheng
+        # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
         rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
 
         # Apply dropout
@@ -1195,7 +1195,7 @@ class DynamicRNNLayer(Layer):
                 # dtype=tf.float64,
                 sequence_length=sequence_length,
                 initial_state=self.initial_state,
-                **dynamic_rnn_init_args
+                **self.dynamic_rnn_init_args
             )
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
@@ -1379,8 +1379,8 @@ class BiDynamicRNNLayer(Layer):
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             # Creats the cell function
-            # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args) # HanSheng
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+            # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
+            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
 
             # Apply dropout
             if dropout:

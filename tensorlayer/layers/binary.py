@@ -159,7 +159,7 @@ class BinaryDenseLayer(Layer):
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
             # W = tl.act.sign(W)    # dont update ...
             W = quantize(W)
@@ -172,11 +172,11 @@ class BinaryDenseLayer(Layer):
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                     )
 
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
 
@@ -298,7 +298,7 @@ class BinaryConv2d(Layer):
         with tf.variable_scope(name):
 
             W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
             W = quantize(W)
@@ -311,7 +311,7 @@ class BinaryConv2d(Layer):
             if b_init:
 
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -319,6 +319,7 @@ class BinaryConv2d(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -386,7 +387,7 @@ class TernaryDenseLayer(Layer):
         with tf.variable_scope(name):
 
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
             # W = tl.act.sign(W)    # dont update ...
@@ -401,10 +402,10 @@ class TernaryDenseLayer(Layer):
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
 
@@ -526,7 +527,7 @@ class TernaryConv2d(Layer):
         with tf.variable_scope(name):
 
             W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
             alpha = _compute_alpha(W)
@@ -542,7 +543,7 @@ class TernaryConv2d(Layer):
             if b_init:
 
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -622,7 +623,7 @@ class DorefaDenseLayer(Layer):
         with tf.variable_scope(name):
 
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
             # W = tl.act.sign(W)    # dont update ...
             W = _quantize_weight(W, bitW)
@@ -636,11 +637,11 @@ class DorefaDenseLayer(Layer):
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                     )
 
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
                 # self.outputs = xnor_gemm(self.inputs, W) + b # TODO
@@ -763,7 +764,7 @@ class DorefaConv2d(Layer):
         strides = (1, strides[0], strides[1], 1)
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
             W = _quantize_weight(W, bitW)
             self.inputs = _quantize_active(_cabs(self.inputs), bitA)
@@ -775,8 +776,9 @@ class DorefaConv2d(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
+
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
 
             self.outputs = self._apply_activation(self.outputs)
