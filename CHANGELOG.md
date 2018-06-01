@@ -121,10 +121,15 @@ To release a new version, please update the changelog as followed:
 - Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
 - Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
 - All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
+- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
+- argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
 
 ### Deprecated
+- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
 
 ### Removed
+- `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
+- `tl.identity` is removed, not used anymore and deprecated for a long time (by @DEKHTIARJonathan in #667)
 
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
@@ -135,6 +140,7 @@ To release a new version, please update the changelog as followed:
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 - All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
+- Duplicated code removed when bias was used (by @DEKHTIARJonathan in #667)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
