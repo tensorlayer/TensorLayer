@@ -78,9 +78,13 @@ To release a new version, please update the changelog as followed:
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
-- Docker:
+- Docker:  
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
-  - Containers built in the following configurations: py2+cpu, py2+gpu, py3+cpu, and py3+gpu (by @DEKHTIARJonathan in #648)
+  - Containers built in the following configurations (by @DEKHTIARJonathan in #648): 
+    - py2 + cpu
+    - py2 + gpu
+    - py3 + cpu
+    - py3 + gpu 
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
@@ -157,9 +161,13 @@ To release a new version, please update the changelog as followed:
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
-- Docker:
+- Docker: 
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
-  - Containers built in the following configurations: py2+cpu, py2+gpu, py3+cpu, and py3+gpu (by @DEKHTIARJonathan in #648)
+  - Containers built in the following configurations (by @DEKHTIARJonathan in #648): 
+    - py2 + cpu
+    - py2 + gpu
+    - py3 + cpu
+    - py3 + gpu 
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
