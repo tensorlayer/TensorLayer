@@ -38,11 +38,13 @@ import tensorlayer as tl
 
 slim = tf.contrib.slim
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
     )
+
+MODEL_PATH = os.path.join("models", 'inception_v3.ckpt')
 
 
 def load_image(path):
@@ -58,7 +60,7 @@ def load_image(path):
     xx = int((img.shape[1] - short_edge) / 2)
     crop_img = img[yy:yy + short_edge, xx:xx + short_edge]
     # resize to 299, 299
-    resized_img = skimage.transform.resize(crop_img, (299, 299))
+    resized_img = skimage.transform.resize(crop_img, (299, 299), anti_aliasing=False)
     return resized_img
 
 
@@ -89,7 +91,7 @@ def print_prob(prob):
 #                                     name='alexnet_v2'  # <-- the name should be the same with the ckpt model
 #                                     )
 # sess = tf.InteractiveSession()
-# # sess.run(tf.initialize_all_variables())
+# # sess.run(tf.global_variables_initializer())
 # tl.layers.initialize_global_variables(sess)
 # network.print_params()
 
@@ -122,15 +124,15 @@ sess = tf.InteractiveSession()
 network.print_params(False)
 
 saver = tf.train.Saver()
-if not os.path.isfile("inception_v3.ckpt"):
+if not os.path.isfile(MODEL_PATH):
     raise Exception(
         "Please download inception_v3 ckpt from https://github.com/tensorflow/models/tree/master/research/slim"
     )
 
 try:  # TF12+
-    saver.restore(sess, "./inception_v3.ckpt")
+    saver.restore(sess, MODEL_PATH)
 except Exception:  # TF11
-    saver.restore(sess, "inception_v3.ckpt")
+    saver.restore(sess, MODEL_PATH)
 print("Model Restored")
 
 y = network.outputs

@@ -27,6 +27,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from . import activation
     from . import array_ops
     from . import cost
+    from . import decorators
     from . import distributed
     from . import files
     from . import iterate

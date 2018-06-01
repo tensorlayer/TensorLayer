@@ -150,7 +150,7 @@ data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 # print("img_batch   : %s" % img_batch._shape)
 # print("label_batch : %s" % label_batch._shape)
 #
-# init = tf.initialize_all_variables()
+# init = tf.global_variables_initializer()
 # with tf.Session() as sess:
 #     sess.run(init)
 #     coord = tf.train.Coordinator()

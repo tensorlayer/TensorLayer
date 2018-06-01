@@ -120,7 +120,7 @@ def customized_clean_str(string):
 
 
 def customized_read_words(input_fpath):  #, dictionary):
-    with open(input_fpath, "r") as f:
+    with open(input_fpath, "r", encoding="utf8") as f:
         words = f.read()
     # Clean the data
     words = customized_clean_str(words)
@@ -155,7 +155,7 @@ def main_restore_embedding_layer():
 
     emb_net = tl.layers.EmbeddingInputlayer(x, vocabulary_size, embedding_size, name='emb')
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
     tl.files.assign_params(sess, [load_params[0]], emb_net)
@@ -369,5 +369,3 @@ if __name__ == '__main__':
 
     # How to generate text from a given context
     main_lstm_generate_text()
-
-#
