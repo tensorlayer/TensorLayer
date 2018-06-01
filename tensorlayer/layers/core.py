@@ -1026,8 +1026,6 @@ class DenseLayer(Layer):
 
         n_in = int(self.inputs.get_shape()[-1])
 
-        print("########## %s ##########" % self.W_init_args)
-
         with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
@@ -1510,7 +1508,7 @@ class DropconnectDenseLayer(Layer):
 
             W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
 
-            self.outputs = self._apply_activation(f.matmul(self.inputs, W_dropcon) + b)
+            self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.append(self.outputs)

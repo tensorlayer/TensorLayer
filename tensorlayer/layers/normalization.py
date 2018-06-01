@@ -245,7 +245,7 @@ class InstanceNormLayer(Layer):
             )
 
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
-            self.outputs = self.act(self.outputs)
+            self.outputs = self._apply_activation(self.outputs)
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 

@@ -156,7 +156,7 @@ class SubpixelConv1d(Layer):
         self.all_layers.append(self.outputs)
 
     @private_method
-    def _PS(I, r):
+    def _PS(self, I, r):
         X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
         X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
         X = tf.transpose(X, [2, 1, 0])

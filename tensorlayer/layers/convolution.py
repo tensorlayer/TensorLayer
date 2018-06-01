@@ -1260,7 +1260,7 @@ class Conv1d(Layer):
         self.inputs = prev_layer.outputs
 
         if tf.__version__ > '1.3':
-            _conv1d = tf.layers.Conv1d(
+            _conv1d = tf.layers.Conv1D(
                 filters=n_filter, kernel_size=filter_size, strides=stride, padding=padding, data_format=data_format,
                 dilation_rate=dilation_rate, activation=self.act, use_bias=(True if b_init else False),
                 kernel_initializer=W_init, bias_initializer=b_init, name=name
@@ -1507,8 +1507,8 @@ class DeConv2d(Layer):
             act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # remove
-            b_init_args=None,  # remove
+            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='decnn2d'
     ):
         super(DeConv2d, self
@@ -1538,26 +1538,6 @@ class DeConv2d(Layer):
 
         else:
             raise RuntimeError("please update TF > 1.3 or downgrade TL < 1.8.4")
-            # if batch_size is None:
-            #     #     batch_size = tf.shape(net.outputs)[0]
-            #     fixed_batch_size = prev_layer.outputs.get_shape().with_rank_at_least(1)[0]
-            #     if fixed_batch_size.value:
-            #         batch_size = fixed_batch_size.value
-            #     else:
-            #         from tensorflow.python.ops import array_ops
-            #         batch_size = array_ops.shape(prev_layer.outputs)[0]
-            # return DeConv2dLayer(
-            #     prev_layer=prev_layer,
-            #     act=act,
-            #     shape=(filter_size[0], filter_size[1], n_filter, int(prev_layer.outputs.get_shape()[-1])),
-            #     output_shape=(batch_size, int(out_size[0]), int(out_size[1]), n_filter),
-            #     strides=(1, strides[0], strides[1], 1),
-            #     padding=padding,
-            #     W_init=W_init,
-            #     b_init=b_init,
-            #     W_init_args=W_init_args,
-            #     b_init_args=b_init_args,
-            #     name=name)
 
 
 class DeConv3d(Layer):
@@ -1581,6 +1561,10 @@ class DeConv3d(Layer):
         The initializer for the weight matrix.
     b_init : initializer or None
         The initializer for the bias vector. If None, skip bias.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer (For TF < 1.3).
+    b_init_args : dictionary
+        The arguments for the bias vector initializer (For TF < 1.3).
     name : str
         A unique layer name.
 
@@ -1588,8 +1572,17 @@ class DeConv3d(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='SAME', act=None,
-            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            self, 
+            prev_layer, 
+            n_filter=32, 
+            filter_size=(3, 3, 3), 
+            strides=(2, 2, 2), 
+            padding='SAME', 
+            act=None,
+            W_init=tf.truncated_normal_initializer(stddev=0.02), 
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='decnn3d'
     ):
 
@@ -1805,8 +1798,8 @@ class SeparableConv1d(Layer):
             # pointwise_constraint=None,
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
+            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='seperable1d',
     ):
 
@@ -1912,8 +1905,8 @@ class SeparableConv2d(Layer):
             # pointwise_constraint=None,
             # W_init=tf.truncated_normal_initializer(stddev=0.1),
             # b_init=tf.constant_initializer(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
+            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='seperable',
     ):
         # if W_init_args is None:
@@ -2005,8 +1998,8 @@ class GroupConv2d(Layer):
             padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
+            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
             name='groupconv',
     ):  # Windaway
 
@@ -2052,7 +2045,7 @@ class GroupConv2d(Layer):
         self.all_layers.append(self.outputs)
 
         if b_init:
-            self.all_params.extend([We, bi])
+            self.all_params.extend([We, b])
         else:
             self.all_params.append(We)
 
