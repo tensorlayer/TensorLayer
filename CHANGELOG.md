@@ -89,6 +89,8 @@ To release a new version, please update the changelog as followed:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
+- Setup:
+  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (by @DEKHTIARJonathan in #666)
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
