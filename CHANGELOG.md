@@ -125,7 +125,10 @@ To release a new version, please update the changelog as followed:
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 - All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
-
+- Tutorial:
+  - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
+  - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
+  
 ### Security
 
 ### Dependencies Update
