@@ -419,6 +419,7 @@ class Layer(object):
     # Added to allow auto-completion
     inputs = None
     outputs = None
+
     all_layers = []
     all_params = []
     all_drop = {}
@@ -535,6 +536,7 @@ class Layer(object):
         net_new.all_layers.append(net_new.outputs)
         net_new.all_params = list(self.all_params)
         net_new.all_drop = dict(self.all_drop)
+        
         return net_new
 
     def __setitem__(self, key, item):
@@ -562,7 +564,7 @@ class Layer(object):
             logging.error(err_msg)
             raise AssertionError(err_msg)
 
-        return args if args is not None and else {}
+        return args if args is not None else {}
 
 
 class InputLayer(Layer):

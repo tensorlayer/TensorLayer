@@ -779,7 +779,7 @@ class DeformableConv2d(Layer):
         with tf.variable_scope(name):
             offset = self.offset_layer.outputs
 
-            if offset.get_shape()[-1] != 2 * shape[0] * shape[1]
+            if offset.get_shape()[-1] != 2 * shape[0] * shape[1]:
                 raise AssertionError("offset.get_shape()[-1] is not equal to: %d" % 2 * shape[0] * shape[1])
 
             # Grid initialisation
@@ -1119,9 +1119,8 @@ class AtrousConv2dLayer(Layer):
                     name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
-            else:
 
-        self.all_layers.append(self.outputs)
+            self.all_layers.append(self.outputs)
 
         if b_init:
             self.all_params.extend([filters, b])
