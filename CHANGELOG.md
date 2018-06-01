@@ -76,6 +76,8 @@ To release a new version, please update the changelog as followed:
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
   - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
+- Decorator:
+  - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #666)
 - Docker:
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
   - Containers built in the following configurations: py2+cpu, py2+gpu, py3+cpu, and py3+gpu (by @DEKHTIARJonathan in #648)
@@ -93,6 +95,7 @@ To release a new version, please update the changelog as followed:
   - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
   - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
+  - `test_decorators.py` added (by @DEKHTIARJonathan in #666)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 
@@ -111,6 +114,7 @@ To release a new version, please update the changelog as followed:
 - README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
 - Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
 - Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
+- All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #666)
 
 ### Deprecated
 
