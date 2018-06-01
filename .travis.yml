@@ -8,6 +8,7 @@ addons:
 branches:
   only:
     - master
+    - /\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
   - "2.7"
@@ -46,7 +47,7 @@ env:
 
 install:
   - pip install tensorflow==$_TF_VERSION
-  - pip install -e .[db,dev,doc,extra,test]
+  - pip install -e .[all]
 
 script:
   # units test
