@@ -10,7 +10,4 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 from .deprecation import deprecated_alias
 from .private_method import private_method
 
-__all__ = [
-    'deprecated_alias',
-    'private_method'
-]
+__all__ = ['deprecated_alias', 'private_method']
