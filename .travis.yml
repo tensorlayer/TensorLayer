@@ -8,6 +8,7 @@ addons:
 branches:
   only:
     - master
+    - /\d+\.\d+(\.\d+)?(\S*)?$/
 
 python:
   - "2.7"
