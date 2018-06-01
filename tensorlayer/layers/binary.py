@@ -311,7 +311,8 @@ class BinaryConv2d(Layer):
             if b_init:
 
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -543,7 +544,8 @@ class TernaryConv2d(Layer):
             if b_init:
 
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -776,7 +778,8 @@ class DorefaConv2d(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')

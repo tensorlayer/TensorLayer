@@ -101,7 +101,8 @@ class Conv1dLayer(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -221,7 +222,8 @@ class Conv2dLayer(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -349,7 +351,8 @@ class DeConv2dLayer(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
 
@@ -433,7 +436,8 @@ class Conv3dLayer(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -515,7 +519,8 @@ class DeConv3dLayer(Layer):
 
             if b_init:
                 b = tf.get_variable(
-                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
@@ -812,8 +817,7 @@ class DeformableConv2d(Layer):
                 _tensor = tf.add(_tensor, b, name='add_bias')
 
             self.outputs = tf.reshape(
-                tensor=self._apply_activation(_tensor),
-                shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
+                tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
             )
 
         # add offset_layer properties
