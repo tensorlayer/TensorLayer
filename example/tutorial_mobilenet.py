@@ -17,6 +17,8 @@ from tensorlayer.layers import (
     BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
 )
 
+MODEL_PATH = os.path.join("models", "mobilenet.npz")
+
 
 def conv_block(n, n_filter, filter_size=(3, 3), strides=(1, 1), is_train=False, name='conv_block'):
     # ref: https://github.com/keras-team/keras/blob/master/keras/applications/mobilenet.py
@@ -101,10 +103,10 @@ n.print_params(False)
 sess = tf.InteractiveSession()
 # tl.layers.initialize_global_variables(sess)
 
-if not os.path.isfile("mobilenet.npz"):
+if not os.path.isfile(MODEL_PATH):
     raise Exception("Please download mobilenet.npz from : https://github.com/tensorlayer/pretrained-models")
 
-tl.files.load_and_assign_npz(sess=sess, name='mobilenet.npz', network=n)
+tl.files.load_and_assign_npz(sess=sess, name=MODEL_PATH, network=n)
 
 img = tl.vis.read_image('data/tiger.jpeg')
 img = tl.prepro.imresize(img, (224, 224)) / 255
@@ -114,4 +116,4 @@ prob = sess.run(softmax, feed_dict={x: [img]})[0]
 
 print("  End time : %.5ss" % (time.time() - start_time))
 print('Predicted :', decode_predictions([prob], top=3)[0])
-# tl.files.save_npz(n.all_params, name='mobilenet.npz', sess=sess)
+# tl.files.save_npz(n.all_params, name=MODEL_PATH, sess=sess)

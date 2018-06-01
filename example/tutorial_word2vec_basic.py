@@ -37,6 +37,7 @@ https://www.tensorflow.org/versions/r0.9/tutorials/word2vec/index.html#vector-re
 
 """
 
+import sys
 import time
 
 import numpy as np
@@ -45,9 +46,18 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 
 import tensorlayer as tl
 
-flags = tf.flags
-flags.DEFINE_string("model", "one", "A type of model.")
+flags = tf.app.flags
+
+flags.DEFINE_string("model", 'one', "The type of model that will be used.")
+
+if (tf.VERSION >= '1.5'):
+    # parse flags
+    flags.FLAGS(sys.argv, known_only=True)
+    flags.ArgumentParser()
+
 FLAGS = flags.FLAGS
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
 def main_word2vec_basic():
@@ -216,8 +226,7 @@ def main_word2vec_basic():
         # Load from ckpt or npz file
         # saver = tf.train.Saver()
         # saver.restore(sess, model_file_name+'.ckpt')
-        load_params = tl.files.load_npz(name=model_file_name + '.npz')
-        tl.files.assign_params(sess, load_params, emb_net)
+        tl.files.load_and_assign_npz_dict(name=model_file_name + '.npz', sess=sess)
 
     emb_net.print_params(False)
     emb_net.print_layers()
@@ -263,7 +272,7 @@ def main_word2vec_basic():
             # Save to ckpt or npz file
             # saver = tf.train.Saver()
             # save_path = saver.save(sess, model_file_name+'.ckpt')
-            tl.files.save_npz(emb_net.all_params, name=model_file_name + '.npz')
+            tl.files.save_npz_dict(emb_net.all_params, name=model_file_name + '.npz', sess=sess)
             tl.files.save_any_to_npy(
                 save_dict={
                     'data': data,
