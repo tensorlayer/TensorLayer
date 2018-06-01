@@ -227,7 +227,10 @@ class InstanceNormLayer(Layer):
     ):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "InstanceNormLayer %s: epsilon:%f act:%s" %
+            (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -276,7 +279,9 @@ class LayerNormLayer(Layer):
 
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info("LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 

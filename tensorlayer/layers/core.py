@@ -432,7 +432,7 @@ class Layer(object):
 
         if name is None:
             raise ValueError('Layer must have a name.')
-        
+
         self.W_init_args = self._argument_dict_checkup(W_init_args)
         self.b_init_args = self._argument_dict_checkup(b_init_args)
         self.dynamic_rnn_init_args = self._argument_dict_checkup(dynamic_rnn_init_args)
@@ -1014,9 +1014,12 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
-        super(DenseLayer, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(DenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info("DenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "DenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
         self.n_units = n_units
@@ -1485,7 +1488,10 @@ class DropconnectDenseLayer(Layer):
         super(DropconnectDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "DropconnectDenseLayer %s: %d %s" %
+            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 

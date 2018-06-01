@@ -144,7 +144,10 @@ class BinaryDenseLayer(Layer):
     ):
         super(BinaryDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-        logging.info("BinaryDenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "BinaryDenseLayer  %s: %d %s" %
+            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -274,8 +277,10 @@ class BinaryConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
-            (name, n_filter, str(filter_size), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         self.inputs = prev_layer.outputs
@@ -371,7 +376,10 @@ class TernaryDenseLayer(Layer):
         super(TernaryDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "TernaryDenseLayer  %s: %d %s" %
+            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -504,8 +512,10 @@ class TernaryConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
-            (name, n_filter, str(filter_size), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         if len(strides) != 2:
@@ -610,7 +620,10 @@ class DorefaDenseLayer(Layer):
     ):
         super(DorefaDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-        logging.info("DorefaDenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
+        logging.info(
+            "DorefaDenseLayer  %s: %d %s" %
+            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -746,8 +759,10 @@ class DorefaConv2d(Layer):
         super(DorefaConv2d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
-            "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
-            (name, n_filter, str(filter_size), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         self.inputs = prev_layer.outputs
