@@ -30,7 +30,7 @@ class Layer_Flow_Control_Test(unittest.TestCase):
         network = tl.layers.ReshapeLayer(net_mux, shape=(-1, 800), name='reshape')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
         # output layer
-        network = tl.layers.DenseLayer(network, n_units=10, , name='output')
+        network = tl.layers.DenseLayer(network, n_units=10, name='output')
 
         network.print_layers()
         network.print_params(False)
