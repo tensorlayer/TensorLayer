@@ -6,7 +6,7 @@ from tensorflow.python.util.deprecation import deprecated
 from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import *
 
-from tensorlayer.deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'LambdaLayer',

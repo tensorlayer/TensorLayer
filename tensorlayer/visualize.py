@@ -13,7 +13,7 @@ try:
     import cv2
 except ImportError:
     logging.warn(
-        'OpenCV Library is not installed.'
+        'OpenCV Library is not installed. '
         'The function `tl.visualize.draw_boxes_and_labels_to_image` will not be able to work.'
     )
 

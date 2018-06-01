@@ -15,7 +15,7 @@ from tensorlayer import iterate
 from tensorlayer import utils
 from tensorlayer import visualize
 
-from tensorlayer.deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'LayersConfig',
