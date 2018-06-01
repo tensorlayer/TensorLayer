@@ -41,11 +41,20 @@ source venv/bin/activate
 # Windows:
 venv\Scripts\activate.bat
 
+# ============= IF TENSORFLOW IS ALREADY INSTALLED ============= #
+pip install -e .[all]
+
+# ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
+
 # for a machine **without** an NVIDIA GPU
 pip install -e .[tf_cpu,db,dev,doc,extra,test]
+# or
+pip install -e .[all_cpu]
 
 # for a machine **with** an NVIDIA GPU
 pip install -e .[tf_gpu,db,dev,doc,extra,test]
+# or
+pip install -e .[all_gpu]
 ```
 
 Launching the unittest:

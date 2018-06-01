@@ -68,6 +68,10 @@ extras_require = {
 	'test': req_file("requirements_test.txt")
 }
 
+extras_require['all'] = sum([extras_require.get(key) for key in ['db', 'dev', 'doc', 'extra', 'test']], list())
+extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_cpu']], list())
+extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_gpu']], list())
+
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")

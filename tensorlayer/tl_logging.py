@@ -36,7 +36,7 @@ def _get_logger():
     global _logger
 
     # Use double-checked locking to avoid taking lock unnecessarily.
-    if _logger:
+    if _logger is not None:
         return _logger
 
     _logger_lock.acquire()
