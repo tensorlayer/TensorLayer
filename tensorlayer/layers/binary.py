@@ -142,15 +142,12 @@ class BinaryDenseLayer(Layer):
             b_init_args=None,
             name='binary_dense',
     ):
-        super(BinaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BinaryDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info("BinaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -269,7 +266,9 @@ class BinaryConv2d(Layer):
             # data_format=None,
             name='binary_cnn2d',
     ):
-        super(BinaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(BinaryConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
@@ -277,12 +276,6 @@ class BinaryConv2d(Layer):
 
         self.inputs = prev_layer.outputs
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
@@ -366,15 +359,12 @@ class TernaryDenseLayer(Layer):
             b_init_args=None,
             name='ternary_dense',
     ):
-        super(TernaryDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(TernaryDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -495,7 +485,9 @@ class TernaryConv2d(Layer):
             # data_format=None,
             name='ternary_cnn2d',
     ):
-        super(TernaryConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(TernaryConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
@@ -506,15 +498,6 @@ class TernaryConv2d(Layer):
 
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
-
-        if W_init_args is None:
-            W_init_args = {}
-
-        if b_init_args is None:
-            b_init_args = {}
-
-        if act is None:
-            act = tf.identity
 
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
@@ -613,15 +596,12 @@ class DorefaDenseLayer(Layer):
             b_init_args=None,
             name='dorefa_dense',
     ):
-        super(DorefaDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DorefaDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info("DorefaDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -746,20 +726,15 @@ class DorefaConv2d(Layer):
             # data_format=None,
             name='dorefa_cnn2d',
     ):
-        super(DorefaConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(DorefaConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")

@@ -6,6 +6,7 @@ from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import private_method
 
 __all__ = [
     'Conv1dLayer',
@@ -79,20 +80,14 @@ class Conv1dLayer(Layer):
             b_init_args=None,
             name='cnn1d',
     ):
-        super(Conv1dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Conv1dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (name, str(shape), str(stride), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if act is None:
-            act = tf.identity
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         with tf.variable_scope(name):
             W = tf.get_variable(
@@ -200,20 +195,15 @@ class Conv2dLayer(Layer):
             data_format=None,
             name='cnn_layer',
     ):
-        super(Conv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Conv2dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         with tf.variable_scope(name):
             W = tf.get_variable(
@@ -336,20 +326,15 @@ class DeConv2dLayer(Layer):
             b_init_args=None,
             name='decnn2d_layer',
     ):
-        super(DeConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DeConv2dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(output_shape), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         # logging.info("  DeConv2dLayer: Untested")
         with tf.variable_scope(name):
@@ -429,20 +414,15 @@ class Conv3dLayer(Layer):
             b_init_args=None,
             name='cnn3d_layer',
     ):
-        super(Conv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(Conv3dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         with tf.variable_scope(name):
             # W = tf.Variable(W_init(shape=shape, **W_init_args), name='W_conv')
@@ -516,20 +496,15 @@ class DeConv3dLayer(Layer):
             b_init_args=None,
             name='decnn3d_layer',
     ):
-        super(DeConv3dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DeConv3dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(output_shape), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         with tf.variable_scope(name):
             W = tf.get_variable(
@@ -593,6 +568,7 @@ class UpSampling2dLayer(Layer):
             name='upsample2d_layer',
     ):
         super(UpSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" %
             (name, is_scale, size, method, align_corners)
@@ -669,6 +645,7 @@ class DownSampling2dLayer(Layer):
             name='downsample2d_layer',
     ):
         super(DownSampling2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" %
             (name, is_scale, size, method, align_corners)
@@ -684,11 +661,13 @@ class DownSampling2dLayer(Layer):
                 size_h = size[0] * int(self.inputs.get_shape()[0])
                 size_w = size[1] * int(self.inputs.get_shape()[1])
                 size = [int(size_h), int(size_w)]
+
         elif len(self.inputs.get_shape()) == 4:
             if is_scale:
                 size_h = size[0] * int(self.inputs.get_shape()[1])
                 size_w = size[1] * int(self.inputs.get_shape()[2])
                 size = [int(size_h), int(size_w)]
+
         else:
             raise Exception("Do not support shape %s" % self.inputs.get_shape())
 
@@ -777,141 +756,9 @@ class DeformableConv2d(Layer):
                 "Deformable CNN layer requires tensrflow 1.4 or higher version | current version %s" % tf.__version__
             )
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-
-        def _to_bc_h_w(x, x_shape):
-            """(b, h, w, c) -> (b*c, h, w)"""
-            x = tf.transpose(x, [0, 3, 1, 2])
-            x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
-            return x
-
-        def _to_b_h_w_n_c(x, x_shape):
-            """(b*c, h, w, n) -> (b, h, w, n, c)"""
-            x = tf.reshape(x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
-            x = tf.transpose(x, [0, 2, 3, 4, 1])
-            return x
-
-        def tf_flatten(a):
-            """Flatten tensor"""
-            return tf.reshape(a, [-1])
-
-        def _get_vals_by_coords(inputs, coords, idx, out_shape):
-            indices = tf.stack([idx, tf_flatten(coords[:, :, :, :, 0]), tf_flatten(coords[:, :, :, :, 1])], axis=-1)
-            vals = tf.gather_nd(inputs, indices)
-            vals = tf.reshape(vals, out_shape)
-            return vals
-
-        def _tf_repeat(a, repeats):
-            """Tensorflow version of np.repeat for 1D"""
-            # https://github.com/tensorflow/tensorflow/issues/8521
-            assert len(a.get_shape()) == 1
-
-            a = tf.expand_dims(a, -1)
-            a = tf.tile(a, [1, repeats])
-            a = tf_flatten(a)
-            return a
-
-        def _tf_batch_map_coordinates(inputs, coords):
-            """Batch version of tf_map_coordinates
-
-            Only supports 2D feature maps
-
-            Parameters
-            ----------
-            inputs : ``tf.Tensor``
-                shape = (b*c, h, w)
-            coords : ``tf.Tensor``
-                shape = (b*c, h, w, n, 2)
-
-            Returns
-            -------
-            ``tf.Tensor``
-                A Tensor with the shape as (b*c, h, w, n)
-
-            """
-            input_shape = inputs.get_shape()
-            coords_shape = coords.get_shape()
-            batch_channel = tf.shape(inputs)[0]
-            input_h = int(input_shape[1])
-            input_w = int(input_shape[2])
-            kernel_n = int(coords_shape[3])
-            n_coords = input_h * input_w * kernel_n
-
-            coords_lt = tf.cast(tf.floor(coords), 'int32')
-            coords_rb = tf.cast(tf.ceil(coords), 'int32')
-            coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
-            coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
-
-            idx = _tf_repeat(tf.range(batch_channel), n_coords)
-
-            vals_lt = _get_vals_by_coords(inputs, coords_lt, idx, (batch_channel, input_h, input_w, kernel_n))
-            vals_rb = _get_vals_by_coords(inputs, coords_rb, idx, (batch_channel, input_h, input_w, kernel_n))
-            vals_lb = _get_vals_by_coords(inputs, coords_lb, idx, (batch_channel, input_h, input_w, kernel_n))
-            vals_rt = _get_vals_by_coords(inputs, coords_rt, idx, (batch_channel, input_h, input_w, kernel_n))
-
-            coords_offset_lt = coords - tf.cast(coords_lt, 'float32')
-
-            vals_t = vals_lt + (vals_rt - vals_lt) * coords_offset_lt[:, :, :, :, 0]
-            vals_b = vals_lb + (vals_rb - vals_lb) * coords_offset_lt[:, :, :, :, 0]
-            mapped_vals = vals_t + (vals_b - vals_t) * coords_offset_lt[:, :, :, :, 1]
-
-            return mapped_vals
-
-        def _tf_batch_map_offsets(inputs, offsets, grid_offset):
-            """Batch map offsets into input
-
-            Parameters
-            ------------
-            inputs : ``tf.Tensor``
-                shape = (b, h, w, c)
-            offsets: ``tf.Tensor``
-                shape = (b, h, w, 2*n)
-            grid_offset: `tf.Tensor``
-                Offset grids shape = (h, w, n, 2)
-
-            Returns
-            -------
-            ``tf.Tensor``
-                A Tensor with the shape as (b, h, w, c)
-
-            """
-            input_shape = inputs.get_shape()
-            batch_size = tf.shape(inputs)[0]
-            kernel_n = int(int(offsets.get_shape()[3]) / 2)
-            input_h = input_shape[1]
-            input_w = input_shape[2]
-            channel = input_shape[3]
-
-            # inputs (b, h, w, c) --> (b*c, h, w)
-            inputs = _to_bc_h_w(inputs, input_shape)
-
-            # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
-            offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))
-            # offsets (b, h, w, n, 2) --> (b*c, h, w, n, 2)
-            # offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
-
-            coords = tf.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
-            coords = tf.tile(coords, [batch_size, 1, 1, 1, 1]) + offsets  # grid_offset --> (b, h, w, n, 2)
-
-            # clip out of bound
-            coords = tf.stack(
-                [
-                    tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
-                    tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))
-                ], axis=-1
-            )
-            coords = tf.tile(coords, [channel, 1, 1, 1, 1])
-
-            mapped_vals = _tf_batch_map_coordinates(inputs, coords)
-            # (b*c, h, w, n) --> (b, h, w, n, c)
-            mapped_vals = _to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
-
-            return mapped_vals
-
-        super(DeformableConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(DeformableConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" %
             (name, n_filter, str(filter_size), act.__name__)
@@ -920,8 +767,6 @@ class DeformableConv2d(Layer):
         self.inputs = prev_layer.outputs
 
         self.offset_layer = offset_layer
-        if act is None:
-            act = tf.identity
 
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
@@ -956,7 +801,7 @@ class DeformableConv2d(Layer):
             grid = tf.tile(grid, [1, 1, kernel_n, 1])  # grid --> (h, w, n, 2)
             grid_offset = grid + initial_offsets  # grid_offset --> (h, w, n, 2)
 
-            input_deform = _tf_batch_map_offsets(self.inputs, offset, grid_offset)
+            input_deform = self._tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
             W = tf.get_variable(
                 name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
@@ -998,6 +843,142 @@ class DeformableConv2d(Layer):
             self.all_params.extend([W, b])
         else:
             self.all_params.append(W)
+
+    @private_method
+    def _to_bc_h_w(self, x, x_shape):
+        """(b, h, w, c) -> (b*c, h, w)"""
+        x = tf.transpose(x, [0, 3, 1, 2])
+        x = tf.reshape(x, (-1, x_shape[1], x_shape[2]))
+        return x
+
+    @private_method
+    def _to_b_h_w_n_c(self, x, x_shape):
+        """(b*c, h, w, n) -> (b, h, w, n, c)"""
+        x = tf.reshape(x, (-1, x_shape[4], x_shape[1], x_shape[2], x_shape[3]))
+        x = tf.transpose(x, [0, 2, 3, 4, 1])
+        return x
+
+    @private_method
+    def tf_flatten(self, a):
+        """Flatten tensor"""
+        return tf.reshape(a, [-1])
+
+    @private_method
+    def _get_vals_by_coords(self, inputs, coords, idx, out_shape):
+        indices = tf.stack([idx, self.tf_flatten(coords[:, :, :, :, 0]), self.tf_flatten(coords[:, :, :, :, 1])], axis=-1)
+        vals = tf.gather_nd(inputs, indices)
+        vals = tf.reshape(vals, out_shape)
+        return vals
+
+    @private_method
+    def _tf_repeat(self, a, repeats):
+        """Tensorflow version of np.repeat for 1D"""
+        # https://github.com/tensorflow/tensorflow/issues/8521
+        assert len(a.get_shape()) == 1
+
+        a = tf.expand_dims(a, -1)
+        a = tf.tile(a, [1, repeats])
+        a = self.tf_flatten(a)
+        return a
+
+    @private_method
+    def _tf_batch_map_coordinates(self, inputs, coords):
+        """Batch version of tf_map_coordinates
+
+        Only supports 2D feature maps
+
+        Parameters
+        ----------
+        inputs : ``tf.Tensor``
+            shape = (b*c, h, w)
+        coords : ``tf.Tensor``
+            shape = (b*c, h, w, n, 2)
+
+        Returns
+        -------
+        ``tf.Tensor``
+            A Tensor with the shape as (b*c, h, w, n)
+
+        """
+        input_shape = inputs.get_shape()
+        coords_shape = coords.get_shape()
+        batch_channel = tf.shape(inputs)[0]
+        input_h = int(input_shape[1])
+        input_w = int(input_shape[2])
+        kernel_n = int(coords_shape[3])
+        n_coords = input_h * input_w * kernel_n
+
+        coords_lt = tf.cast(tf.floor(coords), 'int32')
+        coords_rb = tf.cast(tf.ceil(coords), 'int32')
+        coords_lb = tf.stack([coords_lt[:, :, :, :, 0], coords_rb[:, :, :, :, 1]], axis=-1)
+        coords_rt = tf.stack([coords_rb[:, :, :, :, 0], coords_lt[:, :, :, :, 1]], axis=-1)
+
+        idx = self._tf_repeat(tf.range(batch_channel), n_coords)
+
+        vals_lt = self._get_vals_by_coords(inputs, coords_lt, idx, (batch_channel, input_h, input_w, kernel_n))
+        vals_rb = self._get_vals_by_coords(inputs, coords_rb, idx, (batch_channel, input_h, input_w, kernel_n))
+        vals_lb = self._get_vals_by_coords(inputs, coords_lb, idx, (batch_channel, input_h, input_w, kernel_n))
+        vals_rt = self._get_vals_by_coords(inputs, coords_rt, idx, (batch_channel, input_h, input_w, kernel_n))
+
+        coords_offset_lt = coords - tf.cast(coords_lt, 'float32')
+
+        vals_t = vals_lt + (vals_rt - vals_lt) * coords_offset_lt[:, :, :, :, 0]
+        vals_b = vals_lb + (vals_rb - vals_lb) * coords_offset_lt[:, :, :, :, 0]
+        mapped_vals = vals_t + (vals_b - vals_t) * coords_offset_lt[:, :, :, :, 1]
+
+        return mapped_vals
+
+    @private_method
+    def _tf_batch_map_offsets(self, inputs, offsets, grid_offset):
+        """Batch map offsets into input
+
+        Parameters
+        ------------
+        inputs : ``tf.Tensor``
+            shape = (b, h, w, c)
+        offsets: ``tf.Tensor``
+            shape = (b, h, w, 2*n)
+        grid_offset: `tf.Tensor``
+            Offset grids shape = (h, w, n, 2)
+
+        Returns
+        -------
+        ``tf.Tensor``
+            A Tensor with the shape as (b, h, w, c)
+
+        """
+        input_shape = inputs.get_shape()
+        batch_size = tf.shape(inputs)[0]
+        kernel_n = int(int(offsets.get_shape()[3]) / 2)
+        input_h = input_shape[1]
+        input_w = input_shape[2]
+        channel = input_shape[3]
+
+        # inputs (b, h, w, c) --> (b*c, h, w)
+        inputs = self._to_bc_h_w(inputs, input_shape)
+
+        # offsets (b, h, w, 2*n) --> (b, h, w, n, 2)
+        offsets = tf.reshape(offsets, (batch_size, input_h, input_w, kernel_n, 2))
+        # offsets (b, h, w, n, 2) --> (b*c, h, w, n, 2)
+        # offsets = tf.tile(offsets, [channel, 1, 1, 1, 1])
+
+        coords = tf.expand_dims(grid_offset, 0)  # grid_offset --> (1, h, w, n, 2)
+        coords = tf.tile(coords, [batch_size, 1, 1, 1, 1]) + offsets  # grid_offset --> (b, h, w, n, 2)
+
+        # clip out of bound
+        coords = tf.stack(
+            [
+                tf.clip_by_value(coords[:, :, :, :, 0], 0.0, tf.cast(input_h - 1, 'float32')),
+                tf.clip_by_value(coords[:, :, :, :, 1], 0.0, tf.cast(input_w - 1, 'float32'))
+            ], axis=-1
+        )
+        coords = tf.tile(coords, [channel, 1, 1, 1, 1])
+
+        mapped_vals = self._tf_batch_map_coordinates(inputs, coords)
+        # (b*c, h, w, n) --> (b, h, w, n, c)
+        mapped_vals = self._to_b_h_w_n_c(mapped_vals, [batch_size, input_h, input_w, kernel_n, channel])
+
+        return mapped_vals
 
 
 @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -1115,20 +1096,15 @@ class AtrousConv2dLayer(Layer):
             W_init_args=None, b_init_args=None, name='atrou2d'
     ):
 
-        super(AtrousConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(AtrousConv2dLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" %
             (name, n_filter, filter_size, rate, padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
@@ -1278,7 +1254,9 @@ class Conv1d(Layer):
             b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='conv1d'
     ):
 
-        super(Conv1d, self).__init__(prev_layer=prev_layer, name=name)
+        super(Conv1d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "Conv1d %s: n_filter:%d filter_size:%s stride:%d pad:%s act:%s dilation_rate:%d" %
             (name, n_filter, filter_size, stride, padding, act.__name__, dilation_rate)
@@ -1419,16 +1397,11 @@ class Conv2d(Layer):
         #     data_format=data_format,
         #     name=name)
 
-        super(Conv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(Conv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         if tf.__version__ > '1.5':
             logging.info(
@@ -1561,18 +1534,13 @@ class DeConv2d(Layer):
             b_init_args=None,  # remove
             name='decnn2d'
     ):
-        super(DeConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(DeConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" %
             (name, str(n_filter), str(strides), padding, act.__name__)
         )
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2, DeConv2d and DeConv2dLayer are different.")
@@ -1645,7 +1613,9 @@ class DeConv3d(Layer):
             name='decnn3d'
     ):
 
-        super(DeConv3d, self).__init__(prev_layer=prev_layer, name=name)
+        super(DeConv3d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" %
             (name, str(n_filter), str(strides), padding, act.__name__)
@@ -1745,20 +1715,15 @@ class DepthwiseConv2d(Layer):
             b_init_args=None,
             name='depthwise_conv2d',
     ):
-        super(DepthwiseConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(DepthwiseConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
             (name, str(shape), str(strides), padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-        if act is None:
-            act = tf.identity
 
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
@@ -1868,7 +1833,9 @@ class SeparableConv1d(Layer):
         # if b_init_args is None:
         #     b_init_args = {}
 
-        super(SeparableConv1d, self).__init__(prev_layer=prev_layer, name=name)
+        super(SeparableConv1d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "SeparableConv1d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" %
             (self.name, n_filter, str(filter_size), str(strides), depth_multiplier, act.__name__)
@@ -1976,7 +1943,9 @@ class SeparableConv2d(Layer):
         # if b_init_args is None:
         #     b_init_args = {}
 
-        super(SeparableConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(SeparableConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "SeparableConv2d  %s: n_filter:%d filter_size:%s filter_size:%s depth_multiplier:%d act:%s" %
             (self.name, n_filter, str(filter_size), str(strides), depth_multiplier, act.__name__)
@@ -2064,18 +2033,15 @@ class GroupConv2d(Layer):
             name='groupconv',
     ):  # Windaway
 
-        super(GroupConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(GroupConv2d, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info(
             "GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), n_group, padding, act.__name__)
         )
 
         self.inputs = prev_layer.outputs
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         groupConv = lambda i, k: tf.nn.conv2d(i, k, strides=[1, strides[0], strides[1], 1], padding=padding)
         channels = int(self.inputs.get_shape()[-1])

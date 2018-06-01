@@ -16,6 +16,7 @@ from tensorlayer import utils
 from tensorlayer import visualize
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import private_method
 
 __all__ = [
     'LayersConfig',
@@ -346,6 +347,8 @@ class Layer(object):
     ----------
     prev_layer : :class:`Layer` or None
         Previous layer (optional), for adding all properties of previous layer(s) to this layer.
+    a_init_args : dictionary
+        The arguments for initializing a custom activation
     name : str or None
         A unique layer name.
 
@@ -406,37 +409,55 @@ class Layer(object):
     all_drop = {}
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name=None):
+    def __init__(
+        self,
+        prev_layer,
+        act=None,
+        W_init_args=None,
+        b_init_args=None,
+        cell_init_args=None,
+        a_init_args=None,
+        layer_args=None,
+        name=None
+    ):
 
         if name is None:
             raise ValueError('Layer must have a name.')
 
-        scope_name = tf.get_variable_scope().name
-        if scope_name:
-            name = scope_name + '/' + name
-        self.name = name
+        self.W_init_args = self._argument_dict_checkup(W_init_args)
+        self.b_init_args = self._argument_dict_checkup(b_init_args)
+        self.cell_init_args = self._argument_dict_checkup(cell_init_args)
+        self.a_init_args = self._argument_dict_checkup(a_init_args)
+        self.layer_args = self._argument_dict_checkup(layer_args)
 
-        # get all properties of previous layer(s)
-        if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
+        self.act = act if act not in [None, tf.identity] else None
+
+        scope_name = tf.get_variable_scope().name
+
+        self.name = scope_name + '/' + name if scope_name else name
+
+        if isinstance(prev_layer, tf.Tensor):
+            raise Exception("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+
+        elif isinstance(prev_layer, Layer):
+            # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
 
-        elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
+        elif isinstance(prev_layer, list):
+            # 2. for layer have multiply inputs i.e. ConcatLayer
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
 
-        elif isinstance(prev_layer, tf.Tensor):
-            raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-
-        elif prev_layer is not None:  # tl.models
+        elif prev_layer is not None:
+            # 3. tl.models
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
-            # raise Exception("Unknown layer type %s" % type(prev_layer))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -510,6 +531,19 @@ class Layer(object):
 
     def __len__(self):
         return len(self.all_layers)
+
+    @private_method
+    def _apply_activation(self, logits):
+        return self.act(logits) if self.act is not None else logits
+        
+    @private_method
+    def _argument_dict_checkup(self, args):
+        if not isinstance(args, dict):
+            err_msg = "One of the argument given to %s should be formatted as a dictionnary" % self.__class__.__name__
+            tl.logging.error(err_msg)
+            raise AssertionError(err_msg)
+
+        return args if args is not None and else {}
 
 
 class InputLayer(Layer):
@@ -963,16 +997,13 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
-        super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
         logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
         self.n_units = n_units
-
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -1276,14 +1307,13 @@ class DropoutLayer(Layer):
             name='dropout_layer',
     ):
         super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
 
         if is_train is False:
             logging.info("  skip DropoutLayer")
             self.outputs = prev_layer.outputs
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
         else:
             self.inputs = prev_layer.outputs
 
@@ -1295,11 +1325,9 @@ class DropoutLayer(Layer):
                 LayersConfig.set_keep[name] = tf.placeholder(LayersConfig.tf_dtype)
                 self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
 
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
             if is_fix is False:
                 self.all_drop.update({LayersConfig.set_keep[name]: keep})
+
             self.all_layers.append(self.outputs)
 
         # logging.info(set_keep[name])
@@ -1360,7 +1388,9 @@ class GaussianNoiseLayer(Layer):
             seed=None,
             name='gaussian_noise_layer',
     ):
-        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(GaussianNoiseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
@@ -1438,18 +1468,17 @@ class DropconnectDenseLayer(Layer):
             b_init_args=None,
             name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
+        super(DropconnectDenseLayer, self).__init__(
+            prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
+        )
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
+        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
+
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
 
@@ -1466,9 +1495,6 @@ class DropconnectDenseLayer(Layer):
             W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
             self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.append(self.outputs)
         self.all_params.extend([W, b])

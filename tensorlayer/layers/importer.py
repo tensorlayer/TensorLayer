@@ -65,6 +65,7 @@ class LambdaLayer(Layer):
     ):
 
         super(LambdaLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("LambdaLayer  %s" % name)
 
         self.inputs = prev_layer.outputs
@@ -79,9 +80,6 @@ class LambdaLayer(Layer):
             self.outputs = fn(self.inputs, **fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -119,6 +117,7 @@ class SlimNetsLayer(Layer):
     ):
 
         super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("SlimNetsLayer %s: %s" % (name, slim_layer.__name__))
 
         self.inputs = prev_layer.outputs
@@ -144,13 +143,10 @@ class SlimNetsLayer(Layer):
         self.outputs = net
 
         slim_layers = []
+
         for v in end_points.values():
             # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
 
         self.all_layers.extend(slim_layers)
         self.all_params.extend(slim_variables)
@@ -185,6 +181,7 @@ class KerasLayer(Layer):
     ):
 
         super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("KerasLayer %s: %s" % (name, keras_layer))
 
         self.inputs = prev_layer.outputs
@@ -199,9 +196,7 @@ class KerasLayer(Layer):
         with tf.variable_scope(name) as vs:
             self.outputs = keras_layer(self.inputs, **keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -234,6 +229,7 @@ class EstimatorLayer(Layer):
             name='estimator_layer',
     ):
         super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("EstimatorLayer %s: %s" % (name, model_fn))
 
         self.inputs = prev_layer.outputs
@@ -248,8 +244,6 @@ class EstimatorLayer(Layer):
         with tf.variable_scope(name) as vs:
             self.outputs = model_fn(self.inputs, **args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)

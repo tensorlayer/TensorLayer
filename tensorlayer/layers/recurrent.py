@@ -147,17 +147,18 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn',
     ):
-        super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(RNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {}
         if cell_fn is None:
             raise Exception("Please put in cell_fn")
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning('pop state_is_tuple fails.')
 
@@ -340,19 +341,23 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
-        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BiRNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}  # 'use_peepholes': True,
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
 
         logging.info(
             "BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (
@@ -378,7 +383,7 @@ class BiRNNLayer(Layer):
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
         with tf.variable_scope(name, initializer=initializer) as vs:
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
             # Apply dropout
             if dropout:
                 if isinstance(dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
@@ -397,6 +402,7 @@ class BiRNNLayer(Layer):
                 )
             else:
                 cell_creator = rnn_creator
+
             self.fw_cell = cell_creator()
             self.bw_cell = cell_creator()
 
@@ -449,12 +455,14 @@ class BiRNNLayer(Layer):
                 bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
             except Exception:
                 bidirectional_rnn_fn = tf.nn.bidirectional_rnn
+
             outputs, fw_state, bw_state = bidirectional_rnn_fn(  # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
                 inputs=list_rnn_inputs,
                 initial_state_fw=self.fw_initial_state,
-                initial_state_bw=self.bw_initial_state)
+                initial_state_bw=self.bw_initial_state
+            )
 
             if return_last:
                 raise Exception("Do not support return_last at the moment.")
@@ -483,9 +491,6 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
@@ -725,7 +730,9 @@ class ConvLSTMLayer(Layer):
             return_seq_2d=False,
             name='convlstm',
     ):
-        super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(ConvLSTMLayer, self).__init__(
+            prev_layer=prev_layer, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -793,9 +800,6 @@ class ConvLSTMLayer(Layer):
 
         self.final_state = state
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
@@ -1069,7 +1073,9 @@ class DynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
-        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(DynamicRNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -1335,21 +1341,26 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
-        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BiDynamicRNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}
-        if dynamic_rnn_init_args is None:
-            dynamic_rnn_init_args = {}
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+
+        if dynamic_rnn_init_args is None:
+            dynamic_rnn_init_args = {}
+
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
 
         logging.info(
             "BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (

@@ -49,6 +49,7 @@ class LocalResponseNormLayer(Layer):
             name='lrn_layer',
     ):
         super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
             (name, str(depth_radius), str(bias), str(alpha), str(beta))
@@ -59,9 +60,6 @@ class LocalResponseNormLayer(Layer):
         with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -113,6 +111,7 @@ class BatchNormLayer(Layer):
             name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
             (name, decay, epsilon, act.__name__, is_train)
@@ -197,14 +196,6 @@ class BatchNormLayer(Layer):
 
             variables.extend([moving_mean, moving_variance])
 
-            # logging.info(len(variables))
-            # for idx, v in enumerate(variables):
-            #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
-            # exit()
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -233,7 +224,7 @@ class InstanceNormLayer(Layer):
             epsilon=1e-5,
             name='instan_norm',
     ):
-        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
         logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
 
         self.inputs = prev_layer.outputs
@@ -276,11 +267,24 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, center=True, scale=True, act=tf.identity, reuse=None, variables_collections=None,
-            outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
+            self,
+            prev_layer,
+            center=True,
+            scale=True,
+            act=tf.identity,
+            reuse=None,
+            variables_collections=None,
+            outputs_collections=None,
+            trainable=True,
+            begin_norm_axis=1,
+            begin_params_axis=-1,
+            name='layernorm'
     ):
 
-        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(LayerNormLayer, self).__init__(
+            prev_layer=prev_layer, act=act, name=name
+        )
+
         logging.info("LayerNormLayer %s: act:%s" % (name, act.__name__))
 
         self.inputs = prev_layer.outputs
