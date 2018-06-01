@@ -72,7 +72,7 @@ class SubpixelConv2d(Layer):
         super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__)
+            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         self.inputs = prev_layer.outputs
@@ -146,7 +146,7 @@ class SubpixelConv1d(Layer):
 
         super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
+        logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, self.act.__name__ if self.act is not None else '- No Activation'))
 
         self.inputs = prev_layer.outputs
 

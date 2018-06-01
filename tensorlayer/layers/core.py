@@ -432,7 +432,7 @@ class Layer(object):
 
         if name is None:
             raise ValueError('Layer must have a name.')
-
+        
         self.W_init_args = self._argument_dict_checkup(W_init_args)
         self.b_init_args = self._argument_dict_checkup(b_init_args)
         self.dynamic_rnn_init_args = self._argument_dict_checkup(dynamic_rnn_init_args)
@@ -550,7 +550,8 @@ class Layer(object):
 
     @private_method
     def _argument_dict_checkup(self, args):
-        if not isinstance(args, dict):
+
+        if not isinstance(args, dict) and args is not None:
             err_msg = "One of the argument given to %s should be formatted as a dictionnary" % self.__class__.__name__
             logging.error(err_msg)
             raise AssertionError(err_msg)
@@ -1013,17 +1014,19 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
-        super(DenseLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
-        logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+        super(DenseLayer, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
+        logging.info("DenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
 
         self.inputs = prev_layer.outputs
         self.n_units = n_units
 
         if self.inputs.get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+            raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs.get_shape()[-1])
+
+        print("########## %s ##########" % self.W_init_args)
 
         with tf.variable_scope(name):
             W = tf.get_variable(
@@ -1484,7 +1487,7 @@ class DropconnectDenseLayer(Layer):
         super(DropconnectDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
+        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation'))
 
         self.inputs = prev_layer.outputs
 

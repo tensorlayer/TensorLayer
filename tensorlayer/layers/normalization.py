@@ -114,7 +114,7 @@ class BatchNormLayer(Layer):
 
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (name, decay, epsilon, act.__name__, is_train)
+            (name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
         )
 
         self.inputs = prev_layer.outputs
@@ -227,7 +227,7 @@ class InstanceNormLayer(Layer):
     ):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
+        logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation'))
 
         self.inputs = prev_layer.outputs
 
@@ -276,7 +276,7 @@ class LayerNormLayer(Layer):
 
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info("LayerNormLayer %s: act:%s" % (name, act.__name__))
+        logging.info("LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation'))
 
         self.inputs = prev_layer.outputs
 
