@@ -107,7 +107,7 @@ To release a new version, please update the changelog as followed:
 - `tl.files` refactored into a directory with numerous files (by @DEKHTIARJonathan in #657)
 - `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (by @DEKHTIARJonathan in #657)
 - extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
-- requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657) 
+- requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657)
 - README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
 - Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
 - Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
@@ -124,10 +124,11 @@ To release a new version, please update the changelog as followed:
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
+- All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
-
+  
 ### Security
 
 ### Dependencies Update
