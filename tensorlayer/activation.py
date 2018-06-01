@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
 __all__ = [
-    'identity',
     'ramp',
     'leaky_relu',
     'swish',
@@ -219,6 +218,5 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 
 
 # Alias
-linear = identity
 lrelu = leaky_relu
 htanh = hard_tanh
