@@ -68,7 +68,7 @@ class Layer_Pooling_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    # tf.logging.set_verbosity(tf.logging.INFO)
-    tf.logging.set_verbosity(tf.logging.DEBUG)
+    # tl.logging.set_verbosity(tl.logging.INFO)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()
