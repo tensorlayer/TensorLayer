@@ -134,8 +134,7 @@ class ElementwiseLayer(Layer):
         for l in layers[1:]:
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
-        if act:
-            self.outputs = act(self.outputs)
+        self.outputs = self._apply_activation(self.outputs)
 
         # self.all_layers = list(layers[0].all_layers)
         # self.all_params = list(layers[0].all_params)
@@ -203,9 +202,8 @@ class ElementwiseLambdaLayer(Layer):
         self.inputs = [layer.outputs for layer in layers]
 
         with tf.variable_scope(name) as vs:
-            self.outputs = fn(*self.inputs, **fn_args)
-            if act:
-                self.outputs = act(self.outputs)
+            self.outputs = self._apply_activation(fn(*self.inputs, **fn_args))
+
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers.append(self.outputs)

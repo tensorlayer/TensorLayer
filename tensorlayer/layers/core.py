@@ -5,15 +5,16 @@ import time
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
-
-from tensorlayer import tl_logging as logging
 
 from tensorlayer import files
 from tensorlayer import iterate
 from tensorlayer import utils
 from tensorlayer import visualize
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import private_method
@@ -558,7 +559,7 @@ class Layer(object):
     def _argument_dict_checkup(self, args):
         if not isinstance(args, dict):
             err_msg = "One of the argument given to %s should be formatted as a dictionnary" % self.__class__.__name__
-            tl.logging.error(err_msg)
+            logging.error(err_msg)
             raise AssertionError(err_msg)
 
         return args if args is not None and else {}
@@ -1049,6 +1050,9 @@ class DenseLayer(Layer):
             W = tf.get_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
+            self.outputs = tf.matmul(self.inputs, W)
+
             if b_init is not None:
                 try:
                     b = tf.get_variable(
@@ -1056,9 +1060,10 @@ class DenseLayer(Layer):
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.matmul(self.inputs, W) + b)
-            else:
-                self.outputs = act(tf.matmul(self.inputs, W))
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
         if b_init is not None:
@@ -1518,11 +1523,13 @@ class DropconnectDenseLayer(Layer):
             b = tf.get_variable(
                 name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
             )
-            # self.outputs = act(tf.matmul(self.inputs, W) + b)
+            # self.outputs = tf.matmul(self.inputs, W) + b
 
             LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
+
             W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
-            self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
+
+            self.outputs = self._apply_activation(f.matmul(self.inputs, W_dropcon) + b)
 
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.append(self.outputs)

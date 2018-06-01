@@ -166,20 +166,25 @@ class BinaryDenseLayer(Layer):
             W = quantize(W)
             # W = tf.Variable(W)
             # print(W)
+
+            self.outputs = tf.matmul(self.inputs, W)
+            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+
             if b_init is not None:
                 try:
                     b = tf.get_variable(
                         name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                     )
+
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.matmul(self.inputs, W) + b)
-                # self.outputs = act(xnor_gemm(self.inputs, W) + b) # TODO
-            else:
-                self.outputs = act(tf.matmul(self.inputs, W))
-                # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
+
         if b_init is not None:
             self.all_params.extend([W, b])
         else:
@@ -269,6 +274,7 @@ class BinaryConv2d(Layer):
         super(BinaryConv2d, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
@@ -281,35 +287,38 @@ class BinaryConv2d(Layer):
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
+
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
-            logging.info("[warnings] unknow input channels, set to 1")
+            logging.warning("unknown input channels, set to 1")
+
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
+
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             W = quantize(W)
+
+            self.outputs = tf.nn.conv2d(
+                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                data_format=data_format
+            )
+
             if b_init:
+
                 b = tf.get_variable(
                     name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    ) + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    )
-                )
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
         if b_init:
@@ -362,28 +371,36 @@ class TernaryDenseLayer(Layer):
         super(TernaryDenseLayer, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info("TernaryDenseLayer  %s: %d %s" % (name, n_units, act.__name__))
 
         self.inputs = prev_layer.outputs
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
+
         self.n_units = n_units
 
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             # W = tl.act.sign(W)    # dont update ...
             alpha = _compute_alpha(W)
             W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
             # W = tf.Variable(W)
-            # print(W)
+
+            self.outputs = tf.matmul(self.inputs, W)
+            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+
             if b_init is not None:
                 try:
                     b = tf.get_variable(
@@ -391,11 +408,10 @@ class TernaryDenseLayer(Layer):
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.matmul(self.inputs, W) + b)
-                # self.outputs = act(xnor_gemm(self.inputs, W) + b) # TODO
-            else:
-                self.outputs = act(tf.matmul(self.inputs, W))
-                # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -488,6 +504,7 @@ class TernaryConv2d(Layer):
         super(TernaryConv2d, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
             (name, n_filter, str(filter_size), str(strides), padding, act.__name__)
@@ -503,7 +520,7 @@ class TernaryConv2d(Layer):
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
-            logging.info("[warnings] unknow input channels, set to 1")
+            logging.warning("unknow input channels, set to 1")
 
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
@@ -521,24 +538,20 @@ class TernaryConv2d(Layer):
             W = _ternary_operation(W)
             W = tf.multiply(alpha, W)
 
+            self.outputs = tf.nn.conv2d(
+                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                data_format=data_format
+            )
+
             if b_init:
+
                 b = tf.get_variable(
                     name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    ) + b
-                )
 
-            else:
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    )
-                )
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -612,6 +625,7 @@ class DorefaDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
@@ -620,18 +634,23 @@ class DorefaDenseLayer(Layer):
             self.inputs = _quantize_active(_cabs(self.inputs), bitA)
             # W = tf.Variable(W)
             # print(W)
+
+            self.outputs = tf.matmul(self.inputs, W)
+            # self.outputs = xnor_gemm(self.inputs, W) # TODO
+
             if b_init is not None:
                 try:
                     b = tf.get_variable(
                         name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                     )
+
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.matmul(self.inputs, W) + b)
-                # self.outputs = act(xnor_gemm(self.inputs, W) + b) # TODO
-            else:
-                self.outputs = act(tf.matmul(self.inputs, W))
-                # self.outputs = act(xnor_gemm(self.inputs, W)) # TODO
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                # self.outputs = xnor_gemm(self.inputs, W) + b # TODO
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
         if b_init is not None:
@@ -754,25 +773,22 @@ class DorefaConv2d(Layer):
             )
             W = _quantize_weight(W, bitW)
             self.inputs = _quantize_active(_cabs(self.inputs), bitA)
+
+            self.outputs = tf.nn.conv2d(
+                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                data_format=data_format
+            )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    ) + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    )
-                )
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:

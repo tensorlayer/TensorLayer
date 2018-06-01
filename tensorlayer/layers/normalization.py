@@ -188,11 +188,19 @@ class BatchNormLayer(Layer):
 
             if is_train:
                 mean, var = mean_var_with_update()
-                self.outputs = act(tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon))
             else:
-                self.outputs = act(
-                    tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
-                )
+                mean, var = moving_mean, moving_variance
+
+            self.outputs = tf.nn.batch_normalization(
+                self.inputs,
+                mean,
+                var,
+                beta,
+                gamma,
+                epsilon
+            )
+
+            self.outputs = self._apply_activation(self.outputs)
 
             variables.extend([moving_mean, moving_variance])
 

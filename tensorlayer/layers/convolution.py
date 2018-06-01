@@ -83,6 +83,7 @@ class Conv1dLayer(Layer):
         super(Conv1dLayer, self).__init__(
             prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name
         )
+
         logging.info(
             "Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (name, str(shape), str(stride), padding, act.__name__)
         )
@@ -90,21 +91,26 @@ class Conv1dLayer(Layer):
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name):
+
             W = tf.get_variable(
                 name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
             self.outputs = tf.nn.convolution(
                 self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, )
-            )  # 1.2
+            )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = self.outputs + b
 
-            self.outputs = act(self.outputs)
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -209,25 +215,23 @@ class Conv2dLayer(Layer):
             W = tf.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
+            self.outputs = tf.nn.conv2d(
+                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                data_format=data_format
+            )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    ) + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.conv2d(
-                        self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                        data_format=data_format
-                    )
-                )
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
+
         if b_init:
             self.all_params.extend([W, b])
         else:
@@ -341,18 +345,18 @@ class DeConv2dLayer(Layer):
             W = tf.get_variable(
                 name='W_deconv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
+            self.outputs = tf.nn.conv2d_transpose(
+                self.inputs,
+                W, output_shape=output_shape,
+                strides=strides,
+                padding=padding
+            )
+
             if b_init:
-                b = tf.get_variable(
-                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
-                )
-                self.outputs = act(
-                    tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
-                    + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.conv2d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
-                )
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -429,13 +433,16 @@ class Conv3dLayer(Layer):
                 name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
 
+            self.outputs = tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None)
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None) + b)
-            else:
-                self.outputs = act(tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None))
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -507,18 +514,22 @@ class DeConv3dLayer(Layer):
                 name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
 
+            self.outputs = tf.nn.conv3d_transpose(
+                self.inputs,
+                W,
+                output_shape=output_shape,
+                strides=strides,
+                padding=padding
+            )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
-                    + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.conv3d_transpose(self.inputs, W, output_shape=output_shape, strides=strides, padding=padding)
-                )
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -1100,13 +1111,15 @@ class AtrousConv2dLayer(Layer):
             filters = tf.get_variable(
                 name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
+
+            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters, rate, padding)
+
             if b_init:
                 b = tf.get_variable(
                     name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding) + b)
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
             else:
-                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
 
         self.all_layers.append(self.outputs)
 
@@ -1435,24 +1448,20 @@ class Conv2d(Layer):
                     name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
                 )
 
+                self.outputs = tf.nn.conv2d(
+                    self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                    data_format=data_format
+                )
+
                 if b_init:
                     b = tf.get_variable(
                         name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                         **b_init_args
                     )
-                    self.outputs = act(
-                        tf.nn.conv2d(
-                            self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                            data_format=data_format
-                        ) + b
-                    )
-                else:
-                    self.outputs = act(
-                        tf.nn.conv2d(
-                            self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
-                            data_format=data_format
-                        )
-                    )
+
+                    self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+                self.outputs = self._apply_activation(self.outputs)
 
             self.all_layers.append(self.outputs)
 
@@ -1740,18 +1749,23 @@ class DepthwiseConv2d(Layer):
                 name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
+            self.outputs = tf.nn.depthwise_conv2d(
+                self.inputs,
+                W,
+                strides=strides,
+                padding=padding,
+                rate=dilation_rate
+            )
+
             if b_init:
                 b = tf.get_variable(
                     name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init,
                     dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(
-                    tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate) + b
-                )
-            else:
-                self.outputs = act(
-                    tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate)
-                )
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 
@@ -2047,24 +2061,25 @@ class GroupConv2d(Layer):
                 dtype=LayersConfig.tf_dtype, trainable=True, **W_init_args
             )
 
-            if b_init:
-                bi = tf.get_variable(
-                    name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True,
-                    **b_init_args
-                )
-
             if n_group == 1:
-                conv = groupConv(self.inputs, We)
+                self.outputs = groupConv(self.inputs, We)
+
             else:
                 inputGroups = tf.split(axis=3, num_or_size_splits=n_group, value=self.inputs)
                 weightsGroups = tf.split(axis=3, num_or_size_splits=n_group, value=We)
                 convGroups = [groupConv(i, k) for i, k in zip(inputGroups, weightsGroups)]
-                conv = tf.concat(axis=3, values=convGroups)
+
+                self.outputs = tf.concat(axis=3, values=convGroups)
 
             if b_init:
-                conv = tf.add(conv, bi, name='add')
+                b = tf.get_variable(
+                    name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True,
+                    **b_init_args
+                )
 
-            self.outputs = act(conv)
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
 

@@ -85,12 +85,14 @@ class SubpixelConv2d(Layer):
         self.inputs = prev_layer.outputs
 
         if n_out_channel is None:
+
             if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
                 raise Exception(_err_log)
+
             n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
 
         with tf.variable_scope(name):
-            self.outputs = act(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
+            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
 
         self.all_layers.append(self.outputs)
 
@@ -111,6 +113,7 @@ class SubpixelConv2d(Layer):
             X = tf.depth_to_space(X, r)
         else:
             logging.error(_err_log)
+
         return X
 
 class SubpixelConv1d(Layer):
@@ -158,9 +161,9 @@ class SubpixelConv1d(Layer):
         logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
 
         self.inputs = prev_layer.outputs
-        
+
         with tf.name_scope(name):
-            self.outputs = act(self._PS(self.inputs, r=scale))
+            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
 
         self.all_layers.append(self.outputs)
 
