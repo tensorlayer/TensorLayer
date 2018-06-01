@@ -135,7 +135,7 @@ def Vgg19(rgb):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc6')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc7')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc8')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc8')
     print("build model finished: %fs" % (time.time() - start_time))
     return net
 
@@ -209,7 +209,7 @@ def Vgg19_simple_api(rgb):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc6')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc7')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc8')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc8')
     print("build model finished: %fs" % (time.time() - start_time))
     return net
 

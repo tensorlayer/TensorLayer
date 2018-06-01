@@ -193,7 +193,7 @@ class VGG16Base(object):
         net = FlattenLayer(net, name='flatten')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-        net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
+        net = DenseLayer(net, n_units=1000, , name='fc3_relu')
         return net
 
     @staticmethod
@@ -262,7 +262,7 @@ class VGG16Base(object):
             lambda net: FlattenLayer(net, name='flatten'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu'),
+            lambda net: DenseLayer(net, n_units=1000, , name='fc3_relu'),
         ]
         net = net_in
         for l in layers:

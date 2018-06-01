@@ -21,7 +21,7 @@ __all__ = [
 @tf.RegisterGradient("TL_Sign_QuantizeGrad")
 def _quantize_grad(op, grad):
     """Clip and binarize tensor using the straight through estimator (STE) for the gradient. """
-    return tf.clip_by_value(tf.identity(grad), -1, 1)
+    return tf.clip_by_value(grad, -1, 1)
 
 
 def quantize(x):

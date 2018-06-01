@@ -173,7 +173,7 @@ with tf.device('/cpu:0'):
             net = tl.layers.BinaryDenseLayer(net, 384, act=tf.nn.relu, name='d1relu')
             net = tl.layers.SignLayer(net)
             net = tl.layers.BinaryDenseLayer(net, 192, act=tf.nn.relu, name='d2relu')
-            net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
 
             y = net.outputs
 

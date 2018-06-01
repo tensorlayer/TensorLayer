@@ -286,7 +286,7 @@ class DeConv2dLayer(Layer):
     >>> net_in = tl.layers.InputLayer(inputs, name='g/in')
     >>> net_h0 = tl.layers.DenseLayer(net_in, n_units = 8192,
     ...                            W_init = tf.random_normal_initializer(stddev=0.02),
-    ...                            act = tf.identity, name='g/h0/lin')
+    ...                            act = None, name='g/h0/lin')
     >>> print(net_h0.outputs._shape)
     ... (64, 8192)
     >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
@@ -1246,7 +1246,7 @@ class Conv1d(Layer):
     >>> n = FlattenLayer(n, name='f')
     >>> n = DenseLayer(n, 500, tf.nn.relu, name='d1')
     >>> n = DenseLayer(n, 100, tf.nn.relu, name='d2')
-    >>> n = DenseLayer(n, 2, tf.identity, name='o')
+    >>> n = DenseLayer(n, 2, None, name='o')
 
     """
 

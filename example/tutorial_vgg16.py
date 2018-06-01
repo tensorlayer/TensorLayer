@@ -134,7 +134,7 @@ def fc_layers(net):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc3_relu')
     return net
 
 

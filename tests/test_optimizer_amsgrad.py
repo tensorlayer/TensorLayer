@@ -26,7 +26,7 @@ class Layer_Pooling_Test(CustomTestCase):
         cls.network = tl.layers.DenseLayer(cls.network, 800, tf.nn.relu, name='relu2')
         cls.network = tl.layers.DropoutLayer(cls.network, keep=0.5, name='drop3')
 
-        cls.network = tl.layers.DenseLayer(cls.network, n_units=10, act=tf.identity, name='output')
+        cls.network = tl.layers.DenseLayer(cls.network, n_units=10, , name='output')
 
         # define cost function and metric.
         cls.y = cls.network.outputs
