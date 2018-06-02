@@ -195,11 +195,8 @@ class ElementwiseLambdaLayer(Layer):
             name='elementwiselambda_layer',
     ):
 
-        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, name=name)
+        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, fn_args=fn_args, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
-
-        if fn_args is None:
-            fn_args = {}
 
         self.inputs = [layer.outputs for layer in layers]
 

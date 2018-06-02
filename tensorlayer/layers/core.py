@@ -425,21 +425,13 @@ class Layer(object):
     all_drop = {}
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(
-            self, prev_layer, act=None, W_init_args=None, b_init_args=None, dynamic_rnn_init_args=None,
-            cell_init_args=None, a_init_args=None, layer_args=None, fn_args=None, name=None
-    ):
+    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
 
         if name is None:
             raise ValueError('Layer must have a name.')
 
-        self.W_init_args = self._argument_dict_checkup(W_init_args)
-        self.b_init_args = self._argument_dict_checkup(b_init_args)
-        self.dynamic_rnn_init_args = self._argument_dict_checkup(dynamic_rnn_init_args)
-        self.cell_init_args = self._argument_dict_checkup(cell_init_args)
-        self.a_init_args = self._argument_dict_checkup(a_init_args)
-        self.layer_args = self._argument_dict_checkup(layer_args)
-        self.fn_args = self._argument_dict_checkup(fn_args)
+        for key in kwargs.keys():
+            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
         self.act = act if act not in [None, tf.identity] else None
 
