@@ -30,7 +30,10 @@ shuffle_buffer_size = 100
 def generator():
     inputs = imgs_file_list
     targets = objs_info_list
-    assert len(inputs) == len(targets)
+
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+
     for _input, _target in zip(inputs, targets):
         yield _input.encode('utf-8'), _target.encode('utf-8')
 

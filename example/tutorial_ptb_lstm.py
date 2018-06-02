@@ -235,7 +235,7 @@ def main(_):
             # net = tl.layers.ReshapeLayer(net,
             #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=tf.identity, name='output')
+            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=None, name='output')
         return net, lstm1, lstm2
 
     # Inference for Training

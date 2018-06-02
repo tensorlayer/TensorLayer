@@ -33,7 +33,7 @@ def model(x, is_train=True, reuse=False):
         n = DropoutLayer(n, 0.5, True, is_train, name='drop1')
         n = DenseLayer(n, 256, act=tf.nn.relu, name='relu1')
         n = DropoutLayer(n, 0.5, True, is_train, name='drop2')
-        n = DenseLayer(n, 10, act=tf.identity, name='output')
+        n = DenseLayer(n, 10, act=None, name='output')
     return n
 
 

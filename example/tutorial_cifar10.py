@@ -29,7 +29,7 @@ def model(x, y_, reuse):
         net = FlattenLayer(net, name='flatten')
         net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
         net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
+        net = DenseLayer(net, 10, act=None, W_init=W_init2, name='output')
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -63,7 +63,7 @@ def model_batch_norm(x, y_, reuse, is_train):
         net = FlattenLayer(net, name='flatten')  # output: (batch_size, 2304)
         net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
         net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-        net = DenseLayer(net, 10, act=tf.identity, W_init=W_init2, name='output')
+        net = DenseLayer(net, 10, act=None, W_init=W_init2, name='output')
         y = net.outputs
 
         ce = tl.cost.cross_entropy(y, y_, name='cost')

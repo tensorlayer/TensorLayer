@@ -145,7 +145,7 @@ todo_include_todos = False
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'TensorLayer v1.8.5'
+# html_title = 'TensorLayer'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #
