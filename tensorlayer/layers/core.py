@@ -350,20 +350,8 @@ class Layer(object):
     ----------
     prev_layer : :class:`Layer` or None
         Previous layer (optional), for adding all properties of previous layer(s) to this layer.
-    W_init_args : dictionary
-        The arguments for the weight matrix initializer.
-    b_init_args : dictionary
-        The arguments for the bias vector initializer.
-    dynamic_rnn_init_args : dictionary
-        The arguments for ``tf.nn.bidirectional_dynamic_rnn``.
-    cell_init_args : dictionary
-        The arguments for the RNN cell initializer.
-    a_init_args : dictionary
-        The arguments for initializing a custom activation
-    layer_args : dictionary
-        The arguments for the RNN cell initializer.
-    fn_args : dictionary or None
-        The arguments for the lambda function.
+    act : activation function (None by default)
+        The activation function of this layer.
     name : str or None
         A unique layer name.
 
