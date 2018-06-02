@@ -45,9 +45,6 @@
 .. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
     :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-    :target: https://gitter.im/tensorlayer/Lobby
-
 .. raw:: html
 
    <br/><br/>
