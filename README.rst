@@ -13,7 +13,7 @@
     :target: https://pypi.org/project/tensorlayer/
 
 .. image:: https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg
-    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc0...master
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master
 
 .. image:: https://img.shields.io/pypi/pyversions/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/

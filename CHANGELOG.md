@@ -81,11 +81,11 @@ To release a new version, please update the changelog as followed:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
 - Docker:
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
-  - Containers built in the following configurations (by @DEKHTIARJonathan in #648): 
+  - Containers built in the following configurations (by @DEKHTIARJonathan in #648):
     - py2 + cpu
     - py2 + gpu
     - py3 + cpu
-    - py3 + gpu 
+    - py3 + gpu
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
@@ -145,7 +145,7 @@ To release a new version, please update the changelog as followed:
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
-  
+
 ### Security
 
 ### Dependencies Update
@@ -156,11 +156,12 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
 
-## [1.8.6] - 2018-05-30
+## [1.8.6] - 2018-06-02
 
 ### Added
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
+  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -168,13 +169,13 @@ To release a new version, please update the changelog as followed:
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
-- Docker: 
+- Docker:
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
-  - Containers built in the following configurations (by @DEKHTIARJonathan in #648): 
+  - Containers built in the following configurations (by @DEKHTIARJonathan in #648):
     - py2 + cpu
     - py2 + gpu
     - py3 + cpu
-    - py3 + gpu 
+    - py3 + gpu
 - Documentation:
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
@@ -211,6 +212,15 @@ To release a new version, please update the changelog as followed:
 - Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
 - Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
 - All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
+- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
+- argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
+
+### Deprecated
+- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
+
+### Removed
+- `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
+- `tl.identity` is removed, not used anymore and deprecated for a long time (by @DEKHTIARJonathan in #667)
 
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
@@ -221,6 +231,7 @@ To release a new version, please update the changelog as followed:
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 - All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
+- Duplicated code removed when bias was used (by @DEKHTIARJonathan in #667)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
@@ -272,6 +283,6 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc0...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc0...1.8.5
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master
+[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
