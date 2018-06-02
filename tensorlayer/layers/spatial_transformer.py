@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
 from six.moves import xrange
 
+import numpy as np
+
+import tensorflow as tf
+from tensorflow.python.ops import array_ops
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -272,10 +278,11 @@ class SpatialTransformer2dAffineLayer(Layer):
             # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]/ Hao Dong
             #
             fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
             if fixed_batch_size.value:
                 batch_size = fixed_batch_size.value
+
             else:
-                from tensorflow.python.ops import array_ops
                 batch_size = array_ops.shape(self.inputs)[0]
 
             n_channels = self.inputs.get_shape().as_list()[-1]

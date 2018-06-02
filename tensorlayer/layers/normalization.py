@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+from tensorflow.python.training import moving_averages
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -121,8 +125,6 @@ class BatchNormLayer(Layer):
 
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
-
-        from tensorflow.python.training import moving_averages
 
         with tf.variable_scope(name):
             axis = list(range(len(x_shape) - 1))

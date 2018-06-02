@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import inspect
-
 import tensorflow as tf
+
+from tensorflow.python.ops import array_ops
 from tensorflow.python.util.tf_inspect import getfullargspec
+from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+from tensorlayer.layers.core import list_remove_repeat
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -191,7 +196,6 @@ class RNNLayer(Layer):
             logging.info("       RNN batch_size (concurrent processes): %d" % batch_size)
 
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
@@ -370,8 +374,8 @@ class BiRNNLayer(Layer):
         if fixed_batch_size.value:
             self.batch_size = fixed_batch_size.value
             logging.info("       RNN batch_size (concurrent processes): %d" % self.batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             self.batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
@@ -757,8 +761,8 @@ class ConvLSTMLayer(Layer):
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("     RNN batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
@@ -1109,10 +1113,11 @@ class DynamicRNNLayer(Layer):
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
+
         self.batch_size = batch_size
 
         # Creats the cell function
@@ -1368,13 +1373,15 @@ class BiDynamicRNNLayer(Layer):
 
         # Get the batch_size
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
+
         self.batch_size = batch_size
 
         with tf.variable_scope(name, initializer=initializer) as vs:
@@ -1432,10 +1439,11 @@ class BiDynamicRNNLayer(Layer):
                 if dropout:
                     self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
                     self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+
                 else:
                     self.fw_cell = [cell_creator() for _ in range(n_layer)]
                     self.bw_cell = [cell_creator() for _ in range(n_layer)]
-                from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell, cells_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_states_fw=self.fw_initial_state, initial_states_bw=self.bw_initial_state,

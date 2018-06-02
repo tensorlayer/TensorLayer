@@ -3,7 +3,7 @@
 import tensorflow as tf
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
+from tensorlayer.layers.core import Layer
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import private_method
@@ -81,7 +81,9 @@ class SubpixelConv2d(Layer):
         if n_out_channel is None:
 
             if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
-                raise Exception(_err_log)
+                raise Exception(
+                    "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+                )
 
             n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
 

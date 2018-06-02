@@ -3,8 +3,10 @@
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
 

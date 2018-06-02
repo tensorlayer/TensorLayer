@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
 
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 from tensorlayer.decorators import deprecated_alias
 
