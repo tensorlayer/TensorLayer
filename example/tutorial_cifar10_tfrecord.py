@@ -203,7 +203,7 @@ with tf.device('/cpu:0'):
             net = FlattenLayer(net, name='flatten')
             net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
             net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')
+            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -237,7 +237,7 @@ with tf.device('/cpu:0'):
             net = FlattenLayer(net, name='flatten')
             net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
             net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')
+            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')

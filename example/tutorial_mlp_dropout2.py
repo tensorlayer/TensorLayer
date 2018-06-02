@@ -20,7 +20,7 @@ def mlp(x, is_train=True, reuse=False):
         network = tl.layers.DropoutLayer(network, keep=0.5, is_fix=True, is_train=is_train, name='drop2')
         network = tl.layers.DenseLayer(network, n_units=800, act=tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, is_fix=True, is_train=is_train, name='drop3')
-        network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
+        network = tl.layers.DenseLayer(network, n_units=10, act=None, name='output')
     return network
 
 

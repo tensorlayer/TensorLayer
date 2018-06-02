@@ -127,7 +127,7 @@ class Critic(object):
             n = InputLayer(self.s, name='in')
             n = DenseLayer(n, n_units=30, act=tf.nn.relu6, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden')
             # n = DenseLayer(n, n_units=5, act=tf.nn.relu, W_init=tf.random_uniform_initializer(0, 0.01), name='hidden2')
-            n = DenseLayer(n, n_units=1, act=tf.identity, name='V')
+            n = DenseLayer(n, n_units=1, act=None, name='V')
             self.v = n.outputs
 
         with tf.variable_scope('squared_TD_error'):

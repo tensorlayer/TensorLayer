@@ -132,7 +132,7 @@ class MobileNetV1(Layer):
             n = GlobalMeanPool2d(n, name='globalmeanpool')
             if end_with in n.outputs.name: return n
             # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-            # n = DenseLayer(n, 1000, act=tf.identity, name='output')   # equal
+            # n = DenseLayer(n, 1000, name='output')   # equal
             n = ReshapeLayer(n, [-1, 1, 1, 1024], name='reshape')
             if end_with in n.outputs.name: return n
             n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')

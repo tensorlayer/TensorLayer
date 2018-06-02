@@ -3,7 +3,7 @@
 import tensorflow as tf
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
+from tensorlayer.layers.core import Layer
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -46,6 +46,7 @@ class PadLayer(Layer):
             name='pad_layer',
     ):
         super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("PadLayer   %s: padding:%s mode:%s" % (name, list(padding), mode))
 
         self.inputs = prev_layer.outputs
@@ -83,6 +84,7 @@ class ZeroPad1d(Layer):
             name='zeropad1d',
     ):
         super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("ZeroPad1d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
@@ -119,6 +121,7 @@ class ZeroPad2d(Layer):
             name='zeropad2d',
     ):
         super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("ZeroPad2d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs
@@ -154,6 +157,7 @@ class ZeroPad3d(Layer):
             name='zeropad3d',
     ):
         super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("ZeroPad3d   %s: padding:%s" % (name, str(padding)))
 
         self.inputs = prev_layer.outputs

@@ -24,7 +24,7 @@ def slim_block(x):
         x = slim.dropout(x, 0.5, is_training=is_training)
         x = slim.fully_connected(x, 800, activation_fn=tf.nn.relu)
         x = slim.dropout(x, 0.5, is_training=is_training)
-        logits = slim.fully_connected(x, 10, activation_fn=tf.identity)
+        logits = slim.fully_connected(x, 10, activation_fn=None)
     return logits, {}
 
 

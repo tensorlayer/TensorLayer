@@ -6,7 +6,7 @@
 
 [![Build Status](https://img.shields.io/travis/tensorlayer/tensorlayer.svg?label=Travis&branch=master)](https://travis-ci.org/tensorlayer/tensorlayer)
 [![PyPI version](https://badge.fury.io/py/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
-[![Github commits (since latest release)](https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc0...master)
+[![Github commits (since latest release)](https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
 [![Supported TF Version](https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg)](https://github.com/tensorflow/tensorflow/releases)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9)](https://app.codacy.com/app/tensorlayer/tensorlayer)
@@ -16,7 +16,6 @@
 [![Documentation Status](https://img.shields.io/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN)](https://tensorlayer.readthedocs.io/)
 [![Documentation Status](https://img.shields.io/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN)](https://tensorlayercn.readthedocs.io/)
 [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tensorlayer/Lobby)
 
 <br/>
 
