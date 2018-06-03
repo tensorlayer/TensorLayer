@@ -1095,18 +1095,9 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            n_filter=32,
-            filter_size=(3, 3),
-            rate=2,
-            act=tf.identity,
-            padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='atrou2d'
+            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=tf.identity, padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None, b_init_args=None, name='atrou2d'
     ):
 
         super(AtrousConv2dLayer, self
@@ -1178,18 +1169,9 @@ class AtrousConv2dTransposeLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            shape=(3, 3, 128, 256),
-            output_shape=(1, 64, 64, 128),
-            rate=2,
-            act=tf.identity,
-            padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            name='atrou2dtranspose'
+            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=tf.identity,
+            padding='SAME', W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='atrou2dtranspose'
     ):
 
         super(AtrousConv2dTransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
