@@ -9,4 +9,5 @@ python:
         - db
         - dev
         - doc
+        - extra
         - test
