@@ -63,5 +63,5 @@ class PReluLayer(Layer):
             except Exception:  # TF 0.12
                 self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
-        self._update_layers(self.outputs)
-        self._update_params([alphas])
+        self._add_layers(self.outputs)
+        self._add_params([alphas])

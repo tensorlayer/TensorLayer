@@ -35,7 +35,7 @@ class InputLayer(Layer):
 
         self.outputs = inputs
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class OneHotInputLayer(Layer):
@@ -78,7 +78,7 @@ class OneHotInputLayer(Layer):
 
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class Word2vecEmbeddingInputlayer(Layer):
@@ -227,8 +227,8 @@ class Word2vecEmbeddingInputlayer(Layer):
             self.outputs = embed
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
 
-        self._update_layers(self.outputs)
-        self._update_params([embeddings, nce_weights, nce_biases])
+        self._add_layers(self.outputs)
+        self._add_params([embeddings, nce_weights, nce_biases])
 
 
 class EmbeddingInputlayer(Layer):
@@ -295,8 +295,8 @@ class EmbeddingInputlayer(Layer):
         print("#################")
         print("BEFORE:", self.all_layers)
 
-        self._update_layers(self.outputs)
-        self._update_params(embeddings)
+        self._add_layers(self.outputs)
+        self._add_params(embeddings)
 
         print("AFTER:", self.all_layers)
 
@@ -397,5 +397,5 @@ class AverageEmbeddingInputlayer(Layer):
 
         self.outputs = sentence_embeddings
 
-        self._update_layers(self.outputs)
-        self._update_params(self.embeddings)
+        self._add_layers(self.outputs)
+        self._add_params(self.embeddings)

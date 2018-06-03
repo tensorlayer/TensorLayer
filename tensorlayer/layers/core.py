@@ -432,18 +432,18 @@ class Layer:
 
             self.inputs = prev_layer.outputs
 
-            self._update_layers(prev_layer.all_layers)
-            self._update_params(prev_layer.all_params)
-            self._update_all_drop(prev_layer.all_drop)
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
 
         elif isinstance(prev_layer, list):
             # 2. for layer have multiply inputs i.e. ConcatLayer
 
             self.inputs = [layer.outputs for layer in prev_layer]
 
-            self._update_layers(sum([l.all_layers for l in prev_layer], []))
-            self._update_params(sum([l.all_params for l in prev_layer], []))
-            self._update_all_drop(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            self._add_params(sum([l.all_params for l in prev_layer], []))
+            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
@@ -457,9 +457,9 @@ class Layer:
 
         elif prev_layer is not None:
             # 4. tl.models
-            self._update_layers(prev_layer.all_layers)
-            self._update_params(prev_layer.all_params)
-            self._update_all_drop(prev_layer.all_drop)
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
 
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
@@ -520,12 +520,12 @@ class Layer:
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
 
-        net_new._update_layers(self.all_layers[:-1])
-        net_new._update_layers(net_new.outputs)
+        net_new._add_layers(self.all_layers[:-1])
+        net_new._add_layers(net_new.outputs)
 
-        net_new._update_params(self.all_params)
+        net_new._add_params(self.all_params)
 
-        net_new._update_all_drop(self.all_drop)
+        net_new._add_dropout_layers(self.all_drop)
 
         return net_new
 
@@ -544,7 +544,7 @@ class Layer:
         return len(self.all_layers)
 
     @protected_method
-    def _update_layers(self, layers):
+    def _add_layers(self, layers):
         if isinstance(layers, list):
             self.all_layers.extend(list(layers))
         else:
@@ -553,7 +553,7 @@ class Layer:
         self.all_layers = list_remove_repeat(self.all_layers)
 
     @protected_method
-    def _update_params(self, params):
+    def _add_params(self, params):
         if isinstance(params, list):
             self.all_params.extend(list(params))
         else:
@@ -562,7 +562,7 @@ class Layer:
         self.all_params = list_remove_repeat(self.all_params)
 
     @protected_method
-    def _update_all_drop(self, drop_layers):
+    def _add_dropout_layers(self, drop_layers):
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
             self.all_drop.update(dict(drop_layers))
 
@@ -676,11 +676,11 @@ class DenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
         if b_init is not None:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class ReconLayer(DenseLayer):
@@ -977,7 +977,7 @@ class DropoutLayer(Layer):
             if is_fix is False:
                 self.all_drop.update({LayersConfig.set_keep[name]: keep})
 
-            self._update_layers(self.outputs)
+            self._add_layers(self.outputs)
 
 
 class GaussianNoiseLayer(Layer):
@@ -1033,7 +1033,7 @@ class GaussianNoiseLayer(Layer):
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
                 self.outputs = self.inputs + noise
 
-            self._update_layers(self.outputs)
+            self._add_layers(self.outputs)
 
 
 class DropconnectDenseLayer(Layer):
@@ -1123,5 +1123,5 @@ class DropconnectDenseLayer(Layer):
             self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
 
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
-        self._update_layers(self.outputs)
-        self._update_params([W, b])
+        self._add_layers(self.outputs)
+        self._add_params([W, b])

@@ -53,7 +53,7 @@ class ExpandDimsLayer(Layer):
             except Exception:  # TF11
                 self.outputs = tf.expand_dims(self.inputs, dim=axis)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class TileLayer(Layer):
@@ -91,4 +91,4 @@ class TileLayer(Layer):
         with tf.variable_scope(name):
             self.outputs = tf.tile(self.inputs, multiples=multiples)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)

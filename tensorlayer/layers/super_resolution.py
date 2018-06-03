@@ -89,7 +89,7 @@ class SubpixelConv2d(Layer):
         with tf.variable_scope(name):
             self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
     @private_method
     def _PS(self, X, r, n_out_channels):
@@ -156,7 +156,7 @@ class SubpixelConv1d(Layer):
         with tf.name_scope(name):
             self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
     @private_method
     def _PS(self, I, r):

@@ -255,8 +255,8 @@ class RNNLayer(Layer):
 
         self.final_state = state
 
-        self._update_layers(self.outputs)
-        self._update_params(rnn_variables)
+        self._add_layers(self.outputs)
+        self._add_params(rnn_variables)
 
 
 class BiRNNLayer(Layer):
@@ -490,8 +490,8 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        self._update_layers(self.outputs)
-        self._update_params(rnn_variables)
+        self._add_layers(self.outputs)
+        self._add_params(rnn_variables)
 
 
 class ConvRNNCell(object):
@@ -795,8 +795,8 @@ class ConvLSTMLayer(Layer):
 
         self.final_state = state
 
-        self._update_layers(self.outputs)
-        self._update_params(rnn_variables)
+        self._add_layers(self.outputs)
+        self._add_params(rnn_variables)
 
 
 # Advanced Ops for Dynamic RNN
@@ -1230,8 +1230,8 @@ class DynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self._update_layers(self.outputs)
-        self._update_params(rnn_variables)
+        self._add_layers(self.outputs)
+        self._add_params(rnn_variables)
 
 
 class BiDynamicRNNLayer(Layer):
@@ -1489,8 +1489,8 @@ class BiDynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self._update_layers(self.outputs)
-        self._update_params(rnn_variables)
+        self._add_layers(self.outputs)
+        self._add_params(rnn_variables)
 
 
 class Seq2Seq(Layer):
@@ -1668,12 +1668,12 @@ class Seq2Seq(Layer):
         self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
-        self._update_layers(network_encode.all_layers)
-        self._update_params(network_encode.all_params)
-        self._update_all_drop(network_encode.all_drop)
+        self._add_layers(network_encode.all_layers)
+        self._add_params(network_encode.all_params)
+        self._add_dropout_layers(network_encode.all_drop)
 
-        self._update_layers(network_decode.all_layers)
-        self._update_params(network_decode.all_params)
-        self._update_all_drop(network_decode.all_drop)
+        self._add_layers(network_decode.all_layers)
+        self._add_params(network_decode.all_params)
+        self._add_dropout_layers(network_decode.all_drop)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)

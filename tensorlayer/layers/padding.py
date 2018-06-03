@@ -56,7 +56,7 @@ class PadLayer(Layer):
             )
 
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ZeroPad1d(Layer):
@@ -90,7 +90,7 @@ class ZeroPad1d(Layer):
             raise AssertionError()
 
         self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ZeroPad2d(Layer):
@@ -125,7 +125,7 @@ class ZeroPad2d(Layer):
             raise AssertionError("Padding should be of type `int` or `tuple`")
 
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ZeroPad3d(Layer):
@@ -160,4 +160,4 @@ class ZeroPad3d(Layer):
 
         self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)

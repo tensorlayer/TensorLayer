@@ -87,5 +87,5 @@ class TimeDistributedLayer(Layer):
 
         self.outputs = tf.stack(x, axis=1, name=name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

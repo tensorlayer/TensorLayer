@@ -49,7 +49,7 @@ class FlattenLayer(Layer):
 
         self.outputs = _out
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ReshapeLayer(Layer):
@@ -82,7 +82,7 @@ class ReshapeLayer(Layer):
             raise ValueError("Shape list can not be empty")
 
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
 
@@ -121,4 +121,4 @@ class TransposeLayer(Layer):
         logging.info("TransposeLayer  %s: perm:%s" % (name, perm))
 
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)

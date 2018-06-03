@@ -77,8 +77,8 @@ class LambdaLayer(Layer):
             self.outputs = fn(self.inputs, **self.fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class SlimNetsLayer(Layer):
@@ -141,8 +141,8 @@ class SlimNetsLayer(Layer):
             # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
-        self._update_layers(slim_layers)
-        self._update_params(slim_variables)
+        self._add_layers(slim_layers)
+        self._add_params(slim_variables)
 
 
 @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
@@ -183,8 +183,8 @@ class KerasLayer(Layer):
             self.outputs = keras_layer(self.inputs, **self.keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
@@ -229,5 +229,5 @@ class EstimatorLayer(Layer):
             self.outputs = model_fn(self.inputs, **self.layer_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

@@ -185,12 +185,12 @@ class BinaryDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init is not None:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class BinaryConv2d(Layer):
@@ -322,12 +322,12 @@ class BinaryConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class TernaryDenseLayer(Layer):
@@ -416,12 +416,12 @@ class TernaryDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init is not None:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class TernaryConv2d(Layer):
@@ -556,12 +556,12 @@ class TernaryConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class DorefaDenseLayer(Layer):
@@ -657,11 +657,11 @@ class DorefaDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
         if b_init is not None:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class DorefaConv2d(Layer):
@@ -799,12 +799,12 @@ class DorefaConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class SignLayer(Layer):
@@ -833,7 +833,7 @@ class SignLayer(Layer):
             # self.outputs = tl.act.sign(self.inputs)
             self.outputs = quantize(self.inputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ScaleLayer(Layer):
@@ -866,5 +866,5 @@ class ScaleLayer(Layer):
             scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
             self.outputs = self.inputs * scale
 
-        self._update_layers(self.outputs)
-        self._update_params(scale)
+        self._add_layers(self.outputs)
+        self._add_params(scale)

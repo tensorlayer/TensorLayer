@@ -110,12 +110,12 @@ class Conv1dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class Conv2dLayer(Layer):
@@ -230,12 +230,12 @@ class Conv2dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class DeConv2dLayer(Layer):
@@ -359,12 +359,12 @@ class DeConv2dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class Conv3dLayer(Layer):
@@ -443,12 +443,12 @@ class Conv3dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params([W])
+            self._add_params([W])
 
 
 class DeConv3dLayer(Layer):
@@ -527,12 +527,12 @@ class DeConv3dLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params([W])
+            self._add_params([W])
 
 
 class UpSampling2dLayer(Layer):
@@ -604,7 +604,7 @@ class UpSampling2dLayer(Layer):
                     self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
                 )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class DownSampling2dLayer(Layer):
@@ -676,7 +676,7 @@ class DownSampling2dLayer(Layer):
                     self.inputs, new_height=size[0], new_width=size[1], method=method, align_corners=align_corners
                 )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class DeformableConv2d(Layer):
@@ -809,12 +809,12 @@ class DeformableConv2d(Layer):
                 tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
             )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
     @private_method
     def _to_bc_h_w(self, x, x_shape):
@@ -1098,12 +1098,12 @@ class AtrousConv2dLayer(Layer):
 
                 self.outputs = tf.add(self.outputs, b, name='add_bias')
 
-            self._update_layers(self.outputs)
+            self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([filters, b])
+            self._add_params([filters, b])
         else:
-            self._update_params(filters)
+            self._add_params(filters)
 
 
 def deconv2d_bilinear_upsampling_initializer(shape):
@@ -1251,8 +1251,8 @@ class Conv1d(Layer):
         self.outputs = _conv1d(self.inputs)
         new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(new_variables)
+        self._add_layers(self.outputs)
+        self._add_params(new_variables)
 
 
 # TODO: DeConv1d
@@ -1388,8 +1388,8 @@ class Conv2d(Layer):
 
         self.outputs = conv2d(self.inputs)
 
-        self._update_layers(self.outputs)
-        self._update_params(conv2d.weights)
+        self._add_layers(self.outputs)
+        self._add_params(conv2d.weights)
 
 
 class DeConv2d(Layer):
@@ -1467,8 +1467,8 @@ class DeConv2d(Layer):
         self.outputs = conv2d_transpose(self.inputs)
         new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(new_variables)
+        self._add_layers(self.outputs)
+        self._add_params(new_variables)
 
 
 class DeConv3d(Layer):
@@ -1543,8 +1543,8 @@ class DeConv3d(Layer):
             self.outputs = nn(self.inputs)
             new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(new_variables)
+        self._add_layers(self.outputs)
+        self._add_params(new_variables)
 
 
 class DepthwiseConv2d(Layer):
@@ -1661,12 +1661,12 @@ class DepthwiseConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([W, b])
+            self._add_params([W, b])
         else:
-            self._update_params(W)
+            self._add_params(W)
 
 
 class SeparableConv1d(Layer):
@@ -1770,8 +1770,8 @@ class SeparableConv1d(Layer):
             self.outputs = nn(self.inputs)
             new_variables = nn.weights
 
-        self._update_layers(self.outputs)
-        self._update_params(new_variables)
+        self._add_layers(self.outputs)
+        self._add_params(new_variables)
 
 
 class SeparableConv2d(Layer):
@@ -1881,8 +1881,8 @@ class SeparableConv2d(Layer):
             self.outputs = nn(self.inputs)
             new_variables = nn.weights
 
-        self._update_layers(self.outputs)
-        self._update_params(new_variables)
+        self._add_layers(self.outputs)
+        self._add_params(new_variables)
 
 
 class GroupConv2d(Layer):
@@ -1972,12 +1972,12 @@ class GroupConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._update_params([We, b])
+            self._add_params([We, b])
         else:
-            self._update_params(We)
+            self._add_params(We)
 
 
 # Alias

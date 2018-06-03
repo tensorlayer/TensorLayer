@@ -304,9 +304,9 @@ class SpatialTransformer2dAffineLayer(Layer):
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         # # theta_layer
-        # self._update_layers(theta_layer.all_layers)
-        # self._update_params(theta_layer.all_params)
+        # self._add_layers(theta_layer.all_layers)
+        # self._add_params(theta_layer.all_params)
         # self.all_drop.update(theta_layer.all_drop)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

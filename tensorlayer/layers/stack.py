@@ -53,11 +53,11 @@ class StackLayer(Layer):
         self.outputs = tf.stack(self.inputs, axis=axis, name=name)
 
         # for i in range(1, len(layers)):
-        #     self._update_layers(list(layers[i].all_layers))
-        #     self._update_params(list(layers[i].all_params))
+        #     self._add_layers(list(layers[i].all_layers))
+        #     self._add_params(list(layers[i].all_params))
         #     self.all_drop.update(dict(layers[i].all_drop))
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release

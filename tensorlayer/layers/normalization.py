@@ -62,7 +62,7 @@ class LocalResponseNormLayer(Layer):
         with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class BatchNormLayer(Layer):
@@ -198,8 +198,8 @@ class BatchNormLayer(Layer):
 
             variables.extend([moving_mean, moving_variance])
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class InstanceNormLayer(Layer):
@@ -251,8 +251,8 @@ class InstanceNormLayer(Layer):
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class LayerNormLayer(Layer):
@@ -299,5 +299,5 @@ class LayerNormLayer(Layer):
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

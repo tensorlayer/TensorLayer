@@ -54,4 +54,4 @@ class ROIPoolingLayer(Layer):
 
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)

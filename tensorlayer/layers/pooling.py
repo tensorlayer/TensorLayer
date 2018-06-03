@@ -76,7 +76,7 @@ class PoolLayer(Layer):
 
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MaxPool1d(Layer):
@@ -116,7 +116,7 @@ class MaxPool1d(Layer):
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MeanPool1d(Layer):
@@ -163,7 +163,7 @@ class MeanPool1d(Layer):
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MaxPool2d(Layer):
@@ -199,7 +199,7 @@ class MaxPool2d(Layer):
             self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MeanPool2d(Layer):
@@ -237,7 +237,7 @@ class MeanPool2d(Layer):
             self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MaxPool3d(Layer):
@@ -283,7 +283,7 @@ class MaxPool3d(Layer):
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class MeanPool3d(Layer):
@@ -331,7 +331,7 @@ class MeanPool3d(Layer):
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMaxPool1d(Layer):
@@ -360,7 +360,7 @@ class GlobalMaxPool1d(Layer):
 
         self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMeanPool1d(Layer):
@@ -389,7 +389,7 @@ class GlobalMeanPool1d(Layer):
 
         self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMaxPool2d(Layer):
@@ -418,7 +418,7 @@ class GlobalMaxPool2d(Layer):
 
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMeanPool2d(Layer):
@@ -447,7 +447,7 @@ class GlobalMeanPool2d(Layer):
 
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMaxPool3d(Layer):
@@ -476,7 +476,7 @@ class GlobalMaxPool3d(Layer):
 
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class GlobalMeanPool3d(Layer):
@@ -505,7 +505,7 @@ class GlobalMeanPool3d(Layer):
 
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 # Alias

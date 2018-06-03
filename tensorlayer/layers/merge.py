@@ -65,7 +65,7 @@ class ConcatLayer(Layer):
 
         self.outputs = tf.concat(self.inputs, concat_dim, name=name)
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ElementwiseLayer(Layer):
@@ -121,11 +121,11 @@ class ElementwiseLayer(Layer):
         self.outputs = self._apply_activation(self.outputs)
 
         # for i in range(1, len(layers)):
-        #     self._update_layers(list(layers[i].all_layers))
-        #     self._update_params(list(layers[i].all_params))
+        #     self._add_layers(list(layers[i].all_layers))
+        #     self._add_params(list(layers[i].all_params))
         #     self.all_drop.update(dict(layers[i].all_drop))
 
-        self._update_layers(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ElementwiseLambdaLayer(Layer):
@@ -177,5 +177,5 @@ class ElementwiseLambdaLayer(Layer):
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self._update_layers(self.outputs)
-        self._update_params(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
