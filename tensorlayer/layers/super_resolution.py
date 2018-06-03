@@ -3,9 +3,10 @@
 import tensorflow as tf
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
+from tensorlayer.layers.core import Layer
 
-from tensorlayer.deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import private_method
 
 __all__ = [
     'SubpixelConv1d',
@@ -66,39 +67,50 @@ class SubpixelConv2d(Layer):
     """
     # github/Tetrachrome/subpixel  https://github.com/Tetrachrome/subpixel/blob/master/subpixel.py
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, scale=2, n_out_channel=None, act=tf.identity, name='subpixel_conv2d'):
-        _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+    def __init__(self, prev_layer, scale=2, n_out_channel=None, act=None, name='subpixel_conv2d'):
 
-        super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, name=name)
+        super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
         logging.info(
-            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" % (name, scale, n_out_channel, act.__name__)
+            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" %
+            (name, scale, n_out_channel, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        def _PS(X, r, n_out_channels):
-            if n_out_channels >= 1:
-                if int(X.get_shape()[-1]) != (r**2) * n_out_channels:
-                    raise Exception(_err_log)
-                # bsize, a, b, c = X.get_shape().as_list()
-                # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
-                # Xs=tf.split(X,r,3) #b*h*w*r*r
-                # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
-                # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
-
-                X = tf.depth_to_space(X, r)
-            else:
-                logging.info(_err_log)
-            return X
-
         self.inputs = prev_layer.outputs
+
         if n_out_channel is None:
+
             if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
-                raise Exception(_err_log)
+                raise Exception(
+                    "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+                )
+
             n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
 
         with tf.variable_scope(name):
-            self.outputs = act(_PS(self.inputs, r=scale, n_out_channels=n_out_channel))
+            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
 
         self.all_layers.append(self.outputs)
+
+    @private_method
+    def _PS(self, X, r, n_out_channels):
+
+        _err_log = "SubpixelConv2d: The number of input channels == (scale x scale) x The number of output channels"
+
+        if n_out_channels >= 1:
+            if int(X.get_shape()[-1]) != (r**2) * n_out_channels:
+                raise Exception(_err_log)
+            # bsize, a, b, c = X.get_shape().as_list()
+            # bsize = tf.shape(X)[0] # Handling Dimension(None) type for undefined batch dim
+            # Xs=tf.split(X,r,3) #b*h*w*r*r
+            # Xr=tf.concat(Xs,2) #b*h*(r*w)*r
+            # X=tf.reshape(Xr,(bsize,r*a,r*b,n_out_channel)) # b*(r*h)*(r*w)*c
+
+            X = tf.depth_to_space(X, r)
+        else:
+            logging.error(_err_log)
+
+        return X
 
 
 class SubpixelConv1d(Layer):
@@ -133,22 +145,28 @@ class SubpixelConv1d(Layer):
     """
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, scale=2, act=tf.identity, name='subpixel_conv1d'):
+    def __init__(self, prev_layer, scale=2, act=None, name='subpixel_conv1d'):
 
-        def _PS(I, r):
-            X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
-            X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
-            X = tf.transpose(X, [2, 1, 0])
-            return X
+        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("SubpixelConv1d  %s: scale: %d act: %s" % (name, scale, act.__name__))
+        logging.info(
+            "SubpixelConv1d  %s: scale: %d act: %s" %
+            (name, scale, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
+
         with tf.name_scope(name):
-            self.outputs = act(_PS(self.inputs, r=scale))
+            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
 
         self.all_layers.append(self.outputs)
+
+    @private_method
+    def _PS(self, I, r):
+        X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
+        X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
+        X = tf.transpose(X, [2, 1, 0])
+        return X
 
 
 # Alias

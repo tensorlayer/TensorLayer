@@ -50,10 +50,14 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     into (1000, 180) and feed to ``inputs``. After getting a batch, you can split it back into X1 and X2.
 
     """
-    assert len(inputs) == len(targets)
+
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+
     if shuffle:
         indices = np.arange(len(inputs))
         np.random.shuffle(indices)
+
     for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
         if shuffle:
             excerpt = indices[start_idx:start_idx + batch_size]
@@ -126,8 +130,12 @@ def seq_minibatches(inputs, targets, batch_size, seq_length, stride=1):
     ... ['e' 'e']] [3 4]
 
     """
-    assert len(inputs) == len(targets)
+
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+
     n_loads = (batch_size * stride) + (seq_length - stride)
+
     for start_idx in range(0, len(inputs) - n_loads + 1, (batch_size * stride)):
         seq_inputs = np.zeros((batch_size, seq_length) + inputs.shape[1:], dtype=inputs.dtype)
         seq_targets = np.zeros((batch_size, seq_length) + targets.shape[1:], dtype=targets.dtype)
@@ -192,7 +200,10 @@ def seq_minibatches2(inputs, targets, batch_size, num_steps):
     -----
     - Hint, if the input data are images, you can modify the source code `data = np.zeros([batch_size, batch_len)` to `data = np.zeros([batch_size, batch_len, inputs.shape[1], inputs.shape[2], inputs.shape[3]])`.
     """
-    assert len(inputs) == len(targets)
+
+    if len(inputs) != len(targets):
+        raise AssertionError("The length of inputs and targets should be equal")
+
     data_len = len(inputs)
     batch_len = data_len // batch_size
     # data = np.zeros([batch_size, batch_len])

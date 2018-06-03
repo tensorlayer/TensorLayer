@@ -26,17 +26,12 @@ For more complex activation, TensorFlow API will be required.
 
 .. autosummary::
 
-   identity
    ramp
    leaky_relu
    swish
    sign
    hard_tanh
    pixel_wise_softmax
-
-Identity
--------------
-.. autofunction:: identity
 
 Ramp
 ------

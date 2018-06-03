@@ -37,13 +37,17 @@ following snippet:
 """
 
 import os
+import time
+
+import numpy as np
 from scipy.misc import imread, imresize
+
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
 
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
@@ -130,7 +134,7 @@ def fc_layers(net):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc3_relu')
     return net
 
 
@@ -155,14 +159,14 @@ tl.layers.initialize_global_variables(sess)
 net.print_params()
 net.print_layers()
 
-if not os.path.isfile("vgg16_weights.npz"):
-    print("Please download vgg16_weights.npz from : http://www.cs.toronto.edu/~frossard/post/vgg16/")
-    exit()
-npz = np.load('vgg16_weights.npz')
+tl.files.maybe_download_and_extract(
+    'vgg16_weights.npz', 'models', 'http://www.cs.toronto.edu/~frossard/vgg16/', expected_bytes=553436134
+)
+npz = np.load(os.path.join('models', 'vgg16_weights.npz'))
 
 params = []
 for val in sorted(npz.items()):
-    print("  Loading %s" % str(val[1].shape))
+    print("  Loading params %s" % str(val[1].shape))
     params.append(val[1])
 
 tl.files.assign_params(sess, params, net)

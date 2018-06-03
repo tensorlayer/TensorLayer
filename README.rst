@@ -5,24 +5,24 @@
            <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
        </div>
    </a>
-   
+
 .. image:: https://img.shields.io/travis/tensorlayer/tensorlayer.svg?label=Travis&branch=master
     :target: https://travis-ci.org/tensorlayer/tensorlayer
-   
+
 .. image:: https://badge.fury.io/py/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/
-   
+
 .. image:: https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg
-    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-   
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master
+
 .. image:: https://img.shields.io/pypi/pyversions/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/
-   
+
 .. image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
     :target: https://github.com/tensorflow/tensorflow/releases
-   
+
 .. image:: https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9
-    :target: https://app.codacy.com/app/tensorlayer/tensorlayer 
+    :target: https://app.codacy.com/app/tensorlayer/tensorlayer
 
 .. raw:: html
 
@@ -36,14 +36,14 @@
 .. image:: https://img.shields.io/docker/pulls/tensorlayer/tensorlayer.svg?maxAge=604800
     :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
 
-.. image:: https://img.shields.io/readthedocs/tensorlayer/stable.svg?label=ReadTheDocs
+.. image:: https://img.shields.io/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN
     :target: https://tensorlayer.readthedocs.io/
+
+.. image:: https://img.shields.io/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN
+    :target: https://tensorlayercn.readthedocs.io/
 
 .. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
     :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
-
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-    :target: https://gitter.im/tensorlayer/Lobby
 
 .. raw:: html
 
@@ -61,14 +61,14 @@
 
 .. image:: https://awesome.re/mentioned-badge.svg
     :target: https://github.com/tensorlayer/awesome-tensorlayer
-    
-.. image:: http://img.shields.io/badge/documentation-enlish-blue.svg
+
+.. image:: https://img.shields.io/badge/documentation-english-blue.svg
     :target: https://tensorlayer.readthedocs.io/
-    
-.. image:: http://img.shields.io/badge/documentation-中文-blue.svg
+
+.. image:: https://img.shields.io/badge/documentation-中文-blue.svg
     :target: https://tensorlayercn.readthedocs.io/
-    
-.. image:: http://img.shields.io/badge/book-中文-blue.svg
+
+.. image:: https://img.shields.io/badge/book-中文-blue.svg
     :target: http://www.broadview.com.cn/book/5059/
 
 TensorLayer is a deep learning and reinforcement learning library on top

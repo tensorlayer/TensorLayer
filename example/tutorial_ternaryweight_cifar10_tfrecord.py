@@ -169,7 +169,7 @@ with tf.device('/cpu:0'):
             net = tl.layers.FlattenLayer(net, name='flatten')
             net = tl.layers.TernaryDenseLayer(net, 384, act=tf.nn.relu, name='d1relu')
             net = tl.layers.TernaryDenseLayer(net, 192, act=tf.nn.relu, name='d2relu')
-            net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')

@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import logging
+import numbers
 
 import tensorflow as tf
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import standard_ops
+
+from tensorlayer import tl_logging as logging
 
 __all__ = [
     'cross_entropy',
@@ -94,10 +98,11 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     - `ericjang-DRAW <https://github.com/ericjang/draw/blob/master/draw.py#L73>`__
 
     """
-    #     from tensorflow.python.framework import ops
+
     #     with ops.op_scope([output, target], name, "bce_loss") as name:
     #         output = ops.convert_to_tensor(output, name="preds")
     #         target = ops.convert_to_tensor(targets, name="target")
+
     with tf.name_scope(name):
         return tf.reduce_mean(
             tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1)
@@ -525,10 +530,6 @@ def li_regularizer(scale, scope=None):
     ValueError : if scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-    import numbers
-    from tensorflow.python.framework import ops
-    from tensorflow.python.ops import standard_ops
-    # from tensorflow.python.platform import tf_logging as logging
 
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
@@ -576,13 +577,10 @@ def lo_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-    import numbers
-    from tensorflow.python.framework import ops
-    from tensorflow.python.ops import standard_ops
-    # from tensorflow.python.platform import tf_logging as logging
 
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
+
     if isinstance(scale, numbers.Real):
         if scale < 0.:
             raise ValueError('Setting a scale less than 0 on a regularizer: %g' % scale)
@@ -628,12 +626,10 @@ def maxnorm_regularizer(scale=1.0):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-    import numbers
-    from tensorflow.python.framework import ops
-    from tensorflow.python.ops import standard_ops
 
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
+
     if isinstance(scale, numbers.Real):
         if scale < 0.:
             raise ValueError('Setting a scale less than 0 on a regularizer: %g' % scale)
@@ -676,12 +672,10 @@ def maxnorm_o_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-    import numbers
-    from tensorflow.python.framework import ops
-    from tensorflow.python.ops import standard_ops
 
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
+
     if isinstance(scale, numbers.Real):
         if scale < 0.:
             raise ValueError('Setting a scale less than 0 on a regularizer: %g' % scale)
@@ -726,12 +720,10 @@ def maxnorm_i_regularizer(scale):
     ValueError : If scale is outside of the range [0.0, 1.0] or if scale is not a float.
 
     """
-    import numbers
-    from tensorflow.python.framework import ops
-    from tensorflow.python.ops import standard_ops
 
     if isinstance(scale, numbers.Integral):
         raise ValueError('scale cannot be an integer: %s' % scale)
+
     if isinstance(scale, numbers.Real):
         if scale < 0.:
             raise ValueError('Setting a scale less than 0 on a regularizer: %g' % scale)

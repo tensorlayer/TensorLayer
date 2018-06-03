@@ -44,12 +44,12 @@ def main_test_layers(model='relu'):
         net = tl.layers.DropoutLayer(net, keep=0.5, name='drop2')
         net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu2')
         net = tl.layers.DropoutLayer(net, keep=0.5, name='drop3')
-        net = tl.layers.DenseLayer(net, n_units=10, act=tf.identity, name='output')
+        net = tl.layers.DenseLayer(net, n_units=10, act=None, name='output')
     elif model == 'dropconnect':
         net = tl.layers.InputLayer(x, name='input')
         net = tl.layers.DropconnectDenseLayer(net, keep=0.8, n_units=800, act=tf.nn.relu, name='dropconnect1')
         net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=800, act=tf.nn.relu, name='dropconnect2')
-        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=10, act=tf.identity, name='output')
+        net = tl.layers.DropconnectDenseLayer(net, keep=0.5, n_units=10, act=None, name='output')
 
     # To print all attributes of a Layer.
     # attrs = vars(net)
@@ -234,7 +234,7 @@ def main_test_stacked_denoise_AE(model='relu'):
     recon_layer2 = tl.layers.ReconLayer(net, x_recon=x_recon1, n_units=800, act=act_recon, name='recon_layer2')
     # 3rd layer
     net = tl.layers.DropoutLayer(net, keep=0.5, name='drop3')
-    net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+    net = tl.layers.DenseLayer(net, 10, act=None, name='output')
 
     # Define fine-tune process
     y = net.outputs
@@ -398,7 +398,7 @@ def main_test_cnn_layer():
     net = tl.layers.DropoutLayer(net, keep=0.5, name='drop1')
     net = tl.layers.DenseLayer(net, 256, act=tf.nn.relu, name='relu1')
     net = tl.layers.DropoutLayer(net, keep=0.5, name='drop2')
-    net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+    net = tl.layers.DenseLayer(net, 10, act=None, name='output')
 
     y = net.outputs
 

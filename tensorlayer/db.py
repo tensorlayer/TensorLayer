@@ -5,14 +5,13 @@ import inspect
 import pickle
 import time
 import uuid
+
 from datetime import datetime
 
-try:
-    import gridfs
-    from pymongo import MongoClient
-except ImportError:
-    install_instr = "Please make sure you install PyMongo with the command: pip install pymongo."
-    raise ImportError("__init__.py : Could not import PyMongo." + install_instr)
+from tensorlayer.lazy_imports import LazyImport
+
+gridfs = LazyImport("gridfs")
+pymongo = LazyImport("pymongo")
 
 
 def AutoFill(func):
@@ -64,7 +63,7 @@ class TensorDB(object):
             self, ip='localhost', port=27017, db_name='db_name', user_name=None, password='password', studyID=None
     ):
         ## connect mongodb
-        client = MongoClient(ip, port)
+        client = pymongo.MongoClient(ip, port)
         self.db = client[db_name]
         if user_name != None:
             self.db.authenticate(user_name, password)

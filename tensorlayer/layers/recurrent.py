@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import inspect
-
 import tensorflow as tf
+
+from tensorflow.python.ops import array_ops
 from tensorflow.python.util.tf_inspect import getfullargspec
+from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+from tensorlayer.layers.core import list_remove_repeat
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
-from tensorlayer.deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'RNNLayer',
@@ -147,17 +152,17 @@ class RNNLayer(Layer):
             return_seq_2d=False,
             name='rnn',
     ):
-        super(RNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
+
+        super(RNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {}
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning('pop state_is_tuple fails.')
 
@@ -165,6 +170,7 @@ class RNNLayer(Layer):
             "RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " %
             (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
         )
+
         # You can get the dimension by .get_shape() or ._shape, and check the
         # dimension by .with_rank() as follow.
         # self.inputs.get_shape().with_rank(2)
@@ -188,10 +194,11 @@ class RNNLayer(Layer):
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       RNN batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
+
         self.batch_size = batch_size
 
         # Simplified version of tensorflow.models.rnn.rnn.py's rnn().
@@ -205,14 +212,17 @@ class RNNLayer(Layer):
         #           for input_ in tf.split(1, num_steps, inputs)]
         # outputs, state = rnn.rnn(cell, inputs, initial_state=self._initial_state)
         outputs = []
+
         if 'reuse' in getfullargspec(cell_fn.__init__).args:
-            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **cell_init_args)
+            self.cell = cell = cell_fn(num_units=n_hidden, reuse=tf.get_variable_scope().reuse, **self.cell_init_args)
         else:
-            self.cell = cell = cell_fn(num_units=n_hidden, **cell_init_args)
+            self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
+
         if initial_state is None:
             self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)  #dtype=tf.float32)  # 1.2.3
+
         state = self.initial_state
-        # with tf.variable_scope("model", reuse=None, initializer=initializer):
+
         with tf.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
                 if time_step > 0: tf.get_variable_scope().reuse_variables()
@@ -246,10 +256,6 @@ class RNNLayer(Layer):
                         self.outputs = tf.reshape(tf.concat(1, outputs), [-1, n_steps, n_hidden])
 
         self.final_state = state
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
 
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
@@ -340,19 +346,21 @@ class BiRNNLayer(Layer):
             return_seq_2d=False,
             name='birnn',
     ):
-        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BiRNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}  # 'use_peepholes': True,
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
 
         logging.info(
             "BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (
@@ -366,8 +374,8 @@ class BiRNNLayer(Layer):
         if fixed_batch_size.value:
             self.batch_size = fixed_batch_size.value
             logging.info("       RNN batch_size (concurrent processes): %d" % self.batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             self.batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
 
@@ -378,7 +386,7 @@ class BiRNNLayer(Layer):
             raise Exception("RNN : Input dimension should be rank 3 : [batch_size, n_steps, n_features]")
 
         with tf.variable_scope(name, initializer=initializer) as vs:
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
             # Apply dropout
             if dropout:
                 if isinstance(dropout, (tuple, list)):  # type(dropout) in [tuple, list]:
@@ -397,6 +405,7 @@ class BiRNNLayer(Layer):
                 )
             else:
                 cell_creator = rnn_creator
+
             self.fw_cell = cell_creator()
             self.bw_cell = cell_creator()
 
@@ -449,12 +458,14 @@ class BiRNNLayer(Layer):
                 bidirectional_rnn_fn = tf.contrib.rnn.static_bidirectional_rnn
             except Exception:
                 bidirectional_rnn_fn = tf.nn.bidirectional_rnn
+
             outputs, fw_state, bw_state = bidirectional_rnn_fn(  # outputs, fw_state, bw_state = tf.contrib.rnn.static_bidirectional_rnn(
                 cell_fw=self.fw_cell,
                 cell_bw=self.bw_cell,
                 inputs=list_rnn_inputs,
                 initial_state_fw=self.fw_initial_state,
-                initial_state_bw=self.bw_initial_state)
+                initial_state_bw=self.bw_initial_state
+            )
 
             if return_last:
                 raise Exception("Do not support return_last at the moment.")
@@ -483,9 +494,6 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
@@ -753,8 +761,8 @@ class ConvLSTMLayer(Layer):
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("     RNN batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("     non specified batch_size, uses a tensor instead.")
         self.batch_size = batch_size
@@ -793,9 +801,6 @@ class ConvLSTMLayer(Layer):
 
         self.final_state = state
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
 
@@ -1069,23 +1074,26 @@ class DynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='dyrnn',
     ):
-        super(DynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
+
+        super(DynamicRNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
-        if dynamic_rnn_init_args is None:
-            dynamic_rnn_init_args = {}
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}
-        if return_last is None:
-            return_last = True
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+
+        if return_last is None:
+            return_last = True
 
         logging.info(
             "DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (
@@ -1105,15 +1113,16 @@ class DynamicRNNLayer(Layer):
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
+
         self.batch_size = batch_size
 
         # Creats the cell function
-        # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args) # HanSheng
-        rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+        # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
+        rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
 
         # Apply dropout
         if dropout:
@@ -1191,7 +1200,7 @@ class DynamicRNNLayer(Layer):
                 # dtype=tf.float64,
                 sequence_length=sequence_length,
                 initial_state=self.initial_state,
-                **dynamic_rnn_init_args
+                **self.dynamic_rnn_init_args
             )
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
@@ -1228,10 +1237,6 @@ class DynamicRNNLayer(Layer):
         self.final_state = last_states
 
         self.sequence_length = sequence_length
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
 
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
@@ -1335,21 +1340,23 @@ class BiDynamicRNNLayer(Layer):
             dynamic_rnn_init_args=None,
             name='bi_dyrnn_layer',
     ):
-        super(BiDynamicRNNLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BiDynamicRNNLayer, self).__init__(
+            prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
+        )
 
         self.inputs = prev_layer.outputs
 
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}
-        if dynamic_rnn_init_args is None:
-            dynamic_rnn_init_args = {}
-        if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
+
         if 'GRU' in cell_fn.__name__:
             try:
-                cell_init_args.pop('state_is_tuple')
+                self.cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
+
+        if cell_fn is None:
+            raise Exception("Please put in cell_fn")
 
         logging.info(
             "BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (
@@ -1366,19 +1373,21 @@ class BiDynamicRNNLayer(Layer):
 
         # Get the batch_size
         fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
         if fixed_batch_size.value:
             batch_size = fixed_batch_size.value
             logging.info("       batch_size (concurrent processes): %d" % batch_size)
+
         else:
-            from tensorflow.python.ops import array_ops
             batch_size = array_ops.shape(self.inputs)[0]
             logging.info("       non specified batch_size, uses a tensor instead.")
+
         self.batch_size = batch_size
 
         with tf.variable_scope(name, initializer=initializer) as vs:
             # Creats the cell function
-            # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **cell_init_args) # HanSheng
-            rnn_creator = lambda: cell_fn(num_units=n_hidden, **cell_init_args)
+            # cell_instance_fn=lambda: cell_fn(num_units=n_hidden, **self.cell_init_args) # HanSheng
+            rnn_creator = lambda: cell_fn(num_units=n_hidden, **self.cell_init_args)
 
             # Apply dropout
             if dropout:
@@ -1430,14 +1439,15 @@ class BiDynamicRNNLayer(Layer):
                 if dropout:
                     self.fw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
                     self.bw_cell = [cell_creator(is_last=i == n_layer - 1) for i in range(n_layer)]
+
                 else:
                     self.fw_cell = [cell_creator() for _ in range(n_layer)]
                     self.bw_cell = [cell_creator() for _ in range(n_layer)]
-                from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell, cells_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_states_fw=self.fw_initial_state, initial_states_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype, **dynamic_rnn_init_args
+                    dtype=LayersConfig.tf_dtype, **self.dynamic_rnn_init_args
                 )
 
             else:
@@ -1446,7 +1456,7 @@ class BiDynamicRNNLayer(Layer):
                 outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
                     cell_fw=self.fw_cell, cell_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_state_fw=self.fw_initial_state, initial_state_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype, **dynamic_rnn_init_args
+                    dtype=LayersConfig.tf_dtype, **self.dynamic_rnn_init_args
                 )
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
@@ -1477,6 +1487,7 @@ class BiDynamicRNNLayer(Layer):
                     # 3D Tensor [batch_size, n_steps(max), 2 * n_hidden]
                     max_length = tf.shape(outputs)[1]
                     batch_size = tf.shape(outputs)[0]
+
                     try:  # TF1.0
                         self.outputs = tf.reshape(tf.concat(outputs, 1), [batch_size, max_length, 2 * n_hidden])
                     except Exception:  # TF0.12
@@ -1487,10 +1498,6 @@ class BiDynamicRNNLayer(Layer):
         self.bw_final_states = states_bw
 
         self.sequence_length = sequence_length
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
 
         self.all_layers.append(self.outputs)
         self.all_params.extend(rnn_variables)
@@ -1598,7 +1605,7 @@ class Seq2Seq(Layer):
     ...             n_layer = 1,
     ...             return_seq_2d = True,
     ...             name = 'seq2seq')
-    >>> net_out = DenseLayer(net, n_units=10000, act=tf.identity, name='output')
+    >>> net_out = DenseLayer(net, n_units=10000, act=None, name='output')
     >>> e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net_out.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
     >>> y = tf.nn.softmax(net_out.outputs)
     >>> net_out.print_params(False)
