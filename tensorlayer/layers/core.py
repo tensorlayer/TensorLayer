@@ -17,6 +17,7 @@ from tensorlayer import visualize
 from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
 __all__ = [
@@ -542,6 +543,7 @@ class Layer:
     def __len__(self):
         return len(self.all_layers)
 
+    @protected_method
     def _update_layers(self, layers):
         if isinstance(layers, list):
             self.all_layers.extend(list(layers))
@@ -550,6 +552,7 @@ class Layer:
 
         self.all_layers = list_remove_repeat(self.all_layers)
 
+    @protected_method
     def _update_params(self, params):
         if isinstance(params, list):
             self.all_params.extend(list(params))
@@ -558,6 +561,7 @@ class Layer:
 
         self.all_params = list_remove_repeat(self.all_params)
 
+    @protected_method
     def _update_all_drop(self, drop_layers):
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
             self.all_drop.update(dict(drop_layers))
