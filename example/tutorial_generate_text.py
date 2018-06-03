@@ -238,7 +238,7 @@ def main_lstm_generate_text():
                 return_seq_2d=True, name='lstm1'
             )
             lstm1 = network
-            network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=tf.identity, name='output')
+            network = DenseLayer(network, vocab_size, W_init=rnn_init, b_init=rnn_init, act=None, name='output')
         return network, lstm1
 
     # Inference for Training

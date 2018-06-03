@@ -87,7 +87,7 @@ def mobilenet(x, is_train=True, reuse=False):
 
         n = GlobalMeanPool2d(n)
         # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-        # n = DenseLayer(n, 1000, act=tf.identity, name='output')   # equal
+        # n = DenseLayer(n, 1000, act=None, name='output')   # equal
         n = ReshapeLayer(n, [-1, 1, 1, 1024])
         n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')
         n = FlattenLayer(n)

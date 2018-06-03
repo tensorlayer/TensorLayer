@@ -35,7 +35,7 @@ def model(x, is_train, reuse):
         )
         n = tl.layers.FlattenLayer(n, name='flatten2')
         n = tl.layers.DenseLayer(n, n_units=1024, act=tf.nn.relu, name='out1')
-        n = tl.layers.DenseLayer(n, n_units=10, act=tf.identity, name='out2')
+        n = tl.layers.DenseLayer(n, n_units=10, name='out2')
     return n, s
 
 

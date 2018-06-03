@@ -9,6 +9,7 @@ def private_method(func):
         outer_frame = inspect.stack()[1][0]
         if 'self' not in outer_frame.f_locals or outer_frame.f_locals['self'] is not args[0]:
             raise RuntimeError('%s.%s is a private method' % (args[0].__class__.__name__, func.__name__))
-        func(*args, **kwargs)
+
+        return func(*args, **kwargs)
 
     return func_wrapper

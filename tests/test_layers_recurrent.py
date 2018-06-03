@@ -285,7 +285,7 @@ class Layer_Recurrent_Test(unittest.TestCase):
                 dropout=None, n_layer=2, return_seq_2d=True, name='Seq2seq'
             )
 
-        net11 = tl.layers.DenseLayer(net11, n_units=10000, act=tf.identity, name='oo')
+        net11 = tl.layers.DenseLayer(net11, n_units=10000, name='oo')
 
         # e_loss = tl.cost.cross_entropy_seq_with_mask(logits=net11.outputs, target_seqs=target_seqs, input_mask=target_mask, return_details=False, name='cost')
         # y = tf.nn.softmax(net11.outputs)

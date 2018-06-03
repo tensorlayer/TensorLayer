@@ -2,8 +2,10 @@
 
 import tensorflow as tf
 
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
 
 __all__ = [
     'ConcatLayer',
@@ -134,8 +136,7 @@ class ElementwiseLayer(Layer):
         for l in layers[1:]:
             self.outputs = combine_fn(self.outputs, l.outputs, name=name)
 
-        if act:
-            self.outputs = act(self.outputs)
+        self.outputs = self._apply_activation(self.outputs)
 
         # self.all_layers = list(layers[0].all_layers)
         # self.all_params = list(layers[0].all_params)
@@ -194,18 +195,14 @@ class ElementwiseLambdaLayer(Layer):
             name='elementwiselambda_layer',
     ):
 
-        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, name=name)
+        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, fn_args=fn_args, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
-
-        if fn_args is None:
-            fn_args = {}
 
         self.inputs = [layer.outputs for layer in layers]
 
         with tf.variable_scope(name) as vs:
-            self.outputs = fn(*self.inputs, **fn_args)
-            if act:
-                self.outputs = act(self.outputs)
+            self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
+
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.all_layers.append(self.outputs)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+from collections import Counter
 import os
 import random
 import re
@@ -8,12 +9,17 @@ import subprocess
 import tempfile
 import warnings
 
-import numpy as np
-import tensorflow as tf
 from six.moves import urllib, xrange
+
+import numpy as np
+
+import tensorflow as tf
 from tensorflow.python.platform import gfile
 
-from . import tl_logging as logging
+from tensorlayer import tl_logging as logging
+from tensorlayer.lazy_imports import LazyImport
+
+nltk = LazyImport("nltk")
 
 __all__ = [
     'generate_skip_gram_batch',
@@ -356,15 +362,12 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     - `Installing NLTK data <http://www.nltk.org/data.html>`__
 
     """
-    try:
-        import nltk
-    except:
-        raise Exception("Hint : NLTK is required.")
     if start_word is not None:
         process_sentence = [start_word]
     else:
         process_sentence = []
     process_sentence.extend(nltk.tokenize.word_tokenize(sentence.lower()))
+
     if end_word is not None:
         process_sentence.append(end_word)
     return process_sentence
@@ -424,9 +427,10 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     ...     pad_id: 0
 
     """
-    from collections import Counter
     logging.info("Creating vocabulary.")
+
     counter = Counter()
+
     for c in sentences:
         counter.update(c)
         # logging.info('c',c)
