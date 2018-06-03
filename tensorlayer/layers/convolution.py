@@ -18,7 +18,7 @@ __all__ = [
     'DeformableConv2d',
     'AtrousConv1dLayer',
     'AtrousConv2dLayer',
-    'AtrousConv2dTransLayer',
+    'AtrousConv2dTransposeLayer',
     'deconv2d_bilinear_upsampling_initializer',
     'Conv1d',
     'Conv2d',
@@ -1111,9 +1111,18 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=tf.identity, padding='SAME',
-            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, name='atrou2d'
+            self,
+            prev_layer,
+            n_filter=32,
+            filter_size=(3, 3),
+            rate=2,
+            act=tf.identity,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='atrou2d'
     ):
 
         super(AtrousConv2dLayer, self).__init__(prev_layer=prev_layer, name=name)
@@ -1134,19 +1143,16 @@ class AtrousConv2dLayer(Layer):
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
             filters = tf.get_variable(
-                name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W_atrous', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_atrous', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
                 )
-                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding) + b)
+                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters=filters, rate=rate, padding=padding) + b)
             else:
-                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters, rate, padding))
+                self.outputs = act(tf.nn.atrous_conv2d(self.inputs, filters=filters, rate=rate, padding=padding))
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([filters, b])
@@ -1154,8 +1160,8 @@ class AtrousConv2dLayer(Layer):
             self.all_params.append(filters)
 
 
-class AtrousConv2dTransLayer(Layer):
-    """The :class:`AtrousConv2dTransLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
+class AtrousConv2dTransposeLayer(Layer):
+    """The :class:`AtrousConv2dTransposeLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
     Parameters
     ----------
@@ -1188,14 +1194,23 @@ class AtrousConv2dTransLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=tf.identity,
-            padding='SAME', W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, name='atrou2dtrans'
+            self,
+            prev_layer,
+            shape=(3, 3, 128, 256),
+            output_shape=(1, 64, 64, 128),
+            rate=2,
+            act=tf.identity,
+            padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None,
+            b_init_args=None,
+            name='atrou2dtranspose'
     ):
 
-        super(AtrousConv2dTransLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(AtrousConv2dTransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
         logging.info(
-            "AtrousConv2dTransLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" %
+            "AtrousConv2dTransposeLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" %
             (name, shape, output_shape, rate, padding, act.__name__)
         )
 
@@ -1210,19 +1225,25 @@ class AtrousConv2dTransLayer(Layer):
 
         with tf.variable_scope(name):
             filters = tf.get_variable(
-                name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W_atrous_transpose', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
             )
             if b_init:
                 b = tf.get_variable(
-                    name='b', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                    name='b_atrous_transpose', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **b_init_args
                 )
-                self.outputs = act(tf.nn.atrous_conv2d_transpose(self.inputs, filters, output_shape, rate, padding) + b)
+                self.outputs = act(
+                    tf.nn.atrous_conv2d_transpose(
+                        self.inputs, filters=filters, output_shape=output_shape, rate=rate, padding=padding
+                    ) + b
+                )
             else:
-                self.outputs = act(tf.nn.atrous_conv2d_transpose(self.inputs, filters, output_shape, rate, padding))
+                self.outputs = act(
+                    tf.nn.atrous_conv2d_transpose(
+                        self.inputs, filters=filters, output_shape=output_shape, rate=rate, padding=padding
+                    )
+                )
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         if b_init:
             self.all_params.extend([filters, b])
