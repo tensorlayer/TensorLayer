@@ -4,13 +4,21 @@ MobileNet for ImageNet.
 """
 
 import os
-# import numpy as np
+
 import tensorflow as tf
-from .. import _logging as logging
-from ..layers import (
-    Layer, BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
-)
-from ..files import maybe_download_and_extract, assign_params, load_npz
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.layers import Layer
+from tensorlayer.layers import BatchNormLayer
+from tensorlayer.layers import Conv2d
+from tensorlayer.layers import DepthwiseConv2d
+from tensorlayer.layers import FlattenLayer
+from tensorlayer.layers import GlobalMeanPool2d
+from tensorlayer.layers import InputLayer
+from tensorlayer.layers import ReshapeLayer
+
+from tensorlayer.files import maybe_download_and_extract, assign_params, load_npz
 
 __all__ = [
     'MobileNetV1',
@@ -124,7 +132,7 @@ class MobileNetV1(Layer):
             n = GlobalMeanPool2d(n, name='globalmeanpool')
             if end_with in n.outputs.name: return n
             # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-            # n = DenseLayer(n, 1000, act=tf.identity, name='output')   # equal
+            # n = DenseLayer(n, 1000, name='output')   # equal
             n = ReshapeLayer(n, [-1, 1, 1, 1024], name='reshape')
             if end_with in n.outputs.name: return n
             n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')

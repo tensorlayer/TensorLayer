@@ -1,19 +1,28 @@
 # -*- coding: utf-8 -*-
 import os
-import random
-import subprocess
+
 import sys
-import time
 from sys import exit as _exit
 from sys import platform as _platform
 
+import random
+import subprocess
+import time
+
+from collections import Counter
+
 import numpy as np
+
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import f1_score
+
 import tensorflow as tf
 
 import tensorlayer as tl
 
-from . import _logging as logging
-from . import iterate
+from tensorlayer import tl_logging as logging
+from tensorlayer import iterate
 
 __all__ = [
     'fit',
@@ -104,7 +113,8 @@ def fit(
     thus `tf.global_variables_initializer().run()` before the `fit()` call will be undefined.
 
     """
-    assert X_train.shape[0] >= batch_size, "Number of training examples should be bigger than the batch size"
+    if X_train.shape[0] < batch_size:
+        raise AssertionError("Number of training examples should be bigger than the batch size")
 
     if (tensorboard):
         logging.info("Setting up tensorboard ...")
@@ -363,7 +373,6 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     >>> c_mat, f1, acc, f1_macro = tl.utils.evaluation(y_test, y_predict, n_classes)
 
     """
-    from sklearn.metrics import confusion_matrix, f1_score, accuracy_score
     c_mat = confusion_matrix(y_test, y_predict, labels=[x for x in range(n_classes)])
     f1 = f1_score(y_test, y_predict, average=None, labels=[x for x in range(n_classes)])
     f1_macro = f1_score(y_test, y_predict, average='macro')
@@ -437,13 +446,16 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     # ======== Classes balancing
     if printable:
         logging.info("Classes balancing for training examples...")
-    from collections import Counter
+
     c = Counter(y_train)
+
     if printable:
         logging.info('the occurrence number of each stage: %s' % c.most_common())
         logging.info('the least stage is Label %s have %s instances' % c.most_common()[-1])
         logging.info('the most stage is  Label %s have %s instances' % c.most_common(1)[0])
+
     most_num = c.most_common(1)[0][1]
+
     if printable:
         logging.info('most num is %d, all classes tend to be this num' % most_num)
 
@@ -544,22 +556,24 @@ def exit_tensorflow(sess=None, port=6006):
     """
     text = "[TL] Close tensorboard and nvidia-process if available"
     text2 = "[TL] Close tensorboard and nvidia-process not yet supported by this function (tl.ops.exit_tf) on "
+
     if sess is not None:
         sess.close()
-    # import time
-    # time.sleep(2)
+
     if _platform == "linux" or _platform == "linux2":
         logging.info('linux: %s' % text)
         os.system('nvidia-smi')
         os.system('fuser ' + port + '/tcp -k')  # kill tensorboard 6006
         os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill")  # kill all nvidia-smi python process
         _exit()
+
     elif _platform == "darwin":
         logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
                          shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
+
     else:
         logging.info(text2 + _platform)
 

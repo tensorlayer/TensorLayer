@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
 from six.moves import xrange
 
-from .. import _logging as logging
-from .core import *
+import numpy as np
 
-from ..deprecation import deprecated_alias
+import tensorflow as tf
+from tensorflow.python.ops import array_ops
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'transformer',
@@ -272,10 +278,11 @@ class SpatialTransformer2dAffineLayer(Layer):
             # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]/ Hao Dong
             #
             fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
             if fixed_batch_size.value:
                 batch_size = fixed_batch_size.value
+
             else:
-                from tensorflow.python.ops import array_ops
                 batch_size = array_ops.shape(self.inputs)[0]
 
             n_channels = self.inputs.get_shape().as_list()[-1]
@@ -286,16 +293,10 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # # fixed
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
-        #
         # # theta_layer
         # self.all_layers.extend(theta_layer.all_layers)
         # self.all_params.extend(theta_layer.all_params)
         # self.all_drop.update(theta_layer.all_drop)
 
-        # this layer
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)

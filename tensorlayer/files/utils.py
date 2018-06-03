@@ -1,61 +1,70 @@
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+
 import gzip
 import math
-import os
 import pickle
+import progressbar
 import re
-import sys
+import requests
+import shutil
 import tarfile
 import time
 import zipfile
-import progressbar
 
+from tqdm import tqdm
+
+from six.moves import cPickle
+# from six.moves import zip
+
+from lxml import etree
+import xml.etree.ElementTree as ET
+
+if sys.version_info[0] == 2:
+    from urllib import urlretrieve
+else:
+    from urllib.request import urlretrieve
+
+import matplotlib.pyplot as plt
+
+import scipy.io as sio
 import numpy as np
+
 import tensorflow as tf
-from six.moves import cPickle, zip
 from tensorflow.python.platform import gfile
 
-from . import _logging as logging
-from . import nlp, utils, visualize
+from tensorlayer import tl_logging as logging
+
+from tensorlayer import nlp
+from tensorlayer import utils
+from tensorlayer import visualize
 
 __all__ = [
-    'load_mnist_dataset',
-    'load_fashion_mnist_dataset',
-    'load_cifar10_dataset',
-    'load_ptb_dataset',
-    'load_matt_mahoney_text8_dataset',
-    'load_imdb_dataset',
-    'load_nietzsche_dataset',
-    'load_wmt_en_fr_dataset',
-    'load_flickr25k_dataset',
-    'load_flickr1M_dataset',
-    'load_cyclegan_dataset',
-    'download_file_from_google_drive',
-    'load_celebA_dataset',
-    'load_voc_dataset',
-    'load_mpii_pose_dataset',
-    'save_npz',
-    'load_npz',
     'assign_params',
-    'load_and_assign_npz',
-    'save_npz_dict',
-    'load_and_assign_npz_dict',
-    'save_ckpt',
-    'load_ckpt',
-    'save_any_to_npy',
-    'load_npy_to_any',
-    'file_exists',
-    'folder_exists',
     'del_file',
     'del_folder',
-    'read_file',
+    'download_file_from_google_drive',
+    'exists_or_mkdir',
+    'file_exists',
+    'folder_exists',
+    'load_and_assign_npz',
+    'load_and_assign_npz_dict',
+    'load_ckpt',
+    'load_cropped_svhn',
     'load_file_list',
     'load_folder_list',
-    'exists_or_mkdir',
+    'load_npy_to_any',
+    'load_npz',
     'maybe_download_and_extract',
     'natural_keys',
     'npz_to_W_pdf',
+    'read_file',
+    'save_any_to_npy',
+    'save_ckpt',
+    'save_npz',
+    'save_npz_dict',
 ]
 
 
@@ -256,7 +265,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
     if plotable:
         logging.info('\nCIFAR-10')
-        import matplotlib.pyplot as plt
         fig = plt.figure(1)
 
         logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
@@ -319,8 +327,6 @@ def load_cropped_svhn(path='data', include_extra=True):
 
     """
 
-    import scipy.io
-
     start_time = time.time()
 
     path = os.path.join(path, 'cropped_svhn')
@@ -331,7 +337,7 @@ def load_cropped_svhn(path='data', include_extra=True):
     if file_exists(np_file) is False:
         filename = "train_32x32.mat"
         filepath = maybe_download_and_extract(filename, path, url)
-        mat = scipy.io.loadmat(filepath)
+        mat = sio.loadmat(filepath)
         X_train = mat['X'] / 255.0  # to [0, 1]
         X_train = np.transpose(X_train, (3, 0, 1, 2))
         y_train = np.squeeze(mat['y'], axis=1)
@@ -348,7 +354,7 @@ def load_cropped_svhn(path='data', include_extra=True):
     if file_exists(np_file) is False:
         filename = "test_32x32.mat"
         filepath = maybe_download_and_extract(filename, path, url)
-        mat = scipy.io.loadmat(filepath)
+        mat = sio.loadmat(filepath)
         X_test = mat['X'] / 255.0
         X_test = np.transpose(X_test, (3, 0, 1, 2))
         y_test = np.squeeze(mat['y'], axis=1)
@@ -368,7 +374,7 @@ def load_cropped_svhn(path='data', include_extra=True):
             logging.info("  the first time to load extra images will take long time to convert the file format ...")
             filename = "extra_32x32.mat"
             filepath = maybe_download_and_extract(filename, path, url)
-            mat = scipy.io.loadmat(filepath)
+            mat = sio.loadmat(filepath)
             X_extra = mat['X'] / 255.0
             X_extra = np.transpose(X_extra, (3, 0, 1, 2))
             y_extra = np.squeeze(mat['y'], axis=1)
@@ -802,7 +808,6 @@ def load_flickr1M_dataset(tag='sky', size=10, path="data", n_threads=50, printab
     >>> images = tl.files.load_flickr1M_dataset(tag='zebra')
 
     """
-    import shutil
 
     path = os.path.join(path, 'flickr1M')
     logging.info("[Flickr1M] using {}% of images = {}".format(size * 10, size * 100000))
@@ -933,8 +938,6 @@ def download_file_from_google_drive(ID, destination):
         The destination for save file.
 
     """
-    from tqdm import tqdm
-    import requests
 
     def save_response_content(response, destination, chunk_size=32 * 1024):
         total_size = int(response.headers.get('content-length', 0))
@@ -1096,9 +1099,6 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
                 result[child.tag].append(child_result[child.tag])
         return {xml.tag: result}
 
-    from lxml import etree  # pip install lxml
-    import xml.etree.ElementTree as ET
-
     if dataset == "2012":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
         tar_filename = "VOCtrainval_11-May-2012.tar"
@@ -1110,7 +1110,6 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         logging.info(
             "    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n"
         )
-        import time
         time.sleep(3)
         if os.path.isdir(os.path.join(path, extracted_filename)) is False:
             logging.info("For VOC 2012 Test data - online registration required")
@@ -1139,7 +1138,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
 
     # download dataset
     if dataset != "2012test":
-        from sys import platform as _platform
+        _platform = sys.platform
         if folder_exists(os.path.join(path, extracted_filename)) is False:
             logging.info("[VOC] {} is nonexistent in {}".format(extracted_filename, path))
             maybe_download_and_extract(tar_filename, path, url, extract=True)
@@ -1370,7 +1369,6 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
         del_file(os.path.join(path, tar_filename))
 
     # parse annotation, format see http://human-pose.mpi-inf.mpg.de/#download
-    import scipy.io as sio
     logging.info("reading annotations from mat file ...")
     # mat = sio.loadmat(os.path.join(path, extracted_filename, "mpii_human_pose_v1_u12_1.mat"))
 
@@ -1950,7 +1948,7 @@ def del_file(filepath):
 
 def del_folder(folderpath):
     """Delete a folder by given folder path."""
-    os.rmdir(folderpath)
+    shutil.rmtree(folderpath)
 
 
 def read_file(filepath):
@@ -2088,12 +2086,10 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
 
                 pbar.update(count, force=True)
 
-        if sys.version_info[0] == 2:
-            from urllib import urlretrieve
-        else:
-            from urllib.request import urlretrieve
         filepath = os.path.join(working_directory, filename)
-        sys.stdout.write('Downloading %s...\n' % filename)
+
+        logging.info('Downloading %s...\n' % filename)
+
         urlretrieve(url_source + filename, filepath, reporthook=_dlProgress)
 
     exists_or_mkdir(working_directory, verbose=False)

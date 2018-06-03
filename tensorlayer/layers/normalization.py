@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+from tensorflow.python.training import moving_averages
 
-from .. import _logging as logging
-from .core import *
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from ..deprecation import deprecated_alias
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'LocalResponseNormLayer',
@@ -49,6 +53,7 @@ class LocalResponseNormLayer(Layer):
             name='lrn_layer',
     ):
         super(LocalResponseNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
             (name, str(depth_radius), str(bias), str(alpha), str(beta))
@@ -59,9 +64,6 @@ class LocalResponseNormLayer(Layer):
         with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
 
 
@@ -106,24 +108,23 @@ class BatchNormLayer(Layer):
             prev_layer,
             decay=0.9,
             epsilon=0.00001,
-            act=tf.identity,
+            act=None,
             is_train=False,
             beta_init=tf.zeros_initializer,
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (name, decay, epsilon, act.__name__, is_train)
+            (name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
         )
 
         self.inputs = prev_layer.outputs
 
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
-
-        from tensorflow.python.training import moving_averages
 
         with tf.variable_scope(name):
             axis = list(range(len(x_shape) - 1))
@@ -189,22 +190,15 @@ class BatchNormLayer(Layer):
 
             if is_train:
                 mean, var = mean_var_with_update()
-                self.outputs = act(tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon))
             else:
-                self.outputs = act(
-                    tf.nn.batch_normalization(self.inputs, moving_mean, moving_variance, beta, gamma, epsilon)
-                )
+                mean, var = moving_mean, moving_variance
+
+            self.outputs = tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+
+            self.outputs = self._apply_activation(self.outputs)
 
             variables.extend([moving_mean, moving_variance])
 
-            # logging.info(len(variables))
-            # for idx, v in enumerate(variables):
-            #     logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v))
-            # exit()
-
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -229,32 +223,37 @@ class InstanceNormLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=tf.identity,
+            act=None,
             epsilon=1e-5,
             name='instan_norm',
     ):
-        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("InstanceNormLayer %s: epsilon:%f act:%s" % (self.name, epsilon, act.__name__))
+        super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "InstanceNormLayer %s: epsilon:%f act:%s" %
+            (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
+
             scale = tf.get_variable(
                 'scale', [self.inputs.get_shape()[-1]],
                 initializer=tf.truncated_normal_initializer(mean=1.0, stddev=0.02), dtype=LayersConfig.tf_dtype
             )
+
             offset = tf.get_variable(
                 'offset', [self.inputs.get_shape()[-1]], initializer=tf.constant_initializer(0.0),
                 dtype=LayersConfig.tf_dtype
             )
+
             self.outputs = scale * tf.div(self.inputs - mean, tf.sqrt(var + epsilon)) + offset
-            self.outputs = act(self.outputs)
+            self.outputs = self._apply_activation(self.outputs)
+
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)
 
@@ -276,12 +275,15 @@ class LayerNormLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, center=True, scale=True, act=tf.identity, reuse=None, variables_collections=None,
+            self, prev_layer, center=True, scale=True, act=None, reuse=None, variables_collections=None,
             outputs_collections=None, trainable=True, begin_norm_axis=1, begin_params_axis=-1, name='layernorm'
     ):
 
-        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("LayerNormLayer %s: act:%s" % (name, act.__name__))
+        super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
@@ -292,7 +294,7 @@ class LayerNormLayer(Layer):
                     self.inputs,
                     center=center,
                     scale=scale,
-                    activation_fn=act,
+                    activation_fn=self.act,
                     reuse=reuse,
                     variables_collections=variables_collections,
                     outputs_collections=outputs_collections,
@@ -308,7 +310,7 @@ class LayerNormLayer(Layer):
                     self.inputs,
                     center=center,
                     scale=scale,
-                    activation_fn=act,
+                    activation_fn=self.act,
                     reuse=reuse,
                     variables_collections=variables_collections,
                     outputs_collections=outputs_collections,
@@ -317,10 +319,8 @@ class LayerNormLayer(Layer):
                     begin_params_axis=begin_params_axis,
                     scope='var',
                 )
+
                 variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
         self.all_layers.append(self.outputs)
         self.all_params.extend(variables)

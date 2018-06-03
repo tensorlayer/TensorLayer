@@ -2,11 +2,15 @@
 
 import os
 
-import numpy as np
-import imageio  # save/read image(s)
+import imageio
 
-from . import _logging as logging
-from . import prepro
+import numpy as np
+
+from tensorlayer import tl_logging as logging
+from tensorlayer import prepro
+from tensorlayer.lazy_imports import LazyImport
+
+cv2 = LazyImport("cv2")
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
 # import matplotlib
@@ -182,8 +186,6 @@ def draw_boxes_and_labels_to_image(
     if len(scores) > 0 and len(scores) != len(classes):
         raise AssertionError("number of scores and classes are equal")
 
-    import cv2  # TODO: OpenCV is not in the requirements.
-
     # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
     image = image.copy()
 
@@ -257,7 +259,6 @@ def draw_mpii_pose_to_image(image, poses, save_name='image.png'):
     -----------
     - `MPII Keyponts and ID <http://human-pose.mpi-inf.mpg.de/#download>`__
     """
-    import cv2
     # import skimage
     # don't change the original image, and avoid error https://stackoverflow.com/questions/30249053/python-opencv-drawing-errors-after-manipulating-array-with-numpy
     image = image.copy()

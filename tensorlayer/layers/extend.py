@@ -2,10 +2,10 @@
 
 import tensorflow as tf
 
-from .. import _logging as logging
-from .core import *
+from tensorlayer import tl_logging as logging
+from tensorlayer.layers.core import Layer
 
-from ..deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'ExpandDimsLayer',
@@ -43,6 +43,7 @@ class ExpandDimsLayer(Layer):
             name='expand_dims',
     ):
         super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("ExpandDimsLayer  %s: axis:%d" % (name, axis))
 
         self.inputs = prev_layer.outputs
@@ -52,11 +53,8 @@ class ExpandDimsLayer(Layer):
                 self.outputs = tf.expand_dims(self.inputs, axis=axis)
             except Exception:  # TF11
                 self.outputs = tf.expand_dims(self.inputs, dim=axis)
-        # self.all_layers = list(layer.all_layers)
-        self.all_params = list(prev_layer.all_params)
-        self.all_drop = dict(prev_layer.all_drop)
+
         self.all_layers.append(self.outputs)
-        # self.all_params.extend( variables )
 
 
 class TileLayer(Layer):
@@ -87,14 +85,12 @@ class TileLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, multiples=None, name='tile'):
         super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("TileLayer  %s: multiples:%s" % (name, multiples))
 
         self.inputs = prev_layer.outputs
 
         with tf.variable_scope(name):
             self.outputs = tf.tile(self.inputs, multiples=multiples)
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+
         self.all_layers.append(self.outputs)
-        # self.all_params.extend( variables )

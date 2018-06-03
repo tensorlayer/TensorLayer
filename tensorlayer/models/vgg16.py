@@ -27,9 +27,19 @@ feeding images of multiple sizes is by doing center cropping.
 import os
 import numpy as np
 import tensorflow as tf
-from .. import _logging as logging
-from ..layers import (Conv2d, Conv2dLayer, DenseLayer, FlattenLayer, InputLayer, MaxPool2d, PoolLayer)
-from ..files import maybe_download_and_extract, assign_params
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.layers import Conv2d
+from tensorlayer.layers import Conv2dLayer
+from tensorlayer.layers import DenseLayer
+from tensorlayer.layers import FlattenLayer
+from tensorlayer.layers import InputLayer
+from tensorlayer.layers import MaxPool2d
+from tensorlayer.layers import PoolLayer
+
+from tensorlayer.files import maybe_download_and_extract
+from tensorlayer.files import assign_params
 
 __all__ = [
     'VGG16',
@@ -183,7 +193,7 @@ class VGG16Base(object):
         net = FlattenLayer(net, name='flatten')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-        net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
+        net = DenseLayer(net, n_units=1000, name='fc3_relu')
         return net
 
     @staticmethod
@@ -252,7 +262,7 @@ class VGG16Base(object):
             lambda net: FlattenLayer(net, name='flatten'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu'),
+            lambda net: DenseLayer(net, n_units=1000, name='fc3_relu'),
         ]
         net = net_in
         for l in layers:

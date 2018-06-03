@@ -100,6 +100,7 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 """
 
+import sys
 import time
 
 import numpy as np
@@ -107,9 +108,18 @@ import tensorflow as tf
 
 import tensorlayer as tl
 
-flags = tf.flags
+flags = tf.app.flags
+
 flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
+
+if (tf.VERSION >= '1.5'):
+    # parse flags
+    flags.FLAGS(sys.argv, known_only=True)
+    flags.ArgumentParser()
+
 FLAGS = flags.FLAGS
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
 def main(_):
@@ -225,7 +235,7 @@ def main(_):
             # net = tl.layers.ReshapeLayer(net,
             #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
             net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
-            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=tf.identity, name='output')
+            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=None, name='output')
         return net, lstm1, lstm2
 
     # Inference for Training
@@ -235,7 +245,7 @@ def main(_):
     # Inference for Testing (Evaluation)
     net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
     def loss_fn(outputs, targets):  #, batch_size, num_steps):
@@ -269,7 +279,7 @@ def main(_):
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
     net.print_params()

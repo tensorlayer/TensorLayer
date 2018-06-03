@@ -5,13 +5,19 @@ import time
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
-from .. import _logging as logging
-from .. import files, iterate, utils, visualize
+from tensorlayer import files
+from tensorlayer import iterate
+from tensorlayer import utils
+from tensorlayer import visualize
 
-from ..deprecation import deprecated_alias
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import private_method
 
 __all__ = [
     'LayersConfig',
@@ -323,7 +329,9 @@ def initialize_global_variables(sess):
         TensorFlow session.
 
     """
-    assert sess is not None
+    if sess is None:
+        raise AssertionError('The session must be defined')
+
     # try:    # TF12+
     sess.run(tf.global_variables_initializer())
     # except: # TF11
@@ -342,6 +350,8 @@ class Layer(object):
     ----------
     prev_layer : :class:`Layer` or None
         Previous layer (optional), for adding all properties of previous layer(s) to this layer.
+    act : activation function (None by default)
+        The activation function of this layer.
     name : str or None
         A unique layer name.
 
@@ -397,42 +407,48 @@ class Layer(object):
     # Added to allow auto-completion
     inputs = None
     outputs = None
+
     all_layers = []
     all_params = []
     all_drop = {}
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name=None):
+    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
 
         if name is None:
             raise ValueError('Layer must have a name.')
 
-        scope_name = tf.get_variable_scope().name
-        if scope_name:
-            name = scope_name + '/' + name
-        self.name = name
+        for key in kwargs.keys():
+            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
 
-        # get all properties of previous layer(s)
-        if isinstance(prev_layer, Layer):  # 1. for normal layer have only 1 input i.e. DenseLayer
+        self.act = act if act not in [None, tf.identity] else None
+
+        scope_name = tf.get_variable_scope().name
+
+        self.name = scope_name + '/' + name if scope_name else name
+
+        if isinstance(prev_layer, tf.Tensor):
+            raise Exception("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+
+        elif isinstance(prev_layer, Layer):
+            # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
             # it is pass by reference.
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
 
-        elif isinstance(prev_layer, list):  # 2. for layer have multiply inputs i.e. ConcatLayer
+        elif isinstance(prev_layer, list):
+            # 2. for layer have multiply inputs i.e. ConcatLayer
             self.all_layers = list_remove_repeat(sum([l.all_layers for l in prev_layer], []))
             self.all_params = list_remove_repeat(sum([l.all_params for l in prev_layer], []))
             self.all_drop = dict(sum([list(l.all_drop.items()) for l in prev_layer], []))
 
-        elif isinstance(prev_layer, tf.Tensor):
-            raise Exception("Please use InputLayer to convert Tensor/Placeholder to TL layer")
-
-        elif prev_layer is not None:  # tl.models
+        elif prev_layer is not None:
+            # 3. tl.models
             self.all_layers = list(prev_layer.all_layers)
             self.all_params = list(prev_layer.all_params)
             self.all_drop = dict(prev_layer.all_drop)
-            # raise Exception("Unknown layer type %s" % type(prev_layer))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -491,6 +507,7 @@ class Layer(object):
         net_new.all_layers.append(net_new.outputs)
         net_new.all_params = list(self.all_params)
         net_new.all_drop = dict(self.all_drop)
+
         return net_new
 
     def __setitem__(self, key, item):
@@ -506,6 +523,20 @@ class Layer(object):
 
     def __len__(self):
         return len(self.all_layers)
+
+    @private_method
+    def _apply_activation(self, logits):
+        return self.act(logits) if self.act is not None else logits
+
+    @private_method
+    def _argument_dict_checkup(self, args):
+
+        if not isinstance(args, dict) and args is not None:
+            err_msg = "One of the argument given to %s should be formatted as a dictionnary" % self.__class__.__name__
+            logging.error(err_msg)
+            raise AssertionError(err_msg)
+
+        return args if args is not None else {}
 
 
 class InputLayer(Layer):
@@ -524,9 +555,11 @@ class InputLayer(Layer):
     def __init__(self, inputs=None, name='input'):
 
         super(InputLayer, self).__init__(prev_layer=None, name=name)
+
         logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
 
         self.outputs = inputs
+
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
@@ -564,12 +597,14 @@ class OneHotInputLayer(Layer):
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         super(OneHotInputLayer, self).__init__(prev_layer=None, name=name)
+
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
 
-        # assert depth != None, "depth is not given"
         if depth is None:
-            logging.info("  [*] depth == None the number of output units is undefined")
+            logging.error("  [*] depth == None the number of output units is undefined")
+
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
+
         self.all_layers = []
         self.all_params = []
         self.all_drop = {}
@@ -951,7 +986,7 @@ class DenseLayer(Layer):
             self,
             prev_layer,
             n_units=100,
-            act=tf.identity,
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -959,36 +994,39 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
-        super(DenseLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("DenseLayer  %s: %d %s" % (name, n_units, act.__name__))
+        super(DenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
+        logging.info(
+            "DenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
         self.n_units = n_units
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
-
         if self.inputs.get_shape().ndims != 2:
-            raise Exception("The input dimension must be rank 2, please reshape or flatten it")
+            raise AssertionError("The input dimension must be rank 2, please reshape or flatten it")
 
         n_in = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
+
+            self.outputs = tf.matmul(self.inputs, W)
+
             if b_init is not None:
                 try:
                     b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args)
-                self.outputs = act(tf.matmul(self.inputs, W) + b)
-            else:
-                self.outputs = act(tf.matmul(self.inputs, W))
+                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+
+                self.outputs = tf.add(self.outputs, b, name='add_bias')
+
+            self.outputs = self._apply_activation(self.outputs)
 
         self.all_layers.append(self.outputs)
         if b_init is not None:
@@ -1272,14 +1310,13 @@ class DropoutLayer(Layer):
             name='dropout_layer',
     ):
         super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
 
         if is_train is False:
             logging.info("  skip DropoutLayer")
             self.outputs = prev_layer.outputs
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
         else:
             self.inputs = prev_layer.outputs
 
@@ -1291,11 +1328,9 @@ class DropoutLayer(Layer):
                 LayersConfig.set_keep[name] = tf.placeholder(LayersConfig.tf_dtype)
                 self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
 
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
             if is_fix is False:
                 self.all_drop.update({LayersConfig.set_keep[name]: keep})
+
             self.all_layers.append(self.outputs)
 
         # logging.info(set_keep[name])
@@ -1361,9 +1396,7 @@ class GaussianNoiseLayer(Layer):
         if is_train is False:
             logging.info("  skip GaussianNoiseLayer")
             self.outputs = prev_layer.outputs
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
         else:
             self.inputs = prev_layer.outputs
             logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
@@ -1371,9 +1404,7 @@ class GaussianNoiseLayer(Layer):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
                 self.outputs = self.inputs + noise
-            # self.all_layers = list(layer.all_layers)
-            # self.all_params = list(layer.all_params)
-            # self.all_drop = dict(layer.all_drop)
+
             self.all_layers.append(self.outputs)
 
 
@@ -1427,44 +1458,44 @@ class DropconnectDenseLayer(Layer):
             prev_layer,
             keep=0.5,
             n_units=100,
-            act=tf.identity,
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name='dropconnect_layer',
     ):
-        super(DropconnectDenseLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("DropconnectDenseLayer %s: %d %s" % (name, n_units, act.__name__))
+        super(DropconnectDenseLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        if W_init_args is None:
-            W_init_args = {}
-        if b_init_args is None:
-            b_init_args = {}
+        logging.info(
+            "DropconnectDenseLayer %s: %d %s" %
+            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+        )
 
         self.inputs = prev_layer.outputs
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2")
+
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
 
         with tf.variable_scope(name):
             W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **W_init_args
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
             b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **b_init_args
+                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
             )
-            # self.outputs = act(tf.matmul(self.inputs, W) + b)
+            # self.outputs = tf.matmul(self.inputs, W) + b
 
             LayersConfig.set_keep[name] = tf.placeholder(tf.float32)
-            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
-            self.outputs = act(tf.matmul(self.inputs, W_dropcon) + b)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+            W_dropcon = tf.nn.dropout(W, LayersConfig.set_keep[name])
+
+            self.outputs = self._apply_activation(tf.matmul(self.inputs, W_dropcon) + b)
+
         self.all_drop.update({LayersConfig.set_keep[name]: keep})
         self.all_layers.append(self.outputs)
         self.all_params.extend([W, b])

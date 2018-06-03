@@ -4,11 +4,22 @@ SqueezeNet for ImageNet.
 """
 
 import os
-# import numpy as np
+
 import tensorflow as tf
-from .. import _logging as logging
-from ..layers import (Layer, Conv2d, InputLayer, MaxPool2d, ConcatLayer, DropoutLayer, GlobalMeanPool2d)
-from ..files import maybe_download_and_extract, assign_params, load_npz
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.layers import Layer
+from tensorlayer.layers import Conv2d
+from tensorlayer.layers import InputLayer
+from tensorlayer.layers import MaxPool2d
+from tensorlayer.layers import ConcatLayer
+from tensorlayer.layers import DropoutLayer
+from tensorlayer.layers import GlobalMeanPool2d
+
+from tensorlayer.files import maybe_download_and_extract
+from tensorlayer.files import assign_params
+from tensorlayer.files import load_npz
 
 __all__ = [
     'SqueezeNetV1',

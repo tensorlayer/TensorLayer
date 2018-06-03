@@ -2,10 +2,12 @@
 
 import tensorflow as tf
 
-from .. import _logging as logging
-from .core import *
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import flatten_reshape
 
-from ..deprecation import deprecated_alias
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'FlattenLayer',
@@ -113,11 +115,13 @@ class TransposeLayer(Layer):
     def __init__(self, prev_layer, perm, name='transpose'):
 
         super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("TransposeLayer  %s: perm:%s" % (name, perm))
 
         self.inputs = prev_layer.outputs
 
-        assert perm is not None
+        if perm is None:
+            raise AssertionError("The `perm` argument cannot be None")
 
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
         self.all_layers.append(self.outputs)

@@ -4,10 +4,10 @@ import copy
 
 import tensorflow as tf
 
-from .. import _logging as logging
-from .core import *
+from tensorlayer import tl_logging as logging
+from tensorlayer.layers.core import Layer
 
-from ..deprecation import deprecated_alias
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'PoolLayer',
@@ -67,15 +67,16 @@ class PoolLayer(Layer):
             name='pool_layer',
     ):
         super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "PoolLayer   %s: ksize:%s strides:%s padding:%s pool:%s" %
             (name, str(ksize), str(strides), padding, pool.__name__)
         )
 
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -107,15 +108,17 @@ class MaxPool1d(Layer):
             self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='maxpool1d'
     ):
         super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.layers.max_pooling1d(
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -153,17 +156,16 @@ class MeanPool1d(Layer):
             self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='meanpool1d'
     ):
         super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MeanPool1d %s: filter_size:%s strides:%s padding:%s" %
             (name, str(filter_size), str(strides), str(padding))
         )
 
-        # operation (customized)
         self.outputs = tf.layers.average_pooling1d(
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        # update layer (customized)
         self.all_layers.append(self.outputs)
 
 
@@ -191,11 +193,13 @@ class MaxPool2d(Layer):
             strides = filter_size
 
         super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MaxPool2d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         if tf.__version__ > '1.5':
             self.outputs = tf.layers.max_pooling2d(
                 self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
@@ -206,7 +210,7 @@ class MaxPool2d(Layer):
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]
             self.outputs = tf.nn.max_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -230,16 +234,19 @@ class MeanPool2d(Layer):
 
     @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='meanpool2d'):
+
         if strides is None:
             strides = filter_size
 
         super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MeanPool2d %s: filter_size:%s strides:%s padding:%s" %
             (name, str(filter_size), str(strides), str(padding))
         )
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         if tf.__version__ > '1.5':
             self.outputs = tf.layers.average_pooling2d(
                 self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
@@ -250,11 +257,10 @@ class MeanPool2d(Layer):
             ksize = [1, filter_size[0], filter_size[1], 1]
             strides = [1, strides[0], strides[1], 1]
             self.outputs = tf.nn.avg_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
-# def maxpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='maxpool3d'):
 class MaxPool3d(Layer):
     """Max pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
 
@@ -289,20 +295,20 @@ class MaxPool3d(Layer):
             name='maxpool3d'
     ):
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
-        # operation (customized)
+
         self.inputs = prev_layer.outputs
+
         self.outputs = tf.layers.max_pooling3d(
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        # update layer (customized)
         self.all_layers.append(self.outputs)
 
 
-# def meanpool3d(net, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last', name='meanpool3d'):
 class MeanPool3d(Layer):
     """Mean pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.average_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling3d>`__
 
@@ -338,6 +344,7 @@ class MeanPool3d(Layer):
     ):
 
         super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info(
             "MeanPool3d %s: filter_size:%s strides:%s padding:%s" %
             (name, str(filter_size), str(strides), str(padding))
@@ -345,12 +352,10 @@ class MeanPool3d(Layer):
 
         self.inputs = prev_layer.outputs
 
-        # operation (customized)
         self.outputs = tf.layers.average_pooling3d(
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        # update layer (customized)
         self.all_layers.append(self.outputs)
 
 
@@ -375,11 +380,13 @@ class GlobalMaxPool1d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmaxpool1d'):
         super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("GlobalMaxPool1d %s" % name)
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -404,11 +411,13 @@ class GlobalMeanPool1d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("GlobalMeanPool1d %s" % name)
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -433,11 +442,13 @@ class GlobalMaxPool2d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmaxpool2d'):
         super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("GlobalMaxPool2d %s" % name)
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -462,11 +473,13 @@ class GlobalMeanPool2d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("GlobalMeanPool2d %s" % name)
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -491,12 +504,13 @@ class GlobalMaxPool3d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+
         self.inputs = prev_layer.outputs
-        # print out info (customized)
+
         logging.info("GlobalMaxPool3d %s" % name)
-        # operation (customized)
+
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
@@ -521,11 +535,13 @@ class GlobalMeanPool3d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
+
         logging.info("GlobalMeanPool3d %s" % name)
+
         self.inputs = prev_layer.outputs
-        # operation (customized)
+
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
-        # update layer (customized)
+
         self.all_layers.append(self.outputs)
 
 
