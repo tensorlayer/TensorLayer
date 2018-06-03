@@ -3,8 +3,9 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import InputLayer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
+from tensorlayer.layers.inputs import InputLayer
 
 from tensorlayer import tl_logging as logging
 
@@ -61,17 +62,16 @@ class TimeDistributedLayer(Layer):
             layer_args=None,
             name='time_distributed',
     ):
+
         super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
+
+        if not isinstance(self.inputs, tf.Tensor):
+            self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
 
         logging.info(
             "TimeDistributedLayer %s: layer_class:%s layer_args:%s" %
             (self.name, layer_class.__name__, self.layer_args)
         )
-
-        self.inputs = prev_layer.outputs
-
-        if not isinstance(self.inputs, tf.Tensor):
-            self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
 
         input_shape = self.inputs.get_shape()
 
@@ -87,5 +87,5 @@ class TimeDistributedLayer(Layer):
 
         self.outputs = tf.stack(x, axis=1, name=name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._update_layers(self.outputs)
+        self._update_params(variables)

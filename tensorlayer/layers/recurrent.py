@@ -158,8 +158,6 @@ class RNNLayer(Layer):
 
         super(RNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
 
-        self.inputs = prev_layer.outputs
-
         if 'GRU' in cell_fn.__name__:
             try:
                 self.cell_init_args.pop('state_is_tuple')
@@ -257,8 +255,8 @@ class RNNLayer(Layer):
 
         self.final_state = state
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(rnn_variables)
+        self._update_layers(self.outputs)
+        self._update_params(rnn_variables)
 
 
 class BiRNNLayer(Layer):
@@ -347,8 +345,6 @@ class BiRNNLayer(Layer):
             name='birnn',
     ):
         super(BiRNNLayer, self).__init__(prev_layer=prev_layer, cell_init_args=cell_init_args, name=name)
-
-        self.inputs = prev_layer.outputs
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
@@ -494,8 +490,8 @@ class BiRNNLayer(Layer):
 
         logging.info("     n_params : %d" % (len(rnn_variables)))
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(rnn_variables)
+        self._update_layers(self.outputs)
+        self._update_params(rnn_variables)
 
 
 class ConvRNNCell(object):
@@ -735,8 +731,6 @@ class ConvLSTMLayer(Layer):
     ):
         super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        self.inputs = prev_layer.outputs
-
         logging.info(
             "ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
             "in_dim:%d %s, cell_fn:%s " %
@@ -801,8 +795,8 @@ class ConvLSTMLayer(Layer):
 
         self.final_state = state
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(rnn_variables)
+        self._update_layers(self.outputs)
+        self._update_params(rnn_variables)
 
 
 # Advanced Ops for Dynamic RNN
@@ -1081,8 +1075,6 @@ class DynamicRNNLayer(Layer):
             prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
 
-        self.inputs = prev_layer.outputs
-
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True
 
@@ -1238,8 +1230,8 @@ class DynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(rnn_variables)
+        self._update_layers(self.outputs)
+        self._update_params(rnn_variables)
 
 
 class BiDynamicRNNLayer(Layer):
@@ -1343,8 +1335,6 @@ class BiDynamicRNNLayer(Layer):
         super(BiDynamicRNNLayer, self).__init__(
             prev_layer=prev_layer, cell_init_args=cell_init_args, dynamic_rnn_init_args=dynamic_rnn_init_args, name=name
         )
-
-        self.inputs = prev_layer.outputs
 
         if self.cell_init_args:
             self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
@@ -1499,8 +1489,8 @@ class BiDynamicRNNLayer(Layer):
 
         self.sequence_length = sequence_length
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(rnn_variables)
+        self._update_layers(self.outputs)
+        self._update_params(rnn_variables)
 
 
 class Seq2Seq(Layer):
@@ -1629,19 +1619,20 @@ class Seq2Seq(Layer):
             return_seq_2d=False,
             name='seq2seq',
     ):
-        super(Seq2Seq, self).__init__(prev_layer=None, name=name)
+        super(Seq2Seq, self).__init__(prev_layer=None, cell_init_args=cell_init_args, name=name)
 
-        if cell_init_args is None:
-            cell_init_args = {'state_is_tuple': True}
+        if self.cell_init_args:
+            self.cell_init_args['state_is_tuple'] = True  # 'use_peepholes': True,
 
         if cell_fn is None:
-            raise Exception("Please put in cell_fn")
+            raise ValueError("cell_fn cannot be set to None")
+
         if 'GRU' in cell_fn.__name__:
             try:
                 cell_init_args.pop('state_is_tuple')
             except Exception:
                 logging.warning("pop state_is_tuple fails.")
-        # self.inputs = layer.outputs
+
         logging.info(
             "[*] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
             (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
@@ -1651,14 +1642,14 @@ class Seq2Seq(Layer):
             # tl.layers.set_name_reuse(reuse)
             # network = InputLayer(self.inputs, name=name+'/input')
             network_encode = DynamicRNNLayer(
-                net_encode_in, cell_fn=cell_fn, cell_init_args=cell_init_args, n_hidden=n_hidden,
+                net_encode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
                 initializer=initializer, initial_state=initial_state_encode, dropout=dropout, n_layer=n_layer,
                 sequence_length=encode_sequence_length, return_last=False, return_seq_2d=True, name='encode'
             )
             # vs.reuse_variables()
             # tl.layers.set_name_reuse(True)
             network_decode = DynamicRNNLayer(
-                net_decode_in, cell_fn=cell_fn, cell_init_args=cell_init_args, n_hidden=n_hidden,
+                net_decode_in, cell_fn=cell_fn, cell_init_args=self.cell_init_args, n_hidden=n_hidden,
                 initializer=initializer,
                 initial_state=(network_encode.final_state if initial_state_decode is None else
                                initial_state_decode), dropout=dropout, n_layer=n_layer,
@@ -1677,16 +1668,12 @@ class Seq2Seq(Layer):
         self.final_state_decode = network_decode.final_state
 
         # self.sequence_length = sequence_length
-        self.all_layers = list(network_encode.all_layers)
-        self.all_params = list(network_encode.all_params)
-        self.all_drop = dict(network_encode.all_drop)
+        self._update_layers(network_encode.all_layers)
+        self._update_params(network_encode.all_params)
+        self._update_all_drop(network_encode.all_drop)
 
-        self.all_layers.extend(list(network_decode.all_layers))
-        self.all_params.extend(list(network_decode.all_params))
-        self.all_drop.update(dict(network_decode.all_drop))
+        self._update_layers(network_decode.all_layers)
+        self._update_params(network_decode.all_params)
+        self._update_all_drop(network_decode.all_drop)
 
-        self.all_layers.append(self.outputs)
-        # self.all_params.extend( rnn_variables )
-
-        self.all_layers = list_remove_repeat(self.all_layers)
-        self.all_params = list_remove_repeat(self.all_params)
+        self._update_layers(self.outputs)

@@ -2,8 +2,9 @@
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import Layer
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -49,15 +50,13 @@ class PadLayer(Layer):
 
         logging.info("PadLayer   %s: padding:%s mode:%s" % (name, list(padding), mode))
 
-        self.inputs = prev_layer.outputs
-
         if padding is None:
             raise Exception(
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
 
         self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class ZeroPad1d(Layer):
@@ -87,13 +86,11 @@ class ZeroPad1d(Layer):
 
         logging.info("ZeroPad1d   %s: padding:%s" % (name, str(padding)))
 
-        self.inputs = prev_layer.outputs
-
         if not isinstance(padding, (int, tuple, dict)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)
-        self.all_layers.append(self.outputs)
+        self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        self._update_layers(self.outputs)
 
 
 class ZeroPad2d(Layer):
@@ -124,13 +121,11 @@ class ZeroPad2d(Layer):
 
         logging.info("ZeroPad2d   %s: padding:%s" % (name, str(padding)))
 
-        self.inputs = prev_layer.outputs
-
         if not isinstance(padding, (int, tuple)):
-            raise AssertionError()
+            raise AssertionError("Padding should be of type `int` or `tuple`")
 
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class ZeroPad3d(Layer):
@@ -160,10 +155,9 @@ class ZeroPad3d(Layer):
 
         logging.info("ZeroPad3d   %s: padding:%s" % (name, str(padding)))
 
-        self.inputs = prev_layer.outputs
-
         if not isinstance(padding, (int, tuple)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)
-        self.all_layers.append(self.outputs)
+        self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+
+        self._update_layers(self.outputs)

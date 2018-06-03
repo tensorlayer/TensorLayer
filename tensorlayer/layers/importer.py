@@ -70,8 +70,6 @@ class LambdaLayer(Layer):
 
         logging.info("LambdaLayer  %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         if fn is None:
             raise AssertionError("The `fn` argument cannot be None")
 
@@ -79,8 +77,8 @@ class LambdaLayer(Layer):
             self.outputs = fn(self.inputs, **self.fn_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._update_layers(self.outputs)
+        self._update_params(variables)
 
 
 class SlimNetsLayer(Layer):
@@ -115,22 +113,18 @@ class SlimNetsLayer(Layer):
             name='tfslim_layer',
     ):
 
-        super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, slim_args=slim_args, name=name)
 
         logging.info("SlimNetsLayer %s: %s" % (name, slim_layer.__name__))
 
-        self.inputs = prev_layer.outputs
-
         if slim_layer is None:
             raise ValueError("slim layer is None")
-        if slim_args is None:
-            slim_args = {}
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
         #     slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        net, end_points = slim_layer(self.inputs, **slim_args)
+        net, end_points = slim_layer(self.inputs, **self.slim_args)
 
         slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=name)
         if slim_variables == []:
@@ -147,8 +141,8 @@ class SlimNetsLayer(Layer):
             # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
-        self.all_layers.extend(slim_layers)
-        self.all_params.extend(slim_variables)
+        self._update_layers(slim_layers)
+        self._update_params(slim_variables)
 
 
 @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
@@ -179,25 +173,18 @@ class KerasLayer(Layer):
             name='keras_layer',
     ):
 
-        super(KerasLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(KerasLayer, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
 
         logging.info("KerasLayer %s: %s" % (name, keras_layer))
-
-        self.inputs = prev_layer.outputs
-
-        if prev_layer is None:
-            raise ValueError("layer is None")
-        if keras_args is None:
-            keras_args = {}
 
         logging.warning("This API will be removed, please use LambdaLayer instead.")
 
         with tf.variable_scope(name) as vs:
-            self.outputs = keras_layer(self.inputs, **keras_args)
+            self.outputs = keras_layer(self.inputs, **self.keras_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._update_layers(self.outputs)
+        self._update_params(variables)
 
 
 @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
@@ -212,37 +199,35 @@ class EstimatorLayer(Layer):
         Previous layer
     model_fn : function
         A tensor in tensor out function for building model.
-    args : dictionary
+    layer_args : dictionary
         The arguments for the `model_fn`.
     name : str
         A unique layer name.
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', args='layer_args', end_support_version=1.9
+    )  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
             model_fn,
-            args=None,
+            layer_args=None,
             name='estimator_layer',
     ):
-        super(EstimatorLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(EstimatorLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
         logging.info("EstimatorLayer %s: %s" % (name, model_fn))
 
-        self.inputs = prev_layer.outputs
-
         if model_fn is None:
             raise ValueError('model fn is None')
-        if args is None:
-            args = {}
 
         logging.warning("This API will be removed, please use LambdaLayer instead.")
 
         with tf.variable_scope(name) as vs:
-            self.outputs = model_fn(self.inputs, **args)
+            self.outputs = model_fn(self.inputs, **self.layer_args)
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._update_layers(self.outputs)
+        self._update_params(variables)

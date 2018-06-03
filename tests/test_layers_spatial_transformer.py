@@ -68,7 +68,7 @@ class Layer_Spatial_Transformer_Test(CustomTestCase):
         self.assertEqual(self.s_shape[1:], [40, 40, 1])
 
     def test_net_layers(self):
-        self.assertEqual(len(self.net_layers), 9)
+        self.assertEqual(len(self.net_layers), 10)
 
     def test_net_params(self):
         self.assertEqual(len(self.net_params), 12)

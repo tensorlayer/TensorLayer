@@ -86,10 +86,13 @@ class SqueezeNetV1(Layer):
     def __init__(self, x, end_with='output', is_train=False, reuse=None):
 
         self.net = self.squeezenetv1(x, end_with, is_train, reuse)
+
         self.outputs = self.net.outputs
-        self.all_params = self.net.all_params
-        self.all_layers = self.net.all_layers
-        self.all_drop = self.net.all_drop
+
+        self.all_params = list(self.net.all_params)
+        self.all_layers = list(self.net.all_layers)
+        self.all_drop = dict(self.net.all_drop)
+
         self.print_layers = self.net.print_layers
         self.print_params = self.net.print_params
 

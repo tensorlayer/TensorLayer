@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import Layer
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -53,8 +54,6 @@ class ROIPoolingLayer(Layer):
 
         logging.info("ROIPoolingLayer %s: (%d, %d)" % (name, pool_height, pool_width))
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)

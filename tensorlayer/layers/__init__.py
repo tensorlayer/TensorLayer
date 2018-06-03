@@ -13,6 +13,7 @@ from tensorlayer.layers.core import *
 from .extend import *
 from .flow_control import *
 from .importer import *
+from .inputs import *
 from .merge import *
 from .normalization import *
 from .object_detection import *

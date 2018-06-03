@@ -42,13 +42,14 @@ class FlattenLayer(Layer):
     def __init__(self, prev_layer, name='flatten'):
         super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        self.inputs = prev_layer.outputs
-
-        self.outputs = flatten_reshape(self.inputs, name=name)
-        self.n_units = int(self.outputs.get_shape()[-1])
-        self.all_layers.append(self.outputs)
+        _out = flatten_reshape(self.inputs, name=name)
+        self.n_units = int(_out.get_shape()[-1])
 
         logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
+
+        self.outputs = _out
+
+        self._update_layers(self.outputs)
 
 
 class ReshapeLayer(Layer):
@@ -77,13 +78,11 @@ class ReshapeLayer(Layer):
     def __init__(self, prev_layer, shape, name='reshape'):
         super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        self.inputs = prev_layer.outputs
-
         if not shape:
             raise ValueError("Shape list can not be empty")
 
         self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
 
@@ -114,14 +113,12 @@ class TransposeLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(self, prev_layer, perm, name='transpose'):
 
+        if perm is None:
+            raise AssertionError("The `perm` argument cannot be None")
+
         super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info("TransposeLayer  %s: perm:%s" % (name, perm))
 
-        self.inputs = prev_layer.outputs
-
-        if perm is None:
-            raise AssertionError("The `perm` argument cannot be None")
-
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)

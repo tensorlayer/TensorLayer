@@ -151,8 +151,6 @@ class BinaryDenseLayer(Layer):
             (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        self.inputs = prev_layer.outputs
-
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
@@ -187,12 +185,12 @@ class BinaryDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         if b_init is not None:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class BinaryConv2d(Layer):
@@ -285,8 +283,6 @@ class BinaryConv2d(Layer):
             )
         )
 
-        self.inputs = prev_layer.outputs
-
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
@@ -326,12 +322,12 @@ class BinaryConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         if b_init:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class TernaryDenseLayer(Layer):
@@ -383,8 +379,6 @@ class TernaryDenseLayer(Layer):
             (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        self.inputs = prev_layer.outputs
-
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
@@ -422,12 +416,12 @@ class TernaryDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         if b_init is not None:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class TernaryConv2d(Layer):
@@ -535,8 +529,6 @@ class TernaryConv2d(Layer):
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
 
-        self.inputs = prev_layer.outputs
-
         with tf.variable_scope(name):
 
             W = tf.get_variable(
@@ -564,12 +556,12 @@ class TernaryConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         if b_init:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class DorefaDenseLayer(Layer):
@@ -622,12 +614,11 @@ class DorefaDenseLayer(Layer):
     ):
         super(DorefaDenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
         logging.info(
             "DorefaDenseLayer  %s: %d %s" %
             (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
-
-        self.inputs = prev_layer.outputs
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
@@ -637,6 +628,8 @@ class DorefaDenseLayer(Layer):
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units
 
+        self.inputs = _quantize_active(_cabs(self.inputs), bitA)
+
         with tf.variable_scope(name):
 
             W = tf.get_variable(
@@ -644,7 +637,6 @@ class DorefaDenseLayer(Layer):
             )
             # W = tl.act.sign(W)    # dont update ...
             W = _quantize_weight(W, bitW)
-            self.inputs = _quantize_active(_cabs(self.inputs), bitA)
             # W = tf.Variable(W)
             # print(W)
 
@@ -665,11 +657,11 @@ class DorefaDenseLayer(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
         if b_init is not None:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class DorefaConv2d(Layer):
@@ -760,6 +752,7 @@ class DorefaConv2d(Layer):
     ):
         super(DorefaConv2d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
         logging.info(
             "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
                 name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
@@ -767,26 +760,29 @@ class DorefaConv2d(Layer):
             )
         )
 
-        self.inputs = prev_layer.outputs
+        self.inputs = _quantize_active(_cabs(self.inputs), bitA)  # Do not remove
 
         if use_gemm:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
+
         try:
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
             logging.info("[warnings] unknow input channels, set to 1")
+
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
+
         with tf.variable_scope(name):
             W = tf.get_variable(
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
+
             W = _quantize_weight(W, bitW)
-            self.inputs = _quantize_active(_cabs(self.inputs), bitA)
 
             self.outputs = tf.nn.conv2d(
                 self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
@@ -803,12 +799,12 @@ class DorefaConv2d(Layer):
 
             self.outputs = self._apply_activation(self.outputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
         if b_init:
-            self.all_params.extend([W, b])
+            self._update_params([W, b])
         else:
-            self.all_params.append(W)
+            self._update_params(W)
 
 
 class SignLayer(Layer):
@@ -831,15 +827,13 @@ class SignLayer(Layer):
     ):
         super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        self.inputs = prev_layer.outputs
-
         logging.info("SignLayer  %s" % (self.name))
 
         with tf.variable_scope(name):
             # self.outputs = tl.act.sign(self.inputs)
             self.outputs = quantize(self.inputs)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class ScaleLayer(Layer):
@@ -864,14 +858,13 @@ class ScaleLayer(Layer):
             name='scale',
     ):
         super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("ScaleLayer  %s: init_scale: %f" % (name, init_scale))
 
-        self.inputs = prev_layer.outputs
+        logging.info("ScaleLayer  %s: init_scale: %f" % (name, init_scale))
 
         with tf.variable_scope(name):
             # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
             scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
             self.outputs = self.inputs * scale
 
-        self.all_layers.append(self.outputs)
-        self.all_params.append(scale)
+        self._update_layers(self.outputs)
+        self._update_params(scale)

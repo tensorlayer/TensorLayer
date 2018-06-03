@@ -150,13 +150,13 @@ class Layer_Core_Test(unittest.TestCase):
 
     def test_net1(self):
         self.assertEqual(self.net1_shape[-1], 10)
-        self.assertEqual(len(self.net1_layers), 1)
+        self.assertEqual(len(self.net1_layers), 2)
         self.assertEqual(len(self.net1_params), 2)
         self.assertEqual(self.net1_n_params, 310)
 
     def test_net2(self):
         self.assertEqual(self.net2_shape[-1], 8)
-        self.assertEqual(len(self.net2_layers), 0)
+        self.assertEqual(len(self.net2_layers), 1)
         self.assertEqual(len(self.net2_params), 0)
         self.assertEqual(self.net2_n_params, 0)
 
@@ -180,19 +180,19 @@ class Layer_Core_Test(unittest.TestCase):
 
     def test_net6(self):
         self.assertEqual(self.net6_shape[-1], 784)
-        self.assertEqual(len(self.net6_layers), 2)
+        self.assertEqual(len(self.net6_layers), 3)
         self.assertEqual(len(self.net6_params), 4)
         self.assertEqual(self.net6_n_params, 308308)
 
     def test_net7(self):
         self.assertEqual(self.net7_shape, [64, 100])
-        self.assertEqual(len(self.net7_layers), 2)
+        self.assertEqual(len(self.net7_layers), 3)
         self.assertEqual(len(self.net7_params), 2)
         self.assertEqual(self.net7_n_params, 78500)
 
     def test_net8(self):
         self.assertEqual(self.net8_shape, [64, 100])
-        self.assertEqual(len(self.net8_layers), 2)
+        self.assertEqual(len(self.net8_layers), 3)
         self.assertEqual(len(self.net8_params), 4)
         self.assertEqual(self.net8_n_params, 88600)
 

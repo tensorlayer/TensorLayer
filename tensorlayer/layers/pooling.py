@@ -4,8 +4,9 @@ import copy
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import Layer
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -73,11 +74,9 @@ class PoolLayer(Layer):
             (name, str(ksize), str(strides), padding, pool.__name__)
         )
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MaxPool1d(Layer):
@@ -113,13 +112,11 @@ class MaxPool1d(Layer):
             "MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.layers.max_pooling1d(
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MeanPool1d(Layer):
@@ -166,7 +163,7 @@ class MeanPool1d(Layer):
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MaxPool2d(Layer):
@@ -198,20 +195,11 @@ class MaxPool2d(Layer):
             "MaxPool2d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
 
-        self.inputs = prev_layer.outputs
+        self.outputs = tf.layers.max_pooling2d(
+            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
+        )
 
-        if tf.__version__ > '1.5':
-            self.outputs = tf.layers.max_pooling2d(
-                self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
-            )
-        else:
-            if len(strides) != 2:
-                raise Exception("len(strides) should be 2.")
-            ksize = [1, filter_size[0], filter_size[1], 1]
-            strides = [1, strides[0], strides[1], 1]
-            self.outputs = tf.nn.max_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
-
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MeanPool2d(Layer):
@@ -245,20 +233,11 @@ class MeanPool2d(Layer):
             (name, str(filter_size), str(strides), str(padding))
         )
 
-        self.inputs = prev_layer.outputs
+        self.outputs = tf.layers.average_pooling2d(
+            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
+        )
 
-        if tf.__version__ > '1.5':
-            self.outputs = tf.layers.average_pooling2d(
-                self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
-            )
-        else:
-            if len(strides) != 2:
-                raise Exception("len(strides) should be 2.")
-            ksize = [1, filter_size[0], filter_size[1], 1]
-            strides = [1, strides[0], strides[1], 1]
-            self.outputs = tf.nn.avg_pool(self.inputs, ksize=ksize, strides=strides, padding=padding, name=name)
-
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MaxPool3d(Layer):
@@ -300,13 +279,11 @@ class MaxPool3d(Layer):
             "MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (name, str(filter_size), str(strides), str(padding))
         )
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.layers.max_pooling3d(
             self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class MeanPool3d(Layer):
@@ -350,13 +327,11 @@ class MeanPool3d(Layer):
             (name, str(filter_size), str(strides), str(padding))
         )
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.layers.average_pooling3d(
             prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name
         )
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMaxPool1d(Layer):
@@ -383,11 +358,9 @@ class GlobalMaxPool1d(Layer):
 
         logging.info("GlobalMaxPool1d %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMeanPool1d(Layer):
@@ -414,11 +387,9 @@ class GlobalMeanPool1d(Layer):
 
         logging.info("GlobalMeanPool1d %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMaxPool2d(Layer):
@@ -445,11 +416,9 @@ class GlobalMaxPool2d(Layer):
 
         logging.info("GlobalMaxPool2d %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMeanPool2d(Layer):
@@ -476,11 +445,9 @@ class GlobalMeanPool2d(Layer):
 
         logging.info("GlobalMeanPool2d %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMaxPool3d(Layer):
@@ -505,13 +472,11 @@ class GlobalMaxPool3d(Layer):
     def __init__(self, prev_layer, name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        self.inputs = prev_layer.outputs
-
         logging.info("GlobalMaxPool3d %s" % name)
 
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 class GlobalMeanPool3d(Layer):
@@ -538,11 +503,9 @@ class GlobalMeanPool3d(Layer):
 
         logging.info("GlobalMeanPool3d %s" % name)
 
-        self.inputs = prev_layer.outputs
-
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
 
-        self.all_layers.append(self.outputs)
+        self._update_layers(self.outputs)
 
 
 # Alias
