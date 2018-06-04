@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import six
@@ -8,6 +9,7 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
+from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer import files
 from tensorlayer import iterate
@@ -122,10 +124,6 @@ def initialize_rnn_state(state, feed_dict=None):
         The TensorFlow's RNN state.
 
     """
-    try:  # TF1.0
-        LSTMStateTuple = tf.contrib.rnn.LSTMStateTuple
-    except Exception:
-        LSTMStateTuple = tf.nn.rnn_cell.LSTMStateTuple
 
     if isinstance(state, LSTMStateTuple):
         c = state.c.eval(feed_dict=feed_dict)

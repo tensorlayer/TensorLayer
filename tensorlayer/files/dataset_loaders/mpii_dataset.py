@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
 
 from tensorlayer import tl_logging as logging

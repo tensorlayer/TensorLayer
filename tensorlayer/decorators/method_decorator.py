@@ -1,4 +1,6 @@
-import traceback
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 import inspect
 
 

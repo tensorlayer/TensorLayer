@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
@@ -5,11 +6,11 @@ import tensorflow as tf
 from tensorflow.python.ops import array_ops
 from tensorflow.python.util.tf_inspect import getfullargspec
 from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
+from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
-from tensorlayer.layers.core import list_remove_repeat
 
 from tensorlayer import tl_logging as logging
 
