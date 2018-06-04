@@ -1181,6 +1181,8 @@ class AtrousConv2dTransposeLayer(Layer):
             )
         )
 
+        self.inputs = prev_layer.outputs
+
         with tf.variable_scope(name):
             filters = tf.get_variable(
                 name='W_atrous_2d_transpose', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype,
