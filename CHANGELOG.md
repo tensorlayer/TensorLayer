@@ -94,6 +94,7 @@ To release a new version, please update the changelog as followed:
   - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+  - AtrousDeConv2dLayer added (by @2wins in #662)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Setup:
@@ -291,6 +292,6 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...1.8.5
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
+[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc2...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

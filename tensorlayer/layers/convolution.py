@@ -1,6 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
@@ -22,6 +23,7 @@ __all__ = [
     'DeformableConv2d',
     'AtrousConv1dLayer',
     'AtrousConv2dLayer',
+    'AtrousDeConv2dLayer',
     'deconv2d_bilinear_upsampling_initializer',
     'Conv1d',
     'Conv2d',
@@ -107,7 +109,7 @@ class Conv1dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -227,7 +229,7 @@ class Conv2dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -356,7 +358,7 @@ class DeConv2dLayer(Layer):
                     name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **self.b_init_args
                 )
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -440,7 +442,7 @@ class Conv3dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -524,7 +526,7 @@ class DeConv3dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -804,7 +806,7 @@ class DeformableConv2d(Layer):
                     **self.b_init_args
                 )
 
-                _tensor = tf.add(_tensor, b, name='add_bias')
+                _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
             self.outputs = tf.reshape(
                 tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
@@ -973,7 +975,7 @@ def atrous_conv1d(
         b_init=tf.constant_initializer(value=0.0),
         W_init_args=None,
         b_init_args=None,
-        name='conv1d',
+        name='atrous_1d',
 ):
     """Simplified version of :class:`AtrousConv1dLayer`.
 
@@ -1012,11 +1014,6 @@ def atrous_conv1d(
         A :class:`AtrousConv1dLayer` object
 
     """
-
-    if W_init_args is None:
-        W_init_args = {}
-    if b_init_args is None:
-        b_init_args = {}
 
     return Conv1dLayer(
         prev_layer=prev_layer,
@@ -1071,7 +1068,7 @@ class AtrousConv2dLayer(Layer):
     def __init__(
             self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=None, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, name='atrou2d'
+            W_init_args=None, b_init_args=None, name='atrous_2d'
     ):
 
         super(AtrousConv2dLayer, self
@@ -1086,25 +1083,106 @@ class AtrousConv2dLayer(Layer):
 
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
-            filters = tf.get_variable(
-                name='filter', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+
+            W = tf.get_variable(
+                name='W_atrous_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters, rate, padding)
+            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=rate, padding=padding)
 
             if b_init:
                 b = tf.get_variable(
-                    name='b', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    name='b_atrous_conv2d', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                    **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
-            self._add_layers(self.outputs)
+            self.outputs = self._apply_activation(self.outputs)
+
+        self._add_layers(self.outputs)
 
         if b_init:
-            self._add_params([filters, b])
+            self._add_params([W, b])
         else:
-            self._add_params(filters)
+            self._add_params(W)
+
+
+class AtrousDeConv2dLayer(Layer):
+    """The :class:`AtrousDeConv2dLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
+
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        Previous layer with a 4D output tensor in the shape of (batch, height, width, channels).
+    shape : tuple of int
+        The shape of the filters: (filter_height, filter_width, out_channels, in_channels).
+    output_shape : tuple of int
+        Output shape of the deconvolution.
+    rate : int
+        The stride that we sample input values in the height and width dimensions.
+        This equals the rate that we up-sample the filters by inserting zeros across the height and width dimensions.
+        In the literature, this parameter is sometimes mentioned as input stride or dilation.
+    act : activation function
+        The activation function of this layer.
+    padding : str
+        The padding algorithm type: "SAME" or "VALID".
+    W_init : initializer
+        The initializer for the weight matrix.
+    b_init : initializer or None
+        The initializer for the bias vector. If None, skip biases.
+    W_init_args : dictionary
+        The arguments for the weight matrix initializer.
+    b_init_args : dictionary
+        The arguments for the bias vector initializer.
+    name : str
+        A unique layer name.
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=None, padding='SAME',
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None, b_init_args=None, name='atrous_2d_transpose'
+    ):
+
+        super(AtrousDeConv2dLayer, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+
+        logging.info(
+            "AtrousDeConv2dLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" % (
+                name, shape, output_shape, rate, padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
+        )
+
+        with tf.variable_scope(name):
+            W = tf.get_variable(
+                name='W_atrous_conv2d_transpose', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype,
+                **self.W_init_args
+            )
+
+            self.outputs = tf.nn.atrous_conv2d_transpose(
+                self.inputs, filters=W, output_shape=output_shape, rate=rate, padding=padding
+            )
+
+            if b_init:
+                b = tf.get_variable(
+                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init,
+                    dtype=LayersConfig.tf_dtype, **self.b_init_args
+                )
+
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+
+            self.outputs = self._apply_activation(self.outputs)
+
+        self._add_layers(self.outputs)
+
+        if b_init:
+            self._add_params([W, b])
+        else:
+            self._add_params(W)
 
 
 def deconv2d_bilinear_upsampling_initializer(shape):
@@ -1658,7 +1736,7 @@ class DepthwiseConv2d(Layer):
                     dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -1969,7 +2047,7 @@ class GroupConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 

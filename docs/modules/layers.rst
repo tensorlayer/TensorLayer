@@ -254,6 +254,7 @@ Layer list
    DownSampling2dLayer
    AtrousConv1dLayer
    AtrousConv2dLayer
+   AtrousDeConv2dLayer
 
    Conv1d
    Conv2d
@@ -475,6 +476,10 @@ Convolutional layer (Pro)
 2D Atrous convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AtrousConv2dLayer
+
+2D Atrous transposed convolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AtrousDeConv2dLayer
 
 
 Convolutional layer (Simplified)

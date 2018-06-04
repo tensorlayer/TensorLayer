@@ -9,7 +9,11 @@ from tensorlayer.decorators import deprecated_alias
 
 from tensorlayer.lazy_imports import LazyImport
 
-roi_pooling = LazyImport("tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops")
+try:
+    roi_pooling = LazyImport("tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops")
+except Exception as e:
+    logging.error(e)
+    logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
 
 __all__ = [
     'ROIPoolingLayer',

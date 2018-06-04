@@ -150,17 +150,17 @@ def print_all_variables(train_only=False):
     if train_only:
         t_vars = tf.trainable_variables()
         logging.info("  [*] printing trainable variables")
+
     else:
-        try:  # TF1.0+
-            t_vars = tf.global_variables()
-        except Exception:  # TF0.12
-            t_vars = tf.all_variables()
+        t_vars = tf.global_variables()
         logging.info("  [*] printing global variables")
+
     for idx, v in enumerate(t_vars):
         logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
-def get_variables_with_name(name=None, train_only=True, printable=False):
+@deprecated_alias(printable='verbose', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def get_variables_with_name(name=None, train_only=True, verbose=False):
     """Get a list of TensorFlow variables by a given name scope.
 
     Parameters
@@ -169,7 +169,7 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
         Get the variables that contain this name.
     train_only : boolean
         If Ture, only get the trainable variables.
-    printable : boolean
+    verbose : boolean
         If True, print the information of all variables.
 
     Returns
@@ -184,24 +184,27 @@ def get_variables_with_name(name=None, train_only=True, printable=False):
     """
     if name is None:
         raise Exception("please input a name")
+
     logging.info("  [*] geting variables with %s" % name)
+
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
+
     else:
-        try:  # TF1.0+
-            t_vars = tf.global_variables()
-        except Exception:  # TF0.12
-            t_vars = tf.all_variables()
+        t_vars = tf.global_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
-    if printable:
+
+    if verbose:
         for idx, v in enumerate(d_vars):
             logging.info("  got {:3}: {:15}   {}".format(idx, v.name, str(v.get_shape())))
+
     return d_vars
 
 
-def get_layers_with_name(net, name="", printable=False):
+@deprecated_alias(printable='verbose', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+def get_layers_with_name(net, name="", verbose=False):
     """Get a list of layers' output in a network by a given name scope.
 
     Parameters
@@ -210,7 +213,7 @@ def get_layers_with_name(net, name="", printable=False):
         The last layer of the network.
     name : str
         Get the layers' output that contain this name.
-    printable : boolean
+    verbose : boolean
         If True, print information of all the layers' output
 
     Returns
@@ -232,7 +235,8 @@ def get_layers_with_name(net, name="", printable=False):
         # logging.info(type(layer.name))
         if name in layer.name:
             layers.append(layer)
-            if printable:
+
+            if verbose:
                 logging.info("  got {:3}: {:15}   {}".format(i, layer.name, str(layer.get_shape())))
                 i = i + 1
 
@@ -327,10 +331,7 @@ def initialize_global_variables(sess):
     if sess is None:
         raise AssertionError('The session must be defined')
 
-    # try:    # TF12+
     sess.run(tf.global_variables_initializer())
-    # except: # TF11
-    #     sess.run(tf.initialize_all_variables())
 
 
 class Layer(object):
@@ -568,7 +569,6 @@ class Layer(object):
             self.all_drop.update(list(drop_layers))
 
         else:
-            print("DROP LAYER:", drop_layers)
             raise ValueError()
 
     @private_method
@@ -670,7 +670,7 @@ class DenseLayer(Layer):
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -787,16 +787,11 @@ class ReconLayer(DenseLayer):
         beta = 4
         rho = 0.15
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
-        try:  # TF1.0
-            KLD = beta * tf.reduce_sum(
-                rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
-            )
-        except Exception:  # TF0.12
-            KLD = beta * tf.reduce_sum(
-                rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat)))
-            )
-            # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
-            # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
+
+        KLD = beta * tf.reduce_sum(
+            rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
+        )
+
         # Total cost
         if act == tf.nn.softplus:
             logging.info('     use: mse, L2_w, L1_a')
