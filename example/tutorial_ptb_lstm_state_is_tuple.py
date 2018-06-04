@@ -264,8 +264,9 @@ def main(_):
         # n_examples = batch_size * num_steps
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
-            [outputs], [tf.reshape(targets, [-1])], [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)])
+        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
+            [outputs], [tf.reshape(targets, [-1])], [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)]
+        )
         # [tf.ones([batch_size * num_steps])])
         cost = tf.reduce_sum(loss) / batch_size
         return cost

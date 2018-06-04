@@ -150,12 +150,11 @@ def print_all_variables(train_only=False):
     if train_only:
         t_vars = tf.trainable_variables()
         logging.info("  [*] printing trainable variables")
+
     else:
-        try:  # TF1.0+
-            t_vars = tf.global_variables()
-        except Exception:  # TF0.12
-            t_vars = tf.all_variables()
+        t_vars = tf.global_variables()
         logging.info("  [*] printing global variables")
+
     for idx, v in enumerate(t_vars):
         logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
@@ -191,11 +190,9 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     # tvar = tf.trainable_variables() if train_only else tf.all_variables()
     if train_only:
         t_vars = tf.trainable_variables()
+
     else:
-        try:  # TF1.0+
-            t_vars = tf.global_variables()
-        except Exception:  # TF0.12
-            t_vars = tf.all_variables()
+        t_vars = tf.global_variables()
 
     d_vars = [var for var in t_vars if name in var.name]
 
@@ -334,10 +331,7 @@ def initialize_global_variables(sess):
     if sess is None:
         raise AssertionError('The session must be defined')
 
-    # try:    # TF12+
     sess.run(tf.global_variables_initializer())
-    # except: # TF11
-    #     sess.run(tf.initialize_all_variables())
 
 
 class Layer(object):
@@ -793,16 +787,11 @@ class ReconLayer(DenseLayer):
         beta = 4
         rho = 0.15
         p_hat = tf.reduce_mean(activation_out, 0)  # theano: p_hat = T.mean( self.a[i], axis=0 )
-        try:  # TF1.0
-            KLD = beta * tf.reduce_sum(
-                rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
-            )
-        except Exception:  # TF0.12
-            KLD = beta * tf.reduce_sum(
-                rho * tf.log(tf.div(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.sub(float(1), p_hat)))
-            )
-            # KLD = beta * tf.reduce_sum( rho * tf.log(rho/ p_hat) + (1- rho) * tf.log((1- rho)/(1- p_hat)) )
-            # theano: L1_a = l1_a[i] * T.sum( rho[i] * T.log(rho[i]/ p_hat) + (1- rho[i]) * T.log((1- rho[i])/(1- p_hat)) )
+
+        KLD = beta * tf.reduce_sum(
+            rho * tf.log(tf.divide(rho, p_hat)) + (1 - rho) * tf.log((1 - rho) / (tf.subtract(float(1), p_hat)))
+        )
+
         # Total cost
         if act == tf.nn.softplus:
             logging.info('     use: mse, L2_w, L1_a')

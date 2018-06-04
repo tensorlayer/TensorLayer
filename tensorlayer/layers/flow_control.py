@@ -60,10 +60,7 @@ class MultiplexerLayer(Layer):
 
         self.n_inputs = len(layers)
 
-        try:  # TF1.0
-            all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
-        except Exception:
-            all_inputs = tf.pack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
+        all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
 
         logging.info("MultiplexerLayer %s: n_inputs:%d" % (self.name, self.n_inputs))
 
