@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
@@ -61,29 +62,11 @@ class ConcatLayer(Layer):
 
         super(ConcatLayer, self).__init__(prev_layer=layers, name=name)
 
-        self.inputs = []
-        for l in layers:
-            self.inputs.append(l.outputs)
-        try:  # TF1.0
-            self.outputs = tf.concat(self.inputs, concat_dim, name=name)
-        except Exception:  # TF0.12
-            self.outputs = tf.concat(concat_dim, self.inputs, name=name)
-
         logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))
 
-        # self.all_layers = list(layers[0].all_layers)
-        # self.all_params = list(layers[0].all_params)
-        # self.all_drop = dict(layers[0].all_drop)
-        #
-        # for i in range(1, len(layers)):
-        #     self.all_layers.extend(list(layers[i].all_layers))
-        #     self.all_params.extend(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
-        #
-        # self.all_layers = list_remove_repeat(self.all_layers)
-        # self.all_params = list_remove_repeat(self.all_params)
+        self.outputs = tf.concat(self.inputs, concat_dim, name=name)
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ElementwiseLayer(Layer):
@@ -138,20 +121,12 @@ class ElementwiseLayer(Layer):
 
         self.outputs = self._apply_activation(self.outputs)
 
-        # self.all_layers = list(layers[0].all_layers)
-        # self.all_params = list(layers[0].all_params)
-        # self.all_drop = dict(layers[0].all_drop)
-        #
         # for i in range(1, len(layers)):
-        #     self.all_layers.extend(list(layers[i].all_layers))
-        #     self.all_params.extend(list(layers[i].all_params))
+        #     self._add_layers(list(layers[i].all_layers))
+        #     self._add_params(list(layers[i].all_params))
         #     self.all_drop.update(dict(layers[i].all_drop))
-        #
-        # self.all_layers = list_remove_repeat(self.all_layers)
-        # self.all_params = list_remove_repeat(self.all_params)
-        # # self.all_drop = list_remove_repeat(self.all_drop)
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class ElementwiseLambdaLayer(Layer):
@@ -198,12 +173,10 @@ class ElementwiseLambdaLayer(Layer):
         super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, fn_args=fn_args, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
 
-        self.inputs = [layer.outputs for layer in layers]
-
         with tf.variable_scope(name) as vs:
             self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

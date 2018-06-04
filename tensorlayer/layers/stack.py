@@ -1,9 +1,11 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import Layer
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -46,27 +48,17 @@ class StackLayer(Layer):
     ):
 
         super(StackLayer, self).__init__(prev_layer=layers, name=name)
-        logging.info("StackLayer %s: axis: %d" % (name, axis))
 
-        self.inputs = []
-        for l in layers:
-            self.inputs.append(l.outputs)
+        logging.info("StackLayer %s: axis: %d" % (name, axis))
 
         self.outputs = tf.stack(self.inputs, axis=axis, name=name)
 
-        # self.all_layers = list(layers[0].all_layers)
-        # self.all_params = list(layers[0].all_params)
-        # self.all_drop = dict(layers[0].all_drop)
-        #
         # for i in range(1, len(layers)):
-        #     self.all_layers.extend(list(layers[i].all_layers))
-        #     self.all_params.extend(list(layers[i].all_params))
+        #     self._add_layers(list(layers[i].all_layers))
+        #     self._add_params(list(layers[i].all_params))
         #     self.all_drop.update(dict(layers[i].all_drop))
-        #
-        # self.all_layers = list_remove_repeat(self.all_layers)
-        # self.all_params = list_remove_repeat(self.all_params)
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
 
 @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -110,7 +102,7 @@ def unstack_layer(prev_layer, num=None, axis=0, name='unstack'):
         # n.all_layers = list(layer.all_layers)
         # n.all_params = list(layer.all_params)
         # n.all_drop = dict(layer.all_drop)
-        # n.all_layers.append(inputs)
+        # n.all_layers.extend(inputs)
 
         net_new.append(n)
 
