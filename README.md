@@ -50,7 +50,7 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 	| TensorFlow  	| 2530 images/s | 18075 words/s | 58181 words/s |
 
 
-TensorLayer stands at a unique spot of the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
+TensorLayer stands at a unique spot in the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
 mask the underlying engine from users, which make them hard to customize 
 and fine-tune. On the contrary, TensorLayer APIs are generally flexible and transparent. 
 Users often find it easy to start with the examples and tutorials of TensorLayer, and then dive
