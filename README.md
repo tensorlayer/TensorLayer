@@ -36,9 +36,7 @@ TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning
 
 # Why another deep learning library: TensorLayer
 
-## Motivation
-
-As TensorFlow users, we have been looking for a library that can address various development
+As deep learning practitioners, we have been looking for a library that can address various development
  purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models. 
 Also, it allow users to easily fine-tune TensorFlow; while being suitable for production deployment. TensorLayer aims to satisfy all these purposes. It has three key features:
 
@@ -51,8 +49,6 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 		| TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
 		| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
-
-## Why using TensorLayer
 
 Similar to TensorLayer, Keras and TFLearn also provide high-level abstractions; but they
 mask the underlying engine from users. It is thus hard to customize 
