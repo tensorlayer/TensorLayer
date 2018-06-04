@@ -115,6 +115,7 @@ venv3/
 
 # TensorLayer Directories
 data/
+lib_win/
 
 # Custom Scripts
 update_tl.bat

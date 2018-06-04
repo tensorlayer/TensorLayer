@@ -113,12 +113,12 @@ class SlimNetsLayer(Layer):
             name='tfslim_layer',
     ):
 
+        if slim_layer is None:
+            raise ValueError("slim layer is None")
+
         super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, slim_args=slim_args, name=name)
 
         logging.info("SlimNetsLayer %s: %s" % (name, slim_layer.__name__))
-
-        if slim_layer is None:
-            raise ValueError("slim layer is None")
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)

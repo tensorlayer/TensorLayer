@@ -335,7 +335,7 @@ def initialize_global_variables(sess):
     #     sess.run(tf.initialize_all_variables())
 
 
-class Layer:
+class Layer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
