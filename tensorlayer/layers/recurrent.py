@@ -768,14 +768,14 @@ class ConvLSTMLayer(Layer):
         self.batch_size = batch_size
         outputs = []
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
-        
+
         if initial_state is None:
             self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)
         else:
             self.initial_state = initial_state
-            
+
         state = self.initial_state
-        
+
         # with tf.variable_scope("model", reuse=None, initializer=initializer):
         with tf.variable_scope(name, initializer=initializer) as vs:
             for time_step in range(n_steps):
