@@ -79,6 +79,7 @@ To release a new version, please update the changelog as followed:
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
+  - `tl.decorators` API enriched with `protected_method` (by @DEKHTIARJonathan in #675)
 - Docker:
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
   - Containers built in the following configurations (by @DEKHTIARJonathan in #648):
@@ -125,6 +126,10 @@ To release a new version, please update the changelog as followed:
 - All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
 - `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
 - argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
+- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (by @DEKHTIARJonathan in #675)
+- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (by @DEKHTIARJonathan in #675)
+- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (by @DEKHTIARJonathan in #675)
+- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (by @DEKHTIARJonathan in #675)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
@@ -132,6 +137,7 @@ To release a new version, please update the changelog as followed:
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
 - `tl.identity` is removed, not used anymore and deprecated for a long time (by @DEKHTIARJonathan in #667)
+- All Code specific to `TF.__version__ < "1.6"` have been removed (by @DEKHTIARJonathan in #675)
 
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
@@ -144,10 +150,10 @@ To release a new version, please update the changelog as followed:
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 - All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
 - Duplicated code removed when bias was used (by @DEKHTIARJonathan in #667)
+- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (by @DEKHTIARJonathan in #675)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
-
 ### Security
 
 ### Dependencies Update

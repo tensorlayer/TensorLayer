@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os as _os
 import sys as _sys
 import time as _time

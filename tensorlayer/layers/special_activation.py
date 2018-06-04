@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
@@ -45,14 +46,12 @@ class PReluLayer(Layer):
 
         super(PReluLayer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
 
-        logging.info("PReluLayer %s: channel_shared:%s" % (name, channel_shared))
-
-        self.inputs = prev_layer.outputs
-
         if channel_shared:
             w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
+
+        logging.info("PReluLayer %s: channel_shared:%s" % (name, channel_shared))
 
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):
@@ -65,5 +64,5 @@ class PReluLayer(Layer):
             except Exception:  # TF 0.12
                 self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend([alphas])
+        self._add_layers(self.outputs)
+        self._add_params([alphas])

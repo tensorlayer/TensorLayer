@@ -38,29 +38,17 @@ class Layer_Special_Activation_Test(unittest.TestCase):
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_net1_shape(self):
+    def test_net1(self):
+        self.assertEqual(len(self.net1_layers), 3)
+        self.assertEqual(len(self.net1_params), 3)
+        self.assertEqual(self.net1_n_params, 320)
         self.assertEqual(self.net1_shape[-1], 10)
 
-    def test_net1_all_layers(self):
-        self.assertEqual(len(self.net1_layers), 2)
-
-    def test_net1_all_params(self):
-        self.assertEqual(len(self.net1_params), 3)
-
-    def test_net1_n_params(self):
-        self.assertEqual(self.net1_n_params, 320)
-
-    def test_net2_shape(self):
-        self.assertEqual(self.net2_shape[-1], 10)
-
-    def test_net2_all_layers(self):
-        self.assertEqual(len(self.net2_layers), 3)
-
-    def test_net2_all_params(self):
+    def test_net2(self):
+        self.assertEqual(len(self.net2_layers), 4)
         self.assertEqual(len(self.net2_params), 4)
-
-    def test_net2_n_params(self):
         self.assertEqual(self.net2_n_params, 321)
+        self.assertEqual(self.net2_shape[-1], 10)
 
 
 if __name__ == '__main__':
