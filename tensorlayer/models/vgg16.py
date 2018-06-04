@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
 VGG-16 for ImageNet.
@@ -349,9 +350,12 @@ class VGG16(VGG16Base):
         with tf.variable_scope("vgg16", reuse=reuse):
             net = InputLayer(x, name='input')
             self.net = VGG16Base.vgg16_simple_api(net, end_with)
+
             self.outputs = self.net.outputs
-            self.all_params = self.net.all_params
-            self.all_layers = self.net.all_layers
-            self.all_drop = self.net.all_drop
+
+            self.all_params = list(self.net.all_params)
+            self.all_layers = list(self.net.all_layers)
+            self.all_drop = dict(self.net.all_drop)
+
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params

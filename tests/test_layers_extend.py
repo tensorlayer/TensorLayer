@@ -41,7 +41,7 @@ class Layer_Extend_Test(unittest.TestCase):
         self.assertEqual(self.shape_2[-1], 3)
 
     def test_layers(self):
-        self.assertEqual(len(self.layers), 4)
+        self.assertEqual(len(self.layers), 5)
 
     def test_params(self):
         self.assertEqual(len(self.params), 4)

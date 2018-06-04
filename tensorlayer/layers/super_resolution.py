@@ -1,9 +1,11 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
 from tensorlayer.layers.core import Layer
+
+from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import private_method
@@ -71,13 +73,6 @@ class SubpixelConv2d(Layer):
 
         super(SubpixelConv2d, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
-        logging.info(
-            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" %
-            (name, scale, n_out_channel, self.act.__name__ if self.act is not None else '- No Activation')
-        )
-
-        self.inputs = prev_layer.outputs
-
         if n_out_channel is None:
 
             if int(self.inputs.get_shape()[-1]) / (scale**2) % 1 != 0:
@@ -87,10 +82,15 @@ class SubpixelConv2d(Layer):
 
             n_out_channel = int(int(self.inputs.get_shape()[-1]) / (scale**2))
 
+        logging.info(
+            "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" %
+            (name, scale, n_out_channel, self.act.__name__ if self.act is not None else '- No Activation')
+        )
+
         with tf.variable_scope(name):
             self.outputs = self._apply_activation(self._PS(self.inputs, r=scale, n_out_channels=n_out_channel))
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
     @private_method
     def _PS(self, X, r, n_out_channels):
@@ -154,12 +154,10 @@ class SubpixelConv1d(Layer):
             (name, scale, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        self.inputs = prev_layer.outputs
-
         with tf.name_scope(name):
             self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
     @private_method
     def _PS(self, I, r):

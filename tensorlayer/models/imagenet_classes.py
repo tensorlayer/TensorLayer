@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 class_names = '''tench, Tinca tinca
 goldfish, Carassius auratus
 great white shark, white shark, man-eater, man-eating shark, Carcharodon carcharias

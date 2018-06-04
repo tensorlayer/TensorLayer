@@ -1,3 +1,5 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
 """
 TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also
@@ -8,6 +10,7 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 """
 
 from .deprecation import deprecated_alias
-from .private_method import private_method
+from .method_decorator import private_method
+from .method_decorator import protected_method
 
-__all__ = ['deprecated_alias', 'private_method']
+__all__ = ['deprecated_alias', 'private_method', 'protected_method']

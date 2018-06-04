@@ -32,13 +32,9 @@ class Layer_Stack_Test(unittest.TestCase):
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_net_shape(self):
+    def test_net(self):
         self.assertEqual(self.net_shape[-1], 10)
-
-    def test_layers(self):
-        self.assertEqual(len(self.layers), 4)
-
-    def test_params(self):
+        self.assertEqual(len(self.layers), 5)
         self.assertEqual(len(self.params), 6)
         self.assertEqual(self.n_params, 930)
 
@@ -48,7 +44,7 @@ class Layer_Stack_Test(unittest.TestCase):
             shape = n.outputs.get_shape().as_list()
 
             self.assertEqual(shape[-1], 10)
-            self.assertEqual(len(n.all_layers), 4)
+            self.assertEqual(len(n.all_layers), 5)
             self.assertEqual(len(n.all_params), 6)
             self.assertEqual(n.count_params(), 930)
 

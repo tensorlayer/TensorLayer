@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
@@ -59,12 +60,10 @@ class LocalResponseNormLayer(Layer):
             (name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
-        self.inputs = prev_layer.outputs
-
         with tf.variable_scope(name):
             self.outputs = tf.nn.lrn(self.inputs, depth_radius=depth_radius, bias=bias, alpha=alpha, beta=beta)
 
-        self.all_layers.append(self.outputs)
+        self._add_layers(self.outputs)
 
 
 class BatchNormLayer(Layer):
@@ -121,8 +120,6 @@ class BatchNormLayer(Layer):
             (name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
         )
 
-        self.inputs = prev_layer.outputs
-
         x_shape = self.inputs.get_shape()
         params_shape = x_shape[-1:]
 
@@ -130,13 +127,18 @@ class BatchNormLayer(Layer):
             axis = list(range(len(x_shape) - 1))
             # 1. beta, gamma
             variables = []
+
             if beta_init:
-                if tf.__version__ > '0.12.1' and beta_init == tf.zeros_initializer:
+
+                if beta_init == tf.zeros_initializer:
                     beta_init = beta_init()
+
                 beta = tf.get_variable(
                     'beta', shape=params_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype, trainable=is_train
                 )
+
                 variables.append(beta)
+
             else:
                 beta = None
 
@@ -153,10 +155,8 @@ class BatchNormLayer(Layer):
                 gamma = None
 
             # 2.
-            if tf.__version__ > '0.12.1':
-                moving_mean_init = tf.zeros_initializer()
-            else:
-                moving_mean_init = tf.zeros_initializer
+            moving_mean_init = tf.zeros_initializer()
+
             moving_mean = tf.get_variable(
                 'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
@@ -199,8 +199,8 @@ class BatchNormLayer(Layer):
 
             variables.extend([moving_mean, moving_variance])
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class InstanceNormLayer(Layer):
@@ -234,8 +234,6 @@ class InstanceNormLayer(Layer):
             (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        self.inputs = prev_layer.outputs
-
         with tf.variable_scope(name) as vs:
             mean, var = tf.nn.moments(self.inputs, [1, 2], keep_dims=True)
 
@@ -254,8 +252,8 @@ class InstanceNormLayer(Layer):
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
 
 
 class LayerNormLayer(Layer):
@@ -285,42 +283,22 @@ class LayerNormLayer(Layer):
             "LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
-        self.inputs = prev_layer.outputs
+        with tf.variable_scope(name) as vs:
+            self.outputs = tf.contrib.layers.layer_norm(
+                self.inputs,
+                center=center,
+                scale=scale,
+                activation_fn=self.act,
+                reuse=reuse,
+                variables_collections=variables_collections,
+                outputs_collections=outputs_collections,
+                trainable=trainable,
+                begin_norm_axis=begin_norm_axis,
+                begin_params_axis=begin_params_axis,
+                scope='var',
+            )
 
-        if tf.__version__ < "1.3":
-            # raise Exception("Please use TF 1.3+")
-            with tf.variable_scope(name) as vs:
-                self.outputs = tf.contrib.layers.layer_norm(
-                    self.inputs,
-                    center=center,
-                    scale=scale,
-                    activation_fn=self.act,
-                    reuse=reuse,
-                    variables_collections=variables_collections,
-                    outputs_collections=outputs_collections,
-                    trainable=trainable,
-                    # begin_norm_axis=begin_norm_axis,
-                    # begin_params_axis=begin_params_axis,
-                    scope='var',
-                )
-                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        else:
-            with tf.variable_scope(name) as vs:
-                self.outputs = tf.contrib.layers.layer_norm(
-                    self.inputs,
-                    center=center,
-                    scale=scale,
-                    activation_fn=self.act,
-                    reuse=reuse,
-                    variables_collections=variables_collections,
-                    outputs_collections=outputs_collections,
-                    trainable=trainable,
-                    begin_norm_axis=begin_norm_axis,
-                    begin_params_axis=begin_params_axis,
-                    scope='var',
-                )
+            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-                variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)
