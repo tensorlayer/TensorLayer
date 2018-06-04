@@ -109,7 +109,7 @@ class Conv1dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -229,7 +229,7 @@ class Conv2dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -358,7 +358,7 @@ class DeConv2dLayer(Layer):
                     name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
                     **self.b_init_args
                 )
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -442,7 +442,7 @@ class Conv3dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -526,7 +526,7 @@ class DeConv3dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -806,7 +806,7 @@ class DeformableConv2d(Layer):
                     **self.b_init_args
                 )
 
-                _tensor = tf.add(_tensor, b, name='add_bias')
+                _tensor = tf.nn.bias_add(_tensor, b, name='bias_add')
 
             self.outputs = tf.reshape(
                 tensor=self._apply_activation(_tensor), shape=[tf.shape(self.inputs)[0], input_h, input_w, shape[-1]]
@@ -1096,7 +1096,7 @@ class AtrousConv2dLayer(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -1173,7 +1173,7 @@ class AtrousConv2dTransposeLayer(Layer):
                     dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -1736,7 +1736,7 @@ class DepthwiseConv2d(Layer):
                     dtype=LayersConfig.tf_dtype, **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -2047,7 +2047,7 @@ class GroupConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 

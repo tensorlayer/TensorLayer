@@ -183,7 +183,7 @@ class BinaryDenseLayer(Layer):
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -320,7 +320,7 @@ class BinaryConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -414,7 +414,7 @@ class TernaryDenseLayer(Layer):
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -554,7 +554,7 @@ class TernaryConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
@@ -654,7 +654,7 @@ class DorefaDenseLayer(Layer):
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
                 # self.outputs = xnor_gemm(self.inputs, W) + b # TODO
 
             self.outputs = self._apply_activation(self.outputs)
@@ -797,7 +797,7 @@ class DorefaConv2d(Layer):
                     **self.b_init_args
                 )
 
-                self.outputs = tf.add(self.outputs, b, name='add_bias')
+                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
