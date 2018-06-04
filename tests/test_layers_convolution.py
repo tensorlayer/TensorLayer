@@ -100,7 +100,7 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
 
         cls.n10 = tl.layers.TernaryConv2d(cls.n9, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn2')
 
-        cls.n11 = tl.layers.AtrousConv2dTransposeLayer(
+        cls.n11 = tl.layers.AtrousDeConv2dLayer(
             cls.n10, shape=(3, 3, 32, 64), output_shape=(100, 96, 96, 32), rate=2, act=tf.nn.relu, name='atroustrans1'
         )
 

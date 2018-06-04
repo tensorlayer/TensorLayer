@@ -23,7 +23,7 @@ __all__ = [
     'DeformableConv2d',
     'AtrousConv1dLayer',
     'AtrousConv2dLayer',
-    'AtrousConv2dTransposeLayer',
+    'AtrousDeConv2dLayer',
     'deconv2d_bilinear_upsampling_initializer',
     'Conv1d',
     'Conv2d',
@@ -1108,8 +1108,8 @@ class AtrousConv2dLayer(Layer):
             self._add_params(W)
 
 
-class AtrousConv2dTransposeLayer(Layer):
-    """The :class:`AtrousConv2dTransposeLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
+class AtrousDeConv2dLayer(Layer):
+    """The :class:`AtrousDeConv2dLayer` class is 2D atrous convolution transpose, see `tf.nn.atrous_conv2d_transpose <https://www.tensorflow.org/versions/master/api_docs/python/nn.html#atrous_conv2d_transpose>`__.
 
     Parameters
     ----------
@@ -1147,11 +1147,11 @@ class AtrousConv2dTransposeLayer(Layer):
             W_init_args=None, b_init_args=None, name='atrous_2d_transpose'
     ):
 
-        super(AtrousConv2dTransposeLayer, self
+        super(AtrousDeConv2dLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "AtrousConv2dTransposeLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" % (
+            "AtrousDeConv2dLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" % (
                 name, shape, output_shape, rate, padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
