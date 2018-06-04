@@ -295,15 +295,8 @@ class EmbeddingInputlayer(Layer):
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
 
-        print("#################")
-        print("BEFORE:", self.all_layers)
-
         self._add_layers(self.outputs)
         self._add_params(embeddings)
-
-        print("AFTER:", self.all_layers)
-
-        print("#################")
 
 
 class AverageEmbeddingInputlayer(Layer):

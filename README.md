@@ -11,7 +11,7 @@
 [![Chinese Book](https://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
 
 [![PyPI version](https://badge.fury.io/py/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
-[![Github commits (since latest release)](https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc1...master)
+[![Github commits (since latest release)](https://img.shields.io/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc2...master)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
 [![Supported TF Version](https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg)](https://github.com/tensorflow/tensorflow/releases)
 

@@ -171,18 +171,14 @@ class BatchNormLayer(Layer):
             # 3.
             # These ops will only be preformed when training.
             mean, variance = tf.nn.moments(self.inputs, axis)
-            try:  # TF12
-                update_moving_mean = moving_averages.assign_moving_average(
-                    moving_mean, mean, decay, zero_debias=False
-                )  # if zero_debias=True, has bias
-                update_moving_variance = moving_averages.assign_moving_average(
-                    moving_variance, variance, decay, zero_debias=False
-                )  # if zero_debias=True, has bias
-                # logging.info("TF12 moving")
-            except Exception:  # TF11
-                update_moving_mean = moving_averages.assign_moving_average(moving_mean, mean, decay)
-                update_moving_variance = moving_averages.assign_moving_average(moving_variance, variance, decay)
-                # logging.info("TF11 moving")
+
+            update_moving_mean = moving_averages.assign_moving_average(
+                moving_mean, mean, decay, zero_debias=False
+            )  # if zero_debias=True, has bias
+
+            update_moving_variance = moving_averages.assign_moving_average(
+                moving_variance, variance, decay, zero_debias=False
+            )  # if zero_debias=True, has bias
 
             def mean_var_with_update():
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):

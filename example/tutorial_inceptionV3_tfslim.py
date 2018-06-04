@@ -129,10 +129,7 @@ if not os.path.isfile(MODEL_PATH):
         "Please download inception_v3 ckpt from https://github.com/tensorflow/models/tree/master/research/slim"
     )
 
-try:  # TF12+
-    saver.restore(sess, MODEL_PATH)
-except Exception:  # TF11
-    saver.restore(sess, MODEL_PATH)
+saver.restore(sess, MODEL_PATH)
 print("Model Restored")
 
 y = network.outputs

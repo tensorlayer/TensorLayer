@@ -59,10 +59,7 @@ class PReluLayer(Layer):
                 name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
 
-            try:  # TF 1.0
-                self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
-            except Exception:  # TF 0.12
-                self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
+            self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
         self._add_layers(self.outputs)
         self._add_params([alphas])

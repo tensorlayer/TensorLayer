@@ -53,9 +53,6 @@ def cross_entropy(output, target, name=None):
     - The code is borrowed from: `<https://en.wikipedia.org/wiki/Cross_entropy>`__.
 
     """
-    # try: # old
-    #     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=output, targets=target))
-    # except: # TF 1.0
     if name is None:
         raise Exception("Please give a unique name to tl.cost.cross_entropy for TF1.0+")
     return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
@@ -74,10 +71,7 @@ def sigmoid_cross_entropy(output, target, name=None):
         Name of this loss.
 
     """
-    # try: # TF 1.0
     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
-    # except:
-    #     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=output, targets=target))
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
@@ -400,10 +394,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
 
     """
-    # try: # TF 1.0
     sequence_loss_by_example_fn = tf.contrib.legacy_seq2seq.sequence_loss_by_example
-    # except:
-    #     sequence_loss_by_example_fn = tf.nn.seq2seq.sequence_loss_by_example
 
     loss = sequence_loss_by_example_fn(
         [logits], [tf.reshape(target_seqs, [-1])], [tf.ones_like(tf.reshape(target_seqs, [-1]), dtype=tf.float32)]
@@ -466,16 +457,12 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name) * weights
     #losses = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=targets, name=name)) # for TF1.0 and others
 
-    # try: ## TF1.0
     loss = tf.divide(
         tf.reduce_sum(losses),  # loss from mask. reduce_sum before element-wise mul with mask !!
         tf.reduce_sum(weights),
         name="seq_loss_with_mask"
     )
-    # except: ## TF0.12
-    #     loss = tf.div(tf.reduce_sum(losses),   # loss from mask. reduce_sum before element-wise mul with mask !!
-    #                     tf.reduce_sum(weights),
-    #                     name="seq_loss_with_mask")
+
     if return_details:
         return loss, losses, weights, targets
     else:
@@ -500,13 +487,10 @@ def cosine_similarity(v1, v2):
     - `<https://en.wikipedia.org/wiki/Cosine_similarity>`__.
 
     """
-    # try: ## TF1.0
-    cost = tf.reduce_sum(tf.multiply(v1, v2), 1) / (
+
+    return tf.reduce_sum(tf.multiply(v1, v2), 1) / (
         tf.sqrt(tf.reduce_sum(tf.multiply(v1, v1), 1)) * tf.sqrt(tf.reduce_sum(tf.multiply(v2, v2), 1))
     )
-    # except: ## TF0.12
-    #     cost = tf.reduce_sum(tf.mul(v1, v2), reduction_indices=1) / (tf.sqrt(tf.reduce_sum(tf.mul(v1, v1), reduction_indices=1)) * tf.sqrt(tf.reduce_sum(tf.mul(v2, v2), reduction_indices=1)))
-    return cost
 
 
 ## Regularization Functions

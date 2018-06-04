@@ -49,10 +49,7 @@ class ExpandDimsLayer(Layer):
         logging.info("ExpandDimsLayer  %s: axis:%d" % (name, axis))
 
         with tf.variable_scope(name):
-            try:  # TF12 TF1.0
-                self.outputs = tf.expand_dims(self.inputs, axis=axis)
-            except Exception:  # TF11
-                self.outputs = tf.expand_dims(self.inputs, dim=axis)
+            self.outputs = tf.expand_dims(self.inputs, axis=axis)
 
         self._add_layers(self.outputs)
 
