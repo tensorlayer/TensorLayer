@@ -94,6 +94,7 @@ To release a new version, please update the changelog as followed:
   - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+  - AtrousDeConv2dLayer added (by @2wins in #662)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Setup:
