@@ -11,13 +11,11 @@
 | Build         | [![Build Status](https://img.shields.io/travis/tensorlayer/tensorlayer.svg?label=Travis&branch=master)](https://travis-ci.org/tensorlayer/tensorlayer) [![CircleCI](https://img.shields.io/circleci/project/github/tensorlayer/tensorlayer.svg?label=Docker%20Build&branch=master)](https://circleci.com/gh/tensorlayer/tensorlayer/tree/master) [![Documentation Status](https://img.shields.io/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN)](https://tensorlayer.readthedocs.io/) [![Documentation Status](https://img.shields.io/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN)](https://tensorlayercn.readthedocs.io/) [![PyUP Updates](https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg)](https://pyup.io/repos/github/tensorlayer/tensorlayer/) |
 
 <br/>
-
 <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
 	<div align="center">
 		<img src="img/join_slack.png" width="40%"/>
 	</div>
 </a>
-
 <br/>
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning library designed for researchers and engineers. It provides a large collection of customizable neural layers / functions that are key to build real-world AI applications. TensorLayer is awarded the 2017 Best Open Source Software by the [ACM Multimedia Society](http://www.acmmm.org/2017/mm-2017-awardees/).
