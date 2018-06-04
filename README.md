@@ -52,9 +52,10 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 		| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
 
-## Why using TensorLayer instead of Keras or TFLearn
+## Why using TensorLayer
 
-Keras and TFLearn provide high-level abstractions; but mask the underlying engine from users. It is thus hard to customize 
+Similar to TensorLayer, Keras and TFLearn also provide high-level abstractions; but they
+mask the underlying engine from users. It is thus hard to customize 
 and fine-tune TensorFlow. On the contrary, TensorLayer APIs are generally flexible and transparent. 
 Users often find it easy to start with the examples and tutorials of TensorLayer, and then dive
 into TensorFlow only if necessary. In addition, TensorLayer does not create library lock-in. TensorLayer users can always import models from Keras, TFSlim and TFLearn.
@@ -112,11 +113,11 @@ docker pull tensorlayer/tensorlayer:latest-gpu-py3
 nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu-py3
 ```
 
-# Contribute to TensorLayer
+# Contribute
 
 Please read the [Contributor Guideline](https://github.com/tensorlayer/tensorlayer/blob/rearrange-readme/CONTRIBUTING.md) before submitting your PRs.
 
-# Citation
+# Cite
 If you find this project useful, we would be grateful if you cite the TensorLayer paper：
 
 ```
