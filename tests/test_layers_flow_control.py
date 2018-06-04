@@ -49,7 +49,7 @@ class Layer_Flow_Control_Test(unittest.TestCase):
         self.assertEqual(self.net_shape[-1], 10)
 
     def test_net_layers(self):
-        self.assertEqual(len(self.net_layers), 13)
+        self.assertEqual(len(self.net_layers), 14)
 
     def test_net_params(self):
         self.assertEqual(len(self.net_params), 12)

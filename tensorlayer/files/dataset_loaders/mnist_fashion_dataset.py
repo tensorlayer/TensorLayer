@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 from tensorlayer.files.utils import _load_mnist_dataset
 
 __all__ = ['load_fashion_mnist_dataset']
