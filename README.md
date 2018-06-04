@@ -44,10 +44,10 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 - ***Flexibility*** : TensorLayer APIs are transparent: it does not mask TensorFlow from users; but leaving massive hooks that help *low-level tuning* and *deep customization*.
 - ***Zero-cost Abstraction*** : TensorLayer can achieve the *full power* of TensorFlow. The following table shows the training speeds of classic models using TensorLayer and native TensorFlow on a Titan X Pascal GPU.
 
-		|             	| CIFAR-10      	| PTB LSTM      	| Word2Vec      	|
-		|-------------	|---------------	|---------------	|---------------	|
-		| TensorLayer 	| 2528 images/s 	| 18063 words/s 	| 58167 words/s 	|
-		| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
+	|             	| CIFAR-10      | PTB LSTM      | Word2Vec      |
+	|-------------	|---------------|---------------|---------------|
+	| TensorLayer 	| 2528 images/s | 18063 words/s | 58167 words/s |
+	| TensorFlow  	| 2530 images/s | 18075 words/s | 58181 words/s |
 
 
 TensorLayer stands at a unique spot of the deep learning landscape. Other TensorFLow-based libraries like Keras and TFLearn also provide high-level abstractions; but they often
