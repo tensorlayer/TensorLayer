@@ -58,7 +58,7 @@ Similar to TensorLayer, Keras and TFLearn also provide high-level abstractions; 
 mask the underlying engine from users. It is thus hard to customize 
 and fine-tune TensorFlow. On the contrary, TensorLayer APIs are generally flexible and transparent. 
 Users often find it easy to start with the examples and tutorials of TensorLayer, and then dive
-into TensorFlow only if necessary. In addition, TensorLayer does not create library lock-in. TensorLayer users can always import models from Keras, TFSlim and TFLearn.
+into TensorFlow. In addition, TensorLayer does not create library lock-in. TensorLayer users can always import models from Keras, TFSlim and TFLearn.
 
 TensorLayer has a fast growing usage among top researchers and engineers, from universities like
 Imperial College London, UC Berkeley, Carnegie Mellon University, Stanford University, and
