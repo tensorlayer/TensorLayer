@@ -50,9 +50,9 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 		| TensorFlow  	| 2530 images/s 	| 18075 words/s 	| 58181 words/s 	|
 
 
-Similar to TensorLayer, Keras and TFLearn also provide high-level abstractions; but they
-mask the underlying engine from users. It is thus hard to customize 
-and fine-tune TensorFlow. On the contrary, TensorLayer APIs are generally flexible and transparent. 
+TensorLayer stands at a unique spot of the deep learning landscape. Other TensorFLow-based libraries like Keras and TFLearn also provide high-level abstractions; but they often
+mask the underlying engine from users, which make them hard to customize 
+and fine-tune. On the contrary, TensorLayer APIs are generally flexible and transparent. 
 Users often find it easy to start with the examples and tutorials of TensorLayer, and then dive
 into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in. TensorLayer users can always import models from Keras, TFSlim and TFLearn.
 
