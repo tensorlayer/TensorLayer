@@ -478,7 +478,7 @@ Convolutional layer (Pro)
 .. autoclass:: AtrousConv2dLayer
 
 2D Atrous transposed convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AtrousDeConv2dLayer
 
 
