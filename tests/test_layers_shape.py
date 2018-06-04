@@ -51,40 +51,22 @@ class Layer_Shape_Test(unittest.TestCase):
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_net1_shape(self):
+    def test_net1(self):
+        self.assertEqual(len(self.net1_layers), 2)
         self.assertEqual(self.net1_shape[-1], 784)
-
-    def test_net1_layers(self):
-        self.assertEqual(len(self.net1_layers), 1)
-
-    def test_net1_params(self):
         self.assertEqual(len(self.net1_params), 0)
-
-    def test_net1_n_params(self):
         self.assertEqual(self.net1_n_params, 0)
 
-    def test_net2_shape(self):
+    def test_net2(self):
+        self.assertEqual(len(self.net2_layers), 3)
         self.assertEqual(self.net2_shape[1:], [28, 28, 1])
-
-    def test_net2_layers(self):
-        self.assertEqual(len(self.net2_layers), 2)
-
-    def test_net2_params(self):
         self.assertEqual(len(self.net2_params), 0)
-
-    def test_net2_n_params(self):
         self.assertEqual(self.net2_n_params, 0)
 
-    def test_net3_shape(self):
+    def test_net3(self):
+        self.assertEqual(len(self.net3_layers), 4)
         self.assertEqual(self.net3_shape[1:], [28, 1, 28])
-
-    def test_net3_layers(self):
-        self.assertEqual(len(self.net3_layers), 3)
-
-    def test_net3_params(self):
         self.assertEqual(len(self.net3_params), 0)
-
-    def test_net3_n_params(self):
         self.assertEqual(self.net3_n_params, 0)
 
 

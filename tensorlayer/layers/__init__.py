@@ -1,3 +1,5 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
 """
 TensorLayer provides rich layer implementations trailed for
 various benchmarks and domain-specific problems. In addition, we also
@@ -13,6 +15,7 @@ from tensorlayer.layers.core import *
 from .extend import *
 from .flow_control import *
 from .importer import *
+from .inputs import *
 from .merge import *
 from .normalization import *
 from .object_detection import *
