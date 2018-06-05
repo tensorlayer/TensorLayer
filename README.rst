@@ -108,15 +108,15 @@ it allow users to easily fine-tune TensorFlow; while being suitable for
 production deployment. TensorLayer aims to satisfy all these purposes.
 It has three key features:
 
--  ***Simplicity*** : TensorLayer lifts the low-level dataflow interface
+-  **Simplicity** : TensorLayer lifts the low-level dataflow interface
    of TensorFlow to *high-level* layers / models. It is very easy to
    learn through the rich `example
    codes <https://github.com/tensorlayer/awesome-tensorlayer>`__
    contributed by a wide community.
--  ***Flexibility*** : TensorLayer APIs are transparent: it does not
+-  **Flexibility** : TensorLayer APIs are transparent: it does not
    mask TensorFlow from users; but leaving massive hooks that help
    *low-level tuning* and *deep customization*.
--  ***Zero-cost Abstraction*** : TensorLayer can achieve the *full
+-  **Zero-cost Abstraction** : TensorLayer can achieve the *full
    power* of TensorFlow. The following table shows the training speeds
    of classic models using TensorLayer and native TensorFlow on a Titan
    X Pascal GPU.
