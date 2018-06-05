@@ -39,6 +39,9 @@
 .. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
     :target: https://pypi.org/project/tensorlayer/
 
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc2...master
+
 .. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
     :target: https://pypi.org/project/tensorlayer/
 
