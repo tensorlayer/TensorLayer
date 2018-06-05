@@ -50,19 +50,18 @@ matrix:
   include:
     - python: 3.6
       env:
-        - _TF_VERSION=1.8.0
-        - _FORMATING_TEST=True
+        - _DOC_AND_YAPF_TEST=True
 
 
 install:
-  - pip install tensorflow==$_TF_VERSION
+  - if [[ -v _DOC_AND_YAPF_TEST ]]; then pip install tensorflow; else pip install tensorflow==$_TF_VERSION; fi
   - pip install -e .[all]
 
 
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  - if [[ -v _FORMATING_TEST ]]; then python tests/test_documentation.py; python tests/test_yapf_format.py; else pytest; fi
+  - if [[ -v _DOC_AND_YAPF_TEST ]]; then python tests/test_documentation.py; python tests/test_yapf_format.py; else pytest; fi
 
 
 before_deploy:
