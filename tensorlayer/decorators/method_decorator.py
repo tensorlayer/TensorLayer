@@ -31,7 +31,6 @@ def protected_method(func):
         share_subsclass = False
 
         for cls_ in target:
-            print("cls_:", cls_)
             if issubclass(caller[0], cls_) or caller[0] is cls_:
                 share_subsclass = True
                 break
