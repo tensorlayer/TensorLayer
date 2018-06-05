@@ -62,7 +62,7 @@ install:
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  - pytest
+  - if [[ -v _FORMATING_TEST ]]; then python tests/test_documentation.py && python python tests/test_yapf_format.py; else pytest; fi
 
 
 before_deploy:
