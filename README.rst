@@ -209,7 +209,7 @@ Contribute
 ==========
 
 Please read the `Contributor
-Guideline <https://github.com/tensorlayer/tensorlayer/blob/rearrange-readme/CONTRIBUTING.md>`__
+Guideline <https://github.com/tensorlayer/tensorlayer/blob/master/CONTRIBUTING.md>`__
 before submitting your PRs.
 
 Cite
@@ -232,19 +232,3 @@ License
 =======
 
 TensorLayer is released under the Apache 2.0 license.
-
-.. _Contributor Guideline: https://github.com/tensorlayer/tensorlayer/blob/rearrange-readme/CONTRIBUTING.md
-
-.. _TensorLayer containers: https://hub.docker.com/r/tensorlayer/tensorlayer/
-.. _TensorFlow containers: https://hub.docker.com/r/tensorflow/tensorflow/
-.. _Project Link: https://github.com/NVIDIA/nvidia-docker
-
-.. _rich examples: https://github.com/tensorlayer/awesome-tensorlayer
-
-.. _Mentioned in Awesome TensorLayer: https://github.com/tensorlayer/awesome-tensorlayer
-.. _English Documentation: https://tensorlayer.readthedocs.io/
-.. _Chinese Documentation: https://tensorlayercn.readthedocs.io/
-.. _Chinese Book: http://www.broadview.com.cn/book/5059/
-
-.. _TensorFlow: https://www.tensorflow.org
-.. _ACM Multimedia Society: http://www.acmmm.org/2017/mm-2017-awardees/
