@@ -7,7 +7,7 @@
    </a>
 
 
-.. image:: https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/codacy/grade/ca2a29ddcf7445588beff50bee5406d9.svg
     :target: https://app.codacy.com/app/tensorlayer/tensorlayer
 
 .. image:: https://awesome.re/mentioned-badge.svg
