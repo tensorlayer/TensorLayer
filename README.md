@@ -4,7 +4,7 @@
     </div>
 </a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ca2a29ddcf7445588beff50bee5406d9)](https://app.codacy.com/app/tensorlayer/tensorlayer)
+[![Codacy Badge](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/codacy/grade/ca2a29ddcf7445588beff50bee5406d9.svg?style=flat)](https://app.codacy.com/app/tensorlayer/tensorlayer)
 [![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
 [![Chinese Documentation](https://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
