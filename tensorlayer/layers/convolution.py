@@ -77,6 +77,7 @@ class Conv1dLayer(Layer):
             shape=(5, 1, 5),
             stride=1,
             padding='SAME',
+            dilation_rate=1,
             data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
