@@ -55,7 +55,7 @@ class ROIPoolingLayer(Layer):
     ):
         super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ROIPoolingLayer %s: (%d, %d)" % (name, pool_height, pool_width))
+        logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
 
         self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
 

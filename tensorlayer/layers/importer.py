@@ -119,7 +119,7 @@ class SlimNetsLayer(Layer):
 
         super(SlimNetsLayer, self).__init__(prev_layer=prev_layer, slim_args=slim_args, name=name)
 
-        logging.info("SlimNetsLayer %s: %s" % (name, slim_layer.__name__))
+        logging.info("SlimNetsLayer %s: %s" % (self.name, slim_layer.__name__))
 
         # with tf.variable_scope(name) as vs:
         #     net, end_points = slim_layer(self.inputs, **slim_args)
@@ -176,7 +176,7 @@ class KerasLayer(Layer):
 
         super(KerasLayer, self).__init__(prev_layer=prev_layer, keras_args=keras_args, name=name)
 
-        logging.info("KerasLayer %s: %s" % (name, keras_layer))
+        logging.info("KerasLayer %s: %s" % (self.name, keras_layer))
 
         logging.warning("This API will be removed, please use LambdaLayer instead.")
 
@@ -219,7 +219,7 @@ class EstimatorLayer(Layer):
     ):
         super(EstimatorLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
-        logging.info("EstimatorLayer %s: %s" % (name, model_fn))
+        logging.info("EstimatorLayer %s: %s" % (self.name, model_fn))
 
         if model_fn is None:
             raise ValueError('model fn is None')

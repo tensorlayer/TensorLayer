@@ -645,7 +645,7 @@ class DenseLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DenseLayer  %s: %d %s" % (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            "DenseLayer  %s: %d %s" % (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         self.n_units = n_units
@@ -952,7 +952,7 @@ class DropoutLayer(Layer):
     ):
         super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (name, keep, is_fix))
+        logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
 
         if is_train is False:
             logging.info("  skip DropoutLayer")
@@ -1091,7 +1091,7 @@ class DropconnectDenseLayer(Layer):
 
         logging.info(
             "DropconnectDenseLayer %s: %d %s" %
-            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:

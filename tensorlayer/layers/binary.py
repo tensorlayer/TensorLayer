@@ -150,7 +150,7 @@ class BinaryDenseLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "BinaryDenseLayer  %s: %d %s" %
-            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -280,7 +280,7 @@ class BinaryConv2d(Layer):
 
         logging.info(
             "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
-                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -378,7 +378,7 @@ class TernaryDenseLayer(Layer):
 
         logging.info(
             "TernaryDenseLayer  %s: %d %s" %
-            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -511,7 +511,7 @@ class TernaryConv2d(Layer):
 
         logging.info(
             "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
-                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -619,7 +619,7 @@ class DorefaDenseLayer(Layer):
 
         logging.info(
             "DorefaDenseLayer  %s: %d %s" %
-            (name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -757,7 +757,7 @@ class DorefaConv2d(Layer):
 
         logging.info(
             "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
-                name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
+                self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -774,7 +774,7 @@ class DorefaConv2d(Layer):
             pre_channel = int(prev_layer.outputs.get_shape()[-1])
         except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
             pre_channel = 1
-            logging.info("[warnings] unknow input channels, set to 1")
+            logging.warning("[warnings] unknow input channels, set to 1")
 
         shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
         strides = (1, strides[0], strides[1], 1)
@@ -861,7 +861,7 @@ class ScaleLayer(Layer):
     ):
         super(ScaleLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ScaleLayer  %s: init_scale: %f" % (name, init_scale))
+        logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
 
         with tf.variable_scope(name):
             # scale = tf.get_variable(name='scale_factor', init, trainable=True, )

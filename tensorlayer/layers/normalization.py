@@ -57,7 +57,7 @@ class LocalResponseNormLayer(Layer):
 
         logging.info(
             "LocalResponseNormLayer %s: depth_radius: %s, bias: %s, alpha: %s, beta: %s" %
-            (name, str(depth_radius), str(bias), str(alpha), str(beta))
+            (self.name, str(depth_radius), str(bias), str(alpha), str(beta))
         )
 
         with tf.variable_scope(name):
@@ -117,7 +117,7 @@ class BatchNormLayer(Layer):
 
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
+            (self.name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
         )
 
         x_shape = self.inputs.get_shape()
@@ -160,6 +160,7 @@ class BatchNormLayer(Layer):
             moving_mean = tf.get_variable(
                 'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
             )
+
             moving_variance = tf.get_variable(
                 'moving_variance',
                 params_shape,
@@ -189,9 +190,9 @@ class BatchNormLayer(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            self.outputs = tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
-
-            self.outputs = self._apply_activation(self.outputs)
+            self.outputs = self._apply_activation(
+                tf.nn.batch_normalization(self.inputs, mean, var, beta, gamma, epsilon)
+            )
 
             variables.extend([moving_mean, moving_variance])
 
@@ -276,7 +277,7 @@ class LayerNormLayer(Layer):
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "LayerNormLayer %s: act:%s" % (name, self.act.__name__ if self.act is not None else '- No Activation')
+            "LayerNormLayer %s: act:%s" % (self.name, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         with tf.variable_scope(name) as vs:

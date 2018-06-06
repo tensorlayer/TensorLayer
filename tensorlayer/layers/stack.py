@@ -49,7 +49,7 @@ class StackLayer(Layer):
 
         super(StackLayer, self).__init__(prev_layer=layers, name=name)
 
-        logging.info("StackLayer %s: axis: %d" % (name, axis))
+        logging.info("StackLayer %s: axis: %d" % (self.name, axis))
 
         self.outputs = tf.stack(self.inputs, axis=axis, name=name)
 
@@ -87,7 +87,7 @@ def unstack_layer(prev_layer, num=None, axis=0, name='unstack'):
     with tf.variable_scope(name):
         outputs = tf.unstack(inputs, num=num, axis=axis)
 
-    logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (name, num, axis, len(outputs)))
+    logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (self.name, num, axis, len(outputs)))
 
     net_new = []
     scope_name = tf.get_variable_scope().name
