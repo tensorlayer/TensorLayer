@@ -14,7 +14,9 @@ import progressbar
 import numpy as np
 import tensorflow as tf
 from six.moves import cPickle, zip
-from tensorflow.python.platform import gfile
+from tensorflow import gfile
+
+
 
 from . import tl_logging as logging
 from . import nlp, utils, visualize
@@ -1562,10 +1564,10 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     save_list : list of tensor
         A list of parameters (tensor) to be saved.
     name : str
-        The name of the `.npz` file. or an file object
+        The name of the `.npz` file, now support cloud storage such as s3 , gs, hfs via the gfile
     sess : None or Session
         Session may be required in some case.
-
+￼
     Examples
     --------
     Save model to npz
@@ -1603,11 +1605,21 @@ def save_npz(save_list=None, name='model.npz', sess=None):
             logging.info(
                 " Fail to save model, Hint: pass the session into this function, tl.files.save_npz(network.all_params, name='model.npz', sess=sess)"
             )
-    np.savez(name, params=save_list_var)
+
+    import io
+    output = io.BytesIO()
+    #using bytesIO is a workaround as np.savez internally use  os.path.join operation,
+    # make loader unable to find the data.
+    # we the build the string and then dump content to the cloud.
+    
+    np.savez(output, params=save_list_var)
     save_list_var = None
+    
+    with gfile.GFile(name,'wb') as f:
+        f.write(output.getvalue())
+
     del save_list_var
     logging.info("[*] %s saved" % name)
-
 
 def load_npz(path='', name='model.npz'):
     """Load the parameters of a Model saved by tl.files.save_npz().
@@ -1615,10 +1627,9 @@ def load_npz(path='', name='model.npz'):
     Parameters
     ----------
     path : str
-        Folder path to `.npz` file.
+        Folder path to `.npz` file. now support aws, gs and hfs via the gfile
     name : str
         The name of the `.npz` file.
-        or an file like object
 
     Returns
     --------
@@ -1634,13 +1645,10 @@ def load_npz(path='', name='model.npz'):
     - `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
-    if type(name)==str:
-        d = np.load(path + name)
-    else:
-        d=np.load(name)
-        
+    fname=os.path.join(path,name)
+    with tf.gfile.GFile(fname,'r+b') as f:
+        d = np.load(f)
     return d['params']
-
 
 def assign_params(sess, params, network):
     """Assign the given parameters to the TensorLayer network.
@@ -1702,7 +1710,7 @@ def load_and_assign_npz(sess=None, name=None, network=None):
         raise ValueError("network is None.")
     if sess is None:
         raise ValueError("session is None.")
-    if not os.path.exists(name):
+    if not gfile.Exists(name):
         logging.info("[!] Load {} failed!".format(name))
         return False
     else:
@@ -1735,7 +1743,13 @@ def save_npz_dict(save_list=None, name='model.npz', sess=None):
     save_list_names = [tensor.name for tensor in save_list]
     save_list_var = sess.run(save_list)
     save_var_dict = {save_list_names[idx]: val for idx, val in enumerate(save_list_var)}
-    np.savez(name, **save_var_dict)
+    
+    import io
+    output = io.BytesIO()
+    
+    np.savez(output, **save_var_dict)
+    with gfile.GFile(name,'wb') as f:
+        f.write(output.getvalue())
     save_list_var = None
     save_var_dict = None
     del save_list_var
@@ -1757,11 +1771,11 @@ def load_and_assign_npz_dict(name='model.npz', sess=None):
     if sess is None:
         raise ValueError("session is None.")
 
-    if not os.path.exists(name):
+    if not gfile.Exists(name):
         logging.info("[!] Load {} failed!".format(name))
         return False
-
-    params = np.load(name)
+    with gfile.GFile(name,'r+b') as f:
+        params = np.load(f)
     if len(params.keys()) != len(set(params.keys())):
         raise Exception("Duplication in model npz_dict %s" % name)
     ops = list()
@@ -1900,7 +1914,7 @@ def save_any_to_npy(save_dict=None, name='file.npy'):
     save_dict : directory
         The variables to be saved.
     name : str
-        File name.
+        File name. now support s3, gs and hfs
 
     Examples
     ---------
@@ -1912,7 +1926,10 @@ def save_any_to_npy(save_dict=None, name='file.npy'):
     """
     if save_dict is None:
         save_dict = {}
-    np.save(name, save_dict)
+    
+    with gfile.GFile(name,'wb') as f:
+        np.save(f, save_dict)
+
 
 
 def load_npy_to_any(path='', name='file.npy'):
@@ -1922,6 +1939,7 @@ def load_npy_to_any(path='', name='file.npy'):
     ------------
     path : str
         Path to the file (optional).
+        now support s3,gs,and hfs
     name : str
         File name.
 
@@ -1931,11 +1949,12 @@ def load_npy_to_any(path='', name='file.npy'):
 
     """
     file_path = os.path.join(path, name)
-    try:
-        return np.load(file_path).item()
-    except Exception:
-        return np.load(file_path)
-    raise Exception("[!] Fail to load %s" % file_path)
+    with gfile.GFile(file_path,'rb') as f:
+        try:
+            return np.load(f).item()
+        except Exception:
+            return np.load(f)
+        raise Exception("[!] Fail to load %s" % file_path)
 
 
 def file_exists(filepath):
