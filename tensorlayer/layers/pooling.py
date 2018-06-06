@@ -360,7 +360,7 @@ class GlobalMaxPool1d(Layer):
     def __init__(self, prev_layer, name='globalmaxpool1d'):
         super(GlobalMaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMaxPool1d %s" % name)
+        logging.info("GlobalMaxPool1d %s" % self.name)
 
         self.outputs = tf.reduce_max(self.inputs, axis=1, name=name)
 
@@ -389,7 +389,7 @@ class GlobalMeanPool1d(Layer):
     def __init__(self, prev_layer, name='globalmeanpool1d'):
         super(GlobalMeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMeanPool1d %s" % name)
+        logging.info("GlobalMeanPool1d %s" % self.name)
 
         self.outputs = tf.reduce_mean(self.inputs, axis=1, name=name)
 
@@ -418,7 +418,7 @@ class GlobalMaxPool2d(Layer):
     def __init__(self, prev_layer, name='globalmaxpool2d'):
         super(GlobalMaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMaxPool2d %s" % name)
+        logging.info("GlobalMaxPool2d %s" % self.name)
 
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2], name=name)
 
@@ -447,7 +447,7 @@ class GlobalMeanPool2d(Layer):
     def __init__(self, prev_layer, name='globalmeanpool2d'):
         super(GlobalMeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMeanPool2d %s" % name)
+        logging.info("GlobalMeanPool2d %s" % self.name)
 
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2], name=name)
 
@@ -476,7 +476,7 @@ class GlobalMaxPool3d(Layer):
     def __init__(self, prev_layer, name='globalmaxpool3d'):
         super(GlobalMaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMaxPool3d %s" % name)
+        logging.info("GlobalMaxPool3d %s" % self.name)
 
         self.outputs = tf.reduce_max(self.inputs, axis=[1, 2, 3], name=name)
 
@@ -505,7 +505,7 @@ class GlobalMeanPool3d(Layer):
     def __init__(self, prev_layer, name='globalmeanpool3d'):
         super(GlobalMeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("GlobalMeanPool3d %s" % name)
+        logging.info("GlobalMeanPool3d %s" % self.name)
 
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
 
