@@ -293,5 +293,5 @@ To release a new version, please update the changelog as followed:
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc2...1.8.5
+[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc3...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
