@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+
 import tensorflow as tf
+
 from six.moves import xrange
 
 __all__ = [
@@ -91,17 +93,9 @@ def cross_entropy_reward_loss(logits, actions, rewards, name=None):
     >>> train_op = tf.train.RMSPropOptimizer(learning_rate, decay_rate).minimize(loss)
 
     """
-    try:  # TF 1.0+
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
-    except Exception:
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, targets=actions)
-        # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits, actions)
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=actions, logits=logits, name=name)
 
-    try:  ## TF1.0+
-        loss = tf.reduce_sum(tf.multiply(cross_entropy, rewards))
-    except Exception:  ## TF0.12
-        loss = tf.reduce_sum(tf.mul(cross_entropy, rewards))  # element-wise mul
-    return loss
+    return tf.reduce_sum(tf.multiply(cross_entropy, rewards))
 
 
 def log_weight(probs, weights, name='log_weight'):

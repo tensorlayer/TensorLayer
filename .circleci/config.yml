@@ -217,7 +217,7 @@ jobs:
             CONTAINER_TAG="$VERSION_PREFIX"-gpu-py3
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            
+
             CONTAINER_TAG="$VERSION_PREFIX"-py3-gpu
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
@@ -411,7 +411,7 @@ jobs:
             CONTAINER_TAG="$TL_VERSION"-cpu-py3
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            
+
             CONTAINER_TAG="$TL_VERSION"-py3-cpu
             docker tag latest_py3_cpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
@@ -461,10 +461,25 @@ jobs:
             CONTAINER_TAG="$TL_VERSION"-gpu-py3
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
-            
+
             CONTAINER_TAG="$TL_VERSION"-py3-gpu
             docker tag latest_py3_gpu:latest tensorlayer/tensorlayer:"$CONTAINER_TAG"
             docker push tensorlayer/tensorlayer:"$CONTAINER_TAG"
+
+  init_tag_build:
+    working_directory: ~/build
+    docker:
+      - image: docker:git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          reusable: true
+          exclusive: true
+
+      - run:
+          name: Init Tag Deploy Build
+          command: |
+            echo "start tag workflow"
 
 ###################################################################################
 ###################################################################################
@@ -546,12 +561,21 @@ workflows:
       ###################################################################################
       #                 TAGS BUILDS with TensorLayer installed from PyPI                #
       ###################################################################################
-      
-      - hold:
-          type: approval
+
+      - init_tag_build:
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
+            branches:
+              ignore: /.*/
+
+      - hold:
+          type: approval
+          requires:
+            - init_tag_build
+          filters:
+            tags:
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
             branches:
               ignore: /.*/
 
@@ -560,7 +584,7 @@ workflows:
             - hold
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
             branches:
               ignore: /.*/
 
@@ -569,7 +593,7 @@ workflows:
             - hold
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
             branches:
               ignore: /.*/
 
@@ -578,7 +602,7 @@ workflows:
             - hold
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
             branches:
               ignore: /.*/
 
@@ -587,6 +611,6 @@ workflows:
             - hold
           filters:
             tags:
-              only: /.*/
+              only: /\d+\.\d+(\.\d+)?(\S*)?$/
             branches:
               ignore: /.*/

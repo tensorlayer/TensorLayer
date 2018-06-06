@@ -45,7 +45,7 @@ class Util_Predict_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    # tl.logging.set_verbosity(tl.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

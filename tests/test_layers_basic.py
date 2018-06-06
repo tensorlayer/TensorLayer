@@ -12,6 +12,7 @@ class Layer_Basic_Test(unittest.TestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, [None, 100])
+
         n = tl.layers.InputLayer(x, name='in')
         n = tl.layers.DenseLayer(n, n_units=80, name='d1')
         n = tl.layers.DenseLayer(n, n_units=80, name='d2')
@@ -23,10 +24,11 @@ class Layer_Basic_Test(unittest.TestCase):
         n2.print_layers()
 
         cls.n_params = n.count_params()
-        cls.shape_n = n.outputs.get_shape().as_list()
-        cls.shape_n2 = n2.outputs.get_shape().as_list()
         cls.all_layers = n.all_layers
         cls.all_params = n.all_params
+        cls.shape_n = n.outputs.get_shape().as_list()
+
+        cls.shape_n2 = n2.outputs.get_shape().as_list()
 
     @classmethod
     def tearDownClass(cls):
@@ -39,7 +41,7 @@ class Layer_Basic_Test(unittest.TestCase):
         self.assertEqual(self.shape_n[-1], 80)
 
     def test_all_layers(self):
-        self.assertEqual(len(self.all_layers), 2)
+        self.assertEqual(len(self.all_layers), 3)
 
     def test_all_params(self):
         self.assertEqual(len(self.all_params), 4)
@@ -50,7 +52,7 @@ class Layer_Basic_Test(unittest.TestCase):
 
 if __name__ == '__main__':
 
-    # tl.logging.set_verbosity(tl.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

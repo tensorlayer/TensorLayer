@@ -39,6 +39,8 @@ class VGG_Model_Test(CustomTestCase):
             cls.vgg2_layers = vgg2.all_layers
             cls.vgg2_params = vgg2.all_params
 
+            print("TYPE:", type(vgg2))
+
             # add one more layer
             _ = tl.layers.DenseLayer(vgg2, n_units=100, name='out')
             # initialize all parameters
@@ -69,13 +71,13 @@ class VGG_Model_Test(CustomTestCase):
         tf.reset_default_graph()
 
     def test_vgg1_layers(self):
-        self.assertEqual(len(self.vgg1_layers), 22)
+        self.assertEqual(len(self.vgg1_layers), 23)
 
     def test_vgg2_layers(self):
-        self.assertEqual(len(self.vgg2_layers), 21)
+        self.assertEqual(len(self.vgg2_layers), 22)
 
     def test_vgg3_layers(self):
-        self.assertEqual(len(self.vgg3_layers), 21)
+        self.assertEqual(len(self.vgg3_layers), 22)
 
     def test_vgg1_params(self):
         self.assertEqual(len(self.vgg1_params), 32)
@@ -99,7 +101,7 @@ class VGG_Model_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    # tl.logging.set_verbosity(tl.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os as _os
 import sys as _sys
 import time as _time
@@ -36,7 +39,7 @@ def _get_logger():
     global _logger
 
     # Use double-checked locking to avoid taking lock unnecessarily.
-    if _logger:
+    if _logger is not None:
         return _logger
 
     _logger_lock.acquire()

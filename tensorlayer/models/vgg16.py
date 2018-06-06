@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
 VGG-16 for ImageNet.
@@ -193,7 +194,7 @@ class VGG16Base(object):
         net = FlattenLayer(net, name='flatten')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
         net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-        net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
+        net = DenseLayer(net, n_units=1000, name='fc3_relu')
         return net
 
     @staticmethod
@@ -262,7 +263,7 @@ class VGG16Base(object):
             lambda net: FlattenLayer(net, name='flatten'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu'),
             lambda net: DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu'),
-            lambda net: DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu'),
+            lambda net: DenseLayer(net, n_units=1000, name='fc3_relu'),
         ]
         net = net_in
         for l in layers:
@@ -349,9 +350,12 @@ class VGG16(VGG16Base):
         with tf.variable_scope("vgg16", reuse=reuse):
             net = InputLayer(x, name='input')
             self.net = VGG16Base.vgg16_simple_api(net, end_with)
+
             self.outputs = self.net.outputs
-            self.all_params = self.net.all_params
-            self.all_layers = self.net.all_layers
-            self.all_drop = self.net.all_drop
+
+            self.all_params = list(self.net.all_params)
+            self.all_layers = list(self.net.all_layers)
+            self.all_drop = dict(self.net.all_drop)
+
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params

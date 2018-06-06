@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
+
 from __future__ import absolute_import
 
 import os
@@ -27,10 +28,13 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from . import activation
     from . import array_ops
     from . import cost
+    from . import db
+    from . import decorators
     from . import distributed
     from . import files
     from . import iterate
     from . import layers
+    from . import lazy_imports
     from . import tl_logging as logging
     from . import models
     from . import nlp
@@ -52,7 +56,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     global_dict = {}
 
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 8, 5)
+VERSION = (1, 8, 6, "rc3")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 

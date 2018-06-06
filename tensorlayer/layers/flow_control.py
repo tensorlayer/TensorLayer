@@ -1,9 +1,11 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 
 from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
+
+from tensorlayer.layers.core import Layer
 
 __all__ = [
     'MultiplexerLayer',
@@ -48,21 +50,17 @@ class MultiplexerLayer(Layer):
     >>> network = tl.layers.ReshapeLayer(net_mux, shape=(-1, 800), name='reshape')
     >>> network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
     >>> # output layer
-    >>> network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
+    >>> network = tl.layers.DenseLayer(network, n_units=10, act=None, name='output')
 
     """
 
     def __init__(self, layers, name='mux_layer'):
+
         super(MultiplexerLayer, self).__init__(prev_layer=layers, name=name)
+
         self.n_inputs = len(layers)
 
-        self.inputs = []
-        for l in layers:
-            self.inputs.append(l.outputs)
-        try:  # TF1.0
-            all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
-        except Exception:
-            all_inputs = tf.pack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
+        all_inputs = tf.stack(self.inputs, name=name)  # pack means concat a list of tensor in a new dim  # 1.2
 
         logging.info("MultiplexerLayer %s: n_inputs:%d" % (self.name, self.n_inputs))
 
@@ -73,17 +71,10 @@ class MultiplexerLayer(Layer):
         #         # tf.reshape(self.outputs, shape=)
         # exit()
         # # the same with ConcatLayer
-        # self.all_layers = list(layers[0].all_layers)
-        # self.all_params = list(layers[0].all_params)
-        # self.all_drop = dict(layers[0].all_drop)
-        #
-        # for i in range(1, len(layers)):
-        #     self.all_layers.extend(list(layers[i].all_layers))
-        #     self.all_params.extend(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
-        #
-        # self.all_layers = list_remove_repeat(self.all_layers)
-        # self.all_params = list_remove_repeat(self.all_params)
-        # # self.all_drop = list_remove_repeat(self.all_drop)
 
-        self.all_layers.append(self.outputs)
+        # for i in range(1, len(layers)):
+        #     self._add_layers(list(layers[i].all_layers))
+        #     self._add_params(list(layers[i].all_params))
+        #     self.all_drop.update(dict(layers[i].all_drop))
+
+        self._add_layers(self.outputs)

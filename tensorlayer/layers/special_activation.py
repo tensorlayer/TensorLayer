@@ -1,11 +1,14 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
-from tensorlayer.layers.core import *
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.deprecation import deprecated_alias
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'PReluLayer',
@@ -37,41 +40,26 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer,
-            channel_shared=False,
-            a_init=tf.constant_initializer(value=0.0),
-            a_init_args=None,
-            # restore = True,
+            self, prev_layer, channel_shared=False, a_init=tf.constant_initializer(value=0.0), a_init_args=None,
             name="prelu_layer"
     ):
 
-        if a_init_args is None:
-            a_init_args = {}
-
-        super(PReluLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("PReluLayer %s: channel_shared:%s" % (name, channel_shared))
-
-        self.inputs = prev_layer.outputs
+        super(PReluLayer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
+        logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
+
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):
             alphas = tf.get_variable(
-                name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **a_init_args
+                name='alphas', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
-            try:  # TF 1.0
-                self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
-            except Exception:  # TF 0.12
-                self.outputs = tf.nn.relu(self.inputs) + tf.mul(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
+            self.outputs = tf.nn.relu(self.inputs) + tf.multiply(alphas, (self.inputs - tf.abs(self.inputs))) * 0.5
 
-        self.all_layers.append(self.outputs)
-        self.all_params.extend([alphas])
+        self._add_layers(self.outputs)
+        self._add_params([alphas])

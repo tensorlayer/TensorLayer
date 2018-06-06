@@ -43,32 +43,20 @@ class Layer_Super_Resolution_Test(unittest.TestCase):
 
     def test_net1_shape(self):
         self.assertEqual(self.net1_shape, [10, 200, 16])
-
-    def test_net1_layers(self):
-        self.assertEqual(len(self.net1_layers), 2)
-
-    def test_net1_params(self):
+        self.assertEqual(len(self.net1_layers), 3)
         self.assertEqual(len(self.net1_params), 2)
-
-    def test_net1_n_params(self):
         self.assertEqual(self.net1_n_params, 416)
 
     def test_net2_shape(self):
         self.assertEqual(self.net2_shape, [10, 200, 200, 8])
-
-    def test_net2_layers(self):
-        self.assertEqual(len(self.net2_layers), 2)
-
-    def test_net2_params(self):
+        self.assertEqual(len(self.net2_layers), 3)
         self.assertEqual(len(self.net2_params), 2)
-
-    def test_net2_n_params(self):
         self.assertEqual(self.net2_n_params, 608)
 
 
 if __name__ == '__main__':
 
-    # tl.logging.set_verbosity(tl.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

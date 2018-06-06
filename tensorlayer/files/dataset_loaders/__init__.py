@@ -1,3 +1,6 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
 from .celebA_dataset import *
 from .cifar10_dataset import *
 from .cyclegan_dataset import *

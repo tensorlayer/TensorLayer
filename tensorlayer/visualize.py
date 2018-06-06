@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -8,14 +9,9 @@ import numpy as np
 
 from tensorlayer import tl_logging as logging
 from tensorlayer import prepro
+from tensorlayer.lazy_imports import LazyImport
 
-try:
-    import cv2
-except ImportError:
-    logging.warn(
-        'OpenCV Library is not installed.'
-        'The function `tl.visualize.draw_boxes_and_labels_to_image` will not be able to work.'
-    )
+cv2 = LazyImport("cv2")
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
 # import matplotlib

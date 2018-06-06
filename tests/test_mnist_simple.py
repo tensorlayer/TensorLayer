@@ -31,7 +31,7 @@ class Simple_MNIST_Test(CustomTestCase):
         # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
         # speed up computation, so we use identity here.
         # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-        cls.network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
+        cls.network = tl.layers.DenseLayer(network, n_units=10, name='output')
 
         # define cost function and metric.
         y = cls.network.outputs
@@ -86,7 +86,7 @@ class Simple_MNIST_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    # tl.logging.set_verbosity(tl.logging.INFO)
+    tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

@@ -1,3 +1,4 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
 MobileNet for ImageNet.
@@ -85,10 +86,13 @@ class MobileNetV1(Layer):
     def __init__(self, x, end_with='out', is_train=False, reuse=None):
 
         self.net = self.mobilenetv1(x, end_with, is_train, reuse)
+
         self.outputs = self.net.outputs
-        self.all_params = self.net.all_params
-        self.all_layers = self.net.all_layers
-        self.all_drop = self.net.all_drop
+
+        self.all_params = list(self.net.all_params)
+        self.all_layers = list(self.net.all_layers)
+        self.all_drop = dict(self.net.all_drop)
+
         self.print_layers = self.net.print_layers
         self.print_params = self.net.print_params
 
@@ -132,7 +136,7 @@ class MobileNetV1(Layer):
             n = GlobalMeanPool2d(n, name='globalmeanpool')
             if end_with in n.outputs.name: return n
             # n = DropoutLayer(n, 1-1e-3, True, is_train, name='drop')
-            # n = DenseLayer(n, 1000, act=tf.identity, name='output')   # equal
+            # n = DenseLayer(n, 1000, name='output')   # equal
             n = ReshapeLayer(n, [-1, 1, 1, 1024], name='reshape')
             if end_with in n.outputs.name: return n
             n = Conv2d(n, 1000, (1, 1), (1, 1), name='out')

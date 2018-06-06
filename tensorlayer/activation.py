@@ -6,7 +6,6 @@ import tensorflow as tf
 from tensorflow.python.util.deprecation import deprecated
 
 __all__ = [
-    'identity',
     'ramp',
     'leaky_relu',
     'swish',
@@ -15,26 +14,6 @@ __all__ = [
     'linear',
     'lrelu',
 ]
-
-
-@deprecated("2018-06-30", "This API will be deprecated soon as tf.identity can do the same thing.")
-def identity(x):
-    """Identity activation function.
-
-    Shortcut is ``linear``.
-
-    Parameters
-    ----------
-    x : Tensor
-        input.
-
-    Returns
-    -------
-    Tensor
-        A ``Tensor`` in the same type as ``x``.
-
-    """
-    return x
 
 
 def ramp(x, v_min=0, v_max=1, name=None):
@@ -122,7 +101,7 @@ def swish(x, name='swish'):
 
 @tf.RegisterGradient("QuantizeGrad")
 def _sign_grad(unused_op, grad):
-    return tf.clip_by_value(tf.identity(grad), -1, 1)
+    return tf.clip_by_value(grad, -1, 1)
 
 
 def sign(x):
@@ -239,6 +218,5 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 
 
 # Alias
-linear = identity
 lrelu = leaky_relu
 htanh = hard_tanh

@@ -109,26 +109,26 @@ def read_and_decode(filename, is_train=None):
     if is_train ==True:
         # 1. Randomly crop a [height, width] section of the image.
         img = tf.random_crop(img, [24, 24, 3])
+
         # 2. Randomly flip the image horizontally.
         img = tf.image.random_flip_left_right(img)
+
         # 3. Randomly change brightness.
         img = tf.image.random_brightness(img, max_delta=63)
+
         # 4. Randomly change contrast.
         img = tf.image.random_contrast(img, lower=0.2, upper=1.8)
+
         # 5. Subtract off the mean and divide by the variance of the pixels.
-        try:  # TF 0.12+
-            img = tf.image.per_image_standardization(img)
-        except Exception:  # earlier TF versions
-            img = tf.image.per_image_whitening(img)
+        img = tf.image.per_image_standardization(img)
 
     elif is_train == False:
         # 1. Crop the central [height, width] of the image.
         img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
+
         # 2. Subtract off the mean and divide by the variance of the pixels.
-        try:  # TF 0.12+
-            img = tf.image.per_image_standardization(img)
-        except Exception:  # earlier TF versions
-            img = tf.image.per_image_whitening(img)
+        img = tf.image.per_image_standardization(img)
+
     elif is_train == None:
         img = img
 
@@ -150,7 +150,7 @@ data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 # print("img_batch   : %s" % img_batch._shape)
 # print("label_batch : %s" % label_batch._shape)
 #
-# init = tf.initialize_all_variables()
+# init = tf.global_variables_initializer()
 # with tf.Session() as sess:
 #     sess.run(init)
 #     coord = tf.train.Coordinator()
@@ -203,7 +203,7 @@ with tf.device('/cpu:0'):
             net = FlattenLayer(net, name='flatten')
             net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
             net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')
+            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
@@ -237,7 +237,7 @@ with tf.device('/cpu:0'):
             net = FlattenLayer(net, name='flatten')
             net = DenseLayer(net, 384, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d1relu')
             net = DenseLayer(net, 192, act=tf.nn.relu, W_init=W_init2, b_init=b_init2, name='d2relu')
-            net = DenseLayer(net, n_units=10, act=tf.identity, W_init=W_init2, name='output')
+            net = DenseLayer(net, n_units=10, act=None, W_init=W_init2, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
