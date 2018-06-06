@@ -815,7 +815,7 @@ Stack layer
 
 Unstack layer
 ^^^^^^^^^^^^^^^
-.. autofunction:: UnStackLayer
+.. autoclass:: UnStackLayer
 
 ..
   Estimator layer
