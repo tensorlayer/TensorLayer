@@ -61,7 +61,9 @@ install:
 script:
   # units test
   # https://docs.pytest.org/en/latest/
-  - if [[ -v _DOC_AND_YAPF_TEST ]]; then python tests/test_documentation.py; python tests/test_yapf_format.py; else pytest; fi
+  - rm setup.cfg
+  - if [[ -v _DOC_AND_YAPF_TEST ]]; then mv setup.travis_doc.cfg setup.cfg; else mv setup.travis.cfg setup.cfg; fi
+  - pytest
 
 
 before_deploy:

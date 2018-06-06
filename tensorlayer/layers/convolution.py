@@ -89,8 +89,10 @@ class Conv1dLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" %
-            (name, str(shape), str(stride), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "Conv1dLayer %s: shape:%s stride:%s pad:%s act:%s" % (
+                self.name, str(shape), str(stride), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         with tf.variable_scope(name):
@@ -209,8 +211,10 @@ class Conv2dLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" %
-            (name, str(shape), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "Conv2dLayer %s: shape:%s strides:%s pad:%s act:%s" % (
+                self.name, str(shape), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         with tf.variable_scope(name):
@@ -338,7 +342,7 @@ class DeConv2dLayer(Layer):
 
         logging.info(
             "DeConv2dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (
-                name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
+                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -424,8 +428,10 @@ class Conv3dLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" %
-            (name, str(shape), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "Conv3dLayer %s: shape:%s strides:%s pad:%s act:%s" % (
+                self.name, str(shape), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         with tf.variable_scope(name):
@@ -505,7 +511,7 @@ class DeConv3dLayer(Layer):
 
         logging.info(
             "DeConv3dLayer %s: shape:%s out_shape:%s strides:%s pad:%s act:%s" % (
-                name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
+                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -576,7 +582,7 @@ class UpSampling2dLayer(Layer):
 
         logging.info(
             "UpSampling2dLayer %s: is_scale:%s size:%s method:%d align_corners:%s" %
-            (name, is_scale, size, method, align_corners)
+            (self.name, is_scale, size, method, align_corners)
         )
 
         if not isinstance(size, (list, tuple)) and len(size) == 2:
@@ -648,7 +654,7 @@ class DownSampling2dLayer(Layer):
 
         logging.info(
             "DownSampling2dLayer %s: is_scale:%s size:%s method:%d, align_corners:%s" %
-            (name, is_scale, size, method, align_corners)
+            (self.name, is_scale, size, method, align_corners)
         )
 
         if not isinstance(size, (list, tuple)) and len(size) == 2:
@@ -751,7 +757,7 @@ class DeformableConv2d(Layer):
 
         logging.info(
             "DeformableConv2d %s: n_filter: %d, filter_size: %s act:%s" %
-            (name, n_filter, str(filter_size), self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_filter, str(filter_size), self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         self.offset_layer = offset_layer
@@ -1076,7 +1082,7 @@ class AtrousConv2dLayer(Layer):
 
         logging.info(
             "AtrousConv2dLayer %s: n_filter:%d filter_size:%s rate:%d pad:%s act:%s" % (
-                name, n_filter, filter_size, rate, padding, self.act.__name__
+                self.name, n_filter, filter_size, rate, padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -1152,7 +1158,7 @@ class AtrousDeConv2dLayer(Layer):
 
         logging.info(
             "AtrousDeConv2dLayer %s: shape:%s output_shape:%s rate:%d pad:%s act:%s" % (
-                name, shape, output_shape, rate, padding, self.act.__name__
+                self.name, shape, output_shape, rate, padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -1315,7 +1321,7 @@ class Conv1d(Layer):
 
         logging.info(
             "Conv1d %s: n_filter:%d filter_size:%s stride:%d pad:%s act:%s dilation_rate:%d" % (
-                name, n_filter, filter_size, stride, padding, self.act.__name__
+                self.name, n_filter, filter_size, stride, padding, self.act.__name__
                 if self.act is not None else '- No Activation', dilation_rate
             )
         )
@@ -1530,7 +1536,7 @@ class DeConv2d(Layer):
 
         logging.info(
             "DeConv2d %s: n_filters:%s strides:%s pad:%s act:%s" % (
-                name, str(n_filter), str(strides), padding, self.act.__name__
+                self.name, str(n_filter), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -1601,7 +1607,7 @@ class DeConv3d(Layer):
 
         logging.info(
             "DeConv3d %s: n_filters:%s strides:%s pad:%s act:%s" % (
-                name, str(n_filter), str(strides), padding, self.act.__name__
+                self.name, str(n_filter), str(strides), padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )
@@ -1704,8 +1710,10 @@ class DepthwiseConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" %
-            (name, str(shape), str(strides), padding, self.act.__name__ if self.act is not None else '- No Activation')
+            "DepthwiseConv2d %s: shape:%s strides:%s pad:%s act:%s" % (
+                self.name, str(shape), str(strides), padding, self.act.__name__
+                if self.act is not None else '- No Activation'
+            )
         )
 
         try:
@@ -2017,7 +2025,7 @@ class GroupConv2d(Layer):
 
         logging.info(
             "GroupConv2d %s: n_filter:%d size:%s strides:%s n_group:%d pad:%s act:%s" % (
-                name, n_filter, str(filter_size), str(strides), n_group, padding, self.act.__name__
+                self.name, n_filter, str(filter_size), str(strides), n_group, padding, self.act.__name__
                 if self.act is not None else '- No Activation'
             )
         )

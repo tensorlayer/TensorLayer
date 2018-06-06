@@ -119,7 +119,7 @@ class TransposeLayer(Layer):
 
         super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("TransposeLayer  %s: perm:%s" % (name, perm))
+        logging.info("TransposeLayer  %s: perm:%s" % (self.name, perm))
 
         self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
         self._add_layers(self.outputs)
