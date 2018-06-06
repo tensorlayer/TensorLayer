@@ -107,7 +107,7 @@ class Conv1dLayer(Layer):
             self.outputs = tf.nn.convolution(
                 self.inputs, W, strides=(stride, ), padding=padding, dilation_rate=(dilation_rate, )
             )
-            
+
             if b_init:
                 b = tf.get_variable(
                     name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
