@@ -223,6 +223,7 @@ To release a new version, please update the changelog as followed:
 - All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
 - `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
 - argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
+- `unstack_layer` function transformed into Class `UnStackLayer` (by @DEKHTIARJonathan in #683)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
@@ -293,5 +294,5 @@ To release a new version, please update the changelog as followed:
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc2...1.8.5
+[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc3...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

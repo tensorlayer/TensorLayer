@@ -46,7 +46,7 @@ class ExpandDimsLayer(Layer):
     ):
         super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ExpandDimsLayer  %s: axis:%d" % (name, axis))
+        logging.info("ExpandDimsLayer  %s: axis:%d" % (self.name, axis))
 
         with tf.variable_scope(name):
             self.outputs = tf.expand_dims(self.inputs, axis=axis)
@@ -84,7 +84,7 @@ class TileLayer(Layer):
 
         super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("TileLayer  %s: multiples:%s" % (name, multiples))
+        logging.info("TileLayer  %s: multiples:%s" % (self.name, multiples))
 
         with tf.variable_scope(name):
             self.outputs = tf.tile(self.inputs, multiples=multiples)

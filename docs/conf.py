@@ -18,7 +18,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os, sys
-sys.path.insert(0, os.path.abspath("../")) # Important
+sys.path.insert(0, os.path.abspath("../"))  # Important
 
 from tensorlayer import __shortversion__
 from tensorlayer import __version__

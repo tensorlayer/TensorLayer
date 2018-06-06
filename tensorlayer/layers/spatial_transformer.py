@@ -257,7 +257,7 @@ class SpatialTransformer2dAffineLayer(Layer):
 
         logging.info(
             "SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" %
-            (name, self.inputs.get_shape().as_list(), out_size)
+            (self.name, self.inputs.get_shape().as_list(), out_size)
         )
 
         with tf.variable_scope(name) as vs:

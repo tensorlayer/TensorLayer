@@ -349,7 +349,7 @@ class AverageEmbeddingInputlayer(Layer):
 
         super(AverageEmbeddingInputlayer,
               self).__init__(prev_layer=inputs, embeddings_kwargs=embeddings_kwargs, name=name)
-        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (name, vocabulary_size, embedding_size))
+        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
 
         # if embeddings_kwargs is None:
         #     embeddings_kwargs = {}
