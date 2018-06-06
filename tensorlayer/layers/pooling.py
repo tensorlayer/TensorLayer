@@ -110,7 +110,8 @@ class MaxPool1d(Layer):
         super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool1d %s: filter_size:%s strides:%s padding:%s" % (self.name, str(filter_size), str(strides), str(padding))
+            "MaxPool1d %s: filter_size:%s strides:%s padding:%s" %
+            (self.name, str(filter_size), str(strides), str(padding))
         )
 
         self.outputs = tf.layers.max_pooling1d(
@@ -193,7 +194,8 @@ class MaxPool2d(Layer):
         super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool2d %s: filter_size:%s strides:%s padding:%s" % (self.name, str(filter_size), str(strides), str(padding))
+            "MaxPool2d %s: filter_size:%s strides:%s padding:%s" %
+            (self.name, str(filter_size), str(strides), str(padding))
         )
 
         self.outputs = tf.layers.max_pooling2d(
@@ -277,7 +279,8 @@ class MaxPool3d(Layer):
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool3d %s: filter_size:%s strides:%s padding:%s" % (self.name, str(filter_size), str(strides), str(padding))
+            "MaxPool3d %s: filter_size:%s strides:%s padding:%s" %
+            (self.name, str(filter_size), str(strides), str(padding))
         )
 
         self.outputs = tf.layers.max_pooling3d(

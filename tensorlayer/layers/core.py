@@ -545,7 +545,13 @@ class Layer(object):
     @protected_method
     def _add_layers(self, layers):
         if isinstance(layers, list):
-            self.all_layers.extend(list(layers))
+            try:  # list of class Layer
+                new_layers = [layer.outputs for layer in layers]
+                self.all_layers.extend(list(new_layers))
+
+            except AttributeError:  # list of tf.Tensor
+                self.all_layers.extend(list(layers))
+
         else:
             self.all_layers.append(layers)
 
@@ -553,8 +559,10 @@ class Layer(object):
 
     @protected_method
     def _add_params(self, params):
+
         if isinstance(params, list):
             self.all_params.extend(list(params))
+
         else:
             self.all_params.append(params)
 
@@ -645,7 +653,8 @@ class DenseLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DenseLayer  %s: %d %s" % (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            "DenseLayer  %s: %d %s" %
+            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
         )
 
         self.n_units = n_units
