@@ -396,7 +396,7 @@ def load_cropped_svhn(path='data', include_extra=True):
         logging.info("  added n_extra {} to n_train {} took {}s".format(len(y_extra), len(y_train), time.time() - t))
     else:
         logging.info("  no extra images are included")
-    logging.info("  image size:%s n_train:%d n_test:%d" % (str(X_train.shape[1:4]), len(y_train), len(y_test)))
+    logging.info("  image size: %s n_train: %d n_test: %d" % (str(X_train.shape[1:4]), len(y_train), len(y_test)))
     logging.info("  took: {}s".format(int(time.time() - start_time)))
     return X_train, y_train, X_test, y_test
 

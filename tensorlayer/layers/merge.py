@@ -111,7 +111,7 @@ class ElementwiseLayer(Layer):
 
         super(ElementwiseLayer, self).__init__(prev_layer=layers, name=name)
         logging.info(
-            "ElementwiseLayer %s: size:%s fn:%s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
+            "ElementwiseLayer %s: size: %s fn: %s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
         )
 
         self.outputs = layers[0].outputs
@@ -170,7 +170,7 @@ class ElementwiseLambdaLayer(Layer):
             name='elementwiselambda_layer',
     ):
 
-        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, fn_args=fn_args, name=name)
+        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)
         logging.info("ElementwiseLambdaLayer %s" % self.name)
 
         with tf.variable_scope(name) as vs:

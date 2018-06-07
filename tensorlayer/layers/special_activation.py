@@ -51,7 +51,7 @@ class PReluLayer(Layer):
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
-        logging.info("PReluLayer %s: channel_shared:%s" % (self.name, channel_shared))
+        logging.info("PReluLayer %s: channel_shared: %s" % (self.name, channel_shared))
 
         # with tf.name_scope(name) as scope:
         with tf.variable_scope(name):

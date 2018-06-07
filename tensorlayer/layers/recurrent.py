@@ -166,7 +166,7 @@ class RNNLayer(Layer):
                 logging.warning('pop state_is_tuple fails.')
 
         logging.info(
-            "RNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s " %
+            "RNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s " %
             (self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
         )
 
@@ -356,7 +356,7 @@ class BiRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
 
         logging.info(
-            "BiRNNLayer %s: n_hidden:%d n_steps:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d " % (
+            "BiRNNLayer %s: n_hidden: %d n_steps: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d " % (
                 self.name, n_hidden, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__,
                 dropout, n_layer
             )
@@ -720,8 +720,8 @@ class ConvLSTMLayer(Layer):
         super(ConvLSTMLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "ConvLSTMLayer %s: feature_map:%d, n_steps:%d, "
-            "in_dim:%d %s, cell_fn:%s " %
+            "ConvLSTMLayer %s: feature_map: %d, n_steps: %d, "
+            "in_dim: %d %s, cell_fn: %s " %
             (self.name, feature_map, n_steps, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__)
         )
         # You can get the dimension by .get_shape() or ._shape, and check the
@@ -1077,7 +1077,7 @@ class DynamicRNNLayer(Layer):
             return_last = True
 
         logging.info(
-            "DynamicRNNLayer %s: n_hidden:%d, in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (
+            "DynamicRNNLayer %s: n_hidden: %d, in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
                 self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout,
                 n_layer
             )
@@ -1330,7 +1330,7 @@ class BiDynamicRNNLayer(Layer):
             raise Exception("Please put in cell_fn")
 
         logging.info(
-            "BiDynamicRNNLayer %s: n_hidden:%d in_dim:%d in_shape:%s cell_fn:%s dropout:%s n_layer:%d" % (
+            "BiDynamicRNNLayer %s: n_hidden: %d in_dim: %d in_shape: %s cell_fn: %s dropout: %s n_layer: %d" % (
                 self.name, n_hidden, self.inputs.get_shape().ndims, self.inputs.get_shape(), cell_fn.__name__, dropout,
                 n_layer
             )
@@ -1603,7 +1603,7 @@ class Seq2Seq(Layer):
                 logging.warning("pop state_is_tuple fails.")
 
         logging.info(
-            "[*] Seq2Seq %s: n_hidden:%d cell_fn:%s dropout:%s n_layer:%d" %
+            "[*] Seq2Seq %s: n_hidden: %d cell_fn: %s dropout: %s n_layer: %d" %
             (self.name, n_hidden, cell_fn.__name__, dropout, n_layer)
         )
 
