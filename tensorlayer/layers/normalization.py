@@ -113,7 +113,7 @@ class BatchNormLayer(Layer):
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
             name='batchnorm_layer',
     ):
-        super(BatchNormLayer, self).__init__(prev_layer=prev_layer, name=name)
+        super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
             "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
