@@ -1,14 +1,26 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 """
 SqueezeNet for ImageNet.
 """
 
 import os
-# import numpy as np
+
 import tensorflow as tf
-from .. import _logging as logging
-from ..layers import (Layer, Conv2d, InputLayer, MaxPool2d, ConcatLayer, DropoutLayer, GlobalMeanPool2d)
-from ..files import maybe_download_and_extract, assign_params, load_npz
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.layers import Layer
+from tensorlayer.layers import Conv2d
+from tensorlayer.layers import InputLayer
+from tensorlayer.layers import MaxPool2d
+from tensorlayer.layers import ConcatLayer
+from tensorlayer.layers import DropoutLayer
+from tensorlayer.layers import GlobalMeanPool2d
+
+from tensorlayer.files import maybe_download_and_extract
+from tensorlayer.files import assign_params
+from tensorlayer.files import load_npz
 
 __all__ = [
     'SqueezeNetV1',
@@ -75,10 +87,13 @@ class SqueezeNetV1(Layer):
     def __init__(self, x, end_with='output', is_train=False, reuse=None):
 
         self.net = self.squeezenetv1(x, end_with, is_train, reuse)
+
         self.outputs = self.net.outputs
-        self.all_params = self.net.all_params
-        self.all_layers = self.net.all_layers
-        self.all_drop = self.net.all_drop
+
+        self.all_params = list(self.net.all_params)
+        self.all_layers = list(self.net.all_layers)
+        self.all_drop = dict(self.net.all_drop)
+
         self.print_layers = self.net.print_layers
         self.print_params = self.net.print_params
 

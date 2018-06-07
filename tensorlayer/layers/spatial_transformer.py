@@ -1,13 +1,22 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import numpy as np
-import tensorflow as tf
 from six.moves import xrange
 
-from .. import _logging as logging
-from .core import *
+import numpy as np
 
-from ..deprecation import deprecated_alias
+import tensorflow as tf
+from tensorflow.python.ops import array_ops
+
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import LayersConfig
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
+
+from tensorlayer.layers.core import flatten_reshape
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'transformer',
@@ -240,42 +249,51 @@ class SpatialTransformer2dAffineLayer(Layer):
 
         super(SpatialTransformer2dAffineLayer, self).__init__(prev_layer=[prev_layer, theta_layer], name=name)
 
-        self.inputs = prev_layer.outputs
+        self.inputs = prev_layer.outputs  # Do not remove
         self.theta_layer = theta_layer
 
         if out_size is None:
             out_size = [40, 40]
 
         logging.info(
-            "SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" %
-            (name, self.inputs.get_shape().as_list(), out_size)
+            "SpatialTransformer2dAffineLayer %s: in_size: %s out_size: %s" %
+            (self.name, self.inputs.get_shape().as_list(), out_size)
         )
 
         with tf.variable_scope(name) as vs:
+
             # 1. make the localisation network to [batch, 6] via Flatten and Dense.
             if self.theta_layer.outputs.get_shape().ndims > 2:
                 self.theta_layer.outputs = flatten_reshape(self.theta_layer.outputs, 'flatten')
+
             # 2. To initialize the network to the identity transform init.
             # 2.1 W
             n_in = int(self.theta_layer.outputs.get_shape()[-1])
             shape = (n_in, 6)
+
             W = tf.get_variable(name='W', initializer=tf.zeros(shape), dtype=LayersConfig.tf_dtype)
             # 2.2 b
+
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
+
             b = tf.get_variable(name='b', initializer=identity, dtype=LayersConfig.tf_dtype)
             # 2.3 transformation matrix
+
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)
             # 3. Spatial Transformer Sampling
             # 3.1 transformation
+
             self.outputs = transformer(self.inputs, self.theta, out_size=out_size)
+
             # 3.2 automatically set batch_size and channels
             # e.g. [?, 40, 40, ?] --> [64, 40, 40, 1] or [64, 20, 20, 4]/ Hao Dong
             #
             fixed_batch_size = self.inputs.get_shape().with_rank_at_least(1)[0]
+
             if fixed_batch_size.value:
                 batch_size = fixed_batch_size.value
+
             else:
-                from tensorflow.python.ops import array_ops
                 batch_size = array_ops.shape(self.inputs)[0]
 
             n_channels = self.inputs.get_shape().as_list()[-1]
@@ -286,16 +304,10 @@ class SpatialTransformer2dAffineLayer(Layer):
             # 4. Get all parameters
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
-        # # fixed
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
-        #
         # # theta_layer
-        # self.all_layers.extend(theta_layer.all_layers)
-        # self.all_params.extend(theta_layer.all_params)
+        # self._add_layers(theta_layer.all_layers)
+        # self._add_params(theta_layer.all_params)
         # self.all_drop.update(theta_layer.all_drop)
 
-        # this layer
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

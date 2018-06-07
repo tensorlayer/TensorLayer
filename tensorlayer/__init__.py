@@ -1,18 +1,41 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Deep learning and Reinforcement learning library for Researchers and Engineers"""
+
 from __future__ import absolute_import
 
-try:
-    import tensorflow
+import os
+
+if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
+
+    try:
+        import tensorflow
+    except Exception as e:
+        raise ImportError(
+            "Tensorflow is not installed, please install it with the one of the following commands:\n"
+            " - `pip install --upgrade tensorflow`\n"
+            " - `pip install --upgrade tensorflow-gpu`"
+        )
+
+    if tensorflow.__version__ < "1.6.0" and os.environ.get('READTHEDOCS', None) != 'True':
+        raise RuntimeError(
+            "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
+            "Please update Tensorflow with:\n"
+            " - `pip install --upgrade tensorflow`\n"
+            " - `pip install --upgrade tensorflow-gpu`"
+        )
 
     from . import activation
     from . import array_ops
     from . import cost
+    from . import db
+    from . import decorators
     from . import distributed
     from . import files
     from . import iterate
     from . import layers
+    from . import lazy_imports
+    from . import tl_logging as logging
     from . import models
     from . import nlp
     from . import optimizers
@@ -32,17 +55,8 @@ try:
     global_flag = {}
     global_dict = {}
 
-except Exception as e:
-
-    import pkg_resources
-    installed_packages = [d for d in pkg_resources.working_set]
-
-    for package in installed_packages:
-        if 'tensorlayer' in package.project_name and 'site-packages' in package.location:
-            raise ImportError("__init__.py : Could not import TensorLayer.\nError: {}".format(e))
-
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 8, 5)
+VERSION = (1, 8, 6, "rc4")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 

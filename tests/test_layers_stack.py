@@ -12,50 +12,46 @@ class Layer_Stack_Test(unittest.TestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, shape=[None, 30])
-        net = tl.layers.InputLayer(x, name='input')
-        net1 = tl.layers.DenseLayer(net, n_units=10, name='dense1')
-        net2 = tl.layers.DenseLayer(net, n_units=10, name='dense2')
-        net3 = tl.layers.DenseLayer(net, n_units=10, name='dense3')
-        net = tl.layers.StackLayer([net1, net2, net3], axis=1, name='stack')
+        net_in = tl.layers.InputLayer(x, name='input')
 
-        net.print_layers()
-        net.print_params(False)
+        net_d1 = tl.layers.DenseLayer(net_in, n_units=10, name='dense1')
+        net_d2 = tl.layers.DenseLayer(net_in, n_units=10, name='dense2')
+        net_d3 = tl.layers.DenseLayer(net_in, n_units=10, name='dense3')
 
-        cls.net_shape = net.outputs.get_shape().as_list()
-        cls.layers = net.all_layers
-        cls.params = net.all_params
-        cls.n_params = net.count_params()
+        cls.net_stack = tl.layers.StackLayer([net_d1, net_d2, net_d3], axis=1, name='stack')
 
-        cls.net = tl.layers.UnStackLayer(net, axis=1, name='unstack')
+        cls.net_stack.print_layers()
+        cls.net_stack.print_params(False)
+
+        cls.net_unstack = tl.layers.UnStackLayer(cls.net_stack, axis=1, name='unstack')
+
+        cls.net_unstack.print_layers()
+        cls.net_unstack.print_params(False)
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
-    def test_net_shape(self):
-        self.assertEqual(self.net_shape[-1], 10)
+    def test_StackLayer(self):
+        self.assertEqual(self.net_stack.outputs.get_shape().as_list()[-1], 10)
+        self.assertEqual(len(self.net_stack.all_layers), 5)
+        self.assertEqual(len(self.net_stack.all_params), 6)
+        self.assertEqual(self.net_stack.count_params(), 930)
 
-    def test_layers(self):
-        self.assertEqual(len(self.layers), 4)
+    def test_UnStackLayer(self):
 
-    def test_params(self):
-        self.assertEqual(len(self.params), 6)
-        self.assertEqual(self.n_params, 930)
-
-    def test_unstack(self):
-
-        for n in self.net:
+        for n in self.net_unstack.outputs:
             shape = n.outputs.get_shape().as_list()
 
             self.assertEqual(shape[-1], 10)
-            self.assertEqual(len(n.all_layers), 4)
+            self.assertEqual(len(n.all_layers), 5)
             self.assertEqual(len(n.all_params), 6)
             self.assertEqual(n.count_params(), 930)
 
 
 if __name__ == '__main__':
 
-    # tf.logging.set_verbosity(tf.logging.INFO)
     tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

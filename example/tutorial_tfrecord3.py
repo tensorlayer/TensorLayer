@@ -260,9 +260,9 @@ def prefetch_input_data(
     for pattern in file_pattern.split(","):
         data_files.extend(tf.gfile.Glob(pattern))
     if not data_files:
-        tf.logging.fatal("Found no input files matching %s", file_pattern)
+        tl.logging.fatal("Found no input files matching %s", file_pattern)
     else:
-        tf.logging.info("Prefetching values from %d files matching %s", len(data_files), file_pattern)
+        tl.logging.info("Prefetching values from %d files matching %s", len(data_files), file_pattern)
 
     if is_training:
         print("   is_training == True : RandomShuffleQueue")
@@ -351,7 +351,7 @@ img_batch, img_cap_batch, img_cap_ids_batch = tf.train.batch(
     num_threads=4
 )
 sess = tf.Session()
-# sess.run(tf.initialize_all_variables())
+# sess.run(tf.global_variables_initializer())
 tl.layers.initialize_global_variables(sess)
 coord = tf.train.Coordinator()
 threads = tf.train.start_queue_runners(sess=sess, coord=coord)
@@ -447,7 +447,7 @@ images, input_seqs, target_seqs, input_mask = (
     batch_with_dynamic_pad(images_and_captions=[[img, img_cap]], batch_size=4, queue_capacity=50000)
 )
 sess = tf.Session()
-sess.run(tf.initialize_all_variables())
+sess.run(tf.global_variables_initializer())
 coord = tf.train.Coordinator()
 threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 for _ in range(3):
@@ -460,5 +460,3 @@ for _ in range(3):
 coord.request_stop()
 coord.join(threads)
 sess.close()
-
-#

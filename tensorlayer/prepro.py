@@ -1,18 +1,35 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
+
+import copy
 
 import threading
 import time
 
 import numpy as np
+
 import scipy
 import scipy.ndimage as ndi
+
 import skimage
-# import tensorlayer as tl
+
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
+
 from six.moves import range
-from skimage import exposure, transform
+
+from skimage import exposure
+from skimage import transform
+
+from skimage.morphology import disk
+from skimage.morphology import erosion
+from skimage.morphology import binary_dilation
+from skimage.morphology import binary_erosion
+
+from tensorlayer.lazy_imports import LazyImport
+
+PIL = LazyImport("PIL")
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -1136,7 +1153,6 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
     >>> x = tl.prepro.illumination(x, 0.5, 0.6, 0.8, is_random=False)
 
     """
-    from PIL import Image, ImageEnhance
 
     if is_random:
 
@@ -1155,20 +1171,20 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
 
         # logging.info("using contrast and saturation")
-        image = Image.fromarray(im_)  # array -> PIL
-        contrast_adjust = ImageEnhance.Contrast(image)
+        image = PIL.Image.fromarray(im_)  # array -> PIL
+        contrast_adjust = PIL.ImageEnhance.Contrast(image)
         image = contrast_adjust.enhance(np.random.uniform(contrast[0], contrast[1]))  #0.3,0.9))
 
-        saturation_adjust = ImageEnhance.Color(image)
+        saturation_adjust = PIL.ImageEnhance.Color(image)
         image = saturation_adjust.enhance(np.random.uniform(saturation[0], saturation[1]))  # (0.7,1.0))
         im_ = np.array(image)  # PIL -> array
     else:
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
-        image = Image.fromarray(im_)  # array -> PIL
-        contrast_adjust = ImageEnhance.Contrast(image)
+        image = PIL.Image.fromarray(im_)  # array -> PIL
+        contrast_adjust = PIL.ImageEnhance.Contrast(image)
         image = contrast_adjust.enhance(contrast)
 
-        saturation_adjust = ImageEnhance.Color(image)
+        saturation_adjust = PIL.ImageEnhance.Color(image)
         image = saturation_adjust.enhance(saturation)
         im_ = np.array(image)  # PIL -> array
     return np.asarray(im_)
@@ -1848,12 +1864,13 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
     `PIL Image.fromarray <http://pillow.readthedocs.io/en/3.1.x/reference/Image.html?highlight=fromarray>`__
 
     """
-    from PIL import Image
     # if dim_ordering == 'default':
     #     dim_ordering = K.image_dim_ordering()
     # if dim_ordering == 'th':  # theano
     #     x = x.transpose(1, 2, 0)
+
     x = x.transpose(dim_ordering)
+
     if scale:
         x += max(-np.min(x), 0)
         x_max = np.max(x)
@@ -1862,12 +1879,15 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
             # x /= x_max
             x = x / x_max
         x *= 255
+
     if x.shape[2] == 3:
         # RGB
-        return Image.fromarray(x.astype('uint8'), 'RGB')
+        return PIL.Image.fromarray(x.astype('uint8'), 'RGB')
+
     elif x.shape[2] == 1:
         # grayscale
-        return Image.fromarray(x[:, :, 0].astype('uint8'), 'L')
+        return PIL.Image.fromarray(x[:, :, 0].astype('uint8'), 'L')
+
     else:
         raise Exception('Unsupported channel number: ', x.shape[2])
 
@@ -1945,9 +1965,9 @@ def binary_dilation(x, radius=3):
         A processed binary image.
 
     """
-    from skimage.morphology import disk, binary_dilation
     mask = disk(radius)
     x = binary_dilation(x, selem=mask)
+
     return x
 
 
@@ -1968,9 +1988,9 @@ def dilation(x, radius=3):
         A processed greyscale image.
 
     """
-    from skimage.morphology import disk, dilation
     mask = disk(radius)
     x = dilation(x, selem=mask)
+
     return x
 
 
@@ -1991,7 +2011,6 @@ def binary_erosion(x, radius=3):
         A processed binary image.
 
     """
-    from skimage.morphology import disk, binary_erosion
     mask = disk(radius)
     x = binary_erosion(x, selem=mask)
     return x
@@ -2014,7 +2033,6 @@ def erosion(x, radius=3):
         A processed greyscale image.
 
     """
-    from skimage.morphology import disk, erosion
     mask = disk(radius)
     x = erosion(x, selem=mask)
     return x
@@ -3033,8 +3051,8 @@ def remove_pad_sequences(sequences, pad_id=0):
     ... [[2, 3, 4], [5, 1, 2, 3, 4], [4, 5, 0, 2, 4]]
 
     """
-    import copy
     sequences_out = copy.deepcopy(sequences)
+
     for i, _ in enumerate(sequences):
         # for j in range(len(sequences[i])):
         #     if sequences[i][j] == pad_id:
@@ -3044,6 +3062,7 @@ def remove_pad_sequences(sequences, pad_id=0):
             if sequences[i][-j] != pad_id:
                 sequences_out[i] = sequences_out[i][0:-j + 1]
                 break
+
     return sequences_out
 
 
@@ -3191,7 +3210,7 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
 
     """
     # sequences_out = [[] for _ in range(len(sequences))]#[[]] * len(sequences)
-    import copy
+
     sequences_out = copy.deepcopy(sequences)
     # # add a pad to all
     # for i in range(len(sequences)):
@@ -3199,6 +3218,7 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
     #         sequences_out[i].append(pad_id)
     # # pad -- > end
     # max_len = 0
+
     for i, v in enumerate(sequences):
         for j, _v2 in enumerate(v):
             if sequences[i][j] == pad_id:
@@ -3206,6 +3226,7 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
                 # if j > max_len:
                 #     max_len = j
                 break
+
     # # remove pad if too long
     # for i in range(len(sequences)):
     #     for j in range(len(sequences[i])):

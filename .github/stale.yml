@@ -6,16 +6,11 @@ daysUntilClose: 15
 
 # Issues with these labels will never be considered stale
 exemptLabels:
-  - feature_request
   - bug
-  - CI_Tool
   - discussion
-  - documentation
   - enhancement
   - help_wanted
   - feature_request
-  - tensorflow
-  - wontfix
   
 # Label to use when marking an issue as stale
 staleLabel: 

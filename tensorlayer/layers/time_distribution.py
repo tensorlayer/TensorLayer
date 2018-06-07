@@ -1,11 +1,16 @@
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
 
-from .. import _logging as logging
-from .core import *
+from tensorlayer.layers.core import Layer
+from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from ..deprecation import deprecated_alias
+from tensorlayer.layers.inputs import InputLayer
+
+from tensorlayer import tl_logging as logging
+
+from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
     'TimeDistributedLayer',
@@ -48,26 +53,26 @@ class TimeDistributedLayer(Layer):
 
     """
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    @deprecated_alias(
+        layer='prev_layer', args="layer_args", end_support_version=1.9
+    )  # TODO remove this line for the 1.9 release
     def __init__(
             self,
             prev_layer,
             layer_class=None,
-            args=None,
+            layer_args=None,
             name='time_distributed',
     ):
-        super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, name=name)
-        logging.info("TimeDistributedLayer %s: layer_class:%s args:%s" % (self.name, layer_class.__name__, args))
 
-        if args is None:
-            args = {}
-        if not isinstance(args, dict):
-            raise TypeError("'args' must be a dict.")
-
-        self.inputs = prev_layer.outputs
+        super(TimeDistributedLayer, self).__init__(prev_layer=prev_layer, layer_args=layer_args, name=name)
 
         if not isinstance(self.inputs, tf.Tensor):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
+
+        logging.info(
+            "TimeDistributedLayer %s: layer_class: %s layer_args: %s" %
+            (self.name, layer_class.__name__, self.layer_args)
+        )
 
         input_shape = self.inputs.get_shape()
 
@@ -77,14 +82,11 @@ class TimeDistributedLayer(Layer):
         is_name_reuse = tf.get_variable_scope().reuse
         for i in range(0, timestep):
             with tf.variable_scope(name, reuse=(is_name_reuse if i == 0 else True)) as vs:
-                net = layer_class(InputLayer(x[i], name=args['name'] + str(i)), **args)
+                net = layer_class(InputLayer(x[i], name=self.layer_args['name'] + str(i)), **self.layer_args)
                 x[i] = net.outputs
                 variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
 
         self.outputs = tf.stack(x, axis=1, name=name)
 
-        # self.all_layers = list(layer.all_layers)
-        # self.all_params = list(layer.all_params)
-        # self.all_drop = dict(layer.all_drop)
-        self.all_layers.append(self.outputs)
-        self.all_params.extend(variables)
+        self._add_layers(self.outputs)
+        self._add_params(variables)

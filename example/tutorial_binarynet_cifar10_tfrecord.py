@@ -108,26 +108,26 @@ def read_and_decode(filename, is_train=None):
     if is_train ==True:
         # 1. Randomly crop a [height, width] section of the image.
         img = tf.random_crop(img, [24, 24, 3])
+
         # 2. Randomly flip the image horizontally.
         img = tf.image.random_flip_left_right(img)
+
         # 3. Randomly change brightness.
         img = tf.image.random_brightness(img, max_delta=63)
+
         # 4. Randomly change contrast.
         img = tf.image.random_contrast(img, lower=0.2, upper=1.8)
+
         # 5. Subtract off the mean and divide by the variance of the pixels.
-        try:  # TF 0.12+
-            img = tf.image.per_image_standardization(img)
-        except Exception:  # earlier TF versions
-            img = tf.image.per_image_whitening(img)
+        img = tf.image.per_image_standardization(img)
 
     elif is_train == False:
         # 1. Crop the central [height, width] of the image.
         img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
+
         # 2. Subtract off the mean and divide by the variance of the pixels.
-        try:  # TF 0.12+
-            img = tf.image.per_image_standardization(img)
-        except Exception:  # earlier TF versions
-            img = tf.image.per_image_whitening(img)
+        img = tf.image.per_image_standardization(img)
+
     elif is_train == None:
         img = img
 
@@ -173,7 +173,7 @@ with tf.device('/cpu:0'):
             net = tl.layers.BinaryDenseLayer(net, 384, act=tf.nn.relu, name='d1relu')
             net = tl.layers.SignLayer(net)
             net = tl.layers.BinaryDenseLayer(net, 192, act=tf.nn.relu, name='d2relu')
-            net = tl.layers.DenseLayer(net, 10, act=tf.identity, name='output')
+            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
 
             y = net.outputs
 

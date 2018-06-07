@@ -23,13 +23,17 @@ import tensorlayer as tl
 from tensorlayer.layers import *
 
 try:
-    from data.imagenet_classes import *
+    from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
         "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
     )
 
 VGG_MEAN = [103.939, 116.779, 123.68]
+
+MODEL_DIR = "models"
+MODEL_NAME = "vgg19.npy"
+MODEL_PATH = os.path.join(MODEL_DIR, MODEL_NAME)
 
 
 def load_image(path):
@@ -45,7 +49,7 @@ def load_image(path):
     xx = int((img.shape[1] - short_edge) / 2)
     crop_img = img[yy:yy + short_edge, xx:xx + short_edge]
     # resize to 224, 224
-    resized_img = skimage.transform.resize(crop_img, (224, 224))
+    resized_img = skimage.transform.resize(crop_img, (224, 224), anti_aliasing=False)
     return resized_img
 
 
@@ -74,29 +78,23 @@ def Vgg19(rgb):
     print("build model started")
     rgb_scaled = rgb * 255.0
     # Convert RGB to BGR
-    if tf.__version__ <= '0.11':
-        red, green, blue = tf.split(3, 3, rgb_scaled)
-    else:  # TF 1.0
-        print(rgb_scaled)
-        red, green, blue = tf.split(rgb_scaled, 3, 3)
+    red, green, blue = tf.split(rgb_scaled, 3, 3)
+
     if red.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
+
     if green.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
+
     if blue.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
-    if tf.__version__ <= '0.11':
-        bgr = tf.concat(3, [
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ])
-    else:
-        bgr = tf.concat([
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ], axis=3)
+
+    bgr = tf.concat([
+        blue - VGG_MEAN[0],
+        green - VGG_MEAN[1],
+        red - VGG_MEAN[2],
+    ], axis=3)
+
     if bgr.get_shape().as_list()[1:] != [224, 224, 3]:
         raise Exception("image size unmatch")
     # input layer
@@ -131,7 +129,7 @@ def Vgg19(rgb):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc6')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc7')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc8')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc8')
     print("build model finished: %fs" % (time.time() - start_time))
     return net
 
@@ -148,31 +146,26 @@ def Vgg19_simple_api(rgb):
     print("build model started")
     rgb_scaled = rgb * 255.0
     # Convert RGB to BGR
-    if tf.__version__ <= '0.11':
-        red, green, blue = tf.split(3, 3, rgb_scaled)
-    else:  # TF 1.0
-        print(rgb_scaled)
-        red, green, blue = tf.split(rgb_scaled, 3, 3)
+    red, green, blue = tf.split(rgb_scaled, 3, 3)
+
     if red.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
+
     if green.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
+
     if blue.get_shape().as_list()[1:] != [224, 224, 1]:
         raise Exception("image size unmatch")
-    if tf.__version__ <= '0.11':
-        bgr = tf.concat(3, [
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ])
-    else:
-        bgr = tf.concat([
-            blue - VGG_MEAN[0],
-            green - VGG_MEAN[1],
-            red - VGG_MEAN[2],
-        ], axis=3)
+
+    bgr = tf.concat([
+        blue - VGG_MEAN[0],
+        green - VGG_MEAN[1],
+        red - VGG_MEAN[2],
+    ], axis=3)
+
     if bgr.get_shape().as_list()[1:] != [224, 224, 3]:
         raise Exception("image size unmatch")
+
     # input layer
     net_in = InputLayer(bgr, name='input')
     # conv1
@@ -205,7 +198,7 @@ def Vgg19_simple_api(rgb):
     net = FlattenLayer(net, name='flatten')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc6')
     net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc7')
-    net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc8')
+    net = DenseLayer(net, n_units=1000, act=None, name='fc8')
     print("build model finished: %fs" % (time.time() - start_time))
     return net
 
@@ -218,21 +211,21 @@ y = net.outputs
 probs = tf.nn.softmax(y, name="prob")
 tl.layers.initialize_global_variables(sess)
 
-# You need to download the pre-trained model - VGG19 NPZ
-vgg19_npy_path = "vgg19.npy"
-if not os.path.isfile(vgg19_npy_path):
-    print("Please download vgg19.npz from : https://github.com/machrisaa/tensorflow-vgg")
+# You need to download the pre-trained model - VGG19 NPY
+if not os.path.isfile(MODEL_PATH):
+    print("Please download vgg19.npy from : https://github.com/machrisaa/tensorflow-vgg")
     exit()
-npz = np.load(vgg19_npy_path, encoding='latin1').item()
+
+npy_file = np.load(MODEL_PATH, encoding='latin1').item()
 
 params = []
-for val in sorted(npz.items()):
+for val in sorted(npy_file.items()):
     W = np.asarray(val[1][0])
     b = np.asarray(val[1][1])
     print("  Loading %s: %s, %s" % (val[0], W.shape, b.shape))
     params.extend([W, b])
 
-print("Restoring model from npz file")
+print("Restoring model from npy file")
 tl.files.assign_params(sess, params, net)
 
 img1 = load_image("data/tiger.jpeg")  # test data in github

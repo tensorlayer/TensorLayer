@@ -18,7 +18,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os, sys
-sys.path.insert(0, os.path.abspath("../")) # Important
+sys.path.insert(0, os.path.abspath("../"))  # Important
 
 from tensorlayer import __shortversion__
 from tensorlayer import __version__
@@ -145,7 +145,7 @@ todo_include_todos = False
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
 #
-# html_title = 'TensorLayer v1.8.5'
+# html_title = 'TensorLayer'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #

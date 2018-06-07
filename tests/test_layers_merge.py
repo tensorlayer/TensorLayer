@@ -103,42 +103,42 @@ class Layer_Merge_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_net_vector1(self):
-        self.assertEqual(len(self.data["net_vector1"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_vector1"]["layers"]), 4)
         self.assertEqual(len(self.data["net_vector1"]["params"]), 4)
         self.assertEqual(self.data["net_vector1"]["n_params"], 157000)
 
     def test_net_vector2(self):
-        self.assertEqual(len(self.data["net_vector2"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_vector2"]["layers"]), 4)
         self.assertEqual(len(self.data["net_vector2"]["params"]), 4)
         self.assertEqual(self.data["net_vector2"]["n_params"], 157000)
 
     def test_net_vector3(self):
-        self.assertEqual(len(self.data["net_vector3"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_vector3"]["layers"]), 4)
         self.assertEqual(len(self.data["net_vector3"]["params"]), 4)
         self.assertEqual(self.data["net_vector3"]["n_params"], 157000)
 
     def test_net_image1(self):
         self.assertEqual(self.data["net_image1"]["shape"][1:], [50, 50, 64])
-        self.assertEqual(len(self.data["net_image1"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_image1"]["layers"]), 4)
         self.assertEqual(len(self.data["net_image1"]["params"]), 4)
         self.assertEqual(self.data["net_image1"]["n_params"], 1792)
 
     def test_net_image2(self):
         self.assertEqual(self.data["net_image2"]["shape"][1:], [50, 50, 32])
-        self.assertEqual(len(self.data["net_image2"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_image2"]["layers"]), 4)
         self.assertEqual(len(self.data["net_image2"]["params"]), 4)
         self.assertEqual(self.data["net_image2"]["n_params"], 1792)
 
     def test_net_image3(self):
         self.assertEqual(self.data["net_image3"]["shape"][1:], [50, 50, 32])
-        self.assertEqual(len(self.data["net_image3"]["layers"]), 3)
+        self.assertEqual(len(self.data["net_image3"]["layers"]), 4)
         self.assertEqual(len(self.data["net_image3"]["params"]), 4)
         self.assertEqual(self.data["net_image3"]["n_params"], 1792)
 
 
 if __name__ == '__main__':
 
-    # tf.logging.set_verbosity(tf.logging.INFO)
     tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()

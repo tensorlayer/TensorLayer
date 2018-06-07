@@ -35,7 +35,7 @@ def model(x, is_train, reuse):
         )
         n = tl.layers.FlattenLayer(n, name='flatten2')
         n = tl.layers.DenseLayer(n, n_units=1024, act=tf.nn.relu, name='out1')
-        n = tl.layers.DenseLayer(n, n_units=10, act=tf.identity, name='out2')
+        n = tl.layers.DenseLayer(n, n_units=10, name='out2')
     return n, s
 
 
@@ -68,7 +68,7 @@ class Layer_Spatial_Transformer_Test(CustomTestCase):
         self.assertEqual(self.s_shape[1:], [40, 40, 1])
 
     def test_net_layers(self):
-        self.assertEqual(len(self.net_layers), 9)
+        self.assertEqual(len(self.net_layers), 10)
 
     def test_net_params(self):
         self.assertEqual(len(self.net_params), 12)
@@ -79,7 +79,7 @@ class Layer_Spatial_Transformer_Test(CustomTestCase):
 
 if __name__ == '__main__':
 
-    # tf.logging.set_verbosity(tf.logging.INFO)
     tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
 
     unittest.main()
