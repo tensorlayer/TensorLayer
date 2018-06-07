@@ -1460,7 +1460,7 @@ class Conv2d(Layer):
                 new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self.outputs = conv2d(self.inputs)
             # new_variables = conv2d.weights  #trainable_variables #tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-            print(new_variables)
+            # print(new_variables)
             self.all_layers.append(self.outputs)
             self.all_params.extend(new_variables)
         else:
