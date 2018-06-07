@@ -1336,7 +1336,8 @@ class Conv1d(Layer):
 
         # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
         self.outputs = _conv1d(self.inputs)
-        new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1396,7 +1397,6 @@ class Conv2d(Layer):
 
     """
 
-
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
@@ -1435,38 +1435,39 @@ class Conv2d(Layer):
                 if self.act is not None else 'No Activation'
             )
         )
-        with tf.variable_scope(name) as vs:
-            conv2d = tf.layers.Conv2D(
-                # inputs=self.inputs,
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                data_format='channels_last',
-                dilation_rate=dilation_rate,
-                activation=self.act,
-                use_bias=(False if b_init is None else True),
-                kernel_initializer=W_init,  #None,
-                bias_initializer=b_init,  #f.zeros_initializer(),
-                kernel_regularizer=None,
-                bias_regularizer=None,
-                activity_regularizer=None,
-                kernel_constraint=None,
-                bias_constraint=None,
-                trainable=True,
-                name=name,
-                # reuse=None,
-            )
-            self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-            # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
-            # print(vs.name)#, name)
-            # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-            # print(new_variables)
-            # print(conv2d.weights)
+        # with tf.variable_scope(name) as vs:
+        conv2d = tf.layers.Conv2D(
+            # inputs=self.inputs,
+            filters=n_filter,
+            kernel_size=filter_size,
+            strides=strides,
+            padding=padding,
+            data_format='channels_last',
+            dilation_rate=dilation_rate,
+            activation=self.act,
+            use_bias=(False if b_init is None else True),
+            kernel_initializer=W_init,  #None,
+            bias_initializer=b_init,  #f.zeros_initializer(),
+            kernel_regularizer=None,
+            bias_regularizer=None,
+            activity_regularizer=None,
+            kernel_constraint=None,
+            bias_constraint=None,
+            trainable=True,
+            name=name,
+            # reuse=None,
+        )
+        self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
+        # print(self.name, name)
+        # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
+        # print(new_variables)
+        # print(conv2d.weights)
 
         self._add_layers(self.outputs)
-        self._add_params(new_variables)#conv2d.weights)
+        self._add_params(new_variables)  #conv2d.weights)
+
 
 class DeConv2d(Layer):
     """Simplified version of :class:`DeConv2dLayer`.
@@ -1541,7 +1542,8 @@ class DeConv2d(Layer):
         )
 
         self.outputs = conv2d_transpose(self.inputs)
-        new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1603,21 +1605,15 @@ class DeConv3d(Layer):
             )
         )
 
-        with tf.variable_scope(name) as vs:
+        # with tf.variable_scope(name) as vs:
+        nn = tf.layers.Conv3DTranspose(
+            filters=n_filter, kernel_size=filter_size, strides=strides, padding=padding, activation=self.act,
+            kernel_initializer=W_init, bias_initializer=b_init, name=name
+        )
 
-            nn = tf.layers.Conv3DTranspose(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                activation=self.act,
-                kernel_initializer=W_init,
-                bias_initializer=b_init,
-                name=None,
-            )
-
-            self.outputs = nn(self.inputs)
-            new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        self.outputs = nn(self.inputs)
+        # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1820,33 +1816,34 @@ class SeparableConv1d(Layer):
                 if self.act is not None else 'No Activation'
             )
         )
-        with tf.variable_scope(name) as vs:
-            nn = tf.layers.SeparableConv1D(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                data_format=data_format,
-                dilation_rate=dilation_rate,
-                depth_multiplier=depth_multiplier,
-                activation=self.act,
-                use_bias=(True if b_init is not None else False),
-                depthwise_initializer=depthwise_init,
-                pointwise_initializer=pointwise_init,
-                bias_initializer=b_init,
-                # depthwise_regularizer=None,
-                # pointwise_regularizer=None,
-                # bias_regularizer=None,
-                # activity_regularizer=None,
-                # depthwise_constraint=None,
-                # pointwise_constraint=None,
-                # bias_constraint=None,
-                trainable=True,
-                name=None
-            )
+        # with tf.variable_scope(name) as vs:
+        nn = tf.layers.SeparableConv1D(
+            filters=n_filter,
+            kernel_size=filter_size,
+            strides=strides,
+            padding=padding,
+            data_format=data_format,
+            dilation_rate=dilation_rate,
+            depth_multiplier=depth_multiplier,
+            activation=self.act,
+            use_bias=(True if b_init is not None else False),
+            depthwise_initializer=depthwise_init,
+            pointwise_initializer=pointwise_init,
+            bias_initializer=b_init,
+            # depthwise_regularizer=None,
+            # pointwise_regularizer=None,
+            # bias_regularizer=None,
+            # activity_regularizer=None,
+            # depthwise_constraint=None,
+            # pointwise_constraint=None,
+            # bias_constraint=None,
+            trainable=True,
+            name=name
+        )
 
-            self.outputs = nn(self.inputs)
-            new_variables = nn.weights
+        self.outputs = nn(self.inputs)
+        # new_variables = nn.weights
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1931,33 +1928,34 @@ class SeparableConv2d(Layer):
             )
         )
 
-        with tf.variable_scope(name) as vs:
-            nn = tf.layers.SeparableConv2D(
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                data_format=data_format,
-                dilation_rate=dilation_rate,
-                depth_multiplier=depth_multiplier,
-                activation=self.act,
-                use_bias=(True if b_init is not None else False),
-                depthwise_initializer=depthwise_init,
-                pointwise_initializer=pointwise_init,
-                bias_initializer=b_init,
-                # depthwise_regularizer=None,
-                # pointwise_regularizer=None,
-                # bias_regularizer=None,
-                # activity_regularizer=None,
-                # depthwise_constraint=None,
-                # pointwise_constraint=None,
-                # bias_constraint=None,
-                trainable=True,
-                name=None
-            )
+        # with tf.variable_scope(name) as vs:
+        nn = tf.layers.SeparableConv2D(
+            filters=n_filter,
+            kernel_size=filter_size,
+            strides=strides,
+            padding=padding,
+            data_format=data_format,
+            dilation_rate=dilation_rate,
+            depth_multiplier=depth_multiplier,
+            activation=self.act,
+            use_bias=(True if b_init is not None else False),
+            depthwise_initializer=depthwise_init,
+            pointwise_initializer=pointwise_init,
+            bias_initializer=b_init,
+            # depthwise_regularizer=None,
+            # pointwise_regularizer=None,
+            # bias_regularizer=None,
+            # activity_regularizer=None,
+            # depthwise_constraint=None,
+            # pointwise_constraint=None,
+            # bias_constraint=None,
+            trainable=True,
+            name=name
+        )
 
-            self.outputs = nn(self.inputs)
-            new_variables = nn.weights
+        self.outputs = nn(self.inputs)
+        # new_variables = nn.weights
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
