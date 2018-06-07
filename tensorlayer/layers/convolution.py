@@ -1479,7 +1479,7 @@ class Conv2d(Layer):
         # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
         # print(self.name, name)
         # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-        print(new_variables)
+        # print(new_variables)
         # print(conv2d.weights)
 
         self._add_layers(self.outputs)
