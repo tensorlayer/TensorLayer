@@ -1230,6 +1230,7 @@ def deconv2d_bilinear_upsampling_initializer(shape):
     """
     if shape[0] != shape[1]:
         raise Exception('deconv2d_bilinear_upsampling_initializer only supports symmetrical filter sizes')
+
     if shape[3] < shape[2]:
         raise Exception(
             'deconv2d_bilinear_upsampling_initializer behaviour is not defined for num_in_channels < num_out_channels '
@@ -1412,32 +1413,16 @@ class Conv2d(Layer):
             data_format=None,
             name='conv2d',
     ):
-        # if W_init_args is None:
-        #     W_init_args = {}
-        # if b_init_args is None:
-        #     b_init_args = {}
-        #
+
         # if len(strides) != 2:
         #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
-        #
+
         # try:
         #     pre_channel = int(layer.outputs.get_shape()[-1])
+
         # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
         #     pre_channel = 1
         #     logging.info("[warnings] unknow input channels, set to 1")
-        # return Conv2dLayer(
-        #     layer,
-        #     act=act,
-        #     shape=(filter_size[0], filter_size[1], pre_channel, n_filter),  # 32 features for each 5x5 patch
-        #     strides=(1, strides[0], strides[1], 1),
-        #     padding=padding,
-        #     W_init=W_init,
-        #     W_init_args=W_init_args,
-        #     b_init=b_init,
-        #     b_init_args=b_init_args,
-        #     use_cudnn_on_gpu=use_cudnn_on_gpu,
-        #     data_format=data_format,
-        #     name=name)
 
         super(Conv2d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
