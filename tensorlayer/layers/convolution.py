@@ -1435,30 +1435,30 @@ class Conv2d(Layer):
                 if self.act is not None else 'No Activation'
             )
         )
-        with tf.variable_scope(name) as vs:
-            conv2d = tf.layers.Conv2D(
-                # inputs=self.inputs,
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                data_format='channels_last',
-                dilation_rate=dilation_rate,
-                activation=self.act,
-                use_bias=(False if b_init is None else True),
-                kernel_initializer=W_init,  #None,
-                bias_initializer=b_init,  #f.zeros_initializer(),
-                kernel_regularizer=None,
-                bias_regularizer=None,
-                activity_regularizer=None,
-                kernel_constraint=None,
-                bias_constraint=None,
-                trainable=True,
-                name=name,
-                # reuse=None,
-            )
-            self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-            new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+        # with tf.variable_scope(name) as vs:
+        conv2d = tf.layers.Conv2D(
+            # inputs=self.inputs,
+            filters=n_filter,
+            kernel_size=filter_size,
+            strides=strides,
+            padding=padding,
+            data_format='channels_last',
+            dilation_rate=dilation_rate,
+            activation=self.act,
+            use_bias=(False if b_init is None else True),
+            kernel_initializer=W_init,  #None,
+            bias_initializer=b_init,  #f.zeros_initializer(),
+            kernel_regularizer=None,
+            bias_regularizer=None,
+            activity_regularizer=None,
+            kernel_constraint=None,
+            bias_constraint=None,
+            trainable=True,
+            name=name,
+            # reuse=None,
+        )
+        self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
+        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)#vs.name)
             # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
             # print(vs.name)#, name)
             # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
