@@ -95,6 +95,7 @@ To release a new version, please update the changelog as followed:
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
   - AtrousDeConv2dLayer added (by @2wins in #662)
+  - Fix bugs of using `tf.layers` in CNN (by @zsdonghao in #686)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Setup:
