@@ -1435,30 +1435,32 @@ class Conv2d(Layer):
                 "Conv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" %
                 (self.name, n_filter, str(filter_size), str(strides), padding, act.__name__)
             )
-            # with tf.variable_scope(name) as vs:
-            conv2d = tf.layers.Conv2D(
-                # inputs=self.inputs,
-                filters=n_filter,
-                kernel_size=filter_size,
-                strides=strides,
-                padding=padding,
-                data_format='channels_last',
-                dilation_rate=dilation_rate,
-                activation=act,
-                use_bias=(False if b_init is None else True),
-                kernel_initializer=W_init,  #None,
-                bias_initializer=b_init,  #f.zeros_initializer(),
-                kernel_regularizer=None,
-                bias_regularizer=None,
-                activity_regularizer=None,
-                kernel_constraint=None,
-                bias_constraint=None,
-                trainable=True,
-                name=name,
-                # reuse=None,
-            )
+            with tf.variable_scope(name) as vs:
+                conv2d = tf.layers.Conv2D(
+                    # inputs=self.inputs,
+                    filters=n_filter,
+                    kernel_size=filter_size,
+                    strides=strides,
+                    padding=padding,
+                    data_format='channels_last',
+                    dilation_rate=dilation_rate,
+                    activation=act,
+                    use_bias=(False if b_init is None else True),
+                    kernel_initializer=W_init,  #None,
+                    bias_initializer=b_init,  #f.zeros_initializer(),
+                    kernel_regularizer=None,
+                    bias_regularizer=None,
+                    activity_regularizer=None,
+                    kernel_constraint=None,
+                    bias_constraint=None,
+                    trainable=True,
+                    name=name,
+                    # reuse=None,
+                )
+                new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
             self.outputs = conv2d(self.inputs)
-            new_variables = conv2d.weights  #trainable_variables #tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            # new_variables = conv2d.weights  #trainable_variables #tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+            print(new_variables)
             self.all_layers.append(self.outputs)
             self.all_params.extend(new_variables)
         else:
