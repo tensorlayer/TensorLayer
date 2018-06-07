@@ -76,15 +76,19 @@ class Conv1dLayer(Layer):
             act=None,
             shape=(5, 1, 5),
             stride=1,
-            dilation_rate=1,
             padding='SAME',
-            data_format='NWC',
+            dilation_rate=1,
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name='cnn1d',
     ):
+
+        if data_format not in [None, 'NWC', 'channels_last', 'NCW', 'channels_first']:
+            raise ValueError("`data_format` should be among 'NWC', 'channels_last', 'NCW', 'channels_first'")
+
         super(Conv1dLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
@@ -207,6 +211,11 @@ class Conv2dLayer(Layer):
             data_format=None,
             name='cnn_layer',
     ):
+
+        # dic = {'channels_last': 'NHWC', 'channels_first': 'NCHW'}
+        if data_format not in [None, 'NHWC', 'channels_last', 'NCHW', 'channels_first']:
+            raise ValueError("'data_format' must be among 'NHWC', 'channels_last', 'NCHW', 'channels_first'.")
+
         super(Conv2dLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
@@ -418,12 +427,16 @@ class Conv3dLayer(Layer):
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
             name='cnn3d_layer',
     ):
+        if data_format not in [None, 'NDHWC', 'channels_last', 'NCDHW', 'channels_first']:
+            raise ValueError("'data_format' must be one of 'channels_last', 'channels_first'.")
+
         super(Conv3dLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
@@ -440,7 +453,7 @@ class Conv3dLayer(Layer):
                 name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            self.outputs = tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None)
+            self.outputs = tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, data_format=data_format, name=None)
 
             if b_init:
                 b = tf.get_variable(
@@ -1433,6 +1446,7 @@ class Conv2d(Layer):
                 if self.act is not None else 'No Activation'
             )
         )
+        
         # with tf.variable_scope(name) as vs:
         conv2d = tf.layers.Conv2D(
             # inputs=self.inputs,
