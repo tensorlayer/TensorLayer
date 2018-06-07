@@ -392,8 +392,6 @@ class Conv3dLayer(Layer):
     ----------
     prev_layer : :class:`Layer`
         Previous layer.
-    act : activation function
-        The activation function of this layer.
     shape : tuple of int
         Shape of the filters: (filter_depth, filter_height, filter_width, in_channels, out_channels).
     strides : tuple of int
@@ -401,6 +399,8 @@ class Conv3dLayer(Layer):
         Must be in the same order as the shape dimension.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    act : activation function
+        The activation function of this layer.
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -424,10 +424,10 @@ class Conv3dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=None,
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
