@@ -37,6 +37,15 @@ __all__ = [
 ]
 
 
+def _get_collection_trainable(name=''):
+    variables = []
+    for p in tf.trainable_variables():
+        # print(p.name.rpartition('/')[0], self.name)
+        if p.name.rpartition('/')[0] == name:
+            variables.append(p)
+    return variables
+
+
 class Conv1dLayer(Layer):
     """
     The :class:`Conv1dLayer` class is a 1D CNN layer, see `tf.nn.convolution <https://www.tensorflow.org/api_docs/python/tf/nn/convolution>`__.
@@ -1337,7 +1346,8 @@ class Conv1d(Layer):
         # _conv1d.dtype = LayersConfig.tf_dtype   # unsupport, it will use the same dtype of inputs
         self.outputs = _conv1d(self.inputs)
         # new_variables = _conv1d.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1458,11 +1468,18 @@ class Conv2d(Layer):
             # reuse=None,
         )
         self.outputs = conv2d(self.inputs)  # must put before ``new_variables``
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
+        # new_variables = []
+        # for p in tf.trainable_variables():
+        #     # print(p.name.rpartition('/')[0], self.name)
+        #     if p.name.rpartition('/')[0] == self.name:
+        #         new_variables.append(p)
+        # exit()
         # TF_GRAPHKEYS_VARIABLES  TF_GRAPHKEYS_VARIABLES
         # print(self.name, name)
         # print(tf.trainable_variables())#tf.GraphKeys.TRAINABLE_VARIABLES)
-        # print(new_variables)
+        print(new_variables)
         # print(conv2d.weights)
 
         self._add_layers(self.outputs)
@@ -1543,7 +1560,8 @@ class DeConv2d(Layer):
 
         self.outputs = conv2d_transpose(self.inputs)
         # new_variables = conv2d_transpose.weights  # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1613,7 +1631,8 @@ class DeConv3d(Layer):
 
         self.outputs = nn(self.inputs)
         # new_variables = nn.weights  # tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1843,7 +1862,8 @@ class SeparableConv1d(Layer):
 
         self.outputs = nn(self.inputs)
         # new_variables = nn.weights
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
@@ -1955,7 +1975,8 @@ class SeparableConv2d(Layer):
 
         self.outputs = nn(self.inputs)
         # new_variables = nn.weights
-        new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        # new_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)  #vs.name)
+        new_variables = _get_collection_trainable(self.name)
 
         self._add_layers(self.outputs)
         self._add_params(new_variables)
