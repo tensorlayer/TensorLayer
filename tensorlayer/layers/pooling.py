@@ -71,7 +71,7 @@ class PoolLayer(Layer):
         super(PoolLayer, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "PoolLayer %s: ksize:%s strides:%s padding:%s pool:%s" %
+            "PoolLayer %s: ksize: %s strides: %s padding: %s pool: %s" %
             (self.name, str(ksize), str(strides), padding, pool.__name__)
         )
 
@@ -110,7 +110,7 @@ class MaxPool1d(Layer):
         super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool1d %s: filter_size:%s strides:%s padding:%s" %
+            "MaxPool1d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
@@ -143,7 +143,7 @@ class MeanPool1d(Layer):
         A unique layer name.
 
     """
-    # logging.info("MeanPool1d %s: filter_size:%s strides:%s padding:%s" % (self.name, str(filter_size), str(strides), str(padding)))
+    # logging.info("MeanPool1d %s: filter_size: %s strides: %s padding: %s" % (self.name, str(filter_size), str(strides), str(padding)))
     # outputs = tf.layers.average_pooling1d(prev_layer.outputs, filter_size, strides, padding=padding, data_format=data_format, name=name)
     #
     # net_new = copy.copy(prev_layer)
@@ -157,7 +157,7 @@ class MeanPool1d(Layer):
         super(MeanPool1d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MeanPool1d %s: filter_size:%s strides:%s padding:%s" %
+            "MeanPool1d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
@@ -194,7 +194,7 @@ class MaxPool2d(Layer):
         super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool2d %s: filter_size:%s strides:%s padding:%s" %
+            "MaxPool2d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
@@ -232,7 +232,7 @@ class MeanPool2d(Layer):
         super(MeanPool2d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MeanPool2d %s: filter_size:%s strides:%s padding:%s" %
+            "MeanPool2d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
@@ -279,7 +279,7 @@ class MaxPool3d(Layer):
         super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MaxPool3d %s: filter_size:%s strides:%s padding:%s" %
+            "MaxPool3d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 
@@ -327,7 +327,7 @@ class MeanPool3d(Layer):
         super(MeanPool3d, self).__init__(prev_layer=prev_layer, name=name)
 
         logging.info(
-            "MeanPool3d %s: filter_size:%s strides:%s padding:%s" %
+            "MeanPool3d %s: filter_size: %s strides: %s padding: %s" %
             (self.name, str(filter_size), str(strides), str(padding))
         )
 

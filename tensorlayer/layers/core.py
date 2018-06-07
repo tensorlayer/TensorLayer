@@ -654,7 +654,7 @@ class DenseLayer(Layer):
 
         logging.info(
             "DenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         self.n_units = n_units
@@ -961,7 +961,7 @@ class DropoutLayer(Layer):
     ):
         super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("DropoutLayer %s: keep:%f is_fix:%s" % (self.name, keep, is_fix))
+        logging.info("DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
 
         if is_train is False:
             logging.info("  skip DropoutLayer")
@@ -1029,7 +1029,7 @@ class GaussianNoiseLayer(Layer):
             self.outputs = prev_layer.outputs
 
         else:
-            logging.info("GaussianNoiseLayer %s: mean:%f stddev:%f" % (self.name, mean, stddev))
+            logging.info("GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
             with tf.variable_scope(name):
                 # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
                 noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
@@ -1100,7 +1100,7 @@ class DropconnectDenseLayer(Layer):
 
         logging.info(
             "DropconnectDenseLayer %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:

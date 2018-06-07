@@ -139,8 +139,8 @@ def main(args):
     print('Using program %s with args %s' % (args.file, ' '.join(args.args)))
     print('Using %d workers, %d parameter servers, %d GPUs.' % (num_workers, args.num_pss, len(GPU_IDS)))
     cluster_spec = {
-        'ps': ['localhost:%d' % (PORT_BASE + i) for i in range(args.num_pss)],
-        'worker': ['localhost:%d' % (PORT_BASE + args.num_pss + i) for i in range(num_workers)]
+        'ps': ['localhost: %d' % (PORT_BASE + i) for i in range(args.num_pss)],
+        'worker': ['localhost: %d' % (PORT_BASE + args.num_pss + i) for i in range(num_workers)]
     }
     processes = list(create_tf_jobs(cluster_spec, args.file, args.args))
     try:

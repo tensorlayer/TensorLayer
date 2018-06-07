@@ -116,8 +116,8 @@ class BatchNormLayer(Layer):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "BatchNormLayer %s: decay:%f epsilon:%f act:%s is_train:%s" %
-            (self.name, decay, epsilon, self.act.__name__ if self.act is not None else '- No Activation', is_train)
+            "BatchNormLayer %s: decay: %f epsilon: %f act: %s is_train: %s" %
+            (self.name, decay, epsilon, self.act.__name__ if self.act is not None else 'No Activation', is_train)
         )
 
         x_shape = self.inputs.get_shape()
@@ -227,8 +227,8 @@ class InstanceNormLayer(Layer):
         super(InstanceNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "InstanceNormLayer %s: epsilon:%f act:%s" %
-            (self.name, epsilon, self.act.__name__ if self.act is not None else '- No Activation')
+            "InstanceNormLayer %s: epsilon: %f act: %s" %
+            (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         with tf.variable_scope(name) as vs:
@@ -277,7 +277,7 @@ class LayerNormLayer(Layer):
         super(LayerNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
 
         logging.info(
-            "LayerNormLayer %s: act:%s" % (self.name, self.act.__name__ if self.act is not None else '- No Activation')
+            "LayerNormLayer %s: act: %s" % (self.name, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         with tf.variable_scope(name) as vs:

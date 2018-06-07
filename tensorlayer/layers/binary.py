@@ -150,7 +150,7 @@ class BinaryDenseLayer(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
         logging.info(
             "BinaryDenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -279,9 +279,9 @@ class BinaryConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "BinaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+            "BinaryConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else '- No Activation'
+                if self.act is not None else 'No Activation'
             )
         )
 
@@ -378,7 +378,7 @@ class TernaryDenseLayer(Layer):
 
         logging.info(
             "TernaryDenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -510,9 +510,9 @@ class TernaryConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "TernaryConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+            "TernaryConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else '- No Activation'
+                if self.act is not None else 'No Activation'
             )
         )
 
@@ -619,7 +619,7 @@ class DorefaDenseLayer(Layer):
 
         logging.info(
             "DorefaDenseLayer  %s: %d %s" %
-            (self.name, n_units, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         if self.inputs.get_shape().ndims != 2:
@@ -756,9 +756,9 @@ class DorefaConv2d(Layer):
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "DorefaConv2d %s: n_filter:%d filter_size:%s strides:%s pad:%s act:%s" % (
+            "DorefaConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else '- No Activation'
+                if self.act is not None else 'No Activation'
             )
         )
 
