@@ -218,7 +218,7 @@ def google2_log_prefix(level, timestamp=None, file_and_line=None):
     if level in _level_names:
         severity = _level_names[level][0]
 
-    s = '%c%02d%02d %02d:%02d:%02d.%06d %5d %s:%d] ' % (
+    s = '%c%02d%02d %02d: %02d: %02d.%06d %5d %s: %d] ' % (
         severity,
         now_tuple[1],  # month
         now_tuple[2],  # day

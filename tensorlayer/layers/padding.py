@@ -49,7 +49,7 @@ class PadLayer(Layer):
     ):
         super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("PadLayer   %s: padding:%s mode:%s" % (self.name, list(padding), mode))
+        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(padding), mode))
 
         if padding is None:
             raise Exception(
@@ -85,7 +85,7 @@ class ZeroPad1d(Layer):
     ):
         super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad1d   %s: padding:%s" % (self.name, str(padding)))
+        logging.info("ZeroPad1d   %s: padding: %s" % (self.name, str(padding)))
 
         if not isinstance(padding, (int, tuple, dict)):
             raise AssertionError()
@@ -120,7 +120,7 @@ class ZeroPad2d(Layer):
     ):
         super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad2d   %s: padding:%s" % (self.name, str(padding)))
+        logging.info("ZeroPad2d   %s: padding: %s" % (self.name, str(padding)))
 
         if not isinstance(padding, (int, tuple)):
             raise AssertionError("Padding should be of type `int` or `tuple`")
@@ -154,7 +154,7 @@ class ZeroPad3d(Layer):
     ):
         super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad3d   %s: padding:%s" % (self.name, str(padding)))
+        logging.info("ZeroPad3d   %s: padding: %s" % (self.name, str(padding)))
 
         if not isinstance(padding, (int, tuple)):
             raise AssertionError()

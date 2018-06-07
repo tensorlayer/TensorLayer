@@ -256,7 +256,7 @@ class SpatialTransformer2dAffineLayer(Layer):
             out_size = [40, 40]
 
         logging.info(
-            "SpatialTransformer2dAffineLayer %s: in_size:%s out_size:%s" %
+            "SpatialTransformer2dAffineLayer %s: in_size: %s out_size: %s" %
             (self.name, self.inputs.get_shape().as_list(), out_size)
         )
 

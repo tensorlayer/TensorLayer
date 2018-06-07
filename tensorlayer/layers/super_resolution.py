@@ -84,7 +84,7 @@ class SubpixelConv2d(Layer):
 
         logging.info(
             "SubpixelConv2d  %s: scale: %d n_out_channel: %s act: %s" %
-            (self.name, scale, n_out_channel, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, scale, n_out_channel, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         with tf.variable_scope(name):
@@ -151,7 +151,7 @@ class SubpixelConv1d(Layer):
 
         logging.info(
             "SubpixelConv1d  %s: scale: %d act: %s" %
-            (self.name, scale, self.act.__name__ if self.act is not None else '- No Activation')
+            (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
         )
 
         with tf.name_scope(name):

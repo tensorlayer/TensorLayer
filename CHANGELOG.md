@@ -161,6 +161,7 @@ To release a new version, please update the changelog as followed:
 - Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
 - Update progressbar2 from 3.37.1 to 3.38.0 (by @DEKHTIARJonathan and @pyup-bot in #651)
 - Update scikit-image from 0.13.1 to 0.14.0 (by @DEKHTIARJonathan and @pyup-bot in #656)
+- Update keras from 2.1.6 to 2.2.0 (by @DEKHTIARJonathan and @pyup-bot in #684)
 
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
@@ -178,6 +179,7 @@ To release a new version, please update the changelog as followed:
   - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
+  - `tl.decorators` API enriched with `protected_method` (by @DEKHTIARJonathan in #675)
 - Docker:
   - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
   - Containers built in the following configurations (by @DEKHTIARJonathan in #648):
@@ -186,11 +188,13 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
+  - Clean README (by @luomai in #677)
   - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
   - Optimizers page added (by @DEKHTIARJonathan in #636)
   - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
+  - AtrousDeConv2dLayer added (by @2wins in #662)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Setup:
@@ -223,7 +227,10 @@ To release a new version, please update the changelog as followed:
 - All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
 - `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
 - argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
-- `unstack_layer` function transformed into Class `UnStackLayer` (by @DEKHTIARJonathan in #683)
+- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (by @DEKHTIARJonathan in #675)
+- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (by @DEKHTIARJonathan in #675)
+- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (by @DEKHTIARJonathan in #675)
+- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (by @DEKHTIARJonathan in #675)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
@@ -231,25 +238,30 @@ To release a new version, please update the changelog as followed:
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
 - `tl.identity` is removed, not used anymore and deprecated for a long time (by @DEKHTIARJonathan in #667)
+- All Code specific to `TF.__version__ < "1.6"` have been removed (by @DEKHTIARJonathan in #675)
 
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
 - Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
 - Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
 - Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
+- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (by @dengyueyun666 in #676)
 - Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
 - Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
 - All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
 - Duplicated code removed when bias was used (by @DEKHTIARJonathan in #667)
+- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (by @DEKHTIARJonathan in #675)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
+### Security
 
 ### Dependencies Update
 - Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
 - Update progressbar2 from 3.37.1 to 3.38.0 (by @DEKHTIARJonathan and @pyup-bot in #651)
 - Update scikit-image from 0.13.1 to 0.14.0 (by @DEKHTIARJonathan and @pyup-bot in #656)
+- Update keras from 2.1.6 to 2.2.0 (by @DEKHTIARJonathan and @pyup-bot in #684)
 
 ### Contributors
 @lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
@@ -294,5 +306,5 @@ To release a new version, please update the changelog as followed:
 @zsdonghao @luomai @DEKHTIARJonathan
 
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc3...1.8.5
+[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc4...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

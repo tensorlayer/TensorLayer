@@ -250,7 +250,7 @@ def main_word2vec_basic():
         if step % print_freq == 0:
             if step > 0:
                 average_loss /= print_freq
-            print("Average loss at step %d/%d. loss:%f took:%fs" % \
+            print("Average loss at step %d/%d. loss: %f took: %fs" % \
                 (step, num_steps, average_loss, time.time() - start_time))
             average_loss = 0
         # Prints out nearby words given a list of words.

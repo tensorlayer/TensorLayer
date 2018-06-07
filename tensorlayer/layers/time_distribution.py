@@ -70,7 +70,7 @@ class TimeDistributedLayer(Layer):
             self.inputs = tf.transpose(tf.stack(self.inputs), [1, 0, 2])
 
         logging.info(
-            "TimeDistributedLayer %s: layer_class:%s layer_args:%s" %
+            "TimeDistributedLayer %s: layer_class: %s layer_args: %s" %
             (self.name, layer_class.__name__, self.layer_args)
         )
 
