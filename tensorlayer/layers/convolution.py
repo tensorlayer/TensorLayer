@@ -415,10 +415,10 @@ class Conv3dLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            act=None,
             shape=(2, 2, 2, 3, 32),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
+            act=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
