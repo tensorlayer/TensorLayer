@@ -345,6 +345,8 @@ Layer list
    ScaleLayer
 
    PReluLayer
+   PRelu6Layer
+   PTRelu6Layer
 
    MultiplexerLayer
 
@@ -886,7 +888,20 @@ Scale
 Parametric activation layer
 ---------------------------
 
+PReLU Layer
+^^^^^^^^^^^
 .. autoclass:: PReluLayer
+
+
+PReLU6 Layer
+^^^^^^^^^^^^
+.. autoclass:: PRelu6Layer
+
+
+PTReLU6 Layer
+^^^^^^^^^^^^^
+.. autoclass:: PTRelu6Layer
+
 
 Flow control layer
 ----------------------
