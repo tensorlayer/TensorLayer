@@ -5,8 +5,6 @@ import unittest
 import tensorflow as tf
 import tensorlayer as tl
 
-import numpy as np
-
 try:
     from tests.unittests_helper import CustomTestCase
 except ImportError:
