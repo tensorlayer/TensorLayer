@@ -25,7 +25,7 @@ class PReluLayer(Layer):
     Parameters
     ----------
     prev_layer : :class:`Layer`
-        Previous layer。
+        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
@@ -37,7 +37,7 @@ class PReluLayer(Layer):
 
     References
     -----------
-    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/pdf/1502.01852v1.pdf>`__
+    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/abs/1502.01852>`__
 
     """
 
@@ -73,13 +73,13 @@ class PRelu6Layer(Layer):
     The :class:`PRelu6Layer` class is Parametric Rectified Linear layer.
 
     Modified version of PReLU Layer following the general idea of `ReLU6` introduced by the following paper:
-        Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010]
-        http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf
+
+    - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     Parameters
     ----------
     prev_layer : :class:`Layer`
-        Previous layer。
+        Previous layer.
     channel_shared : boolean
         If True, single weight is shared by all channels.
     a_init : initializer
@@ -91,8 +91,7 @@ class PRelu6Layer(Layer):
 
     References
     -----------
-    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification
-       http://arxiv.org/abs/1502.01852
+    - `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification <http://arxiv.org/abs/1502.01852>`__
 
     """
 

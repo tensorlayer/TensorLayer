@@ -11,7 +11,6 @@ __all__ = [
     'swish',
     'sign',
     'pixel_wise_softmax',
-    'linear',
     'lrelu',
 ]
 
@@ -41,7 +40,7 @@ def ramp(x, v_min=0, v_max=1, name=None):
 
 @deprecated("2018-09-30", "This API is deprecated. Please use as `tf.nn.leaky_relu`.")
 def leaky_relu(x, alpha=0.2, name="leaky_relu"):
-    """LeakyReLU, Shortcut is ``lrelu``.
+    """LeakyReLU, shortcut is ``lrelu``.
 
     Modified version of ReLU, introducing a nonzero gradient for negative input.
 
@@ -66,21 +65,21 @@ def leaky_relu(x, alpha=0.2, name="leaky_relu"):
 
     References
     ----------
-    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013)`
-       http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
 
     """
+
     with tf.name_scope(name, "leaky_relu") as name_scope:
         x = tf.convert_to_tensor(x, name="features")
         return tf.maximum(x, alpha * x, name=name_scope)
 
 
 def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
-    """LeakyReLU6, Shortcut is ``lrelu6``.
+    """LeakyReLU6, shortcut is ``lrelu6``.
 
-    Modified version of Leaky ReLU following the general idea of `ReLU6` introduced by the following paper:
-        Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010]
-        http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf
+    Modified version of PReLU Layer following the general idea of `ReLU6` introduced by the following paper:
+
+    - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
 
     Parameters
     ----------
@@ -100,6 +99,11 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     -------
     Tensor
         A ``Tensor`` in the same type as ``x``.
+
+    References
+    ----------
+    - `Rectifier Nonlinearities Improve Neural Network Acoustic Models, Maas et al. (2013) <http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf>`__
+
     """
 
     with tf.name_scope(name, "leaky_relu6") as name_scope:

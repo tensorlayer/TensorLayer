@@ -886,13 +886,15 @@ Scale
 Parametric activation layer
 ---------------------------
 
+PReLU Layer
+^^^^^^^^^^^
 .. autoclass:: PReluLayer
 
 
-Parametric activation layer
----------------------------
-
+PReLU6 Layer
+^^^^^^^^^^^^
 .. autoclass:: PRelu6Layer
+
 
 Flow control layer
 ----------------------
