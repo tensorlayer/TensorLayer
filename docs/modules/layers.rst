@@ -888,6 +888,12 @@ Parametric activation layer
 
 .. autoclass:: PReluLayer
 
+
+Parametric activation layer
+---------------------------
+
+.. autoclass:: PRelu6Layer
+
 Flow control layer
 ----------------------
 

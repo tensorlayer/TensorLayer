@@ -39,7 +39,8 @@ def ramp(x, v_min=0, v_max=1, name=None):
     return tf.clip_by_value(x, clip_value_min=v_min, clip_value_max=v_max, name=name)
 
 
-def leaky_relu(x, alpha=0.1, name="lrelu"):
+@deprecated("2018-09-30", "This API is deprecated. Please use as `tf.nn.leaky_relu`.")
+def leaky_relu(x, alpha=0.2, name="leaky_relu"):
     """LeakyReLU, Shortcut is ``lrelu``.
 
     Modified version of ReLU, introducing a nonzero gradient for negative input.
@@ -55,6 +56,7 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
 
     Examples
     --------
+    >>> import tensorlayer as tl
     >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.lrelu(x, 0.2), name='dense')
 
     Returns
@@ -68,12 +70,41 @@ def leaky_relu(x, alpha=0.1, name="lrelu"):
        http://web.stanford.edu/~awni/papers/relu_hybrid_icml2013_final.pdf
 
     """
-    # with tf.name_scope(name) as scope:
-    # x = tf.nn.relu(x)
-    # m_x = tf.nn.relu(-x)
-    # x -= alpha * m_x
-    x = tf.maximum(x, alpha * x, name=name)
-    return x
+    with tf.name_scope(name, "leaky_relu") as name_scope:
+        x = tf.convert_to_tensor(x, name="features")
+        return tf.maximum(x, alpha * x, name=name_scope)
+
+
+def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
+    """LeakyReLU6, Shortcut is ``lrelu6``.
+
+    Modified version of Leaky ReLU following the general idea of `ReLU6` introduced by the following paper:
+        Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010]
+        http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf
+
+    Parameters
+    ----------
+    x : Tensor
+        Support input type ``float``, ``double``, ``int32``, ``int64``, ``uint8``, ``int16``, or ``int8``.
+    alpha : float
+        Slope.
+    name : str
+        The function name (optional).
+
+    Examples
+    --------
+    >>> import tensorlayer as tl
+    >>> net = tl.layers.DenseLayer(net, 100, act=lambda x : tl.act.leaky_relu6(x, 0.2), name='dense')
+
+    Returns
+    -------
+    Tensor
+        A ``Tensor`` in the same type as ``x``.
+    """
+
+    with tf.name_scope(name, "leaky_relu6") as name_scope:
+        x = tf.convert_to_tensor(x, name="features")
+        return tf.minimum(tf.maximum(x, alpha * x), 6, name=name_scope)
 
 
 def swish(x, name='swish'):
@@ -219,4 +250,5 @@ def pixel_wise_softmax(x, name='pixel_wise_softmax'):
 
 # Alias
 lrelu = leaky_relu
+lrelu6 = leaky_relu6
 htanh = hard_tanh

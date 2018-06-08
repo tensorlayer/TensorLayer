@@ -72,6 +72,7 @@ To release a new version, please update the changelog as followed:
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been (by @DEKHTIARJonathan in #686)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -135,6 +136,7 @@ To release a new version, please update the changelog as followed:
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
+- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (by @DEKHTIARJonathan in #686)
 
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
@@ -156,6 +158,7 @@ To release a new version, please update the changelog as followed:
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
+
 ### Security
 
 ### Dependencies Update
@@ -173,6 +176,7 @@ To release a new version, please update the changelog as followed:
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been (by @DEKHTIARJonathan in #686)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -196,6 +200,7 @@ To release a new version, please update the changelog as followed:
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
   - AtrousDeConv2dLayer added (by @2wins in #662)
+  - Fix bugs of using `tf.layers` in CNN (by @zsdonghao in #686)
 - Optimizer:
   - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
 - Setup:
@@ -235,6 +240,7 @@ To release a new version, please update the changelog as followed:
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
+- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (by @DEKHTIARJonathan in #686)
 
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
@@ -256,6 +262,7 @@ To release a new version, please update the changelog as followed:
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
   - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
+
 ### Security
 
 ### Dependencies Update
