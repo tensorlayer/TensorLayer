@@ -73,6 +73,7 @@ To release a new version, please update the changelog as followed:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
   - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been (by @DEKHTIARJonathan in #686)
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been (by @DEKHTIARJonathan in #686)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -108,6 +109,7 @@ To release a new version, please update the changelog as followed:
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
   - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
   - `test_decorators.py` added (by @DEKHTIARJonathan in #660)
+  - `test_activations.py` added (by @DEKHTIARJonathan in #686)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
 

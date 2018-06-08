@@ -26,9 +26,10 @@ For more complex activation, TensorFlow API will be required.
 
 .. autosummary::
 
-   ramp
    leaky_relu
    leaky_relu6
+   leaky_twice_relu6
+   ramp
    swish
    sign
    hard_tanh
@@ -45,6 +46,10 @@ Leaky ReLU
 Leaky ReLU6
 ------------
 .. autofunction:: leaky_relu6
+
+Twice Leaky ReLU6
+-----------------
+.. autofunction:: leaky_twice_relu6
 
 Swish
 ------------
