@@ -46,7 +46,7 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.3, stddev=0.1),
+            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReluLayer"
     ):
 
@@ -64,6 +64,8 @@ class PReluLayer(Layer):
             alpha_var = tf.get_variable(
                 name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
+
+            alpha_var = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
         self.outputs = tf.nn.leaky_relu(self.inputs, alpha=alpha_var, name="PReLU_activation")
 
@@ -113,7 +115,7 @@ class PRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.3, stddev=0.1),
+            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReLU6_layer"
     ):
 
@@ -131,6 +133,8 @@ class PRelu6Layer(Layer):
             alpha_var = tf.get_variable(
                 name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
+            
+            alpha_var = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
         self.outputs = leaky_relu6(self.inputs, alpha=alpha_var, name="PReLU6_activation")
 
@@ -182,7 +186,7 @@ class PTRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.3, stddev=0.1),
+            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PTReLU6_layer"
     ):
 
