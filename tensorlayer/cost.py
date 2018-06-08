@@ -31,8 +31,8 @@ __all__ = [
 
 
 def cross_entropy(output, target, name=None):
-    """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions, it implements
-    softmax internally. See ``tf.nn.sparse_softmax_cross_entropy_with_logits``.
+    """Softmax cross-entropy operation, returns the TensorFlow expression of cross-entropy for two distributions,
+    it implements softmax internally. See ``tf.nn.sparse_softmax_cross_entropy_with_logits``.
 
     Parameters
     ----------
