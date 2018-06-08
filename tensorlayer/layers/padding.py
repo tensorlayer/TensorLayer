@@ -126,7 +126,7 @@ class ZeroPad2d(Layer):
             raise AssertionError("Padding should be of type `int` or `tuple`")
 
         self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
-        
+
         self._add_layers(self.outputs)
 
 
