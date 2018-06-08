@@ -133,7 +133,7 @@ class PRelu6Layer(Layer):
             alpha_var = tf.get_variable(
                 name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
-            
+
             alpha_var = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
         self.outputs = leaky_relu6(self.inputs, alpha=alpha_var, name="PReLU6_activation")
