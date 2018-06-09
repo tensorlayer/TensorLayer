@@ -65,9 +65,9 @@ class PReluLayer(Layer):
                 name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
 
-            alpha_var = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
+            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = tf.nn.leaky_relu(self.inputs, alpha=alpha_var, name="PReLU_activation")
+        self.outputs = tf.nn.leaky_relu(self.inputs, alpha=alpha_var_constrained, name="PReLU_activation")
 
         self._add_layers(self.outputs)
         self._add_params(alpha_var)
@@ -134,9 +134,9 @@ class PRelu6Layer(Layer):
                 name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
 
-            alpha_var = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
+            alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = leaky_relu6(self.inputs, alpha=alpha_var, name="PReLU6_activation")
+        self.outputs = leaky_relu6(self.inputs, alpha=alpha_var_constrained, name="PReLU6_activation")
 
         self._add_layers(self.outputs)
         self._add_params(alpha_var)
@@ -207,17 +207,17 @@ class PTRelu6Layer(Layer):
                 name='alpha_low', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
 
-            alpha_low = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
+            alpha_low_constrained = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
 
             # Alpha for outputs higher than 6
             alpha_high = tf.get_variable(
                 name='alpha_high', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
             )
 
-            alpha_high = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
+            alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
 
         self.outputs = leaky_twice_relu6(
-            self.inputs, alpha_low=alpha_low, alpha_high=alpha_high, name="PTReLU6_activation"
+            self.inputs, alpha_low=alpha_low_constrained, alpha_high=alpha_high_constrained, name="PTReLU6_activation"
         )
 
         self._add_layers(self.outputs)

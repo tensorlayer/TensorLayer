@@ -12,43 +12,42 @@ class Layer_Special_Activation_Test(unittest.TestCase):
     def setUpClass(cls):
 
         x = tf.placeholder(tf.float32, shape=[None, 30])
-        net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.DenseLayer(net, n_units=10, name='dense')
-        net1 = tl.layers.PReluLayer(net, name='prelu')
 
-        net1.print_layers()
-        net1.print_params(False)
+        in_layer = tl.layers.InputLayer(x, name='input')
 
-        cls.net1_shape = net1.outputs.get_shape().as_list()
-        cls.net1_layers = net1.all_layers
-        cls.net1_params = net1.all_params
-        cls.net1_n_params = net1.count_params()
+        net = tl.layers.DenseLayer(in_layer, n_units=10, name='dense1')
+        cls.net1 = tl.layers.PReluLayer(net, name='prelu1')
 
-        net2 = tl.layers.PReluLayer(net1, channel_shared=True, name='prelu2')
+        cls.net1.print_layers()
+        cls.net1.print_params(False)
 
-        net2.print_layers()
-        net2.print_params(False)
+        net2 = tl.layers.DenseLayer(cls.net1, n_units=30, name='dense2')
+        cls.net2 = tl.layers.PReluLayer(net2, channel_shared=True, name='prelu2')
 
-        cls.net2_shape = net2.outputs.get_shape().as_list()
-        cls.net2_layers = net2.all_layers
-        cls.net2_params = net2.all_params
-        cls.net2_n_params = net2.count_params()
+        cls.net2.print_layers()
+        cls.net2.print_params(False)
 
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
 
     def test_net1(self):
-        self.assertEqual(len(self.net1_layers), 3)
-        self.assertEqual(len(self.net1_params), 3)
-        self.assertEqual(self.net1_n_params, 320)
-        self.assertEqual(self.net1_shape[-1], 10)
+        self.assertEqual(len(self.net1.all_layers), 3)
+        self.assertEqual(len(self.net1.all_params), 3)
+        self.assertEqual(self.net1.count_params(), 320)
+        self.assertEqual(self.net1.outputs.get_shape().as_list()[1:], [10])
+
+        prelu1_param_shape = self.net1.all_params[-1].get_shape().as_list()
+        self.assertEqual(prelu1_param_shape, [10])
 
     def test_net2(self):
-        self.assertEqual(len(self.net2_layers), 4)
-        self.assertEqual(len(self.net2_params), 4)
-        self.assertEqual(self.net2_n_params, 321)
-        self.assertEqual(self.net2_shape[-1], 10)
+        self.assertEqual(len(self.net2.all_layers), 5)
+        self.assertEqual(len(self.net2.all_params), 6)
+        self.assertEqual(self.net2.count_params(), 651)
+        self.assertEqual(self.net2.outputs.get_shape().as_list()[1:], [30])
+
+        prelu2_param_shape = self.net2.all_params[-1].get_shape().as_list()
+        self.assertEqual(prelu2_param_shape, [1])
 
 
 if __name__ == '__main__':
