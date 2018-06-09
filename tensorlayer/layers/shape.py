@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import flatten_reshape
+from tensorlayer.layers.utils import flatten_reshape
 
 from tensorlayer import tl_logging as logging
 

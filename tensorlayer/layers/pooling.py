@@ -1,8 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import copy
-
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
