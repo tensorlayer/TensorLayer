@@ -4,6 +4,33 @@ API - Layers
 .. automodule:: tensorlayer.layers
 
 
+Name Scope and Sharing Parameters
+---------------------------------
+
+These functions help you to reuse parameters for different inference (graph), and get a
+list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`__.
+
+Get variables with name
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: get_variables_with_name
+
+Get layers with name
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: get_layers_with_name
+
+Enable layer name reuse
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: set_name_reuse
+
+Print variables
+^^^^^^^^^^^^^^^^^^
+.. autofunction:: print_all_variables
+
+Initialize variables
+^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: initialize_global_variables
+
+
 Understanding the Basic Layer
 -----------------------------
 
@@ -94,129 +121,6 @@ In case for evaluating and testing, you can disable all dropout layers as follow
                           sess.run(y_op, feed_dict=feed_dict)))
 
 For more details, please read the MNIST examples in the example folder.
-
-
-Customizing Layers
-------------------
-
-A Simple Layer
-^^^^^^^^^^^^^^
-
-To implement a custom layer in TensorLayer, you will have to write a Python class
-that subclasses Layer and implement the ``outputs`` expression.
-
-The following is an example implementation of a layer that multiplies its input by 2:
-
-.. code-block:: python
-
-  class DoubleLayer(Layer):
-      def __init__(
-          self,
-          layer = None,
-          name ='double_layer',
-      ):
-          # check layer name (fixed)
-          Layer.__init__(self, layer=layer, name=name)
-
-          # the input of this layer is the output of previous layer (fixed)
-          self.inputs = layer.outputs
-
-          # operation (customized)
-          self.outputs = self.inputs * 2
-
-          # update layer (customized)
-          self.all_layers.append(self.outputs)
-
-
-Your Dense Layer
-^^^^^^^^^^^^^^^^
-
-Before creating your own TensorLayer layer, let's have a look at the Dense layer.
-It creates a weight matrix and a bias vector if not exists, and then implements
-the output expression.
-At the end, for a layer with parameters, we also append the parameters into ``all_params``.
-
-.. code-block:: python
-
-  class MyDenseLayer(Layer):
-    def __init__(
-        self,
-        layer = None,
-        n_units = 100,
-        act = tf.nn.relu,
-        name ='simple_dense',
-    ):
-        # check layer name (fixed)
-        Layer.__init__(self, layer=layer, name=name)
-
-        # the input of this layer is the output of previous layer (fixed)
-        self.inputs = layer.outputs
-
-        # print out info (customized)
-        print("  MyDenseLayer %s: %d, %s" % (self.name, n_units, act))
-
-        # operation (customized)
-        n_in = int(self.inputs._shape[-1])
-        with tf.variable_scope(name) as vs:
-            # create new parameters
-            W = tf.get_variable(name='W', shape=(n_in, n_units))
-            b = tf.get_variable(name='b', shape=(n_units))
-            # tensor operation
-            self.outputs = act(tf.matmul(self.inputs, W) + b)
-
-        # update layer (customized)
-        self.all_layers.extend( [self.outputs] )
-        self.all_params.extend( [W, b] )
-
-
-Modifying Pre-train Behaviour
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Greedy layer-wise pretraining is an important task for deep neural network
-initialization, while there are many kinds of pre-training methods according
-to different network architectures and applications.
-
-For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
-can be implemented by using KL divergence (for sigmoid) as the following code,
-but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
-the sparsity can be implemented by using the L1 regularization of activation output.
-
-.. code-block:: python
-
-  # Vanilla Sparse Autoencoder
-  beta = 4
-  rho = 0.15
-  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
-  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
-          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
-
-
-There are many pre-train methods, for this reason, TensorLayer provides a simple way to modify or design your
-own pre-train method. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
-to define the reconstruction layer and cost function, to define your own cost
-function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
-To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
-By default, ``ReconLayer`` only updates the weights and biases of previous 1
-layer by using ``self.train_params = self.all _params[-4:]``, where the 4
-parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``, where
-``W_encoder, b_encoder`` belong to previous DenseLayer, ``W_decoder, b_decoder``
-belong to this ReconLayer.
-In addition, if you want to update the parameters of previous 2 layers at the same time, simply modify ``[-4:]`` to ``[-6:]``.
-
-
-.. code-block:: python
-
-  ReconLayer.__init__(...):
-      ...
-      self.train_params = self.all_params[-4:]
-      ...
-  	self.cost = mse + L1_a + L2_w
-
-
-
-
-
-
 
 
 Layer list
@@ -350,7 +254,6 @@ Layer list
 
    MultiplexerLayer
 
-
    flatten_reshape
    clear_layers_name
    initialize_rnn_state
@@ -358,50 +261,140 @@ Layer list
    merge_networks
 
 
-Name Scope and Sharing Parameters
----------------------------------
+Customizing Layers
+------------------
 
-These functions help you to reuse parameters for different inference (graph), and get a
-list of parameters by given name. About TensorFlow parameters sharing click `here <https://www.tensorflow.org/versions/master/how_tos/variable_scope/index.html>`__.
+A Simple Layer
+^^^^^^^^^^^^^^
 
-Get variables with name
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: get_variables_with_name
+To implement a custom layer in TensorLayer, you will have to write a Python class
+that subclasses Layer and implement the ``outputs`` expression.
 
-Get layers with name
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: get_layers_with_name
+The following is an example implementation of a layer that multiplies its input by 2:
 
-Enable layer name reuse
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: set_name_reuse
+.. code-block:: python
 
-Print variables
-^^^^^^^^^^^^^^^^^^
-.. autofunction:: print_all_variables
+  class DoubleLayer(Layer):
+      def __init__(
+          self,
+          layer = None,
+          name ='double_layer',
+      ):
+          # check layer name (fixed)
+          Layer.__init__(self, layer=layer, name=name)
 
-Initialize variables
-^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: initialize_global_variables
+          # the input of this layer is the output of previous layer (fixed)
+          self.inputs = layer.outputs
+
+          # operation (customized)
+          self.outputs = self.inputs * 2
+
+          # update layer (customized)
+          self.all_layers.append(self.outputs)
+
+
+Your Dense Layer
+^^^^^^^^^^^^^^^^
+
+Before creating your own TensorLayer layer, let's have a look at the Dense layer.
+It creates a weight matrix and a bias vector if not exists, and then implements
+the output expression.
+At the end, for a layer with parameters, we also append the parameters into ``all_params``.
+
+.. code-block:: python
+
+  class MyDenseLayer(Layer):
+    def __init__(
+        self,
+        layer = None,
+        n_units = 100,
+        act = tf.nn.relu,
+        name ='simple_dense',
+    ):
+        # check layer name (fixed)
+        Layer.__init__(self, layer=layer, name=name)
+
+        # the input of this layer is the output of previous layer (fixed)
+        self.inputs = layer.outputs
+
+        # print out info (customized)
+        print("  MyDenseLayer %s: %d, %s" % (self.name, n_units, act))
+
+        # operation (customized)
+        n_in = int(self.inputs._shape[-1])
+        with tf.variable_scope(name) as vs:
+            # create new parameters
+            W = tf.get_variable(name='W', shape=(n_in, n_units))
+            b = tf.get_variable(name='b', shape=(n_units))
+            # tensor operation
+            self.outputs = act(tf.matmul(self.inputs, W) + b)
+
+        # update layer (customized)
+        self.all_layers.extend( [self.outputs] )
+        self.all_params.extend( [W, b] )
+
+
+Modifying Pre-train Behaviour
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Greedy layer-wise pretraining is an important task for deep neural network
+initialization, while there are many kinds of pre-training methods according
+to different network architectures and applications.
+
+For example, the pre-train process of `Vanilla Sparse Autoencoder <http://deeplearning.stanford.edu/wiki/index.php/Autoencoders_and_Sparsity>`_
+can be implemented by using KL divergence (for sigmoid) as the following code,
+but for `Deep Rectifier Network <http://www.jmlr.org/proceedings/papers/v15/glorot11a/glorot11a.pdf>`_,
+the sparsity can be implemented by using the L1 regularization of activation output.
+
+.. code-block:: python
+
+  # Vanilla Sparse Autoencoder
+  beta = 4
+  rho = 0.15
+  p_hat = tf.reduce_mean(activation_out, reduction_indices = 0)
+  KLD = beta * tf.reduce_sum( rho * tf.log(tf.div(rho, p_hat))
+          + (1- rho) * tf.log((1- rho)/ (tf.sub(float(1), p_hat))) )
+
+
+There are many pre-train methods, for this reason, TensorLayer provides a simple way to modify or design your
+own pre-train method. For Autoencoder, TensorLayer uses ``ReconLayer.__init__()``
+to define the reconstruction layer and cost function, to define your own cost
+function, just simply modify the ``self.cost`` in ``ReconLayer.__init__()``.
+To creat your own cost expression please read `Tensorflow Math <https://www.tensorflow.org/versions/master/api_docs/python/math_ops.html>`_.
+By default, ``ReconLayer`` only updates the weights and biases of previous 1
+layer by using ``self.train_params = self.all _params[-4:]``, where the 4
+parameters are ``[W_encoder, b_encoder, W_decoder, b_decoder]``, where
+``W_encoder, b_encoder`` belong to previous DenseLayer, ``W_decoder, b_decoder``
+belong to this ReconLayer.
+In addition, if you want to update the parameters of previous 2 layers at the same time, simply modify ``[-4:]`` to ``[-6:]``.
+
+
+.. code-block:: python
+
+  ReconLayer.__init__(...):
+      ...
+      self.train_params = self.all_params[-4:]
+      ...
+  	self.cost = mse + L1_a + L2_w
+
 
 Basic layer
 -----------
 .. autoclass:: Layer
 
 
+Input Layers
+---------------
+
 Input layer
-------------
+^^^^^^^^^^^^^^^^
 .. autoclass:: InputLayer
-  :members:
 
 One-hot layer
-----------------
+^^^^^^^^^^^^^^^^
 .. autoclass:: OneHotInputLayer
 
-Word Embedding Input layer
------------------------------
-
-Word2vec layer for training
+Word2vec Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Word2vecEmbeddingInputlayer
 
@@ -439,49 +432,6 @@ Gaussian noise layer
 Dropconnect + Dense layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DropconnectDenseLayer
-
-Convolutional layer (Pro)
---------------------------
-
-1D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv1dLayer
-
-2D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv2dLayer
-
-2D Deconvolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DeConv2dLayer
-
-3D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv3dLayer
-
-3D Deconvolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DeConv3dLayer
-
-2D UpSampling
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: UpSampling2dLayer
-
-2D DownSampling
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DownSampling2dLayer
-
-1D Atrous convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: AtrousConv1dLayer
-
-2D Atrous convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AtrousConv2dLayer
-
-2D Atrous transposed convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AtrousDeConv2dLayer
 
 
 Convolutional layer (Simplified)
@@ -526,6 +476,51 @@ APIs may better for you.
 2D Grouped Conv
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GroupConv2d
+
+
+Convolutional layer (Pro)
+--------------------------
+
+1D Convolution
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: Conv1dLayer
+
+2D Convolution
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: Conv2dLayer
+
+2D Deconvolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DeConv2dLayer
+
+3D Convolution
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: Conv3dLayer
+
+3D Deconvolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DeConv3dLayer
+
+2D UpSampling
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: UpSampling2dLayer
+
+2D DownSampling
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DownSampling2dLayer
+
+1D Atrous convolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: AtrousConv1dLayer
+
+2D Atrous convolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AtrousConv2dLayer
+
+2D Atrous transposed convolution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: AtrousDeConv2dLayer
+
 
 Super-Resolution layer
 ------------------------
