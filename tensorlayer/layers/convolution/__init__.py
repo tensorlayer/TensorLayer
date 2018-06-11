@@ -24,20 +24,20 @@ from .ternary_conv import *
 
 __all__ = [
 
-    # expert conv
+    # simplified conv
     'Conv1d',
     'Conv2d',
 
-    # expert deconv
+    # simplified deconv
     'DeConv2d',
     'DeConv3d',
 
-    # simplified conv
+    # expert conv
     'Conv1dLayer',
     'Conv2dLayer',
     'Conv3dLayer',
 
-    # simplified conv
+    # expert conv
     'DeConv2dLayer',
     'DeConv3dLayer',
 
