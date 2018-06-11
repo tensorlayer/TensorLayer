@@ -10,14 +10,17 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 """
 
 from .atrous_conv import *
+from .binary_conv import *
 from .deformable_conv import *
 from .depthwise_conv import *
+from .dorefa_conv import *
 from .expert_conv import *
 from .expert_deconv import *
 from .group_conv import *
 from .separable_conv import *
 from .simplified_conv import *
 from .simplified_deconv import *
+from .ternary_conv import *
 
 __all__ = [
 
@@ -38,21 +41,30 @@ __all__ = [
     'DeConv2dLayer',
     'DeConv3dLayer',
 
-    # deformable
-    'DeformableConv2d',
-
     # atrous
     'AtrousConv1dLayer',
     'AtrousConv2dLayer',
     'AtrousDeConv2dLayer',
 
+    # binary
+    'BinaryConv2d',
+
+    # deformable
+    'DeformableConv2d',
+
     # depthwise
     'DepthwiseConv2d',
+
+    # dorefa
+    'DorefaConv2d',
+
+    # group
+    'GroupConv2d',
 
     # separable
     'SeparableConv1d',
     'SeparableConv2d',
 
-    # group
-    'GroupConv2d',
+    # ternary
+    'TernaryConv2d',
 ]
