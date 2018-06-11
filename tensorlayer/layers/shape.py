@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import flatten_reshape
+from tensorlayer.layers.utils import flatten_reshape
 
 from tensorlayer import tl_logging as logging
 
@@ -32,10 +32,12 @@ class FlattenLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.FlattenLayer(net, name='flatten')
-    ... [?, 784]
+    [?, 784]
 
     """
 
@@ -67,11 +69,13 @@ class ReshapeLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(None, 784))
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.ReshapeLayer(net, [-1, 28, 28, 1], name='reshape')
     >>> print(net.outputs)
-    ... (?, 28, 28, 1)
+    (?, 28, 28, 1)
 
     """
 
@@ -104,10 +108,12 @@ class TransposeLayer(Layer):
 
     Examples
     ----------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 28, 28, 1])
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.TransposeLayer(net, perm=[0, 1, 3, 2], name='trans')
-    ... [None, 28, 1, 28]
+    [None, 28, 1, 28]
 
     """
 

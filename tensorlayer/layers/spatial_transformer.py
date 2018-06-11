@@ -12,7 +12,7 @@ from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.layers.core import flatten_reshape
+from tensorlayer.layers.utils import flatten_reshape
 
 from tensorlayer import tl_logging as logging
 
@@ -55,9 +55,9 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     -----
     To initialize the network to the identity transform init.
 
-    >>> ``theta`` to
-    >>> identity = np.array([[1., 0., 0.],
-    ...                      [0., 1., 0.]])
+    >>> import tensorflow as tf
+    >>> # ``theta`` to
+    >>> identity = np.array([[1., 0., 0.], [0., 1., 0.]])
     >>> identity = identity.flatten()
     >>> theta = tf.Variable(initial_value=identity)
 

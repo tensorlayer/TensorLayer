@@ -38,29 +38,33 @@ class SubpixelConv2d(Layer):
     Examples
     ---------
     >>> # examples here just want to tell you how to set the n_out_channel.
+    >>> import numpy as np
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = np.random.rand(2, 16, 16, 4)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4), name="X")
-    >>> net = InputLayer(X, name='input')
-    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=1, name='subpixel_conv2d')
+    >>> net = tl.layers.InputLayer(X, name='input')
+    >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channel=1, name='subpixel_conv2d')
+    >>> sess = tf.Session()
     >>> y = sess.run(net.outputs, feed_dict={X: x})
     >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 4) (2, 32, 32, 1)
-    >>>
+    (2, 16, 16, 4) (2, 32, 32, 1)
+
     >>> x = np.random.rand(2, 16, 16, 4*10)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 4*10), name="X")
-    >>> net = InputLayer(X, name='input2')
-    >>> net = SubpixelConv2d(net, scale=2, n_out_channel=10, name='subpixel_conv2d2')
+    >>> net = tl.layers.InputLayer(X, name='input2')
+    >>> net = tl.layers.SubpixelConv2d(net, scale=2, n_out_channel=10, name='subpixel_conv2d2')
     >>> y = sess.run(net.outputs, feed_dict={X: x})
     >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 40) (2, 32, 32, 10)
-    >>>
+    (2, 16, 16, 40) (2, 32, 32, 10)
+
     >>> x = np.random.rand(2, 16, 16, 25*10)
     >>> X = tf.placeholder("float32", shape=(2, 16, 16, 25*10), name="X")
-    >>> net = InputLayer(X, name='input3')
-    >>> net = SubpixelConv2d(net, scale=5, n_out_channel=None, name='subpixel_conv2d3')
+    >>> net = tl.layers.InputLayer(X, name='input3')
+    >>> net = tl.layers.SubpixelConv2d(net, scale=5, n_out_channel=None, name='subpixel_conv2d3')
     >>> y = sess.run(net.outputs, feed_dict={X: x})
     >>> print(x.shape, y.shape)
-    ... (2, 16, 16, 250) (2, 80, 80, 10)
+    (2, 16, 16, 250) (2, 80, 80, 10)
 
     References
     ------------
@@ -108,7 +112,7 @@ class SubpixelConv2d(Layer):
 
             X = tf.depth_to_space(X, r)
         else:
-            logging.error(_err_log)
+            raise RuntimeError(_err_log)
 
         return X
 
@@ -132,11 +136,13 @@ class SubpixelConv1d(Layer):
 
     Examples
     ----------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-    >>> n = InputLayer(t_signal, name='in')
-    >>> n = SubpixelConv1d(n, scale=2, name='s')
+    >>> n = tl.layers.InputLayer(t_signal, name='in')
+    >>> n = tl.layers.SubpixelConv1d(n, scale=2, name='s')
     >>> print(n.outputs.shape)
-    ... (10, 200, 2)
+    (10, 200, 2)
 
     References
     -----------
@@ -165,8 +171,3 @@ class SubpixelConv1d(Layer):
         X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
         X = tf.transpose(X, [2, 1, 0])
         return X
-
-
-# Alias
-# SubpixelConv2d = subpixel_conv2d
-# SubpixelConv1d = subpixel_conv1d

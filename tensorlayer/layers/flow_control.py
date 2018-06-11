@@ -31,6 +31,8 @@ class MultiplexerLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(None, 784), name='x')
     >>> # define the network
     >>> net_in = tl.layers.InputLayer(x, name='input')

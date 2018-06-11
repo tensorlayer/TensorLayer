@@ -129,19 +129,19 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
     Customized image preprocessing function.
 
     >>> def distort_img(x):
-    ...     x = tl.prepro.flip_axis(x, axis=0, is_random=True)
-    ...     x = tl.prepro.flip_axis(x, axis=1, is_random=True)
-    ...     x = tl.prepro.crop(x, 100, 100, is_random=True)
-    ...     return x
+    >>>     x = tl.prepro.flip_axis(x, axis=0, is_random=True)
+    >>>     x = tl.prepro.flip_axis(x, axis=1, is_random=True)
+    >>>     x = tl.prepro.crop(x, 100, 100, is_random=True)
+    >>>     return x
     >>> images = tl.prepro.threading_data(images, distort_img)
 
     Process images and masks together (Usually be used for image segmentation).
 
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], tl.prepro.zoom_multi, zoom_range=[0.5, 1], is_random=True)
-    ... data --> [batch_size, 2, row, col, 1]
+    data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
-    ... X_, Y_ --> [batch_size, row, col, 1]
+    X_, Y_ --> [batch_size, row, col, 1]
     >>> tl.vis.save_image(X_, 'images.png')
     >>> tl.vis.save_image(Y_, 'masks.png')
 
@@ -149,20 +149,21 @@ def threading_data(data=None, fn=None, thread_count=None, **kwargs):
 
     >>> X, Y --> [batch_size, row, col, 1]
     >>> data = tl.prepro.threading_data(X, tl.prepro.zoom_multi, 8, zoom_range=[0.5, 1], is_random=True)
-    ... data --> [batch_size, 2, row, col, 1]
+    data --> [batch_size, 2, row, col, 1]
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
-    ... X_, Y_ --> [batch_size, row, col, 1]
+    X_, Y_ --> [batch_size, row, col, 1]
     >>> tl.vis.save_image(X_, 'after.png')
     >>> tl.vis.save_image(Y_, 'before.png')
 
     Customized function for processing images and masks together.
 
     >>> def distort_img(data):
-    ...     x, y = data
-    ...     x, y = tl.prepro.flip_axis_multi([x, y], axis=0, is_random=True)
-    ...     x, y = tl.prepro.flip_axis_multi([x, y], axis=1, is_random=True)
-    ...     x, y = tl.prepro.crop_multi([x, y], 100, 100, is_random=True)
-    ...     return x, y
+    >>>    x, y = data
+    >>>    x, y = tl.prepro.flip_axis_multi([x, y], axis=0, is_random=True)
+    >>>    x, y = tl.prepro.flip_axis_multi([x, y], axis=1, is_random=True)
+    >>>    x, y = tl.prepro.crop_multi([x, y], 100, 100, is_random=True)
+    >>>    return x, y
+
     >>> X, Y --> [batch_size, row, col, channel]
     >>> data = tl.prepro.threading_data([_ for _ in zip(X, Y)], distort_img)
     >>> X_, Y_ = data.transpose((1,0,2,3,4))
@@ -1446,7 +1447,7 @@ def samplewise_norm(
     --------
     >>> x = samplewise_norm(x, samplewise_center=True, samplewise_std_normalization=True)
     >>> print(x.shape, np.mean(x), np.std(x))
-    ... (160, 176, 1), 0.0, 1.0
+    (160, 176, 1), 0.0, 1.0
 
     Notes
     ------
@@ -2058,13 +2059,13 @@ def obj_box_coords_rescale(coords=None, shape=None):
     ---------
     >>> coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50], [10, 10, 20, 20]], shape=[100, 100])
     >>> print(coords)
-    ... [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
+      [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
     >>> coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[50, 100])
     >>> print(coords)
-    ... [[0.3, 0.8, 0.5, 1.0]]
+      [[0.3, 0.8, 0.5, 1.0]]
     >>> coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[100, 200])
     >>> print(coords)
-    ... [[0.15, 0.4, 0.25, 0.5]]
+      [[0.15, 0.4, 0.25, 0.5]]
 
     Returns
     -------
@@ -2113,7 +2114,7 @@ def obj_box_coord_rescale(coord=None, shape=None):
     Examples
     ---------
     >>> coord = tl.prepro.obj_box_coord_rescale(coord=[30, 40, 50, 50], shape=[100, 100])
-    ... [0.3, 0.4, 0.5, 0.5]
+      [0.3, 0.4, 0.5, 0.5]
 
     """
     if coord is None:
@@ -2143,7 +2144,7 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=None):
     Examples
     ---------
     >>> x, y, x2, y2 = tl.prepro.obj_box_coord_scale_to_pixelunit([0.2, 0.3, 0.5, 0.7], shape=(100, 200, 3))
-    ... [40, 30, 100, 70]
+      [40, 30, 100, 70]
 
     """
     if shape is None:
@@ -2159,13 +2160,13 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=None):
 
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50], [10, 10, 20, 20]], shape=[100, 100])
 # logging.info(coords)
-#     # ... [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
+#     #   [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[50, 100])
 # logging.info(coords)
-#     # ... [[0.3, 0.8, 0.5, 1.0]]
+#     #   [[0.3, 0.8, 0.5, 1.0]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[100, 200])
 # logging.info(coords)
-#     # ... [[0.15, 0.4, 0.25, 0.5]]
+#     #   [[0.15, 0.4, 0.25, 0.5]]
 # exit()
 
 
@@ -2187,7 +2188,7 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
     Examples
     ---------
     >>> coord = obj_box_coord_centroid_to_upleft_butright([30, 40, 20, 20])
-    ... [20, 30, 40, 50]
+      [20, 30, 40, 50]
 
     """
 
@@ -2366,16 +2367,16 @@ def obj_box_horizontal_flip(im, coords=None, is_rescale=False, is_center=False, 
     >>> im = np.zeros([80, 100])    # as an image with shape width=100, height=80
     >>> im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3], [0.1, 0.5, 0.2, 0.3]], is_rescale=True, is_center=True, is_random=False)
     >>> print(coords)
-    ... [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
+      [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
     >>> im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3]], is_rescale=True, is_center=False, is_random=False)
     >>> print(coords)
-    ... [[0.5, 0.4, 0.3, 0.3]]
+      [[0.5, 0.4, 0.3, 0.3]]
     >>> im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=True, is_random=False)
     >>> print(coords)
-    ... [[80, 40, 30, 30]]
+      [[80, 40, 30, 30]]
     >>> im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=False, is_random=False)
     >>> print(coords)
-    ... [[50, 40, 30, 30]]
+      [[50, 40, 30, 30]]
 
     """
 
@@ -2423,13 +2424,13 @@ obj_box_left_right_flip = obj_box_horizontal_flip
 # im = np.zeros([80, 100])    # as an image with shape width=100, height=80
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3], [0.1, 0.5, 0.2, 0.3]], is_rescale=True, is_center=True, is_random=False)
 # logging.info(coords)
-# # ... [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
+# #   [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3]], is_rescale=True, is_center=False, is_random=False)
 # logging.info(coords)
 # # [[0.5, 0.4, 0.3, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=True, is_random=False)
 # logging.info(coords)
-# # ... [[80, 40, 30, 30]]
+# #   [[80, 40, 30, 30]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=False, is_random=False)
 # logging.info(coords)
 # # [[50, 40, 30, 30]]
@@ -2462,16 +2463,16 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
     >>> im = np.zeros([80, 100, 3])    # as an image with shape width=100, height=80
     >>> _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30], [10, 20, 20, 20]], size=[160, 200], is_rescale=False)
     >>> print(coords)
-    ... [[40, 80, 60, 60], [20, 40, 40, 40]]
+      [[40, 80, 60, 60], [20, 40, 40, 40]]
     >>> _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[40, 100], is_rescale=False)
     >>> print(coords)
-    ... [[20, 20, 30, 15]]
+      [[20, 20, 30, 15]]
     >>> _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[60, 150], is_rescale=False)
     >>> print(coords)
-    ... [[30, 30, 45, 22]]
+      [[30, 30, 45, 22]]
     >>> im2, coords = obj_box_imresize(im, coords=[[0.2, 0.4, 0.3, 0.3]], size=[160, 200], is_rescale=True)
     >>> print(coords, im2.shape)
-    ... [[0.2, 0.4, 0.3, 0.3]] (160, 200, 3)
+      [[0.2, 0.4, 0.3, 0.3]] (160, 200, 3)
 
     """
     if coords is None:
@@ -2510,16 +2511,16 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 # im = np.zeros([80, 100, 3])    # as an image with shape width=100, height=80
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30], [10, 20, 20, 20]], size=[160, 200], is_rescale=False)
 # logging.info(coords)
-# # ... [[40, 80, 60, 60], [20, 40, 40, 40]]
+# #   [[40, 80, 60, 60], [20, 40, 40, 40]]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[40, 100], is_rescale=False)
 # logging.info(coords)
-# # ... [20, 20, 30, 15]
+# #   [20, 20, 30, 15]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[60, 150], is_rescale=False)
 # logging.info(coords)
-# # ... [30, 30, 45, 22]
+# #   [30, 30, 45, 22]
 # im2, coords = obj_box_imresize(im, coords=[[0.2, 0.4, 0.3, 0.3]], size=[160, 200], is_rescale=True)
 # logging.info(coords, im2.shape)
-# # ... [0.2, 0.4, 0.3, 0.3] (160, 200, 3)
+# # [0.2, 0.4, 0.3, 0.3] (160, 200, 3)
 # exit()
 
 
@@ -2982,9 +2983,9 @@ def pad_sequences(sequences, maxlen=None, dtype='int32', padding='post', truncat
     >>> sequences = [[1,1,1,1,1],[2,2,2],[3,3]]
     >>> sequences = pad_sequences(sequences, maxlen=None, dtype='int32',
     ...                  padding='post', truncating='pre', value=0.)
-    ... [[1 1 1 1 1]
-    ...  [2 2 2 0 0]
-    ...  [3 3 0 0 0]]
+    [[1 1 1 1 1]
+     [2 2 2 0 0]
+     [3 3 0 0 0]]
 
     """
     lengths = [len(s) for s in sequences]
@@ -3048,7 +3049,7 @@ def remove_pad_sequences(sequences, pad_id=0):
     ----------
     >>> sequences = [[2,3,4,0,0], [5,1,2,3,4,0,0,0], [4,5,0,2,4,0,0,0]]
     >>> print(remove_pad_sequences(sequences, pad_id=0))
-    ... [[2, 3, 4], [5, 1, 2, 3, 4], [4, 5, 0, 2, 4]]
+    [[2, 3, 4], [5, 1, 2, 3, 4], [4, 5, 0, 2, 4]]
 
     """
     sequences_out = copy.deepcopy(sequences)
@@ -3092,7 +3093,7 @@ def process_sequences(sequences, end_id=0, pad_val=0, is_shorten=True, remain_en
     >>> sentences_ids = [[4, 3, 5, 3, 2, 2, 2, 2],  <-- end_id is 2
     ...                  [5, 3, 9, 4, 9, 2, 2, 3]]  <-- end_id is 2
     >>> sentences_ids = precess_sequences(sentences_ids, end_id=vocab.end_id, pad_val=0, is_shorten=True)
-    ... [[4, 3, 5, 3, 0], [5, 3, 9, 4, 9]]
+    [[4, 3, 5, 3, 0], [5, 3, 9, 4, 9]]
 
     """
     max_length = 0
@@ -3137,9 +3138,9 @@ def sequences_add_start_id(sequences, start_id=0, remove_last=False):
     ---------
     >>> sentences_ids = [[4,3,5,3,2,2,2,2], [5,3,9,4,9,2,2,3]]
     >>> sentences_ids = sequences_add_start_id(sentences_ids, start_id=2)
-    ... [[2, 4, 3, 5, 3, 2, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2, 3]]
+    [[2, 4, 3, 5, 3, 2, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2, 3]]
     >>> sentences_ids = sequences_add_start_id(sentences_ids, start_id=2, remove_last=True)
-    ... [[2, 4, 3, 5, 3, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2]]
+    [[2, 4, 3, 5, 3, 2, 2, 2], [2, 5, 3, 9, 4, 9, 2, 2]]
 
     For Seq2seq
 
@@ -3176,7 +3177,7 @@ def sequences_add_end_id(sequences, end_id=888):
     ---------
     >>> sequences = [[1,2,3],[4,5,6,7]]
     >>> print(sequences_add_end_id(sequences, end_id=999))
-    ... [[1, 2, 3, 999], [4, 5, 6, 999]]
+    [[1, 2, 3, 999], [4, 5, 6, 999]]
 
     """
     sequences_out = [[] for _ in range(len(sequences))]  #[[]] * len(sequences)
@@ -3206,7 +3207,7 @@ def sequences_add_end_id_after_pad(sequences, end_id=888, pad_id=0):
     ---------
     >>> sequences = [[1,2,0,0], [1,2,3,0], [1,2,3,4]]
     >>> print(sequences_add_end_id_after_pad(sequences, end_id=99, pad_id=0))
-    ... [[1, 2, 99, 0], [1, 2, 3, 99], [1, 2, 3, 4]]
+    [[1, 2, 99, 0], [1, 2, 3, 99], [1, 2, 3, 4]]
 
     """
     # sequences_out = [[] for _ in range(len(sequences))]#[[]] * len(sequences)
@@ -3254,8 +3255,8 @@ def sequences_get_mask(sequences, pad_val=0):
     >>> sentences_ids = [[4, 0, 5, 3, 0, 0],
     ...                  [5, 3, 9, 4, 9, 0]]
     >>> mask = sequences_get_mask(sentences_ids, pad_val=0)
-    ... [[1 1 1 1 0 0]
-    ...  [1 1 1 1 1 0]]
+    [[1 1 1 1 0 0]
+     [1 1 1 1 1 0]]
 
     """
     mask = np.ones_like(sequences)

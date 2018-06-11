@@ -36,20 +36,22 @@ class TimeDistributedLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 32
     >>> timestep = 20
     >>> input_dim = 100
     >>> x = tf.placeholder(dtype=tf.float32, shape=[batch_size, timestep, input_dim], name="encode_seqs")
-    >>> net = InputLayer(x, name='input')
-    >>> net = TimeDistributedLayer(net, layer_class=DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')
-    ... [TL] InputLayer  input: (32, 20, 100)
-    ... [TL] TimeDistributedLayer time_dense: layer_class:DenseLayer
+    >>> net = tl.layers.InputLayer(x, name='input')
+    [TL] InputLayer  input: (32, 20, 100)
+    >>> net = tl.layers.TimeDistributedLayer(net, layer_class=tl.layers.DenseLayer, args={'n_units':50, 'name':'dense'}, name='time_dense')
+    [TL] TimeDistributedLayer time_dense: layer_class:DenseLayer
     >>> print(net.outputs._shape)
-    ... (32, 20, 50)
+    (32, 20, 50)
     >>> net.print_params(False)
-    ... param   0: (100, 50)          time_dense/dense/W:0
-    ... param   1: (50,)              time_dense/dense/b:0
-    ... num of params: 5050
+    [TL] param   0: (100, 50)          time_dense/dense/W:0
+    [TL] param   1: (50,)              time_dense/dense/b:0
+    [TL]    num of params: 5050
 
     """
 
