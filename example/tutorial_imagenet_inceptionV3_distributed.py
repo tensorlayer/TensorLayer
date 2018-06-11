@@ -408,12 +408,12 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(message)s')
 
     if not tf.gfile.Exists(ILSVRC_DIR):
-        logging.error('We couldn\'t find the directory "{}"'.format(ILSVRC_DIR))
-        logging.error('You need to modify the variable BASE_DIR with the path where the dataset is.')
-        logging.error(
-            'The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition: https://www.kaggle.com/c/imagenet-object-localization-challenge/data'
+        raise FileNotFoundError(
+            'We cannot find the directory "{}"\n'
+            'You need to modify the variable BASE_DIR with the path where the dataset is.\n'
+            'The dataset can be downloaded from http://www.image-net.org/ or from the Kaggle competition:\n'
+            'https://www.kaggle.com/c/imagenet-object-localization-challenge/data'.format(ILSVRC_DIR)
         )
-        exit(-1)
 
     # args
     parser = argparse.ArgumentParser()

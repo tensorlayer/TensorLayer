@@ -1,8 +1,6 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import copy
-
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
@@ -353,7 +351,7 @@ class GlobalMaxPool1d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 30])
     >>> n = InputLayer(x, name='in')
     >>> n = GlobalMaxPool1d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -379,10 +377,12 @@ class GlobalMeanPool1d(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 30])
-    >>> n = InputLayer(x, name='in')
-    >>> n = GlobalMeanPool1d(n)
-    ... [None, 30]
+    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.GlobalMeanPool1d(n)
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -408,10 +408,12 @@ class GlobalMaxPool2d(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = InputLayer(x, name='in2')
-    >>> n = GlobalMaxPool2d(n)
-    ... [None, 30]
+    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.GlobalMaxPool2d(n)
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -437,10 +439,12 @@ class GlobalMeanPool2d(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
-    >>> n = InputLayer(x, name='in2')
-    >>> n = GlobalMeanPool2d(n)
-    ... [None, 30]
+    >>> n = tl.layers.InputLayer(x, name='in2')
+    >>> n = tl.layers.GlobalMeanPool2d(n)
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -466,10 +470,12 @@ class GlobalMaxPool3d(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = InputLayer(x, name='in')
-    >>> n = GlobalMaxPool3d(n)
-    ... [None, 30]
+    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.GlobalMaxPool3d(n)
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -495,10 +501,12 @@ class GlobalMeanPool3d(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
-    >>> n = InputLayer(x, name='in')
-    >>> n = GlobalMeanPool2d(n)
-    ... [None, 30]
+    >>> n = tl.layers.InputLayer(x, name='in')
+    >>> n = tl.layers.GlobalMeanPool2d(n)
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -510,10 +518,3 @@ class GlobalMeanPool3d(Layer):
         self.outputs = tf.reduce_mean(self.inputs, axis=[1, 2, 3], name=name)
 
         self._add_layers(self.outputs)
-
-
-# Alias
-# MaxPool1d = maxpool1d
-# MaxPool2d = maxpool2d
-# MeanPool1d = meanpool1d
-# MeanPool2d = meanpool2d

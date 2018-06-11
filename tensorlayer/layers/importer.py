@@ -37,9 +37,11 @@ class LambdaLayer(Layer):
     ---------
     Non-parametric case
 
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 1], name='x')
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = LambdaLayer(net, lambda x: 2*x, name='lambda')
+    >>> net = tl.layers.LambdaLayer(net, lambda x: 2*x, name='lambda')
 
     Parametric case, merge other wrappers into TensorLayer
 
@@ -131,15 +133,14 @@ class SlimNetsLayer(Layer):
         slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
 
         if slim_variables == []:
-            logging.error(
-                "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details"
-                % self.name
+            raise RuntimeError(
+                "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file.\n"
+                "see tutorial_inceptionV3_tfslim.py for more details" % self.name
             )
 
         slim_layers = []
 
         for v in end_points.values():
-            # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
         self._add_layers(slim_layers)

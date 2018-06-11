@@ -367,9 +367,9 @@ class TensorDB(object):
         >>> # Run your job
         >>> temp = db.find_one_job(args={'job_id': 1})
         >>> print(temp['learning_rate'])
-        ... 0.01
+        0.01
         >>> import _your_script
-        ... running your script
+        running your script
         """
 
         if args is None:
