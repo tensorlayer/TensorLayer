@@ -50,7 +50,8 @@ class PReluLayer(Layer):
             a_init_args=None, name="PReluLayer"
     ):
 
-        super(PReluLayer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
+        super(PReluLayer,
+              self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )
@@ -67,7 +68,12 @@ class PReluLayer(Layer):
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = tf.nn.leaky_relu(self.inputs, alpha=alpha_var_constrained, name="PReLU_activation")
+        self.outputs = self._apply_activation(
+            self.inputs, **{
+                'alpha': alpha_var_constrained,
+                'name': "PReLU_activation"
+            }
+        )
 
         self._add_layers(self.outputs)
         self._add_params(alpha_var)
@@ -119,7 +125,7 @@ class PRelu6Layer(Layer):
             a_init_args=None, name="PReLU6_layer"
     ):
 
-        super(PRelu6Layer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
+        super(PRelu6Layer, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )
@@ -136,7 +142,12 @@ class PRelu6Layer(Layer):
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
-        self.outputs = leaky_relu6(self.inputs, alpha=alpha_var_constrained, name="PReLU6_activation")
+        self.outputs = self._apply_activation(
+            self.inputs, **{
+                'alpha': alpha_var_constrained,
+                'name': "PReLU6_activation"
+            }
+        )
 
         self._add_layers(self.outputs)
         self._add_params(alpha_var)
@@ -190,7 +201,8 @@ class PTRelu6Layer(Layer):
             a_init_args=None, name="PTReLU6_layer"
     ):
 
-        super(PTRelu6Layer, self).__init__(prev_layer=prev_layer, a_init_args=a_init_args, name=name)
+        super(PTRelu6Layer,
+              self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
 
         if channel_shared:
             w_shape = (1, )
@@ -216,8 +228,12 @@ class PTRelu6Layer(Layer):
 
             alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
 
-        self.outputs = leaky_twice_relu6(
-            self.inputs, alpha_low=alpha_low_constrained, alpha_high=alpha_high_constrained, name="PTReLU6_activation"
+        self.outputs = self.outputs = self._apply_activation(
+            self.inputs, **{
+                'alpha_low': alpha_low_constrained,
+                'alpha_high': alpha_high_constrained,
+                'name': "PTReLU6_activation"
+            }
         )
 
         self._add_layers(self.outputs)
