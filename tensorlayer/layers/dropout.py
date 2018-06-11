@@ -41,6 +41,8 @@ class DropoutLayer(Layer):
     --------
     Method 1: Using ``all_drop`` see `tutorial_mlp_dropout1.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py>`__
 
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> net = tl.layers.InputLayer(x, name='input_layer')
     >>> net = tl.layers.DropoutLayer(net, keep=0.8, name='drop1')
     >>> net = tl.layers.DenseLayer(net, n_units=800, act=tf.nn.relu, name='relu1')
@@ -67,7 +69,7 @@ class DropoutLayer(Layer):
     >>>                         is_train=is_train, name='drop1')
     >>>     ...
     >>>     return net
-    >>> # define inferences
+
     >>> net_train = mlp(x, is_train=True, reuse=False)
     >>> net_test = mlp(x, is_train=False, reuse=True)
 

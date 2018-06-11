@@ -36,6 +36,8 @@ class GaussianNoiseLayer(Layer):
 
     Examples
     ----------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=(100, 784))
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.DenseLayer(net, n_units=100, act=tf.nn.relu, name='dense3')

@@ -64,6 +64,8 @@ class OneHotInputLayer(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.int32, shape=[None])
     >>> net = tl.layers.OneHotInputLayer(x, depth=8, name='one_hot_encoding')
     (?, 8)
@@ -132,13 +134,15 @@ class Word2vecEmbeddingInputlayer(Layer):
     --------
     With TensorLayer : see ``tensorlayer/example/tutorial_word2vec_basic.py``
 
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> train_inputs = tf.placeholder(tf.int32, shape=(batch_size))
     >>> train_labels = tf.placeholder(tf.int32, shape=(batch_size, 1))
     >>> net = tl.layers.Word2vecEmbeddingInputlayer(inputs=train_inputs,
     ...     train_labels=train_labels, vocabulary_size=1000, embedding_size=200,
     ...     num_sampled=64, name='word2vec')
-    ... (8, 200)
+    (8, 200)
     >>> cost = net.nce_cost
     >>> train_params = net.all_params
     >>> cost = net.nce_cost
@@ -265,6 +269,8 @@ class EmbeddingInputlayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, ))
     >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, name='embed')
@@ -328,6 +334,8 @@ class AverageEmbeddingInputlayer(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> length = 5
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, length))

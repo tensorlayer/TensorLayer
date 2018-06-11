@@ -55,9 +55,9 @@ def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     -----
     To initialize the network to the identity transform init.
 
-    >>> ``theta`` to
-    >>> identity = np.array([[1., 0., 0.],
-    ...                      [0., 1., 0.]])
+    >>> import tensorflow as tf
+    >>> # ``theta`` to
+    >>> identity = np.array([[1., 0., 0.], [0., 1., 0.]])
     >>> identity = identity.flatten()
     >>> theta = tf.Variable(initial_value=identity)
 

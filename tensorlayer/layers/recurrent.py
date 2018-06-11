@@ -92,6 +92,8 @@ class RNNLayer(Layer):
 
     - For encoding see below.
 
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 32
     >>> num_steps = 5
     >>> vocab_size = 3000
@@ -558,7 +560,7 @@ class BasicConvLSTMCell(ConvRNNCell):
     @property
     def state_size(self):
         """State size of the LSTMStateTuple."""
-        return (LSTMStateTuple(self._num_units, self._num_units) if self._state_is_tuple else 2 * self._num_units)
+        return LSTMStateTuple(self._num_units, self._num_units) if self._state_is_tuple else (2 * self._num_units)
 
     @property
     def output_size(self):
@@ -806,6 +808,9 @@ def advanced_indexing_op(inputs, index):
 
     Examples
     ---------
+    >>> import numpy as np
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size, max_length, n_features = 3, 5, 2
     >>> z = np.random.uniform(low=-1, high=1, size=[batch_size, max_length, n_features]).astype(np.float32)
     >>> b_z = tf.constant(z)
@@ -820,11 +825,11 @@ def advanced_indexing_op(inputs, index):
     >>> y = sess.run([o], feed_dict={sl:order})
     >>> print("given",order)
     >>> print("out", y)
-    ... real [-0.93021595  0.53820813] [-0.92548317 -0.77135968] [ 0.89952248  0.19149846]
-    ... given [1 1 2]
-    ... out [array([[-0.93021595,  0.53820813],
-    ...             [-0.92548317, -0.77135968],
-    ...             [ 0.89952248,  0.19149846]], dtype=float32)]
+    real [-0.93021595  0.53820813] [-0.92548317 -0.77135968] [ 0.89952248  0.19149846]
+    given [1 1 2]
+    out [array([[-0.93021595,  0.53820813],
+                [-0.92548317, -0.77135968],
+                [ 0.89952248,  0.19149846]], dtype=float32)]
 
     References
     -----------
