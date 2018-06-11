@@ -109,7 +109,7 @@ class ElementwiseLayer(Layer):
             name='elementwise_layer',
     ):
 
-        super(ElementwiseLayer, self).__init__(prev_layer=layers, name=name)
+        super(ElementwiseLayer, self).__init__(prev_layer=layers, act=act, name=name)
         logging.info(
             "ElementwiseLayer %s: size: %s fn: %s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
         )
