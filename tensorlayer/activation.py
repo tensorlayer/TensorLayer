@@ -127,7 +127,7 @@ def leaky_relu6(x, alpha=0.2, name="leaky_relu6"):
     - `Convolutional Deep Belief Networks on CIFAR-10 [A. Krizhevsky, 2010] <http://www.cs.utoronto.ca/~kriz/conv-cifar10-aug2010.pdf>`__
     """
 
-    if not (0 < alpha <= 1):
+    if not isinstance(alpha, tf.Tensor) and not (0 < alpha <= 1):
         raise ValueError("`alpha` value must be in [0, 1]`")
 
     with tf.name_scope(name, "leaky_relu6") as name_scope:
@@ -179,10 +179,10 @@ def leaky_twice_relu6(x, alpha_low=0.2, alpha_high=0.2, name="leaky_relu6"):
 
     """
 
-    if not (0 < alpha_high <= 1):
+    if not isinstance(alpha_high, tf.Tensor) and not (0 < alpha_high <= 1):
         raise ValueError("`alpha_high` value must be in [0, 1]`")
 
-    if not (0 < alpha_low <= 1):
+    if not isinstance(alpha_low, tf.Tensor) and not (0 < alpha_low <= 1):
         raise ValueError("`alpha_low` value must be in [0, 1]`")
 
     with tf.name_scope(name, "leaky_twice_relu6") as name_scope:
