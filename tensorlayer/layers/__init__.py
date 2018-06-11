@@ -11,16 +11,21 @@ More functions can be found in `TensorFlow API <https://www.tensorflow.org/versi
 
 from .binary import *
 from .convolution import *
-from tensorlayer.layers.core import *
+from .core import *
+from .dense import *
+from .dropout import *
 from .extend import *
 from .flow_control import *
+from .image_resize import *
 from .importer import *
 from .inputs import *
 from .merge import *
+from .noise import *
 from .normalization import *
 from .object_detection import *
 from .padding import *
 from .pooling import *
+from .reconstruction import *
 from .recurrent import *
 from .shape import *
 from .spatial_transformer import *
@@ -28,3 +33,4 @@ from .special_activation import *
 from .stack import *
 from .super_resolution import *
 from .time_distribution import *
+from .utils import *

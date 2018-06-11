@@ -92,6 +92,8 @@ class RNNLayer(Layer):
 
     - For encoding see below.
 
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size = 32
     >>> num_steps = 5
     >>> vocab_size = 3000
@@ -806,6 +808,9 @@ def advanced_indexing_op(inputs, index):
 
     Examples
     ---------
+    >>> import numpy as np
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> batch_size, max_length, n_features = 3, 5, 2
     >>> z = np.random.uniform(low=-1, high=1, size=[batch_size, max_length, n_features]).astype(np.float32)
     >>> b_z = tf.constant(z)
@@ -820,11 +825,11 @@ def advanced_indexing_op(inputs, index):
     >>> y = sess.run([o], feed_dict={sl:order})
     >>> print("given",order)
     >>> print("out", y)
-    ... real [-0.93021595  0.53820813] [-0.92548317 -0.77135968] [ 0.89952248  0.19149846]
-    ... given [1 1 2]
-    ... out [array([[-0.93021595,  0.53820813],
-    ...             [-0.92548317, -0.77135968],
-    ...             [ 0.89952248,  0.19149846]], dtype=float32)]
+    real [-0.93021595  0.53820813] [-0.92548317 -0.77135968] [ 0.89952248  0.19149846]
+    given [1 1 2]
+    out [array([[-0.93021595,  0.53820813],
+                [-0.92548317, -0.77135968],
+                [ 0.89952248,  0.19149846]], dtype=float32)]
 
     References
     -----------
@@ -857,20 +862,20 @@ def retrieve_seq_length_op(data):
     ...         [[1],[2],[6],[1],[0]]]
     >>> data = np.asarray(data)
     >>> print(data.shape)
-    ... (3, 5, 1)
+    (3, 5, 1)
     >>> data = tf.constant(data)
     >>> sl = retrieve_seq_length_op(data)
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
     >>> y = sl.eval()
-    ... [2 3 4]
+    [2 3 4]
 
     Multiple features
     >>> data = [[[1,2],[2,2],[1,2],[1,2],[0,0]],
     ...         [[2,3],[2,4],[3,2],[0,0],[0,0]],
     ...         [[3,3],[2,2],[5,3],[1,2],[0,0]]]
     >>> print(sl)
-    ... [4 3 4]
+    [4 3 4]
 
     References
     ------------
@@ -902,7 +907,7 @@ def retrieve_seq_length_op2(data):
     >>> sess = tf.InteractiveSession()
     >>> tl.layers.initialize_global_variables(sess)
     >>> print(o.eval())
-    ... [2 3 4]
+    [2 3 4]
 
     """
     return tf.reduce_sum(tf.cast(tf.greater(data, tf.zeros_like(data)), tf.int32), 1)
@@ -1028,7 +1033,7 @@ class DynamicRNNLayer(Layer):
     ...             return_last=False,                    # for encoder, set to True
     ...             return_seq_2d=True,                   # stack denselayer or compute cost after it
     ...             name='dynamicrnn')
-    ... net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
+    >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
 
     References
     ----------
@@ -1538,8 +1543,8 @@ class Seq2Seq(Layer):
     >>> target_seqs = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_seqs")
     >>> target_mask = tf.placeholder(dtype=tf.int64, shape=[batch_size, None], name="target_mask") # tl.prepro.sequences_get_mask()
     >>> with tf.variable_scope("model"):
-    ...     # for chatbot, you can use the same embedding layer,
-    ...     # for translation, you may want to use 2 seperated embedding layers
+    >>>     # for chatbot, you can use the same embedding layer,
+    >>>     # for translation, you may want to use 2 seperated embedding layers
     >>>     with tf.variable_scope("embedding") as vs:
     >>>         net_encode = EmbeddingInputlayer(
     ...                 inputs = encode_seqs,

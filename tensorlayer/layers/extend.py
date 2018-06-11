@@ -31,10 +31,12 @@ class ExpandDimsLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, (None, 100))
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.ExpandDimsLayer(n, 2)
-    ... [None, 100, 1]
+    [None, 100, 1]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -72,11 +74,13 @@ class TileLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, (None, 100))
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.ExpandDimsLayer(n, 2)
     >>> n = tl.layers.TileLayer(n, [-1, 1, 3])
-    ... [None, 100, 3]
+    [None, 100, 3]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
