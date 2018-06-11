@@ -142,7 +142,7 @@ class SubpixelConv1d(Layer):
     >>> n = tl.layers.InputLayer(t_signal, name='in')
     >>> n = tl.layers.SubpixelConv1d(n, scale=2, name='s')
     >>> print(n.outputs.shape)
-    ... (10, 200, 2)
+    (10, 200, 2)
 
     References
     -----------

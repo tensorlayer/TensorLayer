@@ -351,7 +351,7 @@ class GlobalMaxPool1d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 30])
     >>> n = InputLayer(x, name='in')
     >>> n = GlobalMaxPool1d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -382,7 +382,7 @@ class GlobalMeanPool1d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 30])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.GlobalMeanPool1d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -444,7 +444,7 @@ class GlobalMeanPool2d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 100, 30])
     >>> n = tl.layers.InputLayer(x, name='in2')
     >>> n = tl.layers.GlobalMeanPool2d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -475,7 +475,7 @@ class GlobalMaxPool3d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.GlobalMaxPool3d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
@@ -506,7 +506,7 @@ class GlobalMeanPool3d(Layer):
     >>> x = tf.placeholder("float32", [None, 100, 100, 100, 30])
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.GlobalMeanPool2d(n)
-    ... [None, 30]
+    [None, 30]
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release

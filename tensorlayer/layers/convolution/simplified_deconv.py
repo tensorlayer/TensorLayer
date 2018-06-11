@@ -65,11 +65,11 @@ class DeConv2dLayer(Layer):
     ...                            W_init = tf.random_normal_initializer(stddev=0.02),
     ...                            act = None, name='g/h0/lin')
     >>> print(net_h0.outputs._shape)
-    ... (64, 8192)
+    (64, 8192)
     >>> net_h0 = tl.layers.ReshapeLayer(net_h0, shape=(-1, 4, 4, 512), name='g/h0/reshape')
     >>> net_h0 = tl.layers.BatchNormLayer(net_h0, act=tf.nn.relu, is_train=is_train, name='g/h0/batch_norm')
     >>> print(net_h0.outputs._shape)
-    ... (64, 4, 4, 512)
+    (64, 4, 4, 512)
     >>> net_h1 = tl.layers.DeConv2dLayer(net_h0,
     ...                            shape=(5, 5, 256, 512),
     ...                            output_shape=(batch_size, 8, 8, 256),
@@ -77,7 +77,7 @@ class DeConv2dLayer(Layer):
     ...                            act=None, name='g/h1/decon2d')
     >>> net_h1 = tl.layers.BatchNormLayer(net_h1, act=tf.nn.relu, is_train=is_train, name='g/h1/batch_norm')
     >>> print(net_h1.outputs._shape)
-    ... (64, 8, 8, 256)
+    (64, 8, 8, 256)
 
     U-Net
 
@@ -86,7 +86,7 @@ class DeConv2dLayer(Layer):
     ...        shape=(3,3,1024,1024), strides=(1,1,1,1), padding='SAME',
     ...        W_init=w_init, b_init=b_init, name='conv10')
     >>> print(conv10.outputs)
-    ... (batch_size, 32, 32, 1024)
+    (batch_size, 32, 32, 1024)
     >>> deconv1 = tl.layers.DeConv2dLayer(conv10, act=tf.nn.relu,
     ...         shape=(3,3,512,1024), strides=(1,2,2,1), output_shape=(batch_size,64,64,512),
     ...         padding='SAME', W_init=w_init, b_init=b_init, name='devcon1_1')

@@ -42,7 +42,7 @@ class GaussianNoiseLayer(Layer):
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net = tl.layers.DenseLayer(net, n_units=100, act=tf.nn.relu, name='dense3')
     >>> net = tl.layers.GaussianNoiseLayer(net, name='gaussian')
-    ... (64, 100)
+    (64, 100)
 
     """
 

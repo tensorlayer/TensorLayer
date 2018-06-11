@@ -147,8 +147,7 @@ class Word2vecEmbeddingInputlayer(Layer):
     >>> train_params = net.all_params
     >>> cost = net.nce_cost
     >>> train_params = net.all_params
-    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(
-    ...                                             cost, var_list=train_params)
+    >>> train_op = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost, var_list=train_params)
     >>> normalized_embeddings = net.normalized_embeddings
 
     Without TensorLayer : see ``tensorflow/examples/tutorials/word2vec/word2vec_basic.py``
@@ -274,7 +273,7 @@ class EmbeddingInputlayer(Layer):
     >>> batch_size = 8
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, ))
     >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, name='embed')
-    ... (8, 50)
+    (8, 50)
 
     """
 
@@ -340,7 +339,7 @@ class AverageEmbeddingInputlayer(Layer):
     >>> length = 5
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, length))
     >>> net = tl.layers.AverageEmbeddingInputlayer(x, vocabulary_size=1000, embedding_size=50, name='avg')
-    ... (8, 50)
+    (8, 50)
 
     """
 

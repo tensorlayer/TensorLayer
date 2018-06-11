@@ -416,7 +416,7 @@ def flatten_list(list_of_list):
     Examples
     --------
     >>> tl.utils.flatten_list([[1, 2, 3],[4, 5],[6]])
-    ... [1, 2, 3, 4, 5, 6]
+    [1, 2, 3, 4, 5, 6]
 
     """
     return sum(list_of_list, [])
@@ -527,7 +527,7 @@ def get_random_int(min_v=0, max_v=10, number=5, seed=None):
     Examples
     ---------
     >>> r = get_random_int(min_v=0, max_v=10, number=5)
-    ... [10, 2, 3, 3, 7]
+    [10, 2, 3, 3, 7]
 
     """
     rnd = random.Random()

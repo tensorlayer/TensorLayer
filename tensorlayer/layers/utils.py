@@ -88,10 +88,10 @@ def flatten_reshape(variable, name='flatten'):
     >>> # Max Pooling (down-sampling) with strides of 2 and kernel size of 2
     >>> network = tf.layers.max_pooling2d(network, 2, 2)
     >>> print(network.get_shape()[:].as_list())
-    >>> ... [None, 62, 62, 32]
+    >>> [None, 62, 62, 32]
     >>> network = tl.layers.flatten_reshape(network)
     >>> print(network.get_shape()[:].as_list()[1:])
-    >>> ... [None, 123008]
+    >>> [None, 123008]
     """
 
     dim = 1
@@ -259,7 +259,7 @@ def list_remove_repeat(x):
     -------
     >>> l = [2, 3, 4, 2, 3]
     >>> l = list_remove_repeat(l)
-    ... [2, 3, 4]
+    [2, 3, 4]
 
     """
     y = []
