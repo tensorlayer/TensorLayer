@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.convolution.simplified_conv import Conv1dLayer
+from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
 from tensorlayer import tl_logging as logging
 
