@@ -281,8 +281,10 @@ class Layer(object):
             raise ValueError()
 
     @private_method
-    def _apply_activation(self, logits):
-        return self.act(logits) if self.act is not None else logits
+    def _apply_activation(self, logits, **kwargs):
+        if not kwargs:
+            kwargs = {}
+        return self.act(logits, **kwargs) if self.act is not None else logits
 
     @private_method
     def _argument_dict_checkup(self, args):
