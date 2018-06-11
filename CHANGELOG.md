@@ -179,6 +179,7 @@ To release a new version, please update the changelog as followed:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
   - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been (by @DEKHTIARJonathan in #686)
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been (by @DEKHTIARJonathan in #690)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
@@ -242,6 +243,7 @@ To release a new version, please update the changelog as followed:
 - Convolution Layers have been refactored under the folder `tensorlayer/layers/convolution` (by @DEKHTIARJonathan in #692)
 - Dense Layers have been refactored under the folder `tensorlayer/layers/dense` (by @DEKHTIARJonathan in #692)
 - Numerous Layer utility functions have been refactored in the file `tensorlayer/layers/utils.py` (by @DEKHTIARJonathan in #692)
+- `tests\test_layers_special_activation.py` made more robust for `PReluLayer`, `PRelu6Layer`, and `PTRelu6Layer` (by @DEKHTIARJonathan in #690)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
