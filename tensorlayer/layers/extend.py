@@ -31,6 +31,8 @@ class ExpandDimsLayer(Layer):
 
     Examples
     --------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, (None, 100))
     >>> n = tl.layers.InputLayer(x, name='in')
     >>> n = tl.layers.ExpandDimsLayer(n, 2)

@@ -131,15 +131,14 @@ class SlimNetsLayer(Layer):
         slim_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=self.name)
 
         if slim_variables == []:
-            logging.error(
-                "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file, see tutorial_inceptionV3_tfslim.py for more details"
-                % self.name
+            raise RuntimeError(
+                "No variables found under %s : the name of SlimNetsLayer should be matched with the begining of the ckpt file.\n"
+                "see tutorial_inceptionV3_tfslim.py for more details" % self.name
             )
 
         slim_layers = []
 
         for v in end_points.values():
-            # tf.contrib.layers.summaries.summarize_activation(v)
             slim_layers.append(v)
 
         self._add_layers(slim_layers)

@@ -65,8 +65,8 @@ class OneHotInputLayer(Layer):
     Examples
     ---------
     >>> x = tf.placeholder(tf.int32, shape=[None])
-    >>> net = tl.layers.OneHotInputLayer(x, depth=8, name='onehot')
-    ... (?, 8)
+    >>> net = tl.layers.OneHotInputLayer(x, depth=8, name='one_hot_encoding')
+    (?, 8)
 
     """
 
@@ -77,7 +77,7 @@ class OneHotInputLayer(Layer):
         logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
 
         if depth is None:
-            logging.error("  [*] depth == None the number of output units is undefined")
+            raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
 
         self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
 

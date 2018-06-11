@@ -78,31 +78,31 @@ class Layer(object):
     - Get information
 
     >>> print(n)
-    ... Last layer is: DenseLayer (d2) [None, 80]
+    Last layer is: DenseLayer (d2) [None, 80]
     >>> n.print_layers()
-    ... [TL]   layer   0: d1/Identity:0        (?, 80)            float32
-    ... [TL]   layer   1: d2/Identity:0        (?, 80)            float32
+    [TL]   layer   0: d1/Identity:0        (?, 80)            float32
+    [TL]   layer   1: d2/Identity:0        (?, 80)            float32
     >>> n.print_params(False)
-    ... [TL]   param   0: d1/W:0               (100, 80)          float32_ref
-    ... [TL]   param   1: d1/b:0               (80,)              float32_ref
-    ... [TL]   param   2: d2/W:0               (80, 80)           float32_ref
-    ... [TL]   param   3: d2/b:0               (80,)              float32_ref
-    ... [TL]   num of params: 14560
+    [TL]   param   0: d1/W:0               (100, 80)          float32_ref
+    [TL]   param   1: d1/b:0               (80,)              float32_ref
+    [TL]   param   2: d2/W:0               (80, 80)           float32_ref
+    [TL]   param   3: d2/b:0               (80,)              float32_ref
+    [TL]   num of params: 14560
     >>> n.count_params()
-    ... 14560
+    14560
 
     - Slicing the outputs
 
     >>> n2 = n[:, :30]
     >>> print(n2)
-    ... Last layer is: Layer (d2) [None, 30]
+    Last layer is: Layer (d2) [None, 30]
 
     - Iterating the outputs
 
     >>> for l in n:
     >>>    print(l)
-    ... Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)
-    ... Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
+    Tensor("d1/Identity:0", shape=(?, 80), dtype=float32)
+    Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
     # Added to allow auto-completion
@@ -152,10 +152,7 @@ class Layer(object):
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
                                                'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-
-                _err = "Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer"
-                logging.error(_err)
-                raise RuntimeError(_err)
+                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
 
             self.inputs = prev_layer
 
@@ -234,11 +231,10 @@ class Layer(object):
         return net_new
 
     def __setitem__(self, key, item):
-        # self.outputs[key] = item
-        raise NotImplementedError("%s: __setitem__" % self.name)
+        raise TypeError("The Layer API does not allow to use the method: `__setitem__`")
 
     def __delitem__(self, key):
-        raise NotImplementedError("%s: __delitem__" % self.name)
+        raise TypeError("The Layer API does not allow to use the method: `__delitem__`")
 
     def __iter__(self):
         for x in self.all_layers:
@@ -292,8 +288,8 @@ class Layer(object):
     def _argument_dict_checkup(self, args):
 
         if not isinstance(args, dict) and args is not None:
-            err_msg = "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-            logging.error(err_msg)
-            raise AssertionError(err_msg)
+            raise AssertionError(
+                "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
+            )
 
         return args if args is not None else {}
