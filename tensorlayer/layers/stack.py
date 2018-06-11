@@ -30,13 +30,15 @@ class StackLayer(Layer):
 
     Examples
     ---------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, shape=[None, 30])
     >>> net = tl.layers.InputLayer(x, name='input')
     >>> net1 = tl.layers.DenseLayer(net, 10, name='dense1')
     >>> net2 = tl.layers.DenseLayer(net, 10, name='dense2')
     >>> net3 = tl.layers.DenseLayer(net, 10, name='dense3')
     >>> net = tl.layers.StackLayer([net1, net2, net3], axis=1, name='stack')
-    ... (?, 3, 10)
+    (?, 3, 10)
 
     """
 

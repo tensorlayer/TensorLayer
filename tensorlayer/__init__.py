@@ -32,6 +32,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from . import decorators
     from . import distributed
     from . import files
+    from . import initializers
     from . import iterate
     from . import layers
     from . import lazy_imports

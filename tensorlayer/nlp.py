@@ -83,16 +83,16 @@ def generate_skip_gram_batch(data, batch_size, num_skips, skip_window, data_inde
     >>> data = [1,2,3,4,5,6,7,8,9,10,11]
     >>> batch, labels, data_index = tl.nlp.generate_skip_gram_batch(data=data, batch_size=8, num_skips=2, skip_window=1, data_index=0)
     >>> print(batch)
-    ... [2 2 3 3 4 4 5 5]
+    [2 2 3 3 4 4 5 5]
     >>> print(labels)
-    ... [[3]
-    ... [1]
-    ... [4]
-    ... [2]
-    ... [5]
-    ... [3]
-    ... [4]
-    ... [6]]
+    [[3]
+    [1]
+    [4]
+    [2]
+    [5]
+    [3]
+    [4]
+    [6]]
 
     """
     # global data_index   # you can put data_index outside the function, then
@@ -354,7 +354,7 @@ def process_sentence(sentence, start_word="<S>", end_word="</S>"):
     >>> c = "how are you?"
     >>> c = tl.nlp.process_sentence(c)
     >>> print(c)
-    ... ['<S>', 'how', 'are', 'you', '?', '</S>']
+    ['<S>', 'how', 'are', 'you', '?', '</S>']
 
     Notes
     -------
@@ -411,21 +411,21 @@ def create_vocab(sentences, word_counts_output_file, min_word_count=1):
     Create vocabulary
 
     >>> tl.nlp.create_vocab(processed_capts, word_counts_output_file='vocab.txt', min_word_count=1)
-    ... Creating vocabulary.
-    ...   Total words: 8
-    ...   Words in vocabulary: 8
-    ...   Wrote vocabulary file: vocab.txt
+    Creating vocabulary.
+      Total words: 8
+      Words in vocabulary: 8
+      Wrote vocabulary file: vocab.txt
 
     Get vocabulary object
 
     >>> vocab = tl.nlp.Vocabulary('vocab.txt', start_word="<S>", end_word="</S>", unk_word="<UNK>")
-    ... INFO:tensorflow:Initializing vocabulary from file: vocab.txt
-    ... [TL] Vocabulary from vocab.txt : <S> </S> <UNK>
-    ... vocabulary with 10 words (includes start_word, end_word, unk_word)
-    ...     start_id: 2
-    ...     end_id: 3
-    ...     unk_id: 9
-    ...     pad_id: 0
+    INFO:tensorflow:Initializing vocabulary from file: vocab.txt
+    [TL] Vocabulary from vocab.txt : <S> </S> <UNK>
+    vocabulary with 10 words (includes start_word, end_word, unk_word)
+        start_id: 2
+        end_id: 3
+        unk_id: 9
+        pad_id: 0
 
     """
     logging.info("Creating vocabulary.")
@@ -544,13 +544,13 @@ def read_analogies_file(eval_file='questions-words.txt', word2id=None):
     >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
     >>> analogy_questions = tl.nlp.read_analogies_file(eval_file='questions-words.txt', word2id=dictionary)
     >>> print(analogy_questions)
-    ... [[ 3068  1248  7161  1581]
-    ... [ 3068  1248 28683  5642]
-    ... [ 3068  1248  3878   486]
-    ... ...,
-    ... [ 1216  4309 19982 25506]
-    ... [ 1216  4309  3194  8650]
-    ... [ 1216  4309   140   312]]
+    [[ 3068  1248  7161  1581]
+    [ 3068  1248 28683  5642]
+    [ 3068  1248  3878   486]
+    ...,
+    [ 1216  4309 19982 25506]
+    [ 1216  4309  3194  8650]
+    [ 1216  4309   140   312]]
 
     """
     if word2id is None:
@@ -729,9 +729,9 @@ def words_to_word_ids(data=None, word_to_id=None, unk_key='UNK'):
     >>> ids = tl.nlp.words_to_word_ids(words, dictionary)
     >>> context = tl.nlp.word_ids_to_words(ids, reverse_dictionary)
     >>> print(ids)
-    ... [6434, 311, 26, 207]
+    [6434, 311, 26, 207]
     >>> print(context)
-    ... [b'hello', b'how', b'are', b'you']
+    [b'hello', b'how', b'are', b'you']
 
     References
     ---------------
@@ -808,14 +808,14 @@ def save_vocab(count=None, name='vocab.txt'):
     >>> data, count, dictionary, reverse_dictionary = tl.nlp.build_words_dataset(words, vocabulary_size, True)
     >>> tl.nlp.save_vocab(count, name='vocab_text8.txt')
     >>> vocab_text8.txt
-    ... UNK 418391
-    ... the 1061396
-    ... of 593677
-    ... and 416629
-    ... one 411764
-    ... in 372201
-    ... a 325873
-    ... to 316376
+    UNK 418391
+    the 1061396
+    of 593677
+    and 416629
+    one 411764
+    in 372201
+    a 325873
+    to 316376
 
     """
     if count is None:
@@ -851,11 +851,11 @@ def basic_tokenizer(sentence, _WORD_SPLIT=re.compile(b"([.,!?\"':;)(])")):
     >>>       tokens = tl.nlp.basic_tokenizer(line)
     >>>       logging.info(tokens)
     >>>       exit()
-    ... [b'Changing', b'Lives', b'|', b'Changing', b'Society', b'|', b'How',
-    ...   b'It', b'Works', b'|', b'Technology', b'Drives', b'Change', b'Home',
-    ...   b'|', b'Concepts', b'|', b'Teachers', b'|', b'Search', b'|', b'Overview',
-    ...   b'|', b'Credits', b'|', b'HHCC', b'Web', b'|', b'Reference', b'|',
-    ...   b'Feedback', b'Virtual', b'Museum', b'of', b'Canada', b'Home', b'Page']
+    [b'Changing', b'Lives', b'|', b'Changing', b'Society', b'|', b'How',
+      b'It', b'Works', b'|', b'Technology', b'Drives', b'Change', b'Home',
+      b'|', b'Concepts', b'|', b'Teachers', b'|', b'Search', b'|', b'Overview',
+      b'|', b'Credits', b'|', b'HHCC', b'Web', b'|', b'Reference', b'|',
+      b'Feedback', b'Virtual', b'Museum', b'of', b'Canada', b'Home', b'Page']
 
     References
     ----------
@@ -952,9 +952,9 @@ def initialize_vocabulary(vocabulary_path):
     Examples
     ---------
     >>> Assume 'test' contains
-    ... dog
-    ... cat
-    ... bird
+    dog
+    cat
+    bird
     >>> vocab, rev_vocab = tl.nlp.initialize_vocabulary("test")
     >>> print(vocab)
     >>> {b'cat': 1, b'dog': 0, b'bird': 2}

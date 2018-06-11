@@ -41,12 +41,12 @@ def discount_episode_rewards(rewards=None, gamma=0.99, mode=0):
     >>> gamma = 0.9
     >>> discount_rewards = tl.rein.discount_episode_rewards(rewards, gamma)
     >>> print(discount_rewards)
-    ... [ 0.72899997  0.81        0.89999998  1.          0.72899997  0.81
-    ... 0.89999998  1.          0.72899997  0.81        0.89999998  1.        ]
+    [ 0.72899997  0.81        0.89999998  1.          0.72899997  0.81
+    0.89999998  1.          0.72899997  0.81        0.89999998  1.        ]
     >>> discount_rewards = tl.rein.discount_episode_rewards(rewards, gamma, mode=1)
     >>> print(discount_rewards)
-    ... [ 1.52110755  1.69011939  1.87791049  2.08656716  1.20729685  1.34144104
-    ... 1.49048996  1.65610003  0.72899997  0.81        0.89999998  1.        ]
+    [ 1.52110755  1.69011939  1.87791049  2.08656716  1.20729685  1.34144104
+    1.49048996  1.65610003  0.72899997  0.81        0.89999998  1.        ]
 
     """
     if rewards is None:
@@ -139,17 +139,17 @@ def choice_action_by_probs(probs=(0.5, 0.5), action_list=None):
     >>> for _ in range(5):
     >>>     a = choice_action_by_probs([0.2, 0.4, 0.4])
     >>>     print(a)
-    ... 0
-    ... 1
-    ... 1
-    ... 2
-    ... 1
+    0
+    1
+    1
+    2
+    1
     >>> for _ in range(3):
     >>>     a = choice_action_by_probs([0.5, 0.5], ['a', 'b'])
     >>>     print(a)
-    ... a
-    ... b
-    ... b
+    a
+    b
+    b
 
     """
     if action_list is None:

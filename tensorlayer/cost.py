@@ -390,7 +390,7 @@ def cross_entropy_seq(logits, target_seqs, batch_size=None):  #, batch_size=1, n
     >>> targets = tf.placeholder(tf.int32, [batch_size, n_steps])
     >>> # build the network
     >>> print(net.outputs)
-    ... (batch_size * n_steps, n_classes)
+    (batch_size * n_steps, n_classes)
     >>> cost = tl.cost.cross_entropy_seq(network.outputs, targets)
 
     """
@@ -445,10 +445,10 @@ def cross_entropy_seq_with_mask(logits, target_seqs, input_mask, return_details=
     ...         return_seq_2d = True,
     ...         name = 'dynamicrnn')
     >>> print(net.outputs)
-    ... (?, 256)
+    (?, 256)
     >>> net = tl.layers.DenseLayer(net, n_units=vocab_size, name="output")
     >>> print(net.outputs)
-    ... (?, 10000)
+    (?, 10000)
     >>> loss = tl.cost.cross_entropy_seq_with_mask(net.outputs, target_seqs, input_mask)
 
     """
