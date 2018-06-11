@@ -9,7 +9,6 @@ from tensorlayer import iterate
 from tensorlayer import utils
 from tensorlayer import visualize
 
-from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.dense import DenseLayer

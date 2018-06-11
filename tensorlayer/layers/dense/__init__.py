@@ -9,8 +9,8 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
+from .base_dense import *
 from .binary_dense import *
-from .dense import *
 from .dorefa_dense import *
 from .dropconnect import *
 from .ternary_dense import *

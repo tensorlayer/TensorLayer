@@ -239,10 +239,14 @@ To release a new version, please update the changelog as followed:
 - Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (by @DEKHTIARJonathan in #675)
 - Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (by @DEKHTIARJonathan in #675)
 - Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (by @DEKHTIARJonathan in #675)
+- Convolution Layers have been refactored under the folder `tensorlayer/layers/convolution` (by @DEKHTIARJonathan in #692)
+- Dense Layers have been refactored under the folder `tensorlayer/layers/dense` (by @DEKHTIARJonathan in #692)
+- Numerous Layer utility functions have been refactored in the file `tensorlayer/layers/utils.py` (by @DEKHTIARJonathan in #692)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
-- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (by @DEKHTIARJonathan in #686)
+- `tl.act.leaky_relu` has been deprecated in favor of `tf.nn.leaky_relu` (by @DEKHTIARJonathan in #686)
+- `tl.layers.initialize_global_variables` has been deprecated in favor of `tf.global_variables_initializer` (by @DEKHTIARJonathan in #692)
 
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
