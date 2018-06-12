@@ -72,8 +72,8 @@ To release a new version, please update the changelog as followed:
 - API:
   - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like 
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary
-  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been 
-  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been 
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added 
