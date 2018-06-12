@@ -170,7 +170,7 @@ To release a new version, please update the changelog as followed:
 - Update keras from 2.1.6 to 2.2.0 
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #657 #675 #667 #658 #660 #661 #686) @2wins (#560 #566 #662) @One-sixth (#579) @zsdonghao (#587 #588 #639 #686) @luomai (#639 #677) @dengyueyun666 (#676)
+@lgarithm @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #657 #675 #667 #658 #660 #661 #686 #690 #692) @2wins (#560 #566 #662) @One-sixth (#579) @zsdonghao (#587 #588 #639 #686) @luomai (#639 #677) @dengyueyun666 (#676)
 
 ## [1.8.6] - 2018-06-02
 
