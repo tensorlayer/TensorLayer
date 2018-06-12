@@ -115,6 +115,8 @@ def save_images(images, size, image_path='_temp.png'):
 
     Examples
     ---------
+    >>> import numpy as np
+    >>> import tensorlayer as tl
     >>> images = np.random.rand(64, 100, 100, 3)
     >>> tl.visualize.save_images(images, [8, 8], 'temp.png')
 
@@ -132,6 +134,11 @@ def save_images(images, size, image_path='_temp.png'):
         return img
 
     def imsave(images, size, path):
+        if np.max(images) <= 1 and (-1 <= np.min(images) < 0):
+            images = ((images + 1) * 127.5).astype(np.uint8)
+        elif np.max(images) <= 1 and np.min(images) >= 0:
+            images = (images * 255).astype(np.uint8)
+
         return imageio.imwrite(path, merge(images, size))
 
     if len(images) > size[0] * size[1]:
