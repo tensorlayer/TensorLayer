@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import (ConcatLayer, Conv2d, DropoutLayer, GlobalMeanPool2d, InputLayer, MaxPool2d)
+
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

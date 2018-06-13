@@ -33,13 +33,12 @@ cart moves more than 2.4 units from the center.
 """
 
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import gym
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer
+
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

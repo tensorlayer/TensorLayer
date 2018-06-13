@@ -43,6 +43,7 @@ from scipy.misc import imread, imresize
 import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.layers import *
+
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 

@@ -33,13 +33,12 @@ measurements. There's no coordinates in the state vector.
 
 import multiprocessing
 import threading
-
 import numpy as np
 import tensorflow as tf
-
 import gym
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer
+
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
