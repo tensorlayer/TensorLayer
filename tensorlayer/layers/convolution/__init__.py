@@ -20,6 +20,7 @@ from .group_conv import *
 from .separable_conv import *
 from .simplified_conv import *
 from .simplified_deconv import *
+from .super_resolution import *
 from .ternary_conv import *
 
 __all__ = [
@@ -64,6 +65,10 @@ __all__ = [
     # separable
     'SeparableConv1d',
     'SeparableConv2d',
+
+    # subpixel    
+    'SubpixelConv1d',
+    'SubpixelConv2d',
 
     # ternary
     'TernaryConv2d',

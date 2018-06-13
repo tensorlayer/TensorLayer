@@ -32,6 +32,5 @@ from .scale import *
 from .shape import *
 from .spatial_transformer import *
 from .stack import *
-from .super_resolution import *
 from .time_distribution import *
 from .utils import *
