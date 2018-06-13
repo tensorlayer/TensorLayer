@@ -90,7 +90,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README (PR #677)
+  - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
@@ -123,7 +123,7 @@ To release a new version, please update the changelog as followed:
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
 - RTD links point to stable documentation instead of latest used for development (PR #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
-- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
+- README.md Badges Updated with Support Python and Tensorflow Versions (PR #644)
 - TL logging API has been consistent with TF logging API and thread-safe (PR #645)
 - Relative Imports changed for absolute imports (PR #657)
 - `tl.files` refactored into a directory with numerous files (PR #657)
@@ -208,7 +208,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README (PR #677)
+  - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
@@ -236,7 +236,7 @@ To release a new version, please update the changelog as followed:
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
 - RTD links point to stable documentation instead of latest used for development (PR #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
-- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
+- README.md Badges Updated with Support Python and Tensorflow Versions (PR #644)
 - TL logging API has been consistent with TF logging API and thread-safe (PR #645)
 - Relative Imports changed for absolute imports (PR #657)
 - `tl.files` refactored into a directory with numerous files (PR #657)
