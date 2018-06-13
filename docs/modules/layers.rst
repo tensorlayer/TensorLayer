@@ -122,6 +122,9 @@ In case for evaluating and testing, you can disable all dropout layers as follow
 
 For more details, please read the MNIST examples in the example folder.
 
+.. -----------------------------------------------------------
+..                        Layer List
+.. -----------------------------------------------------------
 
 Layer list
 ----------
@@ -260,6 +263,9 @@ Layer list
    list_remove_repeat
    merge_networks
 
+.. -----------------------------------------------------------
+..                    Customizing Layers
+.. -----------------------------------------------------------
 
 Customizing Layers
 ------------------
@@ -378,10 +384,18 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
   	self.cost = mse + L1_a + L2_w
 
 
+.. -----------------------------------------------------------
+..                        Basic Layers
+.. -----------------------------------------------------------
+
 Basic layer
 -----------
+
 .. autoclass:: Layer
 
+.. -----------------------------------------------------------
+..                        Input Layers
+.. -----------------------------------------------------------
 
 Input Layers
 ---------------
@@ -406,100 +420,276 @@ Average Embedding Input layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AverageEmbeddingInputlayer
 
-Dense layer
-------------
+.. -----------------------------------------------------------
+..                     Activation Layers
+.. -----------------------------------------------------------
 
-Dense layer
-^^^^^^^^^^^^^
-.. autoclass:: DenseLayer
 
-Reconstruction layer for Autoencoder
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ReconLayer
-   :members:
+Activation Layers
+---------------------------
 
-Noise layer
-------------
+PReLU Layer
+^^^^^^^^^^^^^^^^^
+.. autoclass:: PReluLayer
 
-Dropout layer
-^^^^^^^^^^^^^^^^
-.. autoclass:: DropoutLayer
 
-Gaussian noise layer
-^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: GaussianNoiseLayer
+PReLU6 Layer
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: PRelu6Layer
 
-Dropconnect + Dense layer
+
+PTReLU6 Layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: PTRelu6Layer
+
+
+.. -----------------------------------------------------------
+..                  Convolutional Layers
+.. -----------------------------------------------------------
+
+Convolutional Layers
+---------------------
+
+Simplified Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DropconnectDenseLayer
-
-
-Convolutional layer (Simplified)
------------------------------------
 
 For users don't familiar with TensorFlow, the following simplified functions may easier for you.
 We will provide more simplified functions later, but if you are good at TensorFlow, the professional
 APIs may better for you.
 
-1D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
+Conv1d
+"""""""""""""""""""""
 .. autoclass:: Conv1d
 
-2D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
+Conv2d
+"""""""""""""""""""""
 .. autoclass:: Conv2d
 
-2D Deconvolution
+
+Simplified Deconvolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For users don't familiar with TensorFlow, the following simplified functions may easier for you.
+We will provide more simplified functions later, but if you are good at TensorFlow, the professional
+APIs may better for you.
+
+DeConv2d
+"""""""""""""""""""""
 .. autoclass:: DeConv2d
 
-3D Deconvolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+DeConv3d
+"""""""""""""""""""""
 .. autoclass:: DeConv3d
 
-2D Depthwise Conv
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DepthwiseConv2d
 
-1D Depthwise Separable Conv
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SeparableConv1d
+Expert Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2D Depthwise Separable Conv
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SeparableConv2d
+Conv1dLayer
+"""""""""""""""""""""
+.. autoclass:: Conv1dLayer
 
-2D Deformable Conv
-^^^^^^^^^^^^^^^^^^^^^^^
+Conv2dLayer
+"""""""""""""""""""""
+.. autoclass:: Conv2dLayer
+
+Conv3dLayer
+"""""""""""""""""""""
+.. autoclass:: Conv3dLayer
+
+
+Expert Deconvolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DeConv2dLayer
+"""""""""""""""""""""
+.. autoclass:: DeConv2dLayer
+
+DeConv3dLayer
+"""""""""""""""""""""
+.. autoclass:: DeConv3dLayer
+
+
+Atrous (De)Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+AtrousConv1dLayer
+"""""""""""""""""""""
+.. autofunction:: AtrousConv1dLayer
+
+AtrousConv2dLayer
+"""""""""""""""""""""
+.. autoclass:: AtrousConv2dLayer
+
+AtrousDeConv2dLayer
+"""""""""""""""""""""
+.. autoclass:: AtrousDeConv2dLayer
+
+
+Binary (De)Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+BinaryConv2d
+"""""""""""""""""""""
+.. autoclass:: BinaryConv2d
+
+
+Deformable Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DeformableConv2d
+"""""""""""""""""""""
 .. autoclass:: DeformableConv2d
 
-2D Grouped Conv
-^^^^^^^^^^^^^^^^^^^^^^^
+
+Depthwise Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DepthwiseConv2d
+"""""""""""""""""""""
+.. autoclass:: DepthwiseConv2d
+
+
+DoReFa Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+DorefaConv2d
+"""""""""""""""""""""
+.. autoclass:: DorefaConv2d
+
+
+Group Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+GroupConv2d
+"""""""""""""""""""""
 .. autoclass:: GroupConv2d
 
 
-Convolutional layer (Pro)
---------------------------
-
-1D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv1dLayer
-
-2D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv2dLayer
-
-2D Deconvolution
+Separable Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DeConv2dLayer
 
-3D Convolution
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: Conv3dLayer
+SeparableConv1d
+"""""""""""""""""""""
+.. autoclass:: SeparableConv1d
 
-3D Deconvolution
+SeparableConv2d
+"""""""""""""""""""""
+.. autoclass:: SeparableConv2d
+
+
+SubPixel Convolutions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: DeConv3dLayer
+
+SubpixelConv1d
+"""""""""""""""""""""
+.. autoclass:: SubpixelConv1d
+
+SubpixelConv2d
+"""""""""""""""""""""
+.. autoclass:: SubpixelConv2d
+
+
+Ternary Convolutions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TernaryConv2d
+"""""""""""""""""""""
+.. autoclass:: TernaryConv2d
+
+
+
+.. -----------------------------------------------------------
+..                        Dense Layers
+.. -----------------------------------------------------------
+
+Dense layer
+------------
+
+Binary Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BinaryDenseLayer
+
+Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DenseLayer
+
+DoReFa Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DorefaDenseLayer
+
+Drop Connect Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: DropconnectDenseLayer
+
+Ternary Dense Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: TernaryDenseLayer
+
+.. -----------------------------------------------------------
+..                       Dropout Layer
+.. -----------------------------------------------------------
+
+Dropout Layers
+-------------------
+.. autoclass:: DropoutLayer
+
+.. -----------------------------------------------------------
+..                        Extend Layers
+.. -----------------------------------------------------------
+
+Extend Layers
+-------------------
+
+Expand Dims Layer
+^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ExpandDimsLayer
+
+
+Tile layer
+^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: TileLayer
+
+
+.. -----------------------------------------------------------
+..                 External Libraries Layers
+.. -----------------------------------------------------------
+
+External Libraries Layers
+------------------------------
+
+TF-Slim Layer
+^^^^^^^^^^^^^^^^^^^
+TF-Slim models can be connected into TensorLayer. All Google's Pre-trained model can be used easily ,
+see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
+
+.. autoclass:: SlimNetsLayer
+
+Keras Layer
+^^^^^^^^^^^^^^^^^^^
+Yes ! Keras models can be connected into TensorLayer! 
+see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
+
+.. autoclass:: KerasLayer
+
+Estimator Layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: EstimatorLayer
+
+.. -----------------------------------------------------------
+..                    Flow Control Layer
+.. -----------------------------------------------------------
+
+Flow Control Layer
+----------------------
+.. autoclass:: MultiplexerLayer
+
+.. -----------------------------------------------------------
+..                  Image Resampling Layers
+.. -----------------------------------------------------------
+
+Image Resampling Layers
+-------------------------
 
 2D UpSampling
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -509,61 +699,90 @@ Convolutional layer (Pro)
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: DownSampling2dLayer
 
-1D Atrous convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: AtrousConv1dLayer
+.. -----------------------------------------------------------
+..                      Lambda Layer
+.. -----------------------------------------------------------
 
-2D Atrous convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AtrousConv2dLayer
+Lambda Layers
+---------------
 
-2D Atrous transposed convolution
+Lambda Layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: LambdaLayer
+
+ElementWise Lambda Layer
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ElementwiseLambdaLayer
+
+.. -----------------------------------------------------------
+..                      Merge Layer
+.. -----------------------------------------------------------
+
+Merge Layers
+---------------
+
+Concat Layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ConcatLayer
+
+ElementWise Layer
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: ElementwiseLayer
+
+.. -----------------------------------------------------------
+..                      Noise Layers
+.. -----------------------------------------------------------
+
+Noise Layer
+---------------
+.. autoclass:: GaussianNoiseLayer
+
+.. -----------------------------------------------------------
+..                  Normalization Layers
+.. -----------------------------------------------------------
+
+Normalization layer
+--------------------
+
+For local response normalization as it does not have any weights and arguments,
+you can also apply ``tf.nn.lrn`` on ``network.outputs``.
+
+Batch Normalization
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: BatchNormLayer
+
+Local Response Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: AtrousDeConv2dLayer
+.. autoclass:: LocalResponseNormLayer
 
+Instance Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: InstanceNormLayer
 
-Super-Resolution layer
+Layer Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: LayerNormLayer
+
+.. -----------------------------------------------------------
+..                Object Detection Layers
+.. -----------------------------------------------------------
+
+Object Detection Layer
+------------------------
+.. autoclass:: ROIPoolingLayer
+
+.. -----------------------------------------------------------
+..                     Padding Layers
+.. -----------------------------------------------------------
+
+Padding Layers
 ------------------------
 
-1D Subpixel Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SubpixelConv1d
-
-2D Subpixel Convolution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SubpixelConv2d
-
-
-Spatial Transformer
------------------------
-
-2D Affine Transformation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: SpatialTransformer2dAffineLayer
-
-2D Affine Transformation function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: transformer
-
-Batch 2D Affine Transformation function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: batch_transformer
-
-
-Pooling and Padding layers
----------------------------
-
-Padding (Pro)
-^^^^^^^^^^^^^^
+Pad Layer (Expert API)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 Padding layer for any modes.
 
 .. autoclass:: PadLayer
-
-Pooling (Pro)
-^^^^^^^^^^^^^^
-Pooling layer for any dimensions and any pooling functions.
-
-.. autoclass:: PoolLayer
 
 1D Zero padding
 ^^^^^^^^^^^^^^^^^^^
@@ -576,6 +795,19 @@ Pooling layer for any dimensions and any pooling functions.
 3D Zero padding
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: ZeroPad3d
+
+.. -----------------------------------------------------------
+..                     Pooling Layers
+.. -----------------------------------------------------------
+
+Padding Layers
+------------------------
+
+Pool Layer (Expert API)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Pooling layer for any dimensions and any pooling functions.
+
+.. autoclass:: PoolLayer
 
 1D Max pooling
 ^^^^^^^^^^^^^^^^^^^
@@ -625,132 +857,111 @@ Pooling layer for any dimensions and any pooling functions.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: GlobalMeanPool3d
 
+.. -----------------------------------------------------------
+..                    Quantized Layers
+.. -----------------------------------------------------------
 
-Normalization layer
---------------------
+Quantized Nets
+------------------
 
-For local response normalization as it does not have any weights and arguments,
-you can also apply ``tf.nn.lrn`` on ``network.outputs``.
+This is an experimental API package for building Quantized Neural Networks. We are using matrix multiplication rather than add-minus and bit-count operation at the moment. Therefore, these APIs would not speed up the inferencing, for production, you can train model via TensorLayer and deploy the model into other customized C/C++ implementation (We probably provide users an extra C/C++ binary net framework that can load model from TensorLayer).
 
-Batch Normalization
-^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: BatchNormLayer
-
-Local Response Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LocalResponseNormLayer
-
-Instance Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: InstanceNormLayer
-
-Layer Normalization
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: LayerNormLayer
-
-Object Detection
--------------------
-
-ROI layer
-^^^^^^^^^^^
-.. autoclass:: ROIPoolingLayer
+Note that, these experimental APIs can be changed in the future
 
 
-Time distributed layer
-------------------------
+Sign
+^^^^^^^^^^^^^^
+.. autoclass:: SignLayer
 
-.. autoclass:: TimeDistributedLayer
+Scale
+^^^^^^^^^^^^^^
+.. autoclass:: ScaleLayer
 
+.. -----------------------------------------------------------
+..                  Reconstruction Layer
+.. -----------------------------------------------------------
 
+Recurrent Layers
+---------------------
 
 Fixed Length Recurrent layer
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All recurrent layers can implement any type of RNN cell by feeding different cell function (LSTM, GRU etc).
 
 RNN layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autoclass:: RNNLayer
 
 Bidirectional layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""
 .. autoclass:: BiRNNLayer
 
 
-
 Recurrent Convolutional layer
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Conv RNN Cell
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""
 .. autoclass:: ConvRNNCell
 
 Basic Conv LSTM Cell
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""
 .. autoclass:: BasicConvLSTMCell
 
 Conv LSTM layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""
 .. autoclass:: ConvLSTMLayer
 
 
-
 Advanced Ops for Dynamic RNN
--------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 These operations usually be used inside Dynamic RNN layer, they can
 compute the sequence lengths for different situation and get the last RNN outputs by indexing.
 
 Output indexing
-^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""
 .. autofunction:: advanced_indexing_op
 
 Compute Sequence length 1
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op
 
 Compute Sequence length 2
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op2
 
 Compute Sequence length 3
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autofunction:: retrieve_seq_length_op3
 
 Get Mask
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autofunction:: target_mask_op
 
 
 Dynamic RNN layer
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 RNN layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""
 .. autoclass:: DynamicRNNLayer
 
 Bidirectional layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+"""""""""""""""""""""""""""""""""
 .. autoclass:: BiDynamicRNNLayer
 
 
-
 Sequence to Sequence
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Simple Seq2Seq
-^^^^^^^^^^^^^^^^^
+"""""""""""""""""
 .. autoclass:: Seq2Seq
 
-..
-  PeekySeq2Seq
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  .. autoclass:: PeekySeq2Seq
 
-  AttentionSeq2Seq
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  .. autoclass:: AttentionSeq2Seq
-
-
-
+.. -----------------------------------------------------------
+..                      Shape Layers
+.. -----------------------------------------------------------
 
 Shape layer
 ------------
@@ -767,41 +978,28 @@ Transpose layer
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: TransposeLayer
 
+.. -----------------------------------------------------------
+..               Spatial Transformer Layers
+.. -----------------------------------------------------------
 
-Lambda layer
----------------
+Spatial Transformer
+-----------------------
 
-.. autoclass:: LambdaLayer
+2D Affine Transformation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: SpatialTransformer2dAffineLayer
 
-Merge layer
--------------
+2D Affine Transformation function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: transformer
 
-Concat layer
-^^^^^^^^^^^^^^
-.. autoclass:: ConcatLayer
+Batch 2D Affine Transformation function
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autofunction:: batch_transformer
 
-
-Element-wise layer
-^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ElementwiseLayer
-
-
-Element-wise lambda layer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ElementwiseLambdaLayer
-
-
-Extend layer
--------------
-
-Expand dims layer
-^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ExpandDimsLayer
-
-Tile layer
-^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: TileLayer
-
+.. -----------------------------------------------------------
+..                      Stack Layers
+.. -----------------------------------------------------------
 
 Stack layer
 -------------
@@ -814,108 +1012,20 @@ Unstack layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: UnStackLayer
 
-..
-  Estimator layer
-  ------------------
-  .. autoclass:: EstimatorLayer
+.. -----------------------------------------------------------
+..                 Time Distributed Layer
+.. -----------------------------------------------------------
+
+Time Distributed Layer
+------------------------
+.. autoclass:: TimeDistributedLayer
 
 
-Connect TF-Slim
-------------------
+.. -----------------------------------------------------------
+..                      Helper Functions
+.. -----------------------------------------------------------
 
-TF-Slim models can be connected into TensorLayer. All Google's Pre-trained model can be used easily ,
-see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>`__.
-
-.. autoclass:: SlimNetsLayer
-
-..
-  Connect Keras
-  ------------------
-
-  Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
-
-  .. autoclass:: KerasLayer
-
-
-Quantized Nets
-------------------
-
-Read Me
-^^^^^^^^^^^^^^
-
-This is an experimental API package for building Quantized Neural Networks. We are using matrix multiplication rather than add-minus and bit-count operation at the moment. Therefore, these APIs would not speed up the inferencing, for production, you can train model via TensorLayer and deploy the model into other customized C/C++ implementation (We probably provide users an extra C/C++ binary net framework that can load model from TensorLayer).
-
-Note that, these experimental APIs can be changed in the future
-
-Binarized Dense
-^^^^^^^^^^^^^^^^^
-.. autoclass:: BinaryDenseLayer
-
-Binarized Conv2d
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: BinaryConv2d
-
-Ternary Dense
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: TernaryDenseLayer
-
-Ternary Conv2d
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: TernaryConv2d
-
-Dorefa Dense
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: DorefaDenseLayer
-
-Dorefa Conv2d
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: DorefaConv2d
-
-Sign
-^^^^^^^^^^^^^^
-.. autoclass:: SignLayer
-
-Scale
-^^^^^^^^^^^^^^
-.. autoclass:: ScaleLayer
-
-
-Parametric activation layer
----------------------------
-
-PReLU Layer
-^^^^^^^^^^^
-.. autoclass:: PReluLayer
-
-
-PReLU6 Layer
-^^^^^^^^^^^^
-.. autoclass:: PRelu6Layer
-
-
-PTReLU6 Layer
-^^^^^^^^^^^^^
-.. autoclass:: PTRelu6Layer
-
-
-Flow control layer
-----------------------
-
-.. autoclass:: MultiplexerLayer
-
-..
-  Wrapper
-  ---------
-
-  Embedding + Attention + Seq2seq
-  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-  .. autoclass:: EmbeddingAttentionSeq2seqWrapper
-    :members:
-
-
-
-Helper functions
+Helper Functions
 ------------------------
 
 Flatten tensor

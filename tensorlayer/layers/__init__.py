@@ -16,9 +16,10 @@ from .dense import *
 from .dropout import *
 from .extend import *
 from .flow_control import *
-from .image_resize import *
+from .image_resampling import *
 from .importer import *
 from .inputs import *
+from .lambda_layers import *
 from .merge import *
 from .noise import *
 from .normalization import *
