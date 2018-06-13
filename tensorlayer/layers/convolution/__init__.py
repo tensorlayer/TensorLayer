@@ -66,7 +66,7 @@ __all__ = [
     'SeparableConv1d',
     'SeparableConv2d',
 
-    # subpixel    
+    # subpixel
     'SubpixelConv1d',
     'SubpixelConv2d',
 
