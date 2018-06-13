@@ -33,8 +33,8 @@ to the library as a developer.
   user/installation
   user/tutorial
   user/example
-  user/development
   user/contributing
+  user/get_involved
   user/faq
 
 API Reference
