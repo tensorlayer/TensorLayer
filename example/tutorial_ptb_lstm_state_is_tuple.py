@@ -1,23 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
-
-
-import time
-
-import numpy as np
-import tensorflow as tf
-import tensorlayer as tl
-from tensorlayer.layers import set_keep
-
 """Example of Synced sequence input and output.
+
 This is a reimpmentation of the TensorFlow official PTB example in :
 tensorflow/models/rnn/ptb
 
-The batch_size can be seem as how many concurrent computations.\n
-As the following example shows, the first batch learn the sequence information by using 0 to 9.\n
-The second batch learn the sequence information by using 10 to 19.\n
-So it ignores the information from 9 to 10 !\n
-If only if we set the batch_size = 1, it will consider all information from 0 to 20.\n
+The batch_size can be seem as how many concurrent computations.n
+As the following example shows, the first batch learn the sequence information by using 0 to 9.n
+The second batch learn the sequence information by using 10 to 19.n
+So it ignores the information from 9 to 10 !n
+If only if we set the batch_size = 1, it will consider all information from 0 to 20.n
 
 The meaning of batch_size here is not the same with the MNIST example. In MNIST example,
 batch_size reflects how many examples we consider in each iteration, while in
@@ -32,12 +24,12 @@ In PTB tutorial, we setted batch_size = 20, so we cut the dataset into 20 segmen
 At the begining of each epoch, we initialize (reset) the 20 RNN states for 20
 segments, then go through 20 segments separately.
 
-The training data will be generated as follow:\n
+The training data will be generated as follow:n
 
 >>> train_data = [i for i in range(20)]
 >>> for batch in tl.iterate.ptb_iterator(train_data, batch_size=2, num_steps=3):
 >>>     x, y = batch
->>>     print(x, '\n',y)
+>>>     print(x, 'n',y)
 ... [[ 0  1  2] <---x                       1st subset/ iteration
 ...  [10 11 12]]
 ... [[ 1  2  3] <---y
@@ -67,9 +59,8 @@ $ Seq2seq : https://www.tensorflow.org/versions/master/tutorials/seq2seq/index.h
 $ translation : tensorflow/models/rnn/translate
 
 tensorflow (0.9.0)
-"""
 
-"""Example / benchmark for building a PTB LSTM model.
+Example / benchmark for building a PTB LSTM model.
 
 Trains the model described in:
 (Zaremba, et. al.) Recurrent Neural Network Regularization
@@ -110,11 +101,27 @@ gate weights. Split by column into 4 parts to get the 4 gate weight matrices.
 
 """
 
-flags = tf.flags
-flags.DEFINE_string(
-    "model", "small",
-    "A type of model. Possible options are: small, medium, large.")
+import sys
+import time
+import numpy as np
+import tensorflow as tf
+import tensorlayer as tl
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
+flags = tf.app.flags
+
+flags.DEFINE_string("model", "small", "A type of model. Possible options are: small, medium, large.")
+
+if (tf.VERSION >= '1.5'):
+    # parse flags
+    flags.FLAGS(sys.argv, known_only=True)
+    flags.ArgumentParser()
+
 FLAGS = flags.FLAGS
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
 def main(_):
@@ -128,7 +135,7 @@ def main(_):
 
     if FLAGS.model == "small":
         init_scale = 0.1
-        learning_rate = 1.0
+        learning_rate = 1.
         max_grad_norm = 5
         num_steps = 20
         hidden_size = 200
@@ -142,7 +149,7 @@ def main(_):
         init_scale = 0.05
         learning_rate = 1.0
         max_grad_norm = 5
-        num_layers = 2
+        # num_layers = 2
         num_steps = 35
         hidden_size = 650
         max_epoch = 6
@@ -155,7 +162,7 @@ def main(_):
         init_scale = 0.04
         learning_rate = 1.0
         max_grad_norm = 10
-        num_layers = 2
+        # num_layers = 2
         num_steps = 35
         hidden_size = 1500
         max_epoch = 14
@@ -170,10 +177,10 @@ def main(_):
     # Load PTB dataset
     train_data, valid_data, test_data, vocab_size = tl.files.load_ptb_dataset()
     # train_data = train_data[0:int(100000/5)]    # for fast testing
-    print('len(train_data) {}'.format(len(train_data))) # 929589 a list of int
-    print('len(valid_data) {}'.format(len(valid_data))) # 73760  a list of int
+    print('len(train_data) {}'.format(len(train_data)))  # 929589 a list of int
+    print('len(valid_data) {}'.format(len(valid_data)))  # 73760  a list of int
     print('len(test_data)  {}'.format(len(test_data)))  # 82430  a list of int
-    print('vocab_size      {}'.format(vocab_size))      # 10000
+    print('vocab_size      {}'.format(vocab_size))  # 10000
 
     sess = tf.InteractiveSession()
 
@@ -195,62 +202,57 @@ def main(_):
         Note :
         - For DynamicRNNLayer, you can set dropout and the number of RNN layer internally.
         """
-        print("\nnum_steps : %d, is_training : %s, reuse : %s" %
-                                                (num_steps, is_training, reuse))
-        initializer = tf.random_uniform_initializer(-init_scale, init_scale)
+        print("\nnum_steps : %d, is_training : %s, reuse : %s" % (num_steps, is_training, reuse))
+        init = tf.random_uniform_initializer(-init_scale, init_scale)
         with tf.variable_scope("model", reuse=reuse):
-            tl.layers.set_name_reuse(reuse)
-            network = tl.layers.EmbeddingInputlayer(
-                        inputs=x,
-                        vocabulary_size=vocab_size,
-                        embedding_size=hidden_size,
-                        E_init=initializer,
-                        name='embedding')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob,
-                        is_fix=True, is_train=is_training, name='drop1')
-            network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell, #tf.nn.rnn_cell.BasicLSTMCell,
-                        cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
-                        n_hidden=hidden_size,
-                        initializer=initializer,
-                        n_steps=num_steps,
-                        return_last=False,
-                        name='basic_lstm1')
-            lstm1 = network
-            network = tl.layers.DropoutLayer(network, keep=keep_prob,
-                        is_fix=True, is_train=is_training, name='drop2')
-            network = tl.layers.RNNLayer(network,
-                        cell_fn=tf.contrib.rnn.BasicLSTMCell,#tf.nn.rnn_cell.BasicLSTMCell,
-                        cell_init_args={'forget_bias': 0.0, 'state_is_tuple': True},
-                        n_hidden=hidden_size,
-                        initializer=initializer,
-                        n_steps=num_steps,
-                        return_last=False,
-                        return_seq_2d=True,
-                        name='basic_lstm2')
-            lstm2 = network
+            net = tl.layers.EmbeddingInputlayer(x, vocab_size, hidden_size, init, name='embedding')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop1')
+            net = tl.layers.RNNLayer(
+                net,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_init_args={
+                    'forget_bias': 0.0,
+                    'state_is_tuple': True
+                },
+                n_hidden=hidden_size,
+                initializer=init,
+                n_steps=num_steps,
+                return_last=False,
+                name='basic_lstm1'
+            )
+            lstm1 = net
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop2')
+            net = tl.layers.RNNLayer(
+                net,
+                cell_fn=tf.contrib.rnn.BasicLSTMCell,  #tf.nn.rnn_cell.BasicLSTMCell,
+                cell_init_args={
+                    'forget_bias': 0.0,
+                    'state_is_tuple': True
+                },
+                n_hidden=hidden_size,
+                initializer=init,
+                n_steps=num_steps,
+                return_last=False,
+                return_seq_2d=True,
+                name='basic_lstm2'
+            )
+            lstm2 = net
             # Alternatively, if return_seq_2d=False, in the above RNN layer,
             # you can reshape the outputs as follow:
-            # network = tl.layers.ReshapeLayer(network,
-            #       shape=[-1, int(network.outputs._shape[-1])], name='reshape')
-            network = tl.layers.DropoutLayer(network, keep=keep_prob,
-                        is_fix=True, is_train=is_training, name='drop3')
-            network = tl.layers.DenseLayer(network, n_units=vocab_size,
-                        W_init=initializer, b_init=initializer,
-                        act=tf.identity, name='output')
-        return network, lstm1, lstm2
+            # net = tl.layers.ReshapeLayer(net,
+            #       shape=[-1, int(net.outputs._shape[-1])], name='reshape')
+            net = tl.layers.DropoutLayer(net, keep=keep_prob, is_fix=True, is_train=is_training, name='drop3')
+            net = tl.layers.DenseLayer(net, vocab_size, W_init=init, b_init=init, act=None, name='output')
+        return net, lstm1, lstm2
 
     # Inference for Training
-    network, lstm1, lstm2 = inference(input_data,
-                            is_training=True, num_steps=num_steps, reuse=None)
+    net, lstm1, lstm2 = inference(input_data, is_training=True, num_steps=num_steps, reuse=None)
     # Inference for Validating
-    network_val, lstm1_val, lstm2_val = inference(input_data,
-                            is_training=False, num_steps=num_steps, reuse=True)
+    net_val, lstm1_val, lstm2_val = inference(input_data, is_training=False, num_steps=num_steps, reuse=True)
     # Inference for Testing (Evaluation)
-    network_test, lstm1_test, lstm2_test = inference(input_data_test,
-                            is_training=False, num_steps=1, reuse=True)
+    net_test, lstm1_test, lstm2_test = inference(input_data_test, is_training=False, num_steps=1, reuse=True)
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
     def loss_fn(outputs, targets, batch_size):
@@ -263,146 +265,148 @@ def main(_):
         # n_examples = batch_size * num_steps
         # so
         # cost is the averaged cost of each mini-batch (concurrent process).
-        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(  # loss = tf.nn.seq2seq.sequence_loss_by_example( # TF0.12
-            [outputs],
-            [tf.reshape(targets, [-1])],
-            [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)])
-            # [tf.ones([batch_size * num_steps])])
+        loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
+            [outputs], [tf.reshape(targets, [-1])], [tf.ones_like(tf.reshape(targets, [-1]), dtype=tf.float32)]
+        )
+        # [tf.ones([batch_size * num_steps])])
         cost = tf.reduce_sum(loss) / batch_size
         return cost
 
     # Cost for Training
-    cost = loss_fn(network.outputs, targets, batch_size)
+    cost = loss_fn(net.outputs, targets, batch_size)
     # Cost for Validating
-    cost_val = loss_fn(network_val.outputs, targets, batch_size)
+    cost_val = loss_fn(net_val.outputs, targets, batch_size)
     # Cost for Testing (Evaluation)
-    cost_test = loss_fn(network_test.outputs, targets_test, 1)
+    cost_test = loss_fn(net_test.outputs, targets_test, 1)
 
     # Truncated Backpropagation for training
     with tf.variable_scope('learning_rate'):
         lr = tf.Variable(0.0, trainable=False)
     tvars = tf.trainable_variables()
-    grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars),
-                                      max_grad_norm)
+    grads, _ = tf.clip_by_global_norm(tf.gradients(cost, tvars), max_grad_norm)
     optimizer = tf.train.GradientDescentOptimizer(lr)
     train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    # sess.run(tf.initialize_all_variables())
+    # sess.run(tf.global_variables_initializer())
     tl.layers.initialize_global_variables(sess)
 
-    network.print_params()
-    network.print_layers()
+    net.print_params()
+    net.print_layers()
     tl.layers.print_all_variables()
 
-    print("\nStart learning a language model by using PTB dataset")
+    print("nStart learning a language model by using PTB dataset")
     for i in range(max_max_epoch):
         # decreases the initial learning rate after several
         # epoachs (defined by ``max_epoch``), by multipling a ``lr_decay``.
-        new_lr_decay = lr_decay ** max(i - max_epoch, 0.0)
+        new_lr_decay = lr_decay**max(i - max_epoch, 0.0)
         sess.run(tf.assign(lr, learning_rate * new_lr_decay))
 
         # Training
         print("Epoch: %d/%d Learning rate: %.3f" % (i + 1, max_max_epoch, sess.run(lr)))
         epoch_size = ((len(train_data) // batch_size) - 1) // num_steps
         start_time = time.time()
-        costs = 0.0; iters = 0
+        costs = 0.0
+        iters = 0
         # reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1.initial_state)
         state2 = tl.layers.initialize_rnn_state(lstm2.initial_state)
-        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data,
-                                                    batch_size, num_steps)):
-            feed_dict = {input_data: x, targets: y,
-                        lstm1.initial_state.c: state1[0],
-                        lstm1.initial_state.h: state1[1],
-                        lstm2.initial_state.c: state2[0],
-                        lstm2.initial_state.h: state2[1],
-                        }
+        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(train_data, batch_size, num_steps)):
+            feed_dict = {
+                input_data: x,
+                targets: y,
+                lstm1.initial_state.c: state1[0],
+                lstm1.initial_state.h: state1[1],
+                lstm2.initial_state.c: state2[0],
+                lstm2.initial_state.h: state2[1],
+            }
             # For training, enable dropout
-            feed_dict.update( network.all_drop )
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost,
-                                            lstm1.final_state.c,
-                                            lstm1.final_state.h,
-                                            lstm2.final_state.c,
-                                            lstm2.final_state.h,
-                                            train_op],
-                                            feed_dict=feed_dict
-                                            )
+            feed_dict.update(net.all_drop)
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [cost, lstm1.final_state.c, lstm1.final_state.h, lstm2.final_state.c, lstm2.final_state.h, train_op],
+                feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
 
-            costs += _cost; iters += num_steps
+            costs += _cost
+            iters += num_steps
 
             if step % (epoch_size // 10) == 10:
-                print("%.3f perplexity: %.3f speed: %.0f wps" %
-                    (step * 1.0 / epoch_size, np.exp(costs / iters),
-                    iters * batch_size / (time.time() - start_time)))
+                print(
+                    "%.3f perplexity: %.3f speed: %.0f wps" %
+                    (step * 1.0 / epoch_size, np.exp(costs / iters), iters * batch_size / (time.time() - start_time))
+                )
         train_perplexity = np.exp(costs / iters)
-        print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch,
-                                                            train_perplexity))
+        print("Epoch: %d/%d Train Perplexity: %.3f" % (i + 1, max_max_epoch, train_perplexity))
 
         # Validation
         start_time = time.time()
-        costs = 0.0; iters = 0
+        costs = 0.0
+        iters = 0
         # reset all states at the begining of every epoch
         state1 = tl.layers.initialize_rnn_state(lstm1_val.initial_state)
         state2 = tl.layers.initialize_rnn_state(lstm2_val.initial_state)
-        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data,
-                                                    batch_size, num_steps)):
-            feed_dict = {input_data: x, targets: y,
-                        lstm1_val.initial_state.c: state1[0],
-                        lstm1_val.initial_state.h: state1[1],
-                        lstm2_val.initial_state.c: state2[0],
-                        lstm2_val.initial_state.h: state2[1],
-                        }
-            _cost, state1_c, state1_h, state2_c, state2_h, _ = \
-                                    sess.run([cost_val,
-                                            lstm1_val.final_state.c,
-                                            lstm1_val.final_state.h,
-                                            lstm2_val.final_state.c,
-                                            lstm2_val.final_state.h,
-                                            tf.no_op()],
-                                            feed_dict=feed_dict
-                                            )
+        for step, (x, y) in enumerate(tl.iterate.ptb_iterator(valid_data, batch_size, num_steps)):
+            feed_dict = {
+                input_data: x,
+                targets: y,
+                lstm1_val.initial_state.c: state1[0],
+                lstm1_val.initial_state.h: state1[1],
+                lstm2_val.initial_state.c: state2[0],
+                lstm2_val.initial_state.h: state2[1],
+            }
+            _cost, state1_c, state1_h, state2_c, state2_h, _ = sess.run(
+                [
+                    cost_val, lstm1_val.final_state.c, lstm1_val.final_state.h, lstm2_val.final_state.c,
+                    lstm2_val.final_state.h,
+                    tf.no_op()
+                ], feed_dict=feed_dict
+            )
             state1 = (state1_c, state1_h)
             state2 = (state2_c, state2_h)
-            costs += _cost; iters += num_steps
+            costs += _cost
+            iters += num_steps
         valid_perplexity = np.exp(costs / iters)
-        print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch,
-                                                            valid_perplexity))
+        print("Epoch: %d/%d Valid Perplexity: %.3f" % (i + 1, max_max_epoch, valid_perplexity))
 
     print("Evaluation")
     # Testing
     # go through the test set step by step, it will take a while.
     start_time = time.time()
-    costs = 0.0; iters = 0
+    costs = 0.0
+    iters = 0
     # reset all states at the begining
     state1 = tl.layers.initialize_rnn_state(lstm1_test.initial_state)
     state2 = tl.layers.initialize_rnn_state(lstm2_test.initial_state)
-    for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data,
-                                            batch_size=1, num_steps=1)):
-        feed_dict = {input_data_test: x, targets_test: y,
-                    lstm1_test.initial_state.c: state1[0],
-                    lstm1_test.initial_state.h: state1[1],
-                    lstm2_test.initial_state.c: state2[0],
-                    lstm2_test.initial_state.h: state2[1],
-                    }
-        _cost, state1_c, state1_h, state2_c, state2_h = \
-                                sess.run([cost_test,
-                                        lstm1_test.final_state.c,
-                                        lstm1_test.final_state.h,
-                                        lstm2_test.final_state.c,
-                                        lstm2_test.final_state.h,
-                                        ],
-                                        feed_dict=feed_dict
-                                        )
+    for step, (x, y) in enumerate(tl.iterate.ptb_iterator(test_data, batch_size=1, num_steps=1)):
+        feed_dict = {
+            input_data_test: x,
+            targets_test: y,
+            lstm1_test.initial_state.c: state1[0],
+            lstm1_test.initial_state.h: state1[1],
+            lstm2_test.initial_state.c: state2[0],
+            lstm2_test.initial_state.h: state2[1],
+        }
+        _cost, state1_c, state1_h, state2_c, state2_h = sess.run(
+            [
+                cost_test,
+                lstm1_test.final_state.c,
+                lstm1_test.final_state.h,
+                lstm2_test.final_state.c,
+                lstm2_test.final_state.h,
+            ], feed_dict=feed_dict
+        )
         state1 = (state1_c, state1_h)
         state2 = (state2_c, state2_h)
-        costs += _cost; iters += 1
+        costs += _cost
+        iters += 1
     test_perplexity = np.exp(costs / iters)
     print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))
 
-    print("More example: Text generation using Trump's speech data: https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py  -- def main_lstm_generate_text():")
+    print(
+        "More example: Text generation using Trump's speech data: https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py  -- def main_lstm_generate_text():"
+    )
+
 
 if __name__ == "__main__":
     tf.app.run()

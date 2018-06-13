@@ -1,5 +1,7 @@
-API - Distribution (alpha)
+API - Distributed Training
 =============================
+
+(Alpha release - usage might change later)
 
 Helper sessions and methods to run a distributed training.
 Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_.
@@ -11,6 +13,8 @@ Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/
    TaskSpecDef
    TaskSpec
    DistributedSession
+   StopAtTimeHook
+   LoadCheckpoint
 
 
 Distributed training
@@ -22,7 +26,7 @@ TaskSpecDef
 .. autofunction:: TaskSpecDef
 
 Create TaskSpecDef from environment variables
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: TaskSpec
 
@@ -151,11 +155,11 @@ to do some operations in the sessions. We added more to help with common operati
 
 
 Stop after maximum time
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: StopAtTimeHook
 
 Initialize network with checkpoint
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autofunction:: LoadCheckpoint

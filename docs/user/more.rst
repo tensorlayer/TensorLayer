@@ -11,35 +11,35 @@ More
 
   Coming soon
 
-FQA
+FAQ
 ===========
 
 How to effectively learn TensorLayer
 ------------------------------------------
 No matter what stage you are in, we recommend you to spend just 10 minutes to
-read the source code of TensorLayer and the `Understand layer / Your layer <http://tensorlayer.readthedocs.io/en/stable/modules/layers.html>`_
+read the source code of TensorLayer and the `Understand layer / Your layer <http://tensorlayer.readthedocs.io/en/stable/modules/layers.html>`__
 in this website, you will find the abstract methods are very simple for everyone.
 Reading the source codes helps you to better understand TensorFlow and allows
 you to implement your own methods easily. For discussion, we recommend
-`Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`_,
-`Help Wanted Issues <https://waffle.io/zsdonghao/tensorlayer>`_,
-`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`_
-and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`_.
+`Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`__,
+`Help Wanted Issues <https://waffle.io/tensorlayer/tensorlayer>`__,
+`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`__
+and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`__.
 
 Beginner
 ^^^^^^^^^^^^^^
-For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/zsdonghao/tensorlayer>`_ , then implement an example from scratch.
+For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/tensorlayer/tensorlayer>`__ , then implement an example from scratch.
 
 Engineer
 ^^^^^^^^^^^^^
 For people from industry, the contirbutors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning. Besides, there are also many TensorFlow users already implemented product-level examples including image captioning, semantic/instance segmentation, machine translation, chatbot and etc, which can be found online.
-It is worth noting that a wrapper especially for computer vision `Tf-Slim <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`_ can be connected with TensorLayer seamlessly.
+It is worth noting that a wrapper especially for computer vision `Tf-Slim <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ can be connected with TensorLayer seamlessly.
 Therefore, you may able to find the examples that can be used in your project.
 
 Researcher
 ^^^^^^^^^^^^^
 For people from academic, TensorLayer was originally developed by PhD students who facing issues with other libraries on implement novel algorithm. Installing TensorLayer in editable mode is recommended, so you can extend your methods in TensorLayer.
-For researches related to image such as image captioning, visual QA and etc, you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`_ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
+For researches related to image such as image captioning, visual QA and etc, you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
 
 Exclude some layers from training
@@ -69,6 +69,15 @@ After you get the variable list, you can define your optimizer like that so as t
   train_op = tf.train.AdamOptimizer(0.001).minimize(cost, var_list= train_params)
 
 
+Logging
+-------
+
+TensorLayer adopts the `Python logging module <https://docs.python.org/3/library/logging.html>`__
+to log running information.
+The logging module would print logs to the console in default.
+If you want to configure the logging module,
+you shall follow its `manual <https://docs.python.org/3/library/logging.html>`__.
+
 Visualization
 --------------
 
@@ -81,7 +90,7 @@ If you run the script via SSH control, sometime you may find the following error
 
   _tkinter.TclError: no display name and no $DISPLAY environment variable
 
-If happen, use ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
+If happen, run ``sudo apt-get install python3-tk`` or ``import matplotlib`` and ``matplotlib.use('Agg')`` before ``import tensorlayer as tl``.
 Alternatively, add the following code into the top of ``visualize.py`` or in your own code.
 
 .. code-block:: python
@@ -138,7 +147,7 @@ There are many functions need to be contributed such as
 Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
 Please push on `GitHub`_, every bit helps and will be credited.
 If you are interested in working with us, please
-`contact us <hao.dong11@imperial.ac.uk>`_.
+`contact us <hao.dong11@imperial.ac.uk>`__.
 
 
 Data Science Institute, Imperial College London
@@ -157,11 +166,11 @@ The Data Science Institute is housed in purpose built facilities in the heart of
  - To enable the translation of data science innovation by close collaboration with industry and supporting commercialization.
 
 If you are interested in working with us, please check our
-`vacancies <https://www.imperial.ac.uk/data-science/get-involved/vacancies/>`_
+`vacancies <https://www.imperial.ac.uk/data-science/get-involved/vacancies/>`__
 and other ways to
-`get involved <https://www.imperial.ac.uk/data-science/get-involved/>`_
+`get involved <https://www.imperial.ac.uk/data-science/get-involved/>`__
 , or feel free to
-`contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`_.
+`contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`__.
 
 
 

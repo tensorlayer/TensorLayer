@@ -7,6 +7,8 @@ Welcome to TensorLayer
   :align: center
   :target: https://github.com/tensorlayer/tensorlayer
 
+**Documentation Version:** |release|
+  
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
@@ -42,19 +44,33 @@ method, this part of the documentation is for you.
 .. toctree::
   :maxdepth: 2
 
-  modules/layers
-  modules/cost
-  modules/prepro
-  modules/iterate
-  modules/utils
-  modules/nlp
-  modules/rein
-  modules/files
-  modules/visualize
-  modules/ops
   modules/activation
+  modules/array_ops
+  modules/cost
   modules/distributed
+  modules/files
+  modules/iterate
+  modules/models
+  modules/nlp
+  modules/layers
+  modules/optimizers
+  modules/prepro
+  modules/rein
+  modules/utils
+  modules/visualize
   modules/db
+
+
+Command-line Reference
+----------------------
+
+TensorLayer provides a handy command-line tool `tl` to perform some common tasks.
+
+.. toctree::
+  :maxdepth: 2
+
+  modules/cli
+
 
 Indices and tables
 ==================

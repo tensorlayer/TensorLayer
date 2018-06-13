@@ -1,0 +1,234 @@
+.. raw:: html
+
+   <a href="https://tensorlayer.readthedocs.io/">
+       <div align="center">
+           <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
+       </div>
+   </a>
+
+
+.. image:: https://awesome.re/mentioned-badge.svg
+    :target: https://github.com/tensorlayer/awesome-tensorlayer
+
+.. image:: https://img.shields.io/badge/documentation-english-blue.svg
+    :target: https://tensorlayer.readthedocs.io/
+
+.. image:: https://img.shields.io/badge/documentation-中文-blue.svg
+    :target: https://tensorlayercn.readthedocs.io/
+
+.. image:: https://img.shields.io/badge/book-中文-blue.svg
+    :target: http://www.broadview.com.cn/book/5059/
+
+.. image:: http://pepy.tech/badge/tensorlayer
+    :target: http://pepy.tech/project/tensorlayer
+
+
+.. raw:: html
+
+   <br/>
+
+.. raw:: html
+
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release
+    :target: https://pypi.org/project/tensorlayer/
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
+    :target: https://pypi.org/project/tensorlayer/
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
+    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc5...master
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
+    :target: https://pypi.org/project/tensorlayer/
+
+.. image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
+    :target: https://github.com/tensorflow/tensorflow/releases
+
+
+.. raw:: html
+
+   <br/>
+
+.. raw:: html
+
+
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/travis/tensorlayer/tensorlayer/master.svg?label=Travis
+    :target: https://travis-ci.org/tensorlayer/tensorlayer
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/circleci/project/github/tensorlayer/tensorlayer/master.svg?label=Docker%20Build
+    :target: https://circleci.com/gh/tensorlayer/tensorlayer/tree/master
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN
+    :target: https://tensorlayer.readthedocs.io/
+    
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN
+    :target: https://tensorlayercn.readthedocs.io/
+    
+.. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
+    :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
+    
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/docker/pulls/tensorlayer/tensorlayer.svg
+    :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
+
+.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/codacy/grade/ca2a29ddcf7445588beff50bee5406d9.svg
+    :target: https://app.codacy.com/app/tensorlayer/tensorlayer
+
+
+
+.. raw:: html
+
+   <br/><br/>
+
+   <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
+       <div align="center">
+           <img src="img/join_slack.png" width="40%"/>
+       </div>
+   </a>
+
+   <br/>
+
+.. raw:: html
+
+TensorLayer is a novel TensorFlow-based deep learning and reinforcement
+learning library designed for researchers and engineers. It provides a
+large collection of customizable neural layers / functions that are key
+to build real-world AI applications. TensorLayer is awarded the 2017
+Best Open Source Software by the `ACM Multimedia
+Society <http://www.acmmm.org/2017/mm-2017-awardees/>`__.
+
+Why another deep learning library: TensorLayer
+==============================================
+
+As deep learning practitioners, we have been looking for a library that
+can address various development purposes. This library is easy to adopt
+by providing diverse examples, tutorials and pre-trained models. Also,
+it allow users to easily fine-tune TensorFlow; while being suitable for
+production deployment. TensorLayer aims to satisfy all these purposes.
+It has three key features:
+
+-  **Simplicity** : TensorLayer lifts the low-level dataflow interface
+   of TensorFlow to *high-level* layers / models. It is very easy to
+   learn through the rich `example
+   codes <https://github.com/tensorlayer/awesome-tensorlayer>`__
+   contributed by a wide community.
+-  **Flexibility** : TensorLayer APIs are transparent: it does not
+   mask TensorFlow from users; but leaving massive hooks that help
+   *low-level tuning* and *deep customization*.
+-  **Zero-cost Abstraction** : TensorLayer can achieve the *full
+   power* of TensorFlow. The following table shows the training speeds
+   of classic models using TensorLayer and native TensorFlow on a Titan
+   X Pascal GPU.
+
+   +---------------+-----------------+-----------------+-----------------+
+   |               | CIFAR-10        | PTB LSTM        | Word2Vec        |
+   +===============+=================+=================+=================+
+   | TensorLayer   | 2528 images/s   | 18063 words/s   | 58167 words/s   |
+   +---------------+-----------------+-----------------+-----------------+
+   | TensorFlow    | 2530 images/s   | 18075 words/s   | 58181 words/s   |
+   +---------------+-----------------+-----------------+-----------------+
+
+TensorLayer stands at a unique spot in the library landscape. Other
+wrapper libraries like Keras and TFLearn also provide high-level
+abstractions. They, however, often hide the underlying engine from
+users, which make them hard to customize and fine-tune. On the contrary,
+TensorLayer APIs are generally flexible and transparent. Users often
+find it easy to start with the examples and tutorials, and then dive
+into TensorFlow seamlessly. In addition, TensorLayer does not create
+library lock-in through native supports for importing components from
+Keras, TFSlim and TFLearn.
+
+TensorLayer has a fast growing usage among top researchers and
+engineers, from universities like Imperial College London, UC Berkeley,
+Carnegie Mellon University, Stanford University, and University of
+Technology of Compiegne (UTC), and companies like Google, Microsoft,
+Alibaba, Tencent, Xiaomi, and Bloomberg.
+
+Install
+=======
+
+TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib
+and nltk (optional). For GPU support, CUDA and cuDNN are required. The
+simplest way to install TensorLayer is to use the Python Package Index
+(PyPI):
+
+.. code:: bash
+
+    # for last stable version
+    pip install tensorlayer
+
+    # for latest release candidate
+    pip install --pre tensorlayer
+
+Alternatively, you can install the development version by directly
+pulling from github:
+
+.. code:: bash
+
+    pip install git+https://github.com/tensorlayer/tensorlayer.git
+
+Using Docker - a ready-to-use environment
+-----------------------------------------
+
+The `TensorLayer
+containers <https://hub.docker.com/r/tensorlayer/tensorlayer/>`__ are
+built on top of the official `TensorFlow
+containers <https://hub.docker.com/r/tensorflow/tensorflow/>`__:
+
+Containers with CPU support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+    # for CPU version and Python 2
+    docker pull tensorlayer/tensorlayer:latest
+    docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest
+
+    # for CPU version and Python 3
+    docker pull tensorlayer/tensorlayer:latest-py3
+    docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-py3
+
+Containers with GPU support
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NVIDIA-Docker is required for these containers to work: `Project
+Link <https://github.com/NVIDIA/nvidia-docker>`__
+
+.. code:: bash
+
+    # for GPU version and Python 2
+    docker pull tensorlayer/tensorlayer:latest-gpu
+    nvidia-docker run -it --rm -p 8888:88888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu
+
+    # for GPU version and Python 3
+    docker pull tensorlayer/tensorlayer:latest-gpu-py3
+    nvidia-docker run -it --rm -p 8888:8888 -p 6006:6006 -e PASSWORD=JUPYTER_NB_PASSWORD tensorlayer/tensorlayer:latest-gpu-py3
+
+Contribute
+==========
+
+Please read the `Contributor
+Guideline <https://github.com/tensorlayer/tensorlayer/blob/master/CONTRIBUTING.md>`__
+before submitting your PRs.
+
+Cite
+====
+
+If you find this project useful, we would be grateful if you cite the
+TensorLayer paper：
+
+::
+
+    @article{tensorlayer2017,
+        author  = {Dong, Hao and Supratak, Akara and Mai, Luo and Liu, Fangde and Oehmichen, Axel and Yu, Simiao and Guo, Yike},
+        journal = {ACM Multimedia},
+        title   = {{TensorLayer: A Versatile Library for Efficient Deep Learning Development}},
+        url     = {http://tensorlayer.org},
+        year    = {2017}
+    }
+
+License
+=======
+
+TensorLayer is released under the Apache 2.0 license.

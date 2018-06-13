@@ -1,29 +1,15 @@
 from tensorlayer.layers import *
-from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import \
-    roi_pooling
+from tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops import roi_pooling
 
 # from roi_pooling.roi_pooling_ops import roi_pooling
 
-
-
 # input feature map going into the RoI pooling
-input_value = [[
-    [[1], [2], [4], [4]],
-    [[3], [4], [1], [2]],
-    [[6], [2], [1], [7.0]],
-    [[1], [3], [2], [8]]
-]]
+input_value = [[[[1], [2], [4], [4]], [[3], [4], [1], [2]], [[6], [2], [1], [7.0]], [[1], [3], [2], [8]]]]
 input_value = np.asarray(input_value, dtype='float32')
 
 # Regions of interest as lists of:
 # feature map index, upper left, bottom right coordinates
-rois_value = [
-    [0, 0, 0, 1, 1],
-    [0, 1, 1, 2, 2],
-    [0, 2, 2, 3, 3],
-    [0, 0, 0, 2, 2],
-    [0, 0, 0, 3, 3]
-]
+rois_value = [[0, 0, 0, 1, 1], [0, 1, 1, 2, 2], [0, 2, 2, 3, 3], [0, 0, 0, 2, 2], [0, 0, 0, 3, 3]]
 rois_value = np.asarray(rois_value, dtype='int32')
 
 # the pool_height and width are parameters of the ROI layer

@@ -1,21 +1,22 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+"""Alpha Version for Distributed Training
 
-# Alpha Version for Distributed Training
+you can test this example in your local machine using 2 workers and 1 ps like below,
+where CUDA_VISIBLE_DEVICES can be used to set the GPUs the process can use.
 
-# you can test this example in your local machine using 2 workers and 1 ps like below,
-# where CUDA_VISIBLE_DEVICES can be used to set the GPUs the process can use.
-#
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 0}}' python example/tutorial_mnist_distributed.py > output-master 2>&1 &
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 1}}' python example/tutorial_mnist_distributed.py > output-worker 2>&1 &
-# CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "ps", "index": 0}}' python example/tutorial_mnist_distributed.py > output-ps 2>&1 &
-# Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 0}}' python example/tutorial_mnist_distributed.py > output-master 2>&1 &
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "worker", "index": 1}}' python example/tutorial_mnist_distributed.py > output-worker 2>&1 &
+CUDA_VISIBLE_DEVICES= TF_CONFIG='{"cluster": {"ps": ["127.0.0.1:3001"], "worker": ["127.0.0.1:3002", "127.0.0.1:3003"]}, "task": {"type": "ps", "index": 0}}' python example/tutorial_mnist_distributed.py > output-ps 2>&1 &
+Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
+
+"""
 
 import tensorflow as tf
 import tensorlayer as tl
 
-# set buffer mode to _IOLBF for stdout
-tl.ops.setlinebuf()
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # load environment for distributed training
 task_spec = tl.distributed.TaskSpec()
@@ -23,14 +24,13 @@ task_spec.create_server()
 device_fn = task_spec.device_fn() if task_spec is not None else None
 
 # prepare data
-X_train, y_train, X_val, y_val, X_test, y_test = \
-    tl.files.load_mnist_dataset(shape=(-1,784))
+X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 # create graph
 with tf.device(device_fn):
     # define placeholder
     x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
-    y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
+    y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
     # define the network
     network = tl.layers.InputLayer(x, name='input')
@@ -42,8 +42,7 @@ with tf.device(device_fn):
     # the softmax is implemented internally in tl.cost.cross_entropy(y, y_) to
     # speed up computation, so we use identity here.
     # see tf.nn.sparse_softmax_cross_entropy_with_logits()
-    network = tl.layers.DenseLayer(network, n_units=10,
-                                    act=tf.identity, name='output')
+    network = tl.layers.DenseLayer(network, n_units=10, act=None, name='output')
 
     # define cost function and metric.
     y = network.outputs
@@ -54,8 +53,7 @@ with tf.device(device_fn):
 
     # define the optimizer
     train_params = network.all_params
-    train_op = tf.train.AdamOptimizer(learning_rate=0.0001
-                        ).minimize(cost, var_list=train_params)
+    train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
     with tl.distributed.DistributedSession(task_spec=task_spec) as sess:
         # print network information
@@ -72,13 +70,13 @@ with tf.device(device_fn):
         #tl.layers.initialize_global_variables(sess)
 
         # train the network
-        tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_,
-                    acc=acc, batch_size=500, n_epoch=500, print_freq=print_freq,
-                    X_val=X_val, y_val=y_val, eval_train=eval_train)
+        tl.utils.fit(sess, network, train_op, cost, X_train, y_train, x, y_, \
+            acc=acc, batch_size=500, n_epoch=500, print_freq=print_freq, \
+            X_val=X_val, y_val=y_val, eval_train=eval_train)
 
         if task_spec.is_master():
             # evaluation
             tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
             # save the network to .npz file
-            tl.files.save_npz(network.all_params , name='model.npz')
+            tl.files.save_npz(network.all_params, name='model.npz')

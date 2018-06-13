@@ -1,13 +1,9 @@
-
-
-
 import tensorflow as tf
-import tensorlayer as tl
 
 sess = tf.InteractiveSession()
 
 x = tf.placeholder(tf.float32, shape=[None, 2], name='x')
-W = tf.Variable([[1.0, 2.0],[3.0, 4.0]])
+W = tf.Variable([[1.0, 2.0], [3.0, 4.0]])
 y = x * W
 
 W.initializer.run()
