@@ -21,13 +21,14 @@ http://karpathy.github.io/2016/05/31/rl/
 """
 
 import time
-
+import gym
 import numpy as np
 import tensorflow as tf
-
-import gym
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # hyper-parameters
 image_size = 80

@@ -4,6 +4,9 @@
 import tensorflow as tf
 import tensorlayer as tl
 
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
 sess = tf.InteractiveSession()
 
 # prepare data

@@ -13,8 +13,10 @@ Note: for GPU, please set CUDA_VISIBLE_DEVICES=GPU_ID
 """
 
 import tensorflow as tf
-
 import tensorlayer as tl
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # load environment for distributed training
 task_spec = tl.distributed.TaskSpec()

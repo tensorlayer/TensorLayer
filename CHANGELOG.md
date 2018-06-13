@@ -112,7 +112,12 @@ To release a new version, please update the changelog as followed:
   - `test_activations.py` added (PR #686)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
-
+  - add the following to all tutorials (PR #697):  
+    ```python
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
+    ```
+    
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
@@ -171,13 +176,13 @@ To release a new version, please update the changelog as followed:
 - Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
-- @lgarithm (#563)
-- @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692)
-- @2wins (#560 #566 #662)
-- @One-sixth (#579)
-- @zsdonghao (#587 #588 #639 #685)
-- @luomai (#639 #677)
-- @dengyueyun666 (#676)
+- @lgarithm: #563
+- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692
+- @2wins: #560 #566 #662
+- @One-sixth: #579
+- @zsdonghao: #587 #588 #639 #685 #697
+- @luomai: #639 #677
+- @dengyueyun666: #676
 
 ## [1.8.6] - 2018-06-02
 
