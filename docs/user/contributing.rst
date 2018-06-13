@@ -23,12 +23,12 @@ The Development Core Team
 --------------------------
 
 
-The TensorLayer project was started by `Hao Dong <https://github.com/zsdonghao>`_ at Imperial College London in June 2016. 
+The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
 
 It is developed and maintained by a core team *(in alphabetical order)*:
 
 - **Akara Supratak:** `<https://akaraspt.github.io>`_
-- **Hao Dong:** `<https://zsdonghao.github.io>`_
+- **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
 - **Jonathan Dekhtiar** (`@DEKHTIARJonathan <https://github.com/DEKHTIARJonathan>`_) - `<https://www.jonathandekhtiar.eu>`_
 - **Simiao Yu:** `<https://github.com/zsdonghao>`_
 
