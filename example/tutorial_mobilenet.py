@@ -8,11 +8,11 @@ https://github.com/rcmalli/keras-mobilenet/blob/master/keras_mobilenet/mobilenet
 import json
 import os
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 from tensorlayer.layers import (
     BatchNormLayer, Conv2d, DepthwiseConv2d, FlattenLayer, GlobalMeanPool2d, InputLayer, ReshapeLayer
 )

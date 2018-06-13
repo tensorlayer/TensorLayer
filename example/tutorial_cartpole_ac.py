@@ -40,6 +40,8 @@ import tensorflow as tf
 import gym
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 np.random.seed(2)
 tf.set_random_seed(2)  # reproducible

@@ -11,6 +11,8 @@ import numpy as np
 import multiprocessing, random, json, time
 import tensorflow as tf
 import tensorlayer as tl
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 imgs_file_list, _, _, _, classes, _, _, _, objs_info_list, _ = tl.files.load_voc_dataset(dataset="2007")
 

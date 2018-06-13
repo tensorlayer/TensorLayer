@@ -41,10 +41,10 @@ we run them inside 16 separate threads which continuously fill a TensorFlow queu
 
 import os
 import time
-
 import tensorflow as tf
-
 import tensorlayer as tl
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 model_file_name = "./model_cifar10_tfrecord.ckpt"
 resume = False  # load model, resume from previous checkpoint?

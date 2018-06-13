@@ -26,8 +26,9 @@ from tensorflow.python.framework.errors_impl import OutOfRangeError
 from tensorflow.python.training import session_run_hook
 from tensorflow.python.training.basic_session_run_hooks import StopAtStepHook
 from tensorflow.python.training.monitored_session import SingularMonitoredSession
-
 import tensorlayer as tl
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ########## VARIABLES ##########
 

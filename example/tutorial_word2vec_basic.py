@@ -61,6 +61,8 @@ tf.logging.set_verbosity(tf.logging.DEBUG)
 
 
 def main_word2vec_basic():
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
     # sess = tf.InteractiveSession()
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
 

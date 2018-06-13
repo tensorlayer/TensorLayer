@@ -40,6 +40,8 @@ import tensorflow as tf
 import gym
 import tensorlayer as tl
 from tensorlayer.layers import DenseLayer, InputLayer
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 GAME = 'BipedalWalker-v2'  # BipedalWalkerHardcore-v2
 OUTPUT_GRAPH = False
