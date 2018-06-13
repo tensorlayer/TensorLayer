@@ -28,12 +28,13 @@ After 5 epochs, you should get test accuracy close to 90.9%.
 import array
 import hashlib
 import time
-
 import numpy as np
 import tensorflow as tf
-
 import tensorlayer as tl
 from tensorlayer.layers import *
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 # Hashed n-grams with 1 < n <= N_GRAM are included as features
 # in addition to unigrams.

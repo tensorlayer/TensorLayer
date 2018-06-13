@@ -5,6 +5,9 @@ import time
 import tensorflow as tf
 import tensorlayer as tl
 
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 28, 28, 1))
 # X_train, y_train, X_test, y_test = tl.files.load_cropped_svhn(include_extra=False)
 

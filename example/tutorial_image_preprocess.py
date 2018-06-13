@@ -8,6 +8,8 @@ see `tutorial_cifar10_tfrecord.py` for more details.
 import time
 import tensorlayer as tl
 
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
 X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 32, 3), plotable=False)
 
 
