@@ -386,15 +386,15 @@ Basic layer
 Input Layers
 ---------------
 
-Input layer
+Input Layer
 ^^^^^^^^^^^^^^^^
 .. autoclass:: InputLayer
 
-One-hot layer
-^^^^^^^^^^^^^^^^
+One-hot Input Layer
+^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: OneHotInputLayer
 
-Word2vec Embedding Layer
+Word2Vec Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Word2vecEmbeddingInputlayer
 
