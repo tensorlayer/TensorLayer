@@ -70,105 +70,105 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like
-  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary
-  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated
-  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (PR #580)
+  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated (PR #686)
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated (PR #686)
 - CI Tool:
-  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues
-  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added
-  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0
-  - CircleCI added to build and upload Docker Containers for each PR merged and tag release
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (PR #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (PR #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (PR #644)
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (PR #648)
 - Decorator:
-  - `tl.decorators` API created including `deprecated_alias` and `private_method`
-  - `tl.decorators` API enriched with `protected_method`
+  - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
+  - `tl.decorators` API enriched with `protected_method` (PR #675)
 - Docker:
-  - Containers for each release and for each PR merged on master built
-  - Containers built in the following configurations :
+  - Containers for each release and for each PR merged on master built (PR #648)
+  - Containers built in the following configurations (PR #648):
     - py2 + cpu
     - py2 + gpu
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README
-  - Release semantic version added on index pag
-  - Optimizers page added
-  - `AMSGrad` added on Optimizers page added
+  - Clean README (PR #677)
+  - Release semantic version added on index page (PR #633)
+  - Optimizers page added (PR #636)
+  - `AMSGrad` added on Optimizers page added (PR #636)
 - Layer:
-  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs
-  - AtrousDeConv2dLayer added
-  - Fix bugs of using `tf.layers` in CNN
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
+  - AtrousDeConv2dLayer added (PR #662)
+  - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)`
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
-  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu`
+  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
-  - `test_utils_predict.py` added to reproduce and fix issue #288
-  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution
-  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file
-  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer
-  - `test_logging.py` added to insure robustness of the logging API
-  - `test_decorators.py` added
-  - `test_activations.py` added
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (PR #573)
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (PR #580)
+  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (PR #636)
+  - `test_logging.py` added to insure robustness of the logging API (PR #645)
+  - `test_decorators.py` added (PR #660)
+  - `test_activations.py` added (PR #686)
 - Tutorials:
-  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer`
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
 
 ### Changed
-- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them
-- The document of LambdaLayer for linking it with ElementwiseLambdaLayer
-- RTD links point to stable documentation instead of latest used for development
-- TF Version older than 1.6.0 are officially unsupported and raises an exception
-- Readme Badges Updated with Support Python and Tensorflow Versions
-- TL logging API has been consistent with TF logging API and thread-safe
-- Relative Imports changed for absolute imports
-- `tl.files` refactored into a directory with numerous files
-- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down
-- extra requirements hidden inside the library added in the project requirements
-- requirements files refactored in `requirements/` directory
-- README.md and other markdown files have been refactored and cleaned.
-- Ternary Convolution Layer added in unittest
-- Convolution Layers unittests have been cleaned & refactored
-- All the tests are now using a DEBUG level verbosity when run individualy
-- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation
-- argument dictionaries are now checked and saved within the `Layer` Base Class
-- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop`
-- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs`
-- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated
-- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs`
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
+- RTD links point to stable documentation instead of latest used for development (PR #633)
+- TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
+- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
+- TL logging API has been consistent with TF logging API and thread-safe (PR #645)
+- Relative Imports changed for absolute imports (PR #657)
+- `tl.files` refactored into a directory with numerous files (PR #657)
+- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (PR #657)
+- extra requirements hidden inside the library added in the project requirements (PR #657)
+- requirements files refactored in `requirements/` directory (PR #657)
+- README.md and other markdown files have been refactored and cleaned. (PR #639)
+- Ternary Convolution Layer added in unittest (PR #658)
+- Convolution Layers unittests have been cleaned & refactored (PR #658)
+- All the tests are now using a DEBUG level verbosity when run individualy (PR #660)
+- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (PR #667)
+- argument dictionaries are now checked and saved within the `Layer` Base Class (PR #667)
+- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (PR #675)
+- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (PR #675)
+- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (PR #675)
+- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (PR #675)
 
 ### Deprecated
-- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args`
-- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu`
+- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
+- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (PR #686)
 
 ### Removed
-- `assert()` calls remove and replaced by `raise AssertionError()`
-- `tl.identity` is removed, not used anymore and deprecated for a long time
-- All Code specific to `TF.__version__ < "1.6"` have been removed
+- `assert()` calls remove and replaced by `raise AssertionError()` (PR #667)
+- `tl.identity` is removed, not used anymore and deprecated for a long time (PR #667)
+- All Code specific to `TF.__version__ < "1.6"` have been removed (PR #675)
 
 ### Fixed
-- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect`
-- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous
-- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1`
-- Issue #572 with `tl.layers.DeformableConv2d` fixed
-- Issue #664 with `tl.layers.ConvLSTMLayer` fixed
-- Typo of the document of ElementwiseLambdaLayer
-- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined
-- Deprecation warning fixed in `tl.layers.binary._compute_threshold()`
-- All references to `tf.logging` replaced by `tl.logging`
-- Duplicated code removed when bias was used
-- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised
+- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (PR #574)
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (PR #575)
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (PR #566)
+- Issue #572 with `tl.layers.DeformableConv2d` fixed (PR #573)
+- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (PR #676)
+- Typo of the document of ElementwiseLambdaLayer (PR #588)
+- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (PR #658)
+- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (PR #658)
+- All references to `tf.logging` replaced by `tl.logging` (PR #661)
+- Duplicated code removed when bias was used (PR #667)
+- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (PR #675)
 - Tutorial:
-  - `tutorial_word2vec_basic.py` saving issue #476 fixed
-  - All tutorials tested and errors have been fixed
+  - `tutorial_word2vec_basic.py` saving issue #476 fixed (PR #635)
+  - All tutorials tested and errors have been fixed (PR #635)
 
 ### Security
 
 ### Dependencies Update
-- Update pytest from 3.5.1 to 3.6.0
-- Update progressbar2 from 3.37.1 to 3.38.0
-- Update scikit-image from 0.13.1 to 0.14.0
-- Update keras from 2.1.6 to 2.2.0
-- Update requests from 2.18.4 to 2.19.0
+- Update pytest from 3.5.1 to 3.6.0 (PR #647)
+- Update progressbar2 from 3.37.1 to 3.38.0 (PR #651)
+- Update scikit-image from 0.13.1 to 0.14.0 (PR #656)
+- Update keras from 2.1.6 to 2.2.0 (PR #684)
+- Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
 - @lgarithm (#563)
@@ -183,111 +183,114 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (by @DEKHTIARJonathan in #580)
-  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (by @DEKHTIARJonathan in #667)
-  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been (by @DEKHTIARJonathan in #686)
-  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been (by @DEKHTIARJonathan in #690)
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (PR #580)
+  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated (PR #686)
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated (PR #686)
 - CI Tool:
-  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (by @DEKHTIARJonathan in #573)
-  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (by @DEKHTIARJonathan in #637)
-  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (by @DEKHTIARJonathan in #644)
-  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (by @DEKHTIARJonathan in #648)
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (PR #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (PR #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (PR #644)
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (PR #648)
 - Decorator:
-  - `tl.decorators` API created including `deprecated_alias` and `private_method` (by @DEKHTIARJonathan in #660)
-  - `tl.decorators` API enriched with `protected_method` (by @DEKHTIARJonathan in #675)
+  - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
+  - `tl.decorators` API enriched with `protected_method` (PR #675)
 - Docker:
-  - Containers for each release and for each PR merged on master built (by @DEKHTIARJonathan in #648)
-  - Containers built in the following configurations (by @DEKHTIARJonathan in #648):
+  - Containers for each release and for each PR merged on master built (PR #648)
+  - Containers built in the following configurations (PR #648):
     - py2 + cpu
     - py2 + gpu
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README (by @luomai in #677)
-  - Release semantic version added on index page (by @DEKHTIARJonathan in #633)
-  - Optimizers page added (by @DEKHTIARJonathan in #636)
-  - `AMSGrad` added on Optimizers page added (by @DEKHTIARJonathan in #636)
+  - Clean README (PR #677)
+  - Release semantic version added on index page (PR #633)
+  - Optimizers page added (PR #636)
+  - `AMSGrad` added on Optimizers page added (PR #636)
 - Layer:
-  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (by @One-sixth in #579)
-  - AtrousDeConv2dLayer added (by @2wins in #662)
-  - Fix bugs of using `tf.layers` in CNN (by @zsdonghao in #686)
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
+  - AtrousDeConv2dLayer added (PR #662)
+  - Fix bugs of using `tf.layers` in CNN (PR #686)
 - Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (by @DEKHTIARJonathan in #636)
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
 - Setup:
-  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (by @DEKHTIARJonathan in #660)
+  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
 - Test:
-  - `test_utils_predict.py` added to reproduce and fix issue #288 (by @2wins in #566)
-  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (by @DEKHTIARJonathan in #573)
-  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (by @DEKHTIARJonathan in #580)
-  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (by @DEKHTIARJonathan in #636)
-  - `test_logging.py` added to insure robustness of the logging API (by @DEKHTIARJonathan in #645)
-  - `test_decorators.py` added (by @DEKHTIARJonathan in #660)
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (PR #573)
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (PR #580)
+  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (PR #636)
+  - `test_logging.py` added to insure robustness of the logging API (PR #645)
+  - `test_decorators.py` added (PR #660)
+  - `test_activations.py` added (PR #686)
 - Tutorials:
-  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (by @2wins in #560).
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
 
 ### Changed
-- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (by @DEKHTIARJonathan in #573)
-- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (by @zsdonghao in #587)
-- RTD links point to stable documentation instead of latest used for development (by @DEKHTIARJonathan in #633)
-- TF Version older than 1.6.0 are officially unsupported and raises an exception (by @DEKHTIARJonathan in #644)
-- Readme Badges Updated with Support Python and Tensorflow Versions (by @DEKHTIARJonathan in #644)
-- TL logging API has been consistent with TF logging API and thread-safe (by @DEKHTIARJonathan in #645)
-- Relative Imports changed for absolute imports (by @DEKHTIARJonathan in #657)
-- `tl.files` refactored into a directory with numerous files (by @DEKHTIARJonathan in #657)
-- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (by @DEKHTIARJonathan in #657)
-- extra requirements hidden inside the library added in the project requirements (by @DEKHTIARJonathan in #657)
-- requirements files refactored in `requirements/` directory (by @DEKHTIARJonathan in #657)
-- README.md and other markdown files have been refactored and cleaned. (by @zsdonghao @DEKHTIARJonathan @luomai in #639)
-- Ternary Convolution Layer added in unittest (by @DEKHTIARJonathan in #658)
-- Convolution Layers unittests have been cleaned & refactored (by @DEKHTIARJonathan in #658)
-- All the tests are now using a DEBUG level verbosity when run individualy (by @DEKHTIARJonathan in #660)
-- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (by @DEKHTIARJonathan in #667)
-- argument dictionaries are now checked and saved within the `Layer` Base Class (by @DEKHTIARJonathan in #667)
-- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (by @DEKHTIARJonathan in #675)
-- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (by @DEKHTIARJonathan in #675)
-- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (by @DEKHTIARJonathan in #675)
-- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (by @DEKHTIARJonathan in #675)
-- Convolution Layers have been refactored under the folder `tensorlayer/layers/convolution` (by @DEKHTIARJonathan in #692)
-- Dense Layers have been refactored under the folder `tensorlayer/layers/dense` (by @DEKHTIARJonathan in #692)
-- Numerous Layer utility functions have been refactored in the file `tensorlayer/layers/utils.py` (by @DEKHTIARJonathan in #692)
-- `tests\test_layers_special_activation.py` made more robust for `PReluLayer`, `PRelu6Layer`, and `PTRelu6Layer` (by @DEKHTIARJonathan in #690)
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
+- RTD links point to stable documentation instead of latest used for development (PR #633)
+- TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
+- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
+- TL logging API has been consistent with TF logging API and thread-safe (PR #645)
+- Relative Imports changed for absolute imports (PR #657)
+- `tl.files` refactored into a directory with numerous files (PR #657)
+- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (PR #657)
+- extra requirements hidden inside the library added in the project requirements (PR #657)
+- requirements files refactored in `requirements/` directory (PR #657)
+- README.md and other markdown files have been refactored and cleaned. (PR #639)
+- Ternary Convolution Layer added in unittest (PR #658)
+- Convolution Layers unittests have been cleaned & refactored (PR #658)
+- All the tests are now using a DEBUG level verbosity when run individualy (PR #660)
+- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (PR #667)
+- argument dictionaries are now checked and saved within the `Layer` Base Class (PR #667)
+- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (PR #675)
+- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (PR #675)
+- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (PR #675)
+- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (PR #675)
 
 ### Deprecated
-- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (by @DEKHTIARJonathan in #667)
-- `tl.act.leaky_relu` has been deprecated in favor of `tf.nn.leaky_relu` (by @DEKHTIARJonathan in #686)
-- `tl.layers.initialize_global_variables` has been deprecated in favor of `tf.global_variables_initializer` (by @DEKHTIARJonathan in #692)
+- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
+- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (PR #686)
 
 ### Removed
-- `assert()` calls remove and replaced by `raise AssertionError()` (by @DEKHTIARJonathan in #667)
-- `tl.identity` is removed, not used anymore and deprecated for a long time (by @DEKHTIARJonathan in #667)
-- All Code specific to `TF.__version__ < "1.6"` have been removed (by @DEKHTIARJonathan in #675)
+- `assert()` calls remove and replaced by `raise AssertionError()` (PR #667)
+- `tl.identity` is removed, not used anymore and deprecated for a long time (PR #667)
+- All Code specific to `TF.__version__ < "1.6"` have been removed (PR #675)
 
 ### Fixed
-- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (by @DEKHTIARJonathan in #574)
-- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (by @DEKHTIARJonathan in #575)
-- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (by @2wins in #566)
-- Issue #572 with `tl.layers.DeformableConv2d` fixed (by @DEKHTIARJonathan in #573)
-- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (by @dengyueyun666 in #676)
-- Typo of the document of ElementwiseLambdaLayer (by @zsdonghao in #588)
-- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (by @DEKHTIARJonathan in #658)
-- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (by @DEKHTIARJonathan in #658)
-- All references to `tf.logging` replaced by `tl.logging` (by @DEKHTIARJonathan in #661)
-- Duplicated code removed when bias was used (by @DEKHTIARJonathan in #667)
-- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (by @DEKHTIARJonathan in #675)
+- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (PR #574)
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (PR #575)
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (PR #566)
+- Issue #572 with `tl.layers.DeformableConv2d` fixed (PR #573)
+- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (PR #676)
+- Typo of the document of ElementwiseLambdaLayer (PR #588)
+- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (PR #658)
+- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (PR #658)
+- All references to `tf.logging` replaced by `tl.logging` (PR #661)
+- Duplicated code removed when bias was used (PR #667)
+- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (PR #675)
 - Tutorial:
-  - `tutorial_word2vec_basic.py` saving issue #476 fixed (by @DEKHTIARJonathan in #635)
-  - All tutorials tested and errors have been fixed (by @DEKHTIARJonathan in #635)
+  - `tutorial_word2vec_basic.py` saving issue #476 fixed (PR #635)
+  - All tutorials tested and errors have been fixed (PR #635)
 
 ### Security
 
 ### Dependencies Update
-- Update pytest from 3.5.1 to 3.6.0 (by @DEKHTIARJonathan and @pyup-bot in #647)
-- Update progressbar2 from 3.37.1 to 3.38.0 (by @DEKHTIARJonathan and @pyup-bot in #651)
-- Update scikit-image from 0.13.1 to 0.14.0 (by @DEKHTIARJonathan and @pyup-bot in #656)
-- Update keras from 2.1.6 to 2.2.0 (by @DEKHTIARJonathan and @pyup-bot in #684)
+- Update pytest from 3.5.1 to 3.6.0 (PR #647)
+- Update progressbar2 from 3.37.1 to 3.38.0 (PR #651)
+- Update scikit-image from 0.13.1 to 0.14.0 (PR #656)
+- Update keras from 2.1.6 to 2.2.0 (PR #684)
+- Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
-@lgarithm @DEKHTIARJonathan @2wins @One-sixth @zsdonghao @luomai
+- @lgarithm (#563)
+- @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692)
+- @2wins (#560 #566 #662)
+- @One-sixth (#579)
+- @zsdonghao (#587 #588 #639 #685)
+- @luomai (#639 #677)
+- @dengyueyun666 (#676)
 
 ## [1.8.5] - 2018-05-09
 
