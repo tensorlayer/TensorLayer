@@ -8,6 +8,9 @@ from keras import backend as K
 from keras.layers import *
 from tensorlayer.layers import *
 
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 
 sess = tf.InteractiveSession()
