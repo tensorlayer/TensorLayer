@@ -9,6 +9,7 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
+from .activation import *
 from .convolution import *
 from .core import *
 from .dense import *
@@ -30,7 +31,6 @@ from .recurrent import *
 from .scale import *
 from .shape import *
 from .spatial_transformer import *
-from .special_activation import *
 from .stack import *
 from .super_resolution import *
 from .time_distribution import *
