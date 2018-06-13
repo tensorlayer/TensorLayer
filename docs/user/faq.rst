@@ -1,21 +1,13 @@
-.. _more:
+.. _faq:
 
 ============
-More
-============
-
-
-..
-  Competitions
-  ============
-
-  Coming soon
-
 FAQ
-===========
+============
+
 
 How to effectively learn TensorLayer
-------------------------------------------
+=====================================
+
 No matter what stage you are in, we recommend you to spend just 10 minutes to
 read the source code of TensorLayer and the `Understand layer / Your layer <http://tensorlayer.readthedocs.io/en/stable/modules/layers.html>`__
 in this website, you will find the abstract methods are very simple for everyone.
@@ -27,23 +19,23 @@ you to implement your own methods easily. For discussion, we recommend
 and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`__.
 
 Beginner
-^^^^^^^^^^^^^^
+-----------
 For people who new to deep learning, the contirbutors provided a number of tutorials in this website, these tutorials will guide you to understand autoencoder, convolutional neural network, recurrent neural network, word embedding and deep reinforcement learning and etc. If your already understand the basic of deep learning, we recommend you to skip the tutorials and read the example codes on `Github <https://github.com/tensorlayer/tensorlayer>`__ , then implement an example from scratch.
 
 Engineer
-^^^^^^^^^^^^^
+------------
 For people from industry, the contirbutors provided mass format-consistent examples covering computer vision, natural language processing and reinforcement learning. Besides, there are also many TensorFlow users already implemented product-level examples including image captioning, semantic/instance segmentation, machine translation, chatbot and etc, which can be found online.
 It is worth noting that a wrapper especially for computer vision `Tf-Slim <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ can be connected with TensorLayer seamlessly.
 Therefore, you may able to find the examples that can be used in your project.
 
 Researcher
-^^^^^^^^^^^^^
+-------------
 For people from academic, TensorLayer was originally developed by PhD students who facing issues with other libraries on implement novel algorithm. Installing TensorLayer in editable mode is recommended, so you can extend your methods in TensorLayer.
 For researches related to image such as image captioning, visual QA and etc, you may find it is very helpful to use the existing `Tf-Slim pre-trained models <https://github.com/tensorflow/models/tree/master/slim#Pretrained>`__ with TensorLayer (a specially layer for connecting Tf-Slim is provided).
 
 
 Exclude some layers from training
------------------------------------
+======================================
 
 You may need to get the list of variables you want to update, TensorLayer provides two ways to get the variables list.
 
@@ -70,7 +62,7 @@ After you get the variable list, you can define your optimizer like that so as t
 
 
 Logging
--------
+==========
 
 TensorLayer adopts the `Python logging module <https://docs.python.org/3/library/logging.html>`__
 to log running information.
@@ -79,10 +71,10 @@ If you want to configure the logging module,
 you shall follow its `manual <https://docs.python.org/3/library/logging.html>`__.
 
 Visualization
---------------
+===============
 
 Cannot Save Image
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 If you run the script via SSH control, sometime you may find the following error.
 
@@ -101,7 +93,7 @@ Alternatively, add the following code into the top of ``visualize.py`` or in you
 
 
 Install Master Version
------------------------
+========================
 
 To use all new features of TensorLayer, you need to install the master version from Github.
 Before that, you need to make sure you already installed git.
@@ -112,7 +104,7 @@ Before that, you need to make sure you already installed git.
   [master version] pip install git+https://github.com/zsdonghao/tensorlayer.git
 
 Editable Mode
----------------
+===============
 
 - 1. Download the TensorLayer folder from Github.
 - 2. Before editing the TensorLayer ``.py`` file.
@@ -126,52 +118,11 @@ Editable Mode
 
 
 Load Model
---------------
+===========
 
 Note that, the ``tl.files.load_npz()`` can only able to load the npz model saved by ``tl.files.save_npz()``.
 If you have a model want to load into your TensorLayer network, you can first assign your parameters into a list in order,
 then use ``tl.files.assign_params()`` to load the parameters into your TensorLayer model.
-
-
-
-
-
-Recruitment
-===========
-
-TensorLayer Contributors
---------------------------
-
-TensorLayer contributors are from Imperial College, Tsinghua University, Carnegie Mellon University, Google, Microsoft, Bloomberg and etc.
-There are many functions need to be contributed such as
-Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
-Please push on `GitHub`_, every bit helps and will be credited.
-If you are interested in working with us, please
-`contact us <hao.dong11@imperial.ac.uk>`__.
-
-
-Data Science Institute, Imperial College London
-------------------------------------------------
-
-Data science is therefore by nature at the core of all modern transdisciplinary scientific activities, as it involves the whole life cycle of data, from acquisition and exploration to analysis and communication of the results. Data science is not only concerned with the tools and methods to obtain, manage and analyse data: it is also about extracting value from data and translating it from asset to product.
-
-Launched on 1st April 2014, the Data Science Institute at Imperial College London aims to enhance Imperial's excellence in data-driven research across its faculties by fulfilling the following objectives.
-
-The Data Science Institute is housed in purpose built facilities in the heart of the Imperial College campus in South Kensington. Such a central location provides excellent access to collabroators across the College and across London.
-
- - To act as a focal point for coordinating data science research at Imperial College by facilitating access to funding, engaging with global partners, and stimulating cross-disciplinary collaboration.
- - To develop data management and analysis technologies and services for supporting data driven research in the College.
- - To promote the training and education of the new generation of data scientist by developing and coordinating new degree courses, and conducting public outreach programmes on data science.
- - To advise College on data strategy and policy by providing world-class data science expertise.
- - To enable the translation of data science innovation by close collaboration with industry and supporting commercialization.
-
-If you are interested in working with us, please check our
-`vacancies <https://www.imperial.ac.uk/data-science/get-involved/vacancies/>`__
-and other ways to
-`get involved <https://www.imperial.ac.uk/data-science/get-involved/>`__
-, or feel free to
-`contact us <https://www.imperial.ac.uk/data-science/get-involved/contact-us/>`__.
-
 
 
 

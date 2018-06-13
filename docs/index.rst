@@ -28,12 +28,14 @@ to the library as a developer.
 
 .. toctree::
   :maxdepth: 2
+  :caption: Starting with TensorLayer
 
   user/installation
   user/tutorial
   user/example
   user/development
-  user/more
+  user/contributing
+  user/faq
 
 API Reference
 -------------
@@ -43,6 +45,7 @@ method, this part of the documentation is for you.
 
 .. toctree::
   :maxdepth: 2
+  :caption: Stable Functionalities
 
   modules/activation
   modules/array_ops
@@ -50,14 +53,19 @@ method, this part of the documentation is for you.
   modules/distributed
   modules/files
   modules/iterate
+  modules/layers
   modules/models
   modules/nlp
-  modules/layers
   modules/optimizers
   modules/prepro
   modules/rein
   modules/utils
   modules/visualize
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Unstable Functionalities
+
   modules/db
 
 
@@ -68,6 +76,7 @@ TensorLayer provides a handy command-line tool `tl` to perform some common tasks
 
 .. toctree::
   :maxdepth: 2
+  :caption: Command Line Interface 
 
   modules/cli
 
@@ -80,5 +89,5 @@ Indices and tables
 * :ref:`search`
 
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
 .. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
