@@ -40,7 +40,7 @@ and other ways to
 
 
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/

@@ -15,7 +15,7 @@ Reading the source codes helps you to better understand TensorFlow and allows
 you to implement your own methods easily. For discussion, we recommend
 `Gitter <https://gitter.im/tensorlayer/Lobby#?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge>`__,
 `Help Wanted Issues <https://waffle.io/tensorlayer/tensorlayer>`__,
-`QQ group <https://github.com/zsdonghao/tensorlayer/blob/master/img/img_qq.png>`__
+`QQ group <https://github.com/tensorlayer/tensorlayer/blob/master/img/img_qq.png>`__
 and `Wechat group <https://github.com/shorxp/tensorlayer-chinese/blob/master/docs/wechat_group.md>`__.
 
 Beginner
@@ -101,7 +101,7 @@ Before that, you need to make sure you already installed git.
 .. code-block:: bash
 
   [stable version] pip install tensorlayer
-  [master version] pip install git+https://github.com/zsdonghao/tensorlayer.git
+  [master version] pip install git+https://github.com/tensorlayer/tensorlayer.git
 
 Editable Mode
 ===============
@@ -126,7 +126,7 @@ then use ``tl.files.assign_params()`` to load the parameters into your TensorLay
 
 
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/

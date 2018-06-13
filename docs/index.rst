@@ -12,7 +12,7 @@ Welcome to TensorLayer
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
-More details can be found `here <https://github.com/zsdonghao/tensorlayer>`_.
+More details can be found `here <https://github.com/tensorlayer/tensorlayer>`_.
 
 .. note::
    If you got problem to read the docs online, you could download the repository
@@ -90,4 +90,4 @@ Indices and tables
 
 
 .. _GitHub: https://github.com/tensorlayer/tensorlayer
-.. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
+.. _TensorLayer: https://github.com/tensorlayer/tensorlayer/

@@ -161,6 +161,6 @@ help us reviewing it. If it is fixing an open issue, say, issue #123, add
 GitHub will close it when your request is merged.
 
 
-.. _Release: https://github.com/zsdonghao/tensorlayer/releases
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _Release: https://github.com/tensorlayer/tensorlayer/releases
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
 .. _our mailing list: hao.dong11@imperial.ac.uk

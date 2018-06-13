@@ -88,7 +88,7 @@ class SlimNetsLayer(Layer):
     """A layer that merges TF-Slim models into TensorLayer.
 
     Models can be found in `slim-model <https://github.com/tensorflow/models/tree/master/research/slim#pre-trained-models>`__,
-    see Inception V3 example on `Github <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
+    see Inception V3 example on `Github <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__.
 
     Parameters
     ----------
@@ -151,7 +151,7 @@ class SlimNetsLayer(Layer):
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
 
-    Example can be found here `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+    Example can be found here `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
 
     Parameters
     ----------
@@ -193,7 +193,7 @@ class KerasLayer(Layer):
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
 
-    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`__.
+    It is similar with :class:`KerasLayer`, see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`__.
 
     Parameters
     ----------
