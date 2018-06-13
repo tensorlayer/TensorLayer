@@ -85,7 +85,7 @@ The simplest way to install TensorLayer is as follow, it will also install the n
 .. code-block:: bash
 
   [stable version] pip install tensorlayer
-  [master version] pip install git+https://github.com/zsdonghao/tensorlayer.git
+  [master version] pip install git+https://github.com/tensorlayer/tensorlayer.git
 
 However, if you want to modify or extend TensorLayer, you can download the repository from
 `Github`_ and install it as follow.
@@ -149,8 +149,8 @@ To install it, copy the ``*.h`` files to ``/usr/local/cuda/include`` and the
 ``lib*`` files to ``/usr/local/cuda/lib64``.
 
 .. _TensorFlow: https://www.tensorflow.org/versions/master/get_started/os_setup.html
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
-.. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
+.. _TensorLayer: https://github.com/tensorlayer/tensorlayer/
 
 
 

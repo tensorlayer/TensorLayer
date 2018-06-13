@@ -832,7 +832,7 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
   Connect Keras
   ------------------
 
-  Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
+  Yes ! Keras models can be connected into TensorLayer! see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
 
   .. autoclass:: KerasLayer
 

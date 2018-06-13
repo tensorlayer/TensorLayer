@@ -3,11 +3,11 @@
 """Examples of Stacked Denoising Autoencoder, Dropout, Dropconnect and CNN.
 
  - Multi-layer perceptron (MNIST) - Classification task, see tutorial_mnist_simple.py
-    https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_simple.py
+    https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_simple.py
 
  - Multi-layer perceptron (MNIST) - Classification using Iterator, see:
-    method1 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py
-    method2 : https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py
+    method1 : https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout1.py
+    method2 : https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mlp_dropout2.py
 
 """
 

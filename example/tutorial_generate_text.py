@@ -18,7 +18,7 @@ Example of Synced sequence input and output.
 
 Generate text using LSTM.
 
-Data: https://github.com/zsdonghao/tensorlayer/tree/master/example/data/
+Data: https://github.com/tensorlayer/tensorlayer/tree/master/example/data/
 
 """
 

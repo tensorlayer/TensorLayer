@@ -4,7 +4,7 @@ API - Distributed Training
 (Alpha release - usage might change later)
 
 Helper sessions and methods to run a distributed training.
-Check this `minst example <https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_.
+Check this `minst example <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`_.
 
 .. automodule:: tensorlayer.distributed
 
