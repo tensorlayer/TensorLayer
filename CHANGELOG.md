@@ -70,71 +70,71 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like 
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary
   - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated
   - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues
-  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added 
-  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 
-  - CircleCI added to build and upload Docker Containers for each PR merged and tag release 
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release
 - Decorator:
-  - `tl.decorators` API created including `deprecated_alias` and `private_method` 
+  - `tl.decorators` API created including `deprecated_alias` and `private_method`
   - `tl.decorators` API enriched with `protected_method`
 - Docker:
-  - Containers for each release and for each PR merged on master built 
+  - Containers for each release and for each PR merged on master built
   - Containers built in the following configurations :
     - py2 + cpu
     - py2 + gpu
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README 
+  - Clean README
   - Release semantic version added on index pag
   - Optimizers page added
-  - `AMSGrad` added on Optimizers page added 
+  - `AMSGrad` added on Optimizers page added
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs
   - AtrousDeConv2dLayer added
-  - Fix bugs of using `tf.layers` in CNN 
+  - Fix bugs of using `tf.layers` in CNN
 - Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` 
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)`
 - Setup:
-  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` 
+  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu`
 - Test:
   - `test_utils_predict.py` added to reproduce and fix issue #288
   - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution
-  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file 
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file
   - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer
   - `test_logging.py` added to insure robustness of the logging API
   - `test_decorators.py` added
   - `test_activations.py` added
 - Tutorials:
-  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` 
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer`
 
 ### Changed
-- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them 
-- The document of LambdaLayer for linking it with ElementwiseLambdaLayer 
+- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them
+- The document of LambdaLayer for linking it with ElementwiseLambdaLayer
 - RTD links point to stable documentation instead of latest used for development
-- TF Version older than 1.6.0 are officially unsupported and raises an exception 
+- TF Version older than 1.6.0 are officially unsupported and raises an exception
 - Readme Badges Updated with Support Python and Tensorflow Versions
 - TL logging API has been consistent with TF logging API and thread-safe
 - Relative Imports changed for absolute imports
-- `tl.files` refactored into a directory with numerous files 
-- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down 
+- `tl.files` refactored into a directory with numerous files
+- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down
 - extra requirements hidden inside the library added in the project requirements
-- requirements files refactored in `requirements/` directory 
+- requirements files refactored in `requirements/` directory
 - README.md and other markdown files have been refactored and cleaned.
 - Ternary Convolution Layer added in unittest
 - Convolution Layers unittests have been cleaned & refactored
 - All the tests are now using a DEBUG level verbosity when run individualy
-- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation 
-- argument dictionaries are now checked and saved within the `Layer` Base Class 
-- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` 
+- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation
+- argument dictionaries are now checked and saved within the `Layer` Base Class
+- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop`
 - Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs`
-- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated 
-- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` 
+- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated
+- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs`
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args`
@@ -143,16 +143,16 @@ To release a new version, please update the changelog as followed:
 ### Removed
 - `assert()` calls remove and replaced by `raise AssertionError()`
 - `tl.identity` is removed, not used anymore and deprecated for a long time
-- All Code specific to `TF.__version__ < "1.6"` have been removed 
+- All Code specific to `TF.__version__ < "1.6"` have been removed
 
 ### Fixed
 - Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect`
-- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous 
-- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` 
+- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous
+- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1`
 - Issue #572 with `tl.layers.DeformableConv2d` fixed
 - Issue #664 with `tl.layers.ConvLSTMLayer` fixed
-- Typo of the document of ElementwiseLambdaLayer 
-- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined 
+- Typo of the document of ElementwiseLambdaLayer
+- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined
 - Deprecation warning fixed in `tl.layers.binary._compute_threshold()`
 - All references to `tf.logging` replaced by `tl.logging`
 - Duplicated code removed when bias was used
@@ -164,18 +164,19 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
-- Update pytest from 3.5.1 to 3.6.0 
-- Update progressbar2 from 3.37.1 to 3.38.0 
+- Update pytest from 3.5.1 to 3.6.0
+- Update progressbar2 from 3.37.1 to 3.38.0
 - Update scikit-image from 0.13.1 to 0.14.0
-- Update keras from 2.1.6 to 2.2.0 
+- Update keras from 2.1.6 to 2.2.0
+- Update requests from 2.18.4 to 2.19.0
 
 ### Contributors
 - @lgarithm (#563)
-- @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692) 
-- @2wins (#560 #566 #662) 
-- @One-sixth (#579) 
-- @zsdonghao (#587 #588 #639 #685) 
-- @luomai (#639 #677) 
+- @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692)
+- @2wins (#560 #566 #662)
+- @One-sixth (#579)
+- @zsdonghao (#587 #588 #639 #685)
+- @luomai (#639 #677)
 - @dengyueyun666 (#676)
 
 ## [1.8.6] - 2018-06-02
