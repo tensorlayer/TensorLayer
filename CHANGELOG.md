@@ -112,6 +112,12 @@ To release a new version, please update the changelog as followed:
   - `test_activations.py` added
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` 
+  - add the following to all tutorials:
+  
+```python
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+```
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them 
