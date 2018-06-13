@@ -13,6 +13,9 @@ import tensorflow as tf
 import tensorlayer as tl
 from tensorlayer.models.imagenet_classes import class_names
 
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
+
 x = tf.placeholder(tf.float32, [None, 224, 224, 3])
 
 # get the whole model
