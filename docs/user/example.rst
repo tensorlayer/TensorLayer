@@ -37,11 +37,11 @@ Vision
 
 Adversarial Learning
 ========================
- - DCGAN (CelebA). Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`__ by `zsdonghao <https://github.com/zsdonghao/dcgan>`__.
+ - DCGAN (CelebA). Generating images by `Deep Convolutional Generative Adversarial Networks <http://arxiv.org/abs/1511.06434>`__ by `zsdonghao <https://github.com/tensorlayer/dcgan>`__.
  - `Generative Adversarial Text to Image Synthesis <https://github.com/zsdonghao/text-to-image>`__ by `zsdonghao <https://github.com/zsdonghao/text-to-image>`__.
  - `Unsupervised Image to Image Translation with Generative Adversarial Networks <https://github.com/zsdonghao/Unsup-Im2Im>`__ by `zsdonghao <https://github.com/zsdonghao/Unsup-Im2Im>`__.
  - `Improved CycleGAN <https://github.com/luoxier/CycleGAN_Tensorlayer>`__ with resize-convolution by `luoxier <https://github.com/luoxier/CycleGAN_Tensorlayer>`__.
- - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`__ by `zsdonghao <https://github.com/zsdonghao/SRGAN>`__.
+ - `Super Resolution GAN <https://arxiv.org/abs/1609.04802>`__ by `zsdonghao <https://github.com/tensorlayer/SRGAN>`__.
  - `BEGAN: Boundary Equilibrium Generative Adversarial Networks <http://arxiv.org/abs/1703.10717>`__ by `2wins <https://github.com/2wins/BEGAN-tensorlayer>`__.
  - `DAGAN: Fast Compressed Sensing MRI Reconstruction <https://github.com/nebulaV/DAGAN>`__ by `nebulaV <https://github.com/nebulaV/DAGAN>`__.
 
@@ -53,7 +53,7 @@ Natural Language Processing
  - Restore Embedding matrix. Restore a pre-train embedding matrix, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_generate_text.py>`__.
  - Text Generation. Generates new text scripts, using LSTM network, see `tutorial_generate_text.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_generate_text.py>`__.
  - Chinese Text Anti-Spam by `pakrchen <https://github.com/pakrchen/text-antispam>`__.
- - `Chatbot in 200 lines of code <https://github.com/zsdonghao/seq2seq-chatbot>`__ for `Seq2Seq <http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq>`__.
+ - `Chatbot in 200 lines of code <https://github.com/tensorlayer/seq2seq-chatbot>`__ for `Seq2Seq <http://tensorlayer.readthedocs.io/en/latest/modules/layers.html#simple-seq2seq>`__.
  - FastText Sentence Classification (IMDB), see `tutorial_imdb_fasttext.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_imdb_fasttext.py>`__ by `tomtung <https://github.com/tomtung>`__.
 
 Reinforcement Learning
