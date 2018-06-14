@@ -82,6 +82,7 @@ To release a new version, please update the changelog as followed:
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
   - `tl.decorators` API enriched with `protected_method` (PR #675)
+  - `tl.decorators` API enriched with `deprecated` directly raising warning and modifying documentation (PR #691)
 - Docker:
   - Containers for each release and for each PR merged on master built (PR #648)
   - Containers built in the following configurations (PR #648):
@@ -140,6 +141,7 @@ To release a new version, please update the changelog as followed:
 - Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (PR #675)
 - Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (PR #675)
 - Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (PR #675)
+- Complete Documentation Refactoring and Reorganization (namely Layer APIs) (PR #691)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
@@ -177,7 +179,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @lgarithm: #563
-- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692
+- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692
 - @2wins: #560 #566 #662
 - @One-sixth: #579
 - @zsdonghao: #587 #588 #639 #685 #697
