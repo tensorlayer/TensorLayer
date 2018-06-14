@@ -3,11 +3,11 @@
 
 import tensorflow as tf
 
-from tensorflow.python.util.deprecation import deprecated
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
 from tensorlayer import tl_logging as logging
 
+from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
@@ -37,7 +37,7 @@ def cabs(x):
     return tf.minimum(1.0, tf.abs(x), name='cabs')
 
 
-@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check naming.")
+@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check naming")
 def clear_layers_name():
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 
@@ -195,7 +195,7 @@ def get_variables_with_name(name=None, train_only=True, verbose=False):
     return d_vars
 
 
-@deprecated("2018-09-30", "This API is deprecated in favor of `tf.global_variables_initializer`.")
+@deprecated(date="2018-09-30", instructions="This API is deprecated in favor of `tf.global_variables_initializer`")
 def initialize_global_variables(sess):
     """Initialize the global variables of TensorFlow.
 
@@ -365,7 +365,7 @@ def quantize_weight(x, bitW, force_quantization=False):
     return 2 * _quantize_dorefa(x, bitW) - 1
 
 
-@deprecated("2018-06-30", "TensorLayer relies on TensorFlow to check name reusing.")
+@deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check name reusing")
 def set_name_reuse(enable=True):
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
 

@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-from tensorflow.python.util.deprecation import deprecated
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import tl_logging as logging
 
+from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
@@ -81,6 +81,9 @@ class SlimNetsLayer(Layer):
         self._add_params(slim_variables)
 
 
+@deprecated(
+    date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
+)
 class KerasLayer(Layer):
     """A layer to import Keras layers into TensorLayer.
 
@@ -100,7 +103,6 @@ class KerasLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
     def __init__(
             self,
             prev_layer,
@@ -123,6 +125,9 @@ class KerasLayer(Layer):
         self._add_params(variables)
 
 
+@deprecated(
+    date="2018-06-30", instructions="This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing"
+)
 class EstimatorLayer(Layer):
     """A layer that accepts a user-defined model.
 
@@ -144,7 +149,6 @@ class EstimatorLayer(Layer):
     @deprecated_alias(
         layer='prev_layer', args='layer_args', end_support_version=1.9
     )  # TODO remove this line for the 1.9 release
-    @deprecated("2018-06-30", "This layer will be deprecated soon as :class:`LambdaLayer` can do the same thing.")
     def __init__(
             self,
             prev_layer,
