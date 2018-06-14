@@ -94,8 +94,8 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
         return wrapped(*args, **kwargs)
 
     decorated = deprecated_wrapper(wrapped)
-    
-    if (sys.version_info > (3, 0)): # docstring can only be edited with Python 3
+
+    if (sys.version_info > (3, 0)):  # docstring can only be edited with Python 3
         wrapt.FunctionWrapper.__setattr__(
             decorated, "__doc__", _add_deprecated_function_notice_to_docstring(wrapped.__doc__, date, instructions)
         )
