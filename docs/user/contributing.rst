@@ -28,6 +28,7 @@ The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_
 It is developed and maintained by a core team *(in alphabetical order)*:
 
 - **Akara Supratak** (`@akaraspt <https://github.com/akaraspt>`_) - `<https://akaraspt.github.io>`_
+- **Fangde Liu** (`@fangde <https://github.com/fangde>`_) - `<http://fangde.github.io/>`_
 - **Guo Li** (`@lgarithm <https://github.com/lgarithm>`_) - `<https://lgarithm.github.io>`_
 - **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
 - **Jonathan Dekhtiar** (`@DEKHTIARJonathan <https://github.com/DEKHTIARJonathan>`_) - `<https://www.jonathandekhtiar.eu>`_
