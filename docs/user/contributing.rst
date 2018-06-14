@@ -19,13 +19,13 @@ As an open-source project, we highly welcome and value contributions!
 **If you are interested in working with us, please contact us at:** `tensorlayer@gmail.com <tensorlayer@gmail.com>`_.
 
 
-The Development Core Team
+Project Maintainers
 --------------------------
 
 
 The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
 
-It is developed and maintained by a core team *(in alphabetical order)*:
+It is actively developed and maintained by the following people *(in alphabetical order)*:
 
 - **Akara Supratak** (`@akaraspt <https://github.com/akaraspt>`_) - `<https://akaraspt.github.io>`_
 - **Fangde Liu** (`@fangde <https://github.com/fangde>`_) - `<http://fangde.github.io/>`_
@@ -35,7 +35,7 @@ It is developed and maintained by a core team *(in alphabetical order)*:
 - **Luo Mai** (`@luomai <https://github.com/luomai>`_) - `<http://www.doc.ic.ac.uk/~lm111/>`_
 - **Simiao Yu** (`@nebulaV <https://github.com/nebulaV>`_) - `<https://nebulav.github.io>`_
 
-and numerous others can be found in the `Github Contribution Graph <https://github.com/tensorlayer/tensorlayer/graphs/contributors>`_.
+Numerous other contributors can be found in the `Github Contribution Graph <https://github.com/tensorlayer/tensorlayer/graphs/contributors>`_.
 
 
 What to contribute
