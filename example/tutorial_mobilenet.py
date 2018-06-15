@@ -41,7 +41,7 @@ def decode_predictions(preds, top=5):  # keras.applications.resnet50
     fpath = os.path.join("data", "imagenet_class_index.json")
     if tl.files.file_exists(fpath) is False:
         raise Exception(
-            "{} / download imagenet_class_index.json from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data"
+            "{} / download imagenet_class_index.json from: https://github.com/tensorlayer/tensorlayer/tree/master/example/data"
         )
     if isinstance(preds, np.ndarray) is False:
         preds = np.asarray(preds)
