@@ -74,6 +74,7 @@ To release a new version, please update the changelog as followed:
   - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
   - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated (PR #686)
   - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated (PR #686)
+  - `tl.model.vgg19` added (PR #698)
 - CI Tool:
   - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (PR #573)
   - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (PR #637)
@@ -112,6 +113,7 @@ To release a new version, please update the changelog as followed:
   - `test_activations.py` added (PR #686)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
+  - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - add the following to all tutorials (PR #697):  
     ```python
     tf.logging.set_verbosity(tf.logging.DEBUG)
@@ -183,6 +185,7 @@ To release a new version, please update the changelog as followed:
 - @zsdonghao: #587 #588 #639 #685 #697
 - @luomai: #639 #677
 - @dengyueyun666: #676
+- @OwenLiuzZ: #698
 
 ## [1.8.6] - 2018-06-02
 
