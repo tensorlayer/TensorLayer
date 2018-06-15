@@ -12,7 +12,7 @@ Welcome to TensorLayer
 **Good News:** We won the **Best Open Source Software Award** `@ACM Multimedia (MM) 2017 <http://www.acmmm.org/2017/mm-2017-awardees/>`_.
 
 `TensorLayer`_ is a Deep Learning (DL) and Reinforcement Learning (RL) library extended from `Google TensorFlow <https://www.tensorflow.org>`_.  It provides popular DL and RL modules that can be easily customized and assembled for tackling real-world machine learning problems.
-More details can be found `here <https://github.com/zsdonghao/tensorlayer>`_.
+More details can be found `here <https://github.com/tensorlayer/tensorlayer>`_.
 
 .. note::
    If you got problem to read the docs online, you could download the repository
@@ -28,12 +28,14 @@ to the library as a developer.
 
 .. toctree::
   :maxdepth: 2
+  :caption: Starting with TensorLayer
 
   user/installation
   user/tutorial
   user/example
-  user/development
-  user/more
+  user/contributing
+  user/get_involved
+  user/faq
 
 API Reference
 -------------
@@ -43,6 +45,7 @@ method, this part of the documentation is for you.
 
 .. toctree::
   :maxdepth: 2
+  :caption: Stable Functionalities
 
   modules/activation
   modules/array_ops
@@ -50,14 +53,19 @@ method, this part of the documentation is for you.
   modules/distributed
   modules/files
   modules/iterate
+  modules/layers
   modules/models
   modules/nlp
-  modules/layers
   modules/optimizers
   modules/prepro
   modules/rein
   modules/utils
   modules/visualize
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Unstable Functionalities
+
   modules/db
 
 
@@ -68,6 +76,7 @@ TensorLayer provides a handy command-line tool `tl` to perform some common tasks
 
 .. toctree::
   :maxdepth: 2
+  :caption: Command Line Interface 
 
   modules/cli
 
@@ -80,5 +89,5 @@ Indices and tables
 * :ref:`search`
 
 
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
-.. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
+.. _TensorLayer: https://github.com/tensorlayer/tensorlayer/

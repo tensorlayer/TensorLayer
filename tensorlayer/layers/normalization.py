@@ -111,6 +111,7 @@ class BatchNormLayer(Layer):
             is_train=False,
             beta_init=tf.zeros_initializer,
             gamma_init=tf.random_normal_initializer(mean=1.0, stddev=0.002),
+            moving_mean_init=tf.zeros_initializer(),
             name='batchnorm_layer',
     ):
         super(BatchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
@@ -155,7 +156,6 @@ class BatchNormLayer(Layer):
                 gamma = None
 
             # 2.
-            moving_mean_init = tf.zeros_initializer()
 
             moving_mean = tf.get_variable(
                 'moving_mean', params_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False

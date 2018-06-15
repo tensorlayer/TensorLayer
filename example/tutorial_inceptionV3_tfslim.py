@@ -43,7 +43,7 @@ try:
     from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
-        "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
+        "{} / download the file from: https://github.com/tensorlayer/tensorlayer/tree/master/example/data".format(e)
     )
 
 MODEL_PATH = os.path.join("models", 'inception_v3.ckpt')
@@ -136,7 +136,7 @@ print("Model Restored")
 
 y = network.outputs
 probs = tf.nn.softmax(y)
-# test data in github: https://github.com/zsdonghao/tensorlayer/tree/master/example/data
+# test data in github: https://github.com/tensorlayer/tensorlayer/tree/master/example/data
 img1 = load_image("data/puzzle.jpeg")
 img1 = img1.reshape((1, 299, 299, 3))
 

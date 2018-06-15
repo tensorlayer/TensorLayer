@@ -18,7 +18,7 @@ __all__ = [
 
 class SubpixelConv2d(Layer):
     """It is a 2D sub-pixel up-sampling layer, usually be used
-    for Super-Resolution applications, see `SRGAN <https://github.com/zsdonghao/SRGAN/>`__ for example.
+    for Super-Resolution applications, see `SRGAN <https://github.com/tensorlayer/srgan/>`__ for example.
 
     Parameters
     ------------
