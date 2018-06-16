@@ -168,19 +168,19 @@ TensorLayer is released under the Apache 2.0 license.
    :target: http://www.broadview.com.cn/book/5059/
 .. |Downloads| image:: http://pepy.tech/badge/tensorlayer
    :target: http://pepy.tech/project/tensorlayer
-   
+
 
 .. |PyPI| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release
    :target: https://pypi.org/project/tensorlayer/
 .. |PyPI-Prerelease| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
    :target: https://pypi.org/project/tensorlayer/
 .. |Commits-Since| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
-   :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc5...master
+   :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6...master
 .. |Python| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
    :target: https://pypi.org/project/tensorlayer/
 .. |TensorFlow| image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
    :target: https://github.com/tensorflow/tensorflow/releases
-   
+
 .. |Travis| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/travis/tensorlayer/tensorlayer/master.svg?label=Travis
    :target: https://travis-ci.org/tensorlayer/tensorlayer
 .. |Docker| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/circleci/project/github/tensorlayer/tensorlayer/master.svg?label=Docker%20Build
