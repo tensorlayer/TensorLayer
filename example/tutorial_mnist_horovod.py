@@ -18,13 +18,13 @@ def make_dataset(images, labels):
 def model_function(x, y_):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
         network = tl.layers.InputLayer(x, name='input')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
+        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True)
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
+        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2', is_fix=True)
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
+        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3', is_fix=True)
         network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-        return tl.cost.cross_entropy(network.outputs, y_, name='cost'), network.all_drop
+        return tl.cost.cross_entropy(network.outputs, y_, name='cost')
 
 
 # load mnist data

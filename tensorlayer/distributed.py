@@ -39,9 +39,7 @@ class HorovodTrainer(object):
         dataset_shard = dataset_shard.repeat(self.num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
         next_example, next_label = iterator.get_next()
-        loss, all_drop = self.model_function(next_example, next_label)
-
-        feed_dict = utils.dict_to_one(all_drop)
+        loss = self.model_function(next_example, next_label)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
@@ -79,7 +77,7 @@ class HorovodTrainer(object):
         with tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config) as mon_sess:
             while not mon_sess.should_stop():
                 # Run a training step synchronously.
-                mon_sess.run(train_op, feed_dict)
+                mon_sess.run(train_op)
 
 
 class TaskSpecDef(object):
