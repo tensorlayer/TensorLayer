@@ -8,10 +8,12 @@ import numpy as np
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+
 def make_dataset(images, labels):
     ds1 = tf.data.Dataset.from_tensor_slices(images)
     ds2 = tf.data.Dataset.from_tensor_slices(np.array(labels, dtype=np.int64))
     return tf.data.Dataset.zip((ds1, ds2))
+
 
 def model_function(x, y_):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
@@ -22,7 +24,8 @@ def model_function(x, y_):
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
         network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-        return tl.cost.cross_entropy(network.outputs, y_, name='cost')
+        return tl.cost.cross_entropy(network.outputs, y_, name='cost'), network.all_drop
+
 
 # load mnist data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))

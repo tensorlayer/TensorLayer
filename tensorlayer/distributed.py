@@ -10,6 +10,8 @@ from tensorflow.python.training import session_run_hook
 
 import horovod.tensorflow as hvd
 
+from . import utils
+
 __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'HorovodTrainer']
 
 
@@ -37,7 +39,9 @@ class HorovodTrainer(object):
         dataset_shard = dataset_shard.repeat(self.num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
         next_example, next_label = iterator.get_next()
-        loss = self.model_function(next_example, next_label)
+        loss, all_drop = self.model_function(next_example, next_label)
+
+        feed_dict = utils.dict_to_one(all_drop)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
@@ -75,7 +79,7 @@ class HorovodTrainer(object):
         with tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config) as mon_sess:
             while not mon_sess.should_stop():
                 # Run a training step synchronously.
-                mon_sess.run(train_op)
+                mon_sess.run(train_op, feed_dict)
 
 
 class TaskSpecDef(object):
@@ -384,6 +388,7 @@ class LoadCheckpoint(session_run_hook.SessionRunHook):
         if not self._loaded:
             self._loaded = True
             self._saver.restore(self._checkpoint)
+
 
 # Alias
 TaskSpec = create_task_spec_def
