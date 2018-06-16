@@ -15,37 +15,35 @@ from . import utils
 __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'HorovodTrainer']
 
 
-class HorovodTrainer(object):
+class Trainer(object):
 
     def __init__(
-            self, model_function, dataset, batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
+            self, model_function, dataset, return_optimizer, optimizer_args, batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
-        self.model_function = model_function
-        self.dataset = dataset
-        self.batch_size = 100
-        self.num_epochs = num_epochs
-        self.checkpoint_dir = checkpoint_dir
+        model_function = model_function
+        dataset = dataset
 
-    def run(self):
         # Initialize Horovod.
         hvd.init()
+        self.is_master = hvd.rank() == 0
 
         # Adjust learning rate based on number of GPUs.
-        opt = tf.train.RMSPropOptimizer(0.001 * hvd.size())
+        optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
+        opt = return_optimizer(**optimizer_args)
 
         # Get the shard of the dataset based on my local rank
-        dataset_shard = self.dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-        dataset_shard = dataset_shard.batch(self.batch_size)
-        dataset_shard = dataset_shard.repeat(self.num_epochs)
+        dataset_shard = dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        dataset_shard = dataset_shard.batch(batch_size)
+        dataset_shard = dataset_shard.repeat(num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
         next_example, next_label = iterator.get_next()
-        loss = self.model_function(next_example, next_label)
+        loss = model_function(next_example, next_label)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.contrib.framework.get_or_create_global_step()
-        train_op = opt.minimize(loss, global_step=global_step)
+        self._train_op = opt.minimize(loss, global_step=global_step)
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
@@ -69,15 +67,20 @@ class HorovodTrainer(object):
 
         # Save checkpoints only on worker 0 to prevent other workers from
         # corrupting them.
-        checkpoint_dir = self.checkpoint_dir if hvd.rank() == 0 else None
+        checkpoint_dir = checkpoint_dir if self.is_master else None
 
         # The MonitoredTrainingSession takes care of session initialization,
         # restoring from a checkpoint, saving to a checkpoint, and closing when done
         # or an error occurs.
-        with tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config) as mon_sess:
-            while not mon_sess.should_stop():
-                # Run a training step synchronously.
-                mon_sess.run(train_op)
+        self.sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
+
+    def train_batch(self):
+        self.sess.run(self._train_op)
+    
+    def train_to_end(self):
+        while not self.sess.should_stop():
+            # Run a training step synchronously.
+            self.sess.run(self._train_op)
 
 
 class TaskSpecDef(object):
