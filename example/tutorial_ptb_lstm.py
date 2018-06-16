@@ -375,7 +375,7 @@ def main(_):
     print("Test Perplexity: %.3f took %.2fs" % (test_perplexity, time.time() - start_time))
 
     print(
-        "More example: Text generation using Trump's speech data: https://github.com/zsdonghao/tensorlayer/blob/master/example/tutorial_generate_text.py -- def main_lstm_generate_text():"
+        "More example: Text generation using Trump's speech data: https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_generate_text.py -- def main_lstm_generate_text():"
     )
 
 

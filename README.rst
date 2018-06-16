@@ -1,95 +1,14 @@
-.. raw:: html
-
-   <a href="https://tensorlayer.readthedocs.io/">
-       <div align="center">
-           <img src="img/tl_transparent_logo.png" width="50%" height="30%"/>
-       </div>
-   </a>
+|TENSORLAYER-LOGO|
 
 
-.. image:: https://awesome.re/mentioned-badge.svg
-    :target: https://github.com/tensorlayer/awesome-tensorlayer
+|Awesome| |Documentation-EN| |Documentation-CN| |Book-CN| |Downloads|
 
-.. image:: https://img.shields.io/badge/documentation-english-blue.svg
-    :target: https://tensorlayer.readthedocs.io/
+|PyPI| |PyPI-Prerelease| |Commits-Since| |Python| |TensorFlow|
 
-.. image:: https://img.shields.io/badge/documentation-中文-blue.svg
-    :target: https://tensorlayercn.readthedocs.io/
-
-.. image:: https://img.shields.io/badge/book-中文-blue.svg
-    :target: http://www.broadview.com.cn/book/5059/
-
-.. image:: http://pepy.tech/badge/tensorlayer
-    :target: http://pepy.tech/project/tensorlayer
+|Travis| |Docker| |RTD-EN| |RTD-CN| |PyUP| |Docker-Pulls| |Code-Quality|
 
 
-.. raw:: html
-
-   <br/>
-
-.. raw:: html
-
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release
-    :target: https://pypi.org/project/tensorlayer/
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
-    :target: https://pypi.org/project/tensorlayer/
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
-    :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc5...master
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
-    :target: https://pypi.org/project/tensorlayer/
-
-.. image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
-    :target: https://github.com/tensorflow/tensorflow/releases
-
-
-.. raw:: html
-
-   <br/>
-
-.. raw:: html
-
-
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/travis/tensorlayer/tensorlayer/master.svg?label=Travis
-    :target: https://travis-ci.org/tensorlayer/tensorlayer
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/circleci/project/github/tensorlayer/tensorlayer/master.svg?label=Docker%20Build
-    :target: https://circleci.com/gh/tensorlayer/tensorlayer/tree/master
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN
-    :target: https://tensorlayer.readthedocs.io/
-    
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN
-    :target: https://tensorlayercn.readthedocs.io/
-    
-.. image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
-    :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
-    
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/docker/pulls/tensorlayer/tensorlayer.svg
-    :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
-
-.. image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/codacy/grade/ca2a29ddcf7445588beff50bee5406d9.svg
-    :target: https://app.codacy.com/app/tensorlayer/tensorlayer
-
-
-
-.. raw:: html
-
-   <br/><br/>
-
-   <a href="https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc" target="\_blank">
-       <div align="center">
-           <img src="img/join_slack.png" width="40%"/>
-       </div>
-   </a>
-
-   <br/>
-
-.. raw:: html
+|JOIN-SLACK-LOGO|
 
 TensorLayer is a novel TensorFlow-based deep learning and reinforcement
 learning library designed for researchers and engineers. It provides a
@@ -232,3 +151,47 @@ License
 =======
 
 TensorLayer is released under the Apache 2.0 license.
+
+
+.. |TENSORLAYER-LOGO| image:: https://raw.githubusercontent.com/tensorlayer/tensorlayer/master/img/tl_transparent_logo.png
+   :target: https://tensorlayer.readthedocs.io/
+.. |JOIN-SLACK-LOGO| image:: https://raw.githubusercontent.com/tensorlayer/tensorlayer/master/img/join_slack.png
+   :target: https://join.slack.com/t/tensorlayer/shared_invite/enQtMjUyMjczMzU2Njg4LWI0MWU0MDFkOWY2YjQ4YjVhMzI5M2VlZmE4YTNhNGY1NjZhMzUwMmQ2MTc0YWRjMjQzMjdjMTg2MWQ2ZWJhYzc
+
+.. |Awesome| image:: https://awesome.re/mentioned-badge.svg
+   :target: https://github.com/tensorlayer/awesome-tensorlayer
+.. |Documentation-EN| image:: https://img.shields.io/badge/documentation-english-blue.svg
+   :target: https://tensorlayer.readthedocs.io/
+.. |Documentation-CN| image:: https://img.shields.io/badge/documentation-中文-blue.svg
+   :target: https://tensorlayercn.readthedocs.io/
+.. |Book-CN| image:: https://img.shields.io/badge/book-中文-blue.svg
+   :target: http://www.broadview.com.cn/book/5059/
+.. |Downloads| image:: http://pepy.tech/badge/tensorlayer
+   :target: http://pepy.tech/project/tensorlayer
+   
+
+.. |PyPI| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release
+   :target: https://pypi.org/project/tensorlayer/
+.. |PyPI-Prerelease| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
+   :target: https://pypi.org/project/tensorlayer/
+.. |Commits-Since| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
+   :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc5...master
+.. |Python| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
+   :target: https://pypi.org/project/tensorlayer/
+.. |TensorFlow| image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
+   :target: https://github.com/tensorflow/tensorflow/releases
+   
+.. |Travis| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/travis/tensorlayer/tensorlayer/master.svg?label=Travis
+   :target: https://travis-ci.org/tensorlayer/tensorlayer
+.. |Docker| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/circleci/project/github/tensorlayer/tensorlayer/master.svg?label=Docker%20Build
+   :target: https://circleci.com/gh/tensorlayer/tensorlayer/tree/master
+.. |RTD-EN| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayer/latest.svg?label=ReadTheDocs-EN
+   :target: https://tensorlayer.readthedocs.io/
+.. |RTD-CN| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/readthedocs/tensorlayercn/latest.svg?label=ReadTheDocs-CN
+   :target: https://tensorlayercn.readthedocs.io/
+.. |PyUP| image:: https://pyup.io/repos/github/tensorlayer/tensorlayer/shield.svg
+   :target: https://pyup.io/repos/github/tensorlayer/tensorlayer/
+.. |Docker-Pulls| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/docker/pulls/tensorlayer/tensorlayer.svg
+   :target: https://hub.docker.com/r/tensorlayer/tensorlayer/
+.. |Code-Quality| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/codacy/grade/ca2a29ddcf7445588beff50bee5406d9.svg
+   :target: https://app.codacy.com/app/tensorlayer/tensorlayer

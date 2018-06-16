@@ -160,5 +160,4 @@ setup(
     scripts=[
         'tl',
     ],
-    platform=['any'],
 )

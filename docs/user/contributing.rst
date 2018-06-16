@@ -1,29 +1,41 @@
-Development
-===========
+.. _contributing:
 
-..
-    The TensorLayer project was started by Hao Dong, Imperial College London in Jun
-    2016. It is developed by a core team (in alphabetical order:
-    `Akara Supratak <https://akaraspt.github.io>`_,
-    `Hao Dong <https://zsdonghao.github.io>`_,
-    `Simiao Yu <https://github.com/zsdonghao>`_)
-    and numerous additional contributors on `Release`_.
+===============
+Contributing
+===============
 
-TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London.
+TensorLayer is a major ongoing research project in Data Science Institute, Imperial College London. 
 The goal of the project is to develop a compositional language while complex learning systems
 can be build through composition of neural network modules.
-The whole development is now participated by numerous contributors on `Release`_.
-As an open-source project by we highly welcome contributions!
-Every bit helps and will be credited.
 
-..
-  TensorLayer was initially developed as a part of project in Imperial College London.
-  Now it also maintained by numerous contributors on `GitHub`_.
+Numerous contributors come from various horizons such as: Tsinghua University, Carnegie Mellon University, University of Technology of Compiegne, 
+Google, Microsoft, Bloomberg and etc.
 
-..
-    As an open-source project by Researchers for Researchers and Engineers,
+There are many functions need to be contributed such as Maxout, Neural Turing Machine, Attention, TensorLayer Mobile and etc.
+
+You can easily open a Pull Request (PR) on `GitHub`_, every little step counts and will be credited.
+As an open-source project, we highly welcome and value contributions!
+
+**If you are interested in working with us, please contact us at:** `tensorlayer@gmail.com <tensorlayer@gmail.com>`_.
 
 
+Project Maintainers
+--------------------------
+
+
+The TensorLayer project was started by `Hao Dong <https://zsdonghao.github.io>`_ at Imperial College London in June 2016. 
+
+It is actively developed and maintained by the following people *(in alphabetical order)*:
+
+- **Akara Supratak** (`@akaraspt <https://github.com/akaraspt>`_) - `<https://akaraspt.github.io>`_
+- **Fangde Liu** (`@fangde <https://github.com/fangde>`_) - `<http://fangde.github.io/>`_
+- **Guo Li** (`@lgarithm <https://github.com/lgarithm>`_) - `<https://lgarithm.github.io>`_
+- **Hao Dong** (`@zsdonghao <https://github.com/zsdonghao>`_) - `<https://zsdonghao.github.io>`_
+- **Jonathan Dekhtiar** (`@DEKHTIARJonathan <https://github.com/DEKHTIARJonathan>`_) - `<https://www.jonathandekhtiar.eu>`_
+- **Luo Mai** (`@luomai <https://github.com/luomai>`_) - `<http://www.doc.ic.ac.uk/~lm111/>`_
+- **Simiao Yu** (`@nebulaV <https://github.com/nebulaV>`_) - `<https://nebulav.github.io>`_
+
+Numerous other contributors can be found in the `Github Contribution Graph <https://github.com/tensorlayer/tensorlayer/graphs/contributors>`_.
 
 
 What to contribute
@@ -161,6 +173,6 @@ help us reviewing it. If it is fixing an open issue, say, issue #123, add
 GitHub will close it when your request is merged.
 
 
-.. _Release: https://github.com/zsdonghao/tensorlayer/releases
-.. _GitHub: https://github.com/zsdonghao/tensorlayer
+.. _Release: https://github.com/tensorlayer/tensorlayer/releases
+.. _GitHub: https://github.com/tensorlayer/tensorlayer
 .. _our mailing list: hao.dong11@imperial.ac.uk
