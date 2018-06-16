@@ -8,7 +8,8 @@ import time
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 
-import horovod.tensorflow as hvd
+from tensorlayer.lazy_imports import LazyImport
+hvd = LazyImport('horovod.tensorflow')
 
 from . import utils
 
@@ -18,7 +19,8 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class SimpleTrainer(object):
 
     def __init__(
-            self, model_function, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001), batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
+            self, model_function, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001),
+            batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         model_function = model_function
         dataset = dataset
@@ -76,7 +78,7 @@ class SimpleTrainer(object):
 
     def train_batch(self):
         self.sess.run(self._train_op)
-    
+
     def train_to_end(self):
         while not self.sess.should_stop():
             # Run a training step synchronously.
