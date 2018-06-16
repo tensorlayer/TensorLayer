@@ -13,7 +13,7 @@
 
 ![PyPI Stable Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer.svg?label=PyPI%20-%20Release)
 ![PyPI RC Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release)
-[![Github commits (since latest release)](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc6...master)
+[![Github commits (since latest release)](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg)](https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master)
 [![PyPI - Python Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg)](https://pypi.org/project/tensorlayer/)
 [![Supported TF Version](http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/badge/tensorflow-1.6.0+-blue.svg)](https://github.com/tensorflow/tensorflow/releases)
 
@@ -40,7 +40,7 @@ TensorLayer is a novel TensorFlow-based deep learning and reinforcement learning
 # Why another deep learning library: TensorLayer
 
 As deep learning practitioners, we have been looking for a library that can address various development
- purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models. 
+ purposes. This library is easy to adopt by providing diverse examples, tutorials and pre-trained models.
 Also, it allow users to easily fine-tune TensorFlow; while being suitable for production deployment. TensorLayer aims to satisfy all these purposes. It has three key features:
 
 - ***Simplicity*** : TensorLayer lifts the low-level dataflow interface of TensorFlow to *high-level* layers / models. It is very easy to learn through the rich [example codes](https://github.com/tensorlayer/awesome-tensorlayer) contributed by a wide community.
@@ -54,8 +54,8 @@ Also, it allow users to easily fine-tune TensorFlow; while being suitable for pr
 
 
 TensorLayer stands at a unique spot in the library landscape. Other wrapper libraries like Keras and TFLearn also provide high-level abstractions. They, however, often
-hide the underlying engine from users, which make them hard to customize 
-and fine-tune. On the contrary, TensorLayer APIs are generally flexible and transparent. 
+hide the underlying engine from users, which make them hard to customize
+and fine-tune. On the contrary, TensorLayer APIs are generally flexible and transparent.
 Users often find it easy to start with the examples and tutorials, and then dive
 into TensorFlow seamlessly. In addition, TensorLayer does not create library lock-in through native supports for importing components from Keras, TFSlim and TFLearn.
 
