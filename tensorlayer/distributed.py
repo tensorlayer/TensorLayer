@@ -22,9 +22,6 @@ class SimpleTrainer(object):
             self, model_function, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001),
             batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
-        model_function = model_function
-        dataset = dataset
-
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
@@ -45,7 +42,7 @@ class SimpleTrainer(object):
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.contrib.framework.get_or_create_global_step()
-        self._train_op = opt.minimize(loss, global_step=global_step)
+        self._train_op = opt.minimize(loss, global_step=global_step) # TODO: support a list of losses
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
@@ -55,11 +52,11 @@ class SimpleTrainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=20000 // hvd.size()),
+            tf.train.StopAtStepHook(last_step=20000 // hvd.size()), # TODO: make the step configurable
             tf.train.LoggingTensorHook(tensors={
                 'step': global_step,
                 'loss': loss
-            }, every_n_iter=10),
+            }, every_n_iter=10), # TODO: make the hooks configurable
         ]
 
         # Pin GPU to be used to process local rank (one GPU per process)
