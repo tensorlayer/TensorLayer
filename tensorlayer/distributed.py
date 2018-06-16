@@ -43,7 +43,7 @@ class HorovodTrainer(object):
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.contrib.framework.get_or_create_global_step()
-        train_op = opt.minimize(self.loss, global_step=global_step)
+        train_op = opt.minimize(loss, global_step=global_step)
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
