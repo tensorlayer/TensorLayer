@@ -16,24 +16,30 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class HorovodTrainer(object):
 
     def __init__(
-            self, loss, input_placeholder, label_placeholder, dataset_shard, batch_size=100,
-            checkpoint_dir='./checkpoints'
+            self, model_function, dataset, batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
-        self.loss = loss
-        self.input_placeholder = input_placeholder
-        self.label_placeholder = label_placeholder
-        self.dataset_shard = dataset_shard
+        self.model_function = model_function
+        self.dataset = dataset
         self.batch_size = 100
+        self.num_epochs = num_epochs
         self.checkpoint_dir = checkpoint_dir
 
     def run(self):
-        # Horovod: initialize Horovod.
+        # Initialize Horovod.
         hvd.init()
 
-        # Horovod: adjust learning rate based on number of GPUs.
+        # Adjust learning rate based on number of GPUs.
         opt = tf.train.RMSPropOptimizer(0.001 * hvd.size())
 
-        # Horovod: add Horovod Distributed Optimizer.
+        # Get the shard of the dataset based on my local rank
+        dataset_shard = self.dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        dataset_shard = dataset_shard.batch(self.batch_size)
+        dataset_shard = dataset_shard.repeat(self.num_epochs)
+        iterator = dataset_shard.make_one_shot_iterator()
+        next_example, next_label = iterator.get_next()
+        loss = self.model_function(next_example, next_label)
+
+        # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.contrib.framework.get_or_create_global_step()
@@ -50,16 +56,16 @@ class HorovodTrainer(object):
             tf.train.StopAtStepHook(last_step=20000 // hvd.size()),
             tf.train.LoggingTensorHook(tensors={
                 'step': global_step,
-                'loss': self.loss
+                'loss': loss
             }, every_n_iter=10),
         ]
 
-        # Horovod: pin GPU to be used to process local rank (one GPU per process)
+        # Pin GPU to be used to process local rank (one GPU per process)
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         config.gpu_options.visible_device_list = str(hvd.local_rank())
 
-        # Horovod: save checkpoints only on worker 0 to prevent other workers from
+        # Save checkpoints only on worker 0 to prevent other workers from
         # corrupting them.
         checkpoint_dir = self.checkpoint_dir if hvd.rank() == 0 else None
 
@@ -69,8 +75,7 @@ class HorovodTrainer(object):
         with tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config) as mon_sess:
             while not mon_sess.should_stop():
                 # Run a training step synchronously.
-                input_, label_ = self.dataset_shard.train.next_batch(self.batch_size)
-                mon_sess.run(train_op, feed_dict={self.input_placeholder: input_, self.label_placeholder: label_})
+                mon_sess.run(train_op)
 
 
 class TaskSpecDef(object):
