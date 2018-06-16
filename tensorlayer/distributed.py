@@ -15,7 +15,7 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 
 class HorovodTrainer(object):
 
-    def __int__(
+    def __init__(
             self, loss, input_placeholder, label_placeholder, dataset_shard, batch_size=100,
             checkpoint_dir='./checkpoints'
     ):
