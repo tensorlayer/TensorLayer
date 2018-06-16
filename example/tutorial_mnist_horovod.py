@@ -15,7 +15,7 @@ def make_dataset(images, labels):
     return tf.data.Dataset.zip((ds1, ds2))
 
 
-def model_function(x, y_):
+def make_network(x, y_):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True)
@@ -36,6 +36,6 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 dataset = make_dataset(X_train, y_train)
 
 trainer = tl.distributed.SimpleTrainer(
-    model_function=model_function, dataset=dataset, optimizer=make_optimizer, optimizer_args={'learning_rate': 0.001}
+    network_and_cost_func=make_network, dataset=dataset, optimizer_func=make_optimizer, optimizer_args={'learning_rate': 0.001}
 )
 trainer.train_to_end()

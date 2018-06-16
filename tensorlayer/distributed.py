@@ -11,24 +11,18 @@ from tensorflow.python.training import session_run_hook
 from tensorlayer.lazy_imports import LazyImport
 hvd = LazyImport('horovod.tensorflow')
 
-from . import utils
-
 __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'SimpleTrainer']
 
 
 class SimpleTrainer(object):
 
     def __init__(
-            self, model_function, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001),
+            self, network_and_cost_func, dataset, optimizer_func=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001),
             batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
-
-        # Adjust learning rate based on number of GPUs.
-        optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
-        opt = optimizer(**optimizer_args)
 
         # Get the shard of the dataset based on my local rank
         dataset_shard = dataset.shard(num_shards=hvd.size(), index=hvd.rank())
@@ -36,7 +30,11 @@ class SimpleTrainer(object):
         dataset_shard = dataset_shard.repeat(num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
         next_example, next_label = iterator.get_next()
-        self.network, loss = model_function(next_example, next_label)
+        self.network, loss = network_and_cost_func(next_example, next_label)
+
+        # Adjust learning rate based on number of GPUs.
+        optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
+        opt = optimizer_func(**optimizer_args)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
