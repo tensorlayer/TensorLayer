@@ -85,7 +85,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 
-## [1.8.6] - 2018-06-02
+## [1.8.6] - 2018-06-16
 
 ### Added
 - API:
