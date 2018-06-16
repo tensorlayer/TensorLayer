@@ -85,7 +85,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 
 
-## [1.8.6] - 2018-06-16
+## [1.9.0] - 2018-06-16
 
 ### Added
 - API:
@@ -243,6 +243,6 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6...1.8.5
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

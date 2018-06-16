@@ -175,7 +175,7 @@ TensorLayer is released under the Apache 2.0 license.
 .. |PyPI-Prerelease| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/release/tensorlayer/tensorlayer/all.svg?label=PyPI%20-%20Pre-Release
    :target: https://pypi.org/project/tensorlayer/
 .. |Commits-Since| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/github/commits-since/tensorlayer/tensorlayer/latest.svg
-   :target: https://github.com/tensorlayer/tensorlayer/compare/1.8.6...master
+   :target: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
 .. |Python| image:: http://ec2-35-178-47-120.eu-west-2.compute.amazonaws.com/pypi/pyversions/tensorlayer.svg
    :target: https://pypi.org/project/tensorlayer/
 .. |TensorFlow| image:: https://img.shields.io/badge/tensorflow-1.6.0+-blue.svg
