@@ -32,5 +32,5 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 dataset = make_dataset(X_train, y_train)
 
 optimizer = tf.train.RMSPropOptimizer(0.001)
-trainer = tl.distributed.HorovodTrainer(model_function, dataset, optimizer)
-trainer.run()
+trainer = tl.distributed.SimpleTrainer(model_function, dataset, optimizer)
+trainer.train_to_end()

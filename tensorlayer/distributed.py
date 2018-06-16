@@ -80,7 +80,7 @@ class SimpleTrainer(object):
     def train_to_end(self):
         while not self.sess.should_stop():
             # Run a training step synchronously.
-            self.sess.run(self._train_op)
+            self.train_batch()
 
 
 class TaskSpecDef(object):
