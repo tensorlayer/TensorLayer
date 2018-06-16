@@ -12,13 +12,13 @@ import horovod.tensorflow as hvd
 
 from . import utils
 
-__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'HorovodTrainer']
+__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'SimpleTrainer']
 
 
-class Trainer(object):
+class SimpleTrainer(object):
 
     def __init__(
-            self, model_function, dataset, return_optimizer, optimizer_args, batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
+            self, model_function, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001), batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         model_function = model_function
         dataset = dataset
@@ -29,7 +29,7 @@ class Trainer(object):
 
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
-        opt = return_optimizer(**optimizer_args)
+        opt = optimizer(**optimizer_args)
 
         # Get the shard of the dataset based on my local rank
         dataset_shard = dataset.shard(num_shards=hvd.size(), index=hvd.rank())
@@ -37,7 +37,7 @@ class Trainer(object):
         dataset_shard = dataset_shard.repeat(num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
         next_example, next_label = iterator.get_next()
-        loss = model_function(next_example, next_label)
+        self.network, loss = model_function(next_example, next_label)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)

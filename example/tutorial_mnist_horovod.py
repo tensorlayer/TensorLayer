@@ -24,12 +24,13 @@ def model_function(x, y_):
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
         network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3', is_fix=True)
         network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-        return tl.cost.cross_entropy(network.outputs, y_, name='cost')
+        return network, tl.cost.cross_entropy(network.outputs, y_, name='cost')
 
 
 # load mnist data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 dataset = make_dataset(X_train, y_train)
 
-trainer = tl.distributed.HorovodTrainer(model_function, dataset)
+optimizer = tf.train.RMSPropOptimizer(0.001)
+trainer = tl.distributed.HorovodTrainer(model_function, dataset, optimizer)
 trainer.run()
