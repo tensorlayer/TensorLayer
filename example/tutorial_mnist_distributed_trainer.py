@@ -31,7 +31,7 @@ def make_network(x, y_):
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 dataset = make_dataset(X_train, y_train)
 
-trainer = tl.distributed.SimpleTrainer(
+trainer = tl.distributed.DistributedTrainer(
     network_and_cost_func=make_network, dataset=dataset, optimizer=tf.train.RMSPropOptimizer,
     optimizer_args={'learning_rate': 0.001}
 )
