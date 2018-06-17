@@ -33,7 +33,7 @@ else:
 if sys.platform.startswith('darwin'):
     import matplotlib
     matplotlib.use('TkAgg')
-    
+
 import matplotlib.pyplot as plt
 
 import scipy.io as sio
