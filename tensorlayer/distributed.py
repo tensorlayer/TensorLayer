@@ -17,7 +17,8 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class SimpleTrainer(object):
 
     def __init__(
-            self, network_and_cost_func, dataset, optimizer_func=tf.train.AdamOptimizer, optimizer_args=dict(learning_rate=0.001),
+            self, network_and_cost_func, dataset, optimizer=tf.train.AdamOptimizer,
+            optimizer_args=dict(learning_rate=0.001),
             batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         # Initialize Horovod.
@@ -34,13 +35,13 @@ class SimpleTrainer(object):
 
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
-        opt = optimizer_func(**optimizer_args)
+        opt = optimizer(**optimizer_args)
 
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.contrib.framework.get_or_create_global_step()
-        self._train_op = opt.minimize(loss, global_step=global_step) # TODO: support a list of losses
+        self._train_op = opt.minimize(loss, global_step=global_step)  # TODO: support a list of losses
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
@@ -50,11 +51,11 @@ class SimpleTrainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=20000 // hvd.size()), # TODO: make the step configurable
+            tf.train.StopAtStepHook(last_step=20000 // hvd.size()),  # TODO: make the step configurable
             tf.train.LoggingTensorHook(tensors={
                 'step': global_step,
                 'loss': loss
-            }, every_n_iter=10), # TODO: make the hooks configurable
+            }, every_n_iter=10),  # TODO: make the hooks configurable
         ]
 
         # Pin GPU to be used to process local rank (one GPU per process)

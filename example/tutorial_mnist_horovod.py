@@ -27,15 +27,13 @@ def make_network(x, y_):
         return network, tl.cost.cross_entropy(network.outputs, y_, name='cost')
 
 
-def make_optimizer(args):
-    return tf.train.RMSPropOptimizer(args)
-
 
 # load mnist data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
 dataset = make_dataset(X_train, y_train)
 
 trainer = tl.distributed.SimpleTrainer(
-    network_and_cost_func=make_network, dataset=dataset, optimizer_func=make_optimizer, optimizer_args={'learning_rate': 0.001}
+    network_and_cost_func=make_network, dataset=dataset, optimizer=tf.train.RMSPropOptimizer, optimizer_args={
+        'learning_rate': 0.001}
 )
 trainer.train_to_end()
