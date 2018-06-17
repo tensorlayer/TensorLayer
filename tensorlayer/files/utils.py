@@ -1185,7 +1185,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
 
     imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                        )  # 2007_000027.jpg --> 2007000027
+                       )  # 2007_000027.jpg --> 2007000027
 
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
@@ -1196,7 +1196,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
         imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                   )  # 2007_000032.png --> 2007000032
+                                  )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         # ======== 3. instance segmentation maps path list
@@ -1205,7 +1205,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
         imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                   )  # 2007_000032.png --> 2007000032
+                                  )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1219,7 +1219,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
     )
     imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                            )  # 2007_000027.xml --> 2007000027
+                           )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1457,7 +1457,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             vis = None
 
                         # if len(joint_pos) == 16:
-                        if ((is_16_pos_only == True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
                             # only use image with 16 key points / or use all
                             data = {
                                 'filename': img_fn,
