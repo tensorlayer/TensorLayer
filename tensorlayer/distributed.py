@@ -87,11 +87,10 @@ class DistributedTrainer(object):
     def validate_batch(self):
         return self.sess.run(self._validation_loss)
 
-    def train_to_end(self, validation_step_interval=10):
+    def train_to_end(self):
         while not self.sess.should_stop():
             # Run a training step synchronously.
             self.train_batch()
-            if 
 
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
