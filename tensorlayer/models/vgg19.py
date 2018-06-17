@@ -307,11 +307,23 @@ class VGG19Base(object):
         raise Exception("unknown layer name (end_with): {}".format(end_with))
 
     def restore_params(self, sess):
+        # For no pre-trained model link
+
+        # logging.info("Restore pre-trained parameters")
+        # vgg19_npy_path = os.path.join('models', 'vgg19.npy')
+        # if not os.path.isfile(vgg19_npy_path):
+        #     print("Please download vgg19.npy from : https://github.com/machrisaa/tensorflow-vgg")
+        #     exit()
+        # npz = np.load(vgg19_npy_path, encoding='latin1').item()
+
+        # For existing pre-trained model link
         logging.info("Restore pre-trained parameters")
+        maybe_download_and_extract(
+            'vgg19.npy', 'models',
+            'https://media.githubusercontent.com/media/tensorlayer/pretrained-models/master/models/',
+            expected_bytes=574670860
+        )
         vgg19_npy_path = os.path.join('models', 'vgg19.npy')
-        if not os.path.isfile(vgg19_npy_path):
-            print("Please download vgg19.npy from : https://github.com/machrisaa/tensorflow-vgg")
-            exit()
         npz = np.load(vgg19_npy_path, encoding='latin1').item()
 
         params = []
