@@ -29,10 +29,11 @@ else:
     from urllib.request import urlretrieve
 
 # Fix error on OSX, as suggested by: https://stackoverflow.com/a/48374671
-import matplotlib
-import platform
-if platform.system() in ['Darwin']:
+# See: https://docs.python.org/3/library/sys.html#sys.platform
+if sys.platform.startswith('darwin'):
+    import matplotlib
     matplotlib.use('TkAgg')
+    
 import matplotlib.pyplot as plt
 
 import scipy.io as sio
