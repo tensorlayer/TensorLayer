@@ -7,8 +7,8 @@ import time
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
-
 from tensorlayer.lazy_imports import LazyImport
+
 hvd = LazyImport('horovod.tensorflow')
 
 __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'SimpleTrainer']
@@ -17,9 +17,8 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class SimpleTrainer(object):
 
     def __init__(
-            self, network_and_cost_func, dataset, optimizer=tf.train.AdamOptimizer,
-            optimizer_args=dict(learning_rate=0.001),
-            batch_size=100, num_epochs=500, checkpoint_dir='./checkpoints'
+            self, network_and_cost_func, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=None, batch_size=100,
+            num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         # Initialize Horovod.
         hvd.init()
@@ -33,6 +32,8 @@ class SimpleTrainer(object):
         next_example, next_label = iterator.get_next()
         self.network, loss = network_and_cost_func(next_example, next_label)
 
+        if not optimizer_args:
+            optimizer_args = dict(learning_rate=0.001)
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
         opt = optimizer(**optimizer_args)
@@ -40,7 +41,7 @@ class SimpleTrainer(object):
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
-        global_step = tf.contrib.framework.get_or_create_global_step()
+        global_step = tf.train.framework.get_or_create_global_step()
         self._train_op = opt.minimize(loss, global_step=global_step)  # TODO: support a list of losses
 
         hooks = [
