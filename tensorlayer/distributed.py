@@ -18,7 +18,7 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class DistributedTrainer(object):
 
     def __init__(
-            self, network_and_cost_func, dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=None, batch_size=100,
+            self, network_and_cost_func, training_dataset, validation_dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=None, batch_size=100,
             num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         # Initialize Horovod.
@@ -26,12 +26,19 @@ class DistributedTrainer(object):
         self.is_master = hvd.rank() == 0
 
         # Get the shard of the dataset based on my local rank
-        dataset_shard = dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        dataset_shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
         dataset_shard = dataset_shard.batch(batch_size)
         dataset_shard = dataset_shard.repeat(num_epochs)
         iterator = dataset_shard.make_one_shot_iterator()
-        next_example, next_label = iterator.get_next()
-        self.network, loss = network_and_cost_func(next_example, next_label)
+        next_train_example, next_train_label = iterator.get_next()
+        self.network, loss = network_and_cost_func(next_train_example, next_train_label)
+
+        # Get the loss for validation data set network
+        validation_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        validation_dataset_shard = validation_dataset_shard.batch(batch_size)
+        validation_dataset_shard = validation_dataset_shard.repeat(num_epochs)
+        next_validation_example, next_validation_label = validation_dataset.make_one_shot_iterator().get_next()
+        _, self._validation_loss = network_and_cost_func(next_validation_example, next_validation_label)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
@@ -77,13 +84,17 @@ class DistributedTrainer(object):
     def train_batch(self):
         self.sess.run(self._train_op)
 
-    def train_to_end(self):
+    def validate_batch(self):
+        return self.sess.run(self._validation_loss)
+
+    def train_to_end(self, validation_step_interval=10):
         while not self.sess.should_stop():
             # Run a training step synchronously.
             self.train_batch()
+            if 
 
 
-@deprecated(date="2018-10-30", instructions="Consider using the simple yet high-performance TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class TaskSpecDef(object):
     """Specification for a distributed task.
 
@@ -219,7 +230,7 @@ class TaskSpecDef(object):
         )
 
 
-@deprecated(date="2018-10-30", instructions="Consider using the simple yet high-performance TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_task_spec_def():
     """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed training.
 
@@ -249,7 +260,7 @@ def create_task_spec_def():
         raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
-@deprecated(date="2018-10-30", instructions="Consider using the simple yet high-performance TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_distributed_session(
         task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
         save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
@@ -346,7 +357,7 @@ def create_distributed_session(
     )
 
 
-@deprecated(date="2018-10-30", instructions="Consider using the simple yet high-performance TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class StopAtTimeHook(session_run_hook.SessionRunHook):
     """Hook that requests stop after a specified time.
 
@@ -369,7 +380,7 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
             run_context.request_stop()
 
 
-@deprecated(date="2018-10-30", instructions="Consider using the simple yet high-performance TensorLayer distributed trainer.")
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class LoadCheckpoint(session_run_hook.SessionRunHook):
     """Hook that loads a checkpoint after the session is created.
 

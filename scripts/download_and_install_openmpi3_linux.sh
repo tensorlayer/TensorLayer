@@ -6,7 +6,7 @@ else
 	NPROC=$(nproc)
 fi
 
-mkdir -p ./openmpi_tmp && cd ./openmpi_tmp
+mkdir -p $HOME/openmpi_tmp && cd $HOME/openmpi_tmp
 
 MPI_MAJOR=3
 MPI_MINOR=1
@@ -21,10 +21,11 @@ tar -xf ${FILENAME}
 cd ${FOLDER}
 
 # real	5m7.636s on 64 core machine
-./configure --prefix=$HOME/tensorlayerlib/openmpi
+./configure --prefix=$HOME/openmpi
 make -j ${NPROC} all
 make install
 
-echo 'Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/tensorlayerlib/openmpi/bin'
+rm -rf $HOME/openmpi_tmp
+
+echo 'Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/openmpi/bin'
 echo 'Update the PATH in ~/.bashrc if you want OpenMPI to be ready once the machine start'
-echo 'You can safely delete the ./openmpi_tmp folder now.'
