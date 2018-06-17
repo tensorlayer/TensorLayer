@@ -30,7 +30,9 @@ else:
 
 # Fix error on OSX, as suggested by: https://stackoverflow.com/a/48374671
 import matplotlib
-matplotlib.use('TkAgg')
+import platform
+if platform.system() in ['Darwin']:
+    matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 import scipy.io as sio
