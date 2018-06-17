@@ -77,13 +77,14 @@ To release a new version, please update the changelog as followed:
 ### Removed
 
 ### Fixed
+- import error caused by matplotlib on OSX (PR #705)
 
 ### Security
 
 ### Dependencies Update
 
 ### Contributors
-
+@lgarithm: #705
 
 ## [1.9.0] - 2018-06-16
 
@@ -132,7 +133,7 @@ To release a new version, please update the changelog as followed:
   - `test_activations.py` added (PR #686)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
-  - add the following to all tutorials (PR #697):  
+  - add the following to all tutorials (PR #697):
     ```python
     tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
