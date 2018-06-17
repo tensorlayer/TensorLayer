@@ -41,7 +41,7 @@ class SimpleTrainer(object):
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
-        global_step = tf.train.framework.get_or_create_global_step()
+        global_step = tf.train.get_or_create_global_step()
         self._train_op = opt.minimize(loss, global_step=global_step)  # TODO: support a list of losses
 
         hooks = [
