@@ -28,6 +28,9 @@ if sys.version_info[0] == 2:
 else:
     from urllib.request import urlretrieve
 
+# Fix error on OSX, as suggested by: https://stackoverflow.com/a/48374671
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 import scipy.io as sio
@@ -69,7 +72,7 @@ __all__ = [
 ]
 
 
-## Load dataset functions
+# Load dataset functions
 def load_mnist_dataset(shape=(-1, 784), path='data'):
     """Load the original mnist.
 
@@ -220,7 +223,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
     path = os.path.join(path, 'cifar10')
     logging.info("Load or Download cifar10 > {}".format(path))
 
-    #Helper function to unpickle the data
+    # Helper function to unpickle the data
     def unpickle(file):
         fp = open(file, 'rb')
         if sys.version_info.major == 2:
@@ -232,10 +235,10 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
     filename = 'cifar-10-python.tar.gz'
     url = 'https://www.cs.toronto.edu/~kriz/'
-    #Download and uncompress file
+    # Download and uncompress file
     maybe_download_and_extract(filename, path, url, extract=True)
 
-    #Unpickle file and fill in data
+    # Unpickle file and fill in data
     X_train = None
     y_train = []
     for i in range(1, 6):
@@ -439,7 +442,7 @@ def load_ptb_dataset(path='data'):
     path = os.path.join(path, 'ptb')
     logging.info("Load or Download Penn TreeBank (PTB) dataset > {}".format(path))
 
-    #Maybe dowload and uncompress tar, or load exsisting files
+    # Maybe dowload and uncompress tar, or load exsisting files
     filename = 'simple-examples.tgz'
     url = 'http://www.fit.vutbr.cz/~imikolov/rnnlm/'
     maybe_download_and_extract(filename, path, url, extract=True)
@@ -1103,10 +1106,10 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     if dataset == "2012":
         url = "http://host.robots.ox.ac.uk/pascal/VOC/voc2012/"
         tar_filename = "VOCtrainval_11-May-2012.tar"
-        extracted_filename = "VOC2012"  #"VOCdevkit/VOC2012"
+        extracted_filename = "VOC2012"  # "VOCdevkit/VOC2012"
         logging.info("    [============= VOC 2012 =============]")
     elif dataset == "2012test":
-        extracted_filename = "VOC2012test"  #"VOCdevkit/VOC2012"
+        extracted_filename = "VOC2012test"  # "VOCdevkit/VOC2012"
         logging.info("    [============= VOC 2012 Test Set =============]")
         logging.info(
             "    \nAuthor: 2012test only have person annotation, so 2007test is highly recommended for testing !\n"
@@ -1182,27 +1185,27 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
 
     imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                       )  # 2007_000027.jpg --> 2007000027
+                        )  # 2007_000027.jpg --> 2007000027
 
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
     if dataset != "2012test":
-        ##======== 2. semantic segmentation maps path list
+        # ======== 2. semantic segmentation maps path list
         # folder_semseg = path+"/"+extracted_filename+"/SegmentationClass/"
         folder_semseg = os.path.join(path, extracted_filename, "SegmentationClass")
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
         imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                  )  # 2007_000032.png --> 2007000032
+                                   )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
-        ##======== 3. instance segmentation maps path list
+        # ======== 3. instance segmentation maps path list
         # folder_insseg = path+"/"+extracted_filename+"/SegmentationObject/"
         folder_insseg = os.path.join(path, extracted_filename, "SegmentationObject")
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
         imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                  )  # 2007_000032.png --> 2007000032
+                                   )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1216,7 +1219,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
     )
     imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                           )  # 2007_000027.xml --> 2007000027
+                            )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1454,7 +1457,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             vis = None
 
                         # if len(joint_pos) == 16:
-                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                        if ((is_16_pos_only == True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
                             # only use image with 16 key points / or use all
                             data = {
                                 'filename': img_fn,
@@ -1514,7 +1517,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
     save_joints()
     # split_train_test()  #
 
-    ## read images dir
+    # read images dir
     logging.info("reading images list ...")
     img_dir = os.path.join(path, extracted_filename2)
     _img_list = load_file_list(path=os.path.join(path, extracted_filename2), regx='\\.jpg', printable=False)
@@ -1532,7 +1535,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
             del img_train_list[i]
             del ann_train_list[i]
 
-    ## check annotation and images
+    # check annotation and images
     n_train_images = len(img_train_list)
     n_test_images = len(img_test_list)
     n_images = n_train_images + n_test_images
@@ -2099,7 +2102,7 @@ def maybe_download_and_extract(filename, working_directory, url_source, extract=
     if not os.path.exists(filepath):
         _download(filename, working_directory, url_source)
         statinfo = os.stat(filepath)
-        logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  #, 'bytes.')
+        logging.info('Succesfully downloaded %s %s bytes.' % (filename, statinfo.st_size))  # , 'bytes.')
         if (not (expected_bytes is None) and (expected_bytes != statinfo.st_size)):
             raise Exception('Failed to verify ' + filename + '. Can you get to it with a browser?')
         if (extract):
