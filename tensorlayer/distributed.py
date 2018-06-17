@@ -34,11 +34,11 @@ class DistributedTrainer(object):
         self.network, loss = network_and_cost_func(next_train_example, next_train_label)
 
         # Get the loss for validation data set network
-        validation_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-        validation_dataset_shard = validation_dataset_shard.batch(batch_size)
-        validation_dataset_shard = validation_dataset_shard.repeat(num_epochs)
-        next_validation_example, next_validation_label = validation_dataset.make_one_shot_iterator().get_next()
-        _, self._validation_loss = network_and_cost_func(next_validation_example, next_validation_label)
+        vldt_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        vldt_dataset_shard = vldt_dataset_shard.batch(batch_size)
+        vldt_dataset_shard = vldt_dataset_shard.repeat(num_epochs)
+        next_vldt_example, next_vldt_label = vldt_dataset_shard.make_one_shot_iterator().get_next()
+        _, self._validation_loss = network_and_cost_func(next_vldt_example, next_vldt_label)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
