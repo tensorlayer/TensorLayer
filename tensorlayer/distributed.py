@@ -18,12 +18,20 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class DistributedTrainer(object):
 
     def __init__(
-            self, network_and_cost_func, training_dataset, validation_dataset, optimizer=tf.train.AdamOptimizer, optimizer_args=None, batch_size=100,
+            self, network_and_cost_func, training_dataset, validation_dataset, optimizer=tf.train.AdamOptimizer,
+            optimizer_args=None, batch_size=100,
             num_epochs=500, checkpoint_dir='./checkpoints'
     ):
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
+
+        # Define the loss for validation dataset
+        vldt_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        vldt_dataset_shard = vldt_dataset_shard.batch(batch_size)
+        vldt_dataset_shard = vldt_dataset_shard.repeat(num_epochs)
+        next_vldt_example, next_vldt_label = vldt_dataset_shard.make_one_shot_iterator().get_next()
+        _, self._validation_loss = network_and_cost_func(next_vldt_example, next_vldt_label)
 
         # Get the shard of the dataset based on my local rank
         dataset_shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
@@ -32,13 +40,6 @@ class DistributedTrainer(object):
         iterator = dataset_shard.make_one_shot_iterator()
         next_train_example, next_train_label = iterator.get_next()
         self.network, loss = network_and_cost_func(next_train_example, next_train_label)
-
-        # Get the loss for validation data set network
-        vldt_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-        vldt_dataset_shard = vldt_dataset_shard.batch(batch_size)
-        vldt_dataset_shard = vldt_dataset_shard.repeat(num_epochs)
-        next_vldt_example, next_vldt_label = vldt_dataset_shard.make_one_shot_iterator().get_next()
-        _, self._validation_loss = network_and_cost_func(next_vldt_example, next_vldt_label)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
@@ -85,7 +86,8 @@ class DistributedTrainer(object):
         self.sess.run(self._train_op)
 
     def validate_batch(self):
-        return self.sess.run(self._validation_loss)
+        verr = self.sess.run(self._validation_loss)
+        return verr
 
     def train_to_end(self):
         while not self.sess.should_stop():

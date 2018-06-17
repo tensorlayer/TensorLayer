@@ -29,10 +29,14 @@ def make_network(x, y_):
 
 # load mnist data
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1, 784))
-dataset = make_dataset(X_train, y_train)
+training_dataset = make_dataset(X_train, y_train)
+validation_dataset = make_dataset(X_val, y_val)
+test_dataset = make_dataset(X_test, y_test)
 
 trainer = tl.distributed.DistributedTrainer(
-    network_and_cost_func=make_network, training_dataset=dataset, optimizer=tf.train.RMSPropOptimizer,
-    optimizer_args={'learning_rate': 0.001}
+    network_and_cost_func=make_network, training_dataset=training_dataset, validation_dataset=validation_dataset
+    optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.001}
 )
 trainer.train_to_end()
+
+# Test the trainer accuracy
