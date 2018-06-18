@@ -7,6 +7,8 @@ import time
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
+
+from tensorlayer import tl_logging as logging
 from tensorlayer.decorators import deprecated
 from tensorlayer.lazy_imports import LazyImport
 
@@ -82,17 +84,24 @@ class DistributedTrainer(object):
         # or an error occurs.
         self.sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
 
-    def train_batch(self):
+    def train_on_batch(self):
         self.sess.run(self._train_op)
 
-    def validate_batch(self):
+    def validate_on_batch(self):
         verr = self.sess.run(self._validation_loss)
         return verr
 
     def train_to_end(self):
         while not self.sess.should_stop():
             # Run a training step synchronously.
-            self.train_batch()
+            self.train_on_batch()
+
+    def train_and_validate_to_end(self):
+        while not self.sess.should_stop():
+            # Run a training step synchronously.
+            self.train_on_batch()
+            verr = self.validate_on_batch()
+            logging.info("Validation accuracy: %s" % verr)
 
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
