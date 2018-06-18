@@ -14,13 +14,14 @@ from tensorlayer.lazy_imports import LazyImport
 
 hvd = LazyImport('horovod.tensorflow')
 
-__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'DistributedTrainer']
+__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'Trainer']
 
 
-class DistributedTrainer(object):
+class Trainer(object):
 
     def __init__(
-            self, network_and_cost_func, training_dataset, validation_dataset, optimizer=tf.train.AdamOptimizer,
+            self, network_and_cost_func, training_dataset, validation_dataset, num_steps=20000, log_step_size=20,
+            optimizer=tf.train.AdamOptimizer,
             optimizer_args=None, batch_size=100,
             num_epochs=500, checkpoint_dir='./checkpoints'
     ):
@@ -31,15 +32,16 @@ class DistributedTrainer(object):
         # Define the loss for validation dataset
         vldt_dataset_shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
         vldt_dataset_shard = vldt_dataset_shard.batch(batch_size)
-        vldt_dataset_shard = vldt_dataset_shard.repeat(num_epochs)
+        vldt_dataset_shard = vldt_dataset_shard.repeat() # TODO: check how to reset the dataset iterator
         next_vldt_example, next_vldt_label = vldt_dataset_shard.make_one_shot_iterator().get_next()
         _, self._validation_loss = network_and_cost_func(next_vldt_example, next_vldt_label)
 
         # Get the shard of the dataset based on my local rank
-        dataset_shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-        dataset_shard = dataset_shard.batch(batch_size)
-        dataset_shard = dataset_shard.repeat(num_epochs)
-        iterator = dataset_shard.make_one_shot_iterator()
+        training_dataset = training_dataset.shuffle(seed=0)
+        training_dataset_shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
+        training_dataset_shard = training_dataset_shard.batch(batch_size)
+        training_dataset_shard = training_dataset_shard.repeat(num_epochs)
+        iterator = training_dataset_shard.make_one_shot_iterator()
         next_train_example, next_train_label = iterator.get_next()
         self.network, loss = network_and_cost_func(next_train_example, next_train_label)
 
@@ -63,11 +65,11 @@ class DistributedTrainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=20000 // hvd.size()),  # TODO: make the step configurable
+            tf.train.StopAtStepHook(last_step=num_steps // hvd.size()),
             tf.train.LoggingTensorHook(tensors={
                 'step': global_step,
                 'loss': loss
-            }, every_n_iter=10),  # TODO: make the hooks configurable
+            }, every_n_iter=log_step_size),
         ]
 
         # Pin GPU to be used to process local rank (one GPU per process)
@@ -87,7 +89,8 @@ class DistributedTrainer(object):
     def train_on_batch(self):
         self.sess.run(self._train_op)
 
-    def validate_on_batch(self):
+    def validation_loss(self):
+        # TODO: compute the loss for the entire
         verr = self.sess.run(self._validation_loss)
         return verr
 
