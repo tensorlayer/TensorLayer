@@ -117,14 +117,12 @@ class Trainer(object):
         return average_loss
 
     def train_and_validate_to_end(self, validate_step_size=50):
-        n = 0
+        step = 0
         while not self.sess.should_stop():
-            # Run a training step synchronously.
-            self.train_on_batch()
-            if n % validate_step_size == 0:
-                vldt_loss = self.validation_loss()
-                logging.info("Validation loss: %s" % vldt_loss)
-            n += 1
+            self.train_on_batch() # Run a training step synchronously.
+            if step % validate_step_size == 0:
+                logging.info("Average loss for validation dataset: %s" % self.validation_loss())
+            step += 1
 
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
