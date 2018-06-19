@@ -15,24 +15,15 @@ def make_dataset(images, labels):
     return tf.data.Dataset.zip((ds1, ds2))
 
 
-def make_network_for_training(x, y_):
+def build_network(x, y_, is_train=True):
     # Add droptout layers to the network during training
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
         network = tl.layers.InputLayer(x, name='input')
-        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True)
+        network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True, is_train=is_train)
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2', is_fix=True)
+        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2', is_fix=True, is_train=is_train)
         network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
-        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3', is_fix=True)
-        network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
-        return network, tl.cost.cross_entropy(network.outputs, y_, name='cost')
-
-
-def make_network_for_validation(x, y_):
-    with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
-        network = tl.layers.InputLayer(x, name='input')
-        network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu1')
-        network = tl.layers.DenseLayer(network, 800, tf.nn.relu, name='relu2')
+        network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3', is_fix=True, is_train=is_train)
         network = tl.layers.DenseLayer(network, n_units=10, act=tf.identity, name='output')
         return network, tl.cost.cross_entropy(network.outputs, y_, name='cost')
 
@@ -45,9 +36,9 @@ if __name__ == '__main__':
     training_dataset = make_dataset(X_train, y_train)
     validation_dataset = make_dataset(X_val, y_val)
     trainer = tl.distributed.Trainer(
-        training_network_and_cost_func=make_network_for_training, training_dataset=training_dataset, batch_size=64,
+        build_network_and_cost_func=build_network, training_dataset=training_dataset, batch_size=64,
         optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.001},
-        validation_network_cost_func=make_network_for_validation, validation_dataset=validation_dataset
+        validation_dataset=validation_dataset
     )
 
     # Train the network and validate every 20 mini-batches

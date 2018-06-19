@@ -1,3 +1,5 @@
+#!/bin/sh
+
 set -e
 
 if [ $(uname) == "Darwin" ]; then
@@ -8,6 +10,7 @@ fi
 
 mkdir -p $HOME/openmpi_tmp && cd $HOME/openmpi_tmp
 
+# TODO: upgrade to latest version once https://github.com/open-mpi/ompi/pull/5296 is in the release
 MPI_MAJOR=3
 MPI_MINOR=1
 
@@ -20,8 +23,8 @@ URL=https://download.open-mpi.org/release/open-mpi/v${MPI_MAJOR}.${MPI_MINOR}/${
 tar -xf ${FILENAME}
 cd ${FOLDER}
 
-# real	5m7.636s on 64 core machine
-./configure --prefix=$HOME/openmpi
+# will take about 8 min or longer depends on your machine
+./configure --prefix=$HOME/local/openmpi
 make -j ${NPROC} all
 make install
 

@@ -20,31 +20,31 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class Trainer(object):
 
     def __init__(
-            self, training_network_and_cost_func, training_dataset, optimizer=tf.train.AdamOptimizer,
+            self, build_network_and_cost_func, training_dataset, optimizer=tf.train.AdamOptimizer,
             optimizer_args=None, batch_size=32, num_epochs=100, checkpoint_dir='./checkpoints',
             num_steps=20000, log_step_size=20,
-            validation_network_cost_func=None, validation_dataset=None
+            validation_dataset=None
     ):
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
 
         # Define the loss for validation dataset
-        if (validation_network_cost_func is None) or (validation_dataset is None):
-            self._validation_iterator = None
-            self._validation_loss = None
-        else:
+        if validation_dataset:
             shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
             self._validation_iterator = shard.make_initializable_iterator()
             next_example, next_label = self._validation_iterator.get_next()
-            _, self._validation_loss = validation_network_cost_func(next_example, next_label)
+            _, self._validation_loss = build_network_and_cost_func(next_example, next_label, False)
+        else:
+            self._validation_iterator = None
+            self._validation_loss = None
 
         # Get the shard of the dataset based on my local rank
         training_dataset = training_dataset.shuffle(buffer_size=10000, seed=0)
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
         next_example, next_label = training_iterator.get_next()
-        self.training_network, loss = training_network_and_cost_func(next_example, next_label)
+        self.training_network, loss = build_network_and_cost_func(next_example, next_label)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
@@ -115,7 +115,7 @@ class Trainer(object):
     def train_and_validate_on_all(self, validate_step_size=50):
         step = 0
         while not self.sess.should_stop():
-            self.train_on_batch() # Run a training step synchronously.
+            self.train_on_batch()  # Run a training step synchronously.
             if step % validate_step_size == 0:
                 logging.info("Average loss for validation dataset: %s" % self.get_validation_loss())
             step += 1
