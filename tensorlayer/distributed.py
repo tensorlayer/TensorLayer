@@ -31,23 +31,20 @@ class Trainer(object):
 
         # Define the loss for validation dataset
         if (validation_network_cost_func is None) or (validation_dataset is None):
-            self._vldt_iterator = None
+            self._validation_iterator = None
             self._validation_loss = None
         else:
-            shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-            shard = shard.batch(batch_size)
-            self._vldt_iterator = shard.make_initializable_iterator()
-            next_vldt_example, next_vldt_label = self._vldt_iterator.get_next()
-            _, self._validation_loss = validation_network_cost_func(next_vldt_example, next_vldt_label)
+            shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
+            self._validation_iterator = shard.make_initializable_iterator()
+            next_example, next_label = self._validation_iterator.get_next()
+            _, self._validation_loss = validation_network_cost_func(next_example, next_label)
 
         # Get the shard of the dataset based on my local rank
         training_dataset = training_dataset.shuffle(buffer_size=10000, seed=0)
-        dataset_shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank())
-        dataset_shard = dataset_shard.batch(batch_size)
-        dataset_shard = dataset_shard.repeat(num_epochs)
-        iterator = dataset_shard.make_one_shot_iterator()
-        next_train_example, next_train_label = iterator.get_next()
-        self.network, loss = training_network_and_cost_func(next_train_example, next_train_label)
+        shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
+        training_iterator = shard.make_one_shot_iterator()
+        next_example, next_label = training_iterator.get_next()
+        self.training_network, loss = training_network_and_cost_func(next_example, next_label)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
@@ -71,8 +68,7 @@ class Trainer(object):
             # Horovod: adjust number of steps based on number of GPUs.
             tf.train.StopAtStepHook(last_step=num_steps // hvd.size()),
             tf.train.LoggingTensorHook(tensors={
-                'step': global_step,
-                'loss': loss
+                'training loss': loss
             }, every_n_iter=log_step_size),
         ]
 
@@ -93,18 +89,18 @@ class Trainer(object):
     def train_on_batch(self):
         self.sess.run(self._train_op)
 
-    def train_to_end(self):
+    def train_on_all(self):
         while not self.sess.should_stop():
             # Run a training step synchronously.
             self.train_on_batch()
 
-    def validation_loss(self):
-        if (self._vldt_iterator is None) or (self._validation_loss is None):
+    def get_validation_loss(self):
+        if (self._validation_iterator is None) or (self._validation_loss is None):
             raise AttributeError('Validation is not setup.')
 
         n = 0.0
         loss_sum = 0.0
-        self.sess.run(self._vldt_iterator.initializer)
+        self.sess.run(self._validation_iterator.initializer)
         while True:
             try:
                 loss = self.sess.run(self._validation_loss)
@@ -116,12 +112,12 @@ class Trainer(object):
         average_loss = loss_sum / n
         return average_loss
 
-    def train_and_validate_to_end(self, validate_step_size=50):
+    def train_and_validate_on_all(self, validate_step_size=50):
         step = 0
         while not self.sess.should_stop():
             self.train_on_batch() # Run a training step synchronously.
             if step % validate_step_size == 0:
-                logging.info("Average loss for validation dataset: %s" % self.validation_loss())
+                logging.info("Average loss for validation dataset: %s" % self.get_validation_loss())
             step += 1
 
 

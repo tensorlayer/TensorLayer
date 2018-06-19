@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
@@ -51,6 +51,6 @@ if __name__ == '__main__':
     )
 
     # Train the network and validate every 20 mini-batches
-    trainer.train_and_validate_to_end(validate_step_size=20)
+    trainer.train_and_validate_on_all(validate_step_size=20)
 
     # TODO: Test the trained model
