@@ -878,7 +878,7 @@ Scale
 .. autoclass:: ScaleLayer
 
 .. -----------------------------------------------------------
-..                  Reconstruction Layer
+..                  Recurrent Layers
 .. -----------------------------------------------------------
 
 Recurrent Layers
