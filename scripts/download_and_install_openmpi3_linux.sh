@@ -30,5 +30,5 @@ make install
 
 rm -rf $HOME/openmpi_tmp
 
-echo 'Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/openmpi/bin'
+echo 'Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/local/openmpi/bin'
 echo 'Update the PATH in ~/.bashrc if you want OpenMPI to be ready once the machine start'

@@ -20,10 +20,9 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class Trainer(object):
 
     def __init__(
-            self, build_network_and_cost_func, training_dataset, optimizer=tf.train.AdamOptimizer,
-            optimizer_args=None, batch_size=32, num_epochs=100, checkpoint_dir='./checkpoints',
-            num_steps=20000, log_step_size=20,
-            validation_dataset=None
+            self, build_training_network_and_cost_func, training_dataset, optimizer=tf.train.AdamOptimizer,
+            optimizer_args=None, batch_size=32, num_epochs=100, checkpoint_dir='./checkpoints', num_steps=20000,
+            log_step_size=20, validation_dataset=None, build_validation_network_and_metric_func=None
     ):
         # Initialize Horovod.
         hvd.init()
@@ -34,17 +33,20 @@ class Trainer(object):
             shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
             self._validation_iterator = shard.make_initializable_iterator()
             next_example, next_label = self._validation_iterator.get_next()
-            _, self._validation_loss = build_network_and_cost_func(next_example, next_label, False)
+            _, self._validation_metrics = build_validation_network_and_metric_func(next_example, next_label)
+            if not isinstance(self._validation_metrics, list):
+                self._validation_metrics = list(self._validation_metrics)
         else:
             self._validation_iterator = None
-            self._validation_loss = None
+            self._validation_metrics = None
 
         # Get the shard of the dataset based on my local rank
         training_dataset = training_dataset.shuffle(buffer_size=10000, seed=0)
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
         next_example, next_label = training_iterator.get_next()
-        self.training_network, loss = build_network_and_cost_func(next_example, next_label)
+        self.training_network, loss_list = build_training_network_and_cost_func(next_example, next_label)
+        loss = tf.reduce_sum(loss_list)
 
         if not optimizer_args:
             optimizer_args = dict(learning_rate=0.001)
@@ -67,9 +69,7 @@ class Trainer(object):
 
             # Horovod: adjust number of steps based on number of GPUs.
             tf.train.StopAtStepHook(last_step=num_steps // hvd.size()),
-            tf.train.LoggingTensorHook(tensors={
-                'training loss': loss
-            }, every_n_iter=log_step_size),
+            tf.train.LoggingTensorHook(tensors={'training loss': loss}, every_n_iter=log_step_size),
         ]
 
         # Pin GPU to be used to process local rank (one GPU per process)
@@ -87,37 +87,46 @@ class Trainer(object):
         self.sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
 
     def train_on_batch(self):
+        """ Train one batch. """
         self.sess.run(self._train_op)
 
-    def train_on_all(self):
+    def train_to_end(self):
+        """ Train until the end without validation. """
         while not self.sess.should_stop():
             # Run a training step synchronously.
             self.train_on_batch()
 
-    def get_validation_loss(self):
-        if (self._validation_iterator is None) or (self._validation_loss is None):
+    def get_validation_metrics(self):
+        """ Validate . """
+        if (self._validation_iterator is None) or (self._validation_metrics is None):
             raise AttributeError('Validation is not setup.')
 
         n = 0.0
-        loss_sum = 0.0
+        metric_sums = [0.0] * len(self._validation_metrics)
         self.sess.run(self._validation_iterator.initializer)
         while True:
             try:
-                loss = self.sess.run(self._validation_loss)
-                tf.train.get_global_step()
-                loss_sum += loss
+                metrics = self.sess.run(self._validation_metrics)
+                for i, m in enumerate(metrics):
+                    metric_sums[i] += m
                 n += 1.0
             except tf.errors.OutOfRangeError:
                 break
-        average_loss = loss_sum / n
-        return average_loss
+        for i, m in enumerate(metric_sums):
+            metric_sums[i] = metric_sums[i] / n
+        return metric_sums
 
-    def train_and_validate_on_all(self, validate_step_size=50):
+    def train_and_validate_to_end(self, validate_step_size=50):
+        """ Train until the end all data with validation. """
         step = 0
         while not self.sess.should_stop():
             self.train_on_batch()  # Run a training step synchronously.
             if step % validate_step_size == 0:
-                logging.info("Average loss for validation dataset: %s" % self.get_validation_loss())
+                # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
+                str = 'step: %d, ' % step
+                for n, m in zip(self._validation_metrics, self.get_validation_metrics()):
+                    str += '%s: %f, ' % (n.name, m)
+                logging.info(str)
             step += 1
 
 
