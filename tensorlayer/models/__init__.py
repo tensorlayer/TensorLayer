@@ -6,3 +6,4 @@
 from .vgg16 import VGG16
 from .squeezenetv1 import SqueezeNetV1
 from .mobilenetv1 import MobileNetV1
+from .vgg19 import VGG19

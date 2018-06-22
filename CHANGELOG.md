@@ -69,7 +69,58 @@ To release a new version, please update the changelog as followed:
 ## [Unreleased]
 
 ### Added
-
+- API:
+  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (PR #580)
+  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
+  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated (PR #686)
+  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated (PR #686)
+  - `tl.model.vgg19` added (PR #698)
+- CI Tool:
+  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (PR #573)
+  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (PR #637)
+  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (PR #644)
+  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (PR #648)
+- Decorator:
+  - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
+  - `tl.decorators` API enriched with `protected_method` (PR #675)
+  - `tl.decorators` API enriched with `deprecated` directly raising warning and modifying documentation (PR #691)
+- Docker:
+  - Containers for each release and for each PR merged on master built (PR #648)
+  - Containers built in the following configurations (PR #648):
+    - py2 + cpu
+    - py2 + gpu
+    - py3 + cpu
+    - py3 + gpu
+- Documentation:
+  - Clean README.md (PR #677)
+  - Release semantic version added on index page (PR #633)
+  - Optimizers page added (PR #636)
+  - `AMSGrad` added on Optimizers page added (PR #636)
+- Layer:
+  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
+  - AtrousDeConv2dLayer added (PR #662)
+  - Fix bugs of using `tf.layers` in CNN (PR #686)
+- Optimizer:
+  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
+- Setup:
+  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
+- Test:
+  - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
+  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (PR #573)
+  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (PR #580)
+  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (PR #636)
+  - `test_logging.py` added to insure robustness of the logging API (PR #645)
+  - `test_decorators.py` added (PR #660)
+  - `test_activations.py` added (PR #686)
+- Tutorials:
+  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
+  - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
+  - add the following to all tutorials (PR #697):  
+    ```python
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
+    ```
+    
 ### Changed
 
 ### Deprecated
@@ -84,7 +135,14 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 
 ### Contributors
-@lgarithm: #705
+- @lgarithm: #563
+- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692
+- @2wins: #560 #566 #662
+- @One-sixth: #579
+- @zsdonghao: #587 #588 #639 #685 #697
+- @luomai: #639 #677
+- @dengyueyun666: #676
+- @OwenLiuzZ: #698
 
 ## [1.9.0] - 2018-06-16
 
