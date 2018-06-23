@@ -4,14 +4,12 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer import tl_logging as logging
 
 __all__ = [
     'ConcatLayer',
     'ElementwiseLayer',
-    'ElementwiseLambdaLayer',
 ]
 
 
@@ -133,60 +131,3 @@ class ElementwiseLayer(Layer):
         #     self.all_drop.update(dict(layers[i].all_drop))
 
         self._add_layers(self.outputs)
-
-
-class ElementwiseLambdaLayer(Layer):
-    """A layer that use a custom function to combine multiple :class:`Layer` inputs.
-
-    Parameters
-    ----------
-    layers : list of :class:`Layer`
-        The list of layers to combine.
-    fn : function
-        The function that applies to the outputs of previous layer.
-    fn_args : dictionary or None
-        The arguments for the function (option).
-    act : activation function
-        The activation function of this layer.
-    name : str
-        A unique layer name.
-
-    Examples
-    --------
-    z = mean + noise * tf.exp(std * 0.5)
-
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-
-    >>> def func(noise, mean, std):
-    >>>     return mean + noise * tf.exp(std * 0.5)
-
-    >>> x = tf.placeholder(tf.float32, [None, 200])
-    >>> noise_tensor = tf.random_normal(tf.stack([tf.shape(x)[0], 200]))
-    >>> noise = tl.layers.InputLayer(noise_tensor)
-    >>> net = tl.layers.InputLayer(x)
-    >>> net = tl.layers.DenseLayer(net, n_units=200, act=tf.nn.relu, name='dense1')
-    >>> mean = tl.layers.DenseLayer(net, n_units=200, name='mean')
-    >>> std = tl.layers.DenseLayer(net, n_units=200, name='std')
-    >>> z = tl.layers.ElementwiseLambdaLayer([noise, mean, std], fn=func, name='z')
-    """
-
-    def __init__(
-            self,
-            layers,
-            fn,
-            fn_args=None,
-            act=None,
-            name='elementwiselambda_layer',
-    ):
-
-        super(ElementwiseLambdaLayer, self).__init__(prev_layer=layers, act=act, fn_args=fn_args, name=name)
-        logging.info("ElementwiseLambdaLayer %s" % self.name)
-
-        with tf.variable_scope(name) as vs:
-            self.outputs = self._apply_activation(fn(*self.inputs, **self.fn_args))
-
-            variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
-
-        self._add_layers(self.outputs)
-        self._add_params(variables)

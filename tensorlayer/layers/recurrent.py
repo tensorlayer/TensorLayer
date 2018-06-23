@@ -1473,7 +1473,7 @@ class Seq2Seq(Layer):
     See `Model <https://camo.githubusercontent.com/9e88497fcdec5a9c716e0de5bc4b6d1793c6e23f/687474703a2f2f73757269796164656570616e2e6769746875622e696f2f696d672f736571327365712f73657132736571322e706e67>`__
     and `Sequence to Sequence Learning with Neural Networks <https://arxiv.org/abs/1409.3215>`__.
 
-    - Please check this example `Chatbot in 200 lines of code <https://github.com/zsdonghao/seq2seq-chatbot>`__.
+    - Please check this example `Chatbot in 200 lines of code <https://github.com/tensorlayer/seq2seq-chatbot>`__.
     - The Author recommends users to read the source code of :class:`DynamicRNNLayer` and :class:`Seq2Seq`.
 
     Parameters

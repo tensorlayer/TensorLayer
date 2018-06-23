@@ -83,6 +83,7 @@ To release a new version, please update the changelog as followed:
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
   - `tl.decorators` API enriched with `protected_method` (PR #675)
+  - `tl.decorators` API enriched with `deprecated` directly raising warning and modifying documentation (PR #691)
 - Docker:
   - Containers for each release and for each PR merged on master built (PR #648)
   - Containers built in the following configurations (PR #648):
@@ -91,7 +92,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README (PR #677)
+  - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
@@ -121,65 +122,21 @@ To release a new version, please update the changelog as followed:
     ```
     
 ### Changed
-- Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
-- The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
-- RTD links point to stable documentation instead of latest used for development (PR #633)
-- TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
-- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
-- TL logging API has been consistent with TF logging API and thread-safe (PR #645)
-- Relative Imports changed for absolute imports (PR #657)
-- `tl.files` refactored into a directory with numerous files (PR #657)
-- `tl.files.voc_dataset` fixed because of original Pascal VOC website was down (PR #657)
-- extra requirements hidden inside the library added in the project requirements (PR #657)
-- requirements files refactored in `requirements/` directory (PR #657)
-- README.md and other markdown files have been refactored and cleaned. (PR #639)
-- Ternary Convolution Layer added in unittest (PR #658)
-- Convolution Layers unittests have been cleaned & refactored (PR #658)
-- All the tests are now using a DEBUG level verbosity when run individualy (PR #660)
-- `tf.identity` as activation is **ignored**, thus reducing the size of the graph by removing useless operation (PR #667)
-- argument dictionaries are now checked and saved within the `Layer` Base Class (PR #667)
-- `Layer` Base Class now presenting methods to update faultlessly `all_layers`, `all_params`, and `all_drop` (PR #675)
-- Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (PR #675)
-- Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (PR #675)
-- Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (PR #675)
 
 ### Deprecated
-- `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
-- `tl.act.leaky_relu` have been deprecated in favor of `tf.nn.leaky_relu` (PR #686)
 
 ### Removed
-- `assert()` calls remove and replaced by `raise AssertionError()` (PR #667)
-- `tl.identity` is removed, not used anymore and deprecated for a long time (PR #667)
-- All Code specific to `TF.__version__ < "1.6"` have been removed (PR #675)
 
 ### Fixed
-- Issue #498 - Deprecation Warning Fix in `tl.layers.RNNLayer` with `inspect` (PR #574)
-- Issue #498 - Deprecation Warning Fix in `tl.files` with truth value of an empty array is ambiguous (PR #575)
-- Issue #565 related to `tl.utils.predict` fixed - `np.hstack` problem in which the results for multiple batches are stacked along `axis=1` (PR #566)
-- Issue #572 with `tl.layers.DeformableConv2d` fixed (PR #573)
-- Issue #664 with `tl.layers.ConvLSTMLayer` fixed (PR #676)
-- Typo of the document of ElementwiseLambdaLayer (PR #588)
-- Error in `tl.layers.TernaryConv2d` fixed - self.inputs not defined (PR #658)
-- Deprecation warning fixed in `tl.layers.binary._compute_threshold()` (PR #658)
-- All references to `tf.logging` replaced by `tl.logging` (PR #661)
-- Duplicated code removed when bias was used (PR #667)
-- `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (PR #675)
-- Tutorial:
-  - `tutorial_word2vec_basic.py` saving issue #476 fixed (PR #635)
-  - All tutorials tested and errors have been fixed (PR #635)
+- import error caused by matplotlib on OSX (PR #705)
 
 ### Security
 
 ### Dependencies Update
-- Update pytest from 3.5.1 to 3.6.0 (PR #647)
-- Update progressbar2 from 3.37.1 to 3.38.0 (PR #651)
-- Update scikit-image from 0.13.1 to 0.14.0 (PR #656)
-- Update keras from 2.1.6 to 2.2.0 (PR #684)
-- Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
 - @lgarithm: #563
-- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692
+- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692
 - @2wins: #560 #566 #662
 - @One-sixth: #579
 - @zsdonghao: #587 #588 #639 #685 #697
@@ -187,7 +144,7 @@ To release a new version, please update the changelog as followed:
 - @dengyueyun666: #676
 - @OwenLiuzZ: #698
 
-## [1.8.6] - 2018-06-02
+## [1.9.0] - 2018-06-16
 
 ### Added
 - API:
@@ -203,6 +160,7 @@ To release a new version, please update the changelog as followed:
 - Decorator:
   - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
   - `tl.decorators` API enriched with `protected_method` (PR #675)
+  - `tl.decorators` API enriched with `deprecated` directly raising warning and modifying documentation (PR #691)
 - Docker:
   - Containers for each release and for each PR merged on master built (PR #648)
   - Containers built in the following configurations (PR #648):
@@ -211,7 +169,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
-  - Clean README (PR #677)
+  - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
@@ -233,13 +191,18 @@ To release a new version, please update the changelog as followed:
   - `test_activations.py` added (PR #686)
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
+  - add the following to all tutorials (PR #697):
+    ```python
+    tf.logging.set_verbosity(tf.logging.DEBUG)
+    tl.logging.set_verbosity(tl.logging.DEBUG)
+    ```
 
 ### Changed
 - Tensorflow CPU & GPU dependencies moved to separated requirement files in order to allow PyUP.io to parse them (PR #573)
 - The document of LambdaLayer for linking it with ElementwiseLambdaLayer (PR #587)
 - RTD links point to stable documentation instead of latest used for development (PR #633)
 - TF Version older than 1.6.0 are officially unsupported and raises an exception (PR #644)
-- Readme Badges Updated with Support Python and Tensorflow Versions (PR #644)
+- README.md Badges Updated with Support Python and Tensorflow Versions (PR #644)
 - TL logging API has been consistent with TF logging API and thread-safe (PR #645)
 - Relative Imports changed for absolute imports (PR #657)
 - `tl.files` refactored into a directory with numerous files (PR #657)
@@ -256,6 +219,7 @@ To release a new version, please update the changelog as followed:
 - Input Layers have been removed from `tl.layers.core` and added to `tl.layers.inputs` (PR #675)
 - Input Layers are now considered as true layers in the graph (they represent a placeholder), unittests have been updated (PR #675)
 - Layer API is simplified, with automatic feeding `prev_layer` into `self.inputs` (PR #675)
+- Complete Documentation Refactoring and Reorganization (namely Layer APIs) (PR #691)
 
 ### Deprecated
 - `tl.layers.TimeDistributedLayer` argurment `args` is deprecated in favor of `layer_args` (PR #667)
@@ -278,11 +242,10 @@ To release a new version, please update the changelog as followed:
 - All references to `tf.logging` replaced by `tl.logging` (PR #661)
 - Duplicated code removed when bias was used (PR #667)
 - `tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops` is now lazy loaded to prevent systematic error raised (PR #675)
+- Documentation not build in RTD due to old version of theme in docs directory fixed (PR #703)
 - Tutorial:
   - `tutorial_word2vec_basic.py` saving issue #476 fixed (PR #635)
   - All tutorials tested and errors have been fixed (PR #635)
-
-### Security
 
 ### Dependencies Update
 - Update pytest from 3.5.1 to 3.6.0 (PR #647)
@@ -292,13 +255,13 @@ To release a new version, please update the changelog as followed:
 - Update requests from 2.18.4 to 2.19.0 (PR #695)
 
 ### Contributors
-- @lgarithm (#563)
-- @DEKHTIARJonathan (#573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #692)
-- @2wins (#560 #566 #662)
-- @One-sixth (#579)
-- @zsdonghao (#587 #588 #639 #685)
-- @luomai (#639 #677)
-- @dengyueyun666 (#676)
+- @lgarithm: #563
+- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692 #703
+- @2wins: #560 #566 #662
+- @One-sixth: #579
+- @zsdonghao: #587 #588 #639 #685 #697
+- @luomai: #639 #677
+- @dengyueyun666: #676
 
 ## [1.8.5] - 2018-05-09
 
@@ -339,6 +302,6 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...master
-[1.8.6]: https://github.com/tensorlayer/tensorlayer/compare/1.8.6rc5...1.8.5
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

@@ -29,7 +29,7 @@ try:
     from tensorlayer.models.imagenet_classes import *
 except Exception as e:
     raise Exception(
-        "{} / download the file from: https://github.com/zsdonghao/tensorlayer/tree/master/example/data".format(e)
+        "{} / download the file from: https://github.com/tensorlayer/tensorlayer/tree/master/example/data".format(e)
     )
 
 VGG_MEAN = [103.939, 116.779, 123.68]

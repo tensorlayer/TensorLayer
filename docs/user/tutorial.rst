@@ -1971,7 +1971,7 @@ preprocessing functions (:mod:`tensorlayer.prepro`),
 command line interface (:mod:`tensorlayer.prepro`),
 
 
-.. _TensorLayer: https://github.com/zsdonghao/tensorlayer/
+.. _TensorLayer: https://github.com/tensorlayer/tensorlayer/
 .. _Deeplearning Tutorial: http://deeplearning.stanford.edu/tutorial/
 .. _Convolutional Neural Networks for Visual Recognition: http://cs231n.github.io/
 .. _Neural Networks and Deep Learning: http://neuralnetworksanddeeplearning.com/
