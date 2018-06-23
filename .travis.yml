@@ -56,6 +56,7 @@ matrix:
 
 install:
   - if [[ -v _DOC_AND_YAPF_TEST ]]; then pip install tensorflow; else pip install tensorflow==$_TF_VERSION; fi
+  - apt install -y libopenmpi-dev  # for production use, it's highly recommneded to build the latest MPI from source
   - pip install -e .[all]
 
 
