@@ -20,9 +20,9 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class Trainer(object):
 
     def __init__(
-            self, build_training_network_and_cost_func, training_dataset, optimizer=tf.train.AdamOptimizer,
-            optimizer_args=None, batch_size=32, num_epochs=100, checkpoint_dir='./checkpoints', num_steps=20000,
-            log_step_size=20, validation_dataset=None, build_validation_network_and_metric_func=None
+            self, build_training_func, training_dataset, optimizer,
+            optimizer_args, batch_size=32, num_epochs=100, checkpoint_dir='./checkpoints', num_steps=20000,
+            log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
         # Initialize Horovod.
         hvd.init()
@@ -33,7 +33,7 @@ class Trainer(object):
             shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
             self._validation_iterator = shard.make_initializable_iterator()
             next_example, next_label = self._validation_iterator.get_next()
-            _, self._validation_metrics = build_validation_network_and_metric_func(next_example, next_label)
+            _, self._validation_metrics = build_validation_func(next_example, next_label)
             if not isinstance(self._validation_metrics, list):
                 self._validation_metrics = list(self._validation_metrics)
         else:
@@ -45,11 +45,8 @@ class Trainer(object):
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
         next_example, next_label = training_iterator.get_next()
-        self.training_network, loss_list = build_training_network_and_cost_func(next_example, next_label)
-        loss = tf.reduce_sum(loss_list)
+        self.training_network, loss, log_tensors = build_training_func(next_example, next_label)
 
-        if not optimizer_args:
-            optimizer_args = dict(learning_rate=0.001)
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
         opt = optimizer(**optimizer_args)
@@ -58,6 +55,10 @@ class Trainer(object):
         opt = hvd.DistributedOptimizer(opt)
 
         global_step = tf.train.get_or_create_global_step()
+        if isinstance(log_tensors, list):
+            log_tensors.append(global_step)
+        else:
+            log_tensors['global_step'] = global_step
         self._train_op = opt.minimize(loss, global_step=global_step)  # TODO: support a list of losses
 
         hooks = [
@@ -69,7 +70,7 @@ class Trainer(object):
 
             # Horovod: adjust number of steps based on number of GPUs.
             tf.train.StopAtStepHook(last_step=num_steps // hvd.size()),
-            tf.train.LoggingTensorHook(tensors={'training loss': loss}, every_n_iter=log_step_size),
+            tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
         ]
 
         # Pin GPU to be used to process local rank (one GPU per process)

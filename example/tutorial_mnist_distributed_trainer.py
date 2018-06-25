@@ -31,7 +31,8 @@ def model(x, y_, is_train):
 def build_train(x, y_):
     net = model(x, y_, is_train=True)
     cost = tl.cost.cross_entropy(net.outputs, y_, name='cost_train')
-    return net, cost
+    log_tensors = {'cost': cost}
+    return net, cost, log_tensors
 
 
 def build_validation(x, y_):
@@ -48,14 +49,15 @@ if __name__ == '__main__':
 
     # Setup the trainer
     training_dataset = make_dataset(X_train, y_train)
-    validation_dataset = make_dataset(X_val, y_val)
+    # validation_dataset = make_dataset(X_val, y_val)
     trainer = tl.distributed.Trainer(
-        build_training_network_and_cost_func=build_train, training_dataset=training_dataset, batch_size=64,
+        build_training_func=build_train, training_dataset=training_dataset, batch_size=64,
         optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.001},
-        validation_dataset=validation_dataset, build_validation_network_and_metric_func=build_validation
+        # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
     # Train the network and validate every 20 mini-batches
-    trainer.train_and_validate_to_end(validate_step_size=20)
+    # trainer.train_and_validate_to_end(validate_step_size=20)
+    trainer.train_to_end()
 
     # TODO: Test the trained model
