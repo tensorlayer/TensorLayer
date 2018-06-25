@@ -55,49 +55,15 @@ except Exception as e:
     )
 
 
-def conv_layers(net_in):
-    with tf.name_scope('preprocess'):
-        # Notice that we include a preprocessing layer that takes the RGB image
-        # with pixels values in the range of 0-255 and subtracts the mean image
-        # values (calculated over the entire ImageNet training set).
-        mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-        net_in.outputs = net_in.outputs - mean
-
-    # conv1
-    net = Conv2dLayer(net_in, act=tf.nn.relu, shape=[3, 3, 3, 64], strides=[1, 1, 1, 1], padding='SAME', name='conv1_1')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 64, 64], strides=[1, 1, 1, 1], padding='SAME', name='conv1_2')
-    net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1')
-
-    # conv2
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 64, 128], strides=[1, 1, 1, 1], padding='SAME', name='conv2_1')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 128, 128], strides=[1, 1, 1, 1], padding='SAME', name='conv2_2')
-    net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2')
-
-    # conv3
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 128, 256], strides=[1, 1, 1, 1], padding='SAME', name='conv3_1')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='SAME', name='conv3_2')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 256, 256], strides=[1, 1, 1, 1], padding='SAME', name='conv3_3')
-    net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3')
-
-    # conv4
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 256, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv4_1')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 512, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv4_2')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 512, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv4_3')
-    net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4')
-
-    # conv5
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 512, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv5_1')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 512, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv5_2')
-    net = Conv2dLayer(net, act=tf.nn.relu, shape=[3, 3, 512, 512], strides=[1, 1, 1, 1], padding='SAME', name='conv5_3')
-    net = PoolLayer(net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5')
-    return net
-
-
 def conv_layers_simple_api(net_in):
     with tf.name_scope('preprocess'):
         # Notice that we include a preprocessing layer that takes the RGB image
-        # with pixels values in the range of 0-255 and subtracts the mean image
+        # with pixels values in the range of 0-1 and subtracts the mean image
         # values (calculated over the entire ImageNet training set).
+
+        # Rescale the input tensor with pixels values in the range of 0-255
+        net_in.outputs = net_in.outputs * 255.0
+
         mean = tf.constant([123.68, 116.779, 103.939], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
         net_in.outputs = net_in.outputs - mean
 
@@ -174,6 +140,10 @@ tl.files.assign_params(sess, params, net)
 
 img1 = imread('data/laska.png', mode='RGB')  # test data in github
 img1 = imresize(img1, (224, 224))
+# rescale pixels values in the range of 0-1
+img1 = img1/255.0
+if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
+    raise Exception("image value should be [0, 1]")
 
 _ = sess.run(probs, feed_dict={x: [img1]})[0]  # 1st time take time to compile
 start_time = time.time()
