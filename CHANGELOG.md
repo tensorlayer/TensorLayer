@@ -120,12 +120,16 @@ To release a new version, please update the changelog as followed:
     tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
     ```
+  - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
     
 ### Changed
+  - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
 
 ### Deprecated
 
 ### Removed
+  - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
+
 
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
