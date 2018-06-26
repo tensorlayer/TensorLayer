@@ -21,7 +21,7 @@ class Trainer(object):
 
     def __init__(
             self, build_training_func, training_dataset, optimizer,
-            optimizer_args, batch_size=32, num_epochs=100, is_shuffle=True, shuffle_seed=0, 
+            optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0, 
             checkpoint_dir='./checkpoints', num_steps=20000,
             log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
@@ -42,7 +42,7 @@ class Trainer(object):
             self._validation_metrics = None
 
         # Get the shard of the dataset based on my local rank
-        if is_shuffle:
+        if shuffle_data:
             training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
