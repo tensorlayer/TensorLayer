@@ -1,12 +1,9 @@
 # https://docs.travis-ci.com/user/languages/python/
 language: python
 
-before_install:
-  - sudo apt install -y libopenmpi-dev  # for production use, it's highly recommneded to build the latest MPI from source
-
 addons:
   apt:
-    update: true
+    update: false
 
 branches:
   only:
