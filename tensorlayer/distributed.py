@@ -20,9 +20,10 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 class Trainer(object):
 
     def __init__(
-            self, build_training_func, training_dataset, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            checkpoint_dir='./checkpoints', num_steps=20000, log_step_size=20, validation_dataset=None,
-            build_validation_func=None
+            self, build_training_func, training_dataset, optimizer,
+            optimizer_args, batch_size=32, num_epochs=100, is_shuffle=True, shuffle_seed=0, 
+            checkpoint_dir='./checkpoints', num_steps=20000,
+            log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
         # Initialize Horovod.
         hvd.init()
@@ -41,11 +42,11 @@ class Trainer(object):
             self._validation_metrics = None
 
         # Get the shard of the dataset based on my local rank
-        training_dataset = training_dataset.shuffle(buffer_size=10000, seed=0)
+        if is_shuffle:
+            training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
-        next_example, next_label = training_iterator.get_next()
-        self.training_network, loss, log_tensors = build_training_func(next_example, next_label)
+        self.training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
