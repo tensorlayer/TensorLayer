@@ -667,7 +667,7 @@ see `Slim-model <https://github.com/tensorflow/models/tree/master/research/slim>
 
 Keras Layer
 ^^^^^^^^^^^^^^^^^^^
-Yes ! Keras models can be connected into TensorLayer! 
+Yes ! Keras models can be connected into TensorLayer!
 see `tutorial_keras.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_keras.py>`_ .
 
 .. autoclass:: KerasLayer
@@ -876,6 +876,21 @@ Sign
 Scale
 ^^^^^^^^^^^^^^
 .. autoclass:: ScaleLayer
+
+Binary
+^^^^^^^^^^^^^^
+
+see Convolutional and Dense APIs.
+
+Ternary
+^^^^^^^^^^^^^^
+
+see Convolutional and Dense APIs.
+
+DoReFa
+^^^^^^^^^^^^^^
+
+see Convolutional and Dense APIs.
 
 .. -----------------------------------------------------------
 ..                  Recurrent Layers

@@ -92,6 +92,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
+  - Add binary, ternary and dorefa links (PR #711) 
   - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
