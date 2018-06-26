@@ -55,12 +55,12 @@ class Trainer(object):
         # Add Horovod Distributed Optimizer.
         opt = hvd.DistributedOptimizer(opt)
 
-        global_step = tf.train.get_or_create_global_step()
+        self._global_step = tf.train.get_or_create_global_step()
         if isinstance(log_tensors, list):
-            log_tensors.append(global_step)
+            log_tensors.append(self._global_step)
         else:
-            log_tensors['global_step'] = global_step
-        self._train_op = opt.minimize(loss, global_step=global_step)  # TODO: support a list of losses
+            log_tensors['global_step'] = self._global_step
+        self._train_op = opt.minimize(loss, global_step=self._global_step)  # TODO: support a list of losses
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
@@ -87,6 +87,10 @@ class Trainer(object):
         # restoring from a checkpoint, saving to a checkpoint, and closing when done
         # or an error occurs.
         self.sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
+
+    @property
+    def global_step(self):
+        return self.sess.run(self._global_step)
 
     def train_on_batch(self):
         """ Train one batch. """

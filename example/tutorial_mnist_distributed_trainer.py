@@ -60,7 +60,12 @@ if __name__ == '__main__':
     )
 
     # Train the network and validate every 20 mini-batches
-    # trainer.train_and_validate_to_end(validate_step_size=20)
-    trainer.train_to_end()
+    # 1. Easiest way to train all data: trainer.train_to_end()
+    # 2. Train with validation in the middle: trainer.train_and_validate_to_end(validate_step_size=100)
+    # 3. Train with full control like follows:
+    while not trainer.sess.should_stop():
+        trainer.train_on_batch()
+        if trainer.global_step % 500 == 0 and trainer.is_master:
+            tl.files.save_npz(sess=trainer.sess, name='model.npz', save_list=trainer.training_network.all_params)
 
     # TODO: Test the trained model
