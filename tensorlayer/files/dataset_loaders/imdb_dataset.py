@@ -1,6 +1,8 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import cPickle
+import gzip
 import os
 
 import numpy as np
