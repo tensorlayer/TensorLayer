@@ -135,6 +135,7 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
+- missing import in tl.prepro (PR #712)
 
 ### Security
 

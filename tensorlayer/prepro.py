@@ -28,6 +28,7 @@ from skimage.morphology import binary_dilation
 from skimage.morphology import binary_erosion
 
 from tensorlayer.lazy_imports import LazyImport
+from tensorlayer import tl_logging as logging
 
 PIL = LazyImport("PIL")
 
