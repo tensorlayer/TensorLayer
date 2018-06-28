@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import json
@@ -21,7 +20,7 @@ class Trainer(object):
 
     def __init__(
             self, build_training_func, training_dataset, optimizer,
-            optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0, 
+            optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0,
             checkpoint_dir='./checkpoints', num_steps=20000,
             log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
