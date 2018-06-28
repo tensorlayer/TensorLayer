@@ -4,6 +4,8 @@
 import sys
 import unittest
 
+from six import text_type
+
 try:
     import tests.testing as testing
     from tests.unittests_helper import CustomTestCase
@@ -17,7 +19,7 @@ from yapf.yapflib.yapf_api import FormatCode
 def _read_utf_8_file(filename):
     if sys.version_info.major == 2:  ## Python 2 specific
         with open(filename, 'rb') as f:
-            return unicode(f.read(), 'utf-8')
+            return text_type(f.read(), 'utf-8')
     else:
         with open(filename, encoding='utf-8') as f:
             return f.read()
