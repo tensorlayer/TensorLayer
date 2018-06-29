@@ -15,8 +15,7 @@ def make_dataset(images, labels):
     return tf.data.Dataset.zip((ds1, ds2))
 
 
-def model(x, y_, is_train):
-    # Add droptout layers to the network during training
+def model(x, is_train):
     with tf.variable_scope('mlp', reuse=tf.AUTO_REUSE):
         network = tl.layers.InputLayer(x, name='input')
         network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1', is_fix=True, is_train=is_train)
@@ -29,14 +28,14 @@ def model(x, y_, is_train):
 
 
 def build_train(x, y_):
-    net = model(x, y_, is_train=True)
+    net = model(x, is_train=True)
     cost = tl.cost.cross_entropy(net.outputs, y_, name='cost_train')
     log_tensors = {'cost': cost}
     return net, cost, log_tensors
 
 
 def build_validation(x, y_):
-    net = model(x, y_, is_train=False)
+    net = model(x, is_train=False)
     cost = tl.cost.cross_entropy(net.outputs, y_, name='cost_test')
     correct_prediction = tf.equal(tf.argmax(net.outputs, 1), y_)
     acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='acc_test')
@@ -53,13 +52,13 @@ if __name__ == '__main__':
     trainer = tl.distributed.Trainer(
         build_training_func=build_train,
         training_dataset=training_dataset,
-        batch_size=64,
+        batch_size=32,
         optimizer=tf.train.RMSPropOptimizer,
         optimizer_args={'learning_rate': 0.001},
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
-    # Train the network and validate every 20 mini-batches
+    # There are multiple ways to use the trainer:
     # 1. Easiest way to train all data: trainer.train_to_end()
     # 2. Train with validation in the middle: trainer.train_and_validate_to_end(validate_step_size=100)
     # 3. Train with full control like follows:

@@ -118,8 +118,7 @@ class Trainer(object):
             except tf.errors.OutOfRangeError:
                 break
         for i, m in enumerate(metric_sums):
-            metric_sums[i] = metric_sums[i] / n
-        return metric_sums
+            yield metric_sums[i] / n
 
     def train_and_validate_to_end(self, validate_step_size=50):
         """ Train until the end all data with validation. """
