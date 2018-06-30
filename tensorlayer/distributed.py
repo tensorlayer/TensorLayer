@@ -129,7 +129,7 @@ class Trainer(object):
             self.train_on_batch()  # Run a training step synchronously.
             if self.global_step % validate_step_size == 0:
                 # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
-                _str = 'step: %d, ' % step
+                _str = 'step: %d, ' % self.global_step
                 for n, m in zip(self._validation_metrics, self.get_validation_metrics()):
                     _str += '%s: %f, ' % (n.name, m)
                 logging.info(_str)
