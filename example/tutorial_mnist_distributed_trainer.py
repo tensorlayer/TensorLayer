@@ -55,7 +55,7 @@ if __name__ == '__main__':
         batch_size=32,
         optimizer=tf.train.RMSPropOptimizer,
         optimizer_args={'learning_rate': 0.001},
-        max_steps=10
+        max_steps=100
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
@@ -63,7 +63,6 @@ if __name__ == '__main__':
     # 1. Easiest way to train all data: trainer.train_to_end()
     # 2. Train with validation in the middle: trainer.train_and_validate_to_end(validate_step_size=100)
     # 3. Train with full control like follows:
-    while not trainer.sess.should_stop():
-        trainer.train_on_batch()
+    trainer.train_and_validate_to_end(validate_step_size=50)
 
     # TODO: Test the trained model
