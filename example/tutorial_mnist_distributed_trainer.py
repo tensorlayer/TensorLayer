@@ -55,6 +55,7 @@ if __name__ == '__main__':
         batch_size=32,
         optimizer=tf.train.RMSPropOptimizer,
         optimizer_args={'learning_rate': 0.001},
+        max_steps=10
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
@@ -64,7 +65,5 @@ if __name__ == '__main__':
     # 3. Train with full control like follows:
     while not trainer.sess.should_stop():
         trainer.train_on_batch()
-        if trainer.global_step % 500 == 0 and trainer.is_master:
-            tl.files.save_npz(sess=trainer.sess, name='model.npz', save_list=trainer.training_network.all_params)
 
     # TODO: Test the trained model

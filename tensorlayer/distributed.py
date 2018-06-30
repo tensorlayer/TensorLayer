@@ -21,7 +21,7 @@ class Trainer(object):
     def __init__(
             self, build_training_func, training_dataset, optimizer,
             optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0,
-            checkpoint_dir='./checkpoints', num_steps=20000,
+            checkpoint_dir='./checkpoints', max_steps=20000,
             log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
         # Initialize Horovod.
@@ -69,7 +69,7 @@ class Trainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=num_steps // hvd.size()),
+            tf.train.StopAtStepHook(last_step=max_steps // hvd.size()),
             tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
         ]
 
@@ -99,7 +99,10 @@ class Trainer(object):
         """ Train until the end without validation. """
         while not self.sess.should_stop():
             # Run a training step synchronously.
-            self.train_on_batch()
+            try:
+                self.train_on_batch()
+            except tf.errors.OutOfRangeError:
+                break
 
     def get_validation_metrics(self):
         """ Validate . """
@@ -122,16 +125,14 @@ class Trainer(object):
 
     def train_and_validate_to_end(self, validate_step_size=50):
         """ Train until the end all data with validation. """
-        step = 0
         while not self.sess.should_stop():
             self.train_on_batch()  # Run a training step synchronously.
-            if step % validate_step_size == 0:
+            if self.global_step % validate_step_size == 0:
                 # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
                 _str = 'step: %d, ' % step
                 for n, m in zip(self._validation_metrics, self.get_validation_metrics()):
                     _str += '%s: %f, ' % (n.name, m)
                 logging.info(_str)
-            step += 1
 
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
