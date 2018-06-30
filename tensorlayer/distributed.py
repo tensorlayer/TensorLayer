@@ -27,6 +27,7 @@ class Trainer(object):
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
+        self.last_global_step = 0
 
         # Define the loss for validation dataset
         if validation_dataset:
@@ -89,14 +90,15 @@ class Trainer(object):
 
     @property
     def global_step(self):
-        return self.sess.run(self._global_step)
+        if self.sess.should_stop():
+            return self.last_global_step
+        self.last_global_step = self.sess.run(self._global_step)
+        return self.last_global_step
 
     def train_on_batch(self):
-        """ Train one batch. """
         self.sess.run(self._train_op)
 
     def train_to_end(self):
-        """ Train until the end without validation. """
         while not self.sess.should_stop():
             # Run a training step synchronously.
             try:
@@ -105,7 +107,6 @@ class Trainer(object):
                 break
 
     def get_validation_metrics(self):
-        """ Validate . """
         if (self._validation_iterator is None) or (self._validation_metrics is None):
             raise AttributeError('Validation is not setup.')
 
@@ -124,7 +125,6 @@ class Trainer(object):
             yield metric_sums[i] / n
 
     def train_and_validate_to_end(self, validate_step_size=50):
-        """ Train until the end all data with validation. """
         while not self.sess.should_stop():
             self.train_on_batch()  # Run a training step synchronously.
             if self.global_step % validate_step_size == 0:
