@@ -6,8 +6,8 @@
 
 [![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-[![Chinese Documentation](https://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
-[![Chinese Book](https://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
+[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
+[![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 [![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
 
 
