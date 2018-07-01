@@ -162,9 +162,9 @@ TensorLayer is released under the Apache 2.0 license.
    :target: https://github.com/tensorlayer/awesome-tensorlayer
 .. |Documentation-EN| image:: https://img.shields.io/badge/documentation-english-blue.svg
    :target: https://tensorlayer.readthedocs.io/
-.. |Documentation-CN| image:: https://img.shields.io/badge/documentation-中文-blue.svg
+.. |Documentation-CN| image:: https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg
    :target: https://tensorlayercn.readthedocs.io/
-.. |Book-CN| image:: https://img.shields.io/badge/book-中文-blue.svg
+.. |Book-CN| image:: https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg
    :target: http://www.broadview.com.cn/book/5059/
 .. |Downloads| image:: http://pepy.tech/badge/tensorlayer
    :target: http://pepy.tech/project/tensorlayer
