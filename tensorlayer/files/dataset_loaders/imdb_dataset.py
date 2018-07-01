@@ -1,10 +1,12 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import gzip
 import os
 
 import numpy as np
 
+import six.moves.cPickle as pickle
 from tensorlayer.files.utils import maybe_download_and_extract
 
 __all__ = ['load_imdb_dataset']
@@ -60,7 +62,7 @@ def load_imdb_dataset(
     else:
         f = open(os.path.join(path, filename), 'rb')
 
-    X, labels = cPickle.load(f)
+    X, labels = pickle.load(f)
     f.close()
 
     np.random.seed(seed)
