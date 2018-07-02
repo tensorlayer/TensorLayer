@@ -85,10 +85,6 @@ class Trainer(object):
     See `tutorial_mnist_distributed_trainer.py
     <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__.
 
-    References
-    ----------
-    -
-
     """
     def __init__(
             self, training_dataset, build_training_func, optimizer,
