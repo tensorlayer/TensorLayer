@@ -71,12 +71,14 @@ class Trainer(object):
 
     Attributes
     ----------
-    training_network: class TensorLayer ``Layer``
+    training_network : class TensorLayer ``Layer``
         The training model.
     session : class TensorFlow ``MonitoredTrainingSession``
         The training session tha the Trainer wraps.
-    global_step: int
+    global_step : int
         The number of training mini-batch by far.
+    validation_metrics : list of tuples
+        The validation metrics that zips the validation metric property and the average value.
 
     Examples
     --------
@@ -96,7 +98,7 @@ class Trainer(object):
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
-        self.last_global_step = 0
+        self._last_global_step = 0
 
         # Define the loss for validation dataset
         if validation_dataset:
@@ -160,9 +162,9 @@ class Trainer(object):
     @property
     def global_step(self):
         if self._sess.should_stop():
-            return self.last_global_step
-        self.last_global_step = self._sess.run(self._global_step)
-        return self.last_global_step
+            return self._last_global_step
+        self._last_global_step = self._sess.run(self._global_step)
+        return self._last_global_step
 
     @property
     def session(self):
@@ -172,18 +174,8 @@ class Trainer(object):
     def training_network(self):
         return self._training_network
 
-    def train_on_batch(self):
-        self._sess.run(self._train_op)
-
-    def train_to_end(self):
-        while not self._sess.should_stop():
-            # Run a training step synchronously.
-            try:
-                self.train_on_batch()
-            except tf.errors.OutOfRangeError:
-                break
-
-    def get_validation_metrics(self):
+    @property
+    def validation_metrics(self):
         if (self._validation_iterator is None) or (self._validation_metrics is None):
             raise AttributeError('Validation is not setup.')
 
@@ -199,15 +191,37 @@ class Trainer(object):
             except tf.errors.OutOfRangeError:
                 break
         for i, m in enumerate(metric_sums):
-            yield metric_sums[i] / n
+            metric_sums[i] = metric_sums[i] / n
+        return zip(self._validation_metrics, metric_sums)
+
+    def train_on_batch(self):
+        """Train a mini-batch."""
+        self._sess.run(self._train_op)
+
+    def train_to_end(self):
+        """Train the model until the end of the dataset."""
+        while not self._sess.should_stop():
+            # Run a training step synchronously.
+            try:
+                self.train_on_batch()
+            except tf.errors.OutOfRangeError:
+                break
 
     def train_and_validate_to_end(self, validate_step_size=50):
+        """Train the model until the end of the dataset, and validate every N mini-batches.
+
+        Parameters
+        ----------
+        validate_step_size : int
+            Validate the training network every N steps.
+
+        """
         while not self._sess.should_stop():
             self.train_on_batch()  # Run a training step synchronously.
             if self.global_step % validate_step_size == 0:
                 # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
                 log_str = 'step: %d, ' % self.global_step
-                for n, m in zip(self._validation_metrics, self.get_validation_metrics()):
+                for n, m in self.validation_metrics:
                     log_str += '%s: %f, ' % (n.name, m)
                 logging.info(log_str)
 
