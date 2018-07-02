@@ -30,16 +30,18 @@ def model(x, is_train):
 def build_train(x, y_):
     net = model(x, is_train=True)
     cost = tl.cost.cross_entropy(net.outputs, y_, name='cost_train')
-    log_tensors = {'cost': cost}
+    accurate_prediction = tf.equal(tf.argmax(net.outputs, 1), y_)
+    accuracy = tf.reduce_mean(tf.cast(accurate_prediction, tf.float32), name='accuracy_train')
+    log_tensors = {'cost': cost, 'accuracy': accuracy}
     return net, cost, log_tensors
 
 
 def build_validation(x, y_):
     net = model(x, is_train=False)
     cost = tl.cost.cross_entropy(net.outputs, y_, name='cost_test')
-    correct_prediction = tf.equal(tf.argmax(net.outputs, 1), y_)
-    acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='acc_test')
-    return net, [cost, acc]
+    accurate_prediction = tf.equal(tf.argmax(net.outputs, 1), y_)
+    accuracy = tf.reduce_mean(tf.cast(accurate_prediction, tf.float32), name='accuracy_test')
+    return net, [cost, accuracy]
 
 
 if __name__ == '__main__':
@@ -54,8 +56,7 @@ if __name__ == '__main__':
         training_dataset=training_dataset,
         batch_size=32,
         optimizer=tf.train.RMSPropOptimizer,
-        optimizer_args={'learning_rate': 0.001},
-        max_steps=100
+        optimizer_args={'learning_rate': 0.001}
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
@@ -63,6 +64,13 @@ if __name__ == '__main__':
     # 1. Easiest way to train all data: trainer.train_to_end()
     # 2. Train with validation in the middle: trainer.train_and_validate_to_end(validate_step_size=100)
     # 3. Train with full control like follows:
-    trainer.train_and_validate_to_end(validate_step_size=50)
+    while not trainer.session.should_stop():
+        try:
+            # Run a training step synchronously.
+            trainer.train_on_batch()
+            # TODO: do whatever you like to the training session.
+        except tf.errors.OutOfRangeError:
+            # The dataset would throw the OutOfRangeError when it reaches the end
+            break
 
     # TODO: Test the trained model

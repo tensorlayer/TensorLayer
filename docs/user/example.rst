@@ -19,7 +19,7 @@ Basics
  - Data augmentation with TFRecord. Effective way to load and pre-process data, see `tutorial_tfrecord*.py <https://github.com/tensorlayer/tensorlayer/tree/master/example>`__ and `tutorial_cifar10_tfrecord.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_cifar10_tfrecord.py>`__.
  - Data augmentation with TensorLayer, see `tutorial_image_preprocess.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_image_preprocess.py>`__.
  - Float 16 half-precision model, see `tutorial_mnist_float16.py <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_float16.py>`__.
- - Distributed Training. `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed.py>`__ and `imagenet <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_inceptionV3_tfslim.py>`__ by `jorgemf <https://github.com/jorgemf>`__.
+ - Transparent distributed training. `mnist <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__ by `luomai <https://github.com/luomai>`__.
 
 Vision
 ==================

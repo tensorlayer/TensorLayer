@@ -3,6 +3,7 @@
 import json
 import os
 import time
+import math
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
@@ -17,12 +18,80 @@ __all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'L
 
 
 class Trainer(object):
+    """Trainer for neural networks in a distributed environment.
 
+    TensorLayer Trainer is a high-level training interface built on top of TensorFlow MonitoredSession and
+    `Horovod <https://github.com/uber/horovod>`__. It transparently scales the training of a TensorLayer model
+    from a single GPU to multiple GPUs that be placed on different machines in a single cluster.
+
+    The minimal inputs to the Trainer include (1) a training dataset defined using the TensorFlow DataSet API,
+    and (2) a model build function given the inputs of the training dataset, and returns the neural network
+    to train, the loss function to minimize, and the names of the tensor to log during training, and (3)
+    an optimizer and its arguments.
+
+    The default parameter choices of Trainer is inspired by the Facebook paper:
+    `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
+
+    Parameters
+    ----------
+    training_dataset : class TensorFlow ``DataSet``
+        The training dataset which zips samples and labels. The trainer automatically
+        shards the training dataset based on the number of GPUs.
+    build_training_func : function
+        A function that builds the training operator. It takes the training dataset as an input,
+        and returns the neural network, the loss function and a dictionary that maps
+        string tags to tensors to log during training.
+    optimizer : class TensorFlow ``Optimizer``
+        The loss function optimizer. The trainer automatically linearly scale the learning rate based on
+        the number of GPUs.
+    optimizer_args : dict
+        The optimizer argument dictionary.
+    batch_size : int
+        The training mini-batch size (i.e., number of samples per batch).
+    num_epochs : int
+        The number of training epochs.
+    shuffle_data : boolean
+        If the training data need to be shuffled or not.
+    shuffle_seed : int
+        The random seed that control the data shuffling process. Internally, the trainer is using
+        the tf.data.shuffle() to shuffle data. Note that it is preferable to
+        let all the trainer use the same random seed
+        in order to guarantee an identical data shuffling order across different GPUs.
+    checkpoint_dir : str
+        The path to the TensorFlow model checkpoint. Note that only one trainer master would
+        checkpoints its model.
+    log_step_size : int
+        The trainer logs training information every N mini-batches (i.e., step size).
+    validation_dataset: class TensorFlow ``DataSet`` or None
+        The optional validation dataset that zips samples and labels. Note that
+        only the trainer master needs to the validation often.
+    build_validation_func: function
+        The function that builds the validation operator. It returns the validation neural network (which
+        share the weights of the training network) and a custom number of validation metrics.
+
+    Attributes
+    ----------
+    training_network: class TensorLayer ``Layer``
+        The training model.
+    session : class TensorFlow ``MonitoredTrainingSession``
+        The training session tha the Trainer wraps.
+    global_step: int
+        The number of training mini-batch by far.
+
+    Examples
+    --------
+    See `tutorial_mnist_distributed_trainer.py
+    <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__.
+
+    References
+    ----------
+    -
+
+    """
     def __init__(
-            self, build_training_func, training_dataset, optimizer,
+            self, training_dataset, build_training_func, optimizer,
             optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0,
-            checkpoint_dir='./checkpoints', max_steps=20000,
-            log_step_size=20, validation_dataset=None, build_validation_func=None
+            checkpoint_dir='./checkpoints', log_step_size=20, validation_dataset=None, build_validation_func=None
     ):
         # Initialize Horovod.
         hvd.init()
@@ -46,7 +115,7 @@ class Trainer(object):
             training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
         shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         training_iterator = shard.make_one_shot_iterator()
-        self.training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
+        self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 
         # Adjust learning rate based on number of GPUs.
         optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
@@ -60,7 +129,7 @@ class Trainer(object):
             log_tensors.append(self._global_step)
         else:
             log_tensors['global_step'] = self._global_step
-        self._train_op = opt.minimize(loss, global_step=self._global_step)  # TODO: support a list of losses
+        self._train_op = opt.minimize(loss, global_step=self._global_step)
 
         hooks = [
             # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
@@ -70,7 +139,7 @@ class Trainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=max_steps // hvd.size()),
+            tf.train.StopAtStepHook(last_step=math.inf // hvd.size()),
             tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
         ]
 
@@ -86,20 +155,28 @@ class Trainer(object):
         # The MonitoredTrainingSession takes care of session initialization,
         # restoring from a checkpoint, saving to a checkpoint, and closing when done
         # or an error occurs.
-        self.sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
+        self._sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
 
     @property
     def global_step(self):
-        if self.sess.should_stop():
+        if self._sess.should_stop():
             return self.last_global_step
-        self.last_global_step = self.sess.run(self._global_step)
+        self.last_global_step = self._sess.run(self._global_step)
         return self.last_global_step
 
+    @property
+    def session(self):
+        return self._sess
+
+    @property
+    def training_network(self):
+        return self._training_network
+
     def train_on_batch(self):
-        self.sess.run(self._train_op)
+        self._sess.run(self._train_op)
 
     def train_to_end(self):
-        while not self.sess.should_stop():
+        while not self._sess.should_stop():
             # Run a training step synchronously.
             try:
                 self.train_on_batch()
@@ -112,10 +189,10 @@ class Trainer(object):
 
         n = 0.0
         metric_sums = [0.0] * len(self._validation_metrics)
-        self.sess.run(self._validation_iterator.initializer)
+        self._sess.run(self._validation_iterator.initializer)
         while True:
             try:
-                metrics = self.sess.run(self._validation_metrics)
+                metrics = self._sess.run(self._validation_metrics)
                 for i, m in enumerate(metrics):
                     metric_sums[i] += m
                 n += 1.0
@@ -125,14 +202,14 @@ class Trainer(object):
             yield metric_sums[i] / n
 
     def train_and_validate_to_end(self, validate_step_size=50):
-        while not self.sess.should_stop():
+        while not self._sess.should_stop():
             self.train_on_batch()  # Run a training step synchronously.
             if self.global_step % validate_step_size == 0:
                 # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
-                _str = 'step: %d, ' % self.global_step
+                log_str = 'step: %d, ' % self.global_step
                 for n, m in zip(self._validation_metrics, self.get_validation_metrics()):
-                    _str += '%s: %f, ' % (n.name, m)
-                logging.info(_str)
+                    log_str += '%s: %f, ' % (n.name, m)
+                logging.info(log_str)
 
 
 @deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
