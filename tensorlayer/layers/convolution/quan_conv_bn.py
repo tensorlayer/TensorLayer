@@ -9,6 +9,7 @@ from tensorlayer.layers.core import LayersConfig
 from tensorlayer.layers.utils import quantize_active_overflow
 from tensorlayer.layers.utils import quantize_weight_overflow
 
+from tensorflow.python.training import moving_averages
 from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
@@ -16,7 +17,7 @@ from tensorlayer.decorators import deprecated_alias
 __all__ = ['QuanConv2d']
 
 
-class QuanConv2d(Layer):
+class QuanConv2dWithBN(Layer):
     """The :class:`QuanConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
@@ -86,11 +87,12 @@ class QuanConv2d(Layer):
             strides=(1, 1),
             padding='SAME',
             act=None,
+            decay=0.9,
+            epsilon=1e-5,
+            is_triain=False,
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
-            b_init_args=None,
             use_cudnn_on_gpu=None,
             data_format=None,
             # act=None,
@@ -103,15 +105,16 @@ class QuanConv2d(Layer):
             # b_init_args=None,
             # use_cudnn_on_gpu=None,
             # data_format=None,
-            name='quan_cnn2d',
+            name='quan_cnn2d_bn',
     ):
-        super(QuanConv2d, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        super(QuanConv2dWithBN, self
+             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
         logging.info(
-            "QuanConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
+            "QuanConv2dWithBN %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s decay: %s epsilon: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
+                if self.act is not None else 'No Activation',
+                decay, epsilon
             )
         )
 
@@ -137,26 +140,72 @@ class QuanConv2d(Layer):
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            W = quantize_weight_overflow(W, bitW)
-
-            self.outputs = tf.nn.conv2d(
+            
+            conv = tf.nn.conv2d(
                 self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
                 data_format=data_format
             )
+            
+            para_bn_shape = conv.get_shape()[-1:]
 
-            if b_init:
-                b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
-                    **self.b_init_args
-                )
 
-                self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
+            scale_para = tf.get_variable(
+                name = 'scale_para', shape = para_bn_shape, initializer = tf.ones_initializer, dtype = LayersConfig.tf_dtype, trainable = is_train)
+            
+            offset_para = tf.get_variable(
+                name = 'offset_para', shape = para_bn_shape, initializer = tf.zeros_initializer, dtype = LayersConfig.tf_dtype, trainable = is_train)
+
+            moving_mean = tf.get_variable(
+                'moving_mean', para_bn_shape, initializer=moving_mean_init, dtype=LayersConfig.tf_dtype, trainable=False
+            )
+
+            moving_variance = tf.get_variable(
+                'moving_variance',
+                para_bn_shape,
+                initializer=tf.constant_initializer(1.),
+                dtype=LayersConfig.tf_dtype,
+                trainable=False,
+            )    
+            
+            mean, variance = tf.nn.moments(self.inputs, axis = list(range(len(conv.get_shape()-1))))
+
+            update_moving_mean = moving_averages.assign_moving_average(
+                moving_mean, mean, decay, zero_debias=False
+            )  # if zero_debias=True, has bias
+
+            update_moving_variance = moving_averages.assign_moving_average(
+                moving_variance, variance, decay, zero_debias=False
+            )  # if zero_debias=True, has bias
+
+            def mean_var_with_update():
+                with tf.control_dependencies([update_moving_mean, update_moving_variance]):
+                    return tf.identity(mean), tf.identity(variance)
+            
+            if is_train:
+                mean, var = mean_var_with_update()
+            else:
+                mean, var = moving_mean, moving_variance
+
+            w_fold = _w_fold(W, scale_para, var, epsilon)
+            bias_fold = _bias_fold(offset_para, scale_para, mean, var)
+
+            W = quantize_weight_overflow(w_fold, bitW)
+            
+            conv_fold = tf.nn.conv2d(
+                self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,
+                data_format=data_format
+            )            
+
+            self.outputs = tf.nn.bias_add(conv_fold, bias_fold, name = 'bn_bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
 
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self._add_params([W, scale_para, offset_para, moving_mean, moving_variance])
+
+    def _w_fold(w, gama, var, epsilon):
+        return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+    
+    def _bias_fold(beta, gama, mean, var):
+        return tf.sub(beta, tf.div(tf.multiply(gama, mean)), tf.sqrt(var + epsilon))
