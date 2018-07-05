@@ -86,10 +86,11 @@ class Trainer(object):
     <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__.
 
     """
+
     def __init__(
-            self, training_dataset, build_training_func, optimizer,
-            optimizer_args, batch_size=32, num_epochs=100, shuffle_data=True, shuffle_seed=0,
-            checkpoint_dir='./checkpoints', log_step_size=20, validation_dataset=None, build_validation_func=None
+            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
+            shuffle_data=True, shuffle_seed=0, checkpoint_dir='./checkpoints', log_step_size=20,
+            validation_dataset=None, build_validation_func=None
     ):
         # Initialize Horovod.
         hvd.init()
