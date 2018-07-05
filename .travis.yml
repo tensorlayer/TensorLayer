@@ -58,8 +58,8 @@ install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
         pip install tensorflow
-        sudo sh -c 'mkdir -p /root/local && cd /root/local && wget https://github.com/lgarithm/openmpi-release/raw/master/releases/openmpi-bin-3.1.0.tar.bz2 && tar -xf openmpi-bin-3.1.0.tar.bz2'
-        sudo PATH=/root/local/openmpi/bin:$PATH pip install horovod
+        sudo sh -c 'mkdir -p /opt && chmod a+rx /opt && cd /opt && wget https://github.com/lgarithm/openmpi-release/raw/master/releases/openmpi-bin-3.1.0.tar.bz2 && tar -xf openmpi-bin-3.1.0.tar.bz2'
+        sudo PATH=/opt/openmpi/bin:$PATH pip install horovod
     else
         pip install tensorflow==$_TF_VERSION;
     fi
