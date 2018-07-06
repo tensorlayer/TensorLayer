@@ -72,7 +72,7 @@ extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_
 extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_gpu']], list())
 
 
-cmdclass = None
+cmdclass = dict()
 ext_modules = []
 
 
