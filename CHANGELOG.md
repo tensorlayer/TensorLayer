@@ -92,6 +92,7 @@ To release a new version, please update the changelog as followed:
     - py3 + cpu
     - py3 + gpu
 - Documentation:
+  - Add binary, ternary and dorefa links (PR #711) 
   - Clean README.md (PR #677)
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
@@ -121,6 +122,7 @@ To release a new version, please update the changelog as followed:
     tl.logging.set_verbosity(tl.logging.DEBUG)
     ```
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
+
     
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -133,6 +135,7 @@ To release a new version, please update the changelog as followed:
 
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
+- missing import in tl.prepro (PR #712)
 
 ### Security
 
