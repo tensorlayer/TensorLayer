@@ -45,6 +45,7 @@ else:
 
 # ======================= Reading Requirements files as TXT files =======================
 
+
 def req_file(filename, folder="requirements"):
     with open(os.path.join(folder, filename)) as f:
         content = f.readlines()
@@ -55,17 +56,16 @@ def req_file(filename, folder="requirements"):
 # ======================= Defining the requirements var =======================
 
 
-
 install_requires = req_file("requirements.txt")
 
 extras_require = {
     'tf_cpu': req_file("requirements_tf_cpu.txt"),
     'tf_gpu': req_file("requirements_tf_gpu.txt"),
-	'db': req_file("requirements_db.txt"),
-	'dev': req_file("requirements_dev.txt"),
-	'doc': req_file("requirements_doc.txt"),
-	'extra': req_file("requirements_extra.txt"),
-	'test': req_file("requirements_test.txt")
+    'db': req_file("requirements_db.txt"),
+    'dev': req_file("requirements_dev.txt"),
+    'doc': req_file("requirements_doc.txt"),
+    'extra': req_file("requirements_extra.txt"),
+    'test': req_file("requirements_test.txt")
 }
 
 extras_require['all'] = sum([extras_require.get(key) for key in ['db', 'dev', 'doc', 'extra', 'test']], list())
@@ -75,6 +75,7 @@ extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_g
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
+    extras_require['distributed'] = req_file("requirements_distributed.txt")
 
 # ======================= Define the package setup =======================
 
