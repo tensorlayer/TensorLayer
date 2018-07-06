@@ -81,9 +81,6 @@ ext_modules = []
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
 
-
-if (os.environ.get('READTHEDOCS', None) == 'True' or
-        os.environ.get('_DOC_AND_YAPF_TEST', None) == 'True'):
     ext_modules = [
         Extension('install_horovod_for_rtd', []),
     ]
