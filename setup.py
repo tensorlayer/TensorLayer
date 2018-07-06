@@ -4,11 +4,10 @@ import codecs
 
 os.environ['TENSORLAYER_PACKAGE_BUILDING'] = 'True'
 
+
 try:
-    from setuptools import (
-        setup,
-        find_packages
-    )
+    from setuptools import find_packages, setup, Extension
+    from setuptools.command.build_ext import build_ext
 
 except ImportError:
     from distutils.core import (
@@ -73,24 +72,26 @@ extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_
 extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_gpu']], list())
 
 
+cmdclass = None
+ext_modules = []
+
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
-    extras_require['distributed'] = req_file("requirements_distributed.txt")
 
-    # FIXME: find better way to do this
-    # install openmpi in /opt/openmpi
-    install_openmpi_commands = [
-        'mkdir -p /opt',
-        'chmod a+rx /opt',
-        'cd /opt',
-        'wget https://github.com/lgarithm/openmpi-release/raw/master/releases/openmpi-bin-3.1.0.tar.bz2 ',
-        'tar -xf openmpi-bin-3.1.0.tar.bz2',
-        'ln -s /Users/lg/local/bin/mpicxx /usr/bin/mpicxx',
+    ext_modules = [
+        Extension('install_horovod_for_rtd', []),
     ]
-    os.system(' && '.join(install_openmpi_commands))
+
+    class custom_build_ext(build_ext):
+        def build_extensions(self):
+            os.system('./scripts/install-horovod-for-rtd.sh')
+
+    cmdclass = {'build_ext': custom_build_ext}
+
 
 # ======================= Define the package setup =======================
+
 
 setup(
     name=__package_name__,
@@ -167,10 +168,14 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=install_requires,
 
+    cmdclass=cmdclass,
+
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # $ pip install -e .[test]
     extras_require=extras_require,
+    ext_modules=ext_modules,
+
     scripts=[
         'tl',
     ],
