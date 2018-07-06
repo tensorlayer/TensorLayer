@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os
 import codecs
+import os
+import sys
 
 os.environ['TENSORLAYER_PACKAGE_BUILDING'] = 'True'
 
