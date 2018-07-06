@@ -75,17 +75,21 @@ extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_g
 cmdclass = None
 ext_modules = []
 
+
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
 
+
+if (os.environ.get('READTHEDOCS', None) == 'True' or
+        os.environ.get('_DOC_AND_YAPF_TEST', None) == 'True'):
     ext_modules = [
         Extension('install_horovod_for_rtd', []),
     ]
 
     class custom_build_ext(build_ext):
         def build_extensions(self):
-            os.system('./scripts/install-horovod-for-rtd.sh')
+            os.system('./scripts/install-horovod-for-doc-test.sh')
 
     cmdclass = {'build_ext': custom_build_ext}
 

@@ -11,4 +11,3 @@ python:
         - doc
         - extra
         - test
-        - distributed
