@@ -1,5 +1,7 @@
 set -e
 
+[ ! -z "$1" ] && export PATH=$1:$PATH
+
 mkdir -p /opt
 chmod a+rx /opt
 cd /opt
