@@ -72,10 +72,23 @@ extras_require['all'] = sum([extras_require.get(key) for key in ['db', 'dev', 'd
 extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_cpu']], list())
 extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_gpu']], list())
 
+
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
     extras_require['distributed'] = req_file("requirements_distributed.txt")
+
+    # FIXME: find better way to do this
+    # install openmpi in /opt/openmpi
+    install_openmpi_commands = [
+        'mkdir -p /opt',
+        'chmod a+rx /opt',
+        'cd /opt',
+        'wget https://github.com/lgarithm/openmpi-release/raw/master/releases/openmpi-bin-3.1.0.tar.bz2 ',
+        'tar -xf openmpi-bin-3.1.0.tar.bz2',
+        'ln -s /Users/lg/local/bin/mpicxx /usr/bin/mpicxx',
+    ]
+    os.system(' && '.join(install_openmpi_commands))
 
 # ======================= Define the package setup =======================
 
