@@ -37,7 +37,6 @@ from tensorlayer.layers import FlattenLayer
 from tensorlayer.layers import InputLayer
 from tensorlayer.layers import MaxPool2d
 
-
 from tensorlayer.files import maybe_download_and_extract
 from tensorlayer.files import assign_params
 
@@ -48,6 +47,7 @@ __all__ = [
 
 class VGG16Base(object):
     """The VGG16 model."""
+
     @staticmethod
     def vgg16_simple_api(net_in, end_with):
         with tf.name_scope('preprocess'):

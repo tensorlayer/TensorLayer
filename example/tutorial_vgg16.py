@@ -141,7 +141,7 @@ tl.files.assign_params(sess, params, net)
 img1 = imread('data/laska.png', mode='RGB')  # test data in github
 img1 = imresize(img1, (224, 224))
 # rescale pixels values in the range of 0-1
-img1 = img1/255.0
+img1 = img1 / 255.0
 if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
     raise Exception("image value should be [0, 1]")
 
