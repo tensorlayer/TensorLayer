@@ -9,9 +9,3 @@ python:
     # to build customized extension, we have to use setup_py_install instead of pip_install
     # https://docs.readthedocs.io/en/latest/yaml-config.html#python-setup-py-install
     setup_py_install: true
-    extra_requirements:
-        - db
-        - dev
-        - doc
-        - extra
-        - test
