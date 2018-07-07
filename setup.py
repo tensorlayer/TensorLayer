@@ -80,7 +80,7 @@ ext_modules = []
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
     install_requires.append("tensorflow==1.5.0")
-    install_requires.extend(extras_require['all'])
+    # install_requires.extend(extras_require['all'])
 
     ext_modules = [
         Extension('install_horovod_for_rtd', []),
