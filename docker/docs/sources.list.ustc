@@ -1,0 +1,15 @@
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic main restricted
+
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic-updates main restricted
+
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic universe
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic-updates universe
+
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic multiverse
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic-updates multiverse
+
+deb http://mirrors.ustc.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse
+
+deb http://mirrors.ustc.edu.cn/ubuntu bionic-security main restricted
+deb http://mirrors.ustc.edu.cn/ubuntu bionic-security universe
+deb http://mirrors.ustc.edu.cn/ubuntu bionic-security multiverse
