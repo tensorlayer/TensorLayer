@@ -10,6 +10,7 @@ Check this `minst example <https://github.com/tensorlayer/tensorlayer/blob/maste
 
 .. autosummary::
 
+   Trainer
    TaskSpecDef
    TaskSpec
    DistributedSession
