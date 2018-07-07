@@ -1,3 +1,5 @@
+# This script is for installing horovod on travis-CI only!
+
 set -e
 
 [ ! -z "$1" ] && export PATH=$1:$PATH

@@ -87,7 +87,7 @@ if os.environ.get('READTHEDOCS', None) == 'True':
 
     class custom_build_ext(build_ext):
         def build_extensions(self):
-            os.system('./install-horovod-for-doc-test.sh %s' %
+            os.system('./scripts/install-horovod-for-rtd.sh %s' %
                       os.path.dirname(sys.executable))
 
     cmdclass = {'build_ext': custom_build_ext}
