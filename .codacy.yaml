@@ -2,6 +2,7 @@
 ---
 engines:
   bandit:
-    enabled: false
+    enabled: false # FIXME: make it work
 exclude_paths:
 - scripts/*
+- setup.py
