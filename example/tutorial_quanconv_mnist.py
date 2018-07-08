@@ -25,18 +25,15 @@ def model(x, is_train=True, reuse=False):
         net = tl.layers.QuanConv2dWithBN(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train = is_train, name='qcbnb1')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
 
-        # net = tl.layers.SignLayer(net)
-        net = tl.layers.TernaryConv2d(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train = is_train, name='qcbn2')
+        net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train = is_train, name='qcbn2')
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
 
         net = tl.layers.FlattenLayer(net)
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
-        # net = tl.layers.SignLayer(net)
         net = tl.layers.QuanDenseLayerWithBN(net, 256, is_train = is_train, act=tf.nn.relu, name='qdbn')
 
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
-        # net = tl.layers.SignLayer(net)
-        net = tl.layers.QuanDenseLayerWithBN(net, 10, is_train = is_train, name='qdbn_out')
+        net = tl.layers.QuanDenseLayer(net, 10, name='qdbn_out')
     return net
 
 
@@ -44,7 +41,7 @@ def model(x, is_train=True, reuse=False):
 net_train = model(x, is_train=True, reuse=False)
 net_test = model(x, is_train=False, reuse=True)
 
-# cost for training
+# cost for training 
 y = net_train.outputs
 cost = tl.cost.cross_entropy(y, y_, name='xentropy')
 
@@ -55,13 +52,13 @@ correct_prediction = tf.equal(tf.argmax(y2, 1), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # define the optimizer
-train_params = tl.layers.get_variables_with_name('binarynet', True, True)
+train_params = tl.layers.get_variables_with_name('quan_cnn', True, True)
 train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=train_params)
 
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
-net_train.print_params()
+net_train.print_params(False)
 net_train.print_layers()
 
 n_epoch = 200

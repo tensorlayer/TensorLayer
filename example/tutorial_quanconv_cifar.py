@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-- 1. This model has 1,068,298 paramters and Dorefa compression strategy(weight:1 bit, active: 3 bits),
-after 500 epoches' training with GPU,accurcy of 81.1% was found.
+- 1. This model has 1,068,298 paramters and quantization compression strategy(weight:8 bits, active: 8 bits here, you can change the setting),
+after 705 epoches' training with GPU, test accurcy of 84.5% was found.
 
 - 2. For simplified CNN layers see "Convolutional layer (Simplified)"
 in read the docs website.
@@ -12,8 +12,8 @@ in read the docs website.
 
 Links
 -------
-.. paper:https://arxiv.org/abs/1606.06160
-.. code:https://github.com/XJTUWYD/DoReFa_Cifar10
+.. paper:https://arxiv.org/abs/1712.05877
+
 
 Note
 ------
@@ -141,7 +141,7 @@ data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
 batch_size = 128
-model_file_name = "./model_cifar10_advanced.ckpt"
+model_file_name = "./model_cifar10_quanbn.ckpt"
 resume = False  # load model, resume from previous checkpoint?
 
 with tf.device('/cpu:0'):
@@ -158,23 +158,22 @@ with tf.device('/cpu:0'):
         [x_test_, y_test_], batch_size=batch_size, capacity=50000, num_threads=32
     )
 
-    def model(x_crop, y_, reuse):
-        """ For more simplified CNN APIs, check tensorlayer.org """
+    def model(x_crop, y_, is_train, reuse, bitW, bitA):
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.Conv2d(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', name='cnn1')
+            net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA, name='cnn1')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
-            net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
-            net = tl.layers.QuanConv2dWithBN(net, 1, 3, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='qcnnbn1')
+            # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
+            net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train,  bitW=bitW, bitA=bitA, name='qcnnbn1')
+            # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')
-            net = tl.layers.QuanDenseLayer(net, 1, 3, 384, act=tf.nn.relu, name='qd1relu')
-            net = tl.layers.QuanDenseLayer(net, 1, 3, 192, act=tf.nn.relu, name='qd2relu')
-            net = tl.layers.QuanDenseLayer(net, 10, act=None, name='output')
+            net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu,  bitW=bitW, bitA=bitA, name='qd1relu')
+            net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu,  bitW=bitW, bitA=bitA, name='qd2relu')
+            net = tl.layers.DenseLayer(net, 10, act=None, name='output')
             y = net.outputs
 
             ce = tl.cost.cross_entropy(y, y_, name='cost')
-            # L2 for the MLP, without this, the accuracy will be reduced by 15%.
             L2 = 0
             for p in tl.layers.get_variables_with_name('relu/W', True, True):
                 L2 += tf.contrib.layers.l2_regularizer(0.004)(p)
@@ -192,16 +191,18 @@ with tf.device('/cpu:0'):
     # y_ = tf.placeholder(tf.int32, shape=[batch_size,])
     # cost, acc, network = model(x_crop, y_, None)
 
-    with tf.device('/gpu:0'):  # <-- remove it if you don't have GPU
-        network, cost, acc, = model(x_train_batch, y_train_batch, False)
-        _, cost_test, acc_test = model(x_test_batch, y_test_batch, True)
-
     ## train
     n_epoch = 50000
     learning_rate = 0.0001
+    bitW = 8
+    bitA = 8
     print_freq = 1
     n_step_epoch = int(len(y_train) / batch_size)
     n_step = n_epoch * n_step_epoch
+
+    with tf.device('/gpu:0'):  # <-- remove it if you don't have GPU
+        network, cost, acc, = model(x_train_batch, y_train_batch, True, False, bitW, bitA)
+        _, cost_test, acc_test = model(x_test_batch, y_test_batch, False, True, bitW, bitA)
 
     with tf.device('/gpu:0'):  # <-- remove it if you don't have GPU
         train_op = tf.train.AdamOptimizer(learning_rate).minimize(cost)
@@ -216,6 +217,7 @@ with tf.device('/cpu:0'):
     network.print_layers()
 
     print('   learning_rate: %f' % learning_rate)
+    print('   bitW: %d, bitA: %d' % (bitW,   bitA))
     print('   batch_size: %d' % batch_size)
     print('   n_epoch: %d, step in an epoch: %d, total n_step: %d' % (n_epoch, n_step_epoch, n_step))
 

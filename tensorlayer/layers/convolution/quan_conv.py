@@ -17,9 +17,8 @@ __all__ = ['QuanConv2d']
 
 
 class QuanConv2d(Layer):
-    """The :class:`QuanConv2d` class is a binary fully connected layer, which weights are 'bitW' bits and the output of the previous layer
-    are 'bitA' bits while inferencing.
-
+    """The :class:`QuanConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW' bits and the output of the previous layer
+    are 'bitA' bits while inferencing. 
     Note that, the bias vector would not be binarized.
 
     Parameters
@@ -37,10 +36,14 @@ class QuanConv2d(Layer):
     strides : tuple of int
         The sliding window strides of corresponding input dimensions.
         It must be in the same order as the ``shape`` parameter.
-    act : activation function
-        The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
+    act : activation function
+        The activation function of this layer.
+    bitW : int
+        The bits of this layer's parameter
+    bitA : int
+        The bits of the output of previous layer
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
     W_init : initializer
@@ -64,12 +67,11 @@ class QuanConv2d(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.DorefaConv2d(net, 32, (5, 5), (1, 1), padding='SAME', name='bcnn1')
+    >>> net = tl.layers.QuanConv2d(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
     ...
-    >>> net = tl.layers.SignLayer(net)
-    >>> net = tl.layers.DorefaConv2d(net, 64, (5, 5), (1, 1), padding='SAME', name='bcnn2')
+    >>> net = tl.layers.QuanConv2d(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
@@ -79,13 +81,13 @@ class QuanConv2d(Layer):
     def __init__(
             self,
             prev_layer,
-            bitW=8,
-            bitA=8,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
             padding='SAME',
             act=None,
+            bitW=8,
+            bitA=8,
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),

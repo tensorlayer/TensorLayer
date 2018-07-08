@@ -19,9 +19,8 @@ __all__ = [
 
 
 class QuanDenseLayer(Layer):
-    """The :class:`QuanDenseLayer` class is a ternary fully connected layer, which weights are either -1 or 1 or 0 while inference.
-
-    Note that, the bias vector would not be tenaried.
+    """The :class:`QuanDenseLayer` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
+    are 'bitA' bits while inferencing.
 
     Parameters
     ----------
@@ -30,7 +29,11 @@ class QuanDenseLayer(Layer):
     n_units : int
         The number of units of this layer.
     act : activation function
-        The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
+        The activation function of this layer.
+    bitW : int
+        The bits of this layer's parameter
+    bitA : int
+        The bits of the output of previous layer
     use_gemm : boolean
         If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
     W_init : initializer
@@ -50,10 +53,10 @@ class QuanDenseLayer(Layer):
     def __init__(
             self,
             prev_layer,
-            bitW=8,
-            bitA=8,
             n_units=100,
             act=None,
+            bitW=8,
+            bitA=8,
             use_gemm=False,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
@@ -85,14 +88,9 @@ class QuanDenseLayer(Layer):
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            # W = tl.act.sign(W)    # dont update ...
-
             W = quantize_weight_overflow(W, bitW)
 
-            # W = tf.Variable(W)
-
             self.outputs = tf.matmul(self.inputs, W)
-            # self.outputs = xnor_gemm(self.inputs, W) # TODO
 
             if b_init is not None:
                 try:
