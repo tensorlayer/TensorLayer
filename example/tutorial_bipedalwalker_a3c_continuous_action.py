@@ -63,8 +63,8 @@ N_S = env.observation_space.shape[0]
 N_A = env.action_space.shape[0]
 # A_BOUND = [env.action_space.low, env.action_space.high]
 A_BOUND = [env.action_space.low, env.action_space.high]
-A_BOUND[0] = A_BOUND[0].reshape(1,4)
-A_BOUND[1] = A_BOUND[1].reshape(1,4)
+A_BOUND[0] = A_BOUND[0].reshape(1, 4)
+A_BOUND[1] = A_BOUND[1].reshape(1, 4)
 
 # print(env.unwrapped.hull.position[0])
 # exit()
