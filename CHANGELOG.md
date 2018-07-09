@@ -97,6 +97,7 @@ To release a new version, please update the changelog as followed:
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
+  - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
   - AtrousDeConv2dLayer added (PR #662)
