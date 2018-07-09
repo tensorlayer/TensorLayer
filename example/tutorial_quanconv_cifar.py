@@ -141,7 +141,7 @@ data_to_tfrecord(images=X_train, labels=y_train, filename="train.cifar10")
 data_to_tfrecord(images=X_test, labels=y_test, filename="test.cifar10")
 
 batch_size = 128
-model_file_name = "./model_cifar10_quanbn.ckpt"
+model_file_name = "./model_cifar10_quan.ckpt"
 resume = False  # load model, resume from previous checkpoint?
 
 with tf.device('/cpu:0'):
@@ -161,15 +161,21 @@ with tf.device('/cpu:0'):
     def model(x_crop, y_, is_train, reuse, bitW, bitA):
         with tf.variable_scope("model", reuse=reuse):
             net = tl.layers.InputLayer(x_crop, name='input')
-            net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA, name='cnn1')
+            net = tl.layers.QuanConv2dWithBN(
+                net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA,
+                name='cnn1'
+            )
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
             # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
-            net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train,  bitW=bitW, bitA=bitA, name='qcnnbn1')
+            net = tl.layers.QuanConv2dWithBN(
+                net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, bitW=bitW, bitA=bitA,
+                name='qcnnbn1'
+            )
             # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
             net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
             net = tl.layers.FlattenLayer(net, name='flatten')
-            net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu,  bitW=bitW, bitA=bitA, name='qd1relu')
-            net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu,  bitW=bitW, bitA=bitA, name='qd2relu')
+            net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')
+            net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')
             net = tl.layers.DenseLayer(net, 10, act=None, name='output')
             y = net.outputs
 
@@ -194,8 +200,8 @@ with tf.device('/cpu:0'):
     ## train
     n_epoch = 50000
     learning_rate = 0.0001
-    bitW = 8
-    bitA = 8
+    bitW = 4
+    bitA = 4
     print_freq = 1
     n_step_epoch = int(len(y_train) / batch_size)
     n_step = n_epoch * n_step_epoch
@@ -217,7 +223,7 @@ with tf.device('/cpu:0'):
     network.print_layers()
 
     print('   learning_rate: %f' % learning_rate)
-    print('   bitW: %d, bitA: %d' % (bitW,   bitA))
+    print('   bitW: %d, bitA: %d' % (bitW, bitA))
     print('   batch_size: %d' % batch_size)
     print('   n_epoch: %d, step in an epoch: %d, total n_step: %d' % (n_epoch, n_step_epoch, n_step))
 

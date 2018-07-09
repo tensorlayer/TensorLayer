@@ -22,15 +22,19 @@ y_ = tf.placeholder(tf.int64, shape=[batch_size])
 def model(x, is_train=True, reuse=False):
     with tf.variable_scope("quan_cnn", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.QuanConv2dWithBN(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train = is_train, name='qcbnb1')
+        net = tl.layers.QuanConv2dWithBN(
+            net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, name='qcbnb1'
+        )
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
 
-        net = tl.layers.QuanConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train = is_train, name='qcbn2')
+        net = tl.layers.QuanConv2dWithBN(
+            net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, name='qcbn2'
+        )
         net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
 
         net = tl.layers.FlattenLayer(net)
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop1')
-        net = tl.layers.QuanDenseLayerWithBN(net, 256, is_train = is_train, act=tf.nn.relu, name='qdbn')
+        net = tl.layers.QuanDenseLayerWithBN(net, 256, is_train=is_train, act=tf.nn.relu, name='qdbn')
 
         # net = tl.layers.DropoutLayer(net, 0.8, True, is_train, name='drop2')
         net = tl.layers.QuanDenseLayer(net, 10, name='qdbn_out')
@@ -41,7 +45,7 @@ def model(x, is_train=True, reuse=False):
 net_train = model(x, is_train=True, reuse=False)
 net_test = model(x, is_train=False, reuse=True)
 
-# cost for training 
+# cost for training
 y = net_train.outputs
 cost = tl.cost.cross_entropy(y, y_, name='xentropy')
 

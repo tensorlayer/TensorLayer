@@ -88,8 +88,7 @@ class QuanDenseLayerWithBN(Layer):
             W_init_args=None,
             name='quan_dense_with_bn',
     ):
-        super(QuanDenseLayerWithBN, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
+        super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
         logging.info(
             "QuanDenseLayerWithBN  %s: %d %s" %
@@ -114,23 +113,28 @@ class QuanDenseLayerWithBN(Layer):
             )
 
             mid_out = tf.matmul(x, W)
-            
+
             para_bn_shape = mid_out.get_shape()[-1:]
 
             if gamma_init:
                 scale_para = tf.get_variable(
-                    name = 'scale_para', shape = para_bn_shape, initializer = gamma_init, dtype = LayersConfig.tf_dtype, trainable = is_train)
+                    name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=LayersConfig.tf_dtype,
+                    trainable=is_train
+                )
             else:
                 scale_para = None
 
             if beta_init:
                 offset_para = tf.get_variable(
-                    name = 'offset_para', shape = para_bn_shape, initializer = beta_init, dtype = LayersConfig.tf_dtype, trainable = is_train)
+                    name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype,
+                    trainable=is_train
+                )
             else:
                 offset_para = None
-                
+
             moving_mean = tf.get_variable(
-                'moving_mean', para_bn_shape, initializer = tf.constant_initializer(1.), dtype=LayersConfig.tf_dtype, trainable=False
+                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=LayersConfig.tf_dtype,
+                trainable=False
             )
 
             moving_variance = tf.get_variable(
@@ -139,9 +143,9 @@ class QuanDenseLayerWithBN(Layer):
                 initializer=tf.constant_initializer(1.),
                 dtype=LayersConfig.tf_dtype,
                 trainable=False,
-            )    
-            
-            mean, variance = tf.nn.moments(mid_out, list(range(len(mid_out.get_shape())-1)))
+            )
+
+            mean, variance = tf.nn.moments(mid_out, list(range(len(mid_out.get_shape()) - 1)))
 
             update_moving_mean = moving_averages.assign_moving_average(
                 moving_mean, mean, decay, zero_debias=False
@@ -154,14 +158,14 @@ class QuanDenseLayerWithBN(Layer):
             def mean_var_with_update():
                 with tf.control_dependencies([update_moving_mean, update_moving_variance]):
                     return tf.identity(mean), tf.identity(variance)
-            
+
             if is_train:
                 mean, var = mean_var_with_update()
             else:
                 mean, var = moving_mean, moving_variance
 
-            w_fold = self._w_fold(W, scale_para, var, epsilon)
-            bias_fold = self._bias_fold(offset_para, scale_para, mean, var, epsilon)
+            w_fold = _w_fold(W, scale_para, var, epsilon)
+            bias_fold = _bias_fold(offset_para, scale_para, mean, var, epsilon)
 
             W = quantize_weight_overflow(w_fold, bitW)
             # W = tl.act.sign(W)    # dont update ...
@@ -177,12 +181,12 @@ class QuanDenseLayerWithBN(Layer):
 
         self._add_layers(self.outputs)
 
-        self._add_params([W,scale_para, offset_para, moving_mean, moving_variance])
-
-    def _w_fold(self, w, gama, var, epsilon):
-        return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
-    
-    def _bias_fold(self, beta, gama, mean, var, epsilon):
-        return tf.subtract(beta, tf.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))
+        self._add_params([W, scale_para, offset_para, moving_mean, moving_variance])
 
 
+def _w_fold(w, gama, var, epsilon):
+    return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
+
+
+def _bias_fold(beta, gama, mean, var, epsilon):
+    return tf.subtract(beta, tf.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))
