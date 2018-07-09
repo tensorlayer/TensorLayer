@@ -116,17 +116,23 @@ To release a new version, please update the changelog as followed:
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
+  - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, issue https://github.com/tensorlayer/tensorlayer/issues/732)
   - add the following to all tutorials (PR #697):  
     ```python
     tf.logging.set_verbosity(tf.logging.DEBUG)
     tl.logging.set_verbosity(tl.logging.DEBUG)
     ```
+  - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
+
     
 ### Changed
+  - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
 
 ### Deprecated
 
 ### Removed
+  - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
+
 
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
