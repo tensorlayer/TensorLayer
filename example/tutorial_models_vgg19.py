@@ -29,6 +29,11 @@ vgg.print_layers()
 img1 = tl.vis.read_image('data/tiger.jpeg')
 img1 = tl.prepro.imresize(img1, (224, 224))
 
+# rescale pixels values in the range of 0-1
+img1 = img1 / 255.0
+if ((0 <= img1).all() and (img1 <= 1.0).all()) is False:
+    raise Exception("image value should be [0, 1]")
+
 _ = sess.run(probs, feed_dict={x: [img1]})[0]  # 1st time takes time to compile
 start_time = time.time()
 prob = sess.run(probs, feed_dict={x: [img1]})[0]
