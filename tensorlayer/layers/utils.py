@@ -415,9 +415,9 @@ def _quantize_overflow(x, k):
     n = float(2**k -1)
     max_value = tf.reduce_max(x)
     min_value = tf.reduce_min(x) 
-    step = tf.stop_gradient((max_value - min_value)/n)
-    with G.gradient_overide_map("Round":"Identity"):
-        return tf.round((tf.maximum(tf.minimum(x,max_value),min_value))/step-min_value) + min_value
+    with G.gradient_override_map({"Round":"Identity"}):
+        step = tf.stop_gradient((max_value - min_value)/n)
+        return tf.round((tf.maximum(tf.minimum(x,max_value),min_value)-min_value)/step)*step + min_value
 
 def _compute_threshold(x):
     """
