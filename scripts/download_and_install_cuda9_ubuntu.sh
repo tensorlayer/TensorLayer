@@ -29,6 +29,6 @@ echo 'Setting up the development environment by modifying the PATH and LD_LIBRAR
 export PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
-echo 'You can add them to the end of .bashrc file by adding the following two lines'
+echo 'Adding the following two linesto the end of .bashrc file if you would like the development environment is setup when start.'
 echo 'PATH=/usr/local/cuda-9.0/bin${PATH:+:${PATH}}'
 echo 'LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}'
