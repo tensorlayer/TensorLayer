@@ -12,12 +12,7 @@ from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
-__all__ = [
-    'LocalResponseNormLayer',
-    'BatchNormLayer',
-    'InstanceNormLayer',
-    'LayerNormLayer',
-]
+__all__ = ['LocalResponseNormLayer', 'BatchNormLayer', 'InstanceNormLayer', 'LayerNormLayer', 'SwitchNormLayer']
 
 
 class LocalResponseNormLayer(Layer):
@@ -296,6 +291,80 @@ class LayerNormLayer(Layer):
             )
 
             variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)
+
+        self._add_layers(self.outputs)
+        self._add_params(variables)
+
+
+class SwitchNormLayer(Layer):
+    """
+    The :class:`SwitchNormLayer` is a switch normalization.
+
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        The previous layer.
+    act : activation function
+        The activation function of this layer.
+    epsilon : float
+        Eplison.
+    beta_init : initializer or None
+        The initializer for initializing beta, if None, skip beta.
+        Usually you should not skip beta unless you know what happened.
+    gamma_init : initializer or None
+        The initializer for initializing gamma, if None, skip gamma.
+        When the batch normalization layer is use instead of 'biases', or the next layer is linear, this can be
+        disabled since the scaling can be done by the next layer. see `Inception-ResNet-v2 <https://github.com/tensorflow/models/blob/master/research/slim/nets/inception_resnet_v2.py>`__
+    name : str
+        A unique layer name.
+
+    References
+    ----------
+    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`__
+    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`__
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self,
+            prev_layer,
+            act=None,
+            epsilon=1e-5,
+            beta_init=tf.constant_initializer(0.0),
+            gamma_init=tf.constant_initializer(1.0),
+            moving_mean_init=tf.zeros_initializer(),
+            name='switchnorm_layer',
+    ):
+        super(SwitchNormLayer, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "SwitchNormLayer %s: epsilon: %f act: %s" %
+            (self.name, epsilon, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        with tf.variable_scope(name):
+            x = self.inputs
+            ch = x.shape[-1]
+            epsilon = 1e-5
+
+            batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], keep_dims=True)
+            ins_mean, ins_var = tf.nn.moments(x, [1, 2], keep_dims=True)
+            layer_mean, layer_var = tf.nn.moments(x, [1, 2, 3], keep_dims=True)
+
+            gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
+            beta = tf.get_variable("beta", [ch], initializer=beta_init)
+
+            mean_weight = tf.nn.softmax(tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0)))
+            var_wegiht = tf.nn.softmax(tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0)))
+
+            mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
+            var = var_wegiht[0] * batch_var + var_wegiht[1] * ins_var + var_wegiht[2] * layer_var
+
+            x = (x - mean) / (tf.sqrt(var + epsilon))
+            self.outputs = x * gamma + beta
+            self.outputs = self._apply_activation(self.outputs)
+            variables = [beta, gamma, mean_weight, var_wegiht]
 
         self._add_layers(self.outputs)
         self._add_params(variables)
