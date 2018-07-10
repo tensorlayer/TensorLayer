@@ -15,6 +15,7 @@ def model(x, is_train=True, reuse=False):
         n = tl.layers.LocalResponseNormLayer(n, name='norm_local')
         n = tl.layers.LayerNormLayer(n, reuse=reuse, name='norm_layer')
         n = tl.layers.InstanceNormLayer(n, name='norm_instance')
+        n = tl.layers.SwitchNormLayer(n, name='switchnorm')
     return n
 
 
@@ -47,14 +48,14 @@ class Layer_Normalization_Test(unittest.TestCase):
         tf.reset_default_graph()
 
     def test_all_layers(self):
-        self.assertEqual(len(self.data["train_network"]["layers"]), 7)
-        self.assertEqual(len(self.data["eval_network"]["layers"]), 7)
+        self.assertEqual(len(self.data["train_network"]["layers"]), 8)
+        self.assertEqual(len(self.data["eval_network"]["layers"]), 8)
 
     def test_all_params(self):
-        self.assertEqual(len(self.data["train_network"]["params"]), 12)
+        self.assertEqual(len(self.data["train_network"]["params"]), 16)
 
     def test_n_params(self):
-        self.assertEqual(self.data["train_network"]["n_params"], 60560)
+        self.assertEqual(self.data["train_network"]["n_params"], 60726)
 
 
 if __name__ == '__main__':
