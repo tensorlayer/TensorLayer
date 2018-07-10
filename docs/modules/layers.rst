@@ -202,6 +202,7 @@ Layer list
    LocalResponseNormLayer
    InstanceNormLayer
    LayerNormLayer
+   SwitchNormLayer
 
    ROIPoolingLayer
 
@@ -762,6 +763,10 @@ Instance Normalization
 Layer Normalization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: LayerNormLayer
+
+Switch Normalization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: SwitchNormLayer
 
 .. -----------------------------------------------------------
 ..                Object Detection Layers
