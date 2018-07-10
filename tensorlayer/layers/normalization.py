@@ -362,17 +362,17 @@ class SwitchNormLayer(Layer):
             beta = tf.get_variable("beta", [ch], initializer=beta_init)
 
             mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
-            var_wegiht_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+            var_weight_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
 
             mean_weight = tf.nn.softmax(mean_weight_var)
-            var_wegiht = tf.nn.softmax(var_wegiht_var)
+            var_weight = tf.nn.softmax(var_weight_var)
 
             mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
-            var = var_wegiht[0] * batch_var + var_wegiht[1] * ins_var + var_wegiht[2] * layer_var
+            var = var_weight[0] * batch_var + var_weight[1] * ins_var + var_weight[2] * layer_var
 
             x = (x - mean) / (tf.sqrt(var + epsilon))
             self.outputs = x * gamma + beta
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-        self._add_params([beta, gamma, mean_weight_var, var_wegiht_var])
+        self._add_params([beta, gamma, mean_weight_var, var_weight_var])
