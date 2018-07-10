@@ -18,7 +18,7 @@ __all__ = ['QuanConv2d']
 
 class QuanConv2d(Layer):
     """The :class:`QuanConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW' bits and the output of the previous layer
-    are 'bitA' bits while inferencing. 
+    are 'bitA' bits while inferencing.
     Note that, the bias vector would not be binarized.
 
     Parameters

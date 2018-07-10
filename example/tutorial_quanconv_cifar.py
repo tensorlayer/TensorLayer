@@ -38,8 +38,6 @@ of processing time. To prevent these operations from slowing down training,
 we run them inside 16 separate threads which continuously fill a TensorFlow queue.
 
 """
-
-import os
 import time
 import numpy as np
 import tensorflow as tf
