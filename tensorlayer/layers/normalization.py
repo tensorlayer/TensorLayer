@@ -12,7 +12,13 @@ from tensorlayer import tl_logging as logging
 
 from tensorlayer.decorators import deprecated_alias
 
-__all__ = ['LocalResponseNormLayer', 'BatchNormLayer', 'InstanceNormLayer', 'LayerNormLayer', 'SwitchNormLayer']
+__all__ = [
+    'LocalResponseNormLayer',
+    'BatchNormLayer',
+    'InstanceNormLayer',
+    'LayerNormLayer',
+    'SwitchNormLayer',
+]
 
 
 class LocalResponseNormLayer(Layer):
@@ -298,7 +304,7 @@ class LayerNormLayer(Layer):
 
 class SwitchNormLayer(Layer):
     """
-    The :class:`SwitchNormLayer` is a switch normalization.
+    The :class:`SwitchNormLayer` is a switchable normalization.
 
     Parameters
     ----------
@@ -320,8 +326,8 @@ class SwitchNormLayer(Layer):
 
     References
     ----------
-    - `Source <https://github.com/ry/tensorflow-resnet/blob/master/resnet.py>`__
-    - `stackoverflow <http://stackoverflow.com/questions/38312668/how-does-one-do-inference-with-batch-normalization-with-tensor-flow>`__
+    - `Differentiable Learning-to-Normalize via Switchable Normalization <https://arxiv.org/abs/1806.10779>`__
+    - `Zhihu (CN) <https://zhuanlan.zhihu.com/p/39296570?utm_source=wechat_session&utm_medium=social&utm_oi=984862267107651584>`__
 
     """
 
@@ -355,8 +361,10 @@ class SwitchNormLayer(Layer):
             gamma = tf.get_variable("gamma", [ch], initializer=gamma_init)
             beta = tf.get_variable("beta", [ch], initializer=beta_init)
 
-            mean_weight = tf.nn.softmax(tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0)))
-            var_wegiht = tf.nn.softmax(tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0)))
+            mean_weight = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
+            mean_weight = tf.nn.softmax(mean_weight)
+            var_wegiht = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
+            var_wegiht = tf.nn.softmax(var_wegiht)
 
             mean = mean_weight[0] * batch_mean + mean_weight[1] * ins_mean + mean_weight[2] * layer_mean
             var = var_wegiht[0] * batch_var + var_wegiht[1] * ins_var + var_wegiht[2] * layer_var
