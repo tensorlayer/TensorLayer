@@ -363,7 +363,7 @@ class SwitchNormLayer(Layer):
 
             mean_weight_var = tf.get_variable("mean_weight", [3], initializer=tf.constant_initializer(1.0))
             var_wegiht_var = tf.get_variable("var_weight", [3], initializer=tf.constant_initializer(1.0))
-            
+
             mean_weight = tf.nn.softmax(mean_weight_var)
             var_wegiht = tf.nn.softmax(var_wegiht_var)
 
