@@ -97,6 +97,7 @@ To release a new version, please update the changelog as followed:
   - Release semantic version added on index page (PR #633)
   - Optimizers page added (PR #636)
   - `AMSGrad` added on Optimizers page added (PR #636)
+  - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
 - Layer:
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
   - AtrousDeConv2dLayer added (PR #662)
@@ -116,6 +117,7 @@ To release a new version, please update the changelog as followed:
 - Tutorials:
   - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
+  - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, issue https://github.com/tensorlayer/tensorlayer/issues/732)
   - add the following to all tutorials (PR #697):  
     ```python
     tf.logging.set_verbosity(tf.logging.DEBUG)
