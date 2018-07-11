@@ -39,6 +39,9 @@ requirements:
     # Requirements for the development
     - requirements/requirements_tf_gpu.txt
 
+    # Requirements for the db
+    - requirements/requirements_db.txt
+
     # Requirements for the development
     - requirements/requirements_dev.txt
 
