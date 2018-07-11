@@ -64,7 +64,7 @@ extras_require = {
     'extra': req_file("requirements_extra.txt"),
 
     # Contrib Packages
-    'contrib_logger': req_file("requirements_contrib_logger.txt"),
+    'contrib_loggers': req_file("requirements_contrib_loggers.txt"),
 
     # Dev Packages
     'test': req_file("requirements_test.txt"),
@@ -73,7 +73,7 @@ extras_require = {
     'db': req_file("requirements_db.txt"),
 }
 
-extras_require['all'] = sum([extras_require.get(key) for key in ['extra', 'contrib_logger']], list())
+extras_require['all'] = sum([extras_require.get(key) for key in ['extra', 'contrib_loggers']], list())
 
 extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_cpu']], list())
 extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['all', 'tf_gpu']], list())

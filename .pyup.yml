@@ -43,7 +43,7 @@ requirements:
     - requirements/requirements_extra.txt
 
     # Requirements for contrib loggers
-    - requirements_contrib_logger.txt
+    - requirements_contrib_loggers.txt
 
     # Requirements for the db
     - requirements/requirements_db.txt
