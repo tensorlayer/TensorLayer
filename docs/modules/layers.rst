@@ -74,14 +74,14 @@ To count the number of parameters in a network, run ``network.count_params()``.
   network = tl.layers.InputLayer(x, name='input_layer')
   network = tl.layers.DropoutLayer(network, keep=0.8, name='drop1')
   network = tl.layers.DenseLayer(network, n_units=800,
-                                  act = tf.nn.relu, name='relu1')
+                                  act=tf.nn.relu, name='relu1')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop2')
   network = tl.layers.DenseLayer(network, n_units=800,
-                                  act = tf.nn.relu, name='relu2')
+                                  act=tf.nn.relu, name='relu2')
   network = tl.layers.DropoutLayer(network, keep=0.5, name='drop3')
   network = tl.layers.DenseLayer(network, n_units=10,
-                                  act = tl.activation.identity,
-                                  name='output_layer')
+                                  act=None, name='output')
+
 
   y = network.outputs
   y_op = tf.argmax(tf.nn.softmax(y), 1)
