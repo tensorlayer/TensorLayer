@@ -61,11 +61,11 @@ install_requires = req_file("requirements.txt")
 extras_require = {
     'tf_cpu': req_file("requirements_tf_cpu.txt"),
     'tf_gpu': req_file("requirements_tf_gpu.txt"),
-	'db': req_file("requirements_db.txt"),
-	'dev': req_file("requirements_dev.txt"),
-	'doc': req_file("requirements_doc.txt"),
-	'extra': req_file("requirements_extra.txt"),
-	'test': req_file("requirements_test.txt")
+    'db': req_file("requirements_db.txt"),
+    'dev': req_file("requirements_dev.txt"),
+    'doc': req_file("requirements_doc.txt"),
+    'extra': req_file("requirements_extra.txt"),
+    'test': req_file("requirements_test.txt")
 }
 
 extras_require['all'] = sum([extras_require.get(key) for key in ['db', 'dev', 'doc', 'extra', 'test']], list())
