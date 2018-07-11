@@ -87,6 +87,7 @@ To release a new version, please update the changelog as followed:
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
 
 ### Deprecated
+  - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
 
 ### Removed
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
