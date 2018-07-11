@@ -72,15 +72,17 @@ To release a new version, please update the changelog as followed:
 - API:
   - `tl.model.vgg19` added (PR #698)
 - Documentation:
-  - Add binary, ternary and dorefa links (PR #711) 
+  - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
 - Layer:
   - Release SwitchNormLayer (PR #737)
+- Setup:
+  - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, issue https://github.com/tensorlayer/tensorlayer/issues/732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
-  
+
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
 
@@ -96,8 +98,8 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
-- tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10
-- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10
+- tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10 (PR #739)
+- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
 
 ### Contributors
 - @OwenLiuzZ: #698
