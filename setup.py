@@ -55,7 +55,6 @@ def req_file(filename, folder="requirements"):
 # ======================= Defining the requirements var =======================
 
 
-
 install_requires = req_file("requirements.txt")
 
 extras_require = {
