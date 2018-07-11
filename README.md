@@ -65,14 +65,20 @@ University of Technology of Compiegne (UTC), and companies like Google, Microsof
 
 # Install
 
-TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. The simplest way to install TensorLayer is to use the Python Package Index (PyPI):
+TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
+The simplest way to install TensorLayer is to use the **Py**thon **P**ackage **I**ndex (PyPI):
 
 ```bash
 # for last stable version
-pip install tensorlayer
+pip install --upgrade tensorlayer
 
 # for latest release candidate
-pip install --pre tensorlayer
+pip install --upgrade --pre tensorlayer
+
+# if you want to install the additional dependencies, you can also run
+pip install --upgrade tensorlayer[all]              # all additional dependencies
+pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
+pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
 
 Alternatively, you can install the development version by directly pulling from github:
