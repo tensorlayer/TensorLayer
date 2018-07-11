@@ -39,6 +39,12 @@ requirements:
     # Requirements for the development
     - requirements/requirements_tf_gpu.txt
 
+    # Not necessary, but recommended libraries
+    - requirements/requirements_extra.txt
+
+    # Requirements for contrib loggers
+    - requirements_contrib_logger.txt
+
     # Requirements for the db
     - requirements/requirements_db.txt
 
@@ -47,9 +53,6 @@ requirements:
 
     # Requirements for building docs
     - requirements/requirements_doc.txt
-
-    # Not necessary, but recommended libraries
-    - requirements/requirements_extra.txt
 
     # Requirements for running unittests
     - requirements/requirements_test.txt
