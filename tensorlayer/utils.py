@@ -23,7 +23,7 @@ import tensorflow as tf
 
 import tensorlayer as tl
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 from tensorlayer import iterate
 
 __all__ = [

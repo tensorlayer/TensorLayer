@@ -7,7 +7,7 @@ import imageio
 
 import numpy as np
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 from tensorlayer import prepro
 from tensorlayer.lazy_imports import LazyImport
 

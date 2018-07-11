@@ -17,7 +17,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 from tensorlayer.lazy_imports import LazyImport
 
 nltk = LazyImport("nltk")

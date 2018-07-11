@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 __all__ = [
     'cross_entropy',

@@ -36,7 +36,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from . import iterate
     from . import layers
     from . import lazy_imports
-    from . import tl_logging as logging
+    from . import logging
     from . import models
     from . import nlp
     from . import optimizers

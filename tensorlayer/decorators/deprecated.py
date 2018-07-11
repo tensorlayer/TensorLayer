@@ -9,7 +9,7 @@ from tensorflow.python.util import decorator_utils
 from tensorflow.python.util.deprecation import _call_location
 from tensorflow.python.util.deprecation import _validate_deprecation_args
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 import wrapt
 
