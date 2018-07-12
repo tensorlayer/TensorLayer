@@ -389,7 +389,7 @@ In addition, if you want to update the parameters of previous 2 layers at the sa
 ..                        Basic Layers
 .. -----------------------------------------------------------
 
-Basic layer
+Basic Layer
 -----------
 
 .. autoclass:: Layer
@@ -413,11 +413,11 @@ Word2Vec Embedding Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: Word2vecEmbeddingInputlayer
 
-Embedding Input layer
+Embedding Input Layer
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: EmbeddingInputlayer
 
-Average Embedding Input layer
+Average Embedding Input Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: AverageEmbeddingInputlayer
 
@@ -604,8 +604,8 @@ TernaryConv2d
 ..                        Dense Layers
 .. -----------------------------------------------------------
 
-Dense layer
-------------
+Dense Layers
+-------------
 
 Binary Dense Layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -742,7 +742,7 @@ Noise Layer
 ..                  Normalization Layers
 .. -----------------------------------------------------------
 
-Normalization layer
+Normalization Layers
 --------------------
 
 For local response normalization as it does not have any weights and arguments,
@@ -917,7 +917,7 @@ Bidirectional layer
 .. autoclass:: BiRNNLayer
 
 
-Recurrent Convolutional layer
+Recurrent Convolution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Conv RNN Cell
@@ -959,14 +959,14 @@ Get Mask
 .. autofunction:: target_mask_op
 
 
-Dynamic RNN layer
+Dynamic RNN Layer
 ^^^^^^^^^^^^^^^^^^^^^^
 
-RNN layer
+RNN Layer
 """"""""""""""""""""""""""
 .. autoclass:: DynamicRNNLayer
 
-Bidirectional layer
+Bidirectional Layer
 """""""""""""""""""""""""""""""""
 .. autoclass:: BiDynamicRNNLayer
 
@@ -983,18 +983,18 @@ Simple Seq2Seq
 ..                      Shape Layers
 .. -----------------------------------------------------------
 
-Shape layer
+Shape Layers
 ------------
 
-Flatten layer
+Flatten Layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: FlattenLayer
 
-Reshape layer
+Reshape Layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: ReshapeLayer
 
-Transpose layer
+Transpose Layer
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: TransposeLayer
 
@@ -1021,14 +1021,14 @@ Batch 2D Affine Transformation function
 ..                      Stack Layers
 .. -----------------------------------------------------------
 
-Stack layer
+Stack Layer
 -------------
 
-Stack layer
+Stack Layer
 ^^^^^^^^^^^^^^
 .. autoclass:: StackLayer
 
-Unstack layer
+Unstack Layer
 ^^^^^^^^^^^^^^^
 .. autoclass:: UnStackLayer
 
