@@ -42,14 +42,14 @@ class TensorDB(object):
 
     Attributes
     ------------
-    db : ``pymongo.MongoClient[db_name]``, xxxxxx
-    datafs : ``gridfs.GridFS(self.db, collection="datafs")``, xxxxxxxxxx
-    modelfs : ``gridfs.GridFS(self.db, collection="modelfs")``,
-    paramsfs : ``gridfs.GridFS(self.db, collection="paramsfs")``,
-    db.Params : Collection for
-    db.TrainLog : Collection for
-    db.ValidLog : Collection for
-    db.TestLog : Collection for
+    db : ``pymongo.MongoClient[db_name]``, database system.
+    datafs : ``gridfs.GridFS(self.db, collection="datafs")``, file system for datasets.
+    modelfs : ``gridfs.GridFS(self.db, collection="modelfs")``, file system for models.
+    paramsfs : ``gridfs.GridFS(self.db, collection="paramsfs")``, file system for model parameters.
+    db.Params : Collection for parameters.
+    db.TrainLog : Collection for training log.
+    db.ValidLog : Collection for validation log. 
+    db.TestLog : Collection for testing log.
     studyID : string, unique ID, if None random generate one.
 
     Notes
