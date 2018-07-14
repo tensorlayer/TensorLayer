@@ -15,8 +15,8 @@ ARG TL_VERSION
 RUN if [ -z "$TL_VERSION" ]; then \
         echo "Building a Nightly Release" \
         && apt-get update \
-        && apt-get install -y git python3-tk python-tk \
-        && if [ python -c "import sys; print(sys.version_info >= (3,))" = 'True' ]; then apt-get install -y python3-tk; else apt-get install -y python-tk; fi \
+        && apt-get install -y git \
+        && if [[ $TF_CONTAINER_VERSION = *"py3" ]]; then apt-get install -y python3-tk; else apt-get install -y python-tk; fi \
         && mkdir /tensorlayer_dist/ \
         && cd /tensorlayer_dist/ \
         && git clone https://github.com/tensorlayer/tensorlayer.git \
@@ -26,6 +26,6 @@ RUN if [ -z "$TL_VERSION" ]; then \
     else \
         echo "Building Tag Release:" "$TL_VERSION" \
         && apt-get update \
-        && if [ python -c "import sys; print(sys.version_info >= (3,))" = 'True' ]; then apt-get install -y python3-tk; else apt-get install -y python-tk; fi \
+        && if [[ $TF_CONTAINER_VERSION = *"py3" ]]; then apt-get install -y python3-tk; else apt-get install -y python-tk; fi \
         && pip install --upgrade tensorlayer[all]=="$TL_VERSION" ; \
     fi
