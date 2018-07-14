@@ -28,7 +28,7 @@ RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" && \
         && git clone https://github.com/tensorlayer/tensorlayer.git \
         && cd tensorlayer \
         && pip install --upgrade -e .[all] \
-        && apt autoremove -y \
+        && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         echo "Building Tag Release: $TL_VERSION" \
@@ -38,6 +38,6 @@ RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" && \
                 *)                           apt-get install -y python-tk ;; \
             esac \
         && pip install --upgrade tensorlayer[all]=="$TL_VERSION" \
-        && apt autoremove -y \
+        && apt-get autoremove -y \
         && rm -rf /var/lib/apt/lists/* ; \
     fi
