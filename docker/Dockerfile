@@ -14,30 +14,22 @@ LABEL version="1.0" maintainer="Jonathan DEKHTIAR <contact@jonathandekhtiar.eu>"
 ARG TL_VERSION
 ARG TF_CONTAINER_VERSION
 
-RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" && \
-    if [ -z "$TL_VERSION" ]; then \
+RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" \
+    && apt-get update \
+    && case $TF_CONTAINER_VERSION in \
+            latest-py3 | latest-gpu-py3) apt-get install -y python3-tk  ;; \
+            *)                           apt-get install -y python-tk ;; \
+        esac \
+    && if [ -z "$TL_VERSION" ]; then \
         echo "Building a Nightly Release" \
-        && apt-get update \
         && apt-get install -y git \
-        && case $TF_CONTAINER_VERSION in \
-                latest-py3 | latest-gpu-py3) apt-get install -y python3-tk  ;; \
-                *)                           apt-get install -y python-tk ;; \
-            esac \
-        && mkdir /tensorlayer_dist/ \
-        && cd /tensorlayer_dist/ \
+        && mkdir /dist/ && cd /dist/ \
         && git clone https://github.com/tensorlayer/tensorlayer.git \
         && cd tensorlayer \
-        && pip install --upgrade -e .[all] \
-        && apt-get autoremove -y \
-        && rm -rf /var/lib/apt/lists/* ; \
+        && pip install --disable-pip-version-check --no-cache-dir --upgrade -e .[all]; \
     else \
         echo "Building Tag Release: $TL_VERSION" \
-        && apt-get update \
-        && case $TF_CONTAINER_VERSION in \
-                latest-py3 | latest-gpu-py3) apt-get install -y python3-tk  ;; \
-                *)                           apt-get install -y python-tk ;; \
-            esac \
-        && pip install --upgrade tensorlayer[all]=="$TL_VERSION" \
-        && apt-get autoremove -y \
-        && rm -rf /var/lib/apt/lists/* ; \
-    fi
+        && pip install  --disable-pip-version-check --no-cache-dir --upgrade tensorlayer[all]=="$TL_VERSION"; \
+    fi \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* ; \
