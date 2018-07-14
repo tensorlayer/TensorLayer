@@ -20,8 +20,8 @@ RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" && \
         && apt-get update \
         && apt-get install -y git \
         && case $TF_CONTAINER_VERSION in \
-                *"py3") apt-get install -y python3-tk  ;; \
-                *)       apt-get install -y python-tk ;; \
+                latest-py3 | latest-gpu-py3) apt-get install -y python3-tk  ;; \
+                *)                           apt-get install -y python-tk ;; \
             esac \
         && mkdir /tensorlayer_dist/ \
         && cd /tensorlayer_dist/ \
@@ -34,8 +34,8 @@ RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" && \
         echo "Building Tag Release: $TL_VERSION" \
         && apt-get update \
         && case $TF_CONTAINER_VERSION in \
-                latest-py3 | latest-gpu-py3) && apt-get install -y python3-tk  ;; \
-                *)                           && apt-get install -y python-tk ;; \
+                latest-py3 | latest-gpu-py3) apt-get install -y python3-tk  ;; \
+                *)                           apt-get install -y python-tk ;; \
             esac \
         && pip install --upgrade tensorlayer[all]=="$TL_VERSION" \
         && apt autoremove -y \
