@@ -85,6 +85,7 @@ To release a new version, please update the changelog as followed:
 
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
+  - Dockerfiles merged and refactored into one file (PR #747)
 
 ### Deprecated
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
@@ -95,6 +96,7 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
+- Dockerfiles import error fixed - issue #733 (PR #747)
 
 ### Security
 
@@ -104,6 +106,7 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @OwenLiuzZ: #698
+- @DEKHTIARJonathan: #747
 
 ## [1.9.0] - 2018-06-16
 
