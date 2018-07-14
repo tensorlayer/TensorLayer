@@ -32,4 +32,4 @@ RUN echo "Container Tag: ${TF_CONTAINER_VERSION}" \
         && pip install  --disable-pip-version-check --no-cache-dir --upgrade tensorlayer[all]=="$TL_VERSION"; \
     fi \
     && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* ; \
+    && rm -rf /var/lib/apt/lists/*
