@@ -22,10 +22,13 @@ RUN if [ -z "$TL_VERSION" ]; then \
         && git clone https://github.com/tensorlayer/tensorlayer.git \
         && cd tensorlayer \
         && pip install --upgrade -e .[all] \
+        && apt autoremove -y \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         echo "Building Tag Release:" "$TL_VERSION" \
         && apt-get update \
         && if [[ $TF_CONTAINER_VERSION = *"py3" ]]; then apt-get install -y python3-tk; else apt-get install -y python-tk; fi \
-        && pip install --upgrade tensorlayer[all]=="$TL_VERSION" ; \
+        && pip install --upgrade tensorlayer[all]=="$TL_VERSION" \
+        && apt autoremove -y \
+        && rm -rf /var/lib/apt/lists/* ; \
     fi
