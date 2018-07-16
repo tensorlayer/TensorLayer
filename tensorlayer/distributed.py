@@ -51,26 +51,28 @@ class Trainer(object):
     num_epochs : int
         The number of training epochs.
     shuffle_data : boolean
-        If the training data need to be shuffled or not.
+        If the training data need to be shuffled or not. Default is False.
     shuffle_seed : int
-        The random seed that control the data shuffling process. Internally, the trainer is using
-        the tf.data.shuffle() to shuffle data. Note that it is preferable to
+        The random seed that control the data shuffling process. Default is 0.
+        Internally, the trainer is using the tf.data.shuffle() to shuffle data. Note that it is preferable to
         let all the trainer use the same random seed
         in order to guarantee an identical data shuffling order across different GPUs.
-    checkpoint_dir : str
-        The path to the TensorFlow model checkpoint. Note that only one trainer master would
-        checkpoints its model.
+    checkpoint_dir : None or str
+        The path to the TensorFlow model checkpoint. Note that only one trainer master would checkpoints its model.
+        If None, checkpoint is disabled.
     log_step_size : int
         The trainer logs training information every N mini-batches (i.e., step size).
-    validation_dataset: class TensorFlow ``DataSet`` or None
+    validation_dataset: None or class TensorFlow ``DataSet``
         The optional validation dataset that zips samples and labels. Note that
         only the trainer master needs to the validation often.
-    build_validation_func: function
+    build_validation_func: None or function
         The function that builds the validation operator. It returns the validation neural network (which
         share the weights of the training network) and a custom number of validation metrics.
-    log_store_addr: str
+    log_store_addr: None or str
         The string that combines the IP and port of the log store (performed by TensorDB).
         The IP and port is separated by colon, i.e., ':'. Sample address is '196.168.0.1:27071'
+        If None, the logger will print the log in a default way,
+        and you can configure it using tl.logging and tf.logging.
 
     Attributes
     ----------
