@@ -68,6 +68,9 @@ class Trainer(object):
     build_validation_func: function
         The function that builds the validation operator. It returns the validation neural network (which
         share the weights of the training network) and a custom number of validation metrics.
+    log_store_addr: str
+        The string that combines the IP and port of the log store (performed by TensorDB).
+        The IP and port is separated by colon, i.e., ':'. Sample address is '196.168.0.1:27071'
 
     Attributes
     ----------
@@ -90,8 +93,12 @@ class Trainer(object):
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
             shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, log_step_size=1,
-            validation_dataset=None, build_validation_func=None
+            validation_dataset=None, build_validation_func=None, log_store_addr=None
     ):
+        # Setup the log persistence
+        if not log_store_addr:
+            pass # TODO: connecting the logger output to the TensorDB
+
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
