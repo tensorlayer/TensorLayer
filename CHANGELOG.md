@@ -99,6 +99,7 @@ To release a new version, please update the changelog as followed:
   - `AMSGrad` added on Optimizers page added (PR #636)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
 - Layer:
+  - Release SwitchNormLayer (PR #737)
   - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
   - AtrousDeConv2dLayer added (PR #662)
   - Fix bugs of using `tf.layers` in CNN (PR #686)
