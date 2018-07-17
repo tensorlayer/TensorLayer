@@ -144,6 +144,20 @@ class Layer_Core_Test(unittest.TestCase):
         cls.net8_params = net8.all_params
         cls.net8_n_params = net8.count_params()
 
+        # ============== QuanDenseLayer ==============
+
+        x9 = tf.placeholder(tf.float32, shape=(None, 30))
+        net9 = tl.layers.InputLayer(x9, name='input')
+        net9 = tl.layers.QuanDenseLayer(net9, n_units=10, act=tf.nn.relu, name='quandense')
+
+        net9.print_layers()
+        net9.print_params(False)
+
+        cls.net9_shape = net9.outputs.get_shape().as_list()
+        cls.net9_layers = net9.all_layers
+        cls.net9_params = net9.all_params
+        cls.net9_n_params = net9.count_params()
+
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
@@ -195,6 +209,12 @@ class Layer_Core_Test(unittest.TestCase):
         self.assertEqual(len(self.net8_layers), 3)
         self.assertEqual(len(self.net8_params), 4)
         self.assertEqual(self.net8_n_params, 88600)
+
+    def test_net9(self):
+        self.assertEqual(self.net9_shape[-1], 10)
+        self.assertEqual(len(self.net9_layers), 2)
+        self.assertEqual(len(self.net9_params), 2)
+        self.assertEqual(self.net9_n_params, 310)
 
 
 if __name__ == '__main__':
