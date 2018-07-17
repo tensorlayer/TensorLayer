@@ -31,12 +31,10 @@ import tensorflow as tf
 from tensorlayer import tl_logging as logging
 
 from tensorlayer.layers import Conv2d
-from tensorlayer.layers import Conv2dLayer
 from tensorlayer.layers import DenseLayer
 from tensorlayer.layers import FlattenLayer
 from tensorlayer.layers import InputLayer
 from tensorlayer.layers import MaxPool2d
-from tensorlayer.layers import PoolLayer
 
 from tensorlayer.files import maybe_download_and_extract
 from tensorlayer.files import assign_params
@@ -50,182 +48,15 @@ class VGG19Base(object):
     """The VGG19 model."""
 
     @staticmethod
-    def conv_layers(net_in):
-        with tf.name_scope('preprocess'):
-            # Notice that we include a preprocessing layer that takes the RGB image
-            # with pixels values in the range of 0-255 and subtracts the mean image
-            # values (calculated over the entire ImageNet training set).
-            mean = tf.constant([103.939, 116.779, 123.68], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
-            net_in.outputs = net_in.outputs - mean
-
-        # conv1
-        net = Conv2dLayer(
-            net_in,
-            act=tf.nn.relu,
-            shape=[3, 3, 3, 64],  # 64 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv1_1'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 64, 64],  # 64 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv1_2'
-        )
-        net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool1'
-        )
-
-        # conv2
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 64, 128],  # 128 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv2_1'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 128, 128],  # 128 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv2_2'
-        )
-        net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool2'
-        )
-
-        # conv3
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 128, 256],  # 256 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv3_1'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv3_2'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv3_3'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 256, 256],  # 256 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv3_4'
-        )
-        net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool3'
-        )
-
-        # conv4
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 256, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv4_1'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv4_2'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv4_3'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv4_4'
-        )
-        net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool4'
-        )
-
-        # conv5
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv5_1'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv5_2'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv5_3'
-        )
-        net = Conv2dLayer(
-            net,
-            act=tf.nn.relu,
-            shape=[3, 3, 512, 512],  # 512 features for each 3x3 patch
-            strides=[1, 1, 1, 1],
-            padding='SAME',
-            name='conv5_4'
-        )
-        net = PoolLayer(
-            net, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME', pool=tf.nn.max_pool, name='pool5'
-        )
-        return net
-
-    @staticmethod
-    def fc_layers(net):
-        net = FlattenLayer(net, name='flatten')
-        net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc1_relu')
-        net = DenseLayer(net, n_units=4096, act=tf.nn.relu, name='fc2_relu')
-        net = DenseLayer(net, n_units=1000, act=tf.identity, name='fc3_relu')
-        return net
-
-    @staticmethod
     def vgg19_simple_api(net_in, end_with):
         with tf.name_scope('preprocess'):
             # Notice that we include a preprocessing layer that takes the RGB image
             # with pixels values in the range of 0-255 and subtracts the mean image
             # values (calculated over the entire ImageNet training set).
+
+            # Rescale the input tensor with pixels values in the range of 0-255
+            net_in.outputs = net_in.outputs * 255.0
+
             mean = tf.constant([103.939, 116.779, 123.68], dtype=tf.float32, shape=[1, 1, 1, 3], name='img_mean')
             net_in.outputs = net_in.outputs - mean
 
@@ -344,7 +175,7 @@ class VGG19(VGG19Base):
     Parameters
     ------------
     x : placeholder
-        shape [None, 224, 224, 3], value range [0, 255].
+        shape [None, 224, 224, 3], value range [0, 1].
     end_with : str
         The end point of the model. Default ``fc3_relu`` i.e. the whole model.
     reuse : boolean

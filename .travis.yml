@@ -20,7 +20,7 @@ env:
   # Backward Compatibility in insured for release less than 1 year old.
   # https://pypi.org/project/tensorflow/#history
   matrix:
-    - _TF_VERSION=1.9.0rc1 # Remove on Apr 28, 2019
+    - _TF_VERSION=1.9.0rc2 # Remove on Apr 28, 2019
     - _TF_VERSION=1.8.0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.7.1 # Remove on May 08, 2019
     - _TF_VERSION=1.7.0 # Remove on Mar 29, 2019
@@ -58,11 +58,7 @@ install:
   - |
     if [[ -v _DOC_AND_YAPF_TEST ]]; then
         pip install tensorflow
-        mkdir -p /root/local
-        cd /root/local
-        wget https://github.com/lgarithm/openmpi-release/raw/master/releases/openmpi-bin-3.1.0.tar.bz2
-        tar -xf openmpi-bin-3.1.0.tar.bz2
-        PATH=/root/local/openmpi/bin:$PATH pip install horovod
+        ./scripts/install-horovod-for-doc-test.sh
     else
         pip install tensorflow==$_TF_VERSION;
     fi
