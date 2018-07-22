@@ -6,6 +6,7 @@ python:
     version: 3.5
     pip_install: true
     extra_requirements:
+        - contrib_loggers
         - db
         - dev
         - doc

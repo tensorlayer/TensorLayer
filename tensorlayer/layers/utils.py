@@ -5,7 +5,7 @@ import tensorflow as tf
 
 from tensorflow.python.ops.rnn_cell import LSTMStateTuple
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
