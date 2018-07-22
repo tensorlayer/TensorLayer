@@ -4,6 +4,8 @@
 import os
 import unittest
 
+import time
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
@@ -54,6 +56,8 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
+                    time.sleep(1)
+
             train_dogs_vs_cats()
 
     def test_monitor_variant(self):
@@ -72,6 +76,8 @@ class TL_Logger_Test(CustomTestCase):
 
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
+
+                    time.sleep(1)
 
             train_dogs_vs_cats()
 
@@ -96,6 +102,8 @@ class TL_Logger_Test(CustomTestCase):
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
 
+                    time.sleep(1)
+
                 # Cleanup and mark that the experiment successfully completed
                 exp.end()
 
@@ -119,6 +127,8 @@ class TL_Logger_Test(CustomTestCase):
 
                     # Record a numerical performance metric
                     exp.metric(name="accuracy", value=accuracy)
+
+                    time.sleep(1)
 
                 # Cleanup and mark that the experiment successfully completed
                 exp.end()

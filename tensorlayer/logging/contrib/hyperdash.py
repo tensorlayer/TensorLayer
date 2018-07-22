@@ -3,8 +3,9 @@
 
 from __future__ import absolute_import
 
-import hyperdash as hd
 from tensorlayer.logging.tl_logging import debug
+
+import hyperdash as hd
 
 __all__ = ["HyperDashHandler", "monitor", "Experiment", "IPythonMagicsWrapper"]
 
