@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import
 
-from tensorlayer.logging.tl_logging import debug
+import tensorlayer as tl
 
 import hyperdash as hd
 
@@ -31,7 +31,7 @@ class HyperDashHandler(object):
                 "You should first call `HyperDashHandler.set_apikey('my_api_key')` in order to use `hyperdash`"
             )
 
-        debug("Hyperdash API Key: %s" % cls.apikey)
+        tl.logging.debug("Hyperdash API Key: %s" % cls.apikey)
 
         return cls.apikey
 

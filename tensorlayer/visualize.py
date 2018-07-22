@@ -7,8 +7,7 @@ import imageio
 
 import numpy as np
 
-from tensorlayer import logging
-from tensorlayer import prepro
+import tensorlayer as tl
 
 import cv2
 
@@ -74,11 +73,11 @@ def read_images(img_list, path='', n_threads=10, printable=True):
     imgs = []
     for idx in range(0, len(img_list), n_threads):
         b_imgs_list = img_list[idx:idx + n_threads]
-        b_imgs = prepro.threading_data(b_imgs_list, fn=read_image, path=path)
-        # logging.info(b_imgs.shape)
+        b_imgs = tl.prepro.threading_data(b_imgs_list, fn=read_image, path=path)
+        # tl.logging.info(b_imgs.shape)
         imgs.extend(b_imgs)
         if printable:
-            logging.info('read %d from %s' % (len(imgs), path))
+            tl.logging.info('read %d from %s' % (len(imgs), path))
     return imgs
 
 
@@ -201,12 +200,12 @@ def draw_boxes_and_labels_to_image(
 
     for i, _v in enumerate(coords):
         if is_center:
-            x, y, x2, y2 = prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
+            x, y, x2, y2 = tl.prepro.obj_box_coord_centroid_to_upleft_butright(coords[i])
         else:
             x, y, x2, y2 = coords[i]
 
         if is_rescale:  # scale back to pixel unit if the coords are the portion of width and high
-            x, y, x2, y2 = prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
+            x, y, x2, y2 = tl.prepro.obj_box_coord_scale_to_pixelunit([x, y, x2, y2], (imh, imw))
 
         cv2.rectangle(
             image,
@@ -230,7 +229,7 @@ def draw_boxes_and_labels_to_image(
         # cv2.imwrite('_my.png', image)
         save_image(image, save_name)
     # if len(coords) == 0:
-    #     logging.info("draw_boxes_and_labels_to_image: no bboxes exist, cannot draw !")
+    #     tl.logging.info("draw_boxes_and_labels_to_image: no bboxes exist, cannot draw !")
     return image
 
 
@@ -423,7 +422,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
 
     """
     import matplotlib.pyplot as plt
-    # logging.info(CNN.shape)    # (5, 5, 3, 64)
+    # tl.logging.info(CNN.shape)    # (5, 5, 3, 64)
     # exit()
     n_mask = CNN.shape[3]
     n_row = CNN.shape[0]
@@ -439,7 +438,7 @@ def CNN2d(CNN=None, second=10, saveable=True, name='cnn', fig_idx=3119362):
             if count > n_mask:
                 break
             fig.add_subplot(col, row, count)
-            # logging.info(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
+            # tl.logging.info(CNN[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # exit()
             # plt.imshow(
             #         np.reshape(CNN[count-1,:,:,:], (n_row, n_col)),
@@ -487,7 +486,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
 
     """
     import matplotlib.pyplot as plt
-    # logging.info(images.shape)    # (50000, 32, 32, 3)
+    # tl.logging.info(images.shape)    # (50000, 32, 32, 3)
     # exit()
     if dtype:
         images = np.asarray(images, dtype=dtype)
@@ -505,7 +504,7 @@ def images2d(images=None, second=10, saveable=True, name='images', dtype=None, f
             if count > n_mask:
                 break
             fig.add_subplot(col, row, count)
-            # logging.info(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
+            # tl.logging.info(images[:,:,:,count-1].shape, n_row, n_col)   # (5, 1, 32) 5 5
             # plt.imshow(
             #         np.reshape(images[count-1,:,:,:], (n_row, n_col)),
             #         cmap='gray', interpolation="nearest")     # theano
@@ -588,8 +587,11 @@ def tsne_embedding(embeddings, reverse_dictionary, plot_only=500, second=5, save
         low_dim_embs = tsne.fit_transform(embeddings[:plot_only, :])
         labels = [reverse_dictionary[i] for i in xrange(plot_only)]
         plot_with_labels(low_dim_embs, labels, second=second, saveable=saveable, name=name, fig_idx=fig_idx)
+
     except ImportError:
-        logging.info("Please install sklearn and matplotlib to visualize embeddings.")
+        _err = "Please install sklearn and matplotlib to visualize embeddings."
+        tl.logging.error(_err)
+        raise ImportError(_err)
 
 
 def draw_weights(W=None, second=10, saveable=True, shape=None, name='mnist', fig_idx=2396512):
