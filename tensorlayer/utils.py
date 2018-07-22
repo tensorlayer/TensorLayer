@@ -20,7 +20,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 
 import tensorflow as tf
-
 import tensorlayer as tl
 
 from tensorlayer import logging

@@ -71,6 +71,7 @@ To release a new version, please update the changelog as followed:
 ### Added
 - API:
   - `tl.model.vgg19` added (PR #698)
+  - `tl.logging.contrib.hyperdash` added (PR #739)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -80,12 +81,13 @@ To release a new version, please update the changelog as followed:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
-  - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, issue https://github.com/tensorlayer/tensorlayer/issues/732)
+  - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
 
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
+  - LazyImports move to the most **top level** imports as possible (PR #739)
 
 ### Deprecated
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
@@ -105,8 +107,10 @@ To release a new version, please update the changelog as followed:
 - tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
 
 ### Contributors
-- @OwenLiuzZ: #698
-- @DEKHTIARJonathan: #747
+- @DEKHTIARJonathan: #739 #747
+- @lgarithm: #705
+- @OwenLiuzZ: #698 #710
+- @zsdonghao: #711 #712 #734 #736 #737
 
 ## [1.9.0] - 2018-06-16
 

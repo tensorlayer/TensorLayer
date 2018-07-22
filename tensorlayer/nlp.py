@@ -10,7 +10,8 @@ import subprocess
 import tempfile
 import warnings
 
-from six.moves import urllib, xrange
+from six.moves import urllib
+from six.moves import xrange
 
 import numpy as np
 
@@ -18,9 +19,8 @@ import tensorflow as tf
 from tensorflow.python.platform import gfile
 
 from tensorlayer import logging
-from tensorlayer.lazy_imports import LazyImport
 
-nltk = LazyImport("nltk")
+import nltk
 
 __all__ = [
     'generate_skip_gram_batch',

@@ -27,10 +27,9 @@ from skimage.morphology import erosion
 from skimage.morphology import binary_dilation
 from skimage.morphology import binary_erosion
 
-from tensorlayer.lazy_imports import LazyImport
 from tensorlayer import logging
 
-PIL = LazyImport("PIL")
+import PIL
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html

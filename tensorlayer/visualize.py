@@ -9,9 +9,8 @@ import numpy as np
 
 from tensorlayer import logging
 from tensorlayer import prepro
-from tensorlayer.lazy_imports import LazyImport
 
-cv2 = LazyImport("cv2")
+import cv2
 
 # Uncomment the following line if you got: _tkinter.TclError: no display name and no $DISPLAY environment variable
 # import matplotlib

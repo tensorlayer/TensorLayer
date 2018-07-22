@@ -25,12 +25,13 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
+    from tensorlayer.lazy_imports import LazyImport
+
     from tensorlayer import activation
     from tensorlayer import array_ops
     from tensorlayer import cost
     from tensorlayer import db
     from tensorlayer import decorators
-    from tensorlayer import distributed
     from tensorlayer import files
     from tensorlayer import initializers
     from tensorlayer import iterate
@@ -38,12 +39,15 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import lazy_imports
     from tensorlayer import logging
     from tensorlayer import models
-    from tensorlayer import nlp
     from tensorlayer import optimizers
-    from tensorlayer import prepro
     from tensorlayer import rein
     from tensorlayer import utils
-    from tensorlayer import visualize
+
+    # Lazy Imports
+    distributed = LazyImport("tensorlayer.distributed")
+    nlp = LazyImport("tensorlayer.nlp")
+    prepro = LazyImport("tensorlayer.prepro")
+    visualize = LazyImport("tensorlayer.visualize")
 
     # alias
     act = activation
