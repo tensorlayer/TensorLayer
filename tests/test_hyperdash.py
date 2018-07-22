@@ -42,7 +42,7 @@ class TL_Logger_Test(CustomTestCase):
             hd.HyperDashHandler.set_apikey(self.apikey)
 
             @hd.monitor("TRAVIS 1 - dogs vs. cats")
-            def train_dogs_vs_cats(exp):
+            def train_dogs_vs_cats(exp=None):
 
                 # Record the value of hyperparameter gamma for this experiment
                 lr = exp.param("learning rate", 0.005)
@@ -61,7 +61,7 @@ class TL_Logger_Test(CustomTestCase):
         with self.assertNotRaises(Exception):
 
             @hd.monitor("TRAVIS 2 - dogs vs. cats", api_key=self.apikey)
-            def train_dogs_vs_cats(exp):
+            def train_dogs_vs_cats(exp=None):
 
                 # Record the value of hyperparameter gamma for this experiment
                 lr = exp.param("learning rate", 0.005)
