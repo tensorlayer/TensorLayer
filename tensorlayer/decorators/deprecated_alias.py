@@ -4,7 +4,7 @@
 import functools
 import warnings
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 
 def deprecated_alias(end_support_version, **aliases):

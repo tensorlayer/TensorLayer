@@ -8,7 +8,7 @@ import os
 
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.layers import Layer
 from tensorlayer.layers import Conv2d
