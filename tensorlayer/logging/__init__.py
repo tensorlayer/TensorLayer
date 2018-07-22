@@ -9,9 +9,9 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-from tensorlayer.logging.tl_logging import *
+from .tl_logging import *
 
-from tensorlayer.logging import contrib
+from .contrib import *
 
 __all__ = [
     # additional modules
