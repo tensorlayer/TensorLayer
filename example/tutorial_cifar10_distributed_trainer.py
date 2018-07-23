@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 1. Before you start, run this script: https://github.com/tensorlayer/tensorlayer/blob/distributed/scripts/download_and_install_openmpi3_linux.sh
 2. Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/local/openmpi/bin
@@ -28,6 +27,7 @@ def make_dataset(images, labels):
     lab = tf.data.Dataset.from_tensor_slices(np.array(labels, dtype=np.int64))
     return tf.data.Dataset.zip((img, lab))
 
+
 def data_aug_train(img, ann):
     # 1. Randomly crop a [height, width] section of the image.
     img = tf.random_crop(img, [24, 24, 3])
@@ -41,12 +41,14 @@ def data_aug_train(img, ann):
     img = tf.image.per_image_standardization(img)
     return img, ann
 
+
 def data_aug_valid(img, ann):
     # 1. Crop the central [height, width] of the image.
     img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
     # 2. Subtract off the mean and divide by the variance of the pixels.
     img = tf.image.per_image_standardization(img)
     return img, ann
+
 
 def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):

@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -69,6 +69,8 @@ class DenseLayer(Layer):
             b_init_args=None,
             name='dense',
     ):
+
+        self.layer_params = self._get_init_args()
 
         super(DenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)

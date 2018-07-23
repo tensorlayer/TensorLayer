@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
+import inspect
 import six
 
 from abc import ABCMeta, abstractmethod
@@ -10,7 +12,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.utils import list_remove_repeat
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import protected_method
@@ -275,6 +277,32 @@ class Layer(object):
 
     def __len__(self):
         return len(self.all_layers)
+
+    @protected_method
+    def _get_init_args(self, skip=2):
+
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            if values[arg] is not None and arg not in ['self', 'prev_layer']:
+
+                val = values[arg]
+
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+
+                else:
+                    params[arg] = val
+
+        return params
 
     @protected_method
     def _add_layers(self, layers):

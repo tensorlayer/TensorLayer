@@ -9,7 +9,7 @@ from tensorlayer.layers.core import LayersConfig
 from tensorlayer.activation import leaky_relu6
 from tensorlayer.activation import leaky_twice_relu6
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 

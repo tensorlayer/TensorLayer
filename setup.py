@@ -59,18 +59,29 @@ def req_file(filename, folder="requirements"):
 install_requires = req_file("requirements.txt")
 
 extras_require = {
+    # User packages
     'tf_cpu': req_file("requirements_tf_cpu.txt"),
     'tf_gpu': req_file("requirements_tf_gpu.txt"),
-    'db': req_file("requirements_db.txt"),
+    'extra': req_file("requirements_extra.txt"),
+
+    # Contrib Packages
+    'contrib_loggers': req_file("requirements_contrib_loggers.txt"),
+
+    # Dev Packages
+    'test': req_file("requirements_test.txt"),
     'dev': req_file("requirements_dev.txt"),
     'doc': req_file("requirements_doc.txt"),
-    'extra': req_file("requirements_extra.txt"),
-    'test': req_file("requirements_test.txt")
+    'db': req_file("requirements_db.txt"),
 }
 
-extras_require['all'] = sum([extras_require.get(key) for key in ['db', 'dev', 'doc', 'extra', 'test']], list())
+extras_require['all'] = sum([extras_require.get(key) for key in ['extra', 'contrib_loggers']], list())
+
 extras_require['all_cpu'] = sum([extras_require.get(key) for key in ['all', 'tf_cpu']], list())
-extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['db', 'tf_gpu']], list())
+extras_require['all_gpu'] = sum([extras_require.get(key) for key in ['all', 'tf_gpu']], list())
+
+extras_require['all_dev'] = sum([extras_require.get(key) for key in ['all', 'db', 'dev', 'doc', 'test']], list())
+extras_require['all_cpu_dev'] = sum([extras_require.get(key) for key in ['all_dev', 'tf_cpu']], list())
+extras_require['all_gpu_dev'] = sum([extras_require.get(key) for key in ['all_dev', 'tf_gpu']], list())
 
 
 cmdclass = dict()

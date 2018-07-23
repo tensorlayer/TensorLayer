@@ -94,12 +94,12 @@ class Trainer(object):
 
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, log_step_size=1,
-            validation_dataset=None, build_validation_func=None, log_store_addr=None
+            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, log_step_size=1, validation_dataset=None,
+            build_validation_func=None, log_store_addr=None
     ):
         # Setup the log persistence
         if not log_store_addr:
-            pass # TODO: connecting the logger output to the TensorDB
+            pass  # TODO: connecting the logger output to the TensorDB
 
         # Initialize Horovod.
         hvd.init()

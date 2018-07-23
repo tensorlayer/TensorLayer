@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 __all__ = [
     'InputLayer',
