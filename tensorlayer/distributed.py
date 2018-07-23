@@ -77,6 +77,10 @@ class Trainer(object):
         Linearly scale the learning rate by the number of GPUs. Default is True.
         This `linear scaling rule` is generally effective and is highly recommended by the practioners.
         Check `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
+    max_iteration: int
+        The maximum iteration (i.e., mini-batch) to train.
+        The default is `math.inf`. You can set it to a small number to end the training earlier. This is
+        usually set for testing purpose. 
 
     Attributes
     ----------
@@ -99,7 +103,7 @@ class Trainer(object):
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
             shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
-            validation_dataset=None, build_validation_func=None
+            validation_dataset=None, build_validation_func=None, max_iteration=math.inf
     ):
         # Initialize Horovod.
         hvd.init()
@@ -148,7 +152,7 @@ class Trainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=math.inf // hvd.size()),
+            tf.train.StopAtStepHook(last_step=max_iteration // hvd.size()),
             tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
         ]
 
