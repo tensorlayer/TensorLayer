@@ -233,10 +233,23 @@ class TensorHub(object):
 
         Parameters
         ----------
+        dataset : any type
+            The dataset you want to store.
+        dataset_key : str
+            The name/key of dataset.
+        kwargs : other events
+            Other events, such as description, author and etc (optinal).
+
+        Examples
+        ----------
+        - Save dataset
+        >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
+        - Get dataset
+        >>> dataset = db.find_one_dataset('mnist')
 
         Returns
         ---------
-        boolean
+        boolean : Return True if save success, otherwise, return False.
         """
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
@@ -258,24 +271,29 @@ class TensorHub(object):
             return False
 
     def find_one_dataset(self, dataset_key=None, sort=None, **kwargs):
-        """ Find one dataset that match with the requirement from database.
+        """ Find one dataset from database that match with the requirement.
 
         Parameters
         ----------
-
-        sort
+        dataset_key : str
+            The name/key of dataset.
+        sort : XX
             see mongodb
+        kwargs : other events
+            Other events, such as description, author and etc (optinal).
 
         Examples
         ---------
+        - Save dataset
         >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
+        - Get dataset
         >>> dataset = db.find_one_dataset('mnist')
         >>> datasets = db.find_all_datasets('mnist')
 
         Returns
         --------
         dataset : the dataset or False
-            False if nothing found.
+            Return False if nothing found.
         """
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
@@ -305,16 +323,18 @@ class TensorHub(object):
             return False
 
     def find_all_datasets(self, dataset_key=None, **kwargs):
-        """ Find all datasets that match with the requirement from database.
+        """ Find all datasets from database that match with the requirement.
 
         Parameters
         ----------
-        dataset_key
+        dataset_key : str
+            The name/key of dataset.
+        kwargs : other events
+            Other events, such as description, author and etc (optinal).
 
         Returns
         --------
         params : the parameters, return False if nothing found.
-
         """
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
