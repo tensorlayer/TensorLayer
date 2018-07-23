@@ -72,6 +72,7 @@ To release a new version, please update the changelog as followed:
 - API:
   - `tl.model.vgg19` added (PR #698)
   - `tl.logging.contrib.hyperdash` added (PR #739)
+  - `tl.distributed.trainer` added (PR #700)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -83,6 +84,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
+  - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
 
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -108,9 +110,10 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 - @DEKHTIARJonathan: #739 #747
-- @lgarithm: #705
+- @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
-- @zsdonghao: #711 #712 #734 #736 #737
+- @zsdonghao: #711 #712 #734 #736 #737 #700
+- @luomai: #700
 
 ## [1.9.0] - 2018-06-16
 
