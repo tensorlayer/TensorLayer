@@ -70,6 +70,8 @@ class DenseLayer(Layer):
             name='dense',
     ):
 
+        self.layer_params = self._get_init_args()
+
         super(DenseLayer, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
