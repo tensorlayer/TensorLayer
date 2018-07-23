@@ -105,9 +105,11 @@ To release a new version, please update the changelog as followed:
 ### Dependencies Update
 - tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10 (PR #739)
 - tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
+- pymongo>=3.6,<3.7 => tensorflow-gpu>=3.7,<3.8 (PR #750)
+
 
 ### Contributors
-- @DEKHTIARJonathan: #739 #747
+- @DEKHTIARJonathan: #739 #747 #750
 - @lgarithm: #705
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737
