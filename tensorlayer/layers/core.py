@@ -114,7 +114,7 @@ class Layer(object):
 
         self.inputs = None
         self.outputs = None
-
+        self.graph = {}
         self.all_layers = list()
         self.all_params = list()
         self.all_drop = dict()
@@ -161,6 +161,11 @@ class Layer(object):
 
             self.inputs = prev_layer
 
+            self._add_graphs((self.inputs.name, #.split(':')[0],
+                {'shape': self.inputs.get_shape().as_list(),
+                'dtype': self.inputs.dtype.name, 'class': 'placeholder',
+                'prev_layer': None}))
+
         elif prev_layer is not None:
             # 4. tl.models
             self._add_layers(prev_layer.all_layers)
@@ -173,11 +178,15 @@ class Layer(object):
 
         ## TL Graph
         # print(act, name, args, kwargs)
-        self.graph = {self.name: {'class': self.__class__, 'prev_layer': prev_layer.name}}
-        if act:
-            self.graph[self.name].update({'act': act})
-        self.graph[self.name].update(kwargs)
-        self._add_graphs(self.graph)
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
+        if act: ## convert activation from function to string
+            try:
+                act = act.__name__
+            except:
+                pass
+            self.graph.update({'act': act})
+        self.graph.update(kwargs)
+        self._add_graphs((self.name, self.graph))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""

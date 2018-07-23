@@ -65,7 +65,7 @@ class TensorHub(object):
             self.experiment_key = experiment_key
 
         ## define file system (Buckets)
-        self.data_fs = gridfs.GridFS(self.db, collection="dataFilesystem")
+        self.dataset_fs = gridfs.GridFS(self.db, collection="datasetFilesystem")
         self.model_fs = gridfs.GridFS(self.db, collection="modelfs")
         # self.params_fs = gridfs.GridFS(self.db, collection="parametersFilesystem")
         # self.architecture_fs = gridfs.GridFS(self.db, collection="architectureFilesystem")
@@ -93,12 +93,25 @@ class TensorHub(object):
     @staticmethod
     def _serialization(ps):
         """ Seralize data. """
-        return pickle.dumps(ps, protocol=2)
+        # return pickle.dumps(ps, protocol=2)
+        with open('_temp.pkl', 'wb') as file:
+            return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def _deserialization(ps):
         """ Deseralize data. """
         return pickle.loads(ps)
+
+    def _serialization2(self, obj):
+        # print(obj.__class__)
+        # print(obj.__dict__)
+        # return self._serialization(obj.__class__),
+        return self._serialization(obj.__dict__)
+
+    def _deserialization2(cls, attributes):
+        obj = cls.__new__(cls)
+        obj.__dict__.update(attributes)
+        return obj
 
     def save_model(self, network=None, **kwargs):#args=None):
         """ Save model parameters and archietcture into databset.
@@ -112,7 +125,9 @@ class TensorHub(object):
 
         Examples
         ---------
-        >>> db.save_params(network, accuray=0.8, loss=2.3)
+        >>> net.my_input = x
+        >>> net.my_cost = cost
+        >>> db.save_model(net, accuray=0.8, loss=2.3)
 
         Returns
         ---------
@@ -122,7 +137,11 @@ class TensorHub(object):
 
         self._fill_experiment_info(kwargs)  # put experimentKey into kwargs
         s = time.time()
-
+        # xx = self._serialization2(network)
+        # print(xx)
+        xxx = self._serialization(network)
+        print(xxx)
+        exit()
         kwargs.update({'architecture': self._serialization(network)})
         # architecture_id = self.architecture_fs.put(s)
         # args.update({"architecture_id": architecture_id})
@@ -139,6 +158,10 @@ class TensorHub(object):
             print(e)
             print("[TensorDB] Save model: FAIL")
             return False
+
+    def find_one_model():
+        pass
+
     # def save_params(self, params=None, **kwargs):#args=None):
     #     """ Save parameters into databset, and save the file ID into Params Collections.
     #
@@ -170,7 +193,7 @@ class TensorHub(object):
     #     print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
     #     return f_id
 
-    # def find_one_params(self, experiment_key=None, sort=None, **kwargs ):
+    # def find_one_params(self, experiment_key=None, sort=None, **kwargs):
     #     """ Find one parameter from databset.
     #
     #     Parameters
@@ -205,6 +228,113 @@ class TensorHub(object):
     #     except Exception:
     #         return False#, False
 
+    def save_dataset(self, dataset=None, dataset_key=None, **kwargs):
+        """ Save dataset into database.
+
+        Parameters
+        ----------
+
+        Returns
+        ---------
+        boolean
+        """
+        if dataset_key is None:
+            raise Exception("dataset_key is None, please give a dataset name")
+        kwargs.update({'datasetKey': dataset_key})
+
+        # self._fill_experiment_info(kwargs)
+
+        s = time.time()
+        try:
+            dataset_id = self.dataset_fs.put(self._serialization(dataset))
+            kwargs.update({'dataset_id': dataset_id, 'time': datetime.utcnow()})
+            self.db.Dataset.insert_one(kwargs)
+            # print("[TensorDB] Save params: {} SUCCESS, took: {}s".format(file_name, round(time.time()-s, 2)))
+            print("[TensorDB] Save dataset: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
+            return True
+        except Exception as e:
+            print(e)
+            print("[TensorDB] Save dataset: FAIL")
+            return False
+
+    def find_one_dataset(self, dataset_key=None, sort=None, **kwargs):
+        """ Find one dataset that match with the requirement from database.
+
+        Parameters
+        ----------
+
+        sort
+            see mongodb
+
+        Examples
+        ---------
+        >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
+        >>> dataset = db.find_one_dataset('mnist')
+        >>> datasets = db.find_all_datasets('mnist')
+
+        Returns
+        --------
+        dataset : the dataset or False
+            False if nothing found.
+        """
+        if dataset_key is None:
+            raise Exception("dataset_key is None, please give a dataset name")
+        kwargs.update({'datasetKey': dataset_key})
+
+        s = time.time()
+
+        d = self.db.Dataset.find_one(filter=kwargs, sort=sort)
+
+        if d is not None:
+            dataset_id = d['dataset_id']
+        else:
+            print("[TensorDB] FAIL! Cannot find: {}".format(kwargs))
+            return False
+        try:
+            dataset = self._deserialization(self.dataset_fs.get(dataset_id).read())
+            pc = self.db.Dataset.find(kwargs)
+            print("[TensorDB] Find one dataset SUCCESS, {} took: {}s".format(kwargs, round(time.time() - s, 2)))
+
+            # check whether more datasets match the requirement
+            dataset_id_list = pc.distinct('dataset_id')
+            n_dataset = len(dataset_id_list)
+            if n_dataset != 1:
+                print("     Note that there are {} datasets match the requirement".format(n_dataset))
+            return dataset
+        except Exception:
+            return False
+
+    def find_all_datasets(self, dataset_key=None, **kwargs):
+        """ Find all datasets that match with the requirement from database.
+
+        Parameters
+        ----------
+        dataset_key
+
+        Returns
+        --------
+        params : the parameters, return False if nothing found.
+
+        """
+        if dataset_key is None:
+            raise Exception("dataset_key is None, please give a dataset name")
+        kwargs.update({'datasetKey': dataset_key})
+
+        s = time.time()
+        pc = self.db.Dataset.find(kwargs)
+
+        if pc is not None:
+            dataset_id_list = pc.distinct('dataset_id')
+            dataset_list = []
+            for dataset_id in dataset_id_list:  # you may have multiple Buckets files
+                tmp = self.dataset_fs.get(dataset_id).read()
+                dataset_list.append(self._deserialization(tmp))
+        else:
+            print("[TensorDB] FAIL! Cannot find any dataset: {}".format(kwargs))
+            return False
+
+        print("[TensorDB] Find {} datasets SUCCESS, took: {}s".format(len(dataset_list), round(time.time() - s, 2)))
+        return dataset_list
 
 """ ======================================================================== """
 
