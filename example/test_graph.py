@@ -4,10 +4,11 @@ This tutorial assumes you run a MongoDB in localhost.
 Install and run MongoDB on Mac : https://gist.github.com/subfuzion/9630872
 """
 
-import time
+import os
+import pickle
+
 import tensorflow as tf
 import tensorlayer as tl
-import pickle
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -142,8 +143,6 @@ def load_graph(name='model.pkl'):
 save_graph(net_test, 'graph.pkl')
 with tf.Graph().as_default() as graph:
     net = load_graph('graph.pkl')
-
-import os
 
 
 def save_graph_params(network=None, name='model', sess=None):

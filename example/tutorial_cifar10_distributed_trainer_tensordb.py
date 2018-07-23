@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 1. Before you start, run this script: https://github.com/tensorlayer/tensorlayer/blob/distributed/scripts/download_and_install_openmpi3_linux.sh
 2. Update the PATH with OpenMPI bin by running: PATH=$PATH:$HOME/local/openmpi/bin
@@ -28,6 +27,7 @@ def make_dataset(images, labels):
     lab = tf.data.Dataset.from_tensor_slices(np.array(labels, dtype=np.int64))
     return tf.data.Dataset.zip((img, lab))
 
+
 def data_aug_train(img, ann):
     # 1. Randomly crop a [height, width] section of the image.
     img = tf.random_crop(img, [24, 24, 3])
@@ -41,12 +41,14 @@ def data_aug_train(img, ann):
     img = tf.image.per_image_standardization(img)
     return img, ann
 
+
 def data_aug_valid(img, ann):
     # 1. Crop the central [height, width] of the image.
     img = tf.image.resize_image_with_crop_or_pad(img, 24, 24)
     # 2. Subtract off the mean and divide by the variance of the pixels.
     img = tf.image.per_image_standardization(img)
     return img, ann
+
 
 def model(x, is_train):
     with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
@@ -97,9 +99,13 @@ if __name__ == '__main__':
     # validation_dataset = make_dataset(X_test, y_test)
     # validation_dataset = training_dataset.map(data_aug_valid, num_parallel_calls=multiprocessing.cpu_count())
     trainer = tl.distributed.Trainer(
-        build_training_func=build_train, training_dataset=training_dataset, batch_size=128,
-        optimizer=tf.train.RMSPropOptimizer, optimizer_args={'learning_rate': 0.0001},
-        use_tensordb=True, tensordb_args=dict(ip='xxxx', port=22, studyID='cifar10')      # <   HERE
+        build_training_func=build_train,
+        training_dataset=training_dataset,
+        batch_size=128,
+        optimizer=tf.train.RMSPropOptimizer,
+        optimizer_args={'learning_rate': 0.0001},
+        use_tensordb=True,
+        tensordb_args=dict(ip='xxxx', port=22, studyID='cifar10')  # <   HERE
         # validation_dataset=validation_dataset, build_validation_func=build_validation
     )
 
@@ -119,12 +125,10 @@ if __name__ == '__main__':
 
     # TODO: Test the trained model
 
-
     ### HERE
     # after training, we can get the model according to the conditions e.g. best accuracy, time, iternation number
     from tensorlayer.db import TensorDB
     db = TensorDB(ip='127.0.0.1', port=27017, db_name='your_db', user_name=None, password=None, studyID='cifar10')
-    c, fid = db.find_model_architecutre({'name':'print'})
-
+    c, fid = db.find_model_architecutre({'name': 'print'})
 
     ...

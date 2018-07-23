@@ -13,6 +13,7 @@ from tensorlayer.lazy_imports import LazyImport
 gridfs = LazyImport("gridfs")
 pymongo = LazyImport("pymongo")
 
+
 class TensorHub(object):
     """It is a MongoDB based manager that help you to manage data, network architecture, parameters and logging.
 
@@ -40,10 +41,10 @@ class TensorHub(object):
     db : mongodb client
         See ``pymongo.MongoClient``.
     """
+
     # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-            self, ip='localhost', port=27017, dbname='dbname',
-            username=None, password='password', experiment_key=None
+            self, ip='localhost', port=27017, dbname='dbname', username=None, password='password', experiment_key=None
     ):
         self.ip = ip
         self.port = port
@@ -113,7 +114,7 @@ class TensorHub(object):
         obj.__dict__.update(attributes)
         return obj
 
-    def save_model(self, network=None, **kwargs):#args=None):
+    def save_model(self, network=None, **kwargs):  #args=None):
         """ Save model parameters and archietcture into databset.
 
         Parameters
@@ -336,7 +337,9 @@ class TensorHub(object):
         print("[TensorDB] Find {} datasets SUCCESS, took: {}s".format(len(dataset_list), round(time.time() - s, 2)))
         return dataset_list
 
+
 """ ======================================================================== """
+
 
 def AutoFill(func):
 
