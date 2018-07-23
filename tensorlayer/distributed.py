@@ -24,6 +24,9 @@ class Trainer(object):
     `Horovod <https://github.com/uber/horovod>`__. It transparently scales the training of a TensorLayer model
     from a single GPU to multiple GPUs that be placed on different machines in a single cluster.
 
+    To run the trainer, you will need to install Horovod on your machine. Check the installation script at
+    `tensorlayer/scripts/download_and_install_openmpi3_ubuntu.sh`
+
     The minimal inputs to the Trainer include (1) a training dataset defined using the TensorFlow DataSet API,
     and (2) a model build function given the inputs of the training dataset, and returns the neural network
     to train, the loss function to minimize, and the names of the tensor to log during training, and (3)
