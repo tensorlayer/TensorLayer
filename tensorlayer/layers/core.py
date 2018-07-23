@@ -179,7 +179,7 @@ class Layer(object):
         ## TL Graph
         # print(act, name, args, kwargs)
         self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
-        if act: ## convert activation from function to string
+        if act:  ## convert activation from function to string
             try:
                 act = act.__name__
             except:

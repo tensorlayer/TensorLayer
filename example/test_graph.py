@@ -20,6 +20,7 @@ X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(sha
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None], name='y_')
 
+
 # define the network
 def mlp(x, is_train=True, reuse=False):
     with tf.variable_scope("MLP", reuse=reuse):
@@ -31,6 +32,7 @@ def mlp(x, is_train=True, reuse=False):
         net = tl.layers.DropoutLayer(net, keep=0.5, is_fix=True, is_train=is_train, name='drop3')
         net = tl.layers.DenseLayer(net, n_units=10, act=None, name='output')
     return net
+
 
 # define inferences
 net_train = mlp(x, is_train=True, reuse=False)
@@ -53,6 +55,7 @@ train_op = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost, var_list=
 # initialize all variables in the session
 tl.layers.initialize_global_variables(sess)
 
+
 def save_graph(network=None, name='graph.pkl'):
     """Save the graph of TL model into pickle file.
 
@@ -64,8 +67,11 @@ def save_graph(network=None, name='graph.pkl'):
     with open(name, 'wb') as file:
         return pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
 
+
 from tensorlayer.layers.utils import list_remove_repeat
 from tensorlayer import tl_logging as logging
+
+
 def load_graph(name='model.pkl'):
     """Restore TL model from a graph file, return TL model.
 
@@ -89,34 +95,34 @@ def load_graph(name='model.pkl'):
     for graph in graphs:
         ## get current layer class
         name, layer_kwargs = graph
-        layer_class = layer_kwargs.pop('class')     # class of current layer
-        prev_layer = layer_kwargs.pop('prev_layer') # name of previous layer
+        layer_class = layer_kwargs.pop('class')  # class of current layer
+        prev_layer = layer_kwargs.pop('prev_layer')  # name of previous layer
         ## convert activation from string to function
         try:
             act = layer_kwargs.pop('act')
             # print(dir(tl.act))
             if act in dir(tl.act):
-                layer_kwargs.update({'act': eval('tl.act.'+act)})
+                layer_kwargs.update({'act': eval('tl.act.' + act)})
             else:
-                layer_kwargs.update({'act': eval('tf.nn.'+act)})
+                layer_kwargs.update({'act': eval('tf.nn.' + act)})
 
-        except Exception as e: # no act
+        except Exception as e:  # no act
             pass
             # exit(e)
 
         print(name, prev_layer, layer_class, layer_kwargs)
 
-        if layer_class == 'placeholder': ## create placeholder
+        if layer_class == 'placeholder':  ## create placeholder
             dtype = layer_kwargs.pop('dtype')
             shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(tf.float32, shape, name=name.split(':')[0]) #globals()['tf.'+dtype]
+            _placeholder = tf.placeholder(tf.float32, shape, name=name.split(':')[0])  #globals()['tf.'+dtype]
             # input_dict.update({name: _placeholder})
             input_list.append((name, _placeholder))
-        else:   ## create network
-            try:    # if previous layer is layer
+        else:  ## create network
+            try:  # if previous layer is layer
                 net = layer_dict[prev_layer]
                 layer_kwargs.update({'prev_layer': net})
-            except: # if previous layer is input placeholder
+            except:  # if previous layer is input placeholder
                 for n, t in input_list:
                     if n == prev_layer:
                         _placeholder = t
@@ -124,7 +130,7 @@ def load_graph(name='model.pkl'):
                 # net = globals()['tl.layers.'+layer_class](layer_kwargs)
             layer_kwargs.update({'name': name})
             print(layer_kwargs)
-            net = eval('tl.layers.'+layer_class)(**layer_kwargs)
+            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
             layer_dict.update({name: net})
 
     # for key in input_dict: # set input placeholder into the lastest layer
@@ -132,14 +138,18 @@ def load_graph(name='model.pkl'):
     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
     return layer_dict[name]
 
+
 save_graph(net_test, 'graph.pkl')
 with tf.Graph().as_default() as graph:
     net = load_graph('graph.pkl')
 
 import os
+
+
 def save_graph_params(network=None, name='model', sess=None):
     os.mkdir(name)
     save_graph(network, os.join.path(name, 'graph.pkl'))
+
 
 def load_graph_params():
     pass
