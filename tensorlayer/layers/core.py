@@ -62,6 +62,8 @@ class Layer(object):
         Print all outputs of all layers of this network.
     count_params()
         Return the number of parameters of this network.
+    get_all_params()
+        Return the parameters in a list of array.
 
     Examples
     ---------
@@ -196,7 +198,7 @@ class Layer(object):
             )
 
     def count_params(self):
-        """Return the number of parameters in the network"""
+        """Returns the number of parameters in the network"""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1
@@ -210,6 +212,16 @@ class Layer(object):
                     n = n * s
             n_params = n_params + n
         return n_params
+
+    def get_all_params(self, session=None):
+        """Return the parameters in a list of array. """
+        _params = []
+        for p in self.all_params:
+            if session is None:
+                _params.append(p.eval())
+            else:
+                _params.append(session.run(p))
+        return _params
 
     def __str__(self):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())

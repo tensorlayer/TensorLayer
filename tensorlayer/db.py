@@ -5,14 +5,208 @@ import inspect
 import pickle
 import time
 import uuid
-
+import os, sys
 from datetime import datetime
-
+from tensorlayer.decorators import deprecated_alias
 from tensorlayer.lazy_imports import LazyImport
 
 gridfs = LazyImport("gridfs")
 pymongo = LazyImport("pymongo")
 
+class TensorHub(object):
+    """It is a MongoDB based manager that help you to manage data, network architecture, parameters and logging.
+
+    Parameters
+    -------------
+    ip : str
+        Localhost or IP address.
+    port : int
+        Port number.
+    dbname : str
+        Database name.
+    username : str or None
+        User name, set to None if you do not need authentication.
+    password : str
+        Password.
+    experiment_key : str or None
+        Experiment key for this project, similar with the repository name of Github.
+
+    Attributes
+    ------------
+    ip, port, dbname and other input parameters : see above
+        See above.
+    experiment_key : str
+        The given study ID, if no given, set to the script name.
+    db : mongodb client
+        See ``pymongo.MongoClient``.
+    """
+    # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
+    def __init__(
+            self, ip='localhost', port=27017, dbname='dbname',
+            username=None, password='password', experiment_key=None
+    ):
+        self.ip = ip
+        self.port = port
+        self.dbname = dbname
+        self.username = username
+
+        print("[TensorDB] Initializing ...")
+        ## connect mongodb
+        client = pymongo.MongoClient(ip, port)
+        self.db = client[dbname]
+        if username != None:
+            self.db.authenticate(username, password)
+        else:
+            print("[TensorDB] No username given, it works if authentication is not required")
+        if experiment_key is None:
+            self.experiment_key = sys.argv[0].split('.')[0]
+            print("[TensorDB] No experiment_key given, use {}".format(self.experiment_key))
+        else:
+            self.experiment_key = experiment_key
+
+        ## define file system (Buckets)
+        self.data_fs = gridfs.GridFS(self.db, collection="dataFilesystem")
+        self.model_fs = gridfs.GridFS(self.db, collection="modelfs")
+        # self.params_fs = gridfs.GridFS(self.db, collection="parametersFilesystem")
+        # self.architecture_fs = gridfs.GridFS(self.db, collection="architectureFilesystem")
+
+        ## print info
+        print("[TensorDB] Connected ")
+        _s = "[TensorDB] Info:\n"
+        _s += "  ip             : {}\n".format(self.ip)
+        _s += "  port           : {}\n".format(self.port)
+        _s += "  dbname         : {}\n".format(self.dbname)
+        _s += "  username       : {}\n".format(self.username)
+        _s += "  password       : {}\n".format("*******")
+        _s += "  experiment_key : {}\n".format(self.experiment_key)
+        self._s = _s
+        print(self._s)
+
+    def __str__(self):
+        """ Print information of databset. """
+        return self._s
+
+    def _fill_experiment_info(self, args):
+        """ Fill in experiment_key for all studies, architectures and parameters. """
+        return args.update({'experimentKey': self.experiment_key})
+
+    @staticmethod
+    def _serialization(ps):
+        """ Seralize data. """
+        return pickle.dumps(ps, protocol=2)
+
+    @staticmethod
+    def _deserialization(ps):
+        """ Deseralize data. """
+        return pickle.loads(ps)
+
+    def save_model(self, network=None, **kwargs):#args=None):
+        """ Save model parameters and archietcture into databset.
+
+        Parameters
+        ----------
+        network : TensorLayer layer
+            TensorLayer layer instance.
+        kwargs : other events
+            Other events, such as accuracy, loss, step number and etc (optinal).
+
+        Examples
+        ---------
+        >>> db.save_params(network, accuray=0.8, loss=2.3)
+
+        Returns
+        ---------
+        boolean : True for success, False for fail.
+        """
+        params = network.get_all_params()
+
+        self._fill_experiment_info(kwargs)  # put experimentKey into kwargs
+        s = time.time()
+
+        kwargs.update({'architecture': self._serialization(network)})
+        # architecture_id = self.architecture_fs.put(s)
+        # args.update({"architecture_id": architecture_id})
+        # self.db.march.insert_one(args)
+        exit()
+
+        try:
+            params_id = self.model_fs.put(self._serialization(params))
+            kwargs.update({'params_id': params_id, 'time': datetime.utcnow()})
+            self.db.Model.insert_one(kwargs)
+            print("[TensorDB] Save model: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
+            return True
+        except Exception as e:
+            print(e)
+            print("[TensorDB] Save model: FAIL")
+            return False
+    # def save_params(self, params=None, **kwargs):#args=None):
+    #     """ Save parameters into databset, and save the file ID into Params Collections.
+    #
+    #     Parameters
+    #     ----------
+    #     params : list of array
+    #         List of network parameters, see ``sess.run(net.all_params)``.
+    #     kwargs : other events
+    #         Other events, such as accuracy, loss, step number and etc (optinal).
+    #
+    #     Examples
+    #     ---------
+    #     >>> db.save_params(sess.run(net_test.all_params), accuray=0.8, loss=2.3)
+    #
+    #     Returns
+    #     ---------
+    #     f_id : int
+    #         The Buckets ID of the parameters.
+    #     """
+    #     if isinstance(params, list) is False:
+    #         raise Exception("incorrect format of params")
+    #
+    #     self._fill_experiment_info(kwargs)
+    #     s = time.time()
+    #
+    #     f_id = self.params_fs.put(self._serialization(params))
+    #     kwargs.update({'f_id': f_id, 'time': datetime.utcnow()})
+    #     self.db.Params.insert_one(kwargs)
+    #     print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
+    #     return f_id
+
+    # def find_one_params(self, experiment_key=None, sort=None, **kwargs ):
+    #     """ Find one parameter from databset.
+    #
+    #     Parameters
+    #     ----------
+    #     args : dictionary
+    #         For finding items, such as
+    #     kwargs : events
+    #         Events, such as accuracy, loss, step number to find the parameters.
+    #
+    #     Returns
+    #     --------
+    #     params : the parameters, return False if nothing found.
+    #     """
+    #     # f_id : the Buckets ID of the parameters, return False if nothing found.
+    #     if args is None:
+    #         args = {}
+    #     s = time.time()
+    #
+    #     args.update({'experimentKey': experiment_key})
+    #
+    #     d = self.db.Params.find_one(filter=args, sort=sort)
+    #
+    #     if d is not None:
+    #         f_id = d['f_id']
+    #     else:
+    #         print("[TensorDB] FAIL! Cannot find: {}".format(args))
+    #         return False, False
+    #     try:
+    #         params = self.__deserialization(self.paramsfs.get(f_id).read())
+    #         print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time() - s, 2)))
+    #         return params#, f_id
+    #     except Exception:
+    #         return False#, False
+
+
+""" ======================================================================== """
 
 def AutoFill(func):
 
