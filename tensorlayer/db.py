@@ -7,11 +7,9 @@ import time
 import uuid
 import os, sys
 from datetime import datetime
-from tensorlayer.decorators import deprecated_alias
-from tensorlayer.lazy_imports import LazyImport
 
-gridfs = LazyImport("gridfs")
-pymongo = LazyImport("pymongo")
+import gridfs
+import pymongo
 
 
 class TensorHub(object):

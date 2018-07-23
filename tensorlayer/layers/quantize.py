@@ -7,7 +7,7 @@ from tensorlayer.layers.core import Layer
 
 from tensorlayer.layers.utils import quantize
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 

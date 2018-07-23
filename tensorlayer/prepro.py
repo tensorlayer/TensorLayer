@@ -8,29 +8,28 @@ import time
 
 import numpy as np
 
+import tensorlayer as tl
+
 import scipy
 import scipy.ndimage as ndi
-
-import skimage
 
 from scipy import linalg
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 
-from six.moves import range
+import skimage
 
 from skimage import exposure
 from skimage import transform
 
 from skimage.morphology import disk
-from skimage.morphology import erosion
-from skimage.morphology import binary_dilation
-from skimage.morphology import binary_erosion
+from skimage.morphology import erosion as _erosion
+from skimage.morphology import binary_dilation as _binary_dilation
+from skimage.morphology import binary_erosion as _binary_erosion
 
-from tensorlayer.lazy_imports import LazyImport
-from tensorlayer import tl_logging as logging
+from six.moves import range
 
-PIL = LazyImport("PIL")
+import PIL
 
 # linalg https://docs.scipy.org/doc/scipy/reference/linalg.html
 # ndimage https://docs.scipy.org/doc/scipy/reference/ndimage.html
@@ -334,7 +333,7 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
     if is_random:
         h_offset = int(np.random.uniform(0, h - hrg) - 1)
         w_offset = int(np.random.uniform(0, w - wrg) - 1)
-        # logging.info(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
+        # tl.logging.info(h_offset, w_offset, x[h_offset: hrg+h_offset ,w_offset: wrg+w_offset].shape)
         return x[h_offset:hrg + h_offset, w_offset:wrg + w_offset]
     else:  # central crop
         h_offset = int(np.floor((h - hrg) / 2.))
@@ -345,7 +344,7 @@ def crop(x, wrg, hrg, is_random=False, row_index=0, col_index=1):
         # old implementation
         # h_offset = (h - hrg)/2
         # w_offset = (w - wrg)/2
-        # # logging.info(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
+        # tl.logging.info(x[h_offset: h-h_offset ,w_offset: w-w_offset].shape)
         # return x[h_offset: h-h_offset ,w_offset: w-w_offset]
         # central crop
 
@@ -949,7 +948,7 @@ def elastic_transform_multi(x, alpha, sigma, mode="constant", cval=0, is_random=
 
         x_, y_ = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]), indexing='ij')
         indices = np.reshape(x_ + dx, (-1, 1)), np.reshape(y_ + dy, (-1, 1))
-        # logging.info(data.shape)
+        # tl.logging.info(data.shape)
         if is_3d:
             results.append(map_coordinates(data, indices, order=1).reshape((shape[0], shape[1], 1)))
         else:
@@ -994,12 +993,12 @@ def zoom(
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            logging.info(" random_zoom : not zoom in/out")
+            tl.logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
         zx, zy = zoom_range
-    # logging.info(zx, zy)
+    # tl.logging.info(zx, zy)
     zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
 
     h, w = x.shape[row_index], x.shape[col_index]
@@ -1034,7 +1033,7 @@ def zoom_multi(
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            logging.info(" random_zoom : not zoom in/out")
+            tl.logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
@@ -1172,7 +1171,7 @@ def illumination(x, gamma=1., contrast=1., saturation=1., is_random=False):
             gamma = 1
         im_ = brightness(x, gamma=gamma, gain=1, is_random=False)
 
-        # logging.info("using contrast and saturation")
+        # tl.logging.info("using contrast and saturation")
         image = PIL.Image.fromarray(im_)  # array -> PIL
         contrast_adjust = PIL.ImageEnhance.Contrast(image)
         image = contrast_adjust.enhance(np.random.uniform(contrast[0], contrast[1]))  #0.3,0.9))
@@ -1522,11 +1521,11 @@ def get_zca_whitening_principal_components_img(X):
 
     """
     flatX = np.reshape(X, (X.shape[0], X.shape[1] * X.shape[2] * X.shape[3]))
-    logging.info("zca : computing sigma ..")
+    tl.logging.info("zca : computing sigma ..")
     sigma = np.dot(flatX.T, flatX) / flatX.shape[0]
-    logging.info("zca : computing U, S and V ..")
+    tl.logging.info("zca : computing U, S and V ..")
     U, S, _ = linalg.svd(sigma)  # USV
-    logging.info("zca : computing principal components ..")
+    tl.logging.info("zca : computing principal components ..")
     principal_components = np.dot(np.dot(U, np.diag(1. / np.sqrt(S + 10e-7))), U.T)
     return principal_components
 
@@ -1548,10 +1547,10 @@ def zca_whitening(x, principal_components):
 
     """
     flatx = np.reshape(x, (x.size))
-    # logging.info(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
+    # tl.logging.info(principal_components.shape, x.shape)  # ((28160, 28160), (160, 176, 1))
     # flatx = np.reshape(x, (x.shape))
     # flatx = np.reshape(x, (x.shape[0], ))
-    # logging.info(flatx.shape)  # (160, 176, 1)
+    # tl.logging.info(flatx.shape)  # (160, 176, 1)
     whitex = np.dot(flatx, principal_components)
     x = np.reshape(whitex, (x.shape[0], x.shape[1], x.shape[2]))
     return x
@@ -1681,11 +1680,11 @@ def drop(x, keep=0.5):
 # x = np.asarray([[1,2,3,4,5,6,7,8,9,10],[1,2,3,4,5,6,7,8,9,10]])
 # x = np.asarray([x,x,x,x,x,x])
 # x.shape = 10, 4, 3
-# # logging.info(x)
+# tl.logging.info(x)
 # # exit()
-# logging.info(x.shape)
+# tl.logging.info(x.shape)
 # # exit()
-# logging.info(drop(x, keep=1.))
+# tl.logging.info(drop(x, keep=1.))
 # exit()
 
 
@@ -1877,7 +1876,7 @@ def array_to_img(x, dim_ordering=(0, 1, 2), scale=True):
         x += max(-np.min(x), 0)
         x_max = np.max(x)
         if x_max != 0:
-            # logging.info(x_max)
+            # tl.logging.info(x_max)
             # x /= x_max
             x = x / x_max
         x *= 255
@@ -1945,7 +1944,7 @@ def pt2map(list_points=None, size=(100, 100), val=1):
         return i_m
     for xx in list_points:
         for x in xx:
-            # logging.info(x)
+            # tl.logging.info(x)
             i_m[int(np.round(x[0]))][int(np.round(x[1]))] = val
     return i_m
 
@@ -1968,7 +1967,7 @@ def binary_dilation(x, radius=3):
 
     """
     mask = disk(radius)
-    x = binary_dilation(x, selem=mask)
+    x = _binary_dilation(x, selem=mask)
 
     return x
 
@@ -2014,7 +2013,7 @@ def binary_erosion(x, radius=3):
 
     """
     mask = disk(radius)
-    x = binary_erosion(x, selem=mask)
+    x = _binary_erosion(x, selem=mask)
     return x
 
 
@@ -2036,7 +2035,7 @@ def erosion(x, radius=3):
 
     """
     mask = disk(radius)
-    x = erosion(x, selem=mask)
+    x = _erosion(x, selem=mask)
     return x
 
 
@@ -2160,13 +2159,13 @@ def obj_box_coord_scale_to_pixelunit(coord, shape=None):
 
 
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50], [10, 10, 20, 20]], shape=[100, 100])
-# logging.info(coords)
+# tl.logging.info(coords)
 #     #   [[0.3, 0.4, 0.5, 0.5], [0.1, 0.1, 0.2, 0.2]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[50, 100])
-# logging.info(coords)
+# tl.logging.info(coords)
 #     #   [[0.3, 0.8, 0.5, 1.0]]
 # coords = obj_box_coords_rescale(coords=[[30, 40, 50, 50]], shape=[100, 200])
-# logging.info(coords)
+# tl.logging.info(coords)
 #     #   [[0.15, 0.4, 0.25, 0.5]]
 # exit()
 
@@ -2208,7 +2207,7 @@ def obj_box_coord_centroid_to_upleft_butright(coord, to_int=False):
 
 
 # coord = obj_box_coord_centroid_to_upleft_butright([30, 40, 20, 20])
-# logging.info(coord)    [20, 30, 40, 50]
+# tl.logging.info(coord)    [20, 30, 40, 50]
 # exit()
 
 
@@ -2424,16 +2423,16 @@ obj_box_left_right_flip = obj_box_horizontal_flip
 
 # im = np.zeros([80, 100])    # as an image with shape width=100, height=80
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3], [0.1, 0.5, 0.2, 0.3]], is_rescale=True, is_center=True, is_random=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # #   [[0.8, 0.4, 0.3, 0.3], [0.9, 0.5, 0.2, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[0.2, 0.4, 0.3, 0.3]], is_rescale=True, is_center=False, is_random=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # # [[0.5, 0.4, 0.3, 0.3]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=True, is_random=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # #   [[80, 40, 30, 30]]
 # im, coords = obj_box_left_right_flip(im, coords=[[20, 40, 30, 30]], is_rescale=False, is_center=False, is_random=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # # [[50, 40, 30, 30]]
 # exit()
 
@@ -2497,7 +2496,7 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
             # x' = x * (imw'/imw)
             x = int(coord[0] * (size[1] / imw))
             # y' = y * (imh'/imh)
-            # logging.info('>>', coord[1], size[0], imh)
+            # tl.logging.info('>>', coord[1], size[0], imh)
             y = int(coord[1] * (size[0] / imh))
             # w' = w * (imw'/imw)
             w = int(coord[2] * (size[1] / imw))
@@ -2511,16 +2510,16 @@ def obj_box_imresize(im, coords=None, size=None, interp='bicubic', mode=None, is
 
 # im = np.zeros([80, 100, 3])    # as an image with shape width=100, height=80
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30], [10, 20, 20, 20]], size=[160, 200], is_rescale=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # #   [[40, 80, 60, 60], [20, 40, 40, 40]]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[40, 100], is_rescale=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # #   [20, 20, 30, 15]
 # _, coords = obj_box_imresize(im, coords=[[20, 40, 30, 30]], size=[60, 150], is_rescale=False)
-# logging.info(coords)
+# tl.logging.info(coords)
 # #   [30, 30, 45, 22]
 # im2, coords = obj_box_imresize(im, coords=[[0.2, 0.4, 0.3, 0.3]], size=[160, 200], is_rescale=True)
-# logging.info(coords, im2.shape)
+# tl.logging.info(coords, im2.shape)
 # # [0.2, 0.4, 0.3, 0.3] (160, 200, 3)
 # exit()
 
@@ -2638,12 +2637,12 @@ def obj_box_crop(
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # logging.info('xx', w, h)
+            # tl.logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
                                                         thresh_wh):  # object shape strange: too narrow
-            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # tl.logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
@@ -2773,12 +2772,12 @@ def obj_box_shift(
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # logging.info('xx', w, h)
+            # tl.logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
                                                         thresh_wh):  # object shape strange: too narrow
-            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # tl.logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
@@ -2859,12 +2858,12 @@ def obj_box_zoom(
     if is_random:
         if zoom_range[0] == 1 and zoom_range[1] == 1:
             zx, zy = 1, 1
-            logging.info(" random_zoom : not zoom in/out")
+            tl.logging.info(" random_zoom : not zoom in/out")
         else:
             zx, zy = np.random.uniform(zoom_range[0], zoom_range[1], 2)
     else:
         zx, zy = zoom_range
-    # logging.info(zx, zy)
+    # tl.logging.info(zx, zy)
     zoom_matrix = np.array([[zx, 0, 0], [0, zy, 0], [0, 0, 1]])
 
     h, w = im.shape[row_index], im.shape[col_index]
@@ -2910,12 +2909,12 @@ def obj_box_zoom(
             h = im_new.shape[0] - y
 
         if (w / (h + 1.) > thresh_wh2) or (h / (w + 1.) > thresh_wh2):  # object shape strange: too narrow
-            # logging.info('xx', w, h)
+            # tl.logging.info('xx', w, h)
             return None
 
         if (w / (im_new.shape[1] * 1.) < thresh_wh) or (h / (im_new.shape[0] * 1.) <
                                                         thresh_wh):  # object shape strange: too narrow
-            # logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
+            # tl.logging.info('yy', w, im_new.shape[1], h, im_new.shape[0])
             return None
 
         coord = [x, y, w, h]
