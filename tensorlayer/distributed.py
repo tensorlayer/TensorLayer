@@ -8,7 +8,7 @@ import math
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 from tensorlayer.decorators import deprecated
 from tensorlayer.lazy_imports import LazyImport
 
@@ -80,7 +80,7 @@ class Trainer(object):
     max_iteration: int
         The maximum iteration (i.e., mini-batch) to train.
         The default is `math.inf`. You can set it to a small number to end the training earlier. This is
-        usually set for testing purpose. 
+        usually set for testing purpose.
 
     Attributes
     ----------
