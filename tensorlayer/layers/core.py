@@ -118,6 +118,7 @@ class Layer(object):
         self.all_layers = list()
         self.all_params = list()
         self.all_drop = dict()
+        self.all_graphs = list()
 
         if name is None:
             raise ValueError('Layer must have a name.')
@@ -141,6 +142,7 @@ class Layer(object):
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
 
         elif isinstance(prev_layer, list):
             # 2. for layer have multiply inputs i.e. ConcatLayer
@@ -150,6 +152,7 @@ class Layer(object):
             self._add_layers(sum([l.all_layers for l in prev_layer], []))
             self._add_params(sum([l.all_params for l in prev_layer], []))
             self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
 
         elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
             if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
@@ -163,9 +166,18 @@ class Layer(object):
             self._add_layers(prev_layer.all_layers)
             self._add_params(prev_layer.all_params)
             self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
 
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
+
+        ## TL Graph
+        # print(act, name, args, kwargs)
+        self.graph = {self.name: {'class': self.__class__, 'prev_layer': prev_layer.name}}
+        if act:
+            self.graph[self.name].update({'act': act})
+        self.graph[self.name].update(kwargs)
+        self._add_graphs(self.graph)
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -282,6 +294,17 @@ class Layer(object):
         self.all_params = list_remove_repeat(self.all_params)
 
     @protected_method
+    def _add_graphs(self, graphs):
+
+        if isinstance(graphs, list):
+            self.all_graphs.extend(list(graphs))
+
+        else:
+            self.all_graphs.append(graphs)
+
+        self.all_graphs = list_remove_repeat(self.all_graphs)
+
+    @protected_method
     def _add_dropout_layers(self, drop_layers):
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
             self.all_drop.update(dict(drop_layers))
@@ -307,3 +330,11 @@ class Layer(object):
             )
 
         return args if args is not None else {}
+
+    # def __getstate__(self): # pickle save
+    #     return {'version': 0.1,
+    #             # 'outputs': self.outputs,
+    #             }
+    #
+    # def __setstate__(self, state): # pickle restore
+    #     self.outputs = state['outputs']
