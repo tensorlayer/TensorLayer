@@ -20,7 +20,7 @@ jobs:
           name: TEST BUILD - Build Docker Image Python 2 CPU with Tensorlayer installed from Source
           command: |
             cd docker
-            docker build -t latest_py2_cpu python2/cpu
+            docker build -t latest_py2_cpu . --build-arg TF_CONTAINER_VERSION="latest"
 
   test_sources_py2_gpu:
     working_directory: ~/build
@@ -36,7 +36,7 @@ jobs:
           name: TEST BUILD - Build Docker Image Python 2 GPU with Tensorlayer installed from Source
           command: |
             cd docker
-            docker build -t latest_py2_gpu python2/gpu
+            docker build -t latest_py2_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu"
 
   test_sources_py3_cpu:
     working_directory: ~/build
@@ -52,7 +52,7 @@ jobs:
           name: TEST BUILD - Build Docker Image Python 3 CPU with Tensorlayer installed from Source
           command: |
             cd docker
-            docker build -t latest_py3_cpu python3/cpu
+            docker build -t latest_py3_cpu . --build-arg TF_CONTAINER_VERSION="latest-py3"
 
   test_sources_py3_gpu:
     working_directory: ~/build
@@ -68,7 +68,7 @@ jobs:
           name: TEST BUILD - Build Docker Image Python 3 GPU with Tensorlayer installed from Source
           command: |
             cd docker
-            docker build -t latest_py3_gpu python3/gpu
+            docker build -t latest_py3_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
 
   ###################################################################################
   #       NIGHTLY BUILDS from TensorLayer Master Branch installed from Source       #
@@ -94,7 +94,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_cpu python2/cpu
+            docker build -t latest_py2_cpu . --build-arg TF_CONTAINER_VERSION="latest"
 
             # ============== Nightly Python2 CPU Containers ==============
 
@@ -138,7 +138,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_gpu python2/gpu
+            docker build -t latest_py2_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu"
 
             # ============== Nightly Python2 GPU Containers ==============
 
@@ -174,7 +174,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_cpu python3/cpu
+            docker build -t latest_py3_cpu . --build-arg TF_CONTAINER_VERSION="latest-py3"
 
             # ============== Nightly Python3 CPU Containers ==============
 
@@ -210,7 +210,7 @@ jobs:
             VERSION_PREFIX="nightly"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_gpu python3/gpu
+            docker build -t latest_py3_gpu . --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
 
             # ============== Nightly Python3 GPU Containers ==============
 
@@ -254,7 +254,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_cpu python2/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_cpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest"
 
             # ============== Latest Python2 CPU Containers ==============
 
@@ -328,7 +328,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py2_gpu python2/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py2_gpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-gpu"
 
             # ============== Latest Python2 GPU Containers ==============
 
@@ -386,7 +386,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_cpu python3/cpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_cpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-py3"
 
             # ============== Latest Python3 CPU Containers ==============
 
@@ -444,7 +444,7 @@ jobs:
             VERSION_PREFIX="$(python version_prefix.py --version="$TL_VERSION")"
             echo VERSION_PREFIX="$VERSION_PREFIX"
 
-            docker build -t latest_py3_gpu python3/gpu --build-arg TL_VERSION="$TL_VERSION"
+            docker build -t latest_py3_gpu . --build-arg TL_VERSION="$TL_VERSION" --build-arg TF_CONTAINER_VERSION="latest-gpu-py3"
 
             # ============== Latest Python3 GPU Containers ==============
 

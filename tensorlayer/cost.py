@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
-from tensorlayer import tl_logging as logging
+import tensorlayer as tl
 
 __all__ = [
     'cross_entropy',
@@ -524,7 +524,7 @@ def li_regularizer(scale, scope=None):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def li(weights):
@@ -572,7 +572,7 @@ def lo_regularizer(scale):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def lo(weights, name='lo_regularizer'):
@@ -622,7 +622,7 @@ def maxnorm_regularizer(scale=1.0):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn(weights, name='max_regularizer'):
@@ -668,7 +668,7 @@ def maxnorm_o_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_o(weights, name='maxnorm_o_regularizer'):
@@ -716,7 +716,7 @@ def maxnorm_i_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_i(weights, name='maxnorm_i_regularizer'):

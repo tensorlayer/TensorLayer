@@ -3,7 +3,7 @@
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
