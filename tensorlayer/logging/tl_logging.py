@@ -17,8 +17,21 @@ import threading
 
 import six
 
+from tensorlayer.decorators import deprecated
+
 __all__ = [
-    'DEBUG', 'debug', 'ERROR', 'error', 'FATAL', 'fatal', 'INFO', 'info', 'WARN', 'warn', 'set_verbosity',
+    'DEBUG',
+    'debug',
+    'ERROR',
+    'error',
+    'FATAL',
+    'fatal',
+    'INFO',
+    'info',
+    'WARN',
+    'warning',
+    'warn',  # Deprecated
+    'set_verbosity',
     'get_verbosity'
 ]
 
@@ -101,6 +114,7 @@ def fatal(msg, *args, **kwargs):
     _get_logger().fatal("FATAL: %s" % msg, *args, **kwargs)
 
 
+@deprecated(date="2018-09-30", instructions="This API is deprecated. Please use as `tl.logging.warning`")
 def warn(msg, *args, **kwargs):
     warning(msg, *args, **kwargs)
 

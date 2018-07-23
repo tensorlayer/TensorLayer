@@ -28,7 +28,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
 from tensorlayer.layers import DenseLayer

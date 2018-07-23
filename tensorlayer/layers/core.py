@@ -10,7 +10,7 @@ import tensorflow as tf
 
 from tensorlayer.layers.utils import list_remove_repeat
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import protected_method

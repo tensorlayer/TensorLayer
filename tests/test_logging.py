@@ -1,21 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import unittest
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+import tensorlayer as tl
 
 try:
     from tests.unittests_helper import CustomTestCase
 except ImportError:
     from unittests_helper import CustomTestCase
-
-import tensorflow as tf
-import tensorlayer as tl
-
-from logging import DEBUG
-from logging import ERROR
-from logging import FATAL
-from logging import INFO
-from logging import WARN
 
 
 class TL_Logger_Test(CustomTestCase):

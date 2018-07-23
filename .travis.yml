@@ -20,7 +20,7 @@ env:
   # Backward Compatibility in insured for release less than 1 year old.
   # https://pypi.org/project/tensorflow/#history
   matrix:
-    - _TF_VERSION=1.9.0rc2 # Remove on Apr 28, 2019
+    - _TF_VERSION=1.9.0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.8.0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.7.1 # Remove on May 08, 2019
     - _TF_VERSION=1.7.0 # Remove on Mar 29, 2019
@@ -45,6 +45,10 @@ env:
   ### === GITHUB_PERSONAL_TOKEN === ###
   ## To update: travis encrypt GITHUB_PERSONAL_TOKEN=################################
   - secure: "kMxg4WfTwhnYMD7WjYk71vgw7XlShPpANauKzfTL6oawDrpQRkBUai4uQwiL3kXVBuVv9rKKKZxxnyAm05iB5wGasPDhlFA1DPF0IbyU3pwQKlw2Xo5qtHdgxBnbms6JJ9z5b+hHCVg+LXYYeUw5qG01Osg5Ue6j1g2juQQHCod00FNuo3fe8ah/Y10Rem6CigH8ofosCrTvN2w1GaetJwVehRYf8JkPC6vQ+Yk8IIjHn2CaVJALbhuchVblxwH0NXXRen915BVBwWRQtsrvEVMXKu7A8sMHmvPz1u3rhXQfjpF2KeVOfy1ZnyiHcLE2HgAPuAGh4kxZAAA8ovmcaCbv8m64bm72BrQApSbt6OEtR9L1UeUwdEgi54FH1XFOHQ9dA6CpiGCyk3wAJZqO0/PkNYVLfb4gPLvnvBRwYBaPgUPvVNhidFu/oODENZmcf8g9ChtuC1GT70EYlVwhgDGqUY7/USZCEvIPe81UToqtIKgcgA+Is51XindumJVMiqTsjgdqeC/wZcw+y37TAjIvvXbtYxeqIKv9zh1JuZppqUhnf+OhI+HHFaY4iu7lQTs3C0WmoLskZAp9srwRtifnVFFkdYzngmPaSjWyko2qiS0cTdFJQB/ljqmnJdksacbv5OOa0Q4qZef/hW774nVx105FlkAIk70D2b5l2pA="
+
+  ### === GITHUB_PERSONAL_TOKEN === ###
+  ## To update: travis encrypt HYPERDASH_APIKEY=################################
+  - secure: "ez9Ck1VpqWOd2PPu+CMWzd8R4aAIXbjKCk96PCKwWu8VXoHjaPkiy8Nn0LUzSlUg3nKdZmu2JSndwDMy3+lMLG7zE2WlGNY7MF5KM3GrvFpP3cxJQ6OuPcZcEH4j5KtBtNTrNqa8SWglqhc9mr66a92SD8Ydc4aMj6L9nbQvrsvVzIMmMy6weVlpBF35nweYCM8LxlsnqyPLleHPZo3o/k+hsTqQQbiMGjC78tqrGr56u7AjL2+D/m33+dfCGzFvMJFcpLQ5ldbcVU54i5e6V3xJ48P30QOGZaqG3fcpfZsyJEIWjykt6XFA8GfJjaVVbxdlr7zP7Vd9iWBuemnMEX3F9Cy/4x7LmX9PJfsVPC6FQnanDvsZSNO5hpmKe8BTpttJJvxgscOczV4jnI69OzqhSQeyChwtkqhIg1E/53XIO+uLJAAZsCkAco7tjGGXTKyv8ZlpSJwSqsLcmgpmQbfodCoMLcYenTxqKZv78e2B4tOPGQyS2bkSxAqhvAIam7RCq/yEvz5n2/mBFEGwP6OQFIdC7ypO2LyrOlLT7HJjCeYMeKSm+GOD3LW9oIy9QJZpG6N/zAAjnk9C2mYtWRQIBo4qdHjRvyDReevDexI8j0AXySblxREmQ7ZaT6KEDXXZSu5goTlaGm0g2HwAkKu9xYFV/bRtp6+i1mP7CQg="
 
 
 matrix:

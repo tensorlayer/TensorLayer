@@ -8,10 +8,8 @@ import uuid
 
 from datetime import datetime
 
-from tensorlayer.lazy_imports import LazyImport
-
-gridfs = LazyImport("gridfs")
-pymongo = LazyImport("pymongo")
+import gridfs
+import pymongo
 
 
 def AutoFill(func):

@@ -14,7 +14,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.layers.utils import flatten_reshape
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
