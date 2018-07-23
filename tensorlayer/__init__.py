@@ -25,25 +25,29 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    from . import activation
-    from . import array_ops
-    from . import cost
-    from . import db
-    from . import decorators
-    from . import distributed
-    from . import files
-    from . import initializers
-    from . import iterate
-    from . import layers
-    from . import lazy_imports
-    from . import tl_logging as logging
-    from . import models
-    from . import nlp
-    from . import optimizers
-    from . import prepro
-    from . import rein
-    from . import utils
-    from . import visualize
+    from tensorlayer.lazy_imports import LazyImport
+
+    from tensorlayer import activation
+    from tensorlayer import array_ops
+    from tensorlayer import cost
+    from tensorlayer import db
+    from tensorlayer import decorators
+    from tensorlayer import files
+    from tensorlayer import initializers
+    from tensorlayer import iterate
+    from tensorlayer import layers
+    from tensorlayer import lazy_imports
+    from tensorlayer import logging
+    from tensorlayer import models
+    from tensorlayer import optimizers
+    from tensorlayer import rein
+    from tensorlayer import utils
+
+    # Lazy Imports
+    distributed = LazyImport("tensorlayer.distributed")
+    nlp = LazyImport("tensorlayer.nlp")
+    prepro = LazyImport("tensorlayer.prepro")
+    visualize = LazyImport("tensorlayer.visualize")
 
     # alias
     act = activation
@@ -56,7 +60,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     global_flag = {}
     global_dict = {}
 
-# Use the following formating: (major, minor, patch, prerelease)
+# Use the following formatting: (major, minor, patch, prerelease)
 VERSION = (1, 9, 0, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])

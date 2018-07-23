@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+import os
 import unittest
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import tensorflow as tf
 import tensorlayer as tl
@@ -19,7 +23,7 @@ class Test_Leaky_ReLUs(CustomTestCase):
 
         cls.input_var = tf.Variable(initial_value=0, dtype=tf.float32, name="Input_Var")
 
-        cls.lrelu_out = tl.act.leaky_relu(cls.input_var, alpha=cls.alpha)
+        cls.lrelu_out = tl.act.leaky_relu(cls.input_var, alpha=cls.alpha)  # Deprecated
         cls.lrelu6_out = tl.act.leaky_relu6(cls.input_var, alpha=cls.alpha)
         cls.ltrelu6_out = tl.act.leaky_twice_relu6(cls.input_var, alpha_low=cls.alpha, alpha_high=cls.alpha)
 
