@@ -8,8 +8,9 @@ import math
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 from tensorlayer.decorators import deprecated
+
 from tensorlayer.lazy_imports import LazyImport
 
 hvd = LazyImport('horovod.tensorflow')
