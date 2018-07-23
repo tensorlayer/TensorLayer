@@ -48,7 +48,9 @@ class Trainer(object):
         The loss function optimizer. The trainer automatically linearly scale the learning rate based on
         the number of GPUs.
     optimizer_args : dict
-        The optimizer argument dictionary.
+        The optimizer argument dictionary. It must contain a `learning_rate` field in type of float.
+        Note that the learning rate is linearly scaled according to the number of GPU by default.
+        You can disable it using the option `scaling_learning_rate`
     batch_size : int
         The training mini-batch size (i.e., number of samples per batch).
     num_epochs : int
@@ -72,7 +74,7 @@ class Trainer(object):
         The function that builds the validation operator. It returns the validation neural network (which
         share the weights of the training network) and a custom number of validation metrics.
     scaling_learning_rate: Boolean
-        Linearly scaling the learning rate or not. Default is True.
+        Linearly scale the learning rate by the number of GPUs. Default is True.
         This `linear scaling rule` is generally effective and is highly recommended by the practioners.
         Check `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
 
