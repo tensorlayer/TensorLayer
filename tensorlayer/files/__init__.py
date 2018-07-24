@@ -69,4 +69,6 @@ __all__ = [
     'save_npz_dict',
     'save_graph',
     'load_graph',
+    'save_graph_and_params',
+    'load_graph_and_params',
 ]

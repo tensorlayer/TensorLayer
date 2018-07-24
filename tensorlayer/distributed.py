@@ -10,7 +10,6 @@ from tensorflow.python.training import session_run_hook
 
 from tensorlayer import logging
 from tensorlayer.decorators import deprecated
-
 from tensorlayer.lazy_imports import LazyImport
 
 hvd = LazyImport('horovod.tensorflow')
@@ -24,6 +23,9 @@ class Trainer(object):
     TensorLayer Trainer is a high-level training interface built on top of TensorFlow MonitoredSession and
     `Horovod <https://github.com/uber/horovod>`__. It transparently scales the training of a TensorLayer model
     from a single GPU to multiple GPUs that be placed on different machines in a single cluster.
+
+    To run the trainer, you will need to install Horovod on your machine. Check the installation script at
+    `tensorlayer/scripts/download_and_install_openmpi3_ubuntu.sh`
 
     The minimal inputs to the Trainer include (1) a training dataset defined using the TensorFlow DataSet API,
     and (2) a model build function given the inputs of the training dataset, and returns the neural network
@@ -46,7 +48,9 @@ class Trainer(object):
         The loss function optimizer. The trainer automatically linearly scale the learning rate based on
         the number of GPUs.
     optimizer_args : dict
-        The optimizer argument dictionary.
+        The optimizer argument dictionary. It must contain a `learning_rate` field in type of float.
+        Note that the learning rate is linearly scaled according to the number of GPU by default.
+        You can disable it using the option `scaling_learning_rate`
     batch_size : int
         The training mini-batch size (i.e., number of samples per batch).
     num_epochs : int
@@ -69,11 +73,14 @@ class Trainer(object):
     build_validation_func: None or function
         The function that builds the validation operator. It returns the validation neural network (which
         share the weights of the training network) and a custom number of validation metrics.
-    log_store_addr: None or str
-        The string that combines the IP and port of the log store (performed by TensorDB).
-        The IP and port is separated by colon, i.e., ':'. Sample address is '196.168.0.1:27071'
-        If None, the logger will print the log in a default way,
-        and you can configure it using tl.logging and tf.logging.
+    scaling_learning_rate: Boolean
+        Linearly scale the learning rate by the number of GPUs. Default is True.
+        This `linear scaling rule` is generally effective and is highly recommended by the practioners.
+        Check `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
+    max_iteration: int
+        The maximum iteration (i.e., mini-batch) to train.
+        The default is `math.inf`. You can set it to a small number to end the training earlier. This is
+        usually set for testing purpose.
 
     Attributes
     ----------
@@ -95,13 +102,9 @@ class Trainer(object):
 
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, log_step_size=1, validation_dataset=None,
-            build_validation_func=None, log_store_addr=None
+            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
+            validation_dataset=None, build_validation_func=None, max_iteration=math.inf
     ):
-        # Setup the log persistence
-        if not log_store_addr:
-            pass  # TODO: connecting the logger output to the TensorDB
-
         # Initialize Horovod.
         hvd.init()
         self.is_master = hvd.rank() == 0
@@ -127,7 +130,8 @@ class Trainer(object):
         self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 
         # Adjust learning rate based on number of GPUs.
-        optimizer_args['learning_rate'] = optimizer_args['learning_rate'] * hvd.size()
+        lr = optimizer_args['learning_rate']
+        optimizer_args['learning_rate'] = scaling_learning_rate if lr * hvd.size() else lr
         opt = optimizer(**optimizer_args)
 
         # Add Horovod Distributed Optimizer.
@@ -148,7 +152,7 @@ class Trainer(object):
             hvd.BroadcastGlobalVariablesHook(0),
 
             # Horovod: adjust number of steps based on number of GPUs.
-            tf.train.StopAtStepHook(last_step=math.inf // hvd.size()),
+            tf.train.StopAtStepHook(last_step=max_iteration // hvd.size()),
             tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
         ]
 

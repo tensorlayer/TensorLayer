@@ -267,7 +267,7 @@ class BaseLayer(object):
         else:
             self.all_graphs.append(graphs)
 
-        self.all_graphs = list_remove_repeat(self.all_graphs)
+        # self.all_graphs = list_remove_repeat(self.all_graphs) # cannot repeat
 
     @protected_method
     def _add_dropout_layers(self, drop_layers):

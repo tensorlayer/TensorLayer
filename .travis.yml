@@ -59,13 +59,14 @@ matrix:
 
 
 install:
-  - if [[ -v _DOC_AND_YAPF_TEST ]]; then
+  - |
+    if [[ -v _DOC_AND_YAPF_TEST ]]; then
         pip install tensorflow
         ./scripts/install-horovod-for-doc-test.sh
     else
         pip install tensorflow==$_TF_VERSION;
     fi
-  - pip install -e .[all_dev]
+  - pip install -e .[all_cpu_dev]
 
 
 script:

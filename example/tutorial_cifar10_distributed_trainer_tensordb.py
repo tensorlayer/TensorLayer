@@ -130,5 +130,3 @@ if __name__ == '__main__':
     from tensorlayer.db import TensorDB
     db = TensorDB(ip='127.0.0.1', port=27017, db_name='your_db', user_name=None, password=None, studyID='cifar10')
     c, fid = db.find_model_architecutre({'name': 'print'})
-
-    ...

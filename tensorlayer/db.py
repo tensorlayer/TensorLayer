@@ -5,12 +5,14 @@ import inspect
 import pickle
 import time
 import uuid
-import os, sys
+import os
 from datetime import datetime
 
 import gridfs
 import pymongo
-
+from tensorlayer.files import load_graph_and_params, exists_or_mkdir, del_folder
+from tensorlayer import logging
+import numpy as np
 
 class TensorHub(object):
     """It is a MongoDB based manager that help you to manage data, network architecture, parameters and logging.
@@ -27,22 +29,22 @@ class TensorHub(object):
         User name, set to None if you do not need authentication.
     password : str
         Password.
-    experiment_key : str or None
-        Experiment key for this project, similar with the repository name of Github.
+    project_key : str or None
+        Experiment key for this entire project, similar with the repository name of Github.
 
     Attributes
     ------------
     ip, port, dbname and other input parameters : see above
         See above.
-    experiment_key : str
-        The given study ID, if no given, set to the script name.
+    project_key : str
+        The given project name, if no given, set to the script name.
     db : mongodb client
         See ``pymongo.MongoClient``.
     """
 
     # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-            self, ip='localhost', port=27017, dbname='dbname', username=None, password='password', experiment_key=None
+            self, ip='localhost', port=27017, dbname='dbname', username=None, password='password', project_key=None
     ):
         self.ip = ip
         self.port = port
@@ -57,11 +59,11 @@ class TensorHub(object):
             self.db.authenticate(username, password)
         else:
             print("[TensorDB] No username given, it works if authentication is not required")
-        if experiment_key is None:
-            self.experiment_key = sys.argv[0].split('.')[0]
-            print("[TensorDB] No experiment_key given, use {}".format(self.experiment_key))
+        if project_key is None:
+            self.project_key = sys.argv[0].split('.')[0]
+            print("[TensorDB] No project_key given, use {}".format(self.project_key))
         else:
-            self.experiment_key = experiment_key
+            self.project_key = project_key
 
         ## define file system (Buckets)
         self.dataset_fs = gridfs.GridFS(self.db, collection="datasetFilesystem")
@@ -77,7 +79,7 @@ class TensorHub(object):
         _s += "  dbname         : {}\n".format(self.dbname)
         _s += "  username       : {}\n".format(self.username)
         _s += "  password       : {}\n".format("*******")
-        _s += "  experiment_key : {}\n".format(self.experiment_key)
+        _s += "  project_key : {}\n".format(self.project_key)
         self._s = _s
         print(self._s)
 
@@ -85,67 +87,55 @@ class TensorHub(object):
         """ Print information of databset. """
         return self._s
 
-    def _fill_experiment_info(self, args):
-        """ Fill in experiment_key for all studies, architectures and parameters. """
-        return args.update({'experimentKey': self.experiment_key})
+    def _fill_project_info(self, args):
+        """ Fill in project_key for all studies, architectures and parameters. """
+        return args.update({'projectKey': self.project_key})
 
     @staticmethod
     def _serialization(ps):
         """ Seralize data. """
-        # return pickle.dumps(ps, protocol=2)
-        with open('_temp.pkl', 'wb') as file:
-            return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
+        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)#protocol=2)
+        # with open('_temp.pkl', 'wb') as file:
+        #     return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def _deserialization(ps):
         """ Deseralize data. """
         return pickle.loads(ps)
 
-    def _serialization2(self, obj):
-        # print(obj.__class__)
-        # print(obj.__dict__)
-        # return self._serialization(obj.__class__),
-        return self._serialization(obj.__dict__)
-
-    def _deserialization2(cls, attributes):
-        obj = cls.__new__(cls)
-        obj.__dict__.update(attributes)
-        return obj
-
+    ## =========================== MODELS ================================ ##
     def save_model(self, network=None, **kwargs):  #args=None):
-        """ Save model parameters and archietcture into databset.
+        """Save model archietcture and parameters into database, timestamp will be added automatically.
 
         Parameters
         ----------
         network : TensorLayer layer
             TensorLayer layer instance.
         kwargs : other events
-            Other events, such as accuracy, loss, step number and etc (optinal).
+            Other events, such as name, accuracy, loss, step number and etc (optinal).
 
         Examples
         ---------
-        >>> net.my_input = x
-        >>> net.my_cost = cost
-        >>> db.save_model(net, accuray=0.8, loss=2.3)
+        - Save model architecture and parameters into database.
+        >>> db.save_model(net, accuray=0.8, loss=2.3, name='second_model')
+
+        - Load one model with parameters from database (run this in other script)
+        >>> net = db.find_one_model(sess=sess, accuray=0.8, loss=2.3)
+
+        - Find and load the latest model.
+        >>> net = db.find_one_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
 
         Returns
         ---------
         boolean : True for success, False for fail.
         """
+        self._fill_project_info(kwargs)# put projectKey into kwargs
+
         params = network.get_all_params()
 
-        self._fill_experiment_info(kwargs)  # put experimentKey into kwargs
         s = time.time()
-        # xx = self._serialization2(network)
-        # print(xx)
-        xxx = self._serialization(network)
-        print(xxx)
-        exit()
-        kwargs.update({'architecture': self._serialization(network)})
-        # architecture_id = self.architecture_fs.put(s)
-        # args.update({"architecture_id": architecture_id})
-        # self.db.march.insert_one(args)
-        exit()
+
+        kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))
@@ -158,77 +148,71 @@ class TensorHub(object):
             print("[TensorDB] Save model: FAIL")
             return False
 
-    def find_one_model():
-        pass
+    def find_one_model(self, sess, sort=None, **kwargs):
+        """Finds and returns a model archietcture and its parameters from the database which matches the requirement.
 
-    # def save_params(self, params=None, **kwargs):#args=None):
-    #     """ Save parameters into databset, and save the file ID into Params Collections.
-    #
-    #     Parameters
-    #     ----------
-    #     params : list of array
-    #         List of network parameters, see ``sess.run(net.all_params)``.
-    #     kwargs : other events
-    #         Other events, such as accuracy, loss, step number and etc (optinal).
-    #
-    #     Examples
-    #     ---------
-    #     >>> db.save_params(sess.run(net_test.all_params), accuray=0.8, loss=2.3)
-    #
-    #     Returns
-    #     ---------
-    #     f_id : int
-    #         The Buckets ID of the parameters.
-    #     """
-    #     if isinstance(params, list) is False:
-    #         raise Exception("incorrect format of params")
-    #
-    #     self._fill_experiment_info(kwargs)
-    #     s = time.time()
-    #
-    #     f_id = self.params_fs.put(self._serialization(params))
-    #     kwargs.update({'f_id': f_id, 'time': datetime.utcnow()})
-    #     self.db.Params.insert_one(kwargs)
-    #     print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
-    #     return f_id
+        Parameters
+        ----------
+        sess : Session
+            TensorFlow session.
+        sort : List of tuple
+            PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
+        kwargs : other events
+            Other events, such as name, accuracy, loss, step number and etc (optinal).
 
-    # def find_one_params(self, experiment_key=None, sort=None, **kwargs):
-    #     """ Find one parameter from databset.
-    #
-    #     Parameters
-    #     ----------
-    #     args : dictionary
-    #         For finding items, such as
-    #     kwargs : events
-    #         Events, such as accuracy, loss, step number to find the parameters.
-    #
-    #     Returns
-    #     --------
-    #     params : the parameters, return False if nothing found.
-    #     """
-    #     # f_id : the Buckets ID of the parameters, return False if nothing found.
-    #     if args is None:
-    #         args = {}
-    #     s = time.time()
-    #
-    #     args.update({'experimentKey': experiment_key})
-    #
-    #     d = self.db.Params.find_one(filter=args, sort=sort)
-    #
-    #     if d is not None:
-    #         f_id = d['f_id']
-    #     else:
-    #         print("[TensorDB] FAIL! Cannot find: {}".format(args))
-    #         return False, False
-    #     try:
-    #         params = self.__deserialization(self.paramsfs.get(f_id).read())
-    #         print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time() - s, 2)))
-    #         return params#, f_id
-    #     except Exception:
-    #         return False#, False
+        Examples
+        ---------
+        - see ``save_model``.
 
+        Returns
+        ---------
+        network : TensorLayer layer
+        """
+        self._fill_project_info(kwargs)
+        # if dataset_key is None:
+            # raise Exception("dataset_key is None, please give a dataset name")
+        # kwargs.update({'datasetKey': dataset_key})
+
+        s = time.time()
+
+        d = self.db.Model.find_one(filter=kwargs, sort=sort)
+
+        if d is not None:
+            params_id = d['params_id']
+            graphs = d['architecture']
+            _datetime = d['time']
+            # print(graphs)
+            exists_or_mkdir('__ztemp', False)
+            with open(os.path.join('__ztemp', 'graph.pkl'), 'wb') as file:
+                pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+        else:
+            print("[TensorDB] FAIL! Cannot find model: {}".format(kwargs))
+            return False
+        try:
+
+            params = self._deserialization(self.model_fs.get(params_id).read())
+            # print(params)
+            np.savez(os.path.join('__ztemp', 'params.npz'), params=params)
+
+            network = load_graph_and_params(name='__ztemp', sess=sess)
+            del_folder('__ztemp')
+
+            pc = self.db.Model.find(kwargs)
+            print("[TensorDB] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(kwargs, sort, _datetime, round(time.time() - s, 2)))
+
+            # check whether more parameters match the requirement
+            params_id_list = pc.distinct('params_id')
+            n_params = len(params_id_list)
+            if n_params != 1:
+                print("     Note that there are {} models match the requirement".format(n_params))
+            return network
+        except Exception as e:
+            print(e)
+            return False
+
+    ## =========================== DATASET =============================== ##
     def save_dataset(self, dataset=None, dataset_key=None, **kwargs):
-        """ Save dataset into database.
+        """Saves one dataset into database, timestamp will be added automatically.
 
         Parameters
         ----------
@@ -250,11 +234,10 @@ class TensorHub(object):
         ---------
         boolean : Return True if save success, otherwise, return False.
         """
+        self._fill_project_info(kwargs)
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
         kwargs.update({'datasetKey': dataset_key})
-
-        # self._fill_experiment_info(kwargs)
 
         s = time.time()
         try:
@@ -270,14 +253,14 @@ class TensorHub(object):
             return False
 
     def find_one_dataset(self, dataset_key=None, sort=None, **kwargs):
-        """ Find one dataset from database that match with the requirement.
+        """Finds and returns a dataset from the database which matches the requirement.
 
         Parameters
         ----------
         dataset_key : str
             The name/key of dataset.
-        sort : XX
-            see mongodb
+        sort : List of tuple
+            PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
         kwargs : other events
             Other events, such as description, author and etc (optinal).
 
@@ -294,6 +277,7 @@ class TensorHub(object):
         dataset : the dataset or False
             Return False if nothing found.
         """
+        self._fill_project_info(kwargs)
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
         kwargs.update({'datasetKey': dataset_key})
@@ -305,7 +289,7 @@ class TensorHub(object):
         if d is not None:
             dataset_id = d['dataset_id']
         else:
-            print("[TensorDB] FAIL! Cannot find: {}".format(kwargs))
+            print("[TensorDB] FAIL! Cannot find dataset: {}".format(kwargs))
             return False
         try:
             dataset = self._deserialization(self.dataset_fs.get(dataset_id).read())
@@ -322,7 +306,7 @@ class TensorHub(object):
             return False
 
     def find_all_datasets(self, dataset_key=None, **kwargs):
-        """ Find all datasets from database that match with the requirement.
+        """Finds and returns all datasets from the database which matches the requirement.
 
         Parameters
         ----------
@@ -335,6 +319,7 @@ class TensorHub(object):
         --------
         params : the parameters, return False if nothing found.
         """
+        self._fill_project_info(kwargs)
         if dataset_key is None:
             raise Exception("dataset_key is None, please give a dataset name")
         kwargs.update({'datasetKey': dataset_key})
@@ -355,8 +340,300 @@ class TensorHub(object):
         print("[TensorDB] Find {} datasets SUCCESS, took: {}s".format(len(dataset_list), round(time.time() - s, 2)))
         return dataset_list
 
+    ## =========================== LOGGING =============================== ##
+    def train_log(self, **kwargs):
+        """Saves the training log, timestamp will be added automatically.
 
-""" ======================================================================== """
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.train_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_project_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.TrainLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] train log: " + _log)
+
+    def valid_log(self, **kwargs):
+        """Saves the validation log, timestamp will be added automatically.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.valid_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_project_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.ValidLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] valid log: " + _log)
+
+    def test_log(self, **kwargs):
+        """Saves the testing log, timestamp will be added automatically.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.test_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_project_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.TestLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] test log: " + _log)
+
+    def del_train_log(self, **kwargs):
+        """Deletes training log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - Save training log
+        >>> db.train_log(accuray=0.33)
+        >>> db.train_log(accuray=0.44)
+
+        - Delete logs that match the requirement
+        >>> db.del_train_log(accuray=0.33)
+
+        - Delete all logs
+        >>> db.del_train_log()
+        """
+        self._fill_project_info(kwargs)
+        self.db.TrainLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete TrainLog SUCCESS")
+
+    def del_valid_log(self, **kwargs):
+        """Deletes validation log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - see ``train_log``.
+        """
+        self._fill_project_info(kwargs)
+        self.db.ValidLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete ValidLog SUCCESS")
+
+    def del_test_log(self, **kwargs):
+        """Deletes testing log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - see ``train_log``.
+        """
+        self._fill_project_info(kwargs)
+        self.db.TestLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete TestLog SUCCESS")
+
+    ## =========================== JOB =================================== ##
+    def push_task(self, task_key=None, script=None, hyper_parameters=None, result_key=None, **kwargs):
+        """Uploads a task to the database, timestamp will be added automatically.
+
+        Parameters
+        -----------
+        task_key : str
+            The task name.
+        script : str
+            Directory of the python script.
+        hyper_parameters : dictionary
+            XXX
+        kwargs : other parameters
+            Users customized parameters such as description, version number.
+
+        Examples
+        -----------
+        - Uploads a task
+        >>> db.push_task(task_key='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
+
+        - Finds and runs the latest task
+        >>> db.run_one_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
+        """
+        if not isinstance(task_key, str):# is None:
+            raise Exception("task_key should be string")
+        if not isinstance(script, str):# is None:
+            raise Exception("script should be string")
+        if hyper_parameters is None:
+            hyper_parameters = {}
+        if result_key is None:
+            result_key = []
+
+        self._fill_project_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        kwargs.update({'hyper_parameters': hyper_parameters})
+        kwargs.update({'result_key': result_key})
+
+        _script = open(script, 'rb').read()
+
+        kwargs.update({'status': 'pending', 'script': _script})
+        self.db.Task.insert_one(kwargs)
+        logging.info("[TensorDB] Saved Task: {} / {}".format(task_key, script))
+
+
+    def run_one_task(self, task_key=None, sort=None, **kwargs):
+        """Finds and runs a pending task.
+
+        Parameters
+        -----------
+        task_key : str
+            The task name.
+        sort : List of tuple
+            PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
+        kwargs : other parameters
+            Users customized parameters such as description, version number.
+
+        Examples
+        ---------
+        - see ``push_task``
+
+        Returns
+        --------
+        boolean : True for success, False for fail.
+        """
+        if not isinstance(task_key, str):# is None:
+            raise Exception("task_key should be string")
+        self._fill_project_info(kwargs)
+        kwargs.update({'status': 'pending'})
+
+        ## find task and set status to running
+        # task = self.db.Task.find_one(kwargs)
+        task = self.db.Task.find_one_and_update(kwargs, {'$set': {'status': 'running'}})#, return_document=ReturnDocument.AFTER)
+
+        if task is None:
+            logging.info("[TensorDB] Find Task FAIL: key: {} sort: {}".format(task_key, sort))
+            return False
+        _datetime = task['time']
+        _script = task['script']
+        _id = task['_id']
+        _hyper_parameters = task['hyper_parameters']
+        _result_key = task['result_key']
+        for key in _hyper_parameters:
+            globals()[key] = _hyper_parameters[key]
+        # print(batch_size)
+
+        ## run task
+        # f = open('__ztemp.py', 'wb')
+        # f.write(task['script'])
+        # f.close()
+        s = time.time()
+        logging.info("[TensorDB] Start Task: key: {} sort: {} push time: {}".format(task_key, sort, _datetime))
+        # os.system("python __ztemp.py")
+        s = _script.decode('utf-8')
+        exec(s)
+        # os.remove("__ztemp.py")
+        logging.info("[TensorDB] Finished Task: key: {} sort: {} push time: {} took: {}s".format(task_key, sort, _datetime, time.time()-s))
+
+        ## set status to finished
+        _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})
+
+        ## return results
+        __result__ = {}
+        for _key in _result_key:
+            __result__.update({_key, globals()[_key]})
+        _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'_result': __result__}})
+
+        return True
+
+    def del_task(self, **kwargs):
+        """Delete tasks.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        >>> db.del_task()
+        """
+        self._fill_project_info(kwargs)
+        self.db.Task.delete_many(kwargs)
+        logging.info("[TensorDB] Delete Task SUCCESS")
+
+    # def find_one_job(self, args=None):
+    #     """ Find a job from database
+    #
+    #     Parameters
+    #     ----------
+    #     args : dictionary, find items.
+    #
+    #     Returns
+    #     --------
+    #     dictionary : contains all meta data and script.
+    #     """
+    #
+    #     if args is None:
+    #         args = {}
+    #
+    #     temp = self.db.Job.find_one(args)
+    #
+    #     if temp is not None:
+    #         if 'script_name' in temp.keys():
+    #             f = open('_' + temp['script_name'], 'wb')
+    #             f.write(temp['script'])
+    #             f.close()
+    #         print("[TensorDB] Find Job: {}".format(args))
+    #     else:
+    #         print("[TensorDB] FAIL! Cannot find any: {}".format(args))
+    #         return False
+    #
+    #     return temp
+    #
+    # def peek_job(self):
+    #     args = {'Running': False}
+    #     self.__autofill(args)
+    #     m = self.db.JOBS.find_one(args)
+    #     print(m)
+    #     if m is None:
+    #         return False
+    #
+    #     s = self.paramsfs.get(m['weight']).read()
+    #     w = self.__deserialization(s)
+    #
+    #     ach = self.archfs.get(m['model']).read()
+    #
+    #     return m['_id'], ach, w, m["dargs"], m['epoch']
+    #
+    # def run_job(self, jid):
+    #     self.db.JOBS.find_one_and_update({'_id': jid}, {'$set': {'Running': True, "Since": datetime.utcnow()}})
+    #
+    # def del_job(self, jid):
+    #     self.db.JOBS.find_one_and_update({'_id': jid}, {'$set': {'Running': True, "Finished": datetime.utcnow()}})
+
+
+    @staticmethod
+    def _print_dict(args):
+        # return " / ".join(str(key) + ": "+ str(value) for key, value in args.items())
+        string = ''
+        for key, value in args.items():
+            if key is not '_id':
+                string += str(key) + ": " + str(value) + " / "
+        return string
 
 
 def AutoFill(func):
