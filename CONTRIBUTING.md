@@ -23,38 +23,31 @@ to apply those tools before submitting your PR.
 ## Build from sources
 
 ```bash
-# First clone the repository
+# First clone the repository and change the current directory to the newly cloned repository
 git clone https://github.com/tensorlayer/tensorlayer.git
 cd tensorlayer
 
 # Install virtualenv if necessary
 pip install virtualenv
 
-# Then create a virtualenv called venv inside
+# Then create a virtualenv called `venv`
 virtualenv venv
 
 # Activate the virtualenv  
 
-# Linux:
+## Linux:
 source venv/bin/activate
 
-# Windows:
+## Windows:
 venv\Scripts\activate.bat
-
-# ============= IF TENSORFLOW IS ALREADY INSTALLED ============= #
-pip install -e .[all]
 
 # ============= IF TENSORFLOW IS NOT ALREADY INSTALLED ============= #
 
 # for a machine **without** an NVIDIA GPU
-pip install -e .[tf_cpu,db,dev,doc,extra,test]
-# or
-pip install -e .[all_cpu]
+pip install -e .[all_cpu_dev] --upgrade
 
 # for a machine **with** an NVIDIA GPU
-pip install -e .[tf_gpu,db,dev,doc,extra,test]
-# or
-pip install -e .[all_gpu]
+pip install -e .[all_gpu_dev] --upgrade
 ```
 
 Launching the unittest:

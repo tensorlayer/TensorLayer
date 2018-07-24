@@ -20,11 +20,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 
 import tensorflow as tf
-
 import tensorlayer as tl
-
-from tensorlayer import tl_logging as logging
-from tensorlayer import iterate
 
 __all__ = [
     'fit',
@@ -119,7 +115,7 @@ def fit(
         raise AssertionError("Number of training examples should be bigger than the batch size")
 
     if (tensorboard):
-        logging.info("Setting up tensorboard ...")
+        tl.logging.info("Setting up tensorboard ...")
         #Set up tensorboard summaries and saver
         tl.files.exists_or_mkdir('logs/')
 
@@ -136,7 +132,7 @@ def fit(
         if (tensorboard_weight_histograms):
             for param in network.all_params:
                 if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
-                    logging.info('Param name %s' % param.name)
+                    tl.logging.info('Param name %s' % param.name)
                     tf.summary.histogram(param.name, param)
 
         if hasattr(tf, 'summary') and hasattr(tf.summary, 'histogram'):
@@ -146,16 +142,16 @@ def fit(
 
         #Initalize all variables and summaries
         tl.layers.initialize_global_variables(sess)
-        logging.info("Finished! use $tensorboard --logdir=logs/ to start server")
+        tl.logging.info("Finished! use $tensorboard --logdir=logs/ to start server")
 
-    logging.info("Start training the network ...")
+    tl.logging.info("Start training the network ...")
     start_time_begin = time.time()
     tensorboard_train_index, tensorboard_val_index = 0, 0
     for epoch in range(n_epoch):
         start_time = time.time()
         loss_ep = 0
         n_step = 0
-        for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+        for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
             feed_dict = {x: X_train_a, y_: y_train_a}
             feed_dict.update(network.all_drop)  # enable noise layers
             loss, _ = sess.run([cost, train_op], feed_dict=feed_dict)
@@ -165,7 +161,7 @@ def fit(
 
         if tensorboard and hasattr(tf, 'summary'):
             if epoch + 1 == 1 or (epoch + 1) % tensorboard_epoch_freq == 0:
-                for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+                for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
                     dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                     feed_dict = {x: X_train_a, y_: y_train_a}
                     feed_dict.update(dp_dict)
@@ -173,7 +169,7 @@ def fit(
                     train_writer.add_summary(result, tensorboard_train_index)
                     tensorboard_train_index += 1
                 if (X_val is not None) and (y_val is not None):
-                    for X_val_a, y_val_a in iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
+                    for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
                         dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                         feed_dict = {x: X_val_a, y_: y_val_a}
                         feed_dict.update(dp_dict)
@@ -183,10 +179,10 @@ def fit(
 
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             if (X_val is not None) and (y_val is not None):
-                logging.info("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
+                tl.logging.info("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
                 if eval_train is True:
                     train_loss, train_acc, n_batch = 0, 0, 0
-                    for X_train_a, y_train_a in iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
+                    for X_train_a, y_train_a in tl.iterate.minibatches(X_train, y_train, batch_size, shuffle=True):
                         dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                         feed_dict = {x: X_train_a, y_: y_train_a}
                         feed_dict.update(dp_dict)
@@ -197,11 +193,11 @@ def fit(
                             err = sess.run(cost, feed_dict=feed_dict)
                         train_loss += err
                         n_batch += 1
-                    logging.info("   train loss: %f" % (train_loss / n_batch))
+                    tl.logging.info("   train loss: %f" % (train_loss / n_batch))
                     if acc is not None:
-                        logging.info("   train acc: %f" % (train_acc / n_batch))
+                        tl.logging.info("   train acc: %f" % (train_acc / n_batch))
                 val_loss, val_acc, n_batch = 0, 0, 0
-                for X_val_a, y_val_a in iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
+                for X_val_a, y_val_a in tl.iterate.minibatches(X_val, y_val, batch_size, shuffle=True):
                     dp_dict = dict_to_one(network.all_drop)  # disable noise layers
                     feed_dict = {x: X_val_a, y_: y_val_a}
                     feed_dict.update(dp_dict)
@@ -212,14 +208,16 @@ def fit(
                         err = sess.run(cost, feed_dict=feed_dict)
                     val_loss += err
                     n_batch += 1
-                logging.info("   val loss: %f" % (val_loss / n_batch))
+
+                tl.logging.info("   val loss: %f" % (val_loss / n_batch))
+
                 if acc is not None:
-                    logging.info("   val acc: %f" % (val_acc / n_batch))
+                    tl.logging.info("   val acc: %f" % (val_acc / n_batch))
             else:
-                logging.info(
+                tl.logging.info(
                     "Epoch %d of %d took %fs, loss %f" % (epoch + 1, n_epoch, time.time() - start_time, loss_ep)
                 )
-    logging.info("Total training time: %fs" % (time.time() - start_time_begin))
+    tl.logging.info("Total training time: %fs" % (time.time() - start_time_begin))
 
 
 def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
@@ -256,19 +254,21 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
     >>> tl.utils.test(sess, network, acc, X_test, y_test, x, y_, batch_size=None, cost=cost)
 
     """
-    logging.info('Start testing the network ...')
+    tl.logging.info('Start testing the network ...')
     if batch_size is None:
         dp_dict = dict_to_one(network.all_drop)
         feed_dict = {x: X_test, y_: y_test}
         feed_dict.update(dp_dict)
+
         if cost is not None:
-            logging.info("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
-        logging.info("   test acc: %f" % sess.run(acc, feed_dict=feed_dict))
-        # logging.info("   test acc: %f" % np.mean(y_test == sess.run(y_op,
+            tl.logging.info("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
+
+        tl.logging.info("   test acc: %f" % sess.run(acc, feed_dict=feed_dict))
+        # tl.logging.info("   test acc: %f" % np.mean(y_test == sess.run(y_op,
         #                                           feed_dict=feed_dict)))
     else:
         test_loss, test_acc, n_batch = 0, 0, 0
-        for X_test_a, y_test_a in iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
+        for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
             dp_dict = dict_to_one(network.all_drop)  # disable noise layers
             feed_dict = {x: X_test_a, y_: y_test_a}
             feed_dict.update(dp_dict)
@@ -280,8 +280,8 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
             test_acc += ac
             n_batch += 1
         if cost is not None:
-            logging.info("   test loss: %f" % (test_loss / n_batch))
-        logging.info("   test acc: %f" % (test_acc / n_batch))
+            tl.logging.info("   test loss: %f" % (test_loss / n_batch))
+        tl.logging.info("   test acc: %f" % (test_acc / n_batch))
 
 
 def predict(sess, network, X, x, y_op, batch_size=None):
@@ -322,7 +322,7 @@ def predict(sess, network, X, x, y_op, batch_size=None):
         return sess.run(y_op, feed_dict=feed_dict)
     else:
         result = None
-        for X_a, _ in iterate.minibatches(X, X, batch_size, shuffle=False):
+        for X_a, _ in tl.iterate.minibatches(X, X, batch_size, shuffle=False):
             dp_dict = dict_to_one(network.all_drop)
             feed_dict = {
                 x: X_a,
@@ -379,10 +379,10 @@ def evaluation(y_test=None, y_predict=None, n_classes=None):
     f1 = f1_score(y_test, y_predict, average=None, labels=[x for x in range(n_classes)])
     f1_macro = f1_score(y_test, y_predict, average='macro')
     acc = accuracy_score(y_test, y_predict)
-    logging.info('confusion matrix: \n%s' % c_mat)
-    logging.info('f1-score        : %s' % f1)
-    logging.info('f1-score(macro) : %f' % f1_macro)  # same output with > f1_score(y_true, y_pred, average='macro')
-    logging.info('accuracy-score  : %f' % acc)
+    tl.logging.info('confusion matrix: \n%s' % c_mat)
+    tl.logging.info('f1-score        : %s' % f1)
+    tl.logging.info('f1-score(macro) : %f' % f1_macro)  # same output with > f1_score(y_true, y_pred, average='macro')
+    tl.logging.info('accuracy-score  : %f' % acc)
     return c_mat, f1, acc, f1_macro
 
 
@@ -447,19 +447,19 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
     """
     # ======== Classes balancing
     if printable:
-        logging.info("Classes balancing for training examples...")
+        tl.logging.info("Classes balancing for training examples...")
 
     c = Counter(y_train)
 
     if printable:
-        logging.info('the occurrence number of each stage: %s' % c.most_common())
-        logging.info('the least stage is Label %s have %s instances' % c.most_common()[-1])
-        logging.info('the most stage is  Label %s have %s instances' % c.most_common(1)[0])
+        tl.logging.info('the occurrence number of each stage: %s' % c.most_common())
+        tl.logging.info('the least stage is Label %s have %s instances' % c.most_common()[-1])
+        tl.logging.info('the most stage is  Label %s have %s instances' % c.most_common(1)[0])
 
     most_num = c.most_common(1)[0][1]
 
     if printable:
-        logging.info('most num is %d, all classes tend to be this num' % most_num)
+        tl.logging.info('most num is %d, all classes tend to be this num' % most_num)
 
     locations = {}
     number = {}
@@ -468,14 +468,14 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
         number[lab] = num
         locations[lab] = np.where(np.array(y_train) == lab)[0]
     if printable:
-        logging.info('convert list(np.array) to dict format')
+        tl.logging.info('convert list(np.array) to dict format')
     X = {}  # convert list to dict
     for lab, num in number.items():
         X[lab] = X_train[locations[lab]]
 
     # oversampling
     if printable:
-        logging.info('start oversampling')
+        tl.logging.info('start oversampling')
     for key in X:
         temp = X[key]
         while True:
@@ -483,28 +483,28 @@ def class_balancing_oversample(X_train=None, y_train=None, printable=True):
                 break
             X[key] = np.vstack((X[key], temp))
     if printable:
-        logging.info('first features of label 0 > %d' % len(X[0][0]))
-        logging.info('the occurrence num of each stage after oversampling')
+        tl.logging.info('first features of label 0 > %d' % len(X[0][0]))
+        tl.logging.info('the occurrence num of each stage after oversampling')
     for key in X:
-        logging.info("%s %d" % (key, len(X[key])))
+        tl.logging.info("%s %d" % (key, len(X[key])))
     if printable:
-        logging.info('make each stage have same num of instances')
+        tl.logging.info('make each stage have same num of instances')
     for key in X:
         X[key] = X[key][0:most_num, :]
-        logging.info("%s %d" % (key, len(X[key])))
+        tl.logging.info("%s %d" % (key, len(X[key])))
 
     # convert dict to list
     if printable:
-        logging.info('convert from dict to list format')
+        tl.logging.info('convert from dict to list format')
     y_train = []
     X_train = np.empty(shape=(0, len(X[0][0])))
     for key in X:
         X_train = np.vstack((X_train, X[key]))
         y_train.extend([key for i in range(len(X[key]))])
-    # logging.info(len(X_train), len(y_train))
+    # tl.logging.info(len(X_train), len(y_train))
     c = Counter(y_train)
     if printable:
-        logging.info('the occurrence number of each stage after oversampling: %s' % c.most_common())
+        tl.logging.info('the occurrence number of each stage after oversampling: %s' % c.most_common())
     # ================ End of Classes balancing
     return X_train, y_train
 
@@ -563,21 +563,21 @@ def exit_tensorflow(sess=None, port=6006):
         sess.close()
 
     if _platform == "linux" or _platform == "linux2":
-        logging.info('linux: %s' % text)
+        tl.logging.info('linux: %s' % text)
         os.system('nvidia-smi')
         os.system('fuser ' + port + '/tcp -k')  # kill tensorboard 6006
         os.system("nvidia-smi | grep python |awk '{print $3}'|xargs kill")  # kill all nvidia-smi python process
         _exit()
 
     elif _platform == "darwin":
-        logging.info('OS X: %s' % text)
+        tl.logging.info('OS X: %s' % text)
         subprocess.Popen("lsof -i tcp:" + str(port) + "  | grep -v PID | awk '{print $2}' | xargs kill",
                          shell=True)  # kill tensorboard
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
 
     else:
-        logging.info(text2 + _platform)
+        tl.logging.info(text2 + _platform)
 
 
 def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
@@ -595,19 +595,19 @@ def open_tensorboard(log_dir='/tmp/tensorflow', port=6006):
     text2 = " not yet supported by this function (tl.ops.open_tb)"
 
     if not tl.files.exists_or_mkdir(log_dir, verbose=False):
-        logging.info("[TL] Log reportory was created at %s" % log_dir)
+        tl.logging.info("[TL] Log reportory was created at %s" % log_dir)
 
     if _platform == "linux" or _platform == "linux2":
         raise NotImplementedError()
     elif _platform == "darwin":
-        logging.info('OS X: %s' % text)
+        tl.logging.info('OS X: %s' % text)
         subprocess.Popen(
             sys.prefix + " | python -m tensorflow.tensorboard --logdir=" + log_dir + " --port=" + str(port), shell=True
         )  # open tensorboard in localhost:6006/ or whatever port you chose
     elif _platform == "win32":
         raise NotImplementedError("this function is not supported on the Windows platform")
     else:
-        logging.info(_platform + text2)
+        tl.logging.info(_platform + text2)
 
 
 def clear_all_placeholder_variables(printable=True):
@@ -620,7 +620,7 @@ def clear_all_placeholder_variables(printable=True):
         If True, print all deleted variables.
 
     """
-    logging.info('clear all .....................................')
+    tl.logging.info('clear all .....................................')
     gl = globals().copy()
     for var in gl:
         if var[0] == '_': continue
@@ -629,7 +629,7 @@ def clear_all_placeholder_variables(printable=True):
         if 'class' in str(globals()[var]): continue
 
         if printable:
-            logging.info(" clear_all ------- %s" % str(globals()[var]))
+            tl.logging.info(" clear_all ------- %s" % str(globals()[var]))
 
         del globals()[var]
 
@@ -647,7 +647,7 @@ def set_gpu_fraction(gpu_fraction=0.3):
     - `TensorFlow using GPU <https://www.tensorflow.org/versions/r0.9/how_tos/using_gpu/index.html>`__
 
     """
-    logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
+    tl.logging.info("[TL]: GPU MEM Fraction %f" % gpu_fraction)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
     sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
     return sess
