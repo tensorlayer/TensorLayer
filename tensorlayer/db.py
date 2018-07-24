@@ -452,7 +452,7 @@ class TensorHub(object):
         logging.info("[TensorDB] Delete TestLog SUCCESS")
 
     ## =========================== JOB =================================== ##
-    def push_task(self, task_key=None, script=None, hyper_parameters=None, **kwargs):
+    def push_task(self, task_key=None, script=None, hyper_parameters=None, result_key=None, **kwargs):
         """Uploads a task to the database, timestamp will be added automatically.
 
         Parameters
@@ -461,24 +461,32 @@ class TensorHub(object):
             The task name.
         script : str
             Directory of the python script.
+        hyper_parameters : dictionary
+            XXX
         kwargs : other parameters
             Users customized parameters such as description, version number.
 
         Examples
         -----------
-        - Uploads a job
-        >>> XXX
+        - Uploads a task
+        >>> db.push_task(task_key='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
 
-        - Finds and runs the latest job.
-        >>> db.run_one_job(sess=sess, sort=[("time", pymongo.DESCENDING)])
+        - Finds and runs the latest task
+        >>> db.run_one_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
         """
         if not isinstance(task_key, str):# is None:
             raise Exception("task_key should be string")
         if not isinstance(script, str):# is None:
             raise Exception("script should be string")
+        if hyper_parameters is None:
+            hyper_parameters = {}
+        if result_key is None:
+            result_key = []
 
         self._fill_project_info(kwargs)
         kwargs.update({'time': datetime.utcnow()})
+        kwargs.update({'hyper_parameters': hyper_parameters})
+        kwargs.update({'result_key': result_key})
 
         _script = open(script, 'rb').read()
 
@@ -499,6 +507,10 @@ class TensorHub(object):
         kwargs : other parameters
             Users customized parameters such as description, version number.
 
+        Examples
+        ---------
+        - see ``push_task``
+
         Returns
         --------
         boolean : True for success, False for fail.
@@ -516,20 +528,35 @@ class TensorHub(object):
             logging.info("[TensorDB] Find Task FAIL: key: {} sort: {}".format(task_key, sort))
             return False
         _datetime = task['time']
+        _script = task['script']
         _id = task['_id']
+        _hyper_parameters = task['hyper_parameters']
+        _result_key = task['result_key']
+        for key in _hyper_parameters:
+            globals()[key] = _hyper_parameters[key]
+        # print(batch_size)
 
         ## run task
-        f = open('__ztemp.py', 'wb')
-        f.write(task['script'])
-        f.close()
+        # f = open('__ztemp.py', 'wb')
+        # f.write(task['script'])
+        # f.close()
         s = time.time()
         logging.info("[TensorDB] Start Task: key: {} sort: {} push time: {}".format(task_key, sort, _datetime))
-        os.system("python __ztemp.py")
-        os.remove("__ztemp.py")
+        # os.system("python __ztemp.py")
+        s = _script.decode('utf-8')
+        exec(s)
+        # os.remove("__ztemp.py")
         logging.info("[TensorDB] Finished Task: key: {} sort: {} push time: {} took: {}s".format(task_key, sort, _datetime, time.time()-s))
 
         ## set status to finished
         _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'finished'}})
+
+        ## return results
+        __result__ = {}
+        for _key in _result_key:
+            __result__.update({_key, globals()[_key]})
+        _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'_result': __result__}})
+
         return True
 
     def del_task(self, **kwargs):
