@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize
+from tensorlayer.layers.utils import _quantize
 
 from tensorlayer import logging
 
@@ -79,7 +79,7 @@ class BinaryDenseLayer(Layer):
                 name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
             # W = tl.act.sign(W)    # dont update ...
-            W = quantize(W)
+            W = _quantize(W)
             # W = tf.Variable(W)
             # print(W)
 

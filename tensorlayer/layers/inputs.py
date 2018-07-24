@@ -30,15 +30,32 @@ class InputLayer(Layer):
 
     """
 
-    def __init__(self, inputs, name='input'):
+    def __init__(self, inputs=None, name='input'):
 
-        super(InputLayer, self).__init__(prev_layer=inputs, name=name)
+        self.prev_layer = inputs
+        self.name = name
 
-        logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        super(InputLayer, self).__init__()
 
-        self.outputs = inputs
+    def __str__(self):
 
+        additional_str = []
+
+        try:
+            additional_str.append("shape: %s" % self.inputs.get_shape())
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def __call__(self, inputs):
+
+        super(InputLayer, self).__call__(inputs)
+
+        self.outputs = self.inputs
         self._add_layers(self.outputs)
+
+        return self
 
 
 class OneHotInputLayer(Layer):

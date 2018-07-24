@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize
+from tensorlayer.layers.utils import _quantize
 
 from tensorlayer import logging
 
@@ -129,7 +129,7 @@ class BinaryConv2d(Layer):
                 name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
             )
 
-            W = quantize(W)
+            W = _quantize(W)
 
             self.outputs = tf.nn.conv2d(
                 self.inputs, W, strides=strides, padding=padding, use_cudnn_on_gpu=use_cudnn_on_gpu,

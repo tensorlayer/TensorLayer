@@ -14,6 +14,7 @@ from tensorlayer.layers.utils import list_remove_repeat
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import deprecated
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
@@ -22,11 +23,13 @@ __all__ = [
     'LayersConfig',
     'TF_GRAPHKEYS_VARIABLES',
     'Layer',
+    'BaseLayer',
 ]
 
 
 @six.add_metaclass(ABCMeta)
 class LayersConfig(object):
+
 
     tf_dtype = tf.float32  # TensorFlow DType
     set_keep = {}  # A dictionary for holding tf.placeholders
@@ -39,7 +42,7 @@ class LayersConfig(object):
 TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
 
 
-class Layer(object):
+class BaseLayer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
@@ -109,90 +112,6 @@ class Layer(object):
     Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
-    # Added to allow auto-completion
-
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
-
-        self.inputs = None
-        self.outputs = None
-        self.graph = {}
-        self.all_layers = list()
-        self.all_params = list()
-        self.all_drop = dict()
-        self.all_graphs = list()
-
-        self.layer_args = self._get_init_args(skip=4)
-
-        if name is None:
-            raise ValueError('Layer must have a name.')
-
-        for key in kwargs.keys():
-            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
-
-        self.act = act if act not in [None, tf.identity] else None
-
-        scope_name = tf.get_variable_scope().name
-
-        self.name = scope_name + '/' + name if scope_name else name
-
-        if isinstance(prev_layer, Layer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
-            # Hint : list(), dict() is pass by value (shallow), without them,
-            # it is pass by reference.
-
-            self.inputs = prev_layer.outputs
-
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
-
-        elif isinstance(prev_layer, list):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
-
-            self.inputs = [layer.outputs for layer in prev_layer]
-
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
-
-        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
-
-            self.inputs = prev_layer
-
-            self._add_graphs((self.inputs.name, #.split(':')[0],
-                {'shape': self.inputs.get_shape().as_list(),
-                'dtype': self.inputs.dtype.name, 'class': 'placeholder',
-                'prev_layer': None}))
-
-        elif prev_layer is not None:
-            # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-            self._add_graphs(prev_layer.all_graphs)
-
-            if hasattr(prev_layer, "outputs"):
-                self.inputs = prev_layer.outputs
-
-        ## TL Graph
-        # print(act, name, args, kwargs)
-        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
-        # if act:  ## convert activation from function to string
-        #     try:
-        #         act = act.__name__
-        #     except:
-        #         pass
-        #     self.graph.update({'act': act})
-        # print(self.layer_args)
-        self.graph.update(self.layer_args)
-        # print(self.graph)
-        self._add_graphs((self.name, self.graph))
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -384,3 +303,129 @@ class Layer(object):
     #
     # def __setstate__(self, state): # pickle restore
     #     self.outputs = state['outputs']
+
+
+class Layer(BaseLayer):
+
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+
+        self.is_setup = False
+
+        self.inputs = None
+        self.outputs = None
+
+        self.graph = {}
+
+        self.all_layers = list()
+        self.all_params = list()
+        self.all_drop = dict()
+        self.all_graphs = list()
+
+        self.layer_args = self._get_init_args(skip=4)
+
+        if self.name is None:
+            raise ValueError('%s must have a name.' % self.__class__.__name__)
+        else:
+            scope_name = tf.get_variable_scope().name
+            self.name = scope_name + '/' + self.name if scope_name else self.name
+
+        for key in kwargs.keys():
+            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
+
+        self.act = self.act if hasattr(self, "act") and self.act not in [None, tf.identity] else None
+
+        if hasattr(self, "prev_layer") and self.prev_layer is not None:
+            self.__call__(self.prev_layer)
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    def _str(self, additional_str=list()):
+
+        if len(additional_str) > 0:
+            additional_str = ", ".join(additional_str)
+        else:
+            additional_str = None
+
+        _str = "%s: " % self.__class__.__name__
+
+        if self.is_setup:
+            _str += "`%s`" % self.name
+
+            if additional_str is not None:
+                _str += " - %s" % additional_str
+        else:
+            _str += "setup process not finished"
+
+        return _str
+
+    @abstractmethod
+    @protected_method
+    def __call__(self, prev_layer):
+
+        if isinstance(prev_layer, Layer):
+            # 1. for normal layer have only 1 input i.e. DenseLayer
+            # Hint : list(), dict() is pass by value (shallow), without them,
+            # it is pass by reference.
+
+            self.inputs = prev_layer.outputs
+
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
+
+        elif isinstance(prev_layer, list):
+            # 2. for layer have multiply inputs i.e. ConcatLayer
+
+            self.inputs = [layer.outputs for layer in prev_layer]
+
+            self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            self._add_params(sum([l.all_params for l in prev_layer], []))
+            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
+
+        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
+            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
+                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
+                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+
+            self.inputs = prev_layer
+
+            self._add_graphs((self.inputs.name,  # .split(':')[0],
+                              {'shape': self.inputs.get_shape().as_list(),
+                               'dtype': self.inputs.dtype.name, 'class': 'placeholder',
+                               'prev_layer': None}))
+
+        elif prev_layer is not None:
+            # 4. tl.models
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
+
+            if hasattr(prev_layer, "outputs"):
+                self.inputs = prev_layer.outputs
+
+        ## TL Graph
+        # print(act, name, args, kwargs)
+        prev_layer_name = prev_layer.name if hasattr(prev_layer, "name") else ''
+
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer_name})
+        # if act:  ## convert activation from function to string
+        #     try:
+        #         act = act.__name__
+        #     except:
+        #         pass
+        #     self.graph.update({'act': act})
+        # print(self.layer_args)
+        self.graph.update(self.layer_args)
+        # print(self.graph)
+        self._add_graphs((self.name, self.graph))
+
+        self.is_setup = True
+        logging.info(str(self))

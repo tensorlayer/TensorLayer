@@ -9,27 +9,7 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-from tensorlayer.lazy_imports import LazyImport
+from .core import BaseNetwork
+from .sequential import Sequential
 
-from .tl_logging import *
-
-# Lazy Imports
-contrib = LazyImport("tensorlayer.logging.contrib")
-
-__all__ = [
-    # tl_logging
-    'DEBUG',
-    'debug',
-    'ERROR',
-    'error',
-    'FATAL',
-    'fatal',
-    'INFO',
-    'info',
-    'WARN',
-    'warn',
-    'warning',
-    'set_verbosity',
-    'get_verbosity',
-    'temp_verbosity',
-]
+__all__ = ['BaseNetwork', 'Sequential']

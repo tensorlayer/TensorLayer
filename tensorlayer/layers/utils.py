@@ -23,7 +23,7 @@ __all__ = [
     'list_remove_repeat',
     'merge_networks',
     'print_all_variables',
-    'quantize',
+    '_quantize',
     'quantize_active',
     'quantize_weight',
     'set_name_reuse',
@@ -339,7 +339,7 @@ def print_all_variables(train_only=False):
         logging.info("  var {:3}: {:15}   {}".format(idx, str(v.get_shape()), v.name))
 
 
-def quantize(x):
+def _quantize(x):
     # ref: https://github.com/AngusG/tensorflow-xnor-bnn/blob/master/models/binary_net.py#L70
     #  https://github.com/itayhubara/BinaryNet.tf/blob/master/nnUtils.py
     with tf.get_default_graph().gradient_override_map({"Sign": "TL_Sign_QuantizeGrad"}):
