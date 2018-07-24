@@ -1,0 +1,9 @@
+# https://support.codacy.com/hc/en-us/articles/115002130625-Codacy-Configuration-File
+---
+engines:
+  bandit:
+    enabled: false # FIXME: make it work
+exclude_paths:
+- scripts/*
+- setup.py
+- docker/**/*
