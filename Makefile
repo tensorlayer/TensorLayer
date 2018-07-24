@@ -44,3 +44,9 @@ format:
 
 install3:
 	pip3 install -U . --user
+
+
+TAG = tensorlayer-docs:snaphot
+
+doc:
+	docker build --rm -t $(TAG) -f docker/docs/Dockerfile .
