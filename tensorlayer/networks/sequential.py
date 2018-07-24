@@ -73,15 +73,14 @@ class Sequential(BaseNetwork):
 
         super(Sequential, self).__init__(name)
 
+        self.add(layers.InputLayer(name='input_layer'))
+
         '''
         # Add to the model any layers passed to the constructor.
         if layers:
             for layer in layers:
                 self.add(layer)
         '''
-
-    def __str__(self):
-        return "Sequential Model: `%s`" % self.name
 
     def add(self, layer):
         """Adds a layer instance on top of the layer stack.
@@ -99,23 +98,41 @@ class Sequential(BaseNetwork):
         if not isinstance(layer, layers.Layer):
             raise TypeError('The added layer must be an instance of class Layer. Found: %s' % type(layer))
 
-        if isinstance(layer, layers.InputLayer):
+        if len(self.all_layers) > 0 and isinstance(layer, layers.InputLayer):
             raise TypeError('No need to add another `InputLayer`, it is automatically added to the network')
 
-        self._layers.append(layer)
+        if layer.name in self.all_layers_dict.keys():
+            raise ValueError("The layer name `%s` already exists in this network" % layer.name)
 
-    def compile(self, input_plh):
+        self.all_layers_dict[layer.name] = layer
+        self.all_layers.append(layer.name)
 
-        self._net = self._layers[0](input_plh)
+    def compile(self, input_plh, reuse=False, is_train=True):
 
-        for layer in self._layers[1:]:
-            self._net = layer(self._net)
+        logging.info("** Compiling Model - reuse: %s, is_train: %s **" % (reuse, is_train))
 
-        self.outputs = self._net.outputs
+        with logging.temp_handler("    [*]"):
 
-        self.is_compiled = True
+            _net = self.all_layers_dict[self.all_layers[0]](input_plh)
 
-        '''
+            with tf.variable_scope(self.name, reuse=reuse):
+                for layer in self.all_layers[1:]:
+                    _net = self.all_layers_dict[layer](_net)
+
+                    if not reuse:
+                        self.all_params += _net._local_weights
+
+            if not reuse:
+                self._net = _net
+                self.outputs = self._net.outputs
+                self.is_compiled = True
+
+        return self.outputs
+
+    def __getitem__(self, layer_name):
+        return self.all_layers_dict[layer_name]
+
+    '''
         if not self._layers:
             set_inputs = False
             # First layer in model: check that it is an input layer.
@@ -181,7 +198,7 @@ class Sequential(BaseNetwork):
             self.build()
         else:
             self._layers.append(layer)
-        '''
+    '''
 
     '''
     @property
