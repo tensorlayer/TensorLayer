@@ -122,6 +122,8 @@ class Layer(object):
         self.all_drop = dict()
         self.all_graphs = list()
 
+        self.layer_args = self._get_init_args(skip=4)
+
         if name is None:
             raise ValueError('Layer must have a name.')
 
@@ -179,15 +181,18 @@ class Layer(object):
                 self.inputs = prev_layer.outputs
 
         ## TL Graph
+
         # print(act, name, args, kwargs)
         self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
-        if act:  ## convert activation from function to string
-            try:
-                act = act.__name__
-            except:
-                pass
-            self.graph.update({'act': act})
-        self.graph.update(kwargs)
+        # if act:  ## convert activation from function to string
+        #     try:
+        #         act = act.__name__
+        #     except:
+        #         pass
+        #     self.graph.update({'act': act})
+        # print(self.layer_args)
+        self.graph.update(self.layer_args)
+        # print(self.graph)
         self._add_graphs((self.name, self.graph))
 
     def print_params(self, details=True, session=None):
@@ -279,8 +284,8 @@ class Layer(object):
         return len(self.all_layers)
 
     @protected_method
-    def _get_init_args(self, skip=2):
-
+    def _get_init_args(self, skip=4):
+        """Get all arguments of current layer for saving the graph. """
         stack = inspect.stack()
 
         if len(stack) < skip + 1:
@@ -292,13 +297,18 @@ class Layer(object):
 
         for arg in args:
 
-            if values[arg] is not None and arg not in ['self', 'prev_layer']:
+            ## some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
 
                 val = values[arg]
 
+                ## change function (e.g. act) into dictionary of module path and function name
                 if inspect.isfunction(val):
                     params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
-
+                ## ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+                ## for other data type, save them directly
                 else:
                     params[arg] = val
 
