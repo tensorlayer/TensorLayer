@@ -2,7 +2,7 @@
 set -e
 
 pwd
-SCRIPT_DIR=$(dirname $0)
+SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 
 [ ! -z "$1" ] && export PATH=$1:$PATH
 
