@@ -67,4 +67,6 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
+    'save_graph',
+    'load_graph',
 ]

@@ -181,7 +181,6 @@ class Layer(object):
                 self.inputs = prev_layer.outputs
 
         ## TL Graph
-
         # print(act, name, args, kwargs)
         self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
         # if act:  ## convert activation from function to string

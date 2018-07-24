@@ -3,7 +3,6 @@
 
 import os
 import sys
-
 import gzip
 import math
 import pickle
@@ -14,7 +13,7 @@ import shutil
 import tarfile
 import time
 import zipfile
-
+import importlib
 from tqdm import tqdm
 
 from six.moves import cPickle
@@ -42,8 +41,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
+import tensorlayer as tl
 from tensorlayer import logging
-
 from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
@@ -72,6 +71,8 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
+    'save_graph',
+    'load_graph',
 ]
 
 
@@ -1891,6 +1892,110 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
 
+def save_graph(network=None, name='graph.pkl'):
+    """Save the architecture of TL model into a pickle file.
+
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The name of graph file.
+
+    Examples
+    --------
+    - Save the architecture
+    >>> tl.files.save_graph(net_test, 'graph.pkl')
+
+    - Load the architecture (no parameters restore)
+    >>> net = tl.files.load_graph('graph.pkl')
+    """
+    graphs = network.all_graphs
+    with open(name, 'wb') as file:
+        return pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+def load_graph(name='model.pkl'):
+    """Restore TL model archtecture from a a pickle file.
+
+    Parameters
+    -----------
+    name : str
+        The name of graph file.
+
+    Returns
+    --------
+    network : TensorLayer layer
+        The input placeholder are attributes of the returned TL layer object.
+
+    Examples
+    --------
+    - see ``tl.files.save_graph``
+    """
+    logging.info("Loading TL graph from {}".format(name))
+    with open(name, 'rb') as file:
+        graphs = pickle.load(file)
+
+    input_list = list()
+    # input_dict = dict()
+    layer_dict = dict()
+    ## loop every layers
+    for graph in graphs:
+        ## get current layer class
+        name, layer_kwargs = graph
+        layer_class = layer_kwargs.pop('class')     # class of current layer
+        prev_layer = layer_kwargs.pop('prev_layer') # name of previous layer
+
+        ## convert function dictionary into real function
+        for key in layer_kwargs: # set input placeholder into the lastest layer
+            fn_dict = layer_kwargs[key]
+            if key in ['act']:
+                module_path = fn_dict['module_path']
+                func_name   = fn_dict['func_name']
+                lib = importlib.import_module(module_path)
+                fn = getattr(lib, func_name)
+                layer_kwargs[key] = fn
+                # print(key, layer_kwargs[key])
+        # print(name, prev_layer, layer_class, layer_kwargs)
+
+        if layer_class == 'placeholder': ## create placeholder
+            dtype = layer_kwargs.pop('dtype')
+            shape = layer_kwargs.pop('shape')
+            _placeholder = tf.placeholder(tf.float32, shape, name=name.split(':')[0]) #globals()['tf.'+dtype]
+            # input_dict.update({name: _placeholder})
+            input_list.append((name, _placeholder))
+        else:   ## create network
+            try:    # if previous layer is layer
+                net = layer_dict[prev_layer]
+                layer_kwargs.update({'prev_layer': net})
+            except: # if previous layer is input placeholder
+                for n, t in input_list:
+                    if n == prev_layer:
+                        _placeholder = t
+                layer_kwargs.update({'inputs': _placeholder})
+            layer_kwargs.update({'name': name})
+            # print(layer_kwargs)
+            net = eval('tl.layers.'+layer_class)(**layer_kwargs)
+            layer_dict.update({name: net})
+
+    ## rename placeholder e.g. x:0 --> x
+    for i, (n, t) in enumerate(input_list):
+
+        n_new = n.replace(':', '')
+        if n_new[-1] == '0':
+            n_new = n_new[:-1]
+        input_list[i] = (n_new, t)
+
+    ## put placeholder into network attributes
+    for n, t in input_list:
+        print(name, n, t)
+        layer_dict[name].__dict__.update({n: t})
+        logging.info("  attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
+    # for key in input_dict: # set input placeholder into the lastest layer
+    #     layer_dict[name].globals()[key] = input_dict[key]
+    #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
+
+    ## return the lastest layer as network
+    return layer_dict[name]
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.
