@@ -15,4 +15,11 @@ tar -xf *.tar.bz2
 pip install tensorflow==1.5.0 # must install tensorflow before horovod
 PATH=${LOCATION}/openmpi/bin:$PATH pip install horovod
 
+# install all requirements except tensorflow
+for req in $(find requirements -type f); do
+    if [ ! $(grep tensorflow $req) ]; then
+        pip install -r $req
+    fi
+done
+
 echo "done $0"
