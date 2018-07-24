@@ -1920,27 +1920,8 @@ def save_graph(network=None, name='graph.pkl'):
         pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
     logging.info("[*] Saved")
 
-def load_graph(name='model.pkl'):
-    """Restore TL model archtecture from a a pickle file. No parameters be restored.
-
-    Parameters
-    -----------
-    name : str
-        The name of graph file.
-
-    Returns
-    --------
-    network : TensorLayer layer
-        The input placeholder will become the attributes of the returned TL layer object.
-
-    Examples
-    --------
-    - see ``tl.files.save_graph``
-    """
-    logging.info("[*] Loading TL graph from {}".format(name))
-    with open(name, 'rb') as file:
-        graphs = pickle.load(file)
-
+def _graph2net(graphs):
+    """ Inputs graphs, returns network. """
     input_list = list()
     layer_dict = dict()
     ## loop every layers
@@ -1999,6 +1980,28 @@ def load_graph(name='model.pkl'):
     logging.info("[*] Loaded")
     ## return the lastest layer as network
     return layer_dict[name]
+
+def load_graph(name='model.pkl'):
+    """Restore TL model archtecture from a a pickle file. No parameters be restored.
+
+    Parameters
+    -----------
+    name : str
+        The name of graph file.
+
+    Returns
+    --------
+    network : TensorLayer layer
+        The input placeholder will become the attributes of the returned TL layer object.
+
+    Examples
+    --------
+    - see ``tl.files.save_graph``
+    """
+    logging.info("[*] Loading TL graph from {}".format(name))
+    with open(name, 'rb') as file:
+        graphs = pickle.load(file)
+    return _graph2net(graphs)
 
 def save_graph_and_params(network=None, name='model', sess=None):
     """Save TL model architecture and parameters (i.e. whole model) into graph file and npz file, respectively.

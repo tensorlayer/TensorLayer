@@ -5,11 +5,13 @@ import inspect
 import pickle
 import time
 import uuid
+import os
 from datetime import datetime
 
 import gridfs
 import pymongo
-
+from tensorlayer.files import load_graph_and_params, exists_or_mkdir
+import numpy as np
 
 class TensorHub(object):
     """It is a MongoDB based manager that help you to manage data, network architecture, parameters and logging.
@@ -91,41 +93,34 @@ class TensorHub(object):
     @staticmethod
     def _serialization(ps):
         """ Seralize data. """
-        # return pickle.dumps(ps, protocol=2)
-        with open('_temp.pkl', 'wb') as file:
-            return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
+        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)#protocol=2)
+        # with open('_temp.pkl', 'wb') as file:
+        #     return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     @staticmethod
     def _deserialization(ps):
         """ Deseralize data. """
         return pickle.loads(ps)
 
-    def _serialization2(self, obj):
-        # print(obj.__class__)
-        # print(obj.__dict__)
-        # return self._serialization(obj.__class__),
-        return self._serialization(obj.__dict__)
-
-    def _deserialization2(cls, attributes):
-        obj = cls.__new__(cls)
-        obj.__dict__.update(attributes)
-        return obj
-
     def save_model(self, network=None, **kwargs):  #args=None):
-        """ Save model parameters and archietcture into databset.
+        """Save model archietcture and parameters into database.
 
         Parameters
         ----------
         network : TensorLayer layer
             TensorLayer layer instance.
         kwargs : other events
-            Other events, such as accuracy, loss, step number and etc (optinal).
+            Other events, such as name, accuracy, loss, step number and etc (optinal).
 
         Examples
         ---------
-        >>> net.my_input = x
-        >>> net.my_cost = cost
-        >>> db.save_model(net, accuray=0.8, loss=2.3)
+        - Save model architecture and parameters into database.
+
+        >>> db.save_model(net, accuray=0.8, loss=2.3, name='second_model')
+
+        - Load one model with parameters from database (run this in other script)
+
+        >>> net = db.find_one_model(sess=sess, accuray=0.8, loss=2.3)
 
         Returns
         ---------
@@ -135,16 +130,8 @@ class TensorHub(object):
 
         self._fill_experiment_info(kwargs)  # put experimentKey into kwargs
         s = time.time()
-        # xx = self._serialization2(network)
-        # print(xx)
-        xxx = self._serialization(network)
-        print(xxx)
-        exit()
-        kwargs.update({'architecture': self._serialization(network)})
-        # architecture_id = self.architecture_fs.put(s)
-        # args.update({"architecture_id": architecture_id})
-        # self.db.march.insert_one(args)
-        exit()
+
+        kwargs.update({'architecture': network.all_graphs})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))
@@ -157,77 +144,66 @@ class TensorHub(object):
             print("[TensorDB] Save model: FAIL")
             return False
 
-    def find_one_model(self):
-        pass
+    def find_one_model(self, sess, sort=None, **kwargs):
+        """Returns one model archietcture and parameters from database that match with the requirement.
 
-    # def save_params(self, params=None, **kwargs):#args=None):
-    #     """ Save parameters into databset, and save the file ID into Params Collections.
-    #
-    #     Parameters
-    #     ----------
-    #     params : list of array
-    #         List of network parameters, see ``sess.run(net.all_params)``.
-    #     kwargs : other events
-    #         Other events, such as accuracy, loss, step number and etc (optinal).
-    #
-    #     Examples
-    #     ---------
-    #     >>> db.save_params(sess.run(net_test.all_params), accuray=0.8, loss=2.3)
-    #
-    #     Returns
-    #     ---------
-    #     f_id : int
-    #         The Buckets ID of the parameters.
-    #     """
-    #     if isinstance(params, list) is False:
-    #         raise Exception("incorrect format of params")
-    #
-    #     self._fill_experiment_info(kwargs)
-    #     s = time.time()
-    #
-    #     f_id = self.params_fs.put(self._serialization(params))
-    #     kwargs.update({'f_id': f_id, 'time': datetime.utcnow()})
-    #     self.db.Params.insert_one(kwargs)
-    #     print("[TensorDB] Save params: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
-    #     return f_id
+        Parameters
+        ----------
+        sess : Session
+            TensorFlow session.
+        sort : XX
+            XXX
+        kwargs : other events
+            Other events, such as name, accuracy, loss, step number and etc (optinal).
 
-    # def find_one_params(self, experiment_key=None, sort=None, **kwargs):
-    #     """ Find one parameter from databset.
-    #
-    #     Parameters
-    #     ----------
-    #     args : dictionary
-    #         For finding items, such as
-    #     kwargs : events
-    #         Events, such as accuracy, loss, step number to find the parameters.
-    #
-    #     Returns
-    #     --------
-    #     params : the parameters, return False if nothing found.
-    #     """
-    #     # f_id : the Buckets ID of the parameters, return False if nothing found.
-    #     if args is None:
-    #         args = {}
-    #     s = time.time()
-    #
-    #     args.update({'experimentKey': experiment_key})
-    #
-    #     d = self.db.Params.find_one(filter=args, sort=sort)
-    #
-    #     if d is not None:
-    #         f_id = d['f_id']
-    #     else:
-    #         print("[TensorDB] FAIL! Cannot find: {}".format(args))
-    #         return False, False
-    #     try:
-    #         params = self.__deserialization(self.paramsfs.get(f_id).read())
-    #         print("[TensorDB] Find one params SUCCESS, {} took: {}s".format(args, round(time.time() - s, 2)))
-    #         return params#, f_id
-    #     except Exception:
-    #         return False#, False
+        Examples
+        ---------
+        - see ``save_model``.
+
+        Returns
+        ---------
+        network : TensorLayer layer
+        """
+        # if dataset_key is None:
+            # raise Exception("dataset_key is None, please give a dataset name")
+        # kwargs.update({'datasetKey': dataset_key})
+
+        s = time.time()
+
+        d = self.db.Model.find_one(filter=kwargs, sort=sort)
+
+        if d is not None:
+            params_id = d['params_id']
+            graphs = d['architecture']
+            # print(graphs)
+            exists_or_mkdir('__ztemp', False)
+            with open(os.path.join('__ztemp', 'graph.pkl'), 'wb') as file:
+                pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+        else:
+            print("[TensorDB] FAIL! Cannot find model: {}".format(kwargs))
+            return False
+        try:
+            params = self._deserialization(self.model_fs.get(params_id).read())
+            # print(params)
+            np.savez(os.path.join('__ztemp', 'params.npz'), params=params)
+
+            network = load_graph_and_params(name='__ztemp', sess=sess)
+
+            pc = self.db.Model.find(kwargs)
+            print("[TensorDB] Find one model SUCCESS, {} took: {}s".format(kwargs, round(time.time() - s, 2)))
+
+            # check whether more parameters match the requirement
+            params_id_list = pc.distinct('params_id')
+            n_params = len(params_id_list)
+            if n_params != 1:
+                print("     Note that there are {} models match the requirement".format(n_params))
+            return network
+        except Exception as e:
+            print(e)
+            return False
 
     def save_dataset(self, dataset=None, dataset_key=None, **kwargs):
-        """ Save dataset into database.
+        """Saves one dataset into database.
 
         Parameters
         ----------
@@ -269,7 +245,7 @@ class TensorHub(object):
             return False
 
     def find_one_dataset(self, dataset_key=None, sort=None, **kwargs):
-        """ Find one dataset from database that match with the requirement.
+        """Returns one dataset from database that match with the requirement.
 
         Parameters
         ----------
@@ -304,7 +280,7 @@ class TensorHub(object):
         if d is not None:
             dataset_id = d['dataset_id']
         else:
-            print("[TensorDB] FAIL! Cannot find: {}".format(kwargs))
+            print("[TensorDB] FAIL! Cannot find dataset: {}".format(kwargs))
             return False
         try:
             dataset = self._deserialization(self.dataset_fs.get(dataset_id).read())
@@ -321,7 +297,7 @@ class TensorHub(object):
             return False
 
     def find_all_datasets(self, dataset_key=None, **kwargs):
-        """ Find all datasets from database that match with the requirement.
+        """Returns all datasets from database that match with the requirement.
 
         Parameters
         ----------
