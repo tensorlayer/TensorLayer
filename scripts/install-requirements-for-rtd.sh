@@ -1,6 +1,9 @@
 # This script is for installing horovod on readthedocs only!
 set -e
 
+pwd
+SCRIPT_DIR=$(dirname $0)
+
 [ ! -z "$1" ] && export PATH=$1:$PATH
 
 LOCATION=/home/docs
@@ -16,7 +19,7 @@ pip install tensorflow==1.5.0 # must install tensorflow before horovod
 PATH=${LOCATION}/openmpi/bin:$PATH pip install horovod
 
 # install all requirements except tensorflow
-for req in $(find requirements -type f); do
+for req in $(find $SCRIPT_DIR/../requirements -type f); do
     if [ ! $(grep tensorflow $req) ]; then
         pip install -r $req
     fi
