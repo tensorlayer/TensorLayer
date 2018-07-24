@@ -5,7 +5,6 @@ import inspect
 import pickle
 import time
 import uuid
-import os, sys
 from datetime import datetime
 
 import gridfs
@@ -158,7 +157,7 @@ class TensorHub(object):
             print("[TensorDB] Save model: FAIL")
             return False
 
-    def find_one_model():
+    def find_one_model(self):
         pass
 
     # def save_params(self, params=None, **kwargs):#args=None):
@@ -356,7 +355,6 @@ class TensorHub(object):
         return dataset_list
 
 
-""" ======================================================================== """
 
 
 def AutoFill(func):

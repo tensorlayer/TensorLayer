@@ -1896,7 +1896,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info("[*] load ckpt fail ...")
 
 def save_graph(network=None, name='graph.pkl'):
-    """Save the architecture of TL model into a pickle file. No parameters saved.
+    """Save the architecture of TL model into a pickle file. No parameters be saved.
 
     Parameters
     -----------
@@ -1921,7 +1921,7 @@ def save_graph(network=None, name='graph.pkl'):
     logging.info("[*] Saved")
 
 def load_graph(name='model.pkl'):
-    """Restore TL model archtecture from a a pickle file. No parameters restored.
+    """Restore TL model archtecture from a a pickle file. No parameters be restored.
 
     Parameters
     -----------
@@ -1931,7 +1931,7 @@ def load_graph(name='model.pkl'):
     Returns
     --------
     network : TensorLayer layer
-        The input placeholder are attributes of the returned TL layer object.
+        The input placeholder will become the attributes of the returned TL layer object.
 
     Examples
     --------
@@ -1965,14 +1965,14 @@ def load_graph(name='model.pkl'):
         if layer_class == 'placeholder': ## create placeholder
             dtype = layer_kwargs.pop('dtype')
             shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(tf.float32, shape, name=name.split(':')[0]) #globals()['tf.'+dtype]
+            _placeholder = tf.placeholder(eval('tf.'+dtype), shape, name=name.split(':')[0]) #globals()['tf.'+dtype]
             # input_dict.update({name: _placeholder})
             input_list.append((name, _placeholder))
         else:   ## create network
             try:    # if previous layer is layer
                 net = layer_dict[prev_layer]
                 layer_kwargs.update({'prev_layer': net})
-            except: # if previous layer is input placeholder
+            except:# Exception: # if previous layer is input placeholder
                 for n, t in input_list:
                     if n == prev_layer:
                         _placeholder = t
@@ -2001,19 +2001,42 @@ def load_graph(name='model.pkl'):
     return layer_dict[name]
 
 def save_graph_and_params(network=None, name='model', sess=None):
-    """Save TL model architecture and parameters into graph file and npz file, respectively. """
+    """Save TL model architecture and parameters (i.e. whole model) into graph file and npz file, respectively.
 
-    # os.mkdir(name)
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The folder name to save the graph and parameters.
+    sess : Session
+        TensorFlow Session.
+
+    Examples
+    ---------
+    - Save architecture and parameters
+
+    >>> tl.files.save_graph_and_params(net, 'model', sess)
+
+    - Load archtecture and parameters
+
+    >>> net = tl.files.load_graph_and_params('model', sess)
+    """
     exists_or_mkdir(name, False)
     save_graph(network, os.path.join(name, 'graph.pkl'))
     save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
 
 def load_graph_and_params(name='model', sess=None):
-    """Load TL model architecture and parameters from graph file and npz file, respectively. """
+    """Load TL model architecture and parameters from graph file and npz file, respectively.
 
-    # save_graph(network, os.path.join(name, 'graph.pkl'))
+    Parameters
+    -----------
+    name : str
+        The folder name to load the graph and parameters.
+    sess : Session
+        TensorFlow Session.
+    """
     network = load_graph(name=os.path.join(name, 'graph.pkl'))
-    # save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
     load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
     return network
 
