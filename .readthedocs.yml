@@ -5,7 +5,7 @@ formats:
     - pdf
 
 python:
-    version: 3.5
+    version: 3.6
     # to build customized extension, we have to use setup_py_install instead of pip_install
     # https://docs.readthedocs.io/en/latest/yaml-config.html#python-setup-py-install
     setup_py_install: true
