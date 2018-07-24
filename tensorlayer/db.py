@@ -10,7 +10,8 @@ from datetime import datetime
 
 import gridfs
 import pymongo
-from tensorlayer.files import load_graph_and_params, exists_or_mkdir
+from tensorlayer.files import load_graph_and_params, exists_or_mkdir, del_folder
+from tensorlayer import logging
 import numpy as np
 
 class TensorHub(object):
@@ -102,8 +103,9 @@ class TensorHub(object):
         """ Deseralize data. """
         return pickle.loads(ps)
 
+    ## =========================== MODELS ================================ ##
     def save_model(self, network=None, **kwargs):  #args=None):
-        """Save model archietcture and parameters into database.
+        """Save model archietcture and parameters into database, timestamp will be added automatically.
 
         Parameters
         ----------
@@ -115,12 +117,13 @@ class TensorHub(object):
         Examples
         ---------
         - Save model architecture and parameters into database.
-
         >>> db.save_model(net, accuray=0.8, loss=2.3, name='second_model')
 
         - Load one model with parameters from database (run this in other script)
-
         >>> net = db.find_one_model(sess=sess, accuray=0.8, loss=2.3)
+
+        - Find and load the latest model.
+        net = db.find_one_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
 
         Returns
         ---------
@@ -131,7 +134,7 @@ class TensorHub(object):
         self._fill_experiment_info(kwargs)  # put experimentKey into kwargs
         s = time.time()
 
-        kwargs.update({'architecture': network.all_graphs})
+        kwargs.update({'architecture': network.all_graphs, 'time': datetime.utcnow()})
 
         try:
             params_id = self.model_fs.put(self._serialization(params))
@@ -145,14 +148,14 @@ class TensorHub(object):
             return False
 
     def find_one_model(self, sess, sort=None, **kwargs):
-        """Returns one model archietcture and parameters from database that match with the requirement.
+        """Finds and returns a model archietcture and its parameters from the database which matches the requirement.
 
         Parameters
         ----------
         sess : Session
             TensorFlow session.
-        sort : XX
-            XXX
+        sort : List of tuple
+            PyMongo sort comment, search "PyMongo find one sorting" for more details.
         kwargs : other events
             Other events, such as name, accuracy, loss, step number and etc (optinal).
 
@@ -170,11 +173,14 @@ class TensorHub(object):
 
         s = time.time()
 
+        self._fill_experiment_info(kwargs)
+
         d = self.db.Model.find_one(filter=kwargs, sort=sort)
 
         if d is not None:
             params_id = d['params_id']
             graphs = d['architecture']
+            _datetime = d['time']
             # print(graphs)
             exists_or_mkdir('__ztemp', False)
             with open(os.path.join('__ztemp', 'graph.pkl'), 'wb') as file:
@@ -183,14 +189,16 @@ class TensorHub(object):
             print("[TensorDB] FAIL! Cannot find model: {}".format(kwargs))
             return False
         try:
+
             params = self._deserialization(self.model_fs.get(params_id).read())
             # print(params)
             np.savez(os.path.join('__ztemp', 'params.npz'), params=params)
 
             network = load_graph_and_params(name='__ztemp', sess=sess)
+            del_folder('__ztemp')
 
             pc = self.db.Model.find(kwargs)
-            print("[TensorDB] Find one model SUCCESS, {} took: {}s".format(kwargs, round(time.time() - s, 2)))
+            print("[TensorDB] Find one model SUCCESS. kwargs:{} sort:{} timestamp:{} took: {}s".format(kwargs, sort, _datetime, round(time.time() - s, 2)))
 
             # check whether more parameters match the requirement
             params_id_list = pc.distinct('params_id')
@@ -202,8 +210,9 @@ class TensorHub(object):
             print(e)
             return False
 
+    ## =========================== DATASET =============================== ##
     def save_dataset(self, dataset=None, dataset_key=None, **kwargs):
-        """Saves one dataset into database.
+        """Saves one dataset into database, timestamp will be added automatically.
 
         Parameters
         ----------
@@ -245,14 +254,14 @@ class TensorHub(object):
             return False
 
     def find_one_dataset(self, dataset_key=None, sort=None, **kwargs):
-        """Returns one dataset from database that match with the requirement.
+        """Finds and returns a dataset from the database which matches the requirement.
 
         Parameters
         ----------
         dataset_key : str
             The name/key of dataset.
-        sort : XX
-            see mongodb
+        sort : List of tuple
+            PyMongo sort comment, search PyMongo find one sorting for more details.
         kwargs : other events
             Other events, such as description, author and etc (optinal).
 
@@ -297,7 +306,7 @@ class TensorHub(object):
             return False
 
     def find_all_datasets(self, dataset_key=None, **kwargs):
-        """Returns all datasets from database that match with the requirement.
+        """Finds and returns all datasets from the database which matches the requirement.
 
         Parameters
         ----------
@@ -330,7 +339,187 @@ class TensorHub(object):
         print("[TensorDB] Find {} datasets SUCCESS, took: {}s".format(len(dataset_list), round(time.time() - s, 2)))
         return dataset_list
 
+    ## =========================== LOGGING =============================== ##
+    def train_log(self, **kwargs):
+        """Saves the training log, timestamp will be added automatically.
 
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.train_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_experiment_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.TrainLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] train log: " + _log)
+
+    def valid_log(self, **kwargs):
+        """Saves the validation log, timestamp will be added automatically.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.valid_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_experiment_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.ValidLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] valid log: " + _log)
+
+    def test_log(self, **kwargs):
+        """Saves the testing log, timestamp will be added automatically.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Events, such as accuracy, loss, step number and etc.
+
+        Examples
+        ---------
+        >>> db.test_log(accuray=0.33, loss=0.98)
+        """
+        self._fill_experiment_info(kwargs)
+        kwargs.update({'time': datetime.utcnow()})
+        _result = self.db.TestLog.insert_one(kwargs)
+        _log = self._print_dict(kwargs)
+        logging.info("[TensorDB] test log: " + _log)
+
+    def del_train_log(self, **kwargs):
+        """Deletes training log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - Save training log
+        >>> db.train_log(accuray=0.33)
+        >>> db.train_log(accuray=0.44)
+
+        - Delete logs that match the requirement
+        >>> db.del_train_log(accuray=0.33)
+
+        - Delete all logs
+        >>> db.del_train_log()
+        """
+        self.db.TrainLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete TrainLog SUCCESS")
+
+    def del_valid_log(self, **kwargs):
+        """Deletes validation log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - see ``train_log``.
+        """
+        self.db.ValidLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete ValidLog SUCCESS")
+
+    def del_test_log(self, **kwargs):
+        """Deletes testing log.
+
+        Parameters
+        -----------
+        kwargs : logging information
+            Find items to delete, leave it empty to delete all log.
+
+        Examples
+        ---------
+        - see ``train_log``.
+        """
+        self.db.TestLog.delete_many(kwargs)
+        logging.info("[TensorDB] Delete TestLog SUCCESS")
+    # @AutoFill
+    # def valid_log(self, args=None):
+    #     """Save the validating log.
+    #
+    #     Parameters
+    #     -----------
+    #     args : dictionary, items to save.
+    #
+    #     Examples
+    #     ---------
+    #     >>> db.valid_log(time=time.time(), {'loss': loss, 'acc': acc})
+    #     """
+    #     if args is None:
+    #         args = {}
+    #     _result = self.db.ValidLog.insert_one(args)
+    #     # _log = "".join(str(key) + ": " + str(value) for key, value in args.items())
+    #     _log = self._print_dict(args)
+    #     print("[TensorDB] ValidLog: " + _log)
+    #     return _result
+    #
+    # @AutoFill
+    # def del_valid_log(self, args=None):
+    #     """ Delete validation log.
+    #
+    #     Parameters
+    #     -----------
+    #     args : dictionary, find items to delete, leave it empty to delete all log.
+    #     """
+    #     if args is None:
+    #         args = {}
+    #     self.db.ValidLog.delete_many(args)
+    #     print("[TensorDB] Delete ValidLog SUCCESS")
+    #
+    # @AutoFill
+    # def test_log(self, args=None):
+    #     """Save the testing log.
+    #
+    #     Parameters
+    #     -----------
+    #     args : dictionary, items to save.
+    #
+    #     Examples
+    #     ---------
+    #     >>> db.test_log(time=time.time(), {'loss': loss, 'acc': acc})
+    #     """
+    #     if args is None:
+    #         args = {}
+    #     _result = self.db.TestLog.insert_one(args)
+    #     # _log = "".join(str(key) + str(value) for key, value in args.items())
+    #     _log = self._print_dict(args)
+    #     print("[TensorDB] TestLog: " + _log)
+    #     return _result
+    #
+    # @AutoFill
+    # def del_test_log(self, args=None):
+    #     """ Delete test log.
+    #
+    #     Parameters
+    #     -----------
+    #     args : dictionary, find items to delete, leave it empty to delete all log.
+    #     """
+    #     if args is None:
+    #         args = {}
+    #
+    #     self.db.TestLog.delete_many(args)
+    #     print("[TensorDB] Delete TestLog SUCCESS")
+    @staticmethod
+    def _print_dict(args):
+        # return " / ".join(str(key) + ": "+ str(value) for key, value in args.items())
+        string = ''
+        for key, value in args.items():
+            if key is not '_id':
+                string += str(key) + ": " + str(value) + " / "
+        return string
 
 
 def AutoFill(func):

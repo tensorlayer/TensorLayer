@@ -1908,9 +1908,11 @@ def save_graph(network=None, name='graph.pkl'):
     Examples
     --------
     - Save the architecture
+
     >>> tl.files.save_graph(net_test, 'graph.pkl')
 
     - Load the architecture in another script (no parameters restore)
+    
     >>> net = tl.files.load_graph('graph.pkl')
     """
     logging.info("[*] Saving TL graph into {}".format(name))
@@ -1918,7 +1920,7 @@ def save_graph(network=None, name='graph.pkl'):
     with open(name, 'wb') as file:
         # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
         pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
-    logging.info("[*] Saved")
+    logging.info("[*] Saved graph")
 
 def _graph2net(graphs):
     """ Inputs graphs, returns network. """
@@ -1977,7 +1979,7 @@ def _graph2net(graphs):
     # for key in input_dict: # set input placeholder into the lastest layer
     #     layer_dict[name].globals()[key] = input_dict[key]
     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
-    logging.info("[*] Loaded")
+    logging.info("[*] Load graph finished")
     ## return the lastest layer as network
     return layer_dict[name]
 
