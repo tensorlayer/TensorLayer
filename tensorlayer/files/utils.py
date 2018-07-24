@@ -73,6 +73,8 @@ __all__ = [
     'save_npz_dict',
     'save_graph',
     'load_graph',
+    'save_graph_and_params',
+    'load_graph_and_params',
 ]
 
 
@@ -1596,6 +1598,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
+    logging.info("[*] Saving TL params into %s" % name)
     if save_list is None:
         save_list = []
 
@@ -1612,7 +1615,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    logging.info("[*] %s saved" % name)
+    logging.info("[*] Saved")
 
 
 def load_npz(path='', name='model.npz'):
@@ -1849,19 +1852,19 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     Examples
     ----------
-    Save all global parameters.
+    - Save all global parameters.
 
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', save_dir='model', printable=True)
 
-    Save specific parameters.
+    - Save specific parameters.
 
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
 
-    Load latest ckpt.
+    - Load latest ckpt.
 
     >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
 
-    Load specific ckpt.
+    - Load specific ckpt.
 
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
 
@@ -1893,7 +1896,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info("[*] load ckpt fail ...")
 
 def save_graph(network=None, name='graph.pkl'):
-    """Save the architecture of TL model into a pickle file.
+    """Save the architecture of TL model into a pickle file. No parameters saved.
 
     Parameters
     -----------
@@ -1907,15 +1910,18 @@ def save_graph(network=None, name='graph.pkl'):
     - Save the architecture
     >>> tl.files.save_graph(net_test, 'graph.pkl')
 
-    - Load the architecture (no parameters restore)
+    - Load the architecture in another script (no parameters restore)
     >>> net = tl.files.load_graph('graph.pkl')
     """
+    logging.info("[*] Saving TL graph into {}".format(name))
     graphs = network.all_graphs
     with open(name, 'wb') as file:
-        return pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+        # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+    logging.info("[*] Saved")
 
 def load_graph(name='model.pkl'):
-    """Restore TL model archtecture from a a pickle file.
+    """Restore TL model archtecture from a a pickle file. No parameters restored.
 
     Parameters
     -----------
@@ -1931,12 +1937,11 @@ def load_graph(name='model.pkl'):
     --------
     - see ``tl.files.save_graph``
     """
-    logging.info("Loading TL graph from {}".format(name))
+    logging.info("[*] Loading TL graph from {}".format(name))
     with open(name, 'rb') as file:
         graphs = pickle.load(file)
 
     input_list = list()
-    # input_dict = dict()
     layer_dict = dict()
     ## loop every layers
     for graph in graphs:
@@ -1973,13 +1978,11 @@ def load_graph(name='model.pkl'):
                         _placeholder = t
                 layer_kwargs.update({'inputs': _placeholder})
             layer_kwargs.update({'name': name})
-            # print(layer_kwargs)
             net = eval('tl.layers.'+layer_class)(**layer_kwargs)
             layer_dict.update({name: net})
 
     ## rename placeholder e.g. x:0 --> x
     for i, (n, t) in enumerate(input_list):
-
         n_new = n.replace(':', '')
         if n_new[-1] == '0':
             n_new = n_new[:-1]
@@ -1987,15 +1990,32 @@ def load_graph(name='model.pkl'):
 
     ## put placeholder into network attributes
     for n, t in input_list:
-        print(name, n, t)
+        # print(name, n, t)
         layer_dict[name].__dict__.update({n: t})
-        logging.info("  attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
+        logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
     # for key in input_dict: # set input placeholder into the lastest layer
     #     layer_dict[name].globals()[key] = input_dict[key]
     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
-
+    logging.info("[*] Loaded")
     ## return the lastest layer as network
     return layer_dict[name]
+
+def save_graph_and_params(network=None, name='model', sess=None):
+    """Save TL model architecture and parameters into graph file and npz file, respectively. """
+
+    # os.mkdir(name)
+    exists_or_mkdir(name, False)
+    save_graph(network, os.path.join(name, 'graph.pkl'))
+    save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
+
+def load_graph_and_params(name='model', sess=None):
+    """Load TL model architecture and parameters from graph file and npz file, respectively. """
+
+    # save_graph(network, os.path.join(name, 'graph.pkl'))
+    network = load_graph(name=os.path.join(name, 'graph.pkl'))
+    # save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
+    load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
+    return network
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.
