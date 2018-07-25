@@ -1,4 +1,4 @@
-API - Database (alpha)
+API - Database
 =========================
 
 This is the alpha version of database management system.

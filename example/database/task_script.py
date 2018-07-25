@@ -8,7 +8,7 @@ sess = tf.InteractiveSession()
 
 ## connect to database
 db = tl.db.TensorHub(
-    ip='localhost', port=27017, dbname='temp', username=None, password='password', project_key='tutorial'
+    ip='localhost', port=27017, dbname='temp', project_key='tutorial'
 )
 
 ## load dataset from database
