@@ -72,7 +72,7 @@ class PReluLayer(Layer):
 
         return self._str(additional_str)
 
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, is_train=True):
 
         super(PReluLayer, self).__call__(prev_layer)
 
@@ -169,7 +169,7 @@ class PRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, is_train=True):
 
         super(PRelu6Layer, self).__call__(prev_layer)
 
@@ -268,7 +268,7 @@ class PTRelu6Layer(Layer):
 
         return self._str(additional_str)
 
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, is_train=True):
 
         super(PTRelu6Layer, self).__call__(prev_layer)
 

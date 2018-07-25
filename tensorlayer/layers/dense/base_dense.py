@@ -94,7 +94,7 @@ class DenseLayer(Layer):
 
         return self._str(additional_str)
 
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, is_train=True):
 
         super(DenseLayer, self).__call__(prev_layer)
 

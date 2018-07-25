@@ -78,31 +78,63 @@ class DropoutLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
             keep=0.5,
             is_fix=False,
             is_train=True,
             seed=None,
             name='dropout_layer',
     ):
-        super(DropoutLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("DropoutLayer %s: keep: %f is_fix: %s" % (self.name, keep, is_fix))
+        self.prev_layer = prev_layer
+        self.keep = keep
+        self.is_fix = is_fix
+        self.is_train = is_train
+        self.seed = seed
+        self.name = name
+
+        super(DropoutLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("keep: %f" % self.keep)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("is_fix: %s" % self.is_fix)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def __call__(self, prev_layer, is_train=True):
+
+        super(DropoutLayer, self).__call__(prev_layer)
 
         if is_train is False:
-            logging.info("  skip DropoutLayer")
+            logging.info("  -> [Not Training] - skip DropoutLayer")
             self.outputs = prev_layer.outputs
 
         else:
 
-            # The name of placeholder for keep_prob is the same with the name of the Layer.
-            if is_fix:
-                self.outputs = tf.nn.dropout(self.inputs, keep, seed=seed, name=name)
-            else:
-                LayersConfig.set_keep[name] = tf.placeholder(LayersConfig.tf_dtype)
-                self.outputs = tf.nn.dropout(self.inputs, LayersConfig.set_keep[name], seed=seed, name=name)  # 1.2
+            with tf.variable_scope(self.name):
+                # The name of placeholder for keep_prob is the same with the name of the Layer.
+                if self.is_fix:
+                    self.outputs = tf.nn.dropout(self.inputs, self.keep, seed=self.seed, name=self.name)
 
-            if is_fix is False:
-                self.all_drop.update({LayersConfig.set_keep[name]: keep})
+                else:
+                    keep_plh = tf.placeholder(self.inputs.dtype, shape=())
 
-            self._add_layers(self.outputs)
+                    self.all_drop.update({keep_plh: self.keep})
+                    self._local_drop.update({keep_plh: self.keep})
+
+                    LayersConfig.set_keep[self.name] = keep_plh
+
+                    self.outputs = tf.nn.dropout(self.inputs, keep_plh, seed=self.seed, name=self.name)
+
+        self._add_layers(self.outputs)
+        
+        return self

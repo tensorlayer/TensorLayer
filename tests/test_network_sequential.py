@@ -45,6 +45,14 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.DenseLayer(n_units=50, act=None, name="seq_layer_7"))
             cls.model.add(tl.layers.PTRelu6Layer(channel_shared=False, name="ptrelu6_layer_7"))
 
+            cls.model.add(tl.layers.DenseLayer(n_units=40, act=tf.nn.relu, name="seq_layer_8"))
+            cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=True, name="dropout_layer_8"))
+
+            cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
+            cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
+
+            cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_10"))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -54,13 +62,19 @@ class Network_Sequential_Test(CustomTestCase):
         n_weight_tensors = len(self.model.get_all_params())
         tl.logging.debug("# Weight Tensors: %d" % n_weight_tensors)
 
-        self.assertEqual(n_weight_tensors, 22)
+        self.assertEqual(n_weight_tensors, 28)
+
+    def test_get_all_drop_plh(self):
+        n_drop_plh = len(self.model.all_drop)
+        tl.logging.debug("# Dropout Placeholders: %d" % n_drop_plh)
+
+        self.assertEqual(n_drop_plh, 1)
 
     def test_count_params(self):
         n_params = self.model.count_params()
         tl.logging.debug("# Parameters: %d" % n_params)
 
-        self.assertEqual(n_params, 8744)
+        self.assertEqual(n_params, 15384)
 
     def test__getitem__(self):
 

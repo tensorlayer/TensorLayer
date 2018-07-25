@@ -122,7 +122,8 @@ class Sequential(BaseNetwork):
 
             with tf.variable_scope(self.name, reuse=reuse):
                 for layer in self.all_layers[1:]:
-                    _net = self.all_layers_dict[layer](_net)
+                    _net = self.all_layers_dict[layer](prev_layer=_net, is_train=is_train)
+                    self.all_drop.update(_net._local_drop)
 
             if not self.is_compiled:
                 self._net = _net

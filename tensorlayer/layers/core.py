@@ -171,10 +171,8 @@ class BaseLayer(object):
 
     def __getitem__(self, key):
 
-        print("key:", key)
-
         net_new = Layer()
-        
+
         net_new.name = self.name
 
         net_new.inputs = self.inputs
@@ -321,6 +319,7 @@ class Layer(BaseLayer):
         self.graph = {}
 
         self._local_weights = list()
+        self._local_drop = dict()
 
         self.layer_args = self._get_init_args(skip=4)
 
@@ -357,7 +356,7 @@ class Layer(BaseLayer):
 
     @abstractmethod
     @protected_method
-    def __call__(self, prev_layer):
+    def __call__(self, prev_layer, is_train=True):
 
         if isinstance(prev_layer, Layer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
