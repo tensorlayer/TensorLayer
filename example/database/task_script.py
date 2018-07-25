@@ -1,18 +1,3 @@
-"""
-Task example for database management system.
-
-## local machine : push this task (script) into database, then allow other servers pull tasks to run
-db.push_task(task_key='mnist', script='tutorial_database_task.py',
-    hyper_parameters=dict(n_units1=800, n_units2=800),
-    result_key=['test_accuracy'], description='800-800')
-
-## servers : monitor the database and wait for tasks
-while True:
-    db.run_one_task(task_key='mnist', sort=[("time", -1)])
-    time.sleep(1)
-
-"""
-import time
 import tensorflow as tf
 import tensorlayer as tl
 
@@ -23,7 +8,7 @@ sess = tf.InteractiveSession()
 
 ## connect to database
 db = tl.db.TensorHub(
-    ip='localhost', port=27017, dbname='temp', username=None, password='password', project_key='tutorial'
+    ip='localhost', port=27017, dbname='temp', project_key='tutorial'
 )
 
 ## load dataset from database

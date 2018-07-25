@@ -10,7 +10,7 @@ import tensorflow as tf
 
 ## connect to database
 db = tl.db.TensorHub(
-    ip='localhost', port=27017, dbname='temp', username=None, password='password', project_key='tutorial'
+    ip='localhost', port=27017, dbname='temp', project_key='tutorial'
 )
 
 ## delete existing tasks, models and datasets in this project
@@ -38,7 +38,7 @@ db.push_task(
     result_key=['test_accuracy'], description='400-400'
 )
 
-## wait until all tasks finished
+## wait for tasks to finish
 while db.check_unfinished_task(task_key='mnist'):
     print("waiting runners to finish the tasks")
     time.sleep(1)

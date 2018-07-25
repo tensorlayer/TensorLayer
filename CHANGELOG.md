@@ -70,14 +70,21 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.model.vgg19` added (PR #698)
+  - `tl.model.VGG19` added (PR #698)
   - `tl.logging.contrib.hyperdash` added (PR #739)
   - `tl.distributed.trainer` added (PR #700)
+  - `tl.db.TensorHub` added (PR ＃751)
+  - `tl.files.save_graph` added (PR ＃751)
+  - `tl.files.load_graph_` added (PR ＃751)
+  - `tl.files.save_graph_and_params` added (PR ＃751)
+  - `tl.files.load_graph_and_params` added (PR ＃751) 
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
+  - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
+  - Update Core Layer to support graph (PR ＃751)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
@@ -115,7 +122,7 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
-- @zsdonghao: #711 #712 #734 #736 #737 #700
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
 - @luomai: #700
 
 ## [1.9.0] - 2018-06-16
