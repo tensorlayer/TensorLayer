@@ -81,12 +81,14 @@ class DenseLayer(Layer):
 
     def __str__(self):
         additional_str = []
+
         try:
             additional_str.append("n_units: %d" % self.n_units)
         except AttributeError:
             pass
+
         try:
-            additional_str.append("act: %s" %  self.act.__name__ if self.act is not None else 'No Activation')
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
         except AttributeError:
             pass
 

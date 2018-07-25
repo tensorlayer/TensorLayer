@@ -311,7 +311,6 @@ class Layer(BaseLayer):
 
         super(Layer, self).__init__(*args, **kwargs)
 
-
         self.all_params = list()
 
         self.is_setup = False
