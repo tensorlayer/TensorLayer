@@ -546,11 +546,10 @@ class TensorHub(object):
 
         Examples
         ---------
-        - see ``push_task``
-
-        - Servers wait task
+        - Monitors the database and pull tasks to run
         >>> while True:
-        >>>     db.run_one_task(task_key='mnist')
+        >>>     print("waiting task from distributor")
+        >>>     db.run_one_task(task_key='mnist', sort=[("time", -1)])
         >>>     time.sleep(1)
 
         Returns
@@ -591,7 +590,7 @@ class TensorHub(object):
             # os.system("python __ztemp.py")
             # import _ztemp
             _script = _script.decode('utf-8')
-            with tf.Graph().as_default() as graph: # clear all TF graphs
+            with tf.Graph().as_default(): # as graph: # clear all TF graphs
                 exec(_script, globals())
             # os.remove("_ztemp.py")
 
@@ -614,7 +613,7 @@ class TensorHub(object):
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            logging.info("{}  {}  {}  {}".format(exc_type, fname, exc_tb.tb_lineno, e))
+            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             logging.info("[Database] Fail to run task")
             ## if fail, set status back to pending
             _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'pending'}})
@@ -651,7 +650,10 @@ class TensorHub(object):
         - Wait until all tasks finish in user's local console
         >>> while not db.check_unfinished_task():
         >>>     time.sleep(1)
-        >>> ... get results from database ...
+        >>> print("all tasks finished")
+        >>> sess = tf.InteractiveSession()
+        >>> net = db.find_one_model(sess=sess, sort=[("test_accuracy", -1)])
+        >>> print("the best accuracy {} is from model {}".format(net._test_accuracy, net._name))
 
         Returns
         --------

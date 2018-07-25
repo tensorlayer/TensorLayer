@@ -41,7 +41,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
-import tensorlayer as tl
 from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
@@ -1908,11 +1907,9 @@ def save_graph(network=None, name='graph.pkl'):
     Examples
     --------
     - Save the architecture
-
     >>> tl.files.save_graph(net_test, 'graph.pkl')
 
     - Load the architecture in another script (no parameters restore)
-    
     >>> net = tl.files.load_graph('graph.pkl')
     """
     logging.info("[*] Saving TL graph into {}".format(name))
@@ -1955,7 +1952,7 @@ def _graph2net(graphs):
             try:    # if previous layer is layer
                 net = layer_dict[prev_layer]
                 layer_kwargs.update({'prev_layer': net})
-            except:# Exception: # if previous layer is input placeholder
+            except Exception: # if previous layer is input placeholder
                 for n, t in input_list:
                     if n == prev_layer:
                         _placeholder = t
