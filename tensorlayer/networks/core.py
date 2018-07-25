@@ -45,7 +45,18 @@ class BaseNetwork(core.BaseLayer):
         self.outputs = None
         self.is_compiled = False
 
+        #if name is None:
+        #    raise ValueError('%s must have a name.' % self.__class__.__name__)
+        #else:
+        #    scope_name = tf.get_variable_scope().name
+        #    self.name = scope_name + '/' + name if scope_name else name
         self.name = name
+
+        if self.name is None:
+            raise ValueError('%s must have a name.' % self.__class__.__name__)
+        else:
+            scope_name = tf.get_variable_scope().name
+            self.full_scope = scope_name + '/' + self.name if scope_name else self.name
 
         self.all_layers_dict = dict()
 
@@ -56,16 +67,28 @@ class BaseNetwork(core.BaseLayer):
     def __str__(self):
         return "%s model: `%s`" % (self.__class__.__name__, self.name)
 
+    def get_all_params(self):
+        """Returns a list of parameters in the network"""
+
+        if not self.is_compiled:
+            raise RuntimeError("Impossible to get the network's paramaters if the network is not compiled.")
+
+        return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.full_scope)
+
     def count_params(self):
         """Returns the number of parameters in the network"""
+
+        if not self.is_compiled:
+            raise RuntimeError("Impossible to count the number of paramaters if the network is not compiled.")
+
         n_params = 0
-        for _i, p in enumerate(self.all_params):
+        for _i, p in enumerate(self.get_all_params()):
             n = 1
             # for s in p.eval().shape:
             for s in p.get_shape():
                 try:
                     s = int(s)
-                except Exception:
+                except ValueError:
                     s = 1
                 if s:
                     n = n * s

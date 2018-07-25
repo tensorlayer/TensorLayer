@@ -114,7 +114,6 @@ class BaseLayer(object):
     def __init__(self, *args, **kwargs):
 
         self.all_layers = list()
-        self.all_params = list()
         self.all_drop = dict()
         self.all_graphs = list()
 
@@ -166,16 +165,6 @@ class BaseLayer(object):
                     n = n * s
             n_params = n_params + n
         return n_params
-
-    def get_all_params(self, session=None):
-        """Return the parameters in a list of array. """
-        _params = []
-        for p in self.all_params:
-            if session is None:
-                _params.append(p.eval())
-            else:
-                _params.append(session.run(p))
-        return _params
 
     def __str__(self):
         return "  Last layer is: %s (%s) %s" % (self.__class__.__name__, self.name, self.outputs.get_shape().as_list())
@@ -322,6 +311,9 @@ class Layer(BaseLayer):
 
         super(Layer, self).__init__(*args, **kwargs)
 
+
+        self.all_params = list()
+
         self.is_setup = False
 
         self.graph = {}
@@ -329,12 +321,6 @@ class Layer(BaseLayer):
         self._local_weights = list()
 
         self.layer_args = self._get_init_args(skip=4)
-
-        if self.name is None:
-            raise ValueError('%s must have a name.' % self.__class__.__name__)
-        else:
-            scope_name = tf.get_variable_scope().name
-            self.name = scope_name + '/' + self.name if scope_name else self.name
 
         for key in kwargs.keys():
             setattr(self, key, self._argument_dict_checkup(kwargs[key]))
@@ -452,3 +438,13 @@ class Layer(BaseLayer):
         self._local_weights.append(w)
 
         return w
+
+    def get_all_params(self, session=None):
+        """Return the parameters in a list of array. """
+        _params = []
+        for p in self.all_params:
+            if session is None:
+                _params.append(p.eval())
+            else:
+                _params.append(session.run(p))
+        return _params

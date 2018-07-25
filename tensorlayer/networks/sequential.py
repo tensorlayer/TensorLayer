@@ -107,6 +107,11 @@ class Sequential(BaseNetwork):
         self.all_layers_dict[layer.name] = layer
         self.all_layers.append(layer.name)
 
+        # Reset Network State in case it was previously compiled
+        self._net = None
+        self.outputs = None
+        self.is_compiled = False
+
     def compile(self, input_plh, reuse=False, is_train=True):
 
         logging.info("** Compiling Model - reuse: %s, is_train: %s **" % (reuse, is_train))
@@ -119,10 +124,7 @@ class Sequential(BaseNetwork):
                 for layer in self.all_layers[1:]:
                     _net = self.all_layers_dict[layer](_net)
 
-                    if not reuse:
-                        self.all_params += _net._local_weights
-
-            if not reuse:
+            if not self.is_compiled:
                 self._net = _net
                 self.outputs = self._net.outputs
                 self.is_compiled = True
