@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-import os
 import codecs
+import os
+import sys
 
 os.environ['TENSORLAYER_PACKAGE_BUILDING'] = 'True'
 
+
 try:
-    from setuptools import (
-        setup,
-        find_packages
-    )
+    from setuptools import find_packages, setup, Extension
+    from setuptools.command.build_ext import build_ext
 
 except ImportError:
     from distutils.core import (
@@ -44,6 +44,7 @@ else:
     long_description = 'See ' + __homepage__
 
 # ======================= Reading Requirements files as TXT files =======================
+
 
 def req_file(filename, folder="requirements"):
     with open(os.path.join(folder, filename)) as f:
@@ -82,11 +83,27 @@ extras_require['all_dev'] = sum([extras_require.get(key) for key in ['all', 'db'
 extras_require['all_cpu_dev'] = sum([extras_require.get(key) for key in ['all_dev', 'tf_cpu']], list())
 extras_require['all_gpu_dev'] = sum([extras_require.get(key) for key in ['all_dev', 'tf_gpu']], list())
 
+
+cmdclass = dict()
+ext_modules = []
+
+
 # Readthedocs requires TF 1.5.0 to build properly
 if os.environ.get('READTHEDOCS', None) == 'True':
-    install_requires.append("tensorflow==1.5.0")
+    ext_modules = [
+        Extension('install_requirements_for_rtd', []),
+    ]
+
+    class custom_build_ext(build_ext):
+        def build_extensions(self):
+            os.system('./scripts/install-requirements-for-rtd.sh %s' %
+                      os.path.dirname(sys.executable))
+
+    cmdclass = {'build_ext': custom_build_ext}
+
 
 # ======================= Define the package setup =======================
+
 
 setup(
     name=__package_name__,
@@ -163,10 +180,14 @@ setup(
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=install_requires,
 
+    cmdclass=cmdclass,
+
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # $ pip install -e .[test]
     extras_require=extras_require,
+    ext_modules=ext_modules,
+
     scripts=[
         'tl',
     ],

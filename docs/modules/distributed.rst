@@ -18,10 +18,11 @@ Check this `minst example <https://github.com/tensorlayer/tensorlayer/blob/maste
 
 
 Distributed training
-----------------------
+--------------------
+
 
 TaskSpecDef
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^
 
 .. autofunction:: TaskSpecDef
 
