@@ -46,7 +46,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model.count_params(), 0)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 5)
+        self.assertEqual(self.model.count_layers(), 4)
 
     def test_network_shapes(self):
 
