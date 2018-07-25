@@ -171,7 +171,11 @@ class BaseLayer(object):
 
     def __getitem__(self, key):
 
-        net_new = Layer(prev_layer=None, name=self.name)
+        print("key:", key)
+
+        net_new = Layer()
+        
+        net_new.name = self.name
 
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
@@ -287,9 +291,8 @@ class BaseLayer(object):
     def _argument_dict_checkup(self, args):
 
         if not isinstance(args, dict) and args is not None:
-            raise AssertionError(
-                "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-            )
+            _err = "One of the argument given to `%s` should be formatted as a dictionary" % self.__class__.__name__
+            raise AssertionError(_err)
 
         return args if args is not None else {}
 
