@@ -132,6 +132,9 @@ class Sequential(BaseNetwork):
 
         return self.outputs
 
+    def count_layers(self):
+        return len(self.all_layers_dict)
+
     def __getitem__(self, layer_name):
         return self.all_layers_dict[layer_name]
 
