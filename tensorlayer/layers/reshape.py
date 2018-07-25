@@ -42,17 +42,35 @@ class FlattenLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='flatten'):
-        super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(self, prev_layer=None, name='flatten'):
 
-        _out = flatten_reshape(self.inputs, name=name)
-        self.n_units = int(_out.get_shape()[-1])
+        self.prev_layer = prev_layer
+        self.name = name
 
-        logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
+        super(FlattenLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    def __call__(self, prev_layer, is_train=True):
+
+        _out = flatten_reshape(prev_layer.outputs, name=self.name)
+        self.out_shape = _out.shape
+
+        super(FlattenLayer, self).__call__(prev_layer)
 
         self.outputs = _out
 
         self._add_layers(self.outputs)
+
+        return self
 
 
 class ReshapeLayer(Layer):

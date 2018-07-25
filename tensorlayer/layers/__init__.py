@@ -29,8 +29,8 @@ from .pooling import *
 from .quantize import *
 from .reconstruction import *
 from .recurrent import *
+from .reshape import *
 from .scale import *
-from .shape import *
 from .spatial_transformer import *
 from .stack import *
 from .time_distribution import *
@@ -57,8 +57,8 @@ __all__ += pooling.__all__
 __all__ += quantize.__all__
 __all__ += reconstruction.__all__
 __all__ += recurrent.__all__
+__all__ += reshape.__all__
 __all__ += scale.__all__
-__all__ += shape.__all__
 __all__ += spatial_transformer.__all__
 __all__ += stack.__all__
 __all__ += time_distribution.__all__

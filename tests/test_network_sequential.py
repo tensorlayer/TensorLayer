@@ -25,6 +25,12 @@ class Network_Sequential_Test(CustomTestCase):
         with tf.variable_scope("test_scope"):
             cls.model = tl.networks.Sequential(name="My_Seq_net")
 
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name="expand_layer_1"))
+            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_1"))
+
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_2"))
+            cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_2"))
+
             cls.model.add(tl.layers.DenseLayer(n_units=10, act=tf.nn.relu, name="seq_layer_1"))
 
             cls.model.add(tl.layers.DenseLayer(n_units=20, act=None, name="seq_layer_2"))
