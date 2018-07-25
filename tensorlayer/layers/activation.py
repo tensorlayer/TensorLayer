@@ -44,12 +44,8 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer=None,
-            channel_shared=False,
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None,
-            name="PReluLayer"
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name="PReluLayer"
     ):
 
         self.prev_layer = prev_layer
@@ -81,9 +77,7 @@ class PReluLayer(Layer):
             w_shape = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            alpha_var = self._get_tf_variable(
-                name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args
-            )
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -140,12 +134,8 @@ class PRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer=None,
-            channel_shared=False, 
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None,
-            name="PReLU6_layer"
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name="PReLU6_layer"
     ):
 
         self.prev_layer = prev_layer
@@ -177,9 +167,7 @@ class PRelu6Layer(Layer):
             w_shape = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            alpha_var = self._get_tf_variable(
-                name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args
-            )
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -238,12 +226,8 @@ class PTRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer=None,
-            channel_shared=False, 
-            a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
-            a_init_args=None,
-            name="PTReLU6_layer"
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            a_init_args=None, name="PTReLU6_layer"
     ):
 
         self.prev_layer = prev_layer

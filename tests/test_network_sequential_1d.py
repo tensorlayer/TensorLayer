@@ -60,14 +60,22 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.DenseLayer(n_units=50, act=tf.nn.relu, name="seq_layer_9"))
             cls.model.add(tl.layers.DropoutLayer(keep=0.5, is_fix=False, name="dropout_layer_9"))
 
-            cls.model.add(tl.layers.SlimNetsLayer(
-                slim_layer=slim.fully_connected, slim_args={'num_outputs': 50, 'activation_fn': None},
-                act=tf.nn.relu, name="seq_layer_10")
+            cls.model.add(
+                tl.layers.SlimNetsLayer(
+                    slim_layer=slim.fully_connected, slim_args={
+                        'num_outputs': 50,
+                        'activation_fn': None
+                    }, act=tf.nn.relu, name="seq_layer_10"
+                )
             )
 
-            cls.model.add(tl.layers.KerasLayer(
-                keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11")
+            cls.model.add(
+                tl.layers.KerasLayer(
+                    keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11"
+                )
             )
+
+            cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda'))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
@@ -84,7 +92,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model.count_params(), 29080)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 26)
+        self.assertEqual(self.model.count_layers(), 27)
 
     def test__getitem__(self):
 

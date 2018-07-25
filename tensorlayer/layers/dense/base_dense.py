@@ -103,17 +103,13 @@ class DenseLayer(Layer):
         n_in = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(self.name):
-            W = self._get_tf_variable(
-                name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args
-            )
+            W = self._get_tf_variable(name='W', shape=(n_in, self.n_units), initializer=self.W_init, **self.W_init_args)
 
             self.outputs = tf.matmul(self.inputs, W)
 
             if self.b_init is not None:
                 try:
-                    b = self._get_tf_variable(
-                        name='b', shape=self.n_units, initializer=self.b_init, **self.b_init_args
-                    )
+                    b = self._get_tf_variable(name='b', shape=self.n_units, initializer=self.b_init, **self.b_init_args)
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(name='b', initializer=self.b_init, **self.b_init_args)
 
@@ -123,5 +119,3 @@ class DenseLayer(Layer):
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
-
-

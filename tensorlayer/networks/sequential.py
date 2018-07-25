@@ -74,7 +74,6 @@ class Sequential(BaseNetwork):
         super(Sequential, self).__init__(name)
 
         self.add(layers.InputLayer(name='input_layer'))
-
         '''
         # Add to the model any layers passed to the constructor.
         if layers:
@@ -205,7 +204,6 @@ class Sequential(BaseNetwork):
         else:
             self._layers.append(layer)
     '''
-
     '''
     @property
     def layers(self):

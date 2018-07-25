@@ -99,7 +99,7 @@ class OneHotInputLayer(Layer):
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
         if depth is None:
-            _err =  "%s: depth  cannot be set to `None`. It leads to an undefined number of output units" % self.__class__.__name__
+            _err = "%s: depth  cannot be set to `None`. It leads to an undefined number of output units" % self.__class__.__name__
             raise RuntimeError(_err)
 
         self.prev_layer = inputs
@@ -135,7 +135,9 @@ class OneHotInputLayer(Layer):
 
         self.in_shape = prev_layer.shape
 
-        _out = tf.one_hot(prev_layer, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype)
+        _out = tf.one_hot(
+            prev_layer, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
+        )
         self.out_shape = _out.shape
 
         super(OneHotInputLayer, self).__call__(prev_layer)
@@ -261,8 +263,8 @@ class Word2vecEmbeddingInputlayer(Layer):
         self.name = name
 
         super(Word2vecEmbeddingInputlayer, self).__init__(
-            nce_loss_args=nce_loss_args, E_init_args=E_init_args,
-            nce_W_init_args=nce_W_init_args, nce_b_init_args=nce_b_init_args
+            nce_loss_args=nce_loss_args, E_init_args=E_init_args, nce_W_init_args=nce_W_init_args,
+            nce_b_init_args=nce_b_init_args
         )
 
     def __str__(self):
@@ -309,13 +311,13 @@ class Word2vecEmbeddingInputlayer(Layer):
 
             # Construct the variables for the NCE loss (i.e. negative sampling)
             nce_weights = self._get_tf_variable(
-                name='nce_weights', shape=self._emb_shape, dtype=self.dtype,
-                initializer=self.nce_W_init, **self.nce_W_init_args
+                name='nce_weights', shape=self._emb_shape, dtype=self.dtype, initializer=self.nce_W_init,
+                **self.nce_W_init_args
             )
 
             nce_biases = self._get_tf_variable(
-                name='nce_biases', shape=(self.vocabulary_size,), dtype=self.dtype,
-                initializer=self.nce_b_init, **self.nce_b_init_args
+                name='nce_biases', shape=(self.vocabulary_size, ), dtype=self.dtype, initializer=self.nce_b_init,
+                **self.nce_b_init_args
             )
 
             # Compute the average NCE loss for the batch.
@@ -523,8 +525,8 @@ class AverageEmbeddingInputlayer(Layer):
         with tf.variable_scope(self.name):
 
             embeddings = self._get_tf_variable(
-                name='embeddings', shape=self._emb_shape, dtype=self.dtype,
-                initializer=self.embeddings_initializer, **self.embeddings_kwargs
+                name='embeddings', shape=self._emb_shape, dtype=self.dtype, initializer=self.embeddings_initializer,
+                **self.embeddings_kwargs
             )
 
             word_embeddings = tf.nn.embedding_lookup(

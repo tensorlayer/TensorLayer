@@ -27,7 +27,6 @@ class BaseNetwork(core.BaseLayer):
 
     @abstractmethod
     def __init__(self, name):
-
         '''
         # Signature detection
         if (len(args) == 2 or
@@ -94,6 +93,7 @@ class BaseNetwork(core.BaseLayer):
                     n = n * s
             n_params = n_params + n
         return n_params
+
     '''
     def _base_init(self, name=None):
         # The following are implemented as property functions:
@@ -1481,6 +1481,7 @@ def get_source_inputs(tensor, layer=None, node_index=None):
                     if x not in source_tensors:
                         source_tensors.append(x)
             return source_tensors
+
 
 '''
 def _is_hdf5_filepath(filepath):

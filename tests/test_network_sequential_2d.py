@@ -28,8 +28,16 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 16, 16, 1], name="reshape_layer_1"))
 
-            cls.model.add(tl.layers.UpSampling2dLayer(size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_2"))
-            cls.model.add(tl.layers.DownSampling2dLayer(size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2"))
+            cls.model.add(
+                tl.layers.UpSampling2dLayer(
+                    size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_2"
+                )
+            )
+            cls.model.add(
+                tl.layers.DownSampling2dLayer(
+                    size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2"
+                )
+            )
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
