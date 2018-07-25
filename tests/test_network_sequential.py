@@ -62,8 +62,12 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.SlimNetsLayer(slim_layer=slim.fully_connected, slim_args={'num_outputs': 50, 'activation_fn': None}, act=tf.nn.relu, name="seq_layer_10"))
 
-            cls.model.add(tl.layers.KerasLayer(keras_layer=keras.layers.Dense, keras_args={'units': 1024}, act=tf.nn.relu, name="seq_layer_11"))
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 32, 32], name="reshape_layer_11"))
+            cls.model.add(tl.layers.KerasLayer(keras_layer=keras.layers.Dense, keras_args={'units': 256}, act=tf.nn.relu, name="seq_layer_11"))
+            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 16, 16], name="reshape_layer_11"))
+
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=3, name="expand_layer_12"))
+            cls.model.add(tl.layers.UpSampling2dLayer(size=(2, 2), is_scale=True, method=0, align_corners=True, name="upsample2d_layer_12"))
+            cls.model.add(tl.layers.DownSampling2dLayer(size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_12"))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
@@ -77,7 +81,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 1)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 68248)
+        self.assertEqual(self.model.count_params(), 29080)
 
     def test__getitem__(self):
 
@@ -124,8 +128,12 @@ class Network_Sequential_Test(CustomTestCase):
 
         self.assertEqual(self.model["seq_layer_10"].outputs.shape, (100, 50))
 
-        self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 1024))
-        self.assertEqual(self.model["reshape_layer_11"].outputs.shape, (100, 32, 32))
+        self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.model["reshape_layer_11"].outputs.shape, (100, 16, 16))
+
+        self.assertEqual(self.model["expand_layer_12"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["upsample2d_layer_12"].outputs.shape, (100, 32, 32, 1))
+        self.assertEqual(self.model["downsample2d_layer_12"].outputs.shape, (100, 16, 16, 1))
 
 
 if __name__ == '__main__':
