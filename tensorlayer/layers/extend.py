@@ -109,13 +109,37 @@ class TileLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, multiples=None, name='tile'):
+    def __init__(self, prev_layer=None, multiples=None, name='tile'):
 
-        super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.prev_layer = prev_layer
+        self.multiples = multiples
+        self.name = name
 
-        logging.info("TileLayer  %s: multiples: %s" % (self.name, multiples))
+        super(TileLayer, self).__init__()
 
-        with tf.variable_scope(name):
-            self.outputs = tf.tile(self.inputs, multiples=multiples)
+    def __str__(self):
+        additional_str = []
 
+        try:
+            additional_str.append("multiples: %s" % self.multiples)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        with tf.variable_scope(self.name):
+            _out = tf.tile(prev_layer.outputs, multiples=self.multiples)
+            self.out_shape = _out.shape
+
+        super(TileLayer, self).__call__(prev_layer)
+
+        self.outputs = _out
         self._add_layers(self.outputs)
