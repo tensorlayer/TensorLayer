@@ -95,16 +95,6 @@ class QuanConv2d(Layer):
             b_init_args=None,
             use_cudnn_on_gpu=None,
             data_format=None,
-            # act=None,
-            # shape=(5, 5, 1, 100),
-            # strides=(1, 1, 1, 1),
-            # padding='SAME',
-            # W_init=tf.truncated_normal_initializer(stddev=0.02),
-            # b_init=tf.constant_initializer(value=0.0),
-            # W_init_args=None,
-            # b_init_args=None,
-            # use_cudnn_on_gpu=None,
-            # data_format=None,
             name='quan_cnn2d',
     ):
         super(QuanConv2d, self
