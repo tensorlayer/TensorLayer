@@ -10,7 +10,7 @@ from tensorflow.python.training import moving_averages
 from tensorlayer.layers.utils import quantize_active_overflow
 from tensorlayer.layers.utils import quantize_weight_overflow
 
-from tensorflayer import logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
