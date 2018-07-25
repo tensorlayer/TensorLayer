@@ -103,7 +103,7 @@ class ReshapeLayer(Layer):
             raise ValueError("Shape list can not be empty")
 
         self.prev_layer = prev_layer
-        self.shape = shape
+        self._shape = shape
         self.name = name
 
         super(ReshapeLayer, self).__init__()
@@ -121,7 +121,7 @@ class ReshapeLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
-        _out = tf.reshape(prev_layer.outputs, shape=self.shape, name=self.name)
+        _out = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
         self.out_shape = _out.shape
 
         super(ReshapeLayer, self).__call__(prev_layer)

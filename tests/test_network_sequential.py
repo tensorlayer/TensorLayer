@@ -31,7 +31,6 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_2"))
             cls.model.add(tl.layers.TileLayer(multiples=[1, 1, 3], name="tile_layer_2"))
-            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 16, 6], name="reshape_layer_2"))
             cls.model.add(tl.layers.TransposeLayer(perm=[0, 2, 1], name='transpose_layer_2'))
             cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_2"))
 
@@ -63,7 +62,8 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.SlimNetsLayer(slim_layer=slim.fully_connected, slim_args={'num_outputs': 50, 'activation_fn': None}, act=tf.nn.relu, name="seq_layer_10"))
 
-            cls.model.add(tl.layers.KerasLayer(keras_layer=keras.layers.Dense, keras_args={'units': 50}, act=tf.nn.relu, name="seq_layer_11"))
+            cls.model.add(tl.layers.KerasLayer(keras_layer=keras.layers.Dense, keras_args={'units': 1024}, act=tf.nn.relu, name="seq_layer_11"))
+            cls.model.add(tl.layers.ReshapeLayer(shape=[-1, 32, 32], name="reshape_layer_11"))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
@@ -71,33 +71,61 @@ class Network_Sequential_Test(CustomTestCase):
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
     def test_get_all_param_tensors(self):
-        n_weight_tensors = len(self.model.get_all_params())
-        tl.logging.debug("# Weight Tensors: %d" % n_weight_tensors)
-
-        self.assertEqual(n_weight_tensors, 30)
+        self.assertEqual(len(self.model.get_all_params()), 30)
 
     def test_get_all_drop_plh(self):
-        n_drop_plh = len(self.model.all_drop)
-        tl.logging.debug("# Dropout Placeholders: %d" % n_drop_plh)
-
-        self.assertEqual(n_drop_plh, 1)
+        self.assertEqual(len(self.model.all_drop), 1)
 
     def test_count_params(self):
-        n_params = self.model.count_params()
-        tl.logging.debug("# Parameters: %d" % n_params)
-
-        self.assertEqual(n_params, 18574)
+        self.assertEqual(self.model.count_params(), 68248)
 
     def test__getitem__(self):
 
         with self.assertNotRaises(Exception):
+            self.assertTrue(isinstance(self.model["seq_layer_1"], tl.layers.DenseLayer))
 
-            layer = self.model["seq_layer_1"]
-            self.assertTrue(isinstance(layer, tl.layers.DenseLayer))
+    def test_network_shapes(self):
 
-    def test_network_output(self):
-        self.assertEqual(self.train_model.shape, (100, 50))
-        self.assertEqual(self.test_model.shape, (100, 50))
+        self.assertEqual(self.model["input_layer"].outputs.shape, (100, 32))
+
+        self.assertEqual(self.model["expand_layer_1"].outputs.shape, (100, 1, 32))
+        self.assertEqual(self.model["flatten_layer_1"].outputs.shape, (100, 32))
+
+        self.assertEqual(self.model["expand_layer_2"].outputs.shape, (100, 32, 1))
+        self.assertEqual(self.model["tile_layer_2"].outputs.shape, (100, 32, 3))
+        self.assertEqual(self.model["transpose_layer_2"].outputs.shape, (100, 3, 32))
+        self.assertEqual(self.model["flatten_layer_2"].outputs.shape, (100, 96))
+
+        self.assertEqual(self.model["seq_layer_1"].outputs.shape, (100, 10))
+
+        self.assertEqual(self.model["seq_layer_2"].outputs.shape, (100, 20))
+        self.assertEqual(self.model["prelu_layer_2"].outputs.shape, (100, 20))
+
+        self.assertEqual(self.model["seq_layer_3"].outputs.shape, (100, 30))
+        self.assertEqual(self.model["prelu_layer_3"].outputs.shape, (100, 30))
+
+        self.assertEqual(self.model["seq_layer_4"].outputs.shape, (100, 40))
+        self.assertEqual(self.model["prelu6_layer_4"].outputs.shape, (100, 40))
+
+        self.assertEqual(self.model["seq_layer_5"].outputs.shape, (100, 50))
+        self.assertEqual(self.model["prelu6_layer_5"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.model["seq_layer_6"].outputs.shape, (100, 40))
+        self.assertEqual(self.model["ptrelu6_layer_6"].outputs.shape, (100, 40))
+
+        self.assertEqual(self.model["seq_layer_7"].outputs.shape, (100, 50))
+        self.assertEqual(self.model["ptrelu6_layer_7"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.model["seq_layer_8"].outputs.shape, (100, 40))
+        self.assertEqual(self.model["dropout_layer_8"].outputs.shape, (100, 40))
+
+        self.assertEqual(self.model["seq_layer_9"].outputs.shape, (100, 50))
+        self.assertEqual(self.model["dropout_layer_9"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.model["seq_layer_10"].outputs.shape, (100, 50))
+
+        self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 1024))
+        self.assertEqual(self.model["reshape_layer_11"].outputs.shape, (100, 32, 32))
 
 
 if __name__ == '__main__':
