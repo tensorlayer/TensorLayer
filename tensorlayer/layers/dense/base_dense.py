@@ -4,11 +4,9 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-
-from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'DenseLayer',
@@ -94,6 +92,7 @@ class DenseLayer(Layer):
 
         return self._str(additional_str)
 
+    @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
         super(DenseLayer, self).__call__(prev_layer)
@@ -124,7 +123,5 @@ class DenseLayer(Layer):
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
-
-        return self
 
 

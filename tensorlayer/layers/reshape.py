@@ -9,6 +9,7 @@ from tensorlayer.layers.utils import flatten_reshape
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'FlattenLayer',
@@ -59,6 +60,7 @@ class FlattenLayer(Layer):
 
         return self._str(additional_str)
 
+    @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
         _out = flatten_reshape(prev_layer.outputs, name=self.name)
@@ -69,8 +71,6 @@ class FlattenLayer(Layer):
         self.outputs = _out
 
         self._add_layers(self.outputs)
-
-        return self
 
 
 class ReshapeLayer(Layer):

@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'ExpandDimsLayer',
@@ -68,6 +67,7 @@ class ExpandDimsLayer(Layer):
 
         return self._str(additional_str)
 
+    @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
         with tf.variable_scope(self.name):
@@ -79,8 +79,6 @@ class ExpandDimsLayer(Layer):
         self.outputs = _out
 
         self._add_layers(self.outputs)
-
-        return self
 
 
 class TileLayer(Layer):

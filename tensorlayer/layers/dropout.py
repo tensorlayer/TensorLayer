@@ -9,6 +9,7 @@ from tensorlayer.layers.core import LayersConfig
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'DropoutLayer',
@@ -110,6 +111,7 @@ class DropoutLayer(Layer):
 
         return self._str(additional_str)
 
+    @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
         super(DropoutLayer, self).__call__(prev_layer)
@@ -136,5 +138,3 @@ class DropoutLayer(Layer):
                     self.outputs = tf.nn.dropout(self.inputs, keep_plh, seed=self.seed, name=self.name)
 
         self._add_layers(self.outputs)
-        
-        return self

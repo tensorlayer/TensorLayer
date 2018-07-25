@@ -8,6 +8,8 @@ from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer import logging
 
+from tensorlayer.decorators import force_return_self
+
 __all__ = [
     'InputLayer',
     'OneHotInputLayer',
@@ -48,14 +50,13 @@ class InputLayer(Layer):
 
         return self._str(additional_str)
 
+    @force_return_self
     def __call__(self, inputs):
 
         super(InputLayer, self).__call__(inputs)
 
         self.outputs = self.inputs
         self._add_layers(self.outputs)
-
-        return self
 
 
 class OneHotInputLayer(Layer):
