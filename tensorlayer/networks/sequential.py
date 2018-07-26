@@ -115,6 +115,10 @@ class Sequential(BaseNetwork):
 
         logging.info("** Compiling Model - reuse: %s, is_train: %s **" % (reuse, is_train))
 
+        # Reset All Layers' Inputs
+        for name, layer in self.all_layers_dict.items():
+            layer.inputs = None
+
         with logging.temp_handler("    [*]"):
 
             _net = self.all_layers_dict[self.all_layers[0]](input_plh)
