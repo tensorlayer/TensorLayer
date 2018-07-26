@@ -253,8 +253,8 @@ class Word2vecEmbeddingInputlayer(Layer):
         self.name = name
 
         super(Word2vecEmbeddingInputlayer, self).__init__(
-            nce_W_init_args=nce_W_init_args, nce_b_init_args=nce_b_init_args,
-            nce_loss_args=nce_loss_args, E_init_args=E_init_args
+            nce_W_init_args=nce_W_init_args, nce_b_init_args=nce_b_init_args, nce_loss_args=nce_loss_args,
+            E_init_args=E_init_args
         )
 
     def __str__(self):

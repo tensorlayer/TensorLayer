@@ -44,9 +44,11 @@ class Network_Sequential_Test(CustomTestCase):
             )
             cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
             cls.model.add(tl.layers.InstanceNormLayer(epsilon=1e-5, act=None, name='instance_norm_layer_2'))
-            cls.model.add(tl.layers.LayerNormLayer(
-                center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm_layer_2'
-            ))
+            cls.model.add(
+                tl.layers.LayerNormLayer(
+                    center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm_layer_2'
+                )
+            )
             cls.model.add(tl.layers.SwitchNormLayer(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))

@@ -88,8 +88,7 @@ class Conv1dLayer(Layer):
 
             if b_init:
                 b = self._get_tf_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
-                    **self.b_init_args
+                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
@@ -210,8 +209,7 @@ class Conv2dLayer(Layer):
 
             if b_init:
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
-                    **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
@@ -296,8 +294,7 @@ class Conv3dLayer(Layer):
 
             if b_init:
                 b = self._get_tf_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
-                    **self.b_init_args
+                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

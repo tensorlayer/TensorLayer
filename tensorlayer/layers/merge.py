@@ -54,6 +54,7 @@ class ConcatLayer(Layer):
     [TL]   layer   2: concat_layer:0       (?, 1100)          float32
 
     """
+
     def __init__(
             self,
             layers,

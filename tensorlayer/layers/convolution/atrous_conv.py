@@ -227,8 +227,8 @@ class AtrousDeConv2dLayer(Layer):
 
             if b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init,
-                    dtype=self.inputs.dtype, **self.b_init_args
+                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

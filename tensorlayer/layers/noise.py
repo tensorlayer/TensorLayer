@@ -94,10 +94,9 @@ class GaussianNoiseLayer(Layer):
         else:
             with tf.variable_scope(self.name):
                 noise = tf.random_normal(
-                    shape=self.inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed, dtype=self.inputs.dtype
+                    shape=self.inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed,
+                    dtype=self.inputs.dtype
                 )
                 self.outputs = tf.add(self.inputs, noise)
 
         self._add_layers(self.outputs)
-
-

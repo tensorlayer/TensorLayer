@@ -143,8 +143,7 @@ class TernaryConv2d(Layer):
             if b_init:
 
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
-                    **self.b_init_args
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

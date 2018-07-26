@@ -77,12 +77,13 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda_layer_11'))
             cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_11'))
+            cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11'))
             cls.model.add(
-                tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11')
+                tl.layers.LayerNormLayer(
+                    center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None,
+                    name='layernorm_layer_11'
+                )
             )
-            cls.model.add(tl.layers.LayerNormLayer(
-                center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm_layer_11'
-            ))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
