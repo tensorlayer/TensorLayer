@@ -6,9 +6,9 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize
+from tensorlayer.layers.utils import _quantize
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -75,11 +75,11 @@ class BinaryDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
             # W = tl.act.sign(W)    # dont update ...
-            W = quantize(W)
+            W = _quantize(W)
             # W = tf.Variable(W)
             # print(W)
 
@@ -88,12 +88,12 @@ class BinaryDenseLayer(Layer):
 
             if b_init is not None:
                 try:
-                    b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    b = self._get_tf_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                     )
 
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                    b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 

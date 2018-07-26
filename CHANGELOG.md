@@ -70,64 +70,36 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.alphas` and `tl.alphas_like` added following the tf.ones/zeros and tf.zeros_like/ones_like (PR #580)
-  - `tl.lazy_imports.LazyImport` to import heavy libraries only when necessary (PR #667)
-  - `tl.act.leaky_relu6` and `tl.layers.PRelu6Layer` have been deprecated (PR #686)
-  - `tl.act.leaky_twice_relu6` and `tl.layers.PTRelu6Layer` have been deprecated (PR #686)
-  - `tl.model.vgg19` added (PR #698)
-- CI Tool:
-  - [Stale Probot](https://github.com/probot/stale) added to clean stale issues (PR #573)
-  - [Changelog Probot](https://github.com/mikz/probot-changelog) Configuration added (PR #637)
-  - Travis Builds now handling a matrix of TF Version from TF==1.6.0 to TF==1.8.0 (PR #644)
-  - CircleCI added to build and upload Docker Containers for each PR merged and tag release (PR #648)
-- Decorator:
-  - `tl.decorators` API created including `deprecated_alias` and `private_method` (PR #660)
-  - `tl.decorators` API enriched with `protected_method` (PR #675)
-  - `tl.decorators` API enriched with `deprecated` directly raising warning and modifying documentation (PR #691)
-- Docker:
-  - Containers for each release and for each PR merged on master built (PR #648)
-  - Containers built in the following configurations (PR #648):
-    - py2 + cpu
-    - py2 + gpu
-    - py3 + cpu
-    - py3 + gpu
+  - `tl.model.VGG19` added (PR #698)
+  - `tl.logging.contrib.hyperdash` added (PR #739)
+  - `tl.distributed.trainer` added (PR #700)
+  - `tl.db.TensorHub` added (PR ＃751)
+  - `tl.files.save_graph` added (PR ＃751)
+  - `tl.files.load_graph_` added (PR ＃751)
+  - `tl.files.save_graph_and_params` added (PR ＃751)
+  - `tl.files.load_graph_and_params` added (PR ＃751) 
 - Documentation:
-  - Add binary, ternary and dorefa links (PR #711) 
-  - Clean README.md (PR #677)
-  - Release semantic version added on index page (PR #633)
-  - Optimizers page added (PR #636)
-  - `AMSGrad` added on Optimizers page added (PR #636)
+  - Add binary, ternary and dorefa links (PR #711)
+  - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
+  - Update database (PR ＃751)
 - Layer:
-  - ElementwiseLambdaLayer added to use custom function to connect multiple layer inputs (PR #579)
-  - AtrousDeConv2dLayer added (PR #662)
-  - Fix bugs of using `tf.layers` in CNN (PR #686)
-- Optimizer:
-  - AMSGrad Optimizer added based on `On the Convergence of Adam and Beyond (ICLR 2018)` (PR #636)
+  - Release SwitchNormLayer (PR #737)
+  - Update Core Layer to support graph (PR ＃751)
 - Setup:
-  - Creation of installation flaggs `all`, `all_cpu`, and `all_gpu` (PR #660)
-- Test:
-  - `test_utils_predict.py` added to reproduce and fix issue #288 (PR #566)
-  - `Layer_DeformableConvolution_Test` added to reproduce issue #572 with deformable convolution (PR #573)
-  - `Array_Op_Alphas_Test` and `Array_Op_Alphas_Like_Test` added to test `tensorlayer/array_ops.py` file (PR #580)
-  - `test_optimizer_amsgrad.py` added to test `AMSGrad` optimizer (PR #636)
-  - `test_logging.py` added to insure robustness of the logging API (PR #645)
-  - `test_decorators.py` added (PR #660)
-  - `test_activations.py` added (PR #686)
+  - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
-  - `tutorial_tfslim` has been introduced to show how to use `SlimNetsLayer` (PR #560).
   - `tutorial_models_vgg19` has been introduced to show how to use `tl.model.vgg19` (PR #698).
-  - add the following to all tutorials (PR #697):  
-    ```python
-    tf.logging.set_verbosity(tf.logging.DEBUG)
-    tl.logging.set_verbosity(tl.logging.DEBUG)
-    ```
+  - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
+  - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
 
-    
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
+  - Dockerfiles merged and refactored into one file (PR #747)
+  - LazyImports move to the most **top level** imports as possible (PR #739)
 
 ### Deprecated
+  - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
 
 ### Removed
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
@@ -136,20 +108,23 @@ To release a new version, please update the changelog as followed:
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
+- Dockerfiles import error fixed - issue #733 (PR #747)
 
 ### Security
 
 ### Dependencies Update
+- tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10 (PR #739)
+- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
+- pymongo>=3.6,<3.7 => pymongo>=3.7,<3.8 (PR #750)
+- numpy>=1.14,<1.15 => numpy>=1.15,<1.16 (PR #754)
+
 
 ### Contributors
-- @lgarithm: #563
-- @DEKHTIARJonathan: #573 #574 #575 #580 #633 #635 #636 #639 #644 #645 #648 #657 #667 #658 #659 #660 #661 #666 #667 #672 #675 #683 #686 #687 #690 #691 #692
-- @2wins: #560 #566 #662
-- @One-sixth: #579
-- @zsdonghao: #587 #588 #639 #685 #697
-- @luomai: #639 #677
-- @dengyueyun666: #676
-- @OwenLiuzZ: #698
+- @DEKHTIARJonathan: #739 #747 #750 #754
+- @lgarithm: #705 #700
+- @OwenLiuzZ: #698 #710
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
+- @luomai: #700
 
 ## [1.9.0] - 2018-06-16
 

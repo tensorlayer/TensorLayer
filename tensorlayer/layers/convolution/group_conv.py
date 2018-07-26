@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -77,9 +77,9 @@ class GroupConv2d(Layer):
         channels = int(self.inputs.get_shape()[-1])
 
         with tf.variable_scope(name):
-            We = tf.get_variable(
+            We = self._get_tf_variable(
                 name='W', shape=[filter_size[0], filter_size[1], channels / n_group, n_filter], initializer=W_init,
-                dtype=LayersConfig.tf_dtype, trainable=True, **self.W_init_args
+                dtype=self.inputs.dtype, trainable=True, **self.W_init_args
             )
 
             if n_group == 1:
@@ -93,8 +93,8 @@ class GroupConv2d(Layer):
                 self.outputs = tf.concat(axis=3, values=convGroups)
 
             if b_init:
-                b = tf.get_variable(
-                    name='b', shape=n_filter, initializer=b_init, dtype=LayersConfig.tf_dtype, trainable=True,
+                b = self._get_tf_variable(
+                    name='b', shape=n_filter, initializer=b_init, dtype=self.inputs.dtype, trainable=True,
                     **self.b_init_args
                 )
 

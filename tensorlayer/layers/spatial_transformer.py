@@ -14,7 +14,7 @@ from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
 from tensorlayer.layers.utils import flatten_reshape
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -271,12 +271,12 @@ class SpatialTransformer2dAffineLayer(Layer):
             n_in = int(self.theta_layer.outputs.get_shape()[-1])
             shape = (n_in, 6)
 
-            W = tf.get_variable(name='W', initializer=tf.zeros(shape), dtype=LayersConfig.tf_dtype)
+            W = self._get_tf_variable(name='W', initializer=tf.zeros(shape), dtype=self.inputs.dtype)
             # 2.2 b
 
             identity = tf.constant(np.array([[1., 0, 0], [0, 1., 0]]).astype('float32').flatten())
 
-            b = tf.get_variable(name='b', initializer=identity, dtype=LayersConfig.tf_dtype)
+            b = self._get_tf_variable(name='b', initializer=identity, dtype=self.inputs.dtype)
             # 2.3 transformation matrix
 
             self.theta = tf.nn.tanh(tf.matmul(self.theta_layer.outputs, W) + b)

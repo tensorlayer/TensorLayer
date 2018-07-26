@@ -13,5 +13,6 @@ from .deprecated import deprecated
 from .deprecated_alias import deprecated_alias
 from .method_decorator import private_method
 from .method_decorator import protected_method
+from .layer_decorator import force_return_self
 
-__all__ = ['deprecated', 'deprecated_alias', 'private_method', 'protected_method']
+__all__ = ['deprecated', 'deprecated_alias', 'private_method', 'protected_method', 'force_return_self']

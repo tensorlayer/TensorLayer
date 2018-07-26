@@ -1,16 +1,243 @@
-#! /usr/bin/python
 # -*- coding: utf-8 -*-
 
 import json
 import os
 import time
+import math
 
 import tensorflow as tf
 from tensorflow.python.training import session_run_hook
 
-__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint']
+from tensorlayer import logging
+from tensorlayer.decorators import deprecated
+from tensorlayer.lazy_imports import LazyImport
+
+hvd = LazyImport('horovod.tensorflow')
+
+__all__ = ['TaskSpecDef', 'TaskSpec', 'DistributedSession', 'StopAtTimeHook', 'LoadCheckpoint', 'Trainer']
 
 
+class Trainer(object):
+    """Trainer for neural networks in a distributed environment.
+
+    TensorLayer Trainer is a high-level training interface built on top of TensorFlow MonitoredSession and
+    `Horovod <https://github.com/uber/horovod>`__. It transparently scales the training of a TensorLayer model
+    from a single GPU to multiple GPUs that be placed on different machines in a single cluster.
+
+    To run the trainer, you will need to install Horovod on your machine. Check the installation script at
+    `tensorlayer/scripts/download_and_install_openmpi3_ubuntu.sh`
+
+    The minimal inputs to the Trainer include (1) a training dataset defined using the TensorFlow DataSet API,
+    and (2) a model build function given the inputs of the training dataset, and returns the neural network
+    to train, the loss function to minimize, and the names of the tensor to log during training, and (3)
+    an optimizer and its arguments.
+
+    The default parameter choices of Trainer is inspired by the Facebook paper:
+    `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
+
+    Parameters
+    ----------
+    training_dataset : class TensorFlow ``DataSet``
+        The training dataset which zips samples and labels. The trainer automatically
+        shards the training dataset based on the number of GPUs.
+    build_training_func : function
+        A function that builds the training operator. It takes the training dataset as an input,
+        and returns the neural network, the loss function and a dictionary that maps
+        string tags to tensors to log during training.
+    optimizer : class TensorFlow ``Optimizer``
+        The loss function optimizer. The trainer automatically linearly scale the learning rate based on
+        the number of GPUs.
+    optimizer_args : dict
+        The optimizer argument dictionary. It must contain a `learning_rate` field in type of float.
+        Note that the learning rate is linearly scaled according to the number of GPU by default.
+        You can disable it using the option `scaling_learning_rate`
+    batch_size : int
+        The training mini-batch size (i.e., number of samples per batch).
+    num_epochs : int
+        The number of training epochs.
+    shuffle_data : boolean
+        If the training data need to be shuffled or not. Default is False.
+    shuffle_seed : int
+        The random seed that control the data shuffling process. Default is 0.
+        Internally, the trainer is using the tf.data.shuffle() to shuffle data. Note that it is preferable to
+        let all the trainer use the same random seed
+        in order to guarantee an identical data shuffling order across different GPUs.
+    checkpoint_dir : None or str
+        The path to the TensorFlow model checkpoint. Note that only one trainer master would checkpoints its model.
+        If None, checkpoint is disabled.
+    log_step_size : int
+        The trainer logs training information every N mini-batches (i.e., step size).
+    validation_dataset: None or class TensorFlow ``DataSet``
+        The optional validation dataset that zips samples and labels. Note that
+        only the trainer master needs to the validation often.
+    build_validation_func: None or function
+        The function that builds the validation operator. It returns the validation neural network (which
+        share the weights of the training network) and a custom number of validation metrics.
+    scaling_learning_rate: Boolean
+        Linearly scale the learning rate by the number of GPUs. Default is True.
+        This `linear scaling rule` is generally effective and is highly recommended by the practioners.
+        Check `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour <https://arxiv.org/abs/1706.02677>`__
+    max_iteration: int
+        The maximum iteration (i.e., mini-batch) to train.
+        The default is `math.inf`. You can set it to a small number to end the training earlier. This is
+        usually set for testing purpose.
+
+    Attributes
+    ----------
+    training_network : class TensorLayer ``Layer``
+        The training model.
+    session : class TensorFlow ``MonitoredTrainingSession``
+        The training session tha the Trainer wraps.
+    global_step : int
+        The number of training mini-batch by far.
+    validation_metrics : list of tuples
+        The validation metrics that zips the validation metric property and the average value.
+
+    Examples
+    --------
+    See `tutorial_mnist_distributed_trainer.py
+    <https://github.com/tensorlayer/tensorlayer/blob/master/example/tutorial_mnist_distributed_trainer.py>`__.
+
+    """
+
+    def __init__(
+            self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
+            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
+            validation_dataset=None, build_validation_func=None, max_iteration=math.inf
+    ):
+        # Initialize Horovod.
+        hvd.init()
+        self.is_master = hvd.rank() == 0
+        self._last_global_step = 0
+
+        # Define the loss for validation dataset
+        if validation_dataset:
+            shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
+            self._validation_iterator = shard.make_initializable_iterator()
+            next_example, next_label = self._validation_iterator.get_next()
+            _, self._validation_metrics = build_validation_func(next_example, next_label)
+            if not isinstance(self._validation_metrics, list):
+                self._validation_metrics = list(self._validation_metrics)
+        else:
+            self._validation_iterator = None
+            self._validation_metrics = None
+
+        # Get the shard of the dataset based on my local rank
+        if shuffle_data:
+            training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
+        shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
+        training_iterator = shard.make_one_shot_iterator()
+        self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
+
+        # Adjust learning rate based on number of GPUs.
+        lr = optimizer_args['learning_rate']
+        optimizer_args['learning_rate'] = scaling_learning_rate if lr * hvd.size() else lr
+        opt = optimizer(**optimizer_args)
+
+        # Add Horovod Distributed Optimizer.
+        opt = hvd.DistributedOptimizer(opt)
+
+        self._global_step = tf.train.get_or_create_global_step()
+        if isinstance(log_tensors, list):
+            log_tensors.append(self._global_step)
+        else:
+            log_tensors['global_step'] = self._global_step
+        self._train_op = opt.minimize(loss, global_step=self._global_step)
+
+        hooks = [
+            # Horovod: BroadcastGlobalVariablesHook broadcasts initial variable states
+            # from rank 0 to all other processes. This is necessary to ensure consistent
+            # initialization of all workers when training is started with random weights
+            # or restored from a checkpoint.
+            hvd.BroadcastGlobalVariablesHook(0),
+
+            # Horovod: adjust number of steps based on number of GPUs.
+            tf.train.StopAtStepHook(last_step=max_iteration // hvd.size()),
+            tf.train.LoggingTensorHook(tensors=log_tensors, every_n_iter=log_step_size),
+        ]
+
+        # Pin GPU to be used to process local rank (one GPU per process)
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        config.gpu_options.visible_device_list = str(hvd.local_rank())
+
+        # Save checkpoints only on worker 0 to prevent other workers from
+        # corrupting them.
+        checkpoint_dir = checkpoint_dir if self.is_master else None
+
+        # The MonitoredTrainingSession takes care of session initialization,
+        # restoring from a checkpoint, saving to a checkpoint, and closing when done
+        # or an error occurs.
+        self._sess = tf.train.MonitoredTrainingSession(checkpoint_dir=checkpoint_dir, hooks=hooks, config=config)
+
+    @property
+    def global_step(self):
+        if self._sess.should_stop():
+            return self._last_global_step
+        self._last_global_step = self._sess.run(self._global_step)
+        return self._last_global_step
+
+    @property
+    def session(self):
+        return self._sess
+
+    @property
+    def training_network(self):
+        return self._training_network
+
+    @property
+    def validation_metrics(self):
+        if (self._validation_iterator is None) or (self._validation_metrics is None):
+            raise AttributeError('Validation is not setup.')
+
+        n = 0.0
+        metric_sums = [0.0] * len(self._validation_metrics)
+        self._sess.run(self._validation_iterator.initializer)
+        while True:
+            try:
+                metrics = self._sess.run(self._validation_metrics)
+                for i, m in enumerate(metrics):
+                    metric_sums[i] += m
+                n += 1.0
+            except tf.errors.OutOfRangeError:
+                break
+        for i, m in enumerate(metric_sums):
+            metric_sums[i] = metric_sums[i] / n
+        return zip(self._validation_metrics, metric_sums)
+
+    def train_on_batch(self):
+        """Train a mini-batch."""
+        self._sess.run(self._train_op)
+
+    def train_to_end(self):
+        """Train the model until the end of the dataset."""
+        while not self._sess.should_stop():
+            # Run a training step synchronously.
+            try:
+                self.train_on_batch()
+            except tf.errors.OutOfRangeError:
+                break
+
+    def train_and_validate_to_end(self, validate_step_size=50):
+        """Train the model until the end of the dataset, and validate every N mini-batches.
+
+        Parameters
+        ----------
+        validate_step_size : int
+            Validate the training network every N steps.
+
+        """
+        while not self._sess.should_stop():
+            self.train_on_batch()  # Run a training step synchronously.
+            if self.global_step % validate_step_size == 0:
+                # logging.info("Average loss for validation dataset: %s" % self.get_validation_metrics())
+                log_str = 'step: %d, ' % self.global_step
+                for n, m in self.validation_metrics:
+                    log_str += '%s: %f, ' % (n.name, m)
+                logging.info(log_str)
+
+
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class TaskSpecDef(object):
     """Specification for a distributed task.
 
@@ -146,6 +373,7 @@ class TaskSpecDef(object):
         )
 
 
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_task_spec_def():
     """Returns the a :class:`TaskSpecDef` based on the environment variables for distributed training.
 
@@ -175,6 +403,7 @@ def create_task_spec_def():
         raise Exception('You need to setup TF_CONFIG or JOB_NAME to define the task.')
 
 
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 def create_distributed_session(
         task_spec=None, checkpoint_dir=None, scaffold=None, hooks=None, chief_only_hooks=None, save_checkpoint_secs=600,
         save_summaries_steps=object(), save_summaries_secs=object(), config=None, stop_grace_period_secs=120,
@@ -271,6 +500,7 @@ def create_distributed_session(
     )
 
 
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class StopAtTimeHook(session_run_hook.SessionRunHook):
     """Hook that requests stop after a specified time.
 
@@ -293,6 +523,7 @@ class StopAtTimeHook(session_run_hook.SessionRunHook):
             run_context.request_stop()
 
 
+@deprecated(date="2018-10-30", instructions="Using the TensorLayer distributed trainer.")
 class LoadCheckpoint(session_run_hook.SessionRunHook):
     """Hook that loads a checkpoint after the session is created.
 

@@ -114,6 +114,7 @@ venv3/
 .vscode/
 
 # TensorLayer Directories
+checkpoints
 data/
 lib_win/
 

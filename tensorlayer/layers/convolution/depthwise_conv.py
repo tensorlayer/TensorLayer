@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -115,16 +115,16 @@ class DepthwiseConv2d(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_depthwise2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )  # [filter_height, filter_width, in_channels, depth_multiplier]
 
             self.outputs = tf.nn.depthwise_conv2d(self.inputs, W, strides=strides, padding=padding, rate=dilation_rate)
 
             if b_init:
-                b = tf.get_variable(
+                b = self._get_tf_variable(
                     name='b_depthwise2d', shape=(pre_channel * depth_multiplier), initializer=b_init,
-                    dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
