@@ -358,6 +358,33 @@ class Layer(BaseLayer):
     @protected_method
     def __call__(self, prev_layer, is_train=True):
 
+        self._parse_inputs(prev_layer)
+
+        self.is_setup = True
+        logging.info(str(self))
+
+        ## TL Graph
+        # print(act, name, args, kwargs)
+        prev_layer_name = prev_layer.name if hasattr(prev_layer, "name") else ''
+
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer_name})
+        # if act:  ## convert activation from function to string
+        #     try:
+        #         act = act.__name__
+        #     except:
+        #         pass
+        #     self.graph.update({'act': act})
+        # print(self.layer_args)
+        self.graph.update(self.layer_args)
+        # print(self.graph)
+        self._add_graphs((self.name, self.graph))
+
+    @protected_method
+    def _parse_inputs(self, prev_layer):
+
+        if hasattr(self, 'inputs') and self.inputs is not None:
+            return
+
         if isinstance(prev_layer, Layer):
             # 1. for normal layer have only 1 input i.e. DenseLayer
             # Hint : list(), dict() is pass by value (shallow), without them,
@@ -408,25 +435,6 @@ class Layer(BaseLayer):
 
             if hasattr(prev_layer, "outputs"):
                 self.inputs = prev_layer.outputs
-
-        ## TL Graph
-        # print(act, name, args, kwargs)
-        prev_layer_name = prev_layer.name if hasattr(prev_layer, "name") else ''
-
-        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer_name})
-        # if act:  ## convert activation from function to string
-        #     try:
-        #         act = act.__name__
-        #     except:
-        #         pass
-        #     self.graph.update({'act': act})
-        # print(self.layer_args)
-        self.graph.update(self.layer_args)
-        # print(self.graph)
-        self._add_graphs((self.name, self.graph))
-
-        self.is_setup = True
-        logging.info(str(self))
 
     @protected_method
     def _get_tf_variable(

@@ -99,36 +99,35 @@ class UpSampling2dLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
-        n_dim = len(prev_layer.outputs.shape)
+        self._parse_inputs(prev_layer)
 
-        if n_dim == 3:
+        if len(self.inputs.shape) == 3:
             x_pos, y_pos = (0, 1)
 
-        elif n_dim == 4:
+        elif len(self.inputs.shape) == 4:
             x_pos, y_pos = (1, 2)
 
         else:
             raise RuntimeError("The input shape: %s is not supported" % prev_layer.outputs)
 
         if self.is_scale:
-            size_h = self.size[0] * int(prev_layer.outputs.get_shape()[x_pos])
-            size_w = self.size[1] * int(prev_layer.outputs.get_shape()[y_pos])
+            size_h = np.ceil(int(self.inputs.shape[x_pos]) * self.size[0]).astype(dtype=np.int32)
+            size_w = np.ceil(int(self.inputs.shape[y_pos]) * self.size[1]).astype(dtype=np.int32)
 
-            _size = [int(size_h), int(size_w)]
+            _size = [size_h, size_w]
 
         else:
             _size = self.size
 
         with tf.variable_scope(self.name):
 
-            _out = tf.image.resize_images(
-                prev_layer.outputs, size=_size, method=self.method, align_corners=self.align_corners
+            self.outputs = tf.image.resize_images(
+                self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
-            self.out_shape = _out.shape
+            self.out_shape = self.outputs.shape
 
         super(UpSampling2dLayer, self).__call__(prev_layer)
 
-        self.outputs = _out
         self._add_layers(self.outputs)
 
 
@@ -215,34 +214,33 @@ class DownSampling2dLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
-        n_dim = len(prev_layer.outputs.shape)
+        self._parse_inputs(prev_layer)
 
-        if n_dim == 3:
+        if len(self.inputs.shape) == 3:
             x_pos, y_pos = (0, 1)
 
-        elif n_dim == 4:
+        elif len(self.inputs.shape) == 4:
             x_pos, y_pos = (1, 2)
 
         else:
             raise RuntimeError("The input shape: %s is not supported" % prev_layer.outputs)
 
         if self.is_scale:
-            size_h = np.ceil(int(prev_layer.outputs.get_shape()[x_pos]) / float(self.size[0]))
-            size_w = np.ceil(int(prev_layer.outputs.get_shape()[y_pos]) / float(self.size[1]))
+            size_h = np.ceil(int(self.inputs.shape[x_pos]) / float(self.size[0])).astype(dtype=np.int32)
+            size_w = np.ceil(int(self.inputs.shape[y_pos]) / float(self.size[1])).astype(dtype=np.int32)
 
-            _size = [int(size_h), int(size_w)]
+            _size = [size_h, size_w]
 
         else:
             _size = self.size
 
         with tf.variable_scope(self.name):
 
-            _out = tf.image.resize_images(
-                prev_layer.outputs, size=_size, method=self.method, align_corners=self.align_corners
+            self.outputs = tf.image.resize_images(
+                self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
-            self.out_shape = _out.shape
+            self.out_shape = self.outputs.shape
 
         super(DownSampling2dLayer, self).__call__(prev_layer)
 
-        self.outputs = _out
         self._add_layers(self.outputs)

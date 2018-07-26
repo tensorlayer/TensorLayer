@@ -146,6 +146,8 @@ class KerasLayer(Layer):
 
         super(KerasLayer, self).__init__(keras_args=keras_args)
 
+        logging.warning("This API will be removed, please use `LambdaLayer` instead.")
+
     def __str__(self):
         additional_str = []
 
@@ -218,6 +220,8 @@ class EstimatorLayer(Layer):
 
         super(EstimatorLayer, self).__init__(layer_args=layer_args)
 
+        logging.warning("This API will be removed, please use `LambdaLayer` instead.")
+
     def __str__(self):
         additional_str = []
 
@@ -237,7 +241,6 @@ class EstimatorLayer(Layer):
     def __call__(self, prev_layer, is_train=True):
 
         super(EstimatorLayer, self).__call__(prev_layer)
-        logging.warning("This API will be removed, please use LambdaLayer instead.")
 
         with tf.variable_scope(self.name) as vs:
             self.outputs = self.model_fn(self.inputs, **self.layer_args)

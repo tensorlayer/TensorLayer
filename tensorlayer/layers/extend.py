@@ -70,15 +70,15 @@ class ExpandDimsLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
+        self._parse_inputs(prev_layer)
+
         with tf.variable_scope(self.name):
-            _out = tf.expand_dims(prev_layer.outputs, axis=self.axis)
-            self.out_shape = _out.shape
-
-        super(ExpandDimsLayer, self).__call__(prev_layer)
-
-        self.outputs = _out
+            self.outputs = tf.expand_dims(self.inputs, axis=self.axis)
+            self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
+
+        super(ExpandDimsLayer, self).__call__(prev_layer)
 
 
 class TileLayer(Layer):
@@ -135,11 +135,12 @@ class TileLayer(Layer):
     @force_return_self
     def __call__(self, prev_layer, is_train=True):
 
+        self._parse_inputs(prev_layer)
+
         with tf.variable_scope(self.name):
-            _out = tf.tile(prev_layer.outputs, multiples=self.multiples)
-            self.out_shape = _out.shape
+            self.outputs = tf.tile(prev_layer.outputs, multiples=self.multiples)
+            self.out_shape = self.outputs.shape
+
+        self._add_layers(self.outputs)
 
         super(TileLayer, self).__call__(prev_layer)
-
-        self.outputs = _out
-        self._add_layers(self.outputs)
