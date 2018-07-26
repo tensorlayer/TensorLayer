@@ -221,5 +221,6 @@ class ReconLayer(DenseLayer):
                         files.save_npz([self.all_params[0]], name=save_name + str(epoch + 1) + '.npz')
                     except Exception:
                         raise Exception(
-                            "You should change the visualize.W() in ReconLayer.pretrain(), if you want to save the feature images for different dataset"
+                            "You should change the visualize.W() in ReconLayer.pretrain(), "
+                            "if you want to save the feature images for different dataset"
                         )
