@@ -10,6 +10,7 @@ from tensorlayer.layers.utils import _quantize
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'SignLayer',
@@ -31,15 +32,21 @@ class SignLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
             name='sign',
     ):
-        super(SignLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("SignLayer  %s" % self.name)
+        self.prev_layer = prev_layer
+        self.name = name
 
-        with tf.variable_scope(name):
-            # self.outputs = tl.act.sign(self.inputs)
+        super(SignLayer, self).__init__()
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(SignLayer, self).__call__(prev_layer)
+
+        with tf.variable_scope(self.name):
             self.outputs = _quantize(self.inputs)
 
         self._add_layers(self.outputs)

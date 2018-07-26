@@ -334,9 +334,8 @@ class Layer(BaseLayer):
             else:
                 self.__call__(self.prev_layer)
 
-    @abstractmethod
     def __str__(self):
-        pass
+        return self._str()
 
     def _str(self, additional_str=list()):
 

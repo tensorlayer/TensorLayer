@@ -1,19 +1,21 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import tensorflow as tf
+import tensorlayer as tl
+
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 from tensorlayer.lazy_imports import LazyImport
 
 try:
     roi_pooling = LazyImport("tensorlayer.third_party.roi_pooling.roi_pooling.roi_pooling_ops")
 except Exception as e:
-    logging.error(e)
-    logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
+    tl.logging.error(e)
+    tl.logging.error("HINT: 1. https://github.com/deepsense-ai/roi-pooling  2. tensorlayer/third_party/roi_pooling")
 
 __all__ = [
     'ROIPoolingLayer',
@@ -47,16 +49,37 @@ class ROIPoolingLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            rois,
+            prev_layer=None,
+            rois=list(),
             pool_height=2,
             pool_width=2,
             name='roipooling_layer',
     ):
-        super(ROIPoolingLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ROIPoolingLayer %s: (%d, %d)" % (self.name, pool_height, pool_width))
+        self.prev_layer = prev_layer
+        self.rois = rois
+        self.pool_height = pool_height
+        self.pool_width = pool_width
+        self.name = name
 
-        self.outputs = roi_pooling(self.inputs, rois, pool_height, pool_width)
+        super(ROIPoolingLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("pool_shape: (%d, %d)" % (self.pool_height, self.pool_width))
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(ROIPoolingLayer, self).__call__(prev_layer)
+
+        with tf.variable_scope(self.name):
+            self.outputs = roi_pooling(self.inputs, self.rois, self.pool_height, self.pool_width)
 
         self._add_layers(self.outputs)
