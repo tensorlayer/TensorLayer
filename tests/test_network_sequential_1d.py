@@ -75,7 +75,8 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
 
-            cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda'))
+            cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda_layer_11'))
+            cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_11'))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
@@ -92,7 +93,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model.count_params(), 29080)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 27)
+        self.assertEqual(self.model.count_layers(), 28)
 
     def test__getitem__(self):
 
@@ -140,6 +141,8 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["seq_layer_10"].outputs.shape, (100, 50))
 
         self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.model["lambda_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.model["noise_layer_11"].outputs.shape, (100, 256))
 
 
 if __name__ == '__main__':

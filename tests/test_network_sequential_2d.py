@@ -38,6 +38,7 @@ class Network_Sequential_Test(CustomTestCase):
                     size=(2, 2), is_scale=True, method=0, align_corners=True, name="downsample2d_layer_2"
                 )
             )
+            cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_2'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
@@ -54,7 +55,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model.count_params(), 0)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 4)
+        self.assertEqual(self.model.count_layers(), 5)
 
     def test_network_shapes(self):
 
@@ -64,6 +65,7 @@ class Network_Sequential_Test(CustomTestCase):
 
         self.assertEqual(self.model["upsample2d_layer_2"].outputs.shape, (100, 32, 32, 1))
         self.assertEqual(self.model["downsample2d_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["noise_layer_2"].outputs.shape, (100, 16, 16, 1))
 
 
 if __name__ == '__main__':

@@ -329,7 +329,10 @@ class Layer(BaseLayer):
         self.act = self.act if hasattr(self, "act") and self.act not in [None, tf.identity] else None
 
         if hasattr(self, "prev_layer") and self.prev_layer is not None:
-            self.__call__(self.prev_layer)
+            if hasattr(self, "is_train"):
+                self.__call__(self.prev_layer, self.is_train)
+            else:
+                self.__call__(self.prev_layer)
 
     @abstractmethod
     def __str__(self):
