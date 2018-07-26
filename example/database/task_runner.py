@@ -9,9 +9,7 @@ import tensorlayer as tl
 # tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ## connect to database
-db = tl.db.TensorHub(
-    ip='localhost', port=27017, dbname='temp', project_key='tutorial'
-)
+db = tl.db.TensorHub(ip='localhost', port=27017, dbname='temp', project_key='tutorial')
 
 ## monitors the database and pull tasks to run
 while True:
