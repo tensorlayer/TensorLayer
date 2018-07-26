@@ -12,8 +12,10 @@ import gridfs
 import pymongo
 from tensorlayer.files import load_graph_and_params, exists_or_mkdir, del_folder
 from tensorlayer import logging
+
 import tensorflow as tf
 import numpy as np
+
 
 class TensorHub(object):
     """It is a MongoDB based manager that help you to manage data, network architecture, parameters and logging.
@@ -95,7 +97,7 @@ class TensorHub(object):
     @staticmethod
     def _serialization(ps):
         """ Seralize data. """
-        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)#protocol=2)
+        return pickle.dumps(ps, protocol=pickle.HIGHEST_PROTOCOL)  #protocol=2)
         # with open('_temp.pkl', 'wb') as file:
         #     return pickle.dump(ps, file, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -105,13 +107,15 @@ class TensorHub(object):
         return pickle.loads(ps)
 
     ## =========================== MODELS ================================ ##
-    def save_model(self, network=None, **kwargs):  #args=None):
+    def save_model(self, network=None, model_key='model', **kwargs):  #args=None):
         """Save model archietcture and parameters into database, timestamp will be added automatically.
 
         Parameters
         ----------
         network : TensorLayer layer
             TensorLayer layer instance.
+        model_key : str
+            The name/key of model.
         kwargs : other events
             Other events, such as name, accuracy, loss, step number and etc (optinal).
 
@@ -135,7 +139,8 @@ class TensorHub(object):
         ---------
         boolean : True for success, False for fail.
         """
-        self._fill_project_info(kwargs)# put project_key into kwargs
+        kwargs.update({'model_key': model_key})
+        self._fill_project_info(kwargs)  # put project_key into kwargs
 
         params = network.get_all_params()
 
@@ -150,11 +155,13 @@ class TensorHub(object):
             print("[Database] Save model: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
             return True
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             print("[Database] Save model: FAIL")
             return False
 
-    def find_one_model(self, sess, sort=None, **kwargs):
+    def find_one_model(self, sess, sort=None, model_key='model', **kwargs):
         """Finds and returns a model archietcture and its parameters from the database which matches the requirement.
 
         Parameters
@@ -163,6 +170,8 @@ class TensorHub(object):
             TensorFlow session.
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
+        model_key : str or None
+            The name/key of model.
         kwargs : other events
             Other events, such as name, accuracy, loss, step number and etc (optinal).
 
@@ -174,47 +183,56 @@ class TensorHub(object):
         ---------
         network : TensorLayer layer
         """
+        # print(kwargs)   # {}
+        kwargs.update({'model_key': model_key})
         self._fill_project_info(kwargs)
         # if dataset_key is None:
-            # raise Exception("dataset_key is None, please give a dataset name")
-        # kwargs.update({'dataset_key': dataset_key})
+        # raise Exception("dataset_key is None, please give a dataset name")
+        # print(kwargs)   # {'project_key': 'tutorial', 'model_key': 'mlp'}
 
         s = time.time()
 
         d = self.db.Model.find_one(filter=kwargs, sort=sort)
 
+        _temp_file_name = '_find_one_model_ztemp_file'
         if d is not None:
             params_id = d['params_id']
             graphs = d['architecture']
             _datetime = d['time']
-            exists_or_mkdir('__ztemp', False)
-            with open(os.path.join('__ztemp', 'graph.pkl'), 'wb') as file:
+            exists_or_mkdir(_temp_file_name, False)
+            with open(os.path.join(_temp_file_name, 'graph.pkl'), 'wb') as file:
                 pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
         else:
             print("[Database] FAIL! Cannot find model: {}".format(kwargs))
             return False
         try:
             params = self._deserialization(self.model_fs.get(params_id).read())
-            np.savez(os.path.join('__ztemp', 'params.npz'), params=params)
+            np.savez(os.path.join(_temp_file_name, 'params.npz'), params=params)
 
-            network = load_graph_and_params(name='__ztemp', sess=sess)
-            del_folder('__ztemp')
+            network = load_graph_and_params(name=_temp_file_name, sess=sess)
+            del_folder(_temp_file_name)
 
             pc = self.db.Model.find(kwargs)
-            print("[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(kwargs, sort, _datetime, round(time.time() - s, 2)))
+            print(
+                "[Database] Find one model SUCCESS. kwargs:{} sort:{} save time:{} took: {}s".format(
+                    kwargs, sort, _datetime, round(time.time() - s, 2)
+                )
+            )
 
             # put all informations of model into the TL layer
             for key in d:
-                network.__dict__.update({"_%s"%key : d[key]})
+                network.__dict__.update({"_%s" % key: d[key]})
 
             # check whether more parameters match the requirement
             params_id_list = pc.distinct('params_id')
             n_params = len(params_id_list)
             if n_params != 1:
-                print("     Note that there are {} models match the requirement".format(n_params))
+                print("     Note that there are {} models match the kwargs".format(n_params))
             return network
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             return False
 
     def del_model(self, **kwargs):
@@ -267,7 +285,9 @@ class TensorHub(object):
             print("[Database] Save dataset: SUCCESS, took: {}s".format(round(time.time() - s, 2)))
             return True
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             print("[Database] Save dataset: FAIL")
             return False
 
@@ -321,11 +341,15 @@ class TensorHub(object):
             if n_dataset != 1:
                 print("     Note that there are {} datasets match the requirement".format(n_dataset))
             return dataset
-        except Exception:
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             return False
 
     def find_all_datasets(self, dataset_key=None, **kwargs):
         """Finds and returns all datasets from the database which matches the requirement.
+        In some case, the data in a dataset can be stored seperately for better management.
 
         Parameters
         ----------
@@ -511,9 +535,9 @@ class TensorHub(object):
         >>> db.run_one_task(sess=sess, sort=[("time", 1)])
 
         """
-        if not isinstance(task_key, str):# is None:
+        if not isinstance(task_key, str):  # is None:
             raise Exception("task_key should be string")
-        if not isinstance(script, str):# is None:
+        if not isinstance(script, str):  # is None:
             raise Exception("script should be string")
         if hyper_parameters is None:
             hyper_parameters = {}
@@ -529,8 +553,7 @@ class TensorHub(object):
 
         kwargs.update({'status': 'pending', 'script': _script, 'result': {}})
         self.db.Task.insert_one(kwargs)
-        logging.info("[Database] Saved Task: {} / {}".format(task_key, script))
-
+        logging.info("[Database] Saved Task - task_key: {} script: {}".format(task_key, script))
 
     def run_one_task(self, task_key=None, sort=None, **kwargs):
         """Finds and runs a pending task.
@@ -556,14 +579,16 @@ class TensorHub(object):
         --------
         boolean : True for success, False for fail.
         """
-        if not isinstance(task_key, str):# is None:
+        if not isinstance(task_key, str):  # is None:
             raise Exception("task_key should be string")
         self._fill_project_info(kwargs)
         kwargs.update({'status': 'pending'})
 
         ## find task and set status to running
         # task = self.db.Task.find_one(kwargs)
-        task = self.db.Task.find_one_and_update(kwargs, {'$set': {'status': 'running'}}, sort=sort)#, return_document=ReturnDocument.AFTER)
+        task = self.db.Task.find_one_and_update(kwargs, {'$set': {
+            'status': 'running'
+        }}, sort=sort)  #, return_document=ReturnDocument.AFTER)
 
         try:
             ## get task info e.g. hyper parameters, python script
@@ -590,7 +615,7 @@ class TensorHub(object):
             # os.system("python __ztemp.py")
             # import _ztemp
             _script = _script.decode('utf-8')
-            with tf.Graph().as_default(): # as graph: # clear all TF graphs
+            with tf.Graph().as_default():  # as graph: # clear all TF graphs
                 exec(_script, globals())
             # os.remove("_ztemp.py")
 
@@ -603,11 +628,22 @@ class TensorHub(object):
                 logging.info("  result: {}={} {}".format(_key, globals()[_key], type(globals()[_key])))
                 # print(type(_key), type(globals()[_key]))
                 # __result__.update({_key, globals()[str(_key)]})
-                __result.update({"%s" % _key :globals()[_key]})
+                __result.update({"%s" % _key: globals()[_key]})
             # print(__result, type(globals()[_key]))
-            _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'result': __result}}, return_document=pymongo.ReturnDocument.AFTER)
+            _ = self.db.Task.find_one_and_update(
+                {
+                    '_id': _id
+                }, {'$set': {
+                    'result': __result
+                }}, return_document=pymongo.ReturnDocument.AFTER
+            )
             # print(_['result'])
-            logging.info("[Database] Finished Task: key: {} sort: {} push time: {} took: {}s".format(task_key, sort, _datetime, time.time()-s))
+            logging.info(
+                "[Database] Finished Task: task_key - {} sort: {} push time: {} took: {}s".format(
+                    task_key, sort, _datetime,
+                    time.time() - s
+                )
+            )
             # exit()
             return True
         except Exception as e:
@@ -659,20 +695,25 @@ class TensorHub(object):
         --------
         boolean : True for success, False for fail.
         """
-        if not isinstance(task_key, str):# is None:
+        if not isinstance(task_key, str):  # is None:
             raise Exception("task_key should be string")
         self._fill_project_info(kwargs)
 
-        kwargs.update({'$or': [ { 'status': 'pending' }, { 'status': 'running' }]})
+        kwargs.update({'$or': [{'status': 'pending'}, {'status': 'running'}]})
 
-        ## find task
-        task = self.db.Task.find_one(kwargs)
-        # print(task)
-        if task is None:
-            logging.info("[Database] No unfinished task: key: {}".format(task_key))
+        # ## find task
+        # task = self.db.Task.find_one(kwargs)
+        task = self.db.Task.find(kwargs)
+
+        task_id_list = task.distinct('_id')
+        n_task = len(task_id_list)
+
+        if n_task == 0:
+            logging.info("[Database] No unfinished task - task_key: {}".format(task_key))
             return False
         else:
-            logging.info("[Database] Find unfinished task: key: {}".format(task_key))
+
+            logging.info("[Database] Find {} unfinished task - task_key: {}".format(n_task, task_key))
             return True
 
     @staticmethod

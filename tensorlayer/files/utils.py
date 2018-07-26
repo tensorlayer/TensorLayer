@@ -40,7 +40,7 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
-
+import tensorlayer as tl  # it is used in eval() of _graph2net
 from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
@@ -1894,6 +1894,7 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
 
+
 def save_graph(network=None, name='graph.pkl'):
     """Save the architecture of TL model into a pickle file. No parameters be saved.
 
@@ -1919,6 +1920,7 @@ def save_graph(network=None, name='graph.pkl'):
         pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
     logging.info("[*] Saved graph")
 
+
 def _graph2net(graphs):
     """ Inputs graphs, returns network. """
     input_list = list()
@@ -1927,38 +1929,38 @@ def _graph2net(graphs):
     for graph in graphs:
         ## get current layer class
         name, layer_kwargs = graph
-        layer_class = layer_kwargs.pop('class')     # class of current layer
-        prev_layer = layer_kwargs.pop('prev_layer') # name of previous layer
+        layer_class = layer_kwargs.pop('class')  # class of current layer
+        prev_layer = layer_kwargs.pop('prev_layer')  # name of previous layer
 
         ## convert function dictionary into real function
-        for key in layer_kwargs: # set input placeholder into the lastest layer
+        for key in layer_kwargs:  # set input placeholder into the lastest layer
             fn_dict = layer_kwargs[key]
             if key in ['act']:
                 module_path = fn_dict['module_path']
-                func_name   = fn_dict['func_name']
+                func_name = fn_dict['func_name']
                 lib = importlib.import_module(module_path)
                 fn = getattr(lib, func_name)
                 layer_kwargs[key] = fn
                 # print(key, layer_kwargs[key])
         # print(name, prev_layer, layer_class, layer_kwargs)
 
-        if layer_class == 'placeholder': ## create placeholder
+        if layer_class == 'placeholder':  ## create placeholder
             dtype = layer_kwargs.pop('dtype')
             shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(eval('tf.'+dtype), shape, name=name.split(':')[0]) #globals()['tf.'+dtype]
+            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  #globals()['tf.'+dtype]
             # input_dict.update({name: _placeholder})
             input_list.append((name, _placeholder))
-        else:   ## create network
-            try:    # if previous layer is layer
+        else:  ## create network
+            try:  # if previous layer is layer
                 net = layer_dict[prev_layer]
                 layer_kwargs.update({'prev_layer': net})
-            except Exception: # if previous layer is input placeholder
+            except Exception:  # if previous layer is input placeholder
                 for n, t in input_list:
                     if n == prev_layer:
                         _placeholder = t
                 layer_kwargs.update({'inputs': _placeholder})
             layer_kwargs.update({'name': name})
-            net = eval('tl.layers.'+layer_class)(**layer_kwargs)
+            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
             layer_dict.update({name: net})
 
     ## rename placeholder e.g. x:0 --> x
@@ -1979,6 +1981,7 @@ def _graph2net(graphs):
     logging.info("[*] Load graph finished")
     ## return the lastest layer as network
     return layer_dict[name]
+
 
 def load_graph(name='model.pkl'):
     """Restore TL model archtecture from a a pickle file. No parameters be restored.
@@ -2001,6 +2004,7 @@ def load_graph(name='model.pkl'):
     with open(name, 'rb') as file:
         graphs = pickle.load(file)
     return _graph2net(graphs)
+
 
 def save_graph_and_params(network=None, name='model', sess=None):
     """Save TL model architecture and parameters (i.e. whole model) into graph file and npz file, respectively.
@@ -2028,6 +2032,7 @@ def save_graph_and_params(network=None, name='model', sess=None):
     save_graph(network, os.path.join(name, 'graph.pkl'))
     save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
 
+
 def load_graph_and_params(name='model', sess=None):
     """Load TL model architecture and parameters from graph file and npz file, respectively.
 
@@ -2041,6 +2046,7 @@ def load_graph_and_params(name='model', sess=None):
     network = load_graph(name=os.path.join(name, 'graph.pkl'))
     load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
     return network
+
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
     """Save variables to `.npy` file.
