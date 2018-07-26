@@ -9,10 +9,10 @@ import tensorlayer as tl
 # tl.logging.set_verbosity(tl.logging.DEBUG)
 
 ## connect to database
-db = tl.db.TensorHub(ip='localhost', port=27017, dbname='temp', project_key='tutorial')
+db = tl.db.TensorHub(ip='localhost', port=27017, dbname='temp', project_name='tutorial')
 
 ## monitors the database and pull tasks to run
 while True:
     print("waiting task from distributor")
-    db.run_task(task_key='mnist', sort=[("time", -1)])
+    db.run_top_task(task_name='mnist', sort=[("time", -1)])
     time.sleep(1)

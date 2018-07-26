@@ -31,14 +31,14 @@ class TensorHub(object):
         User name, set to None if you do not need authentication.
     password : str
         Password.
-    project_key : str or None
+    project_name : str or None
         Experiment key for this entire project, similar with the repository name of Github.
 
     Attributes
     ------------
     ip, port, dbname and other input parameters : see above
         See above.
-    project_key : str
+    project_name : str
         The given project name, if no given, set to the script name.
     db : mongodb client
         See ``pymongo.MongoClient``.
@@ -46,7 +46,7 @@ class TensorHub(object):
 
     # @deprecated_alias(db_name='dbname', user_name='username', end_support_version=2.1)
     def __init__(
-            self, ip='localhost', port=27017, dbname='dbname', username=None, password='password', project_key=None
+            self, ip='localhost', port=27017, dbname='dbname', username='None', password='password', project_name=None
     ):
         self.ip = ip
         self.port = port
@@ -58,14 +58,15 @@ class TensorHub(object):
         client = pymongo.MongoClient(ip, port)
         self.db = client[dbname]
         if username is None:
+            print(username, password)
             self.db.authenticate(username, password)
         else:
             print("[Database] No username given, it works if authentication is not required")
-        if project_key is None:
-            self.project_key = sys.argv[0].split('.')[0]
-            print("[Database] No project_key given, use {}".format(self.project_key))
+        if project_name is None:
+            self.project_name = sys.argv[0].split('.')[0]
+            print("[Database] No project_name given, use {}".format(self.project_name))
         else:
-            self.project_key = project_key
+            self.project_name = project_name
 
         # define file system (Buckets)
         self.dataset_fs = gridfs.GridFS(self.db, collection="datasetFilesystem")
@@ -80,7 +81,7 @@ class TensorHub(object):
         _s += "  dbname         : {}\n".format(self.dbname)
         _s += "  username       : {}\n".format(self.username)
         _s += "  password       : {}\n".format("*******")
-        _s += "  project_key : {}\n".format(self.project_key)
+        _s += "  project_name : {}\n".format(self.project_name)
         self._s = _s
         print(self._s)
 
@@ -89,8 +90,8 @@ class TensorHub(object):
         return self._s
 
     def _fill_project_info(self, args):
-        """ Fill in project_key for all studies, architectures and parameters. """
-        return args.update({'project_key': self.project_key})
+        """ Fill in project_name for all studies, architectures and parameters. """
+        return args.update({'project_name': self.project_name})
 
     @staticmethod
     def _serialization(ps):
@@ -105,14 +106,14 @@ class TensorHub(object):
         return pickle.loads(ps)
 
     # =========================== MODELS ================================
-    def save_model(self, network=None, model_key='model', **kwargs):
+    def save_model(self, network=None, model_name='model', **kwargs):
         """Save model architecture and parameters into database, timestamp will be added automatically.
 
         Parameters
         ----------
         network : TensorLayer layer
             TensorLayer layer instance.
-        model_key : str
+        model_name : str
             The name/key of model.
         kwargs : other events
             Other events, such as name, accuracy, loss, step number and etc (optinal).
@@ -120,25 +121,25 @@ class TensorHub(object):
         Examples
         ---------
         - Save model architecture and parameters into database.
-        >>> db.save_model(net, accuray=0.8, loss=2.3, name='second_model')
+        >>> db.save_model(net, accuracy=0.8, loss=2.3, name='second_model')
 
         - Load one model with parameters from database (run this in other script)
-        >>> net = db.find_model(sess=sess, accuray=0.8, loss=2.3)
+        >>> net = db.find_top_model(sess=sess, accuracy=0.8, loss=2.3)
 
         - Find and load the latest model.
-        >>> net = db.find_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
-        >>> net = db.find_model(sess=sess, sort=[("time", -1)])
+        >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
+        >>> net = db.find_top_model(sess=sess, sort=[("time", -1)])
 
         - Find and load the oldest model.
-        >>> net = db.find_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
-        >>> net = db.find_model(sess=sess, sort=[("time", 1)])
+        >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
+        >>> net = db.find_top_model(sess=sess, sort=[("time", 1)])
 
         Returns
         ---------
         boolean : True for success, False for fail.
         """
-        kwargs.update({'model_key': model_key})
-        self._fill_project_info(kwargs)  # put project_key into kwargs
+        kwargs.update({'model_name': model_name})
+        self._fill_project_info(kwargs)  # put project_name into kwargs
 
         params = network.get_all_params()
 
@@ -159,8 +160,8 @@ class TensorHub(object):
             print("[Database] Save model: FAIL")
             return False
 
-    def find_model(self, sess, sort=None, model_key='model', **kwargs):
-        """Finds and returns a model archietcture and its parameters from the database which matches the requirement.
+    def find_top_model(self, sess, sort=None, model_name='model', **kwargs):
+        """Finds and returns a model architecture and its parameters from the database which matches the requirement.
 
         Parameters
         ----------
@@ -168,7 +169,7 @@ class TensorHub(object):
             TensorFlow session.
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
-        model_key : str or None
+        model_name : str or None
             The name/key of model.
         kwargs : other events
             Other events, such as name, accuracy, loss, step number and etc (optinal).
@@ -182,11 +183,8 @@ class TensorHub(object):
         network : TensorLayer layer
         """
         # print(kwargs)   # {}
-        kwargs.update({'model_key': model_key})
+        kwargs.update({'model_name': model_name})
         self._fill_project_info(kwargs)
-        # if dataset_key is None:
-        # raise Exception("dataset_key is None, please give a dataset name")
-        # print(kwargs)   # {'project_key': 'tutorial', 'model_key': 'mlp'}
 
         s = time.time()
 
@@ -246,15 +244,15 @@ class TensorHub(object):
         logging.info("[Database] Delete Model SUCCESS")
 
     # =========================== DATASET ===============================
-    def save_dataset(self, dataset=None, dataset_key=None, **kwargs):
+    def save_dataset(self, dataset=None, dataset_name=None, **kwargs):
         """Saves one dataset into database, timestamp will be added automatically.
 
         Parameters
         ----------
         dataset : any type
             The dataset you want to store.
-        dataset_key : str
-            The name/key of dataset.
+        dataset_name : str
+            The name of dataset.
         kwargs : other events
             Other events, such as description, author and etc (optinal).
 
@@ -263,16 +261,16 @@ class TensorHub(object):
         - Save dataset
         >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
         - Get dataset
-        >>> dataset = db.find_dataset('mnist')
+        >>> dataset = db.find_top_dataset('mnist')
 
         Returns
         ---------
         boolean : Return True if save success, otherwise, return False.
         """
         self._fill_project_info(kwargs)
-        if dataset_key is None:
-            raise Exception("dataset_key is None, please give a dataset name")
-        kwargs.update({'dataset_key': dataset_key})
+        if dataset_name is None:
+            raise Exception("dataset_name is None, please give a dataset name")
+        kwargs.update({'dataset_name': dataset_name})
 
         s = time.time()
         try:
@@ -289,13 +287,13 @@ class TensorHub(object):
             print("[Database] Save dataset: FAIL")
             return False
 
-    def find_dataset(self, dataset_key=None, sort=None, **kwargs):
+    def find_top_dataset(self, dataset_name=None, sort=None, **kwargs):
         """Finds and returns a dataset from the database which matches the requirement.
 
         Parameters
         ----------
-        dataset_key : str
-            The name/key of dataset.
+        dataset_name : str
+            The name of dataset.
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
         kwargs : other events
@@ -306,8 +304,8 @@ class TensorHub(object):
         - Save dataset
         >>> db.save_dataset([X_train, y_train, X_test, y_test], 'mnist', description='this is a tutorial')
         - Get dataset
-        >>> dataset = db.find_dataset('mnist')
-        >>> datasets = db.find_all_datasets('mnist')
+        >>> dataset = db.find_top_dataset('mnist')
+        >>> datasets = db.find_datasets('mnist')
 
         Returns
         --------
@@ -317,9 +315,9 @@ class TensorHub(object):
         """
 
         self._fill_project_info(kwargs)
-        if dataset_key is None:
-            raise Exception("dataset_key is None, please give a dataset name")
-        kwargs.update({'dataset_key': dataset_key})
+        if dataset_name is None:
+            raise Exception("dataset_name is None, please give a dataset name")
+        kwargs.update({'dataset_name': dataset_name})
 
         s = time.time()
 
@@ -347,13 +345,13 @@ class TensorHub(object):
             logging.info("{}  {}  {}  {}  {}".format(exc_type, exc_obj, fname, exc_tb.tb_lineno, e))
             return False
 
-    def find_all_datasets(self, dataset_key=None, **kwargs):
+    def find_datasets(self, dataset_name=None, **kwargs):
         """Finds and returns all datasets from the database which matches the requirement.
         In some case, the data in a dataset can be stored separately for better management.
 
         Parameters
         ----------
-        dataset_key : str
+        dataset_name : str
             The name/key of dataset.
         kwargs : other events
             Other events, such as description, author and etc (optional).
@@ -365,9 +363,9 @@ class TensorHub(object):
         """
 
         self._fill_project_info(kwargs)
-        if dataset_key is None:
-            raise Exception("dataset_key is None, please give a dataset name")
-        kwargs.update({'dataset_key': dataset_key})
+        if dataset_name is None:
+            raise Exception("dataset_name is None, please give a dataset name")
+        kwargs.update({'dataset_name': dataset_name})
 
         s = time.time()
         pc = self.db.Dataset.find(kwargs)
@@ -385,7 +383,7 @@ class TensorHub(object):
         print("[Database] Find {} datasets SUCCESS, took: {}s".format(len(dataset_list), round(time.time() - s, 2)))
         return dataset_list
 
-    def delete_dataset(self, **kwargs):
+    def delete_datasets(self, **kwargs):
         """Delete datasets.
 
         Parameters
@@ -410,7 +408,7 @@ class TensorHub(object):
 
         Examples
         ---------
-        >>> db.save_training_log(accuray=0.33, loss=0.98)
+        >>> db.save_training_log(accuracy=0.33, loss=0.98)
 
         """
 
@@ -430,7 +428,7 @@ class TensorHub(object):
 
         Examples
         ---------
-        >>> db.save_validation_log(accuray=0.33, loss=0.98)
+        >>> db.save_validation_log(accuracy=0.33, loss=0.98)
 
         """
 
@@ -450,7 +448,7 @@ class TensorHub(object):
 
         Examples
         ---------
-        >>> db.save_testing_log(accuray=0.33, loss=0.98)
+        >>> db.save_testing_log(accuracy=0.33, loss=0.98)
 
         """
 
@@ -471,11 +469,11 @@ class TensorHub(object):
         Examples
         ---------
         - Save training log
-        >>> db.save_training_log(accuray=0.33)
-        >>> db.save_training_log(accuray=0.44)
+        >>> db.save_training_log(accuracy=0.33)
+        >>> db.save_training_log(accuracy=0.44)
 
         - Delete logs that match the requirement
-        >>> db.delete_training_log(accuray=0.33)
+        >>> db.delete_training_log(accuracy=0.33)
 
         - Delete all logs
         >>> db.delete_training_log()
@@ -517,60 +515,62 @@ class TensorHub(object):
         logging.info("[Database] Delete TestLog SUCCESS")
 
     # =========================== Task ===================================
-    def create_task(self, task_key=None, script=None, hyper_parameters=None, result_key=None, **kwargs):
+    def create_task(self, task_name=None, script=None, hyper_parameters=None, saved_result_keys=None, **kwargs):
         """Uploads a task to the database, timestamp will be added automatically.
 
         Parameters
         -----------
-        task_key : str
+        task_name : str
             The task name.
         script : str
             File name of the python script.
         hyper_parameters : dictionary
             The hyper parameters pass into the script.
+        saved_result_keys : list of str
+            The keys of the task results to keep in the database when the task finishes.
         kwargs : other parameters
             Users customized parameters such as description, version number.
 
         Examples
         -----------
         - Uploads a task
-        >>> db.create_task(task_key='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
+        >>> db.create_task(task_name='mnist', script='example/tutorial_mnist_simple.py', description='simple tutorial')
 
         - Finds and runs the latest task
-        >>> db.run_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
-        >>> db.run_task(sess=sess, sort=[("time", -1)])
+        >>> db.run_top_task(sess=sess, sort=[("time", pymongo.DESCENDING)])
+        >>> db.run_top_task(sess=sess, sort=[("time", -1)])
 
         - Finds and runs the oldest task
-        >>> db.run_task(sess=sess, sort=[("time", pymongo.ASCENDING)])
-        >>> db.run_task(sess=sess, sort=[("time", 1)])
+        >>> db.run_top_task(sess=sess, sort=[("time", pymongo.ASCENDING)])
+        >>> db.run_top_task(sess=sess, sort=[("time", 1)])
 
         """
-        if not isinstance(task_key, str):  # is None:
-            raise Exception("task_key should be string")
+        if not isinstance(task_name, str):  # is None:
+            raise Exception("task_name should be string")
         if not isinstance(script, str):  # is None:
             raise Exception("script should be string")
         if hyper_parameters is None:
             hyper_parameters = {}
-        if result_key is None:
-            result_key = []
+        if saved_result_keys is None:
+            saved_result_keys = []
 
         self._fill_project_info(kwargs)
         kwargs.update({'time': datetime.utcnow()})
         kwargs.update({'hyper_parameters': hyper_parameters})
-        kwargs.update({'result_key': result_key})
+        kwargs.update({'saved_result_keys': saved_result_keys})
 
         _script = open(script, 'rb').read()
 
         kwargs.update({'status': 'pending', 'script': _script, 'result': {}})
         self.db.Task.insert_one(kwargs)
-        logging.info("[Database] Saved Task - task_key: {} script: {}".format(task_key, script))
+        logging.info("[Database] Saved Task - task_name: {} script: {}".format(task_name, script))
 
-    def run_task(self, task_key=None, sort=None, **kwargs):
-        """Finds and runs a pending task.
+    def run_top_task(self, task_name=None, sort=None, **kwargs):
+        """Finds and runs a pending task that in the first of the sorting list.
 
         Parameters
         -----------
-        task_key : str
+        task_name : str
             The task name.
         sort : List of tuple
             PyMongo sort comment, search "PyMongo find one sorting" and `collection level operations <http://api.mongodb.com/python/current/api/pymongo/collection.html>`__ for more details.
@@ -582,42 +582,40 @@ class TensorHub(object):
         - Monitors the database and pull tasks to run
         >>> while True:
         >>>     print("waiting task from distributor")
-        >>>     db.run_task(task_key='mnist', sort=[("time", -1)])
+        >>>     db.run_top_task(task_name='mnist', sort=[("time", -1)])
         >>>     time.sleep(1)
 
         Returns
         --------
         boolean : True for success, False for fail.
         """
-        if not isinstance(task_key, str):  # is None:
-            raise Exception("task_key should be string")
+        if not isinstance(task_name, str):  # is None:
+            raise Exception("task_name should be string")
         self._fill_project_info(kwargs)
         kwargs.update({'status': 'pending'})
 
         # find task and set status to running
-        task = self.db.Task.find_one_and_update(kwargs, {'$set': {
-            'status': 'running'
-        }}, sort=sort)
+        task = self.db.Task.find_one_and_update(kwargs, {'$set': {'status': 'running'}}, sort=sort)
 
         try:
             # get task info e.g. hyper parameters, python script
             if task is None:
-                logging.info("[Database] Find Task FAIL: key: {} sort: {}".format(task_key, sort))
+                logging.info("[Database] Find Task FAIL: key: {} sort: {}".format(task_name, sort))
                 return False
             else:
-                logging.info("[Database] Find Task SUCCESS: key: {} sort: {}".format(task_key, sort))
+                logging.info("[Database] Find Task SUCCESS: key: {} sort: {}".format(task_name, sort))
             _datetime = task['time']
             _script = task['script']
             _id = task['_id']
             _hyper_parameters = task['hyper_parameters']
-            _result_key = task['result_key']
+            _saved_result_keys = task['saved_result_keys']
             logging.info("  hyper parameters:")
             for key in _hyper_parameters:
                 globals()[key] = _hyper_parameters[key]
                 logging.info("    {}: {}".format(key, _hyper_parameters[key]))
             # run task
             s = time.time()
-            logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_key, sort, _datetime))
+            logging.info("[Database] Start Task: key: {} sort: {} push time: {}".format(task_name, sort, _datetime))
             _script = _script.decode('utf-8')
             with tf.Graph().as_default():  # as graph: # clear all TF graphs
                 exec(_script, globals())
@@ -627,7 +625,7 @@ class TensorHub(object):
 
             # return results
             __result = {}
-            for _key in _result_key:
+            for _key in _saved_result_keys:
                 logging.info("  result: {}={} {}".format(_key, globals()[_key], type(globals()[_key])))
                 __result.update({"%s" % _key: globals()[_key]})
             _ = self.db.Task.find_one_and_update(
@@ -638,8 +636,8 @@ class TensorHub(object):
                 }}, return_document=pymongo.ReturnDocument.AFTER
             )
             logging.info(
-                "[Database] Finished Task: task_key - {} sort: {} push time: {} took: {}s".format(
-                    task_key, sort, _datetime,
+                "[Database] Finished Task: task_name - {} sort: {} push time: {} took: {}s".format(
+                    task_name, sort, _datetime,
                     time.time() - s
                 )
             )
@@ -653,7 +651,7 @@ class TensorHub(object):
             _ = self.db.Task.find_one_and_update({'_id': _id}, {'$set': {'status': 'pending'}})
             return False
 
-    def delete_task(self, **kwargs):
+    def delete_tasks(self, **kwargs):
         """Delete tasks.
 
         Parameters
@@ -663,7 +661,7 @@ class TensorHub(object):
 
         Examples
         ---------
-        >>> db.delete_task()
+        >>> db.delete_tasks()
 
         """
 
@@ -671,12 +669,12 @@ class TensorHub(object):
         self.db.Task.delete_many(kwargs)
         logging.info("[Database] Delete Task SUCCESS")
 
-    def check_unfinished_task(self, task_key=None, **kwargs):
+    def check_unfinished_task(self, task_name=None, **kwargs):
         """Finds and runs a pending task.
 
         Parameters
         -----------
-        task_key : str
+        task_name : str
             The task name.
         kwargs : other parameters
             Users customized parameters such as description, version number.
@@ -688,7 +686,7 @@ class TensorHub(object):
         >>>     time.sleep(1)
         >>> print("all tasks finished")
         >>> sess = tf.InteractiveSession()
-        >>> net = db.find_model(sess=sess, sort=[("test_accuracy", -1)])
+        >>> net = db.find_top_model(sess=sess, sort=[("test_accuracy", -1)])
         >>> print("the best accuracy {} is from model {}".format(net._test_accuracy, net._name))
 
         Returns
@@ -697,8 +695,8 @@ class TensorHub(object):
 
         """
 
-        if not isinstance(task_key, str):  # is None:
-            raise Exception("task_key should be string")
+        if not isinstance(task_name, str):  # is None:
+            raise Exception("task_name should be string")
         self._fill_project_info(kwargs)
 
         kwargs.update({'$or': [{'status': 'pending'}, {'status': 'running'}]})
@@ -711,11 +709,11 @@ class TensorHub(object):
         n_task = len(task_id_list)
 
         if n_task == 0:
-            logging.info("[Database] No unfinished task - task_key: {}".format(task_key))
+            logging.info("[Database] No unfinished task - task_name: {}".format(task_name))
             return False
         else:
 
-            logging.info("[Database] Find {} unfinished task - task_key: {}".format(n_task, task_key))
+            logging.info("[Database] Find {} unfinished task - task_name: {}".format(n_task, task_name))
             return True
 
     @staticmethod
