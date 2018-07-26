@@ -2,7 +2,7 @@ API - Database (alpha)
 =========================
 
 This is the alpha version of database management system.
-If you have trouble, you can ask for help on `fangde.liu@outlook.com <fangde.liu@outlook.com>`_ .
+If you have trouble, you can ask for help on `tensorlayer@gmail.com <tensorlayer@gmail.com>`_ .
 
 .. note::
    We are writing up the documentation, please wait in patient.
