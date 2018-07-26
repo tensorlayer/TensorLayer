@@ -51,6 +51,11 @@ class Network_Sequential_Test(CustomTestCase):
             )
             cls.model.add(tl.layers.SwitchNormLayer(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
 
+            cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [3, 3], [0, 0]], name='pad_layer_3'))
+            cls.model.add(tl.layers.ZeroPad2d(padding=2, name='zeropad2d_layer_3-1'))
+            cls.model.add(tl.layers.ZeroPad2d(padding=(2, 2), name='zeropad2d_layer_3-2'))
+            cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -66,7 +71,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.get_all_params()), 12)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 10)
+        self.assertEqual(self.model.count_layers(), 14)
 
     def test_network_shapes(self):
 
@@ -82,6 +87,10 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.model["layernorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.model["switchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["pad_layer_3"].outputs.shape, (100, 24, 22, 1))
+        self.assertEqual(self.model["zeropad2d_layer_3-1"].outputs.shape, (100, 28, 26, 1))
+        self.assertEqual(self.model["zeropad2d_layer_3-2"].outputs.shape, (100, 32, 30, 1))
+        self.assertEqual(self.model["zeropad2d_layer_3-3"].outputs.shape, (100, 38, 38, 1))
 
 
 if __name__ == '__main__':

@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'PadLayer',
@@ -45,21 +44,57 @@ class PadLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
             padding=None,
             mode='CONSTANT',
             name='pad_layer',
     ):
-        super(PadLayer, self).__init__(prev_layer=prev_layer, name=name)
-
-        logging.info("PadLayer   %s: padding: %s mode: %s" % (self.name, list(padding), mode))
 
         if padding is None:
             raise Exception(
                 "padding should be a Tensor of type int32. see https://www.tensorflow.org/api_docs/python/tf/pad"
             )
 
-        self.outputs = tf.pad(self.inputs, paddings=padding, mode=mode, name=name)
+        if not isinstance(padding, (int, tuple, list)):
+            raise AssertionError()
+
+        self.prev_layer = prev_layer
+        self.padding = padding
+        self.mode = mode
+        self.name = name
+
+        super(PadLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("mode: %s" % self.mode)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.pad(self.inputs, paddings=self.padding, mode=self.mode, name=self.name)
+        self.out_shape = self.outputs.shape
+
+        super(PadLayer, self).__call__(prev_layer)
+
         self._add_layers(self.outputs)
 
 
@@ -82,18 +117,48 @@ class ZeroPad1d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            padding=None,
             name='zeropad1d',
     ):
-        super(ZeroPad1d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad1d   %s: padding: %s" % (self.name, str(padding)))
-
-        if not isinstance(padding, (int, tuple, dict)):
+        if not isinstance(padding, (int, tuple, list)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        if isinstance(padding, (tuple, list)) and len(padding) != 2:
+            raise AssertionError()
+
+        self.prev_layer = prev_layer
+        self.padding = padding
+        self.name = name
+
+        super(ZeroPad1d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.out_shape = self.outputs.shape
+
+        super(ZeroPad1d, self).__call__(prev_layer)
+
         self._add_layers(self.outputs)
 
 
@@ -117,18 +182,47 @@ class ZeroPad2d(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            padding=None,
             name='zeropad2d',
     ):
-        super(ZeroPad2d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad2d   %s: padding: %s" % (self.name, str(padding)))
+        if not isinstance(padding, (int, tuple, list)):
+            raise AssertionError()
 
-        if not isinstance(padding, (int, tuple)):
-            raise AssertionError("Padding should be of type `int` or `tuple`")
+        if isinstance(padding, (tuple, list)) and len(padding) != 2:
+            raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding2D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        self.prev_layer = prev_layer
+        self.padding = padding
+        self.name = name
+
+        super(ZeroPad2d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.out_shape = self.outputs.shape
+
+        super(ZeroPad2d, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -152,17 +246,46 @@ class ZeroPad3d(Layer):
 
     def __init__(
             self,
-            prev_layer,
-            padding,
+            prev_layer=None,
+            padding=None,
             name='zeropad3d',
     ):
-        super(ZeroPad3d, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ZeroPad3d   %s: padding: %s" % (self.name, str(padding)))
-
-        if not isinstance(padding, (int, tuple)):
+        if not isinstance(padding, (int, tuple, list)):
             raise AssertionError()
 
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=padding, name=name)(self.inputs)  # TODO: Stop using Keras
+        if isinstance(padding, (tuple, list)) and len(padding) != 3:
+            raise AssertionError()
+
+        self.prev_layer = prev_layer
+        self.padding = padding
+        self.name = name
+
+        super(ZeroPad3d, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("padding: %s" % str(self.padding))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.out_shape = self.outputs.shape
+
+        super(ZeroPad3d, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)

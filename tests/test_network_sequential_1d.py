@@ -85,6 +85,12 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
 
+            cls.model.add(tl.layers.ExpandDimsLayer(axis=2, name="expand_layer_12"))
+            cls.model.add(tl.layers.PadLayer(padding=[[0, 0], [4, 4], [0, 0]], name='pad_layer_12'))
+            cls.model.add(tl.layers.ZeroPad1d(padding=1, name='zeropad1d_layer_12-1'))
+            cls.model.add(tl.layers.ZeroPad1d(padding=(2, 3), name='zeropad1d_layer_12-2'))
+            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271), name='reshape_layer_12'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -100,7 +106,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.get_all_params()), 36)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 30)
+        self.assertEqual(self.model.count_layers(), 35)
 
     def test__getitem__(self):
 
@@ -151,6 +157,12 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["lambda_layer_11"].outputs.shape, (100, 256))
         self.assertEqual(self.model["noise_layer_11"].outputs.shape, (100, 256))
         self.assertEqual(self.model["batchnorm_layer_11"].outputs.shape, (100, 256))
+
+        self.assertEqual(self.model["expand_layer_12"].outputs.shape, (100, 256, 1))
+        self.assertEqual(self.model["pad_layer_12"].outputs.shape, (100, 264, 1))
+        self.assertEqual(self.model["zeropad1d_layer_12-1"].outputs.shape, (100, 266, 1))
+        self.assertEqual(self.model["zeropad1d_layer_12-2"].outputs.shape, (100, 271, 1))
+        self.assertEqual(self.model["reshape_layer_12"].outputs.shape, (100, 271))
 
 
 if __name__ == '__main__':
