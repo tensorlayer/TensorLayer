@@ -10,7 +10,7 @@ sess = tf.InteractiveSession()
 db = tl.db.TensorHub(ip='localhost', port=27017, dbname='temp', project_key='tutorial')
 
 ## load dataset from database
-X_train, y_train, X_val, y_val, X_test, y_test = db.find_one_dataset('mnist')
+X_train, y_train, X_val, y_val, X_test, y_test = db.find_dataset('mnist')
 
 ## define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
@@ -64,4 +64,4 @@ test_accuracy = float(test_accuracy)
 ## save model into database
 db.save_model(net_train, model_key='mlp', name=str(n_units1) + '-' + str(n_units2), test_accuracy=test_accuracy)
 # in other script, you can load the model as follow
-# net = db.find_one_model(sess=sess, model_key=str(n_units1)+'-'+str(n_units2)
+# net = db.find_model(sess=sess, model_key=str(n_units1)+'-'+str(n_units2)

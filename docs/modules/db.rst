@@ -115,8 +115,8 @@ After saving the dataset, others can access the dataset as followed:
 
 .. code-block:: python
 
-  dataset = db.find_one_dataset('mnist')
-  dataset = db.find_one_dataset('mnist', version='1.0')
+  dataset = db.find_dataset('mnist')
+  dataset = db.find_dataset('mnist', version='1.0')
 
 If you have multiple datasets that use the same dataset key, you can get all of them as followed:
 
@@ -139,7 +139,7 @@ After saving the model into database, we can load it as follow:
 
 .. code-block:: python
 
-  net = db.find_one_model(sess=sess, accuracy=0.8, loss=2.3)
+  net = db.find_model(sess=sess, accuracy=0.8, loss=2.3)
 
 If there are many models, you can use MongoDB's 'sort' method to find the model you want.
 To get the newest or oldest model, you can sort by time:
@@ -148,19 +148,19 @@ To get the newest or oldest model, you can sort by time:
 
   ## newest model
 
-  net = db.find_one_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
-  net = db.find_one_model(sess=sess, sort=[("time", -1)])
+  net = db.find_model(sess=sess, sort=[("time", pymongo.DESCENDING)])
+  net = db.find_model(sess=sess, sort=[("time", -1)])
 
   ## oldest model
 
-  net = db.find_one_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
-  net = db.find_one_model(sess=sess, sort=[("time", 1)])
+  net = db.find_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
+  net = db.find_model(sess=sess, sort=[("time", 1)])
 
 If you save the model along with accuracy, you can get the model with the best accuracy as followed:
 
 .. code-block:: python
 
-  net = db.find_one_model(sess=sess, sort=[("test_accuracy", -1)])
+  net = db.find_model(sess=sess, sort=[("test_accuracy", -1)])
 
 To delete all models in a project:
 
@@ -178,22 +178,22 @@ Save training log:
 
 .. code-block:: python
 
-  db.train_log(accuracy=0.33)
-  db.train_log(accuracy=0.44)
+  db.save_training_log(accuracy=0.33)
+  db.save_training_log(accuracy=0.44)
 
 Delete logs that match the requirement:
 
 .. code-block:: python
 
-  db.delete_train_log(accuracy=0.33)
+  db.delete_training_log(accuracy=0.33)
 
 Delete all logging of this project:
 
 .. code-block:: python
 
-  db.delete_train_log()
-  db.delete_valid_log()
-  db.delete_test_log()
+  db.delete_training_log()
+  db.delete_validation_log()
+  db.delete_testing_log()
 
 Task distribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -242,7 +242,7 @@ In the task script, we can save the final model and results to the database, thi
   ## monitors the database and pull tasks to run
   while True:
       print("waiting task from distributor")
-      db.run_one_task(task_key='mnist', sort=[("time", -1)])
+      db.run_task(task_key='mnist', sort=[("time", -1)])
       time.sleep(1)
 
 Example codes
