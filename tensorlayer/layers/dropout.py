@@ -117,7 +117,7 @@ class DropoutLayer(Layer):
         super(DropoutLayer, self).__call__(prev_layer)
 
         if is_train is False:
-            logging.info("  -> [Not Training] - skip DropoutLayer")
+            logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
             self.outputs = prev_layer.outputs
 
         else:

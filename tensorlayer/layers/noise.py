@@ -88,7 +88,7 @@ class GaussianNoiseLayer(Layer):
         super(GaussianNoiseLayer, self).__call__(prev_layer)
 
         if is_train is False:
-            logging.info("  skip GaussianNoiseLayer")
+            logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
             self.outputs = self.inputs
 
         else:

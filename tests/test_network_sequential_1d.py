@@ -77,23 +77,29 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.LambdaLayer(fn=lambda x: 2 * x, name='lambda_layer_11'))
             cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_11'))
+            cls.model.add(
+                tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_11')
+            )
+            cls.model.add(tl.layers.LayerNormLayer(
+                center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm_layer_11'
+            ))
 
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-    def test_get_all_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 30)
-
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.model.all_drop), 1)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 29080)
+        self.assertEqual(self.model.count_params(), 30616)
+
+    def test_count_param_tensors(self):
+        self.assertEqual(len(self.model.get_all_params()), 36)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 28)
+        self.assertEqual(self.model.count_layers(), 30)
 
     def test__getitem__(self):
 
@@ -143,6 +149,7 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["seq_layer_11"].outputs.shape, (100, 256))
         self.assertEqual(self.model["lambda_layer_11"].outputs.shape, (100, 256))
         self.assertEqual(self.model["noise_layer_11"].outputs.shape, (100, 256))
+        self.assertEqual(self.model["batchnorm_layer_11"].outputs.shape, (100, 256))
 
 
 if __name__ == '__main__':

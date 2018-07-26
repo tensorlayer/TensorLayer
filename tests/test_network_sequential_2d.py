@@ -39,23 +39,32 @@ class Network_Sequential_Test(CustomTestCase):
                 )
             )
             cls.model.add(tl.layers.GaussianNoiseLayer(mean=0.0, stddev=1.0, name='noise_layer_2'))
+            cls.model.add(
+                tl.layers.LocalResponseNormLayer(depth_radius=5, bias=1., alpha=1., beta=.5, name='LRN_layer_2')
+            )
+            cls.model.add(tl.layers.BatchNormLayer(decay=0.9, epsilon=1e-5, act=None, name='batchnorm_layer_2'))
+            cls.model.add(tl.layers.InstanceNormLayer(epsilon=1e-5, act=None, name='instance_norm_layer_2'))
+            cls.model.add(tl.layers.LayerNormLayer(
+                center=True, scale=True, begin_norm_axis=1, begin_params_axis=-1, act=None, name='layernorm_layer_2'
+            ))
+            cls.model.add(tl.layers.SwitchNormLayer(epsilon=1e-5, act=None, name='switchnorm_layer_2'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
 
-    def test_get_all_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 0)
-
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 0)
+        self.assertEqual(self.model.count_params(), 16)
+
+    def test_count_param_tensors(self):
+        self.assertEqual(len(self.model.get_all_params()), 12)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 5)
+        self.assertEqual(self.model.count_layers(), 10)
 
     def test_network_shapes(self):
 
@@ -66,6 +75,11 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["upsample2d_layer_2"].outputs.shape, (100, 32, 32, 1))
         self.assertEqual(self.model["downsample2d_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.model["noise_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["LRN_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["batchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["layernorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+        self.assertEqual(self.model["switchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
 
 
 if __name__ == '__main__':
