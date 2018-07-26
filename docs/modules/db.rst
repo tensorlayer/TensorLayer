@@ -166,7 +166,7 @@ To delete all models in a project:
 
 .. code-block:: python
 
-  db.del_model()
+  db.delete_model()
 
 If you want to specify which model you want to delete, you need to put arguments inside.
 
@@ -185,15 +185,15 @@ Delete logs that match the requirement:
 
 .. code-block:: python
 
-  db.del_train_log(accuracy=0.33)
+  db.delete_train_log(accuracy=0.33)
 
 Delete all logging of this project:
 
 .. code-block:: python
 
-  db.del_train_log()
-  db.del_valid_log()
-  db.del_test_log()
+  db.delete_train_log()
+  db.delete_valid_log()
+  db.delete_test_log()
 
 Task distribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -212,17 +212,17 @@ The following is an example that pushes 3 tasks with different hyper parameters.
   db.save_dataset((X_train, y_train, X_val, y_val, X_test, y_test), 'mnist', description='handwriting digit')
 
   ## push tasks into database, then allow other servers pull tasks to run
-  db.push_task(
+  db.create_task(
       task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=800, n_units2=800),
       result_key=['test_accuracy'], description='800-800'
   )
 
-  db.push_task(
+  db.create_task(
       task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=600, n_units2=600),
       result_key=['test_accuracy'], description='600-600'
   )
 
-  db.push_task(
+  db.create_task(
       task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=400, n_units2=400),
       result_key=['test_accuracy'], description='400-400'
   )
