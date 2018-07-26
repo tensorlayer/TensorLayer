@@ -120,8 +120,8 @@ class DeConv2dLayer(Layer):
 
         # logging.info("  DeConv2dLayer: Untested")
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_deconv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_deconv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv2d_transpose(
@@ -129,8 +129,8 @@ class DeConv2dLayer(Layer):
             )
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
@@ -203,8 +203,8 @@ class DeConv3dLayer(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W_deconv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_deconv3d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv3d_transpose(
@@ -212,8 +212,8 @@ class DeConv3dLayer(Layer):
             )
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 

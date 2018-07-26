@@ -220,7 +220,7 @@ class RNNLayer(Layer):
             self.cell = cell = cell_fn(num_units=n_hidden, **self.cell_init_args)
 
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)  #dtype=tf.float32)  # 1.2.3
+            self.initial_state = cell.zero_state(batch_size, dtype=self.inputs.dtype)  #dtype=tf.float32)  # 1.2.3
 
         state = self.initial_state
 
@@ -433,13 +433,13 @@ class BiRNNLayer(Layer):
             # Initial state of RNN
             if fw_initial_state is None:
                 self.fw_initial_state = self.fw_cell.zero_state(
-                    self.batch_size, dtype=LayersConfig.tf_dtype
+                    self.batch_size, dtype=self.inputs.dtype
                 )  # dtype=tf.float32)
             else:
                 self.fw_initial_state = fw_initial_state
             if bw_initial_state is None:
                 self.bw_initial_state = self.bw_cell.zero_state(
-                    self.batch_size, dtype=LayersConfig.tf_dtype
+                    self.batch_size, dtype=self.inputs.dtype
                 )  # dtype=tf.float32)
             else:
                 self.bw_initial_state = bw_initial_state
@@ -633,7 +633,7 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
 
     # Now the computation.
     with tf.variable_scope(scope or "Conv"):
-        matrix = tf.get_variable(
+        matrix = self._get_tf_variable(
             "Matrix", [filter_size[0], filter_size[1], total_arg_size_depth, num_features], dtype=dtype
         )
         if len(args) == 1:
@@ -642,7 +642,7 @@ def _conv_linear(args, filter_size, num_features, bias, bias_start=0.0, scope=No
             res = tf.nn.conv2d(tf.concat(args, 3), matrix, strides=[1, 1, 1, 1], padding='SAME')
         if not bias:
             return res
-        bias_term = tf.get_variable(
+        bias_term = self._get_tf_variable(
             "Bias", [num_features], dtype=dtype, initializer=tf.constant_initializer(bias_start, dtype=dtype)
         )
     return res + bias_term
@@ -754,7 +754,7 @@ class ConvLSTMLayer(Layer):
         self.cell = cell = cell_fn(shape=cell_shape, filter_size=filter_size, num_features=feature_map)
 
         if initial_state is None:
-            self.initial_state = cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)
+            self.initial_state = cell.zero_state(batch_size, dtype=self.inputs.dtype)
         else:
             self.initial_state = initial_state
 
@@ -1162,7 +1162,7 @@ class DynamicRNNLayer(Layer):
 
         # Initialize initial_state
         if initial_state is None:
-            self.initial_state = self.cell.zero_state(batch_size, dtype=LayersConfig.tf_dtype)  # dtype=tf.float32)
+            self.initial_state = self.cell.zero_state(batch_size, dtype=self.inputs.dtype)  # dtype=tf.float32)
         else:
             self.initial_state = initial_state
 
@@ -1419,7 +1419,7 @@ class BiDynamicRNNLayer(Layer):
                 outputs, states_fw, states_bw = stack_bidirectional_dynamic_rnn(
                     cells_fw=self.fw_cell, cells_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_states_fw=self.fw_initial_state, initial_states_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype, **self.dynamic_rnn_init_args
+                    dtype=self.inputs.dtype, **self.dynamic_rnn_init_args
                 )
 
             else:
@@ -1428,7 +1428,7 @@ class BiDynamicRNNLayer(Layer):
                 outputs, (states_fw, states_bw) = tf.nn.bidirectional_dynamic_rnn(
                     cell_fw=self.fw_cell, cell_bw=self.bw_cell, inputs=self.inputs, sequence_length=sequence_length,
                     initial_state_fw=self.fw_initial_state, initial_state_bw=self.bw_initial_state,
-                    dtype=LayersConfig.tf_dtype, **self.dynamic_rnn_init_args
+                    dtype=self.inputs.dtype, **self.dynamic_rnn_init_args
                 )
 
             rnn_variables = tf.get_collection(TF_GRAPHKEYS_VARIABLES, scope=vs.name)

@@ -78,8 +78,8 @@ class Conv1dLayer(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W_conv1d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_conv1d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.convolution(
@@ -87,8 +87,8 @@ class Conv1dLayer(Layer):
             )
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_conv1d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -199,8 +199,8 @@ class Conv2dLayer(Layer):
         )
 
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv2d(
@@ -209,8 +209,8 @@ class Conv2dLayer(Layer):
             )
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -288,15 +288,15 @@ class Conv3dLayer(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W_conv3d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_conv3d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.conv3d(self.inputs, W, strides=strides, padding=padding, name=None)
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_conv3d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 

@@ -126,8 +126,8 @@ class TernaryConv2d(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             alpha = compute_alpha(W)
@@ -142,8 +142,8 @@ class TernaryConv2d(Layer):
 
             if b_init:
 
-                b = tf.get_variable(
-                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_conv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 

@@ -127,16 +127,16 @@ class DeformableConv2d(Layer):
 
             input_deform = self._tf_batch_map_offsets(self.inputs, offset, grid_offset)
 
-            W = tf.get_variable(
+            W = self._get_tf_variable(
                 name='W_deformableconv2d', shape=[1, 1, shape[0] * shape[1], shape[-2], shape[-1]], initializer=W_init,
-                dtype=LayersConfig.tf_dtype, **self.W_init_args
+                dtype=self.inputs.dtype, **self.W_init_args
             )
 
             _tensor = tf.nn.conv3d(input_deform, W, strides=[1, 1, 1, 1, 1], padding='VALID', name=None)
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_deformableconv2d', shape=(shape[-1]), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
