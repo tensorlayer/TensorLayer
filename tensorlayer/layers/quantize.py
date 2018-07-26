@@ -5,9 +5,9 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer.layers.utils import quantize
+from tensorlayer.layers.utils import _quantize
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
@@ -40,6 +40,6 @@ class SignLayer(Layer):
 
         with tf.variable_scope(name):
             # self.outputs = tl.act.sign(self.inputs)
-            self.outputs = quantize(self.inputs)
+            self.outputs = _quantize(self.inputs)
 
         self._add_layers(self.outputs)

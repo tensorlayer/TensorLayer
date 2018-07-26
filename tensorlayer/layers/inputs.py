@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
+import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
+
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'InputLayer',
@@ -30,14 +33,30 @@ class InputLayer(Layer):
 
     """
 
-    def __init__(self, inputs, name='input'):
+    def __init__(self, inputs=None, name='input'):
 
-        super(InputLayer, self).__init__(prev_layer=inputs, name=name)
+        self.prev_layer = inputs
+        self.name = name
 
-        logging.info("InputLayer  %s: %s" % (self.name, inputs.get_shape()))
+        super(InputLayer, self).__init__()
 
-        self.outputs = inputs
+    def __str__(self):
 
+        additional_str = []
+
+        try:
+            additional_str.append("input shape: %s" % self.inputs.shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(InputLayer, self).__call__(prev_layer)
+
+        self.outputs = self.inputs
         self._add_layers(self.outputs)
 
 
@@ -74,14 +93,46 @@ class OneHotInputLayer(Layer):
 
     def __init__(self, inputs=None, depth=None, on_value=None, off_value=None, axis=None, dtype=None, name='input'):
 
-        super(OneHotInputLayer, self).__init__(prev_layer=inputs, name=name)
-
-        logging.info("OneHotInputLayer  %s: %s" % (self.name, inputs.get_shape()))
-
         if depth is None:
-            raise RuntimeError(self.__class__.__name__ + ": depth == None the number of output units is undefined")
+            _err = "%s: depth  cannot be set to `None`. It leads to an undefined number of output units" % self.__class__.__name__
+            raise RuntimeError(_err)
 
-        self.outputs = tf.one_hot(inputs, depth, on_value=on_value, off_value=off_value, axis=axis, dtype=dtype)
+        self.prev_layer = inputs
+        self.depth = depth
+        self.on_value = on_value
+        self.off_value = off_value
+        self.axis = axis
+        self.dtype = dtype
+        self.name = name
+
+        super(OneHotInputLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("input_shape: %s" % self.inputs.shape)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.one_hot(
+            self.inputs, self.depth, on_value=self.on_value, off_value=self.off_value, axis=self.axis, dtype=self.dtype
+        )
+        self.out_shape = self.outputs.shape
+
+        super(OneHotInputLayer, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)
 
@@ -175,7 +226,7 @@ class Word2vecEmbeddingInputlayer(Layer):
 
     def __init__(
             self,
-            inputs,
+            inputs=None,
             train_labels=None,
             vocabulary_size=80000,
             embedding_size=200,
@@ -187,15 +238,44 @@ class Word2vecEmbeddingInputlayer(Layer):
             nce_W_init_args=None,
             nce_b_init=tf.constant_initializer(value=0.0),
             nce_b_init_args=None,
+            dtype=None,
             name='word2vec',
     ):
+        self.prev_layer = inputs
+        self.train_labels = train_labels
+        self.vocabulary_size = vocabulary_size
+        self.embedding_size = embedding_size
+        self.num_sampled = num_sampled
+        self.E_init = E_init
+        self.nce_W_init = nce_W_init
+        self.nce_b_init = nce_b_init
+        self.dtype = dtype
+        self.name = name
 
         super(Word2vecEmbeddingInputlayer, self).__init__(
-            prev_layer=inputs, nce_loss_args=nce_loss_args, E_init_args=E_init_args, nce_W_init_args=nce_W_init_args,
-            nce_b_init_args=nce_b_init_args, name=name
+            nce_W_init_args=nce_W_init_args, nce_b_init_args=nce_b_init_args, nce_loss_args=nce_loss_args,
+            E_init_args=E_init_args
         )
 
-        logging.info("Word2vecEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("embedding shape: %s" % self._emb_shape)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
 
         # Look up embeddings for inputs.
         # Note: a row of 'embeddings' is the vector representation of a word.
@@ -204,37 +284,46 @@ class Word2vecEmbeddingInputlayer(Layer):
         # multiply by the embedding matrix.
         # embed is the outputs of the hidden layer (embedding layer), it is a
         # row vector with 'embedding_size' values.
-        with tf.variable_scope(name):
-            embeddings = tf.get_variable(
-                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
-                dtype=LayersConfig.tf_dtype, **self.E_init_args
+
+        self._emb_shape = [self.vocabulary_size, self.embedding_size]
+
+        with tf.variable_scope(self.name):
+
+            embeddings = self._get_tf_variable(
+                name='embeddings', shape=self._emb_shape, dtype=self.dtype, initializer=self.E_init, **self.E_init_args
             )
-            embed = tf.nn.embedding_lookup(embeddings, self.inputs)
+
+            self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
+            self.out_shape = self.outputs.shape
+
+            super(Word2vecEmbeddingInputlayer, self).__call__(prev_layer)
+
             # Construct the variables for the NCE loss (i.e. negative sampling)
-            nce_weights = tf.get_variable(
-                name='nce_weights', shape=(vocabulary_size, embedding_size), initializer=nce_W_init,
-                dtype=LayersConfig.tf_dtype, **self.nce_W_init_args
+            nce_weights = self._get_tf_variable(
+                name='nce_weights', shape=self._emb_shape, dtype=self.dtype, initializer=self.nce_W_init,
+                **self.nce_W_init_args
             )
-            nce_biases = tf.get_variable(
-                name='nce_biases', shape=(vocabulary_size), initializer=nce_b_init, dtype=LayersConfig.tf_dtype,
+
+            nce_biases = self._get_tf_variable(
+                name='nce_biases', shape=(self.vocabulary_size, ), dtype=self.dtype, initializer=self.nce_b_init,
                 **self.nce_b_init_args
             )
 
             # Compute the average NCE loss for the batch.
             # tf.nce_loss automatically draws a new sample of the negative labels
             # each time we evaluate the loss.
+
             self.nce_cost = tf.reduce_mean(
                 tf.nn.nce_loss(
-                    weights=nce_weights, biases=nce_biases, inputs=embed, labels=train_labels, num_sampled=num_sampled,
-                    num_classes=vocabulary_size, **self.nce_loss_args
+                    weights=nce_weights, biases=nce_biases, inputs=self.outputs, labels=self.train_labels,
+                    num_sampled=self.num_sampled, num_classes=self.vocabulary_size, **self.nce_loss_args
                 )
             )
 
-            self.outputs = embed
             self.normalized_embeddings = tf.nn.l2_normalize(embeddings, 1)
 
         self._add_layers(self.outputs)
-        self._add_params([embeddings, nce_weights, nce_biases])
+        self._add_params(self._local_weights)
 
 
 class EmbeddingInputlayer(Layer):
@@ -272,36 +361,64 @@ class EmbeddingInputlayer(Layer):
     >>> import tensorlayer as tl
     >>> batch_size = 8
     >>> x = tf.placeholder(tf.int32, shape=(batch_size, ))
-    >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, name='embed')
+    >>> net = tl.layers.EmbeddingInputlayer(inputs=x, vocabulary_size=1000, embedding_size=50, dtype=tf.float32, name='embed')
     (8, 50)
-
     """
 
     def __init__(
             self,
-            inputs,
+            inputs=None,
             vocabulary_size=80000,
             embedding_size=200,
             E_init=tf.random_uniform_initializer(-0.1, 0.1),
             E_init_args=None,
+            dtype=None,
             name='embedding',
     ):
+        self.prev_layer = inputs
+        self.vocabulary_size = vocabulary_size
+        self.embedding_size = embedding_size
+        self.E_init = E_init
+        self.dtype = dtype
+        self.name = name
 
-        super(EmbeddingInputlayer, self).__init__(prev_layer=inputs, E_init_args=E_init_args, name=name)
+        super(EmbeddingInputlayer, self).__init__(E_init_args=E_init_args)
 
-        logging.info("EmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+    def __str__(self):
+        additional_str = []
 
-        with tf.variable_scope(name):
+        try:
+            additional_str.append("embedding shape: %s" % self._emb_shape)
+        except AttributeError:
+            pass
 
-            embeddings = tf.get_variable(
-                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=E_init,
-                dtype=LayersConfig.tf_dtype, **self.E_init_args
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self._emb_shape = [self.vocabulary_size, self.embedding_size]
+
+        with tf.variable_scope(self.name):
+
+            embeddings = self._get_tf_variable(
+                name='embeddings', shape=self._emb_shape, initializer=self.E_init, dtype=self.dtype, **self.E_init_args
             )
 
             self.outputs = tf.nn.embedding_lookup(embeddings, self.inputs)
+            self.out_shape = self.outputs.shape
+
+        super(EmbeddingInputlayer, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)
-        self._add_params(embeddings)
+        self._add_params(self._local_weights)
 
 
 class AverageEmbeddingInputlayer(Layer):
@@ -351,36 +468,61 @@ class AverageEmbeddingInputlayer(Layer):
             pad_value=0,
             embeddings_initializer=tf.random_uniform_initializer(-0.1, 0.1),
             embeddings_kwargs=None,
+            dtype=None,
             name='average_embedding',
     ):
+        self.prev_layer = inputs
+        self.vocabulary_size = vocabulary_size
+        self.embedding_size = embedding_size
+        self.pad_value = pad_value
+        self.embeddings_initializer = embeddings_initializer
+        self.dtype = dtype
+        self.name = name
 
-        super(AverageEmbeddingInputlayer,
-              self).__init__(prev_layer=inputs, embeddings_kwargs=embeddings_kwargs, name=name)
-        logging.info("AverageEmbeddingInputlayer %s: (%d, %d)" % (self.name, vocabulary_size, embedding_size))
+        super(AverageEmbeddingInputlayer, self).__init__(embeddings_kwargs=embeddings_kwargs)
 
-        # if embeddings_kwargs is None:
-        #     embeddings_kwargs = {}
+    def __str__(self):
+        additional_str = []
 
-        if inputs.get_shape().ndims != 2:
+        try:
+            additional_str.append("embedding shape: %s" % self._emb_shape)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        if prev_layer.get_shape().ndims != 2:
             raise ValueError('inputs must be of size batch_size * batch_sentence_length')
 
-        with tf.variable_scope(name):
-            self.embeddings = tf.get_variable(
-                name='embeddings', shape=(vocabulary_size, embedding_size), initializer=embeddings_initializer,
-                dtype=LayersConfig.tf_dtype, **self.embeddings_kwargs
+        self._parse_inputs(prev_layer)
+
+        self._emb_shape = [self.vocabulary_size, self.embedding_size]
+
+        with tf.variable_scope(self.name):
+
+            embeddings = self._get_tf_variable(
+                name='embeddings', shape=self._emb_shape, dtype=self.dtype, initializer=self.embeddings_initializer,
+                **self.embeddings_kwargs
             )
 
             word_embeddings = tf.nn.embedding_lookup(
-                self.embeddings,
+                embeddings,
                 self.inputs,
                 name='word_embeddings',
             )
             # Zero out embeddings of pad value
-            masks = tf.not_equal(self.inputs, pad_value, name='masks')
-            word_embeddings *= tf.cast(
-                tf.expand_dims(masks, axis=-1),
-                dtype=LayersConfig.tf_dtype,
-            )
+            masks = tf.not_equal(self.inputs, self.pad_value, name='masks')
+
+            word_embeddings *= tf.cast(tf.expand_dims(masks, axis=-1), dtype=self.dtype)
+
             sum_word_embeddings = tf.reduce_sum(word_embeddings, axis=1)
 
             # Count number of non-padding words in each sentence
@@ -388,7 +530,7 @@ class AverageEmbeddingInputlayer(Layer):
                 masks,
                 axis=1,
                 keepdims=True,
-                dtype=LayersConfig.tf_dtype,
+                dtype=self.dtype,
                 name='sentence_lengths',
             )
 
@@ -398,7 +540,11 @@ class AverageEmbeddingInputlayer(Layer):
                 name='sentence_embeddings'
             )
 
+            self.out_shape = sentence_embeddings.shape
+
+        super(AverageEmbeddingInputlayer, self).__call__(prev_layer)
+
         self.outputs = sentence_embeddings
 
         self._add_layers(self.outputs)
-        self._add_params(self.embeddings)
+        self._add_params(self._local_weights)

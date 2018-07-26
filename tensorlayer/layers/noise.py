@@ -5,9 +5,10 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'GaussianNoiseLayer',
@@ -49,24 +50,53 @@ class GaussianNoiseLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
+            prev_layer=None,
             mean=0.0,
             stddev=1.0,
             is_train=True,
             seed=None,
             name='gaussian_noise_layer',
     ):
-        super(GaussianNoiseLayer, self).__init__(prev_layer=prev_layer, name=name)
+
+        self.prev_layer = prev_layer
+        self.mean = mean
+        self.stddev = stddev
+        self.is_train = is_train
+        self.seed = seed
+        self.name = name
+
+        super(GaussianNoiseLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("mean: %s" % self.mean)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("stddev: %s" % self.stddev)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(GaussianNoiseLayer, self).__call__(prev_layer)
 
         if is_train is False:
-            logging.info("  skip GaussianNoiseLayer")
-            self.outputs = prev_layer.outputs
+            logging.info("  -> [Not Training] - skip `%s`" % self.__class__.__name__)
+            self.outputs = self.inputs
 
         else:
-            logging.info("GaussianNoiseLayer %s: mean: %f stddev: %f" % (self.name, mean, stddev))
-            with tf.variable_scope(name):
-                # noise = np.random.normal(0.0 , sigma , tf.to_int64(self.inputs).get_shape())
-                noise = tf.random_normal(shape=self.inputs.get_shape(), mean=mean, stddev=stddev, seed=seed)
-                self.outputs = self.inputs + noise
+            with tf.variable_scope(self.name):
+                noise = tf.random_normal(
+                    shape=self.inputs.get_shape(), mean=self.mean, stddev=self.stddev, seed=self.seed,
+                    dtype=self.inputs.dtype
+                )
+                self.outputs = tf.add(self.inputs, noise)
 
-            self._add_layers(self.outputs)
+        self._add_layers(self.outputs)

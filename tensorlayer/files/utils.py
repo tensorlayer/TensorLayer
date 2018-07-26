@@ -3,7 +3,6 @@
 
 import os
 import sys
-
 import gzip
 import math
 import pickle
@@ -14,7 +13,7 @@ import shutil
 import tarfile
 import time
 import zipfile
-
+import importlib
 from tqdm import tqdm
 
 from six.moves import cPickle
@@ -41,9 +40,8 @@ import numpy as np
 
 import tensorflow as tf
 from tensorflow.python.platform import gfile
-
-from tensorlayer import tl_logging as logging
-
+import tensorlayer as tl  # it is used in eval() of _graph2net
+from tensorlayer import logging
 from tensorlayer import nlp
 from tensorlayer import utils
 from tensorlayer import visualize
@@ -72,6 +70,10 @@ __all__ = [
     'save_ckpt',
     'save_npz',
     'save_npz_dict',
+    'save_graph',
+    'load_graph',
+    'save_graph_and_params',
+    'load_graph_and_params',
 ]
 
 
@@ -1595,6 +1597,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     `Saving dictionary using numpy <http://stackoverflow.com/questions/22315595/saving-dictionary-of-header-information-using-numpy-savez>`__
 
     """
+    logging.info("[*] Saving TL params into %s" % name)
     if save_list is None:
         save_list = []
 
@@ -1611,7 +1614,7 @@ def save_npz(save_list=None, name='model.npz', sess=None):
     np.savez(name, params=save_list_var)
     save_list_var = None
     del save_list_var
-    logging.info("[*] %s saved" % name)
+    logging.info("[*] Saved")
 
 
 def load_npz(path='', name='model.npz'):
@@ -1848,19 +1851,19 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
 
     Examples
     ----------
-    Save all global parameters.
+    - Save all global parameters.
 
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', save_dir='model', printable=True)
 
-    Save specific parameters.
+    - Save specific parameters.
 
     >>> tl.files.save_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', printable=True)
 
-    Load latest ckpt.
+    - Load latest ckpt.
 
     >>> tl.files.load_ckpt(sess=sess, var_list=net.all_params, save_dir='model', printable=True)
 
-    Load specific ckpt.
+    - Load specific ckpt.
 
     >>> tl.files.load_ckpt(sess=sess, mode_name='model.ckpt', var_list=net.all_params, save_dir='model', is_latest=False, printable=True)
 
@@ -1890,6 +1893,159 @@ def load_ckpt(sess=None, mode_name='model.ckpt', save_dir='checkpoint', var_list
     except Exception as e:
         logging.info(e)
         logging.info("[*] load ckpt fail ...")
+
+
+def save_graph(network=None, name='graph.pkl'):
+    """Save the architecture of TL model into a pickle file. No parameters be saved.
+
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The name of graph file.
+
+    Examples
+    --------
+    - Save the architecture
+    >>> tl.files.save_graph(net_test, 'graph.pkl')
+
+    - Load the architecture in another script (no parameters restore)
+    >>> net = tl.files.load_graph('graph.pkl')
+    """
+    logging.info("[*] Saving TL graph into {}".format(name))
+    graphs = network.all_graphs
+    with open(name, 'wb') as file:
+        # pickle.dumps(graphs, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(graphs, file, protocol=pickle.HIGHEST_PROTOCOL)
+    logging.info("[*] Saved graph")
+
+
+def _graph2net(graphs):
+    """ Inputs graphs, returns network. """
+    input_list = list()
+    layer_dict = dict()
+    ## loop every layers
+    for graph in graphs:
+        ## get current layer class
+        name, layer_kwargs = graph
+        layer_class = layer_kwargs.pop('class')  # class of current layer
+        prev_layer = layer_kwargs.pop('prev_layer')  # name of previous layer
+
+        ## convert function dictionary into real function
+        for key in layer_kwargs:  # set input placeholder into the lastest layer
+            fn_dict = layer_kwargs[key]
+            if key in ['act']:
+                module_path = fn_dict['module_path']
+                func_name = fn_dict['func_name']
+                lib = importlib.import_module(module_path)
+                fn = getattr(lib, func_name)
+                layer_kwargs[key] = fn
+                # print(key, layer_kwargs[key])
+        # print(name, prev_layer, layer_class, layer_kwargs)
+
+        if layer_class == 'placeholder':  ## create placeholder
+            dtype = layer_kwargs.pop('dtype')
+            shape = layer_kwargs.pop('shape')
+            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  #globals()['tf.'+dtype]
+            # input_dict.update({name: _placeholder})
+            input_list.append((name, _placeholder))
+        else:  ## create network
+            try:  # if previous layer is layer
+                net = layer_dict[prev_layer]
+                layer_kwargs.update({'prev_layer': net})
+            except Exception:  # if previous layer is input placeholder
+                for n, t in input_list:
+                    if n == prev_layer:
+                        _placeholder = t
+                layer_kwargs.update({'inputs': _placeholder})
+            layer_kwargs.update({'name': name})
+            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
+            layer_dict.update({name: net})
+
+    ## rename placeholder e.g. x:0 --> x
+    for i, (n, t) in enumerate(input_list):
+        n_new = n.replace(':', '')
+        if n_new[-1] == '0':
+            n_new = n_new[:-1]
+        input_list[i] = (n_new, t)
+
+    ## put placeholder into network attributes
+    for n, t in input_list:
+        # print(name, n, t)
+        layer_dict[name].__dict__.update({n: t})
+        logging.info("[*] attributes: {} {} {}".format(n, t.get_shape().as_list(), t.dtype.name))
+    # for key in input_dict: # set input placeholder into the lastest layer
+    #     layer_dict[name].globals()[key] = input_dict[key]
+    #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
+    logging.info("[*] Load graph finished")
+    ## return the lastest layer as network
+    return layer_dict[name]
+
+
+def load_graph(name='model.pkl'):
+    """Restore TL model archtecture from a a pickle file. No parameters be restored.
+
+    Parameters
+    -----------
+    name : str
+        The name of graph file.
+
+    Returns
+    --------
+    network : TensorLayer layer
+        The input placeholder will become the attributes of the returned TL layer object.
+
+    Examples
+    --------
+    - see ``tl.files.save_graph``
+    """
+    logging.info("[*] Loading TL graph from {}".format(name))
+    with open(name, 'rb') as file:
+        graphs = pickle.load(file)
+    return _graph2net(graphs)
+
+
+def save_graph_and_params(network=None, name='model', sess=None):
+    """Save TL model architecture and parameters (i.e. whole model) into graph file and npz file, respectively.
+
+    Parameters
+    -----------
+    network : TensorLayer layer
+        The network to save.
+    name : str
+        The folder name to save the graph and parameters.
+    sess : Session
+        TensorFlow Session.
+
+    Examples
+    ---------
+    - Save architecture and parameters
+
+    >>> tl.files.save_graph_and_params(net, 'model', sess)
+
+    - Load archtecture and parameters
+
+    >>> net = tl.files.load_graph_and_params('model', sess)
+    """
+    exists_or_mkdir(name, False)
+    save_graph(network, os.path.join(name, 'graph.pkl'))
+    save_npz(save_list=network.all_params, name=os.path.join(name, 'params.npz'), sess=sess)
+
+
+def load_graph_and_params(name='model', sess=None):
+    """Load TL model architecture and parameters from graph file and npz file, respectively.
+
+    Parameters
+    -----------
+    name : str
+        The folder name to load the graph and parameters.
+    sess : Session
+        TensorFlow Session.
+    """
+    network = load_graph(name=os.path.join(name, 'graph.pkl'))
+    load_and_assign_npz(sess=sess, name=os.path.join(name, 'params.npz'), network=network)
+    return network
 
 
 def save_any_to_npy(save_dict=None, name='file.npy'):
@@ -1970,7 +2126,7 @@ def read_file(filepath):
         return afile.read()
 
 
-def load_file_list(path=None, regx='\.npz', printable=True):
+def load_file_list(path=None, regx='\.jpg', printable=True, keep_prefix=False):
     r"""Return a file list in a folder by given a path and regular expression.
 
     Parameters
@@ -1981,6 +2137,8 @@ def load_file_list(path=None, regx='\.npz', printable=True):
         The regx of file name.
     printable : boolean
         Whether to print the files infomation.
+    keep_prefix : boolean
+        Whether to keep path in the file name.
 
     Examples
     ----------
@@ -1995,6 +2153,10 @@ def load_file_list(path=None, regx='\.npz', printable=True):
         if re.search(regx, f):
             return_list.append(f)
     # return_list.sort()
+    if keep_prefix:
+        for i, f in enumerate(return_list):
+            return_list[i] = os.path.join(path, f)
+
     if printable:
         logging.info('Match file list = %s' % return_list)
         logging.info('Number of files = %d' % len(return_list))

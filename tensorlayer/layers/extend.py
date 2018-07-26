@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import tl_logging as logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'ExpandDimsLayer',
@@ -42,18 +41,44 @@ class ExpandDimsLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            axis,
+            prev_layer=None,
+            axis=0,
             name='expand_dims',
     ):
-        super(ExpandDimsLayer, self).__init__(prev_layer=prev_layer, name=name)
 
-        logging.info("ExpandDimsLayer  %s: axis: %d" % (self.name, axis))
+        self.prev_layer = prev_layer
+        self.axis = axis
+        self.name = name
 
-        with tf.variable_scope(name):
-            self.outputs = tf.expand_dims(self.inputs, axis=axis)
+        super(ExpandDimsLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("axis: %d" % self.axis)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        with tf.variable_scope(self.name):
+            self.outputs = tf.expand_dims(self.inputs, axis=self.axis)
+            self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
+
+        super(ExpandDimsLayer, self).__call__(prev_layer)
 
 
 class TileLayer(Layer):
@@ -84,13 +109,38 @@ class TileLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, multiples=None, name='tile'):
+    def __init__(self, prev_layer=None, multiples=None, name='tile'):
 
-        super(TileLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.prev_layer = prev_layer
+        self.multiples = multiples
+        self.name = name
 
-        logging.info("TileLayer  %s: multiples: %s" % (self.name, multiples))
+        super(TileLayer, self).__init__()
 
-        with tf.variable_scope(name):
-            self.outputs = tf.tile(self.inputs, multiples=multiples)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("multiples: %s" % self.multiples)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        with tf.variable_scope(self.name):
+            self.outputs = tf.tile(prev_layer.outputs, multiples=self.multiples)
+            self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
+
+        super(TileLayer, self).__call__(prev_layer)

@@ -1,5 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
+
+import inspect
 import six
 
 from abc import ABCMeta, abstractmethod
@@ -10,9 +12,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.utils import list_remove_repeat
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
-from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import protected_method
 from tensorlayer.decorators import private_method
 
@@ -20,6 +21,7 @@ __all__ = [
     'LayersConfig',
     'TF_GRAPHKEYS_VARIABLES',
     'Layer',
+    'BaseLayer',
 ]
 
 
@@ -37,7 +39,7 @@ class LayersConfig(object):
 TF_GRAPHKEYS_VARIABLES = tf.GraphKeys.GLOBAL_VARIABLES
 
 
-class Layer(object):
+class BaseLayer(object):
     """The basic :class:`Layer` class represents a single layer of a neural network.
 
     It should be subclassed when implementing new types of layers.
@@ -62,6 +64,8 @@ class Layer(object):
         Print all outputs of all layers of this network.
     count_params()
         Return the number of parameters of this network.
+    get_all_params()
+        Return the parameters in a list of array.
 
     Examples
     ---------
@@ -105,65 +109,16 @@ class Layer(object):
     Tensor("d2/Identity:0", shape=(?, 80), dtype=float32)
 
     """
-    # Added to allow auto-completion
 
-    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, act=None, name=None, *args, **kwargs):
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+
+        self.all_layers = list()
+        self.all_drop = dict()
+        self.all_graphs = list()
 
         self.inputs = None
         self.outputs = None
-
-        self.all_layers = list()
-        self.all_params = list()
-        self.all_drop = dict()
-
-        if name is None:
-            raise ValueError('Layer must have a name.')
-
-        for key in kwargs.keys():
-            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
-
-        self.act = act if act not in [None, tf.identity] else None
-
-        scope_name = tf.get_variable_scope().name
-
-        self.name = scope_name + '/' + name if scope_name else name
-
-        if isinstance(prev_layer, Layer):
-            # 1. for normal layer have only 1 input i.e. DenseLayer
-            # Hint : list(), dict() is pass by value (shallow), without them,
-            # it is pass by reference.
-
-            self.inputs = prev_layer.outputs
-
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-
-        elif isinstance(prev_layer, list):
-            # 2. for layer have multiply inputs i.e. ConcatLayer
-
-            self.inputs = [layer.outputs for layer in prev_layer]
-
-            self._add_layers(sum([l.all_layers for l in prev_layer], []))
-            self._add_params(sum([l.all_params for l in prev_layer], []))
-            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
-
-        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
-            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
-                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
-                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
-
-            self.inputs = prev_layer
-
-        elif prev_layer is not None:
-            # 4. tl.models
-            self._add_layers(prev_layer.all_layers)
-            self._add_params(prev_layer.all_params)
-            self._add_dropout_layers(prev_layer.all_drop)
-
-            if hasattr(prev_layer, "outputs"):
-                self.inputs = prev_layer.outputs
 
     def print_params(self, details=True, session=None):
         """Print all info of parameters in the network"""
@@ -196,7 +151,7 @@ class Layer(object):
             )
 
     def count_params(self):
-        """Return the number of parameters in the network"""
+        """Returns the number of parameters in the network"""
         n_params = 0
         for _i, p in enumerate(self.all_params):
             n = 1
@@ -216,7 +171,9 @@ class Layer(object):
 
     def __getitem__(self, key):
 
-        net_new = Layer(prev_layer=None, name=self.name)
+        net_new = Layer()
+
+        net_new.name = self.name
 
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
@@ -242,6 +199,37 @@ class Layer(object):
 
     def __len__(self):
         return len(self.all_layers)
+
+    @protected_method
+    def _get_init_args(self, skip=4):
+        """Get all arguments of current layer for saving the graph. """
+        stack = inspect.stack()
+
+        if len(stack) < skip + 1:
+            raise ValueError("The length of the inspection stack is shorter than the requested start position.")
+
+        args, _, _, values = inspect.getargvalues(stack[skip][0])
+
+        params = {}
+
+        for arg in args:
+
+            ## some args dont need to be saved into the graph. e.g. the input placeholder
+            if values[arg] is not None and arg not in ['self', 'prev_layer', 'inputs']:
+
+                val = values[arg]
+
+                ## change function (e.g. act) into dictionary of module path and function name
+                if inspect.isfunction(val):
+                    params[arg] = {"module_path": val.__module__, "func_name": val.__name__}
+                ## ignore more args e.g. TF class
+                elif arg.endswith('init'):
+                    continue
+                ## for other data type, save them directly
+                else:
+                    params[arg] = val
+
+        return params
 
     @protected_method
     def _add_layers(self, layers):
@@ -270,6 +258,17 @@ class Layer(object):
         self.all_params = list_remove_repeat(self.all_params)
 
     @protected_method
+    def _add_graphs(self, graphs):
+
+        if isinstance(graphs, list):
+            self.all_graphs.extend(list(graphs))
+
+        else:
+            self.all_graphs.append(graphs)
+
+        # self.all_graphs = list_remove_repeat(self.all_graphs) # cannot repeat
+
+    @protected_method
     def _add_dropout_layers(self, drop_layers):
         if isinstance(drop_layers, dict) or isinstance(drop_layers, list):
             self.all_drop.update(dict(drop_layers))
@@ -290,8 +289,181 @@ class Layer(object):
     def _argument_dict_checkup(self, args):
 
         if not isinstance(args, dict) and args is not None:
-            raise AssertionError(
-                "One of the argument given to %s should be formatted as a dictionary" % self.__class__.__name__
-            )
+            _err = "One of the argument given to `%s` should be formatted as a dictionary" % self.__class__.__name__
+            raise AssertionError(_err)
 
         return args if args is not None else {}
+
+    # def __getstate__(self): # pickle save
+    #     return {'version': 0.1,
+    #             # 'outputs': self.outputs,
+    #             }
+    #
+    # def __setstate__(self, state): # pickle restore
+    #     self.outputs = state['outputs']
+
+
+class Layer(BaseLayer):
+
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def __init__(self, *args, **kwargs):
+
+        super(Layer, self).__init__(*args, **kwargs)
+
+        self.all_params = list()
+
+        self.is_setup = False
+
+        self.graph = {}
+
+        self._local_weights = list()
+        self._local_drop = dict()
+
+        self.layer_args = self._get_init_args(skip=4)
+
+        for key in kwargs.keys():
+            setattr(self, key, self._argument_dict_checkup(kwargs[key]))
+
+        self.act = self.act if hasattr(self, "act") and self.act not in [None, tf.identity] else None
+
+        if hasattr(self, "prev_layer") and self.prev_layer is not None:
+            if hasattr(self, "is_train"):
+                self.__call__(self.prev_layer, self.is_train)
+            else:
+                self.__call__(self.prev_layer)
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+    def _str(self, additional_str=list()):
+
+        if len(additional_str) > 0:
+            additional_str = ", ".join(additional_str)
+        else:
+            additional_str = None
+
+        _str = "%s: " % self.__class__.__name__
+
+        if self.is_setup:
+            _str += "`%s`" % self.name
+
+            if additional_str is not None:
+                _str += " - %s" % additional_str
+        else:
+            _str += "setup process not finished"
+
+        return _str
+
+    @abstractmethod
+    @protected_method
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.is_setup = True
+        logging.info(str(self))
+
+        ## TL Graph
+        # print(act, name, args, kwargs)
+        prev_layer_name = prev_layer.name if hasattr(prev_layer, "name") else ''
+
+        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer_name})
+        # if act:  ## convert activation from function to string
+        #     try:
+        #         act = act.__name__
+        #     except:
+        #         pass
+        #     self.graph.update({'act': act})
+        # print(self.layer_args)
+        self.graph.update(self.layer_args)
+        # print(self.graph)
+        self._add_graphs((self.name, self.graph))
+
+    @protected_method
+    def _parse_inputs(self, prev_layer):
+
+        if hasattr(self, 'inputs') and self.inputs is not None:
+            return
+
+        if isinstance(prev_layer, Layer):
+            # 1. for normal layer have only 1 input i.e. DenseLayer
+            # Hint : list(), dict() is pass by value (shallow), without them,
+            # it is pass by reference.
+
+            self.inputs = prev_layer.outputs
+
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
+
+        elif isinstance(prev_layer, list):
+            # 2. for layer have multiply inputs i.e. ConcatLayer
+
+            self.inputs = [layer.outputs for layer in prev_layer]
+
+            self._add_layers(sum([l.all_layers for l in prev_layer], []))
+            self._add_params(sum([l.all_params for l in prev_layer], []))
+            self._add_dropout_layers(sum([list(l.all_drop.items()) for l in prev_layer], []))
+            self._add_graphs(sum([l.all_graphs for l in prev_layer], []))
+
+        elif isinstance(prev_layer, tf.Tensor) or isinstance(prev_layer, tf.Variable):  # placeholders
+            if self.__class__.__name__ not in ['InputLayer', 'OneHotInputLayer', 'Word2vecEmbeddingInputlayer',
+                                               'EmbeddingInputlayer', 'AverageEmbeddingInputlayer']:
+                raise RuntimeError("Please use `tl.layers.InputLayer` to convert Tensor/Placeholder to a TL layer")
+
+            self.inputs = prev_layer
+
+            self._add_graphs(
+                (
+                    self.inputs.name,  # .split(':')[0],
+                    {
+                        'shape': self.inputs.get_shape().as_list(),
+                        'dtype': self.inputs.dtype.name,
+                        'class': 'placeholder',
+                        'prev_layer': None
+                    }
+                )
+            )
+
+        elif prev_layer is not None:
+            # 4. tl.models
+            self._add_layers(prev_layer.all_layers)
+            self._add_params(prev_layer.all_params)
+            self._add_dropout_layers(prev_layer.all_drop)
+            self._add_graphs(prev_layer.all_graphs)
+
+            if hasattr(prev_layer, "outputs"):
+                self.inputs = prev_layer.outputs
+
+    @protected_method
+    def _get_tf_variable(
+            self, name, shape=None, dtype=None, initializer=None, regularizer=None, trainable=True, collections=None,
+            caching_device=None, partitioner=None, validate_shape=True, use_resource=None, custom_getter=None,
+            constraint=None
+    ):
+        if hasattr(self, "inputs") and isinstance(self.inputs, tf.Tensor):
+            dtype = self.inputs.dtype
+
+        w = tf.get_variable(
+            name, shape=shape, dtype=dtype, initializer=initializer, regularizer=regularizer, trainable=trainable,
+            collections=collections, caching_device=caching_device, partitioner=partitioner,
+            validate_shape=validate_shape, use_resource=use_resource, custom_getter=custom_getter, constraint=constraint
+        )
+
+        self._local_weights.append(w)
+
+        return w
+
+    def get_all_params(self, session=None):
+        """Return the parameters in a list of array. """
+        _params = []
+        for p in self.all_params:
+            if session is None:
+                _params.append(p.eval())
+            else:
+                _params.append(session.run(p))
+        return _params

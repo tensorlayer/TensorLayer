@@ -1,15 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import inspect
 import sys
 import functools
 
 from tensorflow.python.util import decorator_utils
 
-from tensorflow.python.util.deprecation import _call_location
 from tensorflow.python.util.deprecation import _validate_deprecation_args
-
-from tensorlayer import tl_logging as logging
 
 import wrapt
 
@@ -83,10 +81,19 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
                 if warn_once:
                     _PRINTED_WARNING[class_or_func_name] = True
 
+                from tensorlayer import logging
+
+                if not inspect.isclass(wrapped):
+                    filename = wrapped.__code__.co_filename
+                    wrapped_type = "Function"
+                else:
+                    filename = wrapped.__module__
+                    wrapped_type = "Class"
+
                 logging.warning(
-                    'From %s: %s (from %s) is deprecated and will be removed %s.\n'
+                    '%s: `%s.%s` (in file: `%s`) is deprecated and will be removed %s.\n'
                     'Instructions for updating: %s\n' % (
-                        _call_location(), class_or_func_name, wrapped.__module__, 'in a future version'
+                        wrapped_type, wrapped.__module__, class_or_func_name, filename, 'in a future version'
                         if date is None else ('after %s' % date), instructions
                     )
                 )
@@ -95,7 +102,7 @@ def deprecated(wrapped=None, date='', instructions='', warn_once=True):
 
     decorated = deprecated_wrapper(wrapped)
 
-    if (sys.version_info > (3, 0)):  # docstring can only be edited with Python 3
+    if sys.version_info > (3, 0):  # docstring can only be edited with Python 3
         wrapt.FunctionWrapper.__setattr__(
             decorated, "__doc__", _add_deprecated_function_notice_to_docstring(wrapped.__doc__, date, instructions)
         )

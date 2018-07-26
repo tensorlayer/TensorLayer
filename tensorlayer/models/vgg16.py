@@ -29,7 +29,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
 
 from tensorlayer.layers import Conv2d
 from tensorlayer.layers import DenseLayer
@@ -153,7 +153,7 @@ class VGG16(VGG16Base):
     Parameters
     ------------
     x : placeholder
-        shape [None, 224, 224, 3], value range [0, 255].
+        shape [None, 224, 224, 3], value range [0, 1].
     end_with : str
         The end point of the model. Default ``fc3_relu`` i.e. the whole model.
     reuse : boolean

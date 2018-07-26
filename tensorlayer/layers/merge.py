@@ -5,7 +5,9 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import tl_logging as logging
+from tensorlayer import logging
+
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'ConcatLayer',
@@ -60,13 +62,38 @@ class ConcatLayer(Layer):
             name='concat_layer',
     ):
 
-        super(ConcatLayer, self).__init__(prev_layer=layers, name=name)
+        self.prev_layer = layers
+        self.concat_dim = concat_dim
+        self.name = name
 
-        logging.info("ConcatLayer %s: axis: %d" % (self.name, concat_dim))
+        super(ConcatLayer, self).__init__()
 
-        self.outputs = tf.concat(self.inputs, concat_dim, name=name)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("axis: %s" % self.concat_dim)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.concat(self.inputs, self.concat_dim, name=self.name)
+        self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
+
+        super(ConcatLayer, self).__call__(prev_layer)
 
 
 class ElementwiseLayer(Layer):
@@ -113,21 +140,42 @@ class ElementwiseLayer(Layer):
             name='elementwise_layer',
     ):
 
-        super(ElementwiseLayer, self).__init__(prev_layer=layers, act=act, name=name)
-        logging.info(
-            "ElementwiseLayer %s: size: %s fn: %s" % (self.name, layers[0].outputs.get_shape(), combine_fn.__name__)
-        )
+        self.prev_layer = layers
+        self.combine_fn = combine_fn
+        self.act = act
+        self.name = name
 
-        self.outputs = layers[0].outputs
+        super(ElementwiseLayer, self).__init__()
 
-        for l in layers[1:]:
-            self.outputs = combine_fn(self.outputs, l.outputs, name=name)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("fn: %s" % self.combine_fn.__name__)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = self.inputs[0]
+
+        for layer in self.inputs[1:]:
+            self.outputs = self.combine_fn(self.outputs, layer, name=self.name)
 
         self.outputs = self._apply_activation(self.outputs)
 
-        # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
+        self.out_shape = self.outputs.shape
 
         self._add_layers(self.outputs)
+
+        super(ElementwiseLayer, self).__call__(prev_layer)

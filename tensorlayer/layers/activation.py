@@ -4,14 +4,12 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.activation import leaky_relu6
 from tensorlayer.activation import leaky_twice_relu6
 
-from tensorlayer import tl_logging as logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'PReluLayer',
@@ -46,25 +44,40 @@ class PReluLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReluLayer"
     ):
 
-        super(PReluLayer,
-              self).__init__(prev_layer=prev_layer, act=tf.nn.leaky_relu, a_init_args=a_init_args, name=name)
+        self.prev_layer = prev_layer
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.act = tf.nn.leaky_relu
+        self.name = name
 
-        if channel_shared:
+        super(PReluLayer, self).__init__(a_init_args=a_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("channel_shared: %s" % self.channel_shared)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(PReluLayer, self).__call__(prev_layer)
+
+        if self.channel_shared:
             w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
-        logging.info("PReluLayer %s: channel_shared: %s" % (self.name, channel_shared))
-
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
+        with tf.variable_scope(self.name):
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -76,7 +89,7 @@ class PReluLayer(Layer):
         )
 
         self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+        self._add_params(self._local_weights)
 
 
 class PRelu6Layer(Layer):
@@ -121,24 +134,40 @@ class PRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PReLU6_layer"
     ):
 
-        super(PRelu6Layer, self).__init__(prev_layer=prev_layer, act=leaky_relu6, a_init_args=a_init_args, name=name)
+        self.prev_layer = prev_layer
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.act = leaky_relu6
+        self.name = name
 
-        if channel_shared:
+        super(PRelu6Layer, self).__init__(a_init_args=a_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("channel_shared: %s" % self.channel_shared)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(PRelu6Layer, self).__call__(prev_layer)
+
+        if self.channel_shared:
             w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
-        logging.info("PRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
-
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
-            alpha_var = tf.get_variable(
-                name='alpha', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
-            )
+        with tf.variable_scope(self.name):
+            alpha_var = self._get_tf_variable(name='alpha', shape=w_shape, initializer=self.a_init, **self.a_init_args)
 
             alpha_var_constrained = tf.nn.sigmoid(alpha_var, name="constraining_alpha_var_in_0_1")
 
@@ -150,7 +179,7 @@ class PRelu6Layer(Layer):
         )
 
         self._add_layers(self.outputs)
-        self._add_params(alpha_var)
+        self._add_params(self._local_weights)
 
 
 class PTRelu6Layer(Layer):
@@ -197,33 +226,50 @@ class PTRelu6Layer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
+            self, prev_layer=None, channel_shared=False, a_init=tf.truncated_normal_initializer(mean=0.0, stddev=0.1),
             a_init_args=None, name="PTReLU6_layer"
     ):
 
-        super(PTRelu6Layer,
-              self).__init__(prev_layer=prev_layer, act=leaky_twice_relu6, a_init_args=a_init_args, name=name)
+        self.prev_layer = prev_layer
+        self.channel_shared = channel_shared
+        self.a_init = a_init
+        self.act = leaky_twice_relu6
+        self.name = name
 
-        if channel_shared:
+        super(PTRelu6Layer, self).__init__(a_init_args=a_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("channel_shared: %s" % self.channel_shared)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(PTRelu6Layer, self).__call__(prev_layer)
+
+        if self.channel_shared:
             w_shape = (1, )
         else:
             w_shape = int(self.inputs.get_shape()[-1])
 
-        logging.info("PTRelu6Layer %s: channel_shared: %s" % (self.name, channel_shared))
-
-        # with tf.name_scope(name) as scope:
-        with tf.variable_scope(name):
+        with tf.variable_scope(self.name):
 
             # Alpha for outputs lower than zeros
-            alpha_low = tf.get_variable(
-                name='alpha_low', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            alpha_low = self._get_tf_variable(
+                name='alpha_low', shape=w_shape, initializer=self.a_init, **self.a_init_args
             )
 
             alpha_low_constrained = tf.nn.sigmoid(alpha_low, name="constraining_alpha_low_in_0_1")
 
             # Alpha for outputs higher than 6
-            alpha_high = tf.get_variable(
-                name='alpha_high', shape=w_shape, initializer=a_init, dtype=LayersConfig.tf_dtype, **self.a_init_args
+            alpha_high = self._get_tf_variable(
+                name='alpha_high', shape=w_shape, initializer=self.a_init, **self.a_init_args
             )
 
             alpha_high_constrained = tf.nn.sigmoid(alpha_high, name="constraining_alpha_high_in_0_1")
@@ -237,4 +283,4 @@ class PTRelu6Layer(Layer):
         )
 
         self._add_layers(self.outputs)
-        self._add_params([alpha_low, alpha_high])
+        self._add_params(self._local_weights)

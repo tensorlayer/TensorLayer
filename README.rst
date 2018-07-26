@@ -67,18 +67,21 @@ Alibaba, Tencent, Xiaomi, and Bloomberg.
 Install
 =======
 
-TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib
-and nltk (optional). For GPU support, CUDA and cuDNN are required. The
-simplest way to install TensorLayer is to use the Python Package Index
-(PyPI):
+TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
+The simplest way to install TensorLayer is to use the Python Package Index (PyPI):
 
 .. code:: bash
 
     # for last stable version
-    pip install tensorlayer
+    pip install --upgrade tensorlayer
 
     # for latest release candidate
-    pip install --pre tensorlayer
+    pip install --upgrade --pre tensorlayer
+
+    # if you want to install the additional dependencies, you can also run
+    pip install --upgrade tensorlayer[all]              # all additional dependencies
+    pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
+    pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 
 Alternatively, you can install the development version by directly
 pulling from github:
@@ -162,9 +165,9 @@ TensorLayer is released under the Apache 2.0 license.
    :target: https://github.com/tensorlayer/awesome-tensorlayer
 .. |Documentation-EN| image:: https://img.shields.io/badge/documentation-english-blue.svg
    :target: https://tensorlayer.readthedocs.io/
-.. |Documentation-CN| image:: https://img.shields.io/badge/documentation-中文-blue.svg
+.. |Documentation-CN| image:: https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg
    :target: https://tensorlayercn.readthedocs.io/
-.. |Book-CN| image:: https://img.shields.io/badge/book-中文-blue.svg
+.. |Book-CN| image:: https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg
    :target: http://www.broadview.com.cn/book/5059/
 .. |Downloads| image:: http://pepy.tech/badge/tensorlayer
    :target: http://pepy.tech/project/tensorlayer

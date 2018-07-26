@@ -6,8 +6,8 @@
 
 [![Mentioned in Awesome TensorLayer](https://awesome.re/mentioned-badge.svg)](https://github.com/tensorlayer/awesome-tensorlayer)
 [![English Documentation](https://img.shields.io/badge/documentation-english-blue.svg)](https://tensorlayer.readthedocs.io/)
-[![Chinese Documentation](https://img.shields.io/badge/documentation-中文-blue.svg)](https://tensorlayercn.readthedocs.io/)
-[![Chinese Book](https://img.shields.io/badge/book-中文-blue.svg)](http://www.broadview.com.cn/book/5059/)
+[![Chinese Documentation](https://img.shields.io/badge/documentation-%E4%B8%AD%E6%96%87-blue.svg)](https://tensorlayercn.readthedocs.io/)
+[![Chinese Book](https://img.shields.io/badge/book-%E4%B8%AD%E6%96%87-blue.svg)](http://www.broadview.com.cn/book/5059/)
 [![Downloads](http://pepy.tech/badge/tensorlayer)](http://pepy.tech/project/tensorlayer)
 
 
@@ -65,14 +65,20 @@ University of Technology of Compiegne (UTC), and companies like Google, Microsof
 
 # Install
 
-TensorLayer has pre-requisites including TensorFlow, numpy, matplotlib and nltk (optional). For GPU support, CUDA and cuDNN are required. The simplest way to install TensorLayer is to use the Python Package Index (PyPI):
+TensorLayer has pre-requisites including TensorFlow, numpy, and others. For GPU support, CUDA and cuDNN are required.
+The simplest way to install TensorLayer is to use the **Py**thon **P**ackage **I**ndex (PyPI):
 
 ```bash
 # for last stable version
-pip install tensorlayer
+pip install --upgrade tensorlayer
 
 # for latest release candidate
-pip install --pre tensorlayer
+pip install --upgrade --pre tensorlayer
+
+# if you want to install the additional dependencies, you can also run
+pip install --upgrade tensorlayer[all]              # all additional dependencies
+pip install --upgrade tensorlayer[extra]            # only the `extra` dependencies
+pip install --upgrade tensorlayer[contrib_loggers]  # only the `contrib_loggers` dependencies
 ```
 
 Alternatively, you can install the development version by directly pulling from github:

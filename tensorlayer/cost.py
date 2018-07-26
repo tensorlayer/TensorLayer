@@ -7,7 +7,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import standard_ops
 
-from tensorlayer import tl_logging as logging
+import tensorlayer as tl
 
 __all__ = [
     'cross_entropy',
@@ -55,7 +55,7 @@ def cross_entropy(output, target, name=None):
     """
     if name is None:
         raise Exception("Please give a unique name to tl.cost.cross_entropy for TF1.0+")
-    return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    return tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=target, logits=output), name=name)
 
 
 def sigmoid_cross_entropy(output, target, name=None):
@@ -71,7 +71,7 @@ def sigmoid_cross_entropy(output, target, name=None):
         Name of this loss.
 
     """
-    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output, name=name))
+    return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=output), name=name)
 
 
 def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
@@ -98,10 +98,11 @@ def binary_cross_entropy(output, target, epsilon=1e-8, name='bce_loss'):
     #         output = ops.convert_to_tensor(output, name="preds")
     #         target = ops.convert_to_tensor(targets, name="target")
 
-    with tf.name_scope(name):
-        return tf.reduce_mean(
-            tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1)
-        )
+    # with tf.name_scope(name):
+    return tf.reduce_mean(
+        tf.reduce_sum(-(target * tf.log(output + epsilon) + (1. - target) * tf.log(1. - output + epsilon)), axis=1),
+        name=name
+    )
 
     # For brevity, let `x = output`, `z = target`.  The binary cross entropy loss is
     #
@@ -121,34 +122,36 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
         Whether compute the mean or sum for each example.
             - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
             - If False, use ``tf.reduce_sum`` (default).
+    name : str
+        An optional name to attach to this function.
 
     References
     ------------
     - `Wiki Mean Squared Error <https://en.wikipedia.org/wiki/Mean_squared_error>`__
 
     """
-    with tf.name_scope(name):
-        if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-            if is_mean:
-                mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), 1))
-            else:
-                mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1))
-        elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-            if is_mean:
-                mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2]))
-            else:
-                mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2]))
-        elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-            if is_mean:
-                mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2, 3]))
-            else:
-                mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]))
+    # with tf.name_scope(name):
+    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+        if is_mean:
+            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), 1), name=name)
         else:
-            raise Exception("Unknow dimension")
-        return mse
+            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), 1), name=name)
+    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+        if is_mean:
+            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2]), name=name)
+        else:
+            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2]), name=name)
+    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+        if is_mean:
+            mse = tf.reduce_mean(tf.reduce_mean(tf.squared_difference(output, target), [1, 2, 3]), name=name)
+        else:
+            mse = tf.reduce_mean(tf.reduce_sum(tf.squared_difference(output, target), [1, 2, 3]), name=name)
+    else:
+        raise Exception("Unknow dimension")
+    return mse
 
 
-def normalized_mean_square_error(output, target):
+def normalized_mean_square_error(output, target, name="mean_squared_error_loss"):
     """Return the TensorFlow expression of normalized mean-square-error of two distributions.
 
     Parameters
@@ -157,23 +160,25 @@ def normalized_mean_square_error(output, target):
         2D, 3D or 4D tensor i.e. [batch_size, n_feature], [batch_size, height, width] or [batch_size, height, width, channel].
     target : Tensor
         The target distribution, format the same with `output`.
+    name : str
+        An optional name to attach to this function.
 
     """
-    with tf.name_scope("mean_squared_error_loss"):
-        if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
-            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
-        elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2]))
-            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2]))
-        elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-            nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2, 3]))
-            nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2, 3]))
-        nmse = tf.reduce_mean(nmse_a / nmse_b)
+    # with tf.name_scope("mean_squared_error_loss"):
+    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
+        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
+    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2]))
+        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2]))
+    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+        nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=[1, 2, 3]))
+        nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=[1, 2, 3]))
+    nmse = tf.reduce_mean(nmse_a / nmse_b, name=name)
     return nmse
 
 
-def absolute_difference_error(output, target, is_mean=False):
+def absolute_difference_error(output, target, is_mean=False, name="mean_squared_error_loss"):
     """Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
 
     Parameters
@@ -186,27 +191,29 @@ def absolute_difference_error(output, target, is_mean=False):
         Whether compute the mean or sum for each example.
             - If True, use ``tf.reduce_mean`` to compute the loss between one target and predict data.
             - If False, use ``tf.reduce_sum`` (default).
+    name : str
+        An optional name to attach to this function.
 
     """
-    with tf.name_scope("mean_squared_error_loss"):
-        if output.get_shape().ndims == 2:  # [batch_size, n_feature]
-            if is_mean:
-                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), 1))
-            else:
-                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), 1))
-        elif output.get_shape().ndims == 3:  # [batch_size, w, h]
-            if is_mean:
-                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2]))
-            else:
-                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2]))
-        elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
-            if is_mean:
-                loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2, 3]))
-            else:
-                loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2, 3]))
+    # with tf.name_scope("mean_squared_error_loss"):
+    if output.get_shape().ndims == 2:  # [batch_size, n_feature]
+        if is_mean:
+            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), 1), name=name)
         else:
-            raise Exception("Unknow dimension")
-        return loss
+            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), 1), name=name)
+    elif output.get_shape().ndims == 3:  # [batch_size, w, h]
+        if is_mean:
+            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2]), name=name)
+        else:
+            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2]), name=name)
+    elif output.get_shape().ndims == 4:  # [batch_size, w, h, c]
+        if is_mean:
+            loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), [1, 2, 3]), name=name)
+        else:
+            loss = tf.reduce_mean(tf.reduce_sum(tf.abs(output - target), [1, 2, 3]), name=name)
+    else:
+        raise Exception("Unknow dimension")
+    return loss
 
 
 def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
@@ -255,7 +262,7 @@ def dice_coe(output, target, loss_type='jaccard', axis=(1, 2, 3), smooth=1e-5):
     ## new haodong
     dice = (2. * inse + smooth) / (l + r + smooth)
     ##
-    dice = tf.reduce_mean(dice)
+    dice = tf.reduce_mean(dice, name='dice_coe')
     return dice
 
 
@@ -294,7 +301,7 @@ def dice_hard_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     ## new haodong
     hard_dice = (2. * inse + smooth) / (l + r + smooth)
     ##
-    hard_dice = tf.reduce_mean(hard_dice)
+    hard_dice = tf.reduce_mean(hard_dice, name='hard_dice')
     return hard_dice
 
 
@@ -330,7 +337,7 @@ def iou_coe(output, target, threshold=0.5, axis=(1, 2, 3), smooth=1e-5):
     # batch_iou = inse / (union + epsilon)
     ## new haodong
     batch_iou = (inse + smooth) / (union + smooth)
-    iou = tf.reduce_mean(batch_iou)
+    iou = tf.reduce_mean(batch_iou, name='iou_coe')
     return iou  #, pre, truth, inse, union
 
 
@@ -524,7 +531,7 @@ def li_regularizer(scale, scope=None):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def li(weights):
@@ -572,7 +579,7 @@ def lo_regularizer(scale):
         if scale >= 1.:
             raise ValueError('Setting a scale greater than 1 on a regularizer: %g' % scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def lo(weights, name='lo_regularizer'):
@@ -622,7 +629,7 @@ def maxnorm_regularizer(scale=1.0):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn(weights, name='max_regularizer'):
@@ -668,7 +675,7 @@ def maxnorm_o_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_o(weights, name='maxnorm_o_regularizer'):
@@ -716,7 +723,7 @@ def maxnorm_i_regularizer(scale):
         #   raise ValueError('Setting a scale greater than 1 on a regularizer: %g' %
         #                    scale)
         if scale == 0.:
-            logging.info('Scale of 0 disables regularizer.')
+            tl.logging.info('Scale of 0 disables regularizer.')
             return lambda _, name=None: None
 
     def mn_i(weights, name='maxnorm_i_regularizer'):
