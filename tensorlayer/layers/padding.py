@@ -154,7 +154,8 @@ class ZeroPad1d(Layer):
 
         self._parse_inputs(prev_layer)
 
-        self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.outputs = tf.keras.layers.ZeroPadding1D(padding=self.padding,
+                                                     name=self.name)(self.inputs)  # TODO: Stop using Keras
         self.out_shape = self.outputs.shape
 
         super(ZeroPad1d, self).__call__(prev_layer)
@@ -219,7 +220,8 @@ class ZeroPad2d(Layer):
 
         self._parse_inputs(prev_layer)
 
-        self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.outputs = tf.keras.layers.ZeroPadding2D(padding=self.padding,
+                                                     name=self.name)(self.inputs)  # TODO: Stop using Keras
         self.out_shape = self.outputs.shape
 
         super(ZeroPad2d, self).__call__(prev_layer)
@@ -283,7 +285,8 @@ class ZeroPad3d(Layer):
 
         self._parse_inputs(prev_layer)
 
-        self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding, name=self.name)(self.inputs)  # TODO: Stop using Keras
+        self.outputs = tf.keras.layers.ZeroPadding3D(padding=self.padding,
+                                                     name=self.name)(self.inputs)  # TODO: Stop using Keras
         self.out_shape = self.outputs.shape
 
         super(ZeroPad3d, self).__call__(prev_layer)
