@@ -1,0 +1,136 @@
+#! /usr/bin/python
+# -*- coding: utf-8 -*-
+
+import tensorflow as tf
+
+from tensorlayer.layers.core import Layer
+
+from tensorlayer import logging
+
+from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
+
+
+class MaxPool1d(Layer):
+    """Max pooling for 1D signal [batch, length, channel]. Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`__ .
+
+    Parameters
+    ----------
+    prev_layer : :class:`Layer`
+        The previous layer with a output rank as 3 [batch, length, channel].
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
+
+    """
+
+    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self, prev_layer, filter_size=3, strides=2, padding='valid', data_format='channels_last', name='maxpool1d'
+    ):
+        super(MaxPool1d, self).__init__(prev_layer=prev_layer, name=name)
+
+        logging.info(
+            "MaxPool1d %s: filter_size: %s strides: %s padding: %s" %
+            (self.name, str(filter_size), str(strides), str(padding))
+        )
+
+        self.outputs = tf.layers.max_pooling1d(
+            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        )
+
+        self._add_layers(self.outputs)
+
+
+class MaxPool2d(Layer):
+    """Max pooling for 2D image [batch, height, width, channel].
+
+    Parameters
+    -----------
+    prev_layer : :class:`Layer`
+        The previous layer with a output rank as 4 [batch, height, width, channel].
+    filter_size : tuple of int
+        (height, width) for filter size.
+    strides : tuple of int
+        (height, width) for strides.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    name : str
+        A unique layer name.
+
+    """
+
+    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, filter_size=(3, 3), strides=(2, 2), padding='SAME', name='maxpool2d'):
+        if strides is None:
+            strides = filter_size
+
+        super(MaxPool2d, self).__init__(prev_layer=prev_layer, name=name)
+
+        logging.info(
+            "MaxPool2d %s: filter_size: %s strides: %s padding: %s" %
+            (self.name, str(filter_size), str(strides), str(padding))
+        )
+
+        self.outputs = tf.layers.max_pooling2d(
+            self.inputs, filter_size, strides, padding=padding, data_format='channels_last', name=name
+        )
+
+        self._add_layers(self.outputs)
+
+
+class MaxPool3d(Layer):
+    """Max pooling for 3D volume [batch, depth, height, width, channel]. Wrapper for `tf.layers.max_pooling3d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling3d>`__ .
+
+    Parameters
+    ------------
+    prev_layer : :class:`Layer`
+        The previous layer with a output rank as 5 [batch, depth, height, width, channel].
+    filter_size : tuple of int
+        Pooling window size.
+    strides : tuple of int
+        Strides of the pooling operation.
+    padding : str
+        The padding method: 'valid' or 'same'.
+    data_format : str
+        One of `channels_last` (default) or `channels_first`.
+        The ordering of the dimensions must match the inputs.
+        channels_last corresponds to inputs with the shape (batch, length, channels);
+        while channels_first corresponds to inputs with shape (batch, channels, length).
+    name : str
+        A unique layer name.
+
+    Returns
+    -------
+    :class:`Layer`
+        A max pooling 3-D layer with a output rank as 5.
+
+    """
+
+    @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(
+            self, prev_layer, filter_size=(3, 3, 3), strides=(2, 2, 2), padding='valid', data_format='channels_last',
+            name='maxpool3d'
+    ):
+        super(MaxPool3d, self).__init__(prev_layer=prev_layer, name=name)
+
+        logging.info(
+            "MaxPool3d %s: filter_size: %s strides: %s padding: %s" %
+            (self.name, str(filter_size), str(strides), str(padding))
+        )
+
+        self.outputs = tf.layers.max_pooling3d(
+            self.inputs, filter_size, strides, padding=padding, data_format=data_format, name=name
+        )
+
+        self._add_layers(self.outputs)
