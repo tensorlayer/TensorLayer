@@ -9,6 +9,8 @@ from tensorflow.contrib.rnn import stack_bidirectional_dynamic_rnn
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
+from tensorlayer.decorators import deprecated_alias
+
 from tensorlayer import logging
 
 
