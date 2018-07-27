@@ -108,6 +108,8 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
             cls.n10, shape=(3, 3, 32, 64), output_shape=(100, 96, 96, 32), rate=2, act=tf.nn.relu, name='atroustrans1'
         )
 
+        cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
+
     @classmethod
     def tearDownClass(cls):
         tf.reset_default_graph()
@@ -188,6 +190,13 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
         self.assertEqual(len(self.n11.all_params), 22)
         self.assertEqual(self.n11.count_params(), 150592)
         self.assertEqual(self.n11.outputs.get_shape().as_list()[1:], [96, 96, 32])
+
+    def test_layer_n12(self):
+
+        self.assertEqual(len(self.n12.all_layers), 13)
+        self.assertEqual(len(self.n12.all_params), 24)
+        self.assertEqual(self.n12.count_params(), 201856)
+        self.assertEqual(self.n12.outputs.get_shape().as_list()[1:], [96, 96, 64])
 
 
 class Layer_Convolution_3D_Test(unittest.TestCase):

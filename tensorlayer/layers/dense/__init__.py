@@ -14,6 +14,8 @@ from .binary_dense import *
 from .dorefa_dense import *
 from .dropconnect import *
 from .ternary_dense import *
+from .quan_dense import *
+from .quan_dense_bn import *
 
 __all__ = [
     'BinaryDenseLayer',
@@ -21,4 +23,6 @@ __all__ = [
     'DorefaDenseLayer',
     'DropconnectDenseLayer',
     'TernaryDenseLayer',
+    'QuanDenseLayer',
+    'QuanDenseLayerWithBN',
 ]
