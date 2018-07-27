@@ -84,6 +84,7 @@ To release a new version, please update the changelog as followed:
   - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
+  - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
@@ -92,11 +93,12 @@ To release a new version, please update the changelog as followed:
   - fix bug of `tutorial_bipedalwalker_a3c_continuous_action.py` (PR #734, Issue #732)
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
-
+  - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
 ### Changed
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
+  - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)  
 
 ### Deprecated
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
@@ -124,6 +126,8 @@ To release a new version, please update the changelog as followed:
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
 - @luomai: #700
+- @XJTUWYD: #735
+- @mutewall: #735
 
 ## [1.9.0] - 2018-06-16
 
@@ -286,3 +290,4 @@ To release a new version, please update the changelog as followed:
 [Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
+
