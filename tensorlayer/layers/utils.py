@@ -26,6 +26,8 @@ __all__ = [
     'quantize',
     'quantize_active',
     'quantize_weight',
+    'quantize_active_overflow',
+    'quantize_weight_overflow',
     'set_name_reuse',
     'ternary_operation',
 ]
@@ -364,6 +366,18 @@ def quantize_weight(x, bitW, force_quantization=False):
     return 2 * _quantize_dorefa(x, bitW) - 1
 
 
+def quantize_active_overflow(x, bitA):
+    if bitA == 32:
+        return x
+    return _quantize_overflow(x, bitA)
+
+
+def quantize_weight_overflow(x, bitW):
+    if bitW == 32:
+        return x
+    return _quantize_overflow(x, bitW)
+
+
 @deprecated(date="2018-06-30", instructions="TensorLayer relies on TensorFlow to check name reusing")
 def set_name_reuse(enable=True):
     logging.warning('this method is DEPRECATED and has no effect, please remove it from your code.')
@@ -394,6 +408,16 @@ def _quantize_dorefa(x, k):
     n = float(2**k - 1)
     with G.gradient_override_map({"Round": "Identity"}):
         return tf.round(x * n) / n
+
+
+def _quantize_overflow(x, k):
+    G = tf.get_default_graph()
+    n = float(2**k - 1)
+    max_value = tf.reduce_max(x)
+    min_value = tf.reduce_min(x)
+    with G.gradient_override_map({"Round": "Identity"}):
+        step = tf.stop_gradient((max_value - min_value) / n)
+        return tf.round((tf.maximum(tf.minimum(x, max_value), min_value) - min_value) / step) * step + min_value
 
 
 def _compute_threshold(x):

@@ -22,6 +22,8 @@ from .simplified_conv import *
 from .simplified_deconv import *
 from .super_resolution import *
 from .ternary_conv import *
+from .quan_conv import *
+from .quan_conv_bn import *
 
 __all__ = [
 
@@ -72,4 +74,8 @@ __all__ = [
 
     # ternary
     'TernaryConv2d',
+
+    #quan_conv
+    'QuanConv2d',
+    'QuanConv2dWithBN',
 ]
