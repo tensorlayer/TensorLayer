@@ -92,13 +92,13 @@ Connect to the database
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Similar with MongoDB management tools, IP and port number are required for connecting to the database.
-To distinguish the different projects, the database instances have a ``project_key`` argument.
+To distinguish the different projects, the database instances have a ``project_name`` argument.
 In the following example, we connect to MongoDB on a local machine with the IP ``localhost``, and port ``27017`` (this is the default port number of MongoDB).
 
 .. code-block:: python
 
   db = tl.db.TensorHub(ip='localhost', port=27017, dbname='temp',
-        username=None, password='password', project_key='tutorial')
+        username=None, password='password', project_name='tutorial')
 
 Dataset management
 ^^^^^^^^^^^^^^^^^^^^
@@ -109,7 +109,7 @@ Note that, all saving functions will automatically save a timestamp, allowing yo
 
 .. code-block:: python
 
-  db.save_dataset(dataset=[X_train, y_train, X_test, y_test], dataset_key='mnist', description='this is a tutorial')
+  db.save_dataset(dataset=[X_train, y_train, X_test, y_test], dataset_name='mnist', description='this is a tutorial')
 
 After saving the dataset, others can access the dataset as followed:
 
@@ -213,22 +213,22 @@ The following is an example that pushes 3 tasks with different hyper parameters.
 
   ## push tasks into database, then allow other servers pull tasks to run
   db.create_task(
-      task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=800, n_units2=800),
-      result_key=['test_accuracy'], description='800-800'
+      task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=800, n_units2=800),
+      saved_result_keys=['test_accuracy'], description='800-800'
   )
 
   db.create_task(
-      task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=600, n_units2=600),
-      result_key=['test_accuracy'], description='600-600'
+      task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=600, n_units2=600),
+      saved_result_keys=['test_accuracy'], description='600-600'
   )
 
   db.create_task(
-      task_key='mnist', script='task_script.py', hyper_parameters=dict(n_units1=400, n_units2=400),
-      result_key=['test_accuracy'], description='400-400'
+      task_name='mnist', script='task_script.py', hyper_parameters=dict(n_units1=400, n_units2=400),
+      saved_result_keys=['test_accuracy'], description='400-400'
   )
 
   ## wait for tasks to finish
-  while db.check_unfinished_task(task_key='mnist'):
+  while db.check_unfinished_task(task_name='mnist'):
       print("waiting runners to finish the tasks")
       time.sleep(1)
 
@@ -242,7 +242,7 @@ In the task script, we can save the final model and results to the database, thi
   ## monitors the database and pull tasks to run
   while True:
       print("waiting task from distributor")
-      db.run_task(task_key='mnist', sort=[("time", -1)])
+      db.run_task(task_name='mnist', sort=[("time", -1)])
       time.sleep(1)
 
 Example codes
