@@ -5,9 +5,8 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'StackLayer',
@@ -44,22 +43,33 @@ class StackLayer(Layer):
 
     def __init__(
             self,
-            layers,
+            layers=None,
             axis=1,
             name='stack',
     ):
 
-        super(StackLayer, self).__init__(prev_layer=layers, name=name)
+        self.prev_layer = layers
+        self.axis = axis
+        self.name = name
 
-        logging.info("StackLayer %s: axis: %d" % (self.name, axis))
+        super(StackLayer, self).__init__()
 
-        self.outputs = tf.stack(self.inputs, axis=axis, name=name)
+    def __str__(self):
+        additional_str = []
 
-        # for i in range(1, len(layers)):
-        #     self._add_layers(list(layers[i].all_layers))
-        #     self._add_params(list(layers[i].all_params))
-        #     self.all_drop.update(dict(layers[i].all_drop))
+        try:
+            additional_str.append("axis: %s" % self.axis)
+        except AttributeError:
+            pass
 
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(StackLayer, self).__call__(prev_layer)
+
+        self.outputs = tf.stack(self.inputs, axis=self.axis, name=self.name)
         self._add_layers(self.outputs)
 
 
@@ -86,18 +96,49 @@ class UnStackLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, num=None, axis=0, name='unstack'):
+    def __init__(self, prev_layer=None, num=None, axis=0, name='unstack'):
 
-        super(UnStackLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.prev_layer = prev_layer
+        self.num = num
+        self.axis = axis
+        self.name = name
 
-        outputs = tf.unstack(self.inputs, num=num, axis=axis, name=name)
+        super(UnStackLayer, self).__init__()
 
-        logging.info("UnStackLayer %s: num: %s axis: %d, n_outputs: %d" % (self.name, num, axis, len(outputs)))
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("num: %s" % self.num)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("axis: %s" % self.axis)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("n_outputs: %s" % self.n_outputs)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        self.outputs = tf.unstack(self.inputs, num=self.num, axis=self.axis, name=self.name)
+        self.n_outputs = len(self.outputs)
+
+        super(UnStackLayer, self).__call__(prev_layer)
 
         net_new = []
 
-        for i, unstacked_dim in enumerate(outputs):
-            layer = Layer(prev_layer=self, name=name + str(i))
+        for i, unstacked_dim in enumerate(self.outputs):
+            layer = Layer(prev_layer=None, name=self.name + "_%d" % i)
             layer.outputs = unstacked_dim
 
             net_new.append(layer)
