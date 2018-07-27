@@ -55,6 +55,7 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ZeroPad2d(padding=2, name='zeropad2d_layer_3-1'))
             cls.model.add(tl.layers.ZeroPad2d(padding=(2, 2), name='zeropad2d_layer_3-2'))
             cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
+            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_12'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
@@ -65,13 +66,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 16)
+        self.assertEqual(self.model.count_params(), 17)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 12)
+        self.assertEqual(len(self.model.get_all_params()), 13)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 14)
+        self.assertEqual(self.model.count_layers(), 15)
 
     def test_network_shapes(self):
 
