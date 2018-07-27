@@ -181,8 +181,13 @@ class Layer(object):
                 self.inputs = prev_layer.outputs
 
         ## TL Graph
-        # print(act, name, args, kwargs)
-        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
+        if isinstance(prev_layer, list): # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+            _list = []
+            for layer in prev_layer:
+                _list.append(layer.name)
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': _list})
+        else: # normal layers e.g. Conv2d
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
         # if act:  ## convert activation from function to string
         #     try:
         #         act = act.__name__

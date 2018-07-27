@@ -1930,7 +1930,9 @@ def _graph2net(graphs):
         ## get current layer class
         name, layer_kwargs = graph
         layer_class = layer_kwargs.pop('class')  # class of current layer
-        prev_layer = layer_kwargs.pop('prev_layer')  # name of previous layer
+        prev_layer = layer_kwargs.pop(
+            'prev_layer'
+        )  # name of previous layer : str =one layer   list of str = multiple layers
 
         ## convert function dictionary into real function
         for key in layer_kwargs:  # set input placeholder into the lastest layer
@@ -1951,17 +1953,20 @@ def _graph2net(graphs):
             # input_dict.update({name: _placeholder})
             input_list.append((name, _placeholder))
         else:  ## create network
-            try:  # if previous layer is layer
-                net = layer_dict[prev_layer]
-                layer_kwargs.update({'prev_layer': net})
-            except Exception:  # if previous layer is input placeholder
-                for n, t in input_list:
-                    if n == prev_layer:
-                        _placeholder = t
-                layer_kwargs.update({'inputs': _placeholder})
-            layer_kwargs.update({'name': name})
-            net = eval('tl.layers.' + layer_class)(**layer_kwargs)
-            layer_dict.update({name: net})
+            if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+                raise NotImplementedError("graph does not support this layer at the moment:{}" % layer_class)
+            else:  # normal layers e.g. Conv2d
+                try:  # if previous layer is layer
+                    net = layer_dict[prev_layer]
+                    layer_kwargs.update({'prev_layer': net})
+                except Exception:  # if previous layer is input placeholder
+                    for n, t in input_list:
+                        if n == prev_layer:
+                            _placeholder = t
+                    layer_kwargs.update({'inputs': _placeholder})
+                layer_kwargs.update({'name': name})
+                net = eval('tl.layers.' + layer_class)(**layer_kwargs)
+                layer_dict.update({name: net})
 
     ## rename placeholder e.g. x:0 --> x
     for i, (n, t) in enumerate(input_list):
