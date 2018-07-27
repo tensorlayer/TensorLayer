@@ -22,7 +22,7 @@ __all__ = [
     'DenseLayer',
     'DorefaDenseLayer',
     'DropconnectDenseLayer',
-    'TernaryDenseLayer',
     'QuanDenseLayer',
     'QuanDenseLayerWithBN',
+    'TernaryDenseLayer',
 ]

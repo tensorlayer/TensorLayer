@@ -64,6 +64,10 @@ __all__ = [
     # group
     'GroupConv2d',
 
+    # quan_conv
+    'QuanConv2d',
+    'QuanConv2dWithBN',
+
     # separable
     'SeparableConv1d',
     'SeparableConv2d',
@@ -74,8 +78,4 @@ __all__ = [
 
     # ternary
     'TernaryConv2d',
-
-    #quan_conv
-    'QuanConv2d',
-    'QuanConv2dWithBN',
 ]

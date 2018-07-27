@@ -84,8 +84,8 @@ class QuanDenseLayer(Layer):
 
         with tf.variable_scope(name):
 
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             W = quantize_weight_overflow(W, bitW)
@@ -94,11 +94,11 @@ class QuanDenseLayer(Layer):
 
             if b_init is not None:
                 try:
-                    b = tf.get_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+                    b = self._get_tf_variable(
+                        name='b', shape=(n_units), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
-                    b = tf.get_variable(name='b', initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args)
+                    b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 

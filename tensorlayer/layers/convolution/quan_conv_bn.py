@@ -144,8 +144,8 @@ class QuanConv2dWithBN(Layer):
         strides = (1, strides[0], strides[1], 1)
 
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             conv = tf.nn.conv2d(
@@ -155,31 +155,31 @@ class QuanConv2dWithBN(Layer):
             para_bn_shape = conv.get_shape()[-1:]
 
             if gamma_init:
-                scale_para = tf.get_variable(
-                    name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=LayersConfig.tf_dtype,
+                scale_para = self._get_tf_variable(
+                    name='scale_para', shape=para_bn_shape, initializer=gamma_init, dtype=self.inputs.dtype,
                     trainable=is_train
                 )
             else:
                 scale_para = None
 
             if beta_init:
-                offset_para = tf.get_variable(
-                    name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=LayersConfig.tf_dtype,
+                offset_para = self._get_tf_variable(
+                    name='offset_para', shape=para_bn_shape, initializer=beta_init, dtype=self.inputs.dtype,
                     trainable=is_train
                 )
             else:
                 offset_para = None
 
-            moving_mean = tf.get_variable(
-                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=LayersConfig.tf_dtype,
+            moving_mean = self._get_tf_variable(
+                'moving_mean', para_bn_shape, initializer=tf.constant_initializer(1.), dtype=self.inputs.dtype,
                 trainable=False
             )
 
-            moving_variance = tf.get_variable(
+            moving_variance = self._get_tf_variable(
                 'moving_variance',
                 para_bn_shape,
                 initializer=tf.constant_initializer(1.),
-                dtype=LayersConfig.tf_dtype,
+                dtype=self.inputs.dtype,
                 trainable=False,
             )
 
