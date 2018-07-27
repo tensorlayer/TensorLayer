@@ -337,6 +337,7 @@ class Layer(BaseLayer):
     def __str__(self):
         return self._str()
 
+    @private_method
     def _str(self, additional_str=list()):
 
         if len(additional_str) > 0:
@@ -357,7 +358,7 @@ class Layer(BaseLayer):
         return _str
 
     @abstractmethod
-    @protected_method
+    @private_method
     def __call__(self, prev_layer, is_train=True):
 
         self._parse_inputs(prev_layer)

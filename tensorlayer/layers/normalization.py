@@ -425,12 +425,15 @@ class LayerNormLayer(Layer):
 
         super(LayerNormLayer, self).__call__(prev_layer)
 
+        is_name_reuse = tf.get_variable_scope().reuse
+
         with tf.variable_scope(self.name) as vs:
             self.outputs = tf.contrib.layers.layer_norm(
                 self.inputs,
                 center=self.center,
                 scale=self.scale,
                 activation_fn=None,
+                reuse=is_name_reuse,
                 variables_collections=self.variables_collections,
                 outputs_collections=self.outputs_collections,
                 trainable=is_train,
