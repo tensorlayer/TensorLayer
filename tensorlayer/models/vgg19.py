@@ -225,6 +225,9 @@ class VGG19(VGG19Base):
 
     def __init__(self, x, end_with='fc3_relu', reuse=None):
         with tf.variable_scope("vgg19", reuse=reuse):
+            scope_name = tf.get_variable_scope().name
+            self.name = scope_name + '/' + name if scope_name else name
+
             net = InputLayer(x, name='input')
             self.net = VGG19Base.vgg19_simple_api(net, end_with)
             self.outputs = self.net.outputs

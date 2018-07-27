@@ -203,6 +203,9 @@ class VGG16(VGG16Base):
 
     def __init__(self, x, end_with='fc3_relu', reuse=None):
         with tf.variable_scope("vgg16", reuse=reuse):
+            scope_name = tf.get_variable_scope().name
+            self.name = scope_name + '/' + name if scope_name else name
+
             net = InputLayer(x, name='input')
             self.net = VGG16Base.vgg16_simple_api(net, end_with)
 
