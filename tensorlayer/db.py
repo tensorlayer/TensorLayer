@@ -519,6 +519,15 @@ class TensorHub(object):
         self.db.TestLog.delete_many(kwargs)
         logging.info("[Database] Delete TestLog SUCCESS")
 
+    # def find_training_logs(self, **kwargs):
+    #     pass
+    #
+    # def find_validation_logs(self, **kwargs):
+    #     pass
+    #
+    # def find_testing_logs(self, **kwargs):
+    #     pass
+
     # =========================== Task ===================================
     def create_task(self, task_name=None, script=None, hyper_parameters=None, saved_result_keys=None, **kwargs):
         """Uploads a task to the database, timestamp will be added automatically.
