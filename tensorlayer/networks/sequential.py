@@ -118,6 +118,7 @@ class Sequential(BaseNetwork):
         # Reset All Layers' Inputs
         for name, layer in self.all_layers_dict.items():
             layer.inputs = None
+            layer.outputs = None
 
         with logging.temp_handler("    [*]"):
 
