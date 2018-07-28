@@ -175,6 +175,7 @@ class BaseLayer(object):
 
         net_new.name = self.name
 
+        net_new.name = self.name + '_indexing'
         net_new.inputs = self.inputs
         net_new.outputs = self.outputs[key]
 
@@ -182,7 +183,7 @@ class BaseLayer(object):
         net_new._add_layers(net_new.outputs)
 
         net_new._add_params(self.all_params)
-
+        net_new._add_graphs(self.all_graphs)
         net_new._add_dropout_layers(self.all_drop)
 
         return net_new
@@ -367,10 +368,18 @@ class Layer(BaseLayer):
         logging.info(str(self))
 
         ## TL Graph
-        # print(act, name, args, kwargs)
-        prev_layer_name = prev_layer.name if hasattr(prev_layer, "name") else ''
+        if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
+            _list = []
+            for layer in prev_layer:
+                _list.append(layer.name)
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': _list})
 
-        self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer_name})
+        elif prev_layer is None:  #
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': None})
+
+        else:  # normal layers e.g. Conv2d
+            self.graph.update({'class': self.__class__.__name__.split('.')[-1], 'prev_layer': prev_layer.name})
+
         # if act:  ## convert activation from function to string
         #     try:
         #         act = act.__name__
@@ -378,6 +387,7 @@ class Layer(BaseLayer):
         #         pass
         #     self.graph.update({'act': act})
         # print(self.layer_args)
+
         self.graph.update(self.layer_args)
         # print(self.graph)
         self._add_graphs((self.name, self.graph))
