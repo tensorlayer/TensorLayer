@@ -134,6 +134,10 @@ class TensorHub(object):
         >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
         >>> net = db.find_top_model(sess=sess, sort=[("time", 1)])
 
+        - Get model information
+        >>> net._accuracy
+        ... 0.8
+
         Returns
         ---------
         boolean : True for success, False for fail.
@@ -181,6 +185,7 @@ class TensorHub(object):
         Returns
         ---------
         network : TensorLayer layer
+            Note that, the returned network contains all information of the document (record), e.g. if you saved accuracy in the document, you can get the accuracy by using ``net._accuracy``.
         """
         # print(kwargs)   # {}
         kwargs.update({'model_name': model_name})
