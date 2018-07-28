@@ -118,10 +118,11 @@ To release a new version, please update the changelog as followed:
 - tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
 - pymongo>=3.6,<3.7 => pymongo>=3.7,<3.8 (PR #750)
 - numpy>=1.14,<1.15 => numpy>=1.15,<1.16 (PR #754)
+- tqdm>=4.23,<4.24 => numpy>=4.24,<4.25 (PR #755)
 
 
 ### Contributors
-- @DEKHTIARJonathan: #739 #747 #750 #754
+- @DEKHTIARJonathan: #739 #747 #750 #754 #755
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
