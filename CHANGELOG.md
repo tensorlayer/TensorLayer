@@ -114,8 +114,8 @@ To release a new version, please update the changelog as followed:
 ### Security
 
 ### Dependencies Update
-- tensorflow>=1.8,<1.9 => tensorflow>=1.9,<1.10 (PR #739)
-- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.9,<1.10 (PR #739)
+- tensorflow>=1.8,<1.9 => tensorflow>=1.6,<1.10 (PR #739)
+- tensorflow-gpu>=1.8,<1.9 => tensorflow-gpu>=1.6,<1.10 (PR #739)
 - pymongo>=3.6,<3.7 => pymongo>=3.7,<3.8 (PR #750)
 - numpy>=1.14,<1.15 => numpy>=1.15,<1.16 (PR #754)
 - tqdm>=4.23,<4.24 => tqdm>=4.24,<4.25 (PR #755)
