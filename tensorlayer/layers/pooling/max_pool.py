@@ -10,6 +10,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
+__all__ = [
+    'MaxPool1d',
+    'MaxPool2d',
+    'MaxPool3d'
+]
+
 
 class MaxPool1d(Layer):
     """Max pooling for 1D signal [batch, length, channel]. Wrapper for `tf.layers.max_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/max_pooling1d>`__ .

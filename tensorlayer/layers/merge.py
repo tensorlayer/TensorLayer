@@ -5,8 +5,6 @@ import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import force_return_self
 
 __all__ = [

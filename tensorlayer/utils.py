@@ -28,6 +28,7 @@ __all__ = [
     'predict',
     'evaluation',
     'dict_to_one',
+    'list_remove_repeat',
     'flatten_list',
     'class_balancing_oversample',
     'get_random_int',
@@ -407,6 +408,35 @@ def dict_to_one(dp_dict):
 
     """
     return {x: 1 for x in dp_dict}
+
+
+def list_remove_repeat(x):
+    """Remove the repeated items in a list, and return the processed list.
+    You may need it to create merged layer like Concat, Elementwise and etc.
+
+    Parameters
+    ----------
+    x : list
+        Input
+
+    Returns
+    -------
+    list
+        A list that after removing it's repeated items
+
+    Examples
+    -------
+    >>> l = [2, 3, 4, 2, 3]
+    >>> l = list_remove_repeat(l)
+    [2, 3, 4]
+
+    """
+    y = []
+    for i in x:
+        if i not in y:
+            y.append(i)
+
+    return y
 
 
 def flatten_list(list_of_list):

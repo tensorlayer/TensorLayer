@@ -10,7 +10,7 @@ import numpy as np
 
 import tensorflow as tf
 
-from tensorlayer.layers.utils import list_remove_repeat
+from tensorlayer.utils import list_remove_repeat
 
 from tensorlayer import logging
 

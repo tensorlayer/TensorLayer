@@ -1,18 +1,24 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+import numpy as np
+
+import tensorflow as tf
 from tensorflow.python.ops import array_ops
 
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import TF_GRAPHKEYS_VARIABLES
 
-from tensorlayer.layers.utils import flatten_reshape
+from tensorlayer.layers.utils.reshape import flatten_reshape
+from tensorlayer.layers.utils.spatial_transformer import transformer
 
-from tensorlayer.layers.spatial_transformer.utils import *
-
+from tensorlayer.decorators import private_method
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
-from tensorlayer.decorators import private_method
+
+__all__ = [
+    'SpatialTransformer2dAffineLayer'
+]
 
 
 class SpatialTransformer2dAffineLayer(Layer):

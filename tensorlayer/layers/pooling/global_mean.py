@@ -10,6 +10,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
+__all__ = [
+    'GlobalMeanPool1d',
+    'GlobalMeanPool2d',
+    'GlobalMeanPool3d'
+]
+
 
 class GlobalMeanPool1d(Layer):
     """The :class:`GlobalMeanPool1d` class is a 1D Global Mean Pooling layer.

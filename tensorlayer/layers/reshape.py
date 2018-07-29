@@ -4,9 +4,8 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.utils import flatten_reshape
 
-from tensorlayer import logging
+from tensorlayer.layers.utils.reshape import flatten_reshape
 
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self

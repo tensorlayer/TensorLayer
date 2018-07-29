@@ -1,17 +1,9 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-import inspect
-import six
-
 from abc import ABCMeta, abstractmethod
 
-import numpy as np
-
 import tensorflow as tf
-import tensorlayer as tl
-
-from tensorlayer.layers.utils import list_remove_repeat
 
 from tensorlayer import logging
 from tensorlayer.layers import core

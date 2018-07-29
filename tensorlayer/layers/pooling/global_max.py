@@ -10,6 +10,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
+__all__ = [
+    'GlobalMaxPool1d',
+    'GlobalMaxPool2d',
+    'GlobalMaxPool3d'
+]
+
 
 class GlobalMaxPool1d(Layer):
     """The :class:`GlobalMaxPool1d` class is a 1D Global Max Pooling layer.

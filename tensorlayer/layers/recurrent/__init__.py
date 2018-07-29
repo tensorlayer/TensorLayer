@@ -29,9 +29,4 @@ __all__ = [
     'DynamicRNNLayer',
     'BiDynamicRNNLayer',
     'Seq2Seq',
-    'advanced_indexing_op',
-    'retrieve_seq_length_op',
-    'retrieve_seq_length_op2',
-    'retrieve_seq_length_op3',
-    'target_mask_op',
 ]

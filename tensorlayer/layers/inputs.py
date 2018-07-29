@@ -2,12 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import tensorlayer as tl
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
-
-from tensorlayer import logging
 
 from tensorlayer.decorators import force_return_self
 

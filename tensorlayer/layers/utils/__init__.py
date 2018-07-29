@@ -9,11 +9,19 @@ layers that allow user to apply ``tf.nn.lrn`` on ``network.outputs``.
 More functions can be found in `TensorFlow API <https://www.tensorflow.org/versions/master/api_docs/index.html>`__.
 """
 
-from .utils import *
-from .layers import *
+from .core_utils import *
+from .merge import *
+from .quantization import *
+from .recurrent import *
+from .reshape import *
+from .spatial_transformer import *
+from .ternary import *
 
-__all__ = [
-    'transformer',
-    'batch_transformer',
-    'SpatialTransformer2dAffineLayer',
-]
+__all__ = []
+__all__ += core_utils.__all__
+__all__ += merge.__all__
+__all__ += quantization.__all__
+__all__ += recurrent.__all__
+__all__ += reshape.__all__
+__all__ += spatial_transformer.__all__
+__all__ += ternary.__all__

@@ -15,18 +15,9 @@ from .mean_pool import *
 from .global_mean import *
 from .global_max import *
 
-__all__ = [
-    'PoolLayer',
-    'MaxPool1d',
-    'MeanPool1d',
-    'MaxPool2d',
-    'MeanPool2d',
-    'MaxPool3d',
-    'MeanPool3d',
-    'GlobalMaxPool1d',
-    'GlobalMeanPool1d',
-    'GlobalMaxPool2d',
-    'GlobalMeanPool2d',
-    'GlobalMaxPool3d',
-    'GlobalMeanPool3d',
-]
+__all__ = []
+__all__ += base_pooling.__all__
+__all__ += max_pool.__all__
+__all__ += mean_pool.__all__
+__all__ += global_mean.__all__
+__all__ += global_max.__all__

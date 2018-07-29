@@ -6,8 +6,10 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import quantize_active_overflow
-from tensorlayer.layers.utils import quantize_weight_overflow
+from tensorlayer.layers.utils.quantization import bias_fold
+from tensorlayer.layers.utils.quantization import w_fold
+from tensorlayer.layers.utils.quantization import quantize_weight_overflow
+from tensorlayer.layers.utils.quantization import quantize_weight_overflow
 
 from tensorflow.python.training import moving_averages
 from tensorlayer import logging
@@ -202,8 +204,8 @@ class QuanConv2dWithBN(Layer):
             else:
                 mean, var = moving_mean, moving_variance
 
-            w_fold = _w_fold(W, scale_para, var, epsilon)
-            bias_fold = _bias_fold(offset_para, scale_para, mean, var, epsilon)
+            w_fold = w_fold(W, scale_para, var, epsilon)
+            bias_fold = bias_fold(offset_para, scale_para, mean, var, epsilon)
 
             W = quantize_weight_overflow(w_fold, bitW)
 
@@ -221,9 +223,9 @@ class QuanConv2dWithBN(Layer):
         self._add_params([W, scale_para, offset_para, moving_mean, moving_variance])
 
 
-def _w_fold(w, gama, var, epsilon):
+def w_fold(w, gama, var, epsilon):
     return tf.div(tf.multiply(gama, w), tf.sqrt(var + epsilon))
 
 
-def _bias_fold(beta, gama, mean, var, epsilon):
+def bias_fold(beta, gama, mean, var, epsilon):
     return tf.subtract(beta, tf.div(tf.multiply(gama, mean), tf.sqrt(var + epsilon)))

@@ -17,12 +17,11 @@ from .ternary_dense import *
 from .quan_dense import *
 from .quan_dense_bn import *
 
-__all__ = [
-    'BinaryDenseLayer',
-    'DenseLayer',
-    'DorefaDenseLayer',
-    'DropconnectDenseLayer',
-    'QuanDenseLayer',
-    'QuanDenseLayerWithBN',
-    'TernaryDenseLayer',
-]
+__all__ = []
+__all__ += base_dense.__all__
+__all__ += binary_dense.__all__
+__all__ += dorefa_dense.__all__
+__all__ += dropconnect.__all__
+__all__ += ternary_dense.__all__
+__all__ += quan_dense.__all__
+__all__ += quan_dense_bn.__all__

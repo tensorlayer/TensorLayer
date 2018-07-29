@@ -6,9 +6,9 @@ import tensorflow as tf
 from tensorlayer.layers.core import Layer
 from tensorlayer.layers.core import LayersConfig
 
-from tensorlayer.layers.utils import cabs
-from tensorlayer.layers.utils import quantize_active
-from tensorlayer.layers.utils import quantize_weight
+from tensorlayer.layers.utils.quantization import cabs
+from tensorlayer.layers.utils.quantization import quantize_active
+from tensorlayer.layers.utils.quantization import quantize_weight
 
 from tensorlayer import logging
 

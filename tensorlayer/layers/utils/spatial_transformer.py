@@ -7,6 +7,11 @@ import numpy as np
 
 import tensorflow as tf
 
+__all__ = [
+    'transformer',
+    'batch_transformer',
+]
+
 
 def transformer(U, theta, out_size, name='SpatialTransformer2dAffine'):
     """Spatial Transformer Layer for `2D Affine Transformation <https://en.wikipedia.org/wiki/Affine_transformation>`__

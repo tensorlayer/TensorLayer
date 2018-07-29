@@ -25,57 +25,19 @@ from .ternary_conv import *
 from .quan_conv import *
 from .quan_conv_bn import *
 
-__all__ = [
-
-    # simplified conv
-    'Conv1d',
-    'Conv2d',
-
-    # simplified deconv
-    'DeConv2d',
-    'DeConv3d',
-
-    # expert conv
-    'Conv1dLayer',
-    'Conv2dLayer',
-    'Conv3dLayer',
-
-    # expert conv
-    'DeConv2dLayer',
-    'DeConv3dLayer',
-
-    # atrous
-    'AtrousConv1dLayer',
-    'AtrousConv2dLayer',
-    'AtrousDeConv2dLayer',
-
-    # binary
-    'BinaryConv2d',
-
-    # deformable
-    'DeformableConv2d',
-
-    # depthwise
-    'DepthwiseConv2d',
-
-    # dorefa
-    'DorefaConv2d',
-
-    # group
-    'GroupConv2d',
-
-    # quan_conv
-    'QuanConv2d',
-    'QuanConv2dWithBN',
-
-    # separable
-    'SeparableConv1d',
-    'SeparableConv2d',
-
-    # subpixel
-    'SubpixelConv1d',
-    'SubpixelConv2d',
-
-    # ternary
-    'TernaryConv2d',
-]
+__all__ = []
+__all__ += atrous_conv.__all__
+__all__ += binary_conv.__all__
+__all__ += deformable_conv.__all__
+__all__ += depthwise_conv.__all__
+__all__ += dorefa_conv.__all__
+__all__ += expert_conv.__all__
+__all__ += expert_deconv.__all__
+__all__ += group_conv.__all__
+__all__ += separable_conv.__all__
+__all__ += simplified_conv.__all__
+__all__ += simplified_deconv.__all__
+__all__ += super_resolution.__all__
+__all__ += ternary_conv.__all__
+__all__ += quan_conv.__all__
+__all__ += quan_conv_bn.__all__

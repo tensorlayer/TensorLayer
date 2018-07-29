@@ -10,6 +10,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
+__all__ = [
+    'MeanPool1d',
+    'MeanPool2d',
+    'MeanPool3d'
+]
+
 
 class MeanPool1d(Layer):
     """Mean pooling for 1D signal [batch, length, channel]. Wrapper for `tf.layers.average_pooling1d <https://www.tensorflow.org/api_docs/python/tf/layers/average_pooling1d>`__ .
