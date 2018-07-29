@@ -134,6 +134,10 @@ class TensorHub(object):
         >>> net = db.find_top_model(sess=sess, sort=[("time", pymongo.ASCENDING)])
         >>> net = db.find_top_model(sess=sess, sort=[("time", 1)])
 
+        - Get model information
+        >>> net._accuracy
+        ... 0.8
+
         Returns
         ---------
         boolean : True for success, False for fail.
@@ -181,6 +185,7 @@ class TensorHub(object):
         Returns
         ---------
         network : TensorLayer layer
+            Note that, the returned network contains all information of the document (record), e.g. if you saved accuracy in the document, you can get the accuracy by using ``net._accuracy``.
         """
         # print(kwargs)   # {}
         kwargs.update({'model_name': model_name})
@@ -513,6 +518,15 @@ class TensorHub(object):
         self._fill_project_info(kwargs)
         self.db.TestLog.delete_many(kwargs)
         logging.info("[Database] Delete TestLog SUCCESS")
+
+    # def find_training_logs(self, **kwargs):
+    #     pass
+    #
+    # def find_validation_logs(self, **kwargs):
+    #     pass
+    #
+    # def find_testing_logs(self, **kwargs):
+    #     pass
 
     # =========================== Task ===================================
     def create_task(self, task_name=None, script=None, hyper_parameters=None, saved_result_keys=None, **kwargs):
