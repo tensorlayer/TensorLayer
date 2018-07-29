@@ -4,13 +4,11 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer.layers.convolution.expert_conv import Conv1dLayer
 
-from tensorlayer import logging
-
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'AtrousConv1dLayer',
@@ -26,13 +24,13 @@ def atrous_conv1d(
         filter_size=2,
         stride=1,
         dilation=1,
-        act=None,
         padding='SAME',
         data_format='NWC',
         W_init=tf.truncated_normal_initializer(stddev=0.02),
         b_init=tf.constant_initializer(value=0.0),
         W_init_args=None,
         b_init_args=None,
+        act=None,
         name='atrous_1d',
 ):
     """Simplified version of :class:`AtrousConv1dLayer`.
@@ -124,33 +122,70 @@ class AtrousConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, n_filter=32, filter_size=(3, 3), rate=2, act=None, padding='SAME',
+            self, prev_layer=None, n_filter=32, filter_size=(3, 3), rate=2, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, name='atrous_2d'
+            W_init_args=None, b_init_args=None, act=None, name='atrous_2d'
     ):
 
-        super(AtrousConv2dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        self.prev_layer = prev_layer
+        self.n_filter = n_filter
+        self.filter_size = filter_size
+        self.rate = rate
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
 
-        logging.info(
-            "AtrousConv2dLayer %s: n_filter: %d filter_size: %s rate: %d pad: %s act: %s" % (
-                self.name, n_filter, filter_size, rate, padding, self.act.__name__
-                if self.act is not None else 'No Activation'
-            )
-        )
+        super(AtrousConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
-        with tf.variable_scope(name):
-            shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("n_filter: %d" % self.n_filter)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("filter_size: %s" % str(self.filter_size))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("rate: %d" % self.rate)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("pad: %s" % self.pad)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(AtrousConv2dLayer, self).__call__(prev_layer)
+
+        with tf.variable_scope(self.name):
+            shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
 
             W = self._get_tf_variable(
-                name='W_atrous_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_atrous_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
-            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=rate, padding=padding)
+            self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=self.rate, padding=self.padding)
 
-            if b_init:
+            if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d', shape=(n_filter), initializer=b_init, dtype=self.inputs.dtype,
+                    name='b_atrous_conv2d', shape=(self.n_filter, ), initializer=self.b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -159,11 +194,7 @@ class AtrousConv2dLayer(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self._add_params(self._local_weights)
 
 
 class AtrousDeConv2dLayer(Layer):
@@ -200,48 +231,90 @@ class AtrousDeConv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self, prev_layer, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, act=None, padding='SAME',
+            self, prev_layer=None, shape=(3, 3, 128, 256), output_shape=(1, 64, 64, 128), rate=2, padding='SAME',
             W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None, b_init_args=None, name='atrous_2d_transpose'
+            W_init_args=None, b_init_args=None, act=None, name='atrous_2d_transpose'
     ):
 
-        super(AtrousDeConv2dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
+        self.prev_layer = prev_layer
+        self.shape = shape
+        self.output_shape = output_shape
+        self.rate = rate
+        self.padding = padding
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
 
-        logging.info(
-            "AtrousDeConv2dLayer %s: shape: %s output_shape: %s rate: %d pad: %s act: %s" % (
-                self.name, shape, output_shape, rate, padding, self.act.__name__
-                if self.act is not None else 'No Activation'
-            )
-        )
+        super(AtrousDeConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
 
-        with tf.variable_scope(name):
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("shape: %s" % str(self.shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self.out_shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("rate: %d" % self.rate)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        self._parse_inputs(prev_layer)
+
+        with tf.variable_scope(self.name):
             W = self._get_tf_variable(
-                name='W_atrous_conv2d_transpose', shape=shape, initializer=W_init, dtype=self.inputs.dtype,
+                name='W_atrous_conv2d_transpose', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
+            try:
+                batch_size = int(self.inputs.get_shape()[0])
+            except TypeError:
+                batch_size = None
+
+            deconv_shape = [batch_size] + list(self.output_shape[1:])
+
             self.outputs = tf.nn.atrous_conv2d_transpose(
-                self.inputs, filters=W, output_shape=output_shape, rate=rate, padding=padding
+                self.inputs, filters=W, output_shape=deconv_shape, rate=self.rate, padding=self.padding
             )
 
-            if b_init:
+            if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
+                    name='b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
 
             self.outputs = self._apply_activation(self.outputs)
+            self.out_shape = self.outputs.shape
+
+        super(AtrousDeConv2dLayer, self).__call__(prev_layer)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-
-            self._add_params(W)
+        self._add_params(self._local_weights)
 
 
 # Alias

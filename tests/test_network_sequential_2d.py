@@ -55,7 +55,15 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ZeroPad2d(padding=2, name='zeropad2d_layer_3-1'))
             cls.model.add(tl.layers.ZeroPad2d(padding=(2, 2), name='zeropad2d_layer_3-2'))
             cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
-            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_12'))
+            cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_3'))
+
+            cls.model.add(tl.layers.AtrousConv2dLayer(n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_layer_4'))
+
+            cls.model.add(tl.layers.AtrousConv2dLayer(n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', b_init=None, act=tf.nn.relu, name='atrous_2d_layer_5'))
+
+            cls.model.add(tl.layers.AtrousDeConv2dLayer(shape=(3, 3, 32, 32), output_shape=(None, 64, 64, 32), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_transpose_6'))
+
+            cls.model.add(tl.layers.AtrousDeConv2dLayer(shape=(3, 3, 32, 32), output_shape=(None, 128, 128, 32), rate=2, padding='SAME', b_init=None, act=tf.nn.relu, name='atrous_2d_transpose_7'))
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
@@ -65,14 +73,15 @@ class Network_Sequential_Test(CustomTestCase):
     def test_get_all_drop_plh(self):
         self.assertEqual(len(self.model.all_drop), 0)
 
+
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 17)
+        self.assertEqual(self.model.count_params(), 28017)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 13)
+        self.assertEqual(len(self.model.get_all_params()), 19)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 15)
+        self.assertEqual(self.model.count_layers(), 19)
 
     def test_network_shapes(self):
 
@@ -88,10 +97,20 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["instance_norm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.model["layernorm_layer_2"].outputs.shape, (100, 16, 16, 1))
         self.assertEqual(self.model["switchnorm_layer_2"].outputs.shape, (100, 16, 16, 1))
+
         self.assertEqual(self.model["pad_layer_3"].outputs.shape, (100, 24, 22, 1))
         self.assertEqual(self.model["zeropad2d_layer_3-1"].outputs.shape, (100, 28, 26, 1))
         self.assertEqual(self.model["zeropad2d_layer_3-2"].outputs.shape, (100, 32, 30, 1))
         self.assertEqual(self.model["zeropad2d_layer_3-3"].outputs.shape, (100, 38, 38, 1))
+        self.assertEqual(self.model["scale_layer_3"].outputs.shape, (100, 38, 38, 1))
+
+        self.assertEqual(self.model["atrous_2d_layer_4"].outputs.shape, (100, 38, 38, 32))
+
+        self.assertEqual(self.model["atrous_2d_layer_5"].outputs.shape, (100, 38, 38, 32))
+
+        self.assertEqual(self.model["atrous_2d_transpose_6"].outputs.shape, (100, 64, 64, 32))
+
+        self.assertEqual(self.model["atrous_2d_transpose_7"].outputs.shape, (100, 128, 128, 32))
 
 
 if __name__ == '__main__':
