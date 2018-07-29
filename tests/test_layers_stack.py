@@ -18,9 +18,11 @@ class Layer_Stack_Test(unittest.TestCase):
         x = tf.placeholder(tf.float32, shape=[None, 30])
         net_in = tl.layers.InputLayer(x, name='input')
 
-        net_d1 = tl.layers.DenseLayer(net_in, n_units=10, name='dense1')
-        net_d2 = tl.layers.DenseLayer(net_in, n_units=10, name='dense2')
-        net_d3 = tl.layers.DenseLayer(net_in, n_units=10, name='dense3')
+        net = tl.layers.DropoutLayer(net_in, keep=0.5, is_train=True, name='dropout')
+
+        net_d1 = tl.layers.DenseLayer(net, n_units=10, name='dense1')
+        net_d2 = tl.layers.DenseLayer(net, n_units=10, name='dense2')
+        net_d3 = tl.layers.DenseLayer(net, n_units=10, name='dense3')
 
         cls.net_stack = tl.layers.StackLayer([net_d1, net_d2, net_d3], axis=1, name='stack')
 
@@ -38,8 +40,9 @@ class Layer_Stack_Test(unittest.TestCase):
 
     def test_StackLayer(self):
         self.assertEqual(self.net_stack.outputs.get_shape().as_list()[-1], 10)
-        self.assertEqual(len(self.net_stack.all_layers), 5)
+        self.assertEqual(len(self.net_stack.all_layers), 6)
         self.assertEqual(len(self.net_stack.all_params), 6)
+        self.assertEqual(len(self.net_stack.all_drop), 1)
         self.assertEqual(self.net_stack.count_params(), 930)
 
     def test_UnStackLayer(self):
@@ -48,8 +51,9 @@ class Layer_Stack_Test(unittest.TestCase):
             shape = n.outputs.get_shape().as_list()
 
             self.assertEqual(shape[-1], 10)
-            self.assertEqual(len(n.all_layers), 5)
+            self.assertEqual(len(n.all_layers), 7)
             self.assertEqual(len(n.all_params), 6)
+            self.assertEqual(len(n.all_drop), 1)
             self.assertEqual(n.count_params(), 930)
 
 

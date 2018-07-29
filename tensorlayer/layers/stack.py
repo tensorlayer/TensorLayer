@@ -138,11 +138,17 @@ class UnStackLayer(Layer):
         net_new = []
 
         for i, unstacked_dim in enumerate(self.outputs):
-            layer = Layer(prev_layer=None, name=self.name + "_%d" % i)
+            layer = Layer()
+
+            layer.name = self.name + "_%d" % i
             layer.outputs = unstacked_dim
+
+            layer.all_drop = self.all_drop
+            layer._add_params(self.all_params)
+            layer._add_layers(self.all_layers)
+            layer._add_layers(layer.outputs)
 
             net_new.append(layer)
 
         self.outputs = net_new
-
-        self._add_layers(net_new)
+        self._add_layers(self.outputs)
