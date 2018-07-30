@@ -151,7 +151,7 @@ def mean_squared_error(output, target, is_mean=False, name="mean_squared_error")
     return mse
 
 
-def normalized_mean_square_error(output, target, name="mean_squared_error_loss"):
+def normalized_mean_square_error(output, target, name="normalized_mean_squared_error_loss"):
     """Return the TensorFlow expression of normalized mean-square-error of two distributions.
 
     Parameters
@@ -164,7 +164,7 @@ def normalized_mean_square_error(output, target, name="mean_squared_error_loss")
         An optional name to attach to this function.
 
     """
-    # with tf.name_scope("mean_squared_error_loss"):
+    # with tf.name_scope("normalized_mean_squared_error_loss"):
     if output.get_shape().ndims == 2:  # [batch_size, n_feature]
         nmse_a = tf.sqrt(tf.reduce_sum(tf.squared_difference(output, target), axis=1))
         nmse_b = tf.sqrt(tf.reduce_sum(tf.square(target), axis=1))
@@ -178,7 +178,7 @@ def normalized_mean_square_error(output, target, name="mean_squared_error_loss")
     return nmse
 
 
-def absolute_difference_error(output, target, is_mean=False, name="mean_squared_error_loss"):
+def absolute_difference_error(output, target, is_mean=False, name="absolute_difference_error_loss"):
     """Return the TensorFlow expression of absolute difference error (L1) of two batch of data.
 
     Parameters
@@ -195,7 +195,7 @@ def absolute_difference_error(output, target, is_mean=False, name="mean_squared_
         An optional name to attach to this function.
 
     """
-    # with tf.name_scope("mean_squared_error_loss"):
+    # with tf.name_scope("absolute_difference_error_loss"):
     if output.get_shape().ndims == 2:  # [batch_size, n_feature]
         if is_mean:
             loss = tf.reduce_mean(tf.reduce_mean(tf.abs(output - target), 1), name=name)
