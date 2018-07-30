@@ -65,6 +65,10 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.AtrousDeConv2dLayer(shape=(3, 3, 32, 32), output_shape=(None, 128, 128, 32), rate=2, padding='SAME', b_init=None, act=tf.nn.relu, name='atrous_2d_transpose_7'))
 
+            cls.model.add(tl.layers.BinaryConv2d(n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu, name='binary_conv2d_layer_8'))
+
+            cls.model.add(tl.layers.BinaryConv2d(n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=tf.nn.relu, name='binary_conv2d_layer_9'))
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -75,13 +79,13 @@ class Network_Sequential_Test(CustomTestCase):
 
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 28017)
+        self.assertEqual(self.model.count_params(), 79249)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 19)
+        self.assertEqual(len(self.model.get_all_params()), 22)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 19)
+        self.assertEqual(self.model.count_layers(), 21)
 
     def test_network_shapes(self):
 
@@ -111,6 +115,10 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["atrous_2d_transpose_6"].outputs.shape, (100, 64, 64, 32))
 
         self.assertEqual(self.model["atrous_2d_transpose_7"].outputs.shape, (100, 128, 128, 32))
+
+        self.assertEqual(self.model["binary_conv2d_layer_8"].outputs.shape, (100, 128, 128, 32))
+
+        self.assertEqual(self.model["binary_conv2d_layer_9"].outputs.shape, (100, 128, 128, 32))
 
 
 if __name__ == '__main__':
