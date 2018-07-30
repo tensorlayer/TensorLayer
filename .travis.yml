@@ -20,6 +20,7 @@ env:
   # Backward Compatibility in insured for release less than 1 year old.
   # https://pypi.org/project/tensorflow/#history
   matrix:
+    - _TF_VERSION=1.10.0rc0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.9.0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.8.0 # Remove on Apr 28, 2019
     - _TF_VERSION=1.7.1 # Remove on May 08, 2019
