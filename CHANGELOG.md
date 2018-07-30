@@ -103,6 +103,7 @@ To release a new version, please update the changelog as followed:
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
+- Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
 
 ### Security
 
@@ -121,6 +122,7 @@ To release a new version, please update the changelog as followed:
 - @luomai: #700
 - @XJTUWYD: #735
 - @mutewall: #735
+- @thangvubk: #759
 
 ## [1.9.0] - 2018-06-16
 
