@@ -103,6 +103,7 @@ To release a new version, please update the changelog as followed:
 - import error caused by matplotlib on OSX (PR #705)
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
+- Fix some loss function typos in `cost.py` (PR #759)
 
 ### Security
 
