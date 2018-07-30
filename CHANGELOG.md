@@ -84,6 +84,11 @@ To release a new version, please update the changelog as followed:
 
 ### Contributors
 
+## [1.9.1] - 2018-07-30
+
+### Fixed
+- Issue with tensorflow 1.10.0 fixed
+
 
 ## [1.9.0] - 2018-06-16
 
@@ -243,6 +248,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 @zsdonghao @luomai @DEKHTIARJonathan
 
-[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...master
+[Unreleased]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...master
+[1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.1...1.9.0
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.8.5
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5

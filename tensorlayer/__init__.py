@@ -58,13 +58,13 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     global_dict = {}
 
 # Use the following formating: (major, minor, patch, prerelease)
-VERSION = (1, 9, 0, "")
+VERSION = (1, 9, 1, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
 __package_name__ = 'tensorlayer'
 __contact_names__ = 'TensorLayer Contributors'
-__contact_emails__ = 'hao.dong11@imperial.ac.uk'
+__contact_emails__ = 'tensorlayer@gmail.com'
 __homepage__ = 'http://tensorlayer.readthedocs.io/en/latest/'
 __repository_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
