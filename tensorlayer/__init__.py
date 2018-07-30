@@ -5,6 +5,7 @@
 from __future__ import absolute_import
 
 import os
+from distutils.version import LooseVersion
 
 if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
 
@@ -17,7 +18,7 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
             " - `pip install --upgrade tensorflow-gpu`"
         )
 
-    if tensorflow.__version__ < "1.6.0" and os.environ.get('READTHEDOCS', None) != 'True':
+    if LooseVersion(tensorflow.__version__) < LooseVersion("1.6.0") and os.environ.get('READTHEDOCS', None) != 'True':
         raise RuntimeError(
             "TensorLayer does not support Tensorflow version older than 1.6.0.\n"
             "Please update Tensorflow with:\n"
@@ -69,4 +70,5 @@ __repository_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __download_url__ = 'https://github.com/tensorlayer/tensorlayer'
 __description__ = 'Reinforcement Learning and Deep Learning Library for Researcher and Engineer.'
 __license__ = 'apache'
-__keywords__ = 'deep learning, machine learning, computer vision, nlp, supervised learning, unsupervised learning, reinforcement learning, tensorflow'
+__keywords__ = 'deep learning, machine learning, computer vision, nlp, '
+__keywords__ += 'supervised learning, unsupervised learning, reinforcement learning, tensorflow'
