@@ -92,6 +92,11 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271), name='reshape_layer_12'))
             cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_12'))
 
+            cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271, 1), name='reshape_layer_13'))
+            cls.model.add(tl.layers.Conv1dLayer(shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13'))
+
+            cls.model.add(tl.layers.Conv1dLayer(shape=(5, 12, 24), stride=1, padding='SAME', b_init=None, act=tf.nn.relu, name='conv1d_layer_14'))
+
             plh = tf.placeholder(tf.float16, (100, 32))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -101,13 +106,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 1)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 30617)
+        self.assertEqual(self.model.count_params(), 32129)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 37)
+        self.assertEqual(len(self.model.get_all_params()), 40)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 36)
+        self.assertEqual(self.model.count_layers(), 39)
 
     def test__getitem__(self):
 
@@ -164,6 +169,12 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["zeropad1d_layer_12-1"].outputs.shape, (100, 266, 1))
         self.assertEqual(self.model["zeropad1d_layer_12-2"].outputs.shape, (100, 271, 1))
         self.assertEqual(self.model["reshape_layer_12"].outputs.shape, (100, 271))
+        self.assertEqual(self.model["scale_layer_12"].outputs.shape, (100, 271))
+
+        self.assertEqual(self.model["reshape_layer_13"].outputs.shape, (100, 271, 1))
+        self.assertEqual(self.model["conv1d_layer_13"].outputs.shape, (100, 271, 12))
+
+        self.assertEqual(self.model["conv1d_layer_14"].outputs.shape, (100, 271, 24))
 
 
 if __name__ == '__main__':
