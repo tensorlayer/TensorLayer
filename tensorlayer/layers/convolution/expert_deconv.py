@@ -4,11 +4,11 @@
 import tensorflow as tf
 
 from tensorlayer.layers.core import Layer
-from tensorlayer.layers.core import LayersConfig
 
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'DeConv2dLayer',
@@ -96,41 +96,91 @@ class DeConv2dLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            act=None,
+            prev_layer=None,
             shape=(3, 3, 128, 256),
             output_shape=(1, 256, 256, 128),
             strides=(1, 2, 2, 1),
             padding='SAME',
+            data_format='NHWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='decnn2d_layer',
+            act=None,
+            name='deconv2d_layer',
     ):
-        super(DeConv2dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "DeConv2dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
-            )
-        )
+        if data_format not in ["NHWC", "NCHW"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
 
-        # logging.info("  DeConv2dLayer: Untested")
-        with tf.variable_scope(name):
+        self.prev_layer = prev_layer
+        self.shape = shape
+        self.output_shape = output_shape
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(DeConv2dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("shape: %s" % str(self.shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self.output_shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("strides: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(DeConv2dLayer, self).__call__(prev_layer)
+
+        with tf.variable_scope(self.name):
             W = self._get_tf_variable(
-                name='W_deconv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_deconv2d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                **self.W_init_args
             )
+
+            try:
+                batch_size = int(self.inputs.get_shape()[0])
+            except TypeError:
+                batch_size = None
+
+            deconv_shape = [batch_size] + list(self.output_shape[1:])
 
             self.outputs = tf.nn.conv2d_transpose(
-                self.inputs, W, output_shape=output_shape, strides=strides, padding=padding
+                self.inputs, W, output_shape=deconv_shape, strides=self.strides, padding=self.padding
             )
 
-            if b_init:
+            if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deconv2d', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
+                    name='b_deconv2d', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')
@@ -138,11 +188,7 @@ class DeConv2dLayer(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self._add_params(self._local_weights)
 
 
 class DeConv3dLayer(Layer):
@@ -179,41 +225,91 @@ class DeConv3dLayer(Layer):
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
             self,
-            prev_layer,
-            act=None,
+            prev_layer=None,
             shape=(2, 2, 2, 128, 256),
             output_shape=(1, 12, 32, 32, 128),
             strides=(1, 2, 2, 2, 1),
             padding='SAME',
+            data_format='NDHWC',
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='decnn3d_layer',
+            act=None,
+            name='deconv3d_layer',
     ):
-        super(DeConv3dLayer, self
-             ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
-        logging.info(
-            "DeConv3dLayer %s: shape: %s out_shape: %s strides: %s pad: %s act: %s" % (
-                self.name, str(shape), str(output_shape), str(strides), padding, self.act.__name__
-                if self.act is not None else 'No Activation'
-            )
-        )
+        if data_format not in ["NDHWC", "NCDHW"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'NDHWC' or 'NCDHW'")
 
-        with tf.variable_scope(name):
+        self.prev_layer = prev_layer
+        self.shape = shape
+        self.output_shape = output_shape
+        self.strides = strides
+        self.padding = padding
+        self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
+        self.act = act
+        self.name = name
+
+        super(DeConv3dLayer, self).__init__(W_init_args=W_init_args, b_init_args=b_init_args)
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("shape: %s" % str(self.shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("output_shape: %s" % str(self.output_shape))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("strides: %s" % str(self.strides))
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("padding: %s" % self.padding)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("act: %s" % self.act.__name__ if self.act is not None else 'No Activation')
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        super(DeConv3dLayer, self).__call__(prev_layer)
+
+        with tf.variable_scope(self.name):
 
             W = self._get_tf_variable(
-                name='W_deconv3d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_deconv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
+
+            try:
+                batch_size = int(self.inputs.get_shape()[0])
+            except TypeError:
+                batch_size = None
+
+            deconv_shape = [batch_size] + list(self.output_shape[1:])
 
             self.outputs = tf.nn.conv3d_transpose(
-                self.inputs, W, output_shape=output_shape, strides=strides, padding=padding
+                self.inputs, W, output_shape=deconv_shape, strides=self.strides, padding=self.padding
             )
 
-            if b_init:
+            if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_deconv3d', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
+                    name='b_deconv3d', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -222,8 +318,4 @@ class DeConv3dLayer(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params([W])
+        self._add_params(self._local_weights)
