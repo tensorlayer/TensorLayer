@@ -103,7 +103,7 @@ class Sequential(BaseNetwork):
 
     def compile(self, input_plh, reuse=False, is_train=True):
 
-        logging.info("** Compiling Model - reuse: %s, is_train: %s **" % (reuse, is_train))
+        logging.info("** Compiling Model `%s` - reuse: %s, is_train: %s **" % (self.name, reuse, is_train))
 
         # Reset All Layers' Inputs
         for name, layer in self.all_layers_dict.items():

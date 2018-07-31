@@ -24,7 +24,7 @@ class Network_Sequential_Test(CustomTestCase):
     def setUpClass(cls):
 
         with tf.variable_scope("test_scope"):
-            cls.model = tl.networks.Sequential(name="My_Seq_net")
+            cls.model = tl.networks.Sequential(name="My_Sequential_1D_Network")
 
             cls.model.add(tl.layers.ExpandDimsLayer(axis=1, name="expand_layer_1"))
             cls.model.add(tl.layers.FlattenLayer(name="flatten_layer_1"))
