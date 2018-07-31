@@ -86,7 +86,7 @@ class BinaryConv2d(Layer):
             W_init_args=None,
             b_init_args=None,
             act=None,
-            name='binary_cnn2d',
+            name='binary_conv2d',
     ):
 
         # TODO: Implement GEMM
