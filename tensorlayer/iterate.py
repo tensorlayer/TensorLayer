@@ -51,11 +51,16 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         indices = np.arange(len(inputs))
         np.random.shuffle(indices)
 
-    for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
+    # for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
+    # chulei: handling the case where the number of samples is not a multiple of batch_size, avoiding wasting samples
+    for start_idx in range(0, len(inputs), batch_size):
+        end_idx = start_idx + batch_size
+        if end_idx > len(inputs):
+            end_idx = len(inputs)
         if shuffle:
-            excerpt = indices[start_idx:start_idx + batch_size]
+            excerpt = indices[start_idx:end_idx]
         else:
-            excerpt = slice(start_idx, start_idx + batch_size)
+            excerpt = slice(start_idx, end_idx)
         if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle ==True):
             # zsdonghao: for list indexing when shuffle==True
             yield [inputs[i] for i in excerpt], [targets[i] for i in excerpt]
