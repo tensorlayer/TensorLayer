@@ -88,7 +88,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
 ### Changed
-  - function minibatches changed to avoid wasting samples(PR #762)
+  - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
