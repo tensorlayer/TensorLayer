@@ -79,12 +79,12 @@ class BinaryConv2d(Layer):
             strides=(1, 1),
             padding='SAME',
             use_gemm=False,
+            use_cudnn_on_gpu=False,
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            use_cudnn_on_gpu=None,
-            data_format=None,
             act=None,
             name='binary_cnn2d',
     ):
@@ -102,10 +102,10 @@ class BinaryConv2d(Layer):
         self.strides = strides
         self.padding = padding
         self.use_gemm = use_gemm
-        self.W_init = W_init
-        self.b_init = b_init
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
         self.data_format = data_format
+        self.W_init = W_init
+        self.b_init = b_init
         self.act = act
         self.name = name
 
