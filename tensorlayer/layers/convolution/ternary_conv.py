@@ -85,7 +85,7 @@ class TernaryConv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            use_cudnn_on_gpu=None,
+            use_cudnn_on_gpu=True,
             data_format=None,
             # act=None,
             # shape=(5, 5, 1, 100),
@@ -95,7 +95,7 @@ class TernaryConv2d(Layer):
             # b_init=tf.constant_initializer(value=0.0),
             # W_init_args=None,
             # b_init_args=None,
-            # use_cudnn_on_gpu=None,
+            # use_cudnn_on_gpu=True,
             # data_format=None,
             name='ternary_cnn2d',
     ):
@@ -116,12 +116,12 @@ class TernaryConv2d(Layer):
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         try:
-            pre_channel = int(prev_layer.outputs.get_shape()[-1])
-        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            pre_channel = 1
+            input_channels = int(prev_layer.outputs.get_shape()[-1])
+        except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
+            input_channels = 1
             logging.warning("unknow input channels, set to 1")
 
-        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+        shape = (filter_size[0], filter_size[1], input_channels, n_filter)
         strides = (1, strides[0], strides[1], 1)
 
         with tf.variable_scope(name):
@@ -151,8 +151,4 @@ class TernaryConv2d(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self._add_params(self._local_weights)

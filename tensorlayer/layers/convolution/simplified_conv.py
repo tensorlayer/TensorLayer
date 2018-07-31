@@ -164,7 +164,7 @@ class Conv2d(Layer):
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            use_cudnn_on_gpu=None,
+            use_cudnn_on_gpu=True,
             data_format=None,
             name='conv2d',
     ):
@@ -172,10 +172,10 @@ class Conv2d(Layer):
         #     raise ValueError("len(strides) should be 2, Conv2d and Conv2dLayer are different.")
 
         # try:
-        #     pre_channel = int(layer.outputs.get_shape()[-1])
+        #     input_channels = int(layer.outputs.get_shape()[-1])
 
-        # except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-        #     pre_channel = 1
+        # except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
+        #     input_channels = 1
         #     logging.info("[warnings] unknow input channels, set to 1")
 
         super(Conv2d, self

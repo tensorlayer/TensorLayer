@@ -16,6 +16,62 @@ __all__ = [
 ]
 
 
+class SubpixelConv1d(Layer):
+    """It is a 1D sub-pixel up-sampling layer.
+
+    Calls a TensorFlow function that directly implements this functionality.
+    We assume input has dim (batch, width, r)
+
+    Parameters
+    ------------
+    net : :class:`Layer`
+        Previous layer with output shape of (batch, width, r).
+    scale : int
+        The up-scaling ratio, a wrong setting will lead to Dimension size error.
+    act : activation function
+        The activation function of this layer.
+    name : str
+        A unique layer name.
+
+    Examples
+    ----------
+    >>> import tensorflow as tf
+    >>> import tensorlayer as tl
+    >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
+    >>> n = tl.layers.InputLayer(t_signal, name='in')
+    >>> n = tl.layers.SubpixelConv1d(n, scale=2, name='s')
+    >>> print(n.outputs.shape)
+    (10, 200, 2)
+
+    References
+    -----------
+    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
+
+    """
+
+    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
+    def __init__(self, prev_layer, scale=2, act=None, name='subpixel_conv1d'):
+
+        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
+
+        logging.info(
+            "SubpixelConv1d  %s: scale: %d act: %s" %
+            (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
+        )
+
+        with tf.name_scope(name):
+            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
+
+        self._add_layers(self.outputs)
+
+    @private_method
+    def _PS(self, I, r):
+        X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
+        X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
+        X = tf.transpose(X, [2, 1, 0])
+        return X
+
+
 class SubpixelConv2d(Layer):
     """It is a 2D sub-pixel up-sampling layer, usually be used
     for Super-Resolution applications, see `SRGAN <https://github.com/tensorlayer/srgan/>`__ for example.
@@ -114,60 +170,4 @@ class SubpixelConv2d(Layer):
         else:
             raise RuntimeError(_err_log)
 
-        return X
-
-
-class SubpixelConv1d(Layer):
-    """It is a 1D sub-pixel up-sampling layer.
-
-    Calls a TensorFlow function that directly implements this functionality.
-    We assume input has dim (batch, width, r)
-
-    Parameters
-    ------------
-    net : :class:`Layer`
-        Previous layer with output shape of (batch, width, r).
-    scale : int
-        The up-scaling ratio, a wrong setting will lead to Dimension size error.
-    act : activation function
-        The activation function of this layer.
-    name : str
-        A unique layer name.
-
-    Examples
-    ----------
-    >>> import tensorflow as tf
-    >>> import tensorlayer as tl
-    >>> t_signal = tf.placeholder('float32', [10, 100, 4], name='x')
-    >>> n = tl.layers.InputLayer(t_signal, name='in')
-    >>> n = tl.layers.SubpixelConv1d(n, scale=2, name='s')
-    >>> print(n.outputs.shape)
-    (10, 200, 2)
-
-    References
-    -----------
-    `Audio Super Resolution Implementation <https://github.com/kuleshov/audio-super-res/blob/master/src/models/layers/subpixel.py>`__.
-
-    """
-
-    @deprecated_alias(net='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, scale=2, act=None, name='subpixel_conv1d'):
-
-        super(SubpixelConv1d, self).__init__(prev_layer=prev_layer, act=act, name=name)
-
-        logging.info(
-            "SubpixelConv1d  %s: scale: %d act: %s" %
-            (self.name, scale, self.act.__name__ if self.act is not None else 'No Activation')
-        )
-
-        with tf.name_scope(name):
-            self.outputs = self._apply_activation(self._PS(self.inputs, r=scale))
-
-        self._add_layers(self.outputs)
-
-    @private_method
-    def _PS(self, I, r):
-        X = tf.transpose(I, [2, 1, 0])  # (r, w, b)
-        X = tf.batch_to_space_nd(X, [r], [[0, 0]])  # (1, r*w, b)
-        X = tf.transpose(X, [2, 1, 0])
         return X
