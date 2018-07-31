@@ -79,7 +79,7 @@ class BinaryConv2d(Layer):
             strides=(1, 1),
             padding='SAME',
             use_gemm=False,
-            use_cudnn_on_gpu=False,
+            use_cudnn_on_gpu=True,
             data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
