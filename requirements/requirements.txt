@@ -1,11 +1,11 @@
 imageio>=2.3,<2.4
 lxml>=4.2,<4.3
 matplotlib>=2.2,<2.3
-numpy>=1.15,<1.16
+numpy>=1.14,<1.16
 progressbar2>=3.38,<3.39
 requests>=2.19,<2.20
 scikit-learn>=0.19,<0.20
 scikit-image>=0.14,<0.15
 scipy>=1.1,<1.2
-tqdm>=4.24,<4.25
+tqdm>=4.23,<4.25
 wrapt>=1.10,<1.11
