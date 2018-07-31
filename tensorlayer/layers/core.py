@@ -159,7 +159,7 @@ class BaseLayer(object):
             for s in p.get_shape():
                 try:
                     s = int(s)
-                except Exception:
+                except TypeError:
                     s = 1
                 if s:
                     n = n * s

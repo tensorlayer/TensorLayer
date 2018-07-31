@@ -142,7 +142,7 @@ class DepthwiseConv2d(Layer):
         try:
             input_channels = int(self.inputs.get_shape()[-1])
 
-        except Exception:  # if input_channels is ?, it happens when using Spatial Transformer Net
+        except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
             input_channels = 1
             logging.warning("unknown input channels, set to 1")
 
