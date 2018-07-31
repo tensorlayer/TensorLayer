@@ -57,21 +57,21 @@ X_train, y_train, X_test, y_test = tl.files.load_cifar10_dataset(shape=(-1, 32, 
 def model(x, y_, reuse, is_train, bitW, bitA):
     with tf.variable_scope("model", reuse=reuse):
         net = tl.layers.InputLayer(x, name='input')
-        net = tl.layers.QuanConv2dWithBN(
+        net = tl.layers.QuantizedConv2dWithBN(
             net, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA,
             name='qcnnbn1'
         )
         net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
         # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn1')
-        net = tl.layers.QuanConv2dWithBN(
+        net = tl.layers.QuantizedConv2dWithBN(
             net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train, bitW=bitW, bitA=bitA,
             name='qcnnbn2'
         )
         # net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=is_train, name='bn2')
         net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
         net = tl.layers.FlattenLayer(net, name='flatten')
-        net = tl.layers.QuanDenseLayer(net, 384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')
-        net = tl.layers.QuanDenseLayer(net, 192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')
+        net = tl.layers.QuantizedDense(net, 384, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd1relu')
+        net = tl.layers.QuantizedDense(net, 192, act=tf.nn.relu, bitW=bitW, bitA=bitA, name='qd2relu')
         net = tl.layers.DenseLayer(net, 10, act=None, name='output')
         y = net.outputs
 

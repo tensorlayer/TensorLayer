@@ -16,12 +16,12 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 
 __all__ = [
-    'QuanDenseLayerWithBN',
+    'QuantizedDenseWithBN',
 ]
 
 
-class QuanDenseLayerWithBN(Layer):
-    """The :class:`QuanDenseLayer` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
+class QuantizedDenseWithBN(Layer):
+    """The :class:`QuantizedDense` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
 
     Parameters
@@ -89,10 +89,10 @@ class QuanDenseLayerWithBN(Layer):
             W_init_args=None,
             name='quan_dense_with_bn',
     ):
-        super(QuanDenseLayerWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
+        super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
         logging.info(
-            "QuanDenseLayerWithBN  %s: %d %s" %
+            "QuantizedDenseWithBN  %s: %d %s" %
             (self.name, n_units, self.act.__name__ if self.act is not None else 'No Activation')
         )
 

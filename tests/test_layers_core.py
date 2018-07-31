@@ -148,11 +148,11 @@ class Layer_Core_Test(unittest.TestCase):
         cls.net8_params = net8.all_params
         cls.net8_n_params = net8.count_params()
 
-        # ============== QuanDenseLayer ==============
+        # ============== QuantizedDense ==============
 
         x9 = tf.placeholder(tf.float32, shape=(None, 30))
         net9 = tl.layers.InputLayer(x9, name='input')
-        net9 = tl.layers.QuanDenseLayer(net9, n_units=10, act=tf.nn.relu, name='quandense')
+        net9 = tl.layers.QuantizedDense(net9, n_units=10, act=tf.nn.relu, name='quandense')
 
         net9.print_layers()
         net9.print_params(False)

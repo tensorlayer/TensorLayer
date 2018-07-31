@@ -84,7 +84,7 @@ To release a new version, please update the changelog as followed:
   - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
-  - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
+  - Release QuantizedConv2d, QuantizedConv2dWithBN, QuantizedDense, QuantizedDenseWithBN (PR#735)
   - Update Core Layer to support graph (PR ＃751)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)

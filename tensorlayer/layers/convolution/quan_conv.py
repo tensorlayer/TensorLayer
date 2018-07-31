@@ -13,11 +13,11 @@ from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
 
-__all__ = ['QuanConv2d']
+__all__ = ['QuantizedConv2d']
 
 
-class QuanConv2d(Layer):
-    """The :class:`QuanConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW' bits and the output of the previous layer
+class QuantizedConv2d(Layer):
+    """The :class:`QuantizedConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW' bits and the output of the previous layer
     are 'bitA' bits while inferencing.
     Note that, the bias vector would not be binarized.
 
@@ -67,11 +67,11 @@ class QuanConv2d(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.QuanConv2d(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn1')
+    >>> net = tl.layers.QuantizedConv2d(net, 32, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn1')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn1')
     ...
-    >>> net = tl.layers.QuanConv2d(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn2')
+    >>> net = tl.layers.QuantizedConv2d(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, name='qcnn2')
     >>> net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
     >>> net = tl.layers.BatchNormLayer(net, act=tl.act.htanh, is_train=True, name='bn2')
 
@@ -89,19 +89,19 @@ class QuanConv2d(Layer):
             bitW=8,
             bitA=8,
             use_gemm=False,
+            use_cudnn_on_gpu=True,
+            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            use_cudnn_on_gpu=None,
-            data_format=None,
             name='quan_cnn2d',
     ):
-        super(QuanConv2d, self
+        super(QuantizedConv2d, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
 
         logging.info(
-            "QuanConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
+            "QuantizedConv2d %s: n_filter: %d filter_size: %s strides: %s pad: %s act: %s" % (
                 self.name, n_filter, str(filter_size), str(strides), padding, self.act.__name__
                 if self.act is not None else 'No Activation'
             )
@@ -116,12 +116,12 @@ class QuanConv2d(Layer):
             raise ValueError("len(strides) should be 2.")
 
         try:
-            pre_channel = int(prev_layer.outputs.get_shape()[-1])
-        except Exception:  # if pre_channel is ?, it happens when using Spatial Transformer Net
-            pre_channel = 1
+            input_channels = int(prev_layer.outputs.get_shape()[-1])
+        except TypeError:  # if input_channels is ?, it happens when using Spatial Transformer Net
+            input_channels = 1
             logging.warning("[warnings] unknow input channels, set to 1")
 
-        shape = (filter_size[0], filter_size[1], pre_channel, n_filter)
+        shape = (filter_size[0], filter_size[1], input_channels, n_filter)
         strides = (1, strides[0], strides[1], 1)
 
         with tf.variable_scope(name):
@@ -146,8 +146,4 @@ class QuanConv2d(Layer):
             self.outputs = self._apply_activation(self.outputs)
 
         self._add_layers(self.outputs)
-
-        if b_init:
-            self._add_params([W, b])
-        else:
-            self._add_params(W)
+        self._add_params(self._local_weights)

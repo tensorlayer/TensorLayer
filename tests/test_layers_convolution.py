@@ -108,7 +108,7 @@ class Layer_Convolution_2D_Test(unittest.TestCase):
             cls.n10, shape=(3, 3, 32, 64), output_shape=(100, 96, 96, 32), rate=2, act=tf.nn.relu, name='atroustrans1'
         )
 
-        cls.n12 = tl.layers.QuanConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
+        cls.n12 = tl.layers.QuantizedConv2d(cls.n11, 64, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='quancnn')
 
     @classmethod
     def tearDownClass(cls):
