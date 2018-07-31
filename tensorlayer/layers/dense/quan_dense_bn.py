@@ -60,8 +60,8 @@ class QuantizedDenseWithBN(Layer):
         Usually you should not skip beta unless you know what happened.
     gamma_init : initializer or None
         The initializer for initializing gamma, if None, skip gamma.
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     W_init_args : dictionary
@@ -84,10 +84,10 @@ class QuantizedDenseWithBN(Layer):
             bitA=8,
             gamma_init=tf.ones_initializer,
             beta_init=tf.zeros_initializer,
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             W_init_args=None,
-            name='quan_dense_with_bn',
+            name='quantized_dense_with_bn',
     ):
         super(QuantizedDenseWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
@@ -99,7 +99,7 @@ class QuantizedDenseWithBN(Layer):
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])

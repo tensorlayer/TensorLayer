@@ -17,8 +17,8 @@ __all__ = ['QuantizedConv2d']
 
 
 class QuantizedConv2d(Layer):
-    """The :class:`QuantizedConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW' bits and the output of the previous layer
-    are 'bitA' bits while inferencing.
+    """The :class:`QuantizedConv2dWithBN` class is a quantized convolutional layer with BN, which weights are 'bitW'
+    bits and the output of the previous layer are 'bitA' bits while inferencing.
     Note that, the bias vector would not be binarized.
 
     Parameters
@@ -44,8 +44,8 @@ class QuantizedConv2d(Layer):
         The bits of this layer's parameter
     bitA : int
         The bits of the output of previous layer
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -88,7 +88,7 @@ class QuantizedConv2d(Layer):
             act=None,
             bitW=8,
             bitA=8,
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             use_cudnn_on_gpu=True,
             data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),

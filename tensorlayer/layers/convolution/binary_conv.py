@@ -36,8 +36,8 @@ class BinaryConv2d(Layer):
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -78,7 +78,7 @@ class BinaryConv2d(Layer):
             filter_size=(3, 3),
             strides=(1, 1),
             padding='SAME',
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             use_cudnn_on_gpu=True,
             data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
@@ -90,7 +90,7 @@ class BinaryConv2d(Layer):
     ):
 
         # TODO: Implement GEMM
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:
@@ -101,7 +101,7 @@ class BinaryConv2d(Layer):
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
-        self.use_gemm = use_gemm
+        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
         self.data_format = data_format
         self.W_init = W_init

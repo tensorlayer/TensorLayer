@@ -18,8 +18,8 @@ __all__ = [
 
 
 class QuantizedDense(Layer):
-    """The :class:`QuantizedDense` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and the output of the previous layer
-    are 'bitA' bits while inferencing.
+    """The :class:`QuantizedDense` class is a quantized fully connected layer with BN, which weights are 'bitW' bits and
+    the output of the previous layer are 'bitA' bits while inferencing.
 
     Parameters
     ----------
@@ -33,8 +33,8 @@ class QuantizedDense(Layer):
         The bits of this layer's parameter
     bitA : int
         The bits of the output of previous layer
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -56,12 +56,12 @@ class QuantizedDense(Layer):
             act=None,
             bitW=8,
             bitA=8,
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
             b_init_args=None,
-            name='quan_dense',
+            name='quantized_dense',
     ):
         super(QuantizedDense, self
              ).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, b_init_args=b_init_args, name=name)
@@ -74,7 +74,7 @@ class QuantizedDense(Layer):
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])

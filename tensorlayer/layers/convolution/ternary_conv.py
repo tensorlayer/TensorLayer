@@ -37,8 +37,8 @@ class TernaryConv2d(Layer):
         The activation function of this layer.
     padding : str
         The padding algorithm type: "SAME" or "VALID".
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inference. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     b_init : initializer or None
@@ -80,7 +80,7 @@ class TernaryConv2d(Layer):
             strides=(1, 1),
             act=None,
             padding='SAME',
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -112,7 +112,7 @@ class TernaryConv2d(Layer):
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
 
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         try:

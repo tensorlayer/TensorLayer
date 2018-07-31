@@ -68,8 +68,8 @@ class QuantizedConv2dWithBN(Layer):
         Usually you should not skip beta unless you know what happened.
     gamma_init : initializer or None
         The initializer for initializing gamma, if None, skip gamma.
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the the weight matrix.
     W_init_args : dictionary
@@ -111,12 +111,12 @@ class QuantizedConv2dWithBN(Layer):
             beta_init=tf.zeros_initializer,
             bitW=8,
             bitA=8,
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             W_init_args=None,
             use_cudnn_on_gpu=True,
             data_format=None,
-            name='quan_cnn2d_bn',
+            name='quantized_conv2d',
     ):
         super(QuantizedConv2dWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
 
@@ -130,7 +130,7 @@ class QuantizedConv2dWithBN(Layer):
         x = self.inputs
         self.inputs = quantize_active_overflow(self.inputs, bitA)  # Do not remove
 
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:

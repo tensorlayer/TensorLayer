@@ -77,7 +77,7 @@ To release a new version, please update the changelog as followed:
   - `tl.files.save_graph` added (PR ＃751)
   - `tl.files.load_graph_` added (PR ＃751)
   - `tl.files.save_graph_and_params` added (PR ＃751)
-  - `tl.files.load_graph_and_params` added (PR ＃751) 
+  - `tl.files.load_graph_and_params` added (PR ＃751)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -99,6 +99,7 @@ To release a new version, please update the changelog as followed:
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
   - some new test functions have been added in `test_layers_convolution.py`, `test_layers_normalization.py`, `test_layers_core.py` (PR #735)  
+  - `use_gemm` parameter changed for `gemmlowp_at_inference` (PR #751)
 
 ### Deprecated
   - `tl.logging.warn` has been deprecated in favor of `tl.logging.warning` (PR #739)
@@ -300,4 +301,3 @@ To release a new version, please update the changelog as followed:
 [1.9.1]: https://github.com/tensorlayer/tensorlayer/compare/1.9.0...1.9.1
 [1.9.0]: https://github.com/tensorlayer/tensorlayer/compare/1.8.5...1.9.0
 [1.8.5]: https://github.com/tensorlayer/tensorlayer/compare/1.8.4...1.8.5
-

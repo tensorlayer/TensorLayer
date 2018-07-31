@@ -37,8 +37,8 @@ class DorefaDenseLayer(Layer):
         The number of units of this layer.
     act : activation function
         The activation function of this layer, usually set to ``tf.act.sign`` or apply :class:`SignLayer` after :class:`BatchNormLayer`.
-    use_gemm : boolean
-        If True, use gemm instead of ``tf.matmul`` for inferencing. (TODO).
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     W_init : initializer
         The initializer for the weight matrix.
     b_init : initializer or None
@@ -60,7 +60,7 @@ class DorefaDenseLayer(Layer):
             bitA=3,
             n_units=100,
             act=None,
-            use_gemm=False,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.1),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -77,7 +77,7 @@ class DorefaDenseLayer(Layer):
 
         if self.inputs.get_shape().ndims != 2:
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
-        if use_gemm:
+        if gemmlowp_at_inference:
             raise Exception("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
