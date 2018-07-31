@@ -73,6 +73,10 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.DepthwiseConv2d(shape=(3, 3), strides=(1, 1), padding='SAME', dilation_rate=(1, 1), depth_multiplier=1, b_init=None, act=tf.nn.relu, name='depthwise_conv2d_layer_11'))
 
+            cls.model.add(tl.layers.DorefaConv2d(bitW=1, bitA=3, n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', act=tf.nn.relu, name='dorefa_conv2d_layer_12'))
+
+            cls.model.add(tl.layers.DorefaConv2d(bitW=1, bitA=3, n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', b_init=None, act=tf.nn.relu, name='dorefa_conv2d_layer_13'))
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -82,13 +86,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 79857)
+        self.assertEqual(self.model.count_params(), 98321)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 25)
+        self.assertEqual(len(self.model.get_all_params()), 28)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 23)
+        self.assertEqual(self.model.count_layers(), 25)
 
     def test_network_shapes(self):
 
@@ -126,6 +130,10 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["depthwise_conv2d_layer_10"].outputs.shape, (100, 128, 128, 32))
 
         self.assertEqual(self.model["depthwise_conv2d_layer_11"].outputs.shape, (100, 128, 128, 32))
+
+        self.assertEqual(self.model["dorefa_conv2d_layer_12"].outputs.shape, (100, 128, 128, 32))
+
+        self.assertEqual(self.model["dorefa_conv2d_layer_13"].outputs.shape, (100, 128, 128, 32))
 
 
 if __name__ == '__main__':
