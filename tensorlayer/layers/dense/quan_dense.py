@@ -94,7 +94,7 @@ class QuantizedDense(Layer):
             if b_init is not None:
                 try:
                     b = self._get_tf_variable(
-                        name='b', shape=(n_units,), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
+                        name='b', shape=(n_units, ), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)

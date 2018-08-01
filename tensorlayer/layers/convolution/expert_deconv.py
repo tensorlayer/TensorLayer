@@ -293,7 +293,8 @@ class DeConv3dLayer(Layer):
         with tf.variable_scope(self.name):
 
             W = self._get_tf_variable(
-                name='W_deconv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_deconv3d', shape=self.shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                **self.W_init_args
             )
 
             try:

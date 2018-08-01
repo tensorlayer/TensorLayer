@@ -16,9 +16,7 @@ from tensorlayer.decorators import private_method
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
-__all__ = [
-    'SpatialTransformer2dAffineLayer'
-]
+__all__ = ['SpatialTransformer2dAffineLayer']
 
 
 class SpatialTransformer2dAffineLayer(Layer):

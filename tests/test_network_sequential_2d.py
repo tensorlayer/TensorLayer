@@ -57,43 +57,137 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ZeroPad2d(padding=((3, 3), (4, 4)), name='zeropad2d_layer_3-3'))
             cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_3'))
 
-            cls.model.add(tl.layers.AtrousConv2dLayer(n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_layer_4'))
+            cls.model.add(
+                tl.layers.AtrousConv2dLayer(
+                    n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_layer_4'
+                )
+            )
 
-            cls.model.add(tl.layers.AtrousConv2dLayer(n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', b_init=None, act=tf.nn.relu, name='atrous_2d_layer_5'))
+            cls.model.add(
+                tl.layers.AtrousConv2dLayer(
+                    n_filter=32, filter_size=(3, 3), rate=2, padding='SAME', b_init=None, act=tf.nn.relu,
+                    name='atrous_2d_layer_5'
+                )
+            )
 
-            cls.model.add(tl.layers.AtrousDeConv2dLayer(shape=(3, 3, 32, 32), output_shape=(None, 64, 64, 32), rate=2, padding='SAME', act=tf.nn.relu, name='atrous_2d_transpose_6'))
+            cls.model.add(
+                tl.layers.AtrousDeConv2dLayer(
+                    shape=(3, 3, 32, 32), output_shape=(None, 64, 64, 32), rate=2, padding='SAME', act=tf.nn.relu,
+                    name='atrous_2d_transpose_6'
+                )
+            )
 
-            cls.model.add(tl.layers.AtrousDeConv2dLayer(shape=(3, 3, 32, 32), output_shape=(None, 128, 128, 32), rate=2, padding='SAME', b_init=None, act=tf.nn.relu, name='atrous_2d_transpose_7'))
+            cls.model.add(
+                tl.layers.AtrousDeConv2dLayer(
+                    shape=(3, 3, 32, 32), output_shape=(None, 128, 128, 32), rate=2, padding='SAME', b_init=None,
+                    act=tf.nn.relu, name='atrous_2d_transpose_7'
+                )
+            )
 
-            cls.model.add(tl.layers.BinaryConv2d(n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu, name='binary_conv2d_layer_8'))
+            cls.model.add(
+                tl.layers.BinaryConv2d(
+                    n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', act=tf.nn.relu,
+                    name='binary_conv2d_layer_8'
+                )
+            )
 
-            cls.model.add(tl.layers.BinaryConv2d(n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=tf.nn.relu, name='binary_conv2d_layer_9'))
+            cls.model.add(
+                tl.layers.BinaryConv2d(
+                    n_filter=32, filter_size=(5, 5), strides=(1, 1), padding='SAME', b_init=None, act=tf.nn.relu,
+                    name='binary_conv2d_layer_9'
+                )
+            )
 
-            cls.model.add(tl.layers.DepthwiseConv2d(shape=(3, 3), strides=(1, 1), padding='SAME', dilation_rate=(1, 1), depth_multiplier=1, act=tf.nn.relu, name='depthwise_conv2d_layer_10'))
+            cls.model.add(
+                tl.layers.DepthwiseConv2d(
+                    shape=(3, 3), strides=(1, 1), padding='SAME', dilation_rate=(1, 1), depth_multiplier=1,
+                    act=tf.nn.relu, name='depthwise_conv2d_layer_10'
+                )
+            )
 
-            cls.model.add(tl.layers.DepthwiseConv2d(shape=(3, 3), strides=(1, 1), padding='SAME', dilation_rate=(1, 1), depth_multiplier=1, b_init=None, act=tf.nn.relu, name='depthwise_conv2d_layer_11'))
+            cls.model.add(
+                tl.layers.DepthwiseConv2d(
+                    shape=(3, 3), strides=(1, 1), padding='SAME', dilation_rate=(1, 1), depth_multiplier=1, b_init=None,
+                    act=tf.nn.relu, name='depthwise_conv2d_layer_11'
+                )
+            )
 
-            cls.model.add(tl.layers.DorefaConv2d(n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', bitW=1, bitA=3, act=tf.nn.relu, name='dorefa_conv2d_layer_12'))
+            cls.model.add(
+                tl.layers.DorefaConv2d(
+                    n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', bitW=1, bitA=3, act=tf.nn.relu,
+                    name='dorefa_conv2d_layer_12'
+                )
+            )
 
-            cls.model.add(tl.layers.DorefaConv2d(n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', bitW=1, bitA=3, b_init=None, act=tf.nn.relu, name='dorefa_conv2d_layer_13'))
+            cls.model.add(
+                tl.layers.DorefaConv2d(
+                    n_filter=32, filter_size=(3, 3), strides=(1, 1), padding='SAME', bitW=1, bitA=3, b_init=None,
+                    act=tf.nn.relu, name='dorefa_conv2d_layer_13'
+                )
+            )
 
-            cls.model.add(tl.layers.Conv2dLayer(shape=(5, 5, 32, 16), strides=(1, 1, 1, 1), padding='SAME', act=tf.nn.relu, name='expert_conv2d_layer_14'))
+            cls.model.add(
+                tl.layers.Conv2dLayer(
+                    shape=(5, 5, 32, 16), strides=(1, 1, 1, 1), padding='SAME', act=tf.nn.relu,
+                    name='expert_conv2d_layer_14'
+                )
+            )
 
-            cls.model.add(tl.layers.Conv2dLayer(shape=(5, 5, 16, 8), strides=(1, 1, 1, 1), padding='SAME', b_init=None, act=tf.nn.relu, name='expert_conv2d_layer_15'))
+            cls.model.add(
+                tl.layers.Conv2dLayer(
+                    shape=(5, 5, 16, 8), strides=(1, 1, 1, 1), padding='SAME', b_init=None, act=tf.nn.relu,
+                    name='expert_conv2d_layer_15'
+                )
+            )
 
-            cls.model.add(tl.layers.DeConv2dLayer(shape=(3, 3, 8, 8), strides=(1, 2, 2, 1), output_shape=(None, 128, 128, 8), padding='SAME', act=tf.nn.relu, name='expert_deconv2d_layer_16'))
+            cls.model.add(
+                tl.layers.DeConv2dLayer(
+                    shape=(3, 3, 8, 8), strides=(1, 2, 2, 1), output_shape=(None, 128, 128, 8), padding='SAME',
+                    act=tf.nn.relu, name='expert_deconv2d_layer_16'
+                )
+            )
 
-            cls.model.add(tl.layers.DeConv2dLayer(shape=(3, 3, 8, 8), strides=(1, 2, 2, 1), output_shape=(None, 128, 128, 8), padding='SAME', b_init=None, act=tf.nn.relu, name='expert_deconv2d_layer_17'))
+            cls.model.add(
+                tl.layers.DeConv2dLayer(
+                    shape=(3, 3, 8, 8), strides=(1, 2, 2, 1), output_shape=(None, 128, 128, 8), padding='SAME',
+                    b_init=None, act=tf.nn.relu, name='expert_deconv2d_layer_17'
+                )
+            )
 
-            cls.model.add(tl.layers.GroupConv2d(n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='SAME', n_group=2, act=tf.nn.relu, name='groupconv2d_layer_18'))
+            cls.model.add(
+                tl.layers.GroupConv2d(
+                    n_filter=32, filter_size=(3, 3), strides=(2, 2), padding='SAME', n_group=2, act=tf.nn.relu,
+                    name='groupconv2d_layer_18'
+                )
+            )
 
-            cls.model.add(tl.layers.GroupConv2d(n_filter=16, filter_size=(3, 3), strides=(2, 2), padding='SAME', n_group=4, b_init=None, act=tf.nn.relu, name='groupconv2d_layer_19'))
+            cls.model.add(
+                tl.layers.GroupConv2d(
+                    n_filter=16, filter_size=(3, 3), strides=(2, 2), padding='SAME', n_group=4, b_init=None,
+                    act=tf.nn.relu, name='groupconv2d_layer_19'
+                )
+            )
 
-            cls.model.add(tl.layers.QuantizedConv2d(n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, act=tf.nn.relu, name='quantizedconv2d_layer_20'))
+            cls.model.add(
+                tl.layers.QuantizedConv2d(
+                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, act=tf.nn.relu,
+                    name='quantizedconv2d_layer_20'
+                )
+            )
 
-            cls.model.add(tl.layers.QuantizedConv2d(n_filter=16, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, b_init=None, act=tf.nn.relu, name='quantizedconv2d_layer_21'))
+            cls.model.add(
+                tl.layers.QuantizedConv2d(
+                    n_filter=16, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, b_init=None,
+                    act=tf.nn.relu, name='quantizedconv2d_layer_21'
+                )
+            )
 
-            cls.model.add(tl.layers.QuantizedConv2dWithBN(n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, decay=0.9, act=tf.nn.relu, name='quantizedconv2d_layer_22'))
+            cls.model.add(
+                tl.layers.QuantizedConv2dWithBN(
+                    n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, decay=0.9,
+                    act=tf.nn.relu, name='quantizedconv2d_layer_22'
+                )
+            )
 
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 

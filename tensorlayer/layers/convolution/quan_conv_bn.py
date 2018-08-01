@@ -220,7 +220,8 @@ class QuantizedConv2dWithBN(Layer):
             quantized_inputs = quantize_active_overflow(self.inputs, self.bitA)  # Do not remove
 
             W = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype, **self.W_init_args
+                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype,
+                **self.W_init_args
             )
 
             conv_out = tf.nn.conv2d(

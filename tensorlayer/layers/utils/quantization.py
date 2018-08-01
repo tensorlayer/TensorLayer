@@ -3,19 +3,9 @@
 
 import tensorflow as tf
 
-
 __all__ = [
-    'cabs',
-    'w_fold',
-    'bias_fold',
-    'quantize',
-    'quantize_active',
-    'quantize_dorefa',
-    'quantize_grad',
-    'quantize_overflow',
-    'quantize_weight',
-    'quantize_active_overflow',
-    'quantize_weight_overflow'
+    'cabs', 'w_fold', 'bias_fold', 'quantize', 'quantize_active', 'quantize_dorefa', 'quantize_grad',
+    'quantize_overflow', 'quantize_weight', 'quantize_active_overflow', 'quantize_weight_overflow'
 ]
 
 
@@ -52,7 +42,7 @@ def quantize_active(x, bitA):
 
 def quantize_dorefa(x, bitA):
     G = tf.get_default_graph()
-    n = float(2 ** bitA - 1)
+    n = float(2**bitA - 1)
 
     with G.gradient_override_map({"Round": "Identity"}):
         return tf.round(x * n) / n
@@ -66,7 +56,7 @@ def quantize_grad(op, grad):
 
 def quantize_overflow(x, k):
     G = tf.get_default_graph()
-    n = float(2 ** k - 1)
+    n = float(2**k - 1)
     max_value = tf.reduce_max(x)
     min_value = tf.reduce_min(x)
     with G.gradient_override_map({"Round": "Identity"}):

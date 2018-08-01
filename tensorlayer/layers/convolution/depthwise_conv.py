@@ -156,7 +156,7 @@ class DepthwiseConv2d(Layer):
             )
 
             self.outputs = tf.nn.depthwise_conv2d(
-                self.inputs, W, strides=self.strides, padding=self.padding,  rate=self.dilation_rate
+                self.inputs, W, strides=self.strides, padding=self.padding, rate=self.dilation_rate
             )
 
             if self.b_init:
@@ -171,7 +171,3 @@ class DepthwiseConv2d(Layer):
 
         self._add_layers(self.outputs)
         self._add_params(self._local_weights)
-
-
-
-

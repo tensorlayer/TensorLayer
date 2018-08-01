@@ -178,7 +178,8 @@ class AtrousConv2dLayer(Layer):
             shape = [self.filter_size[0], self.filter_size[1], int(self.inputs.get_shape()[-1]), self.n_filter]
 
             W = self._get_tf_variable(
-                name='W_atrous_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_atrous_conv2d', shape=shape, initializer=self.W_init, dtype=self.inputs.dtype,
+                **self.W_init_args
             )
 
             self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=self.rate, padding=self.padding)
@@ -302,8 +303,8 @@ class AtrousDeConv2dLayer(Layer):
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init, dtype=self.inputs.dtype,
-                    **self.b_init_args
+                    name='b_atrous_conv2d_transpose', shape=(self.shape[-2]), initializer=self.b_init,
+                    dtype=self.inputs.dtype, **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

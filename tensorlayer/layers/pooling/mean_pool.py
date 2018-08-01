@@ -10,11 +10,7 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
-__all__ = [
-    'MeanPool1d',
-    'MeanPool2d',
-    'MeanPool3d'
-]
+__all__ = ['MeanPool1d', 'MeanPool2d', 'MeanPool3d']
 
 
 class MeanPool1d(Layer):

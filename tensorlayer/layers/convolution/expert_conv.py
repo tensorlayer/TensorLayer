@@ -204,20 +204,9 @@ class Conv2dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(5, 5, 1, 100),
-            strides=(1, 1, 1, 1),
-            padding='SAME',
-            data_format="NHWC",
-            use_cudnn_on_gpu=True,
-            gemmlowp_at_inference=False,
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv2d_layer'
+            self, prev_layer=None, shape=(5, 5, 1, 100), strides=(1, 1, 1, 1), padding='SAME', data_format="NHWC",
+            use_cudnn_on_gpu=True, gemmlowp_at_inference=False, W_init=tf.truncated_normal_initializer(stddev=0.02),
+            b_init=tf.constant_initializer(value=0.0), W_init_args=None, b_init_args=None, act=None, name='conv2d_layer'
     ):
 
         if len(strides) != 4:
@@ -336,18 +325,9 @@ class Conv3dLayer(Layer):
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
     def __init__(
-            self,
-            prev_layer=None,
-            shape=(2, 2, 2, 3, 32),
-            strides=(1, 2, 2, 2, 1),
-            padding='SAME',
-            data_format='NDHWC',
-            W_init=tf.truncated_normal_initializer(stddev=0.02),
-            b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,
-            b_init_args=None,
-            act=None,
-            name='conv3d_layer'
+            self, prev_layer=None, shape=(2, 2, 2, 3, 32), strides=(1, 2, 2, 2, 1), padding='SAME', data_format='NDHWC',
+            W_init=tf.truncated_normal_initializer(stddev=0.02), b_init=tf.constant_initializer(value=0.0),
+            W_init_args=None, b_init_args=None, act=None, name='conv3d_layer'
     ):
 
         if data_format not in ["NDHWC", "NCDHW"]:

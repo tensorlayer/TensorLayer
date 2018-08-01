@@ -3,7 +3,6 @@
 
 import tensorflow as tf
 
-
 __all__ = [
     'compute_alpha',
     'ternary_operation',

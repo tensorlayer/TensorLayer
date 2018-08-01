@@ -10,11 +10,7 @@ from tensorlayer import logging
 from tensorlayer.decorators import deprecated_alias
 from tensorlayer.decorators import force_return_self
 
-__all__ = [
-    'MaxPool1d',
-    'MaxPool2d',
-    'MaxPool3d'
-]
+__all__ = ['MaxPool1d', 'MaxPool2d', 'MaxPool3d']
 
 
 class MaxPool1d(Layer):

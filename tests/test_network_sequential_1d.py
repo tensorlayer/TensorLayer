@@ -93,9 +93,17 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_12'))
 
             cls.model.add(tl.layers.ReshapeLayer(shape=(-1, 271, 1), name='reshape_layer_13'))
-            cls.model.add(tl.layers.Conv1dLayer(shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13'))
+            cls.model.add(
+                tl.layers.Conv1dLayer(
+                    shape=(5, 1, 12), stride=1, padding='SAME', act=tf.nn.relu, name='conv1d_layer_13'
+                )
+            )
 
-            cls.model.add(tl.layers.Conv1dLayer(shape=(5, 12, 24), stride=1, padding='SAME', b_init=None, act=tf.nn.relu, name='conv1d_layer_14'))
+            cls.model.add(
+                tl.layers.Conv1dLayer(
+                    shape=(5, 12, 24), stride=1, padding='SAME', b_init=None, act=tf.nn.relu, name='conv1d_layer_14'
+                )
+            )
 
             plh = tf.placeholder(tf.float16, (100, 32))
 

@@ -34,13 +34,31 @@ class Network_Sequential_Test(CustomTestCase):
             cls.model.add(tl.layers.ZeroPad3d(padding=((2, 2), (3, 3), (4, 4)), name='zeropad3d_layer_2-3'))
             cls.model.add(tl.layers.ScaleLayer(init_scale=2., name='scale_layer_2'))
 
-            cls.model.add(tl.layers.Conv3dLayer(shape=(2, 2, 2, 1, 8), strides=(1, 1, 1, 1, 1), padding='SAME', name="conv3d_layer_3"))
+            cls.model.add(
+                tl.layers.Conv3dLayer(
+                    shape=(2, 2, 2, 1, 8), strides=(1, 1, 1, 1, 1), padding='SAME', name="conv3d_layer_3"
+                )
+            )
 
-            cls.model.add(tl.layers.Conv3dLayer(shape=(2, 2, 2, 8, 16), strides=(1, 1, 1, 1, 1), padding='SAME', b_init=None, name="conv3d_layer_4"))
+            cls.model.add(
+                tl.layers.Conv3dLayer(
+                    shape=(2, 2, 2, 8, 16), strides=(1, 1, 1, 1, 1), padding='SAME', b_init=None, name="conv3d_layer_4"
+                )
+            )
 
-            cls.model.add(tl.layers.DeConv3dLayer(shape=(3, 3, 3, 8, 16), strides=(1, 2, 2, 2, 1), output_shape=(None, 36, 36, 36, 8), padding='SAME', act=tf.nn.relu, name='expert_deconv3d_layer_5'))
+            cls.model.add(
+                tl.layers.DeConv3dLayer(
+                    shape=(3, 3, 3, 8, 16), strides=(1, 2, 2, 2, 1), output_shape=(None, 36, 36, 36, 8), padding='SAME',
+                    act=tf.nn.relu, name='expert_deconv3d_layer_5'
+                )
+            )
 
-            cls.model.add(tl.layers.DeConv3dLayer(shape=(3, 3, 3, 4, 8), strides=(1, 2, 2, 2, 1), output_shape=(None, 36, 36, 36, 4), padding='SAME', b_init=None, act=tf.nn.relu, name='expert_deconv3d_layer_6'))
+            cls.model.add(
+                tl.layers.DeConv3dLayer(
+                    shape=(3, 3, 3, 4, 8), strides=(1, 2, 2, 2, 1), output_shape=(None, 36, 36, 36, 4), padding='SAME',
+                    b_init=None, act=tf.nn.relu, name='expert_deconv3d_layer_6'
+                )
+            )
 
             plh = tf.placeholder(tf.float16, (100, 16, 16, 16))
 

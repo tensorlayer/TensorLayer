@@ -143,7 +143,8 @@ class GroupConv2d(Layer):
         with tf.variable_scope(self.name):
 
             We = self._get_tf_variable(
-                name='W', shape=[self.filter_size[0], self.filter_size[1], input_channels / self.n_group, self.n_filter],
+                name='W',
+                shape=[self.filter_size[0], self.filter_size[1], input_channels / self.n_group, self.n_filter],
                 initializer=self.W_init, dtype=self.inputs.dtype, trainable=is_train, **self.W_init_args
             )
 
@@ -176,6 +177,6 @@ class GroupConv2d(Layer):
     @private_method
     def exec_conv2d(self, inputs, n_filters):
         return tf.nn.conv2d(
-            input=inputs, filter=n_filters, strides=[1, self.strides[0], self.strides[1], 1],
-            padding=self.padding, data_format=self.data_format, use_cudnn_on_gpu=self.use_cudnn_on_gpu
+            input=inputs, filter=n_filters, strides=[1, self.strides[0], self.strides[1], 1], padding=self.padding,
+            data_format=self.data_format, use_cudnn_on_gpu=self.use_cudnn_on_gpu
         )
