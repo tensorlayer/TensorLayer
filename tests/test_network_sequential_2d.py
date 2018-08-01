@@ -93,6 +93,8 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.QuantizedConv2d(n_filter=16, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, b_init=None, act=tf.nn.relu, name='quantizedconv2d_layer_21'))
 
+            cls.model.add(tl.layers.QuantizedConv2dWithBN(n_filter=8, filter_size=(5, 5), strides=(1, 1), padding='SAME', bitW=1, bitA=3, decay=0.9, act=tf.nn.relu, name='quantizedconv2d_layer_22'))
+
             plh = tf.placeholder(tf.float16, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
@@ -102,13 +104,13 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(len(self.model.all_drop), 0)
 
     def test_count_params(self):
-        self.assertEqual(self.model.count_params(), 124241)
+        self.assertEqual(self.model.count_params(), 127473)
 
     def test_count_param_tensors(self):
-        self.assertEqual(len(self.model.get_all_params()), 40)
+        self.assertEqual(len(self.model.get_all_params()), 45)
 
     def test_count_layers(self):
-        self.assertEqual(self.model.count_layers(), 33)
+        self.assertEqual(self.model.count_layers(), 34)
 
     def test_network_dtype(self):
 
@@ -178,6 +180,8 @@ class Network_Sequential_Test(CustomTestCase):
         self.assertEqual(self.model["quantizedconv2d_layer_20"].outputs.shape, (100, 32, 32, 8))
 
         self.assertEqual(self.model["quantizedconv2d_layer_21"].outputs.shape, (100, 32, 32, 16))
+
+        self.assertEqual(self.model["quantizedconv2d_layer_22"].outputs.shape, (100, 32, 32, 8))
 
 
 if __name__ == '__main__':

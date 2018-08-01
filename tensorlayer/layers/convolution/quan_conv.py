@@ -170,20 +170,23 @@ class QuantizedConv2d(Layer):
         strides = (1, self.strides[0], self.strides[1], 1)
 
         with tf.variable_scope(self.name):
+
+            quantized_inputs = quantize_active_overflow(self.inputs, self.bitA)  # Do not remove
+
             W = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=self.inputs.dtype, **self.W_init_args
+                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype, **self.W_init_args
             )
 
             W = quantize_weight_overflow(W, self.bitW)
 
             self.outputs = tf.nn.conv2d(
-                self.inputs, W, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
+                quantized_inputs, W, strides=strides, padding=self.padding, use_cudnn_on_gpu=self.use_cudnn_on_gpu,
                 data_format=self.data_format
             )
 
             if self.b_init:
                 b = self._get_tf_variable(
-                    name='b_conv2d', shape=(w_shape[-1], ), initializer=self.b_init, dtype=self.inputs.dtype,
+                    name='b_conv2d', shape=(w_shape[-1], ), initializer=self.b_init, dtype=quantized_inputs.dtype,
                     **self.b_init_args
                 )
 
