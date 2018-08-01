@@ -20,7 +20,7 @@ __all__ = [
 
 
 def cabs(x):
-    return tf.minimum(1.0, tf.abs(x), name='cabs')
+    return tf.minimum(tf.abs(x), 1.0, name='cabs')
 
 
 def bias_fold(beta, gama, mean, var, epsilon):
@@ -39,14 +39,21 @@ def quantize(x):
 
 
 def quantize_active(x, bitA):
-    if bitA == 32:
+    bypass = False
+    bypass += (bitA == 64 and x.dtype == tf.float64)
+    bypass += (bitA == 32 and x.dtype == tf.float32)
+    bypass += (bitA == 16 and x.dtype == tf.float16)
+
+    if bypass:
         return x
+
     return quantize_dorefa(x, bitA)
 
 
-def quantize_dorefa(x, k):
+def quantize_dorefa(x, bitA):
     G = tf.get_default_graph()
-    n = float(2 ** k - 1)
+    n = float(2 ** bitA - 1)
+
     with G.gradient_override_map({"Round": "Identity"}):
         return tf.round(x * n) / n
 

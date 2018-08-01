@@ -124,6 +124,8 @@ class UpSampling2dLayer(Layer):
             self.outputs = tf.image.resize_images(
                 self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
+            self.outputs = tf.cast(self.outputs, self.inputs.dtype)
+
             self.out_shape = self.outputs.shape
 
         super(UpSampling2dLayer, self).__call__(prev_layer)
@@ -239,6 +241,8 @@ class DownSampling2dLayer(Layer):
             self.outputs = tf.image.resize_images(
                 self.inputs, size=_size, method=self.method, align_corners=self.align_corners
             )
+            self.outputs = tf.cast(self.outputs, self.inputs.dtype)
+
             self.out_shape = self.outputs.shape
 
         super(DownSampling2dLayer, self).__call__(prev_layer)

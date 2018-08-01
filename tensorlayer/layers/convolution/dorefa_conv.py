@@ -170,7 +170,8 @@ class DorefaConv2d(Layer):
 
         with tf.variable_scope(self.name):
             W = self._get_tf_variable(
-                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype, **self.W_init_args
+                name='W_conv2d', shape=w_shape, initializer=self.W_init, dtype=quantized_inputs.dtype,
+                **self.W_init_args
             )
 
             W = quantize_weight(W, self.bitW)
