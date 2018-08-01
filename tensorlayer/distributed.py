@@ -55,6 +55,9 @@ class Trainer(object):
         The training mini-batch size (i.e., number of samples per batch).
     num_epochs : int
         The number of training epochs.
+    prefetch_buffer_size: int or None
+        The dataset prefetch buffer size. Set this parameter to overlap the GPU training and data preparation
+        if the data preparation is heavy.
     shuffle_data : boolean
         If the training data need to be shuffled or not. Default is False.
     shuffle_seed : int
@@ -102,7 +105,7 @@ class Trainer(object):
 
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
+            prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
             validation_dataset=None, build_validation_func=None, max_iteration=math.inf
     ):
         # Initialize Horovod.
@@ -112,8 +115,10 @@ class Trainer(object):
 
         # Define the loss for validation dataset
         if validation_dataset:
-            shard = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
-            self._validation_iterator = shard.make_initializable_iterator()
+            validation_dataset = validation_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size)
+            if prefetch_buffer_size:
+                validation_dataset.prefetch(buffer_size=prefetch_buffer_size)
+            self._validation_iterator = validation_dataset.make_initializable_iterator()
             next_example, next_label = self._validation_iterator.get_next()
             _, self._validation_metrics = build_validation_func(next_example, next_label)
             if not isinstance(self._validation_metrics, list):
@@ -125,8 +130,10 @@ class Trainer(object):
         # Get the shard of the dataset based on my local rank
         if shuffle_data:
             training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
-        shard = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
-        training_iterator = shard.make_one_shot_iterator()
+        training_dataset = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
+        if prefetch_buffer_size:
+            training_dataset.prefetch(buffer_size=prefetch_buffer_size)
+        training_iterator = training_dataset.make_one_shot_iterator()
         self._training_network, loss, log_tensors = build_training_func(*training_iterator.get_next())
 
         # Adjust learning rate based on number of GPUs.
