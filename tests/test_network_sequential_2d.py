@@ -89,7 +89,8 @@ class Network_Sequential_Test(CustomTestCase):
 
             cls.model.add(tl.layers.GroupConv2d(n_filter=16, filter_size=(3, 3), strides=(2, 2), padding='SAME', n_group=4, b_init=None, act=tf.nn.relu, name='groupconv2d_layer_19'))
 
-            plh = tf.placeholder(tf.float16, (100, 16, 16))
+            cls.input_dtype = tf.float16
+            plh = tf.placeholder(cls.input_dtype, (100, 16, 16))
 
             cls.train_model = cls.model.compile(plh, reuse=False, is_train=True)
             cls.test_model = cls.model.compile(plh, reuse=True, is_train=False)
@@ -105,6 +106,18 @@ class Network_Sequential_Test(CustomTestCase):
 
     def test_count_layers(self):
         self.assertEqual(self.model.count_layers(), 31)
+
+    def test_network_dtype(self):
+
+        with self.assertNotRaises(RuntimeError):
+
+            for layer_name in self.model.all_layers_dict.keys():
+
+                if self.model[layer_name].outputs.dtype != self.input_dtype:
+                    raise RuntimeError(
+                        "Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.model[layer_name].outputs.dtype, tf.float16)
+                    )
 
     def test_network_shapes(self):
 

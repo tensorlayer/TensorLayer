@@ -59,6 +59,17 @@ class Network_Sequential_Test(CustomTestCase):
     def test_count_layers(self):
         self.assertEqual(self.model.count_layers(), 11)
 
+    def test_network_dtype(self):
+
+        with self.assertNotRaises(RuntimeError):
+
+            for layer_name in self.model.all_layers_dict.keys():
+                if self.model[layer_name].outputs.dtype != tf.float16:
+                    raise RuntimeError(
+                        "Layer `%s` has an output of type %s, expected %s" %
+                        (layer_name, self.model[layer_name].outputs.dtype, tf.float16)
+                    )
+
     def test_network_shapes(self):
 
         self.assertEqual(self.model["input_layer"].outputs.shape, (100, 16, 16, 16))
