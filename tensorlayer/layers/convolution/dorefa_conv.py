@@ -80,15 +80,15 @@ class DorefaConv2d(Layer):
     def __init__(
             self,
             prev_layer=None,
-            bitW=1,
-            bitA=3,
             n_filter=32,
             filter_size=(3, 3),
             strides=(1, 1),
             padding='SAME',
+            bitW=1,
+            bitA=3,
+            data_format=None,
             gemmlowp_at_inference=False,
             use_cudnn_on_gpu=True,
-            data_format=None,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -105,15 +105,15 @@ class DorefaConv2d(Layer):
             raise ValueError("len(strides) should be 2.")
 
         self.prev_layer = prev_layer
-        self.bitW = bitW
-        self.bitA = bitA
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
+        self.bitW = bitW
+        self.bitA = bitA
+        self.data_format = data_format
         self.gemmlowp_at_inference = gemmlowp_at_inference
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
-        self.data_format = data_format
         self.W_init = W_init
         self.b_init = b_init
         self.act = act
