@@ -54,18 +54,26 @@ class GroupConv2d(Layer):
             strides=(2, 2),
             n_group=2,
             padding='SAME',
-            data_format='NHWC',
+            data_format="NHWC",
             use_cudnn_on_gpu=True,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
-            W_init_args=None,  # TODO: Remove when TF <1.3 not supported
-            b_init_args=None,  # TODO: Remove when TF <1.3 not supported
+            W_init_args=None,
+            b_init_args=None,
             act=None,
             name='groupconv2d',
     ):
 
+        if len(strides) != 2:
+            raise ValueError("len(strides) should be 2.")
+
         if data_format not in ["NHWC", "NCHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
+
+        # TODO: Implement GEMM
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter
@@ -75,6 +83,7 @@ class GroupConv2d(Layer):
         self.padding = padding
         self.data_format = data_format
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.padding = padding
         self.W_init = W_init
         self.b_init = b_init

@@ -75,7 +75,7 @@ class QuantizedDense(Layer):
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
         self.inputs = quantize_active_overflow(self.inputs, bitA)
@@ -94,7 +94,7 @@ class QuantizedDense(Layer):
             if b_init is not None:
                 try:
                     b = self._get_tf_variable(
-                        name='b', shape=(n_units), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
+                        name='b', shape=(n_units,), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
                     )
                 except Exception:  # If initializer is a constant, do not specify shape.
                     b = self._get_tf_variable(name='b', initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args)

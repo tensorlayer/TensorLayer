@@ -69,7 +69,7 @@ class BinaryDenseLayer(Layer):
             raise Exception("The input dimension must be rank 2, please reshape or flatten it")
 
         if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         n_in = int(self.inputs.get_shape()[-1])
         self.n_units = n_units

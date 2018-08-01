@@ -87,10 +87,10 @@ class QuantizedConv2dWithBN(Layer):
     >>> import tensorlayer as tl
     >>> x = tf.placeholder(tf.float32, [None, 256, 256, 3])
     >>> net = tl.layers.InputLayer(x, name='input')
-    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA, name='qcnnbn1')
+    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1),  act=tf.nn.relu, padding='SAME', is_train=is_train, bitW=bitW, bitA=bitA, name='qconv2dbn1')
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool1')
     ...
-    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train,  bitW=bitW, bitA=bitA, name='qcnnbn2')
+    >>> net = tl.layers.QuantizedConv2dWithBN(net, 64, (5, 5), (1, 1), padding='SAME', act=tf.nn.relu, is_train=is_train,  bitW=bitW, bitA=bitA, name='qconv2dbn2')
     >>> net = tl.layers.MaxPool2d(net, (3, 3), (2, 2), padding='SAME', name='pool2')
     ...
     """
@@ -107,15 +107,15 @@ class QuantizedConv2dWithBN(Layer):
             decay=0.9,
             epsilon=1e-5,
             is_train=False,
-            gamma_init=tf.ones_initializer,
-            beta_init=tf.zeros_initializer,
             bitW=8,
             bitA=8,
+            data_format=None,
+            use_cudnn_on_gpu=True,
             gemmlowp_at_inference=False,
+            gamma_init=tf.ones_initializer,
+            beta_init=tf.zeros_initializer,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             W_init_args=None,
-            use_cudnn_on_gpu=True,
-            data_format=None,
             name='quantized_conv2d',
     ):
         super(QuantizedConv2dWithBN, self).__init__(prev_layer=prev_layer, act=act, W_init_args=W_init_args, name=name)
@@ -131,7 +131,7 @@ class QuantizedConv2dWithBN(Layer):
         self.inputs = quantize_active_overflow(self.inputs, bitA)  # Do not remove
 
         if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")

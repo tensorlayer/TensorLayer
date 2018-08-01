@@ -78,9 +78,9 @@ class BinaryConv2d(Layer):
             filter_size=(3, 3),
             strides=(1, 1),
             padding='SAME',
-            gemmlowp_at_inference=False,
+            data_format="NHWC",
             use_cudnn_on_gpu=True,
-            data_format=None,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -89,21 +89,24 @@ class BinaryConv2d(Layer):
             name='binary_conv2d',
     ):
 
-        # TODO: Implement GEMM
-        if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
-
         if len(strides) != 2:
             raise ValueError("len(strides) should be 2.")
+
+        if data_format not in ["NHWC", "NCHW"]:
+            raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
+
+        # TODO: Implement GEMM
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter
         self.filter_size = filter_size
         self.strides = strides
         self.padding = padding
-        self.gemmlowp_at_inference = gemmlowp_at_inference
-        self.use_cudnn_on_gpu = use_cudnn_on_gpu
         self.data_format = data_format
+        self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
         self.act = act

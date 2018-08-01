@@ -88,8 +88,8 @@ class QuantizedConv2d(Layer):
             bitW=8,
             bitA=8,
             data_format="NHWC",
-            gemmlowp_at_inference=False,
             use_cudnn_on_gpu=True,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -106,7 +106,7 @@ class QuantizedConv2d(Layer):
 
         # TODO: Implement GEMM
         if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         self.prev_layer = prev_layer
         self.n_filter = n_filter
@@ -116,8 +116,8 @@ class QuantizedConv2d(Layer):
         self.bitW = bitW
         self.bitA = bitA
         self.data_format = data_format
-        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
         self.act = act

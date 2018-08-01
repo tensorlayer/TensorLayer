@@ -113,7 +113,7 @@ class TernaryConv2d(Layer):
             raise ValueError("len(strides) should be 2.")
 
         if gemmlowp_at_inference:
-            raise Exception("TODO. The current version use tf.matmul for inferencing.")
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         try:
             input_channels = int(prev_layer.outputs.get_shape()[-1])

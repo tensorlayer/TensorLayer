@@ -155,6 +155,8 @@ class Conv2dLayer(Layer):
         The padding algorithm type: "SAME" or "VALID".
     use_cudnn_on_gpu : bool
         Default is True.
+    gemmlowp_at_inference : boolean
+        If True, use gemmlowp instead of ``tf.matmul`` (gemm) for inference. (TODO).
     data_format : str
         "NHWC" or "NCHW", default is "NHWC".
     W_init : initializer
@@ -207,8 +209,9 @@ class Conv2dLayer(Layer):
             shape=(5, 5, 1, 100),
             strides=(1, 1, 1, 1),
             padding='SAME',
-            data_format='NHWC',
+            data_format="NHWC",
             use_cudnn_on_gpu=True,
+            gemmlowp_at_inference=False,
             W_init=tf.truncated_normal_initializer(stddev=0.02),
             b_init=tf.constant_initializer(value=0.0),
             W_init_args=None,
@@ -217,8 +220,15 @@ class Conv2dLayer(Layer):
             name='conv2d_layer'
     ):
 
+        if len(strides) != 4:
+            raise ValueError("len(strides) should be 4.")
+
         if data_format not in ["NHWC", "NCHW"]:
             raise ValueError("`data_format` value is not valid, should be either: 'NHWC' or 'NCHW'")
+
+        # TODO: Implement GEMM
+        if gemmlowp_at_inference:
+            raise NotImplementedError("TODO. The current version use tf.matmul for inferencing.")
 
         self.prev_layer = prev_layer
         self.shape = shape
@@ -226,6 +236,7 @@ class Conv2dLayer(Layer):
         self.padding = padding
         self.data_format = data_format
         self.use_cudnn_on_gpu = use_cudnn_on_gpu
+        self.gemmlowp_at_inference = gemmlowp_at_inference
         self.W_init = W_init
         self.b_init = b_init
         self.act = act
