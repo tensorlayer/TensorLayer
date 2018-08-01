@@ -105,8 +105,9 @@ class Trainer(object):
 
     def __init__(
             self, training_dataset, build_training_func, optimizer, optimizer_args, batch_size=32, num_epochs=100,
-            prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None, scaling_learning_rate=True, log_step_size=1,
-            validation_dataset=None, build_validation_func=None, max_iteration=math.inf
+            prefetch_buffer_size=None, shuffle_data=False, shuffle_seed=0, checkpoint_dir=None,
+            scaling_learning_rate=True, log_step_size=1, validation_dataset=None, build_validation_func=None,
+            max_iteration=math.inf
     ):
         # Initialize Horovod.
         hvd.init()
@@ -130,7 +131,8 @@ class Trainer(object):
         # Get the shard of the dataset based on my local rank
         if shuffle_data:
             training_dataset = training_dataset.shuffle(buffer_size=10000, seed=shuffle_seed)
-        training_dataset = training_dataset.shard(num_shards=hvd.size(), index=hvd.rank()).batch(batch_size).repeat(num_epochs)
+        training_dataset = training_dataset.shard(num_shards=hvd.size(),
+                                                  index=hvd.rank()).batch(batch_size).repeat(num_epochs)
         if prefetch_buffer_size:
             training_dataset.prefetch(buffer_size=prefetch_buffer_size)
         training_iterator = training_dataset.make_one_shot_iterator()
