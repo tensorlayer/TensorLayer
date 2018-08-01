@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
+def minibatches(inputs=None, targets=None, batch_size=None, allow_dynamic_batch_size=False, shuffle=False):
     """Generate a generator that input a group of example in numpy.array and
     their labels, return the examples and labels by the given batch size.
 
@@ -24,6 +24,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         The labels of inputs, every row is a example.
     batch_size : int
         The batch size.
+    allow_dynamic_batch_size: boolean
+        Allow the use of the last data batch in case the number of examples is not a multiple of batch_size, this may result in unexpected behaviour if other functions expect a fixed-sized batch-size.
     shuffle : boolean
         Indicating whether to use a shuffling queue, shuffle the dataset before return.
 
@@ -51,11 +53,19 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         indices = np.arange(len(inputs))
         np.random.shuffle(indices)
 
-    for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
+    # for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):
+    # chulei: handling the case where the number of samples is not a multiple of batch_size, avoiding wasting samples
+    for start_idx in range(0, len(inputs), batch_size):
+        end_idx = start_idx + batch_size
+        if end_idx > len(inputs):
+            if allow_dynamic_batch_size:
+                end_idx = len(inputs)
+            else:
+                break
         if shuffle:
-            excerpt = indices[start_idx:start_idx + batch_size]
+            excerpt = indices[start_idx:end_idx]
         else:
-            excerpt = slice(start_idx, start_idx + batch_size)
+            excerpt = slice(start_idx, end_idx)
         if (isinstance(inputs, list) or isinstance(targets, list)) and (shuffle ==True):
             # zsdonghao: for list indexing when shuffle==True
             yield [inputs[i] for i in excerpt], [targets[i] for i in excerpt]
