@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
+def minibatches(inputs=None, targets=None, batch_size=None, is_dynamic_batch_size=False, shuffle=False):
     """Generate a generator that input a group of example in numpy.array and
     their labels, return the examples and labels by the given batch size.
 
@@ -24,6 +24,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         The labels of inputs, every row is a example.
     batch_size : int
         The batch size.
+    is_dynamic_batch_size: boolean
+        Indicating whether to use all the dataset when the number of examples is not a multiple of batch_size, note that the size of the last batch may be different.
     shuffle : boolean
         Indicating whether to use a shuffling queue, shuffle the dataset before return.
 
@@ -56,7 +58,10 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
     for start_idx in range(0, len(inputs), batch_size):
         end_idx = start_idx + batch_size
         if end_idx > len(inputs):
-            end_idx = len(inputs)
+            if is_dynamic_batch_size:
+                end_idx = len(inputs)
+            else:
+                break
         if shuffle:
             excerpt = indices[start_idx:end_idx]
         else:
