@@ -70,9 +70,10 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.model.vgg19` added (PR #698)
-  - `tl.logging.contrib.hyperdash` added (PR #739)
-  - `tl.distributed.trainer` added (PR #700)
+  - Add `tl.model.vgg19` (PR #698)
+  - Add `tl.logging.contrib.hyperdash` (PR #739)
+  - Add `tl.distributed.trainer` (PR #700)
+  - Add `prefetch_buffer_size` to the `tl.distributed.trainer` (PR #766)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -120,7 +121,7 @@ To release a new version, please update the changelog as followed:
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737 #700
-- @luomai: #700
+- @luomai: #700 #766
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
