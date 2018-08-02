@@ -805,7 +805,7 @@ Padding layer for any modes.
 ..                     Pooling Layers
 .. -----------------------------------------------------------
 
-Padding Layers
+Pooling Layers
 ------------------------
 
 Pool Layer (Expert API)
