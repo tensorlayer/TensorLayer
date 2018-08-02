@@ -70,14 +70,15 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.model.VGG19` added (PR #698)
-  - `tl.logging.contrib.hyperdash` added (PR #739)
-  - `tl.distributed.trainer` added (PR #700)
-  - `tl.db.TensorHub` added (PR ＃751)
-  - `tl.files.save_graph` added (PR ＃751)
-  - `tl.files.load_graph_` added (PR ＃751)
-  - `tl.files.save_graph_and_params` added (PR ＃751)
-  - `tl.files.load_graph_and_params` added (PR ＃751) 
+  - Add `tl.model.vgg19` (PR #698)
+  - Add `tl.logging.contrib.hyperdash` (PR #739)
+  - Add `tl.distributed.trainer` (PR #700)
+  - Add `prefetch_buffer_size` to the `tl.distributed.trainer` (PR #766)
+  - Add `tl.db.TensorHub` (PR ＃751)
+  - Add `tl.files.save_graph` (PR ＃751)
+  - Add `tl.files.load_graph_` (PR ＃751)
+  - Add `tl.files.save_graph_and_params` (PR ＃751)
+  - Add `tl.files.load_graph_and_params` (PR ＃751)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
