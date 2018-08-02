@@ -127,7 +127,7 @@ To release a new version, please update the changelog as followed:
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
-- @luomai: #700 #751
+- @luomai: #700 #751 #766
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
