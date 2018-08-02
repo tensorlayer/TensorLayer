@@ -61,7 +61,6 @@ __all__ = [
     'load_npz',
     'maybe_download_and_extract',
     'natural_keys',
-    'npz_to_W_pdf',
     'read_file',
     'save_any_to_npy',
     'save_ckpt',

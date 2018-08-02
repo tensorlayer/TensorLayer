@@ -14,11 +14,6 @@ to visualize the model, activations etc. Here we provide more functions for data
    save_images
    draw_boxes_and_labels_to_image
    draw_mpii_pose_to_image
-   draw_weights
-   CNN2d
-   frame
-   images2d
-   tsne_embedding
 
 
 Save and read images
@@ -51,26 +46,3 @@ Save image for pose estimation (MPII)
 
 Visualize model parameters
 ------------------------------
-
-Visualize CNN 2d filter
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: CNN2d
-
-Visualize weights
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: draw_weights
-
-Visualize images
------------------
-
-Image by matplotlib
-^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: frame
-
-Images by matplotlib
-^^^^^^^^^^^^^^^^^^^^^
-.. autofunction:: images2d
-
-Visualize embeddings
---------------------
-.. autofunction:: tsne_embedding

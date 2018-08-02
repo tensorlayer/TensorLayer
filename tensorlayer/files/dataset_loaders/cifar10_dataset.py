@@ -15,7 +15,7 @@ from tensorlayer.files.utils import maybe_download_and_extract
 __all__ = ['load_cifar10_dataset']
 
 
-def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
+def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data'):
     """Load CIFAR-10 dataset.
 
     It consists of 60000 32x32 colour images in 10 classes, with
@@ -50,7 +50,7 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
     path = os.path.join(path, 'cifar10')
     logging.info("Load or Download cifar10 > {}".format(path))
 
-    #Helper function to unpickle the data
+    # Helper function to unpickle the data
     def unpickle(file):
         fp = open(file, 'rb')
         if sys.version_info.major == 2:
@@ -64,10 +64,10 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
 
     filename = 'cifar-10-python.tar.gz'
     url = 'https://www.cs.toronto.edu/~kriz/'
-    #Download and uncompress file
+    # Download and uncompress file
     maybe_download_and_extract(filename, path, url, extract=True)
 
-    #Unpickle file and fill in data
+    # Unpickle file and fill in data
     X_train = None
     y_train = []
     for i in range(1, 6):
@@ -95,38 +95,6 @@ def load_cifar10_dataset(shape=(-1, 32, 32, 3), path='data', plotable=False):
         X_train = X_train.reshape(shape)
 
     y_train = np.array(y_train)
-
-    if plotable:
-        logging.info('\nCIFAR-10')
-        import matplotlib.pyplot as plt
-        fig = plt.figure(1)
-
-        logging.info('Shape of a training image: X_train[0] %s' % X_train[0].shape)
-
-        plt.ion()  # interactive mode
-        count = 1
-        for _ in range(10):  # each row
-            for _ in range(10):  # each column
-                _ = fig.add_subplot(10, 10, count)
-                if shape == (-1, 3, 32, 32):
-                    # plt.imshow(X_train[count-1], interpolation='nearest')
-                    plt.imshow(np.transpose(X_train[count - 1], (1, 2, 0)), interpolation='nearest')
-                    # plt.imshow(np.transpose(X_train[count-1], (2, 1, 0)), interpolation='nearest')
-                elif shape == (-1, 32, 32, 3):
-                    plt.imshow(X_train[count - 1], interpolation='nearest')
-                    # plt.imshow(np.transpose(X_train[count-1], (1, 0, 2)), interpolation='nearest')
-                else:
-                    raise Exception("Do not support the given 'shape' to plot the image examples")
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())
-                plt.gca().yaxis.set_major_locator(plt.NullLocator())
-                count = count + 1
-        plt.draw()  # interactive mode
-        plt.pause(3)  # interactive mode
-
-        logging.info("X_train: %s" % X_train.shape)
-        logging.info("y_train: %s" % y_train.shape)
-        logging.info("X_test:  %s" % X_test.shape)
-        logging.info("y_test:  %s" % y_test.shape)
 
     X_train = np.asarray(X_train, dtype=np.float32)
     X_test = np.asarray(X_test, dtype=np.float32)
