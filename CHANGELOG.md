@@ -70,14 +70,15 @@ To release a new version, please update the changelog as followed:
 
 ### Added
 - API:
-  - `tl.model.VGG19` added (PR #698)
-  - `tl.logging.contrib.hyperdash` added (PR #739)
-  - `tl.distributed.trainer` added (PR #700)
-  - `tl.db.TensorHub` added (PR ＃751)
-  - `tl.files.save_graph` added (PR ＃751)
-  - `tl.files.load_graph_` added (PR ＃751)
-  - `tl.files.save_graph_and_params` added (PR ＃751)
-  - `tl.files.load_graph_and_params` added (PR ＃751)
+  - Add `tl.model.vgg19` (PR #698)
+  - Add `tl.logging.contrib.hyperdash` (PR #739)
+  - Add `tl.distributed.trainer` (PR #700)
+  - Add `prefetch_buffer_size` to the `tl.distributed.trainer` (PR #766)
+  - Add `tl.db.TensorHub` (PR ＃751)
+  - Add `tl.files.save_graph` (PR ＃751)
+  - Add `tl.files.load_graph_` (PR ＃751)
+  - Add `tl.files.save_graph_and_params` (PR ＃751)
+  - Add `tl.files.load_graph_and_params` (PR ＃751)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
@@ -95,6 +96,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
 ### Changed
+  - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
   - Dockerfiles merged and refactored into one file (PR #747)
   - LazyImports move to the most **top level** imports as possible (PR #739)
@@ -129,7 +131,7 @@ To release a new version, please update the changelog as followed:
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710
 - @zsdonghao: #711 #712 #734 #736 #737 #700 #751
-- @luomai: #700 #751
+- @luomai: #700 #751 #766
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759
