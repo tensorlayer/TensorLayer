@@ -120,7 +120,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
-- @OwenLiuzZ: #698 #710
+- @OwenLiuzZ: #698 #710 #776
 - @zsdonghao: #711 #712 #734 #736 #737 #700
 - @luomai: #700 #766
 - @XJTUWYD: #735
