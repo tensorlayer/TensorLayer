@@ -1190,7 +1190,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
     logging.info("[VOC] {} images found".format(len(imgs_file_list)))
 
     imgs_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                       )  # 2007_000027.jpg --> 2007000027
+                        )  # 2007_000027.jpg --> 2007000027
 
     imgs_file_list = [os.path.join(folder_imgs, s) for s in imgs_file_list]
     # logging.info('IM',imgs_file_list[0::3333], imgs_file_list[-1])
@@ -1201,7 +1201,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         imgs_semseg_file_list = load_file_list(path=folder_semseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for semantic segmentation found".format(len(imgs_semseg_file_list)))
         imgs_semseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                  )  # 2007_000032.png --> 2007000032
+                                   )  # 2007_000032.png --> 2007000032
         imgs_semseg_file_list = [os.path.join(folder_semseg, s) for s in imgs_semseg_file_list]
         # logging.info('Semantic Seg IM',imgs_semseg_file_list[0::333], imgs_semseg_file_list[-1])
         # ======== 3. instance segmentation maps path list
@@ -1210,7 +1210,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         imgs_insseg_file_list = load_file_list(path=folder_insseg, regx='\\.png', printable=False)
         logging.info("[VOC] {} maps for instance segmentation found".format(len(imgs_semseg_file_list)))
         imgs_insseg_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                                  )  # 2007_000032.png --> 2007000032
+                                   )  # 2007_000032.png --> 2007000032
         imgs_insseg_file_list = [os.path.join(folder_insseg, s) for s in imgs_insseg_file_list]
         # logging.info('Instance Seg IM',imgs_insseg_file_list[0::333], imgs_insseg_file_list[-1])
     else:
@@ -1224,7 +1224,7 @@ def load_voc_dataset(path='data', dataset='2012', contain_classes_in_person=Fals
         "[VOC] {} XML annotation files for bounding box and object class found".format(len(imgs_ann_file_list))
     )
     imgs_ann_file_list.sort(key=lambda s: int(s.replace('.', ' ').replace('_', '').split(' ')[-2])
-                           )  # 2007_000027.xml --> 2007000027
+                            )  # 2007_000027.xml --> 2007000027
     imgs_ann_file_list = [os.path.join(folder_ann, s) for s in imgs_ann_file_list]
     # logging.info('ANN',imgs_ann_file_list[0::3333], imgs_ann_file_list[-1])
 
@@ -1462,7 +1462,7 @@ def load_mpii_pose_dataset(path='data', is_16_pos_only=False):
                             vis = None
 
                         # if len(joint_pos) == 16:
-                        if ((is_16_pos_only ==True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
+                        if ((is_16_pos_only == True) and (len(joint_pos) == 16)) or (is_16_pos_only == False):
                             # only use image with 16 key points / or use all
                             data = {
                                 'filename': img_fn,
@@ -1907,10 +1907,10 @@ def save_graph(network=None, name='graph.pkl'):
 
     Examples
     --------
-    - Save the architecture
+    Save the architecture
     >>> tl.files.save_graph(net_test, 'graph.pkl')
 
-    - Load the architecture in another script (no parameters restore)
+    Load the architecture in another script (no parameters restore)
     >>> net = tl.files.load_graph('graph.pkl')
     """
     logging.info("[*] Saving TL graph into {}".format(name))
@@ -1925,16 +1925,16 @@ def _graph2net(graphs):
     """ Inputs graphs, returns network. """
     input_list = list()
     layer_dict = dict()
-    ## loop every layers
+    # loop every layers
     for graph in graphs:
-        ## get current layer class
+        # get current layer class
         name, layer_kwargs = graph
         layer_class = layer_kwargs.pop('class')  # class of current layer
         prev_layer = layer_kwargs.pop(
             'prev_layer'
         )  # name of previous layer : str =one layer   list of str = multiple layers
 
-        ## convert function dictionary into real function
+        # convert function dictionary into real function
         for key in layer_kwargs:  # set input placeholder into the lastest layer
             fn_dict = layer_kwargs[key]
             if key in ['act']:
@@ -1946,13 +1946,13 @@ def _graph2net(graphs):
                 # print(key, layer_kwargs[key])
         # print(name, prev_layer, layer_class, layer_kwargs)
 
-        if layer_class == 'placeholder':  ## create placeholder
+        if layer_class == 'placeholder':  # create placeholder
             dtype = layer_kwargs.pop('dtype')
             shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  #globals()['tf.'+dtype]
+            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  # globals()['tf.'+dtype]
             # input_dict.update({name: _placeholder})
             input_list.append((name, _placeholder))
-        else:  ## create network
+        else:  # create network
             if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
                 raise NotImplementedError("graph does not support this layer at the moment:{}" % layer_class)
             else:  # normal layers e.g. Conv2d
@@ -1968,14 +1968,14 @@ def _graph2net(graphs):
                 net = eval('tl.layers.' + layer_class)(**layer_kwargs)
                 layer_dict.update({name: net})
 
-    ## rename placeholder e.g. x:0 --> x
+    # rename placeholder e.g. x:0 --> x
     for i, (n, t) in enumerate(input_list):
         n_new = n.replace(':', '')
         if n_new[-1] == '0':
             n_new = n_new[:-1]
         input_list[i] = (n_new, t)
 
-    ## put placeholder into network attributes
+    # put placeholder into network attributes
     for n, t in input_list:
         # print(name, n, t)
         layer_dict[name].__dict__.update({n: t})
@@ -1984,7 +1984,7 @@ def _graph2net(graphs):
     #     layer_dict[name].globals()[key] = input_dict[key]
     #     logging.info("  attributes: {:3} {:15} {:15}".format(n, input_dict[key].get_shape().as_list(), input_dict[key].dtype.name))
     logging.info("[*] Load graph finished")
-    ## return the lastest layer as network
+    # return the lastest layer as network
     return layer_dict[name]
 
 
@@ -2025,11 +2025,11 @@ def save_graph_and_params(network=None, name='model', sess=None):
 
     Examples
     ---------
-    - Save architecture and parameters
+    Save architecture and parameters
 
     >>> tl.files.save_graph_and_params(net, 'model', sess)
 
-    - Load archtecture and parameters
+    Load archtecture and parameters
 
     >>> net = tl.files.load_graph_and_params('model', sess)
     """
