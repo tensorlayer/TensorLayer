@@ -142,15 +142,15 @@ class AtrousConv2dLayer(Layer):
         with tf.variable_scope(name):
             shape = [filter_size[0], filter_size[1], int(self.inputs.get_shape()[-1]), n_filter]
 
-            W = tf.get_variable(
-                name='W_atrous_conv2d', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W_atrous_conv2d', shape=shape, initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
 
             self.outputs = tf.nn.atrous_conv2d(self.inputs, filters=W, rate=rate, padding=padding)
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_atrous_conv2d', shape=(n_filter), initializer=b_init, dtype=LayersConfig.tf_dtype,
+                b = self._get_tf_variable(
+                    name='b_atrous_conv2d', shape=(n_filter), initializer=b_init, dtype=self.inputs.dtype,
                     **self.b_init_args
                 )
 
@@ -216,8 +216,8 @@ class AtrousDeConv2dLayer(Layer):
         )
 
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W_atrous_conv2d_transpose', shape=shape, initializer=W_init, dtype=LayersConfig.tf_dtype,
+            W = self._get_tf_variable(
+                name='W_atrous_conv2d_transpose', shape=shape, initializer=W_init, dtype=self.inputs.dtype,
                 **self.W_init_args
             )
 
@@ -226,9 +226,9 @@ class AtrousDeConv2dLayer(Layer):
             )
 
             if b_init:
-                b = tf.get_variable(
-                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init,
-                    dtype=LayersConfig.tf_dtype, **self.b_init_args
+                b = self._get_tf_variable(
+                    name='b_atrous_conv2d_transpose', shape=(shape[-2]), initializer=b_init, dtype=self.inputs.dtype,
+                    **self.b_init_args
                 )
 
                 self.outputs = tf.nn.bias_add(self.outputs, b, name='bias_add')

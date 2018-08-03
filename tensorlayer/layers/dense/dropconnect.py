@@ -87,11 +87,11 @@ class DropconnectDenseLayer(Layer):
         self.n_units = n_units
 
         with tf.variable_scope(name):
-            W = tf.get_variable(
-                name='W', shape=(n_in, n_units), initializer=W_init, dtype=LayersConfig.tf_dtype, **self.W_init_args
+            W = self._get_tf_variable(
+                name='W', shape=(n_in, n_units), initializer=W_init, dtype=self.inputs.dtype, **self.W_init_args
             )
-            b = tf.get_variable(
-                name='b', shape=(n_units), initializer=b_init, dtype=LayersConfig.tf_dtype, **self.b_init_args
+            b = self._get_tf_variable(
+                name='b', shape=(n_units), initializer=b_init, dtype=self.inputs.dtype, **self.b_init_args
             )
             # self.outputs = tf.matmul(self.inputs, W) + b
 

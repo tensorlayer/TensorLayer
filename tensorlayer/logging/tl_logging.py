@@ -17,6 +17,7 @@ import threading
 
 import six
 
+from contextlib import contextmanager
 from tensorlayer.decorators import deprecated
 
 __all__ = [
@@ -32,7 +33,10 @@ __all__ = [
     'warning',
     'warn',  # Deprecated
     'set_verbosity',
-    'get_verbosity'
+    'get_verbosity',
+    'temp_verbosity',
+    'temp_handler',
+    '_get_logger'
 ]
 
 # Don't use this directly. Use _get_logger() instead.
@@ -256,6 +260,46 @@ def get_verbosity():
 def set_verbosity(v):
     """Sets the threshold for what messages will be logged."""
     _get_logger().setLevel(v)
+
+
+@contextmanager
+def temp_verbosity(v):
+    old_verbosity = get_verbosity()
+
+    try:
+        set_verbosity(v)
+        yield
+    finally:
+        set_verbosity(old_verbosity)
+
+
+@contextmanager
+def temp_handler(header):
+
+    # Scope the TensorFlow logger to not conflict with users' loggers.
+    logger = _get_logger()
+
+    if hasattr(_sys, "ps1"):
+        _logging_target = _sys.stdout
+    else:
+        _logging_target = _sys.stderr
+
+    old_handler = logger.handlers[0]
+
+    try:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+
+        _handler = _logging.StreamHandler(_logging_target)
+        _handler.setFormatter(_logging.Formatter('%s' % header + ' %(message)s'))
+        logger.addHandler(_handler)
+
+        yield
+    finally:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+
+        logger.addHandler(old_handler)
 
 
 def _get_thread_id():

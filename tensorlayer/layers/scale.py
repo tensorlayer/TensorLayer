@@ -40,8 +40,8 @@ class ScaleLayer(Layer):
         logging.info("ScaleLayer  %s: init_scale: %f" % (self.name, init_scale))
 
         with tf.variable_scope(name):
-            # scale = tf.get_variable(name='scale_factor', init, trainable=True, )
-            scale = tf.get_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
+            # scale = self._get_tf_variable(name='scale_factor', init, trainable=True, )
+            scale = self._get_tf_variable("scale", shape=[1], initializer=tf.constant_initializer(value=init_scale))
             self.outputs = self.inputs * scale
 
         self._add_layers(self.outputs)

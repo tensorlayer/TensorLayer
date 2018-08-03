@@ -30,5 +30,6 @@ __all__ = [
     'warn',
     'warning',
     'set_verbosity',
-    'get_verbosity'
+    'get_verbosity',
+    'temp_verbosity',
 ]

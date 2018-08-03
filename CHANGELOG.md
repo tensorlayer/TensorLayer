@@ -77,6 +77,7 @@ To release a new version, please update the changelog as followed:
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
+  - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
   - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
@@ -88,6 +89,7 @@ To release a new version, please update the changelog as followed:
   - `tutorial_models_vgg16` and `tutorial_models_vgg19` has been changed the input scale from [0,255] to [0,1](PR #710)
   - `tutorial_mnist_distributed_trainer.py` and `tutorial_cifar10_distributed_trainer.py` are added to explain the uses of Distributed Trainer (PR #700)
   - add `tutorial_quanconv_cifar10.py` and `tutorial_quanconv_mnist.py` (PR #735)
+  - add`tutorial_work_with_onnx.py`(PR #773)
 ### Changed
   - function minibatches changed to avoid wasting samples.(PR #762)
   - all the input scale in both vgg16 and vgg19 has been changed the input scale from [0,255] to [0,1](PR #710)
@@ -100,6 +102,7 @@ To release a new version, please update the changelog as followed:
 
 ### Removed
   - `conv_layers()`  has been removed in both vgg16 and vgg19(PR #710)
+
 
 ### Fixed
 - import error caused by matplotlib on OSX (PR #705)
@@ -119,7 +122,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
-- @OwenLiuzZ: #698 #710
+- @OwenLiuzZ: #698 #710 #773
 - @zsdonghao: #711 #712 #734 #736 #737 #700
 - @luomai: #700 #766
 - @XJTUWYD: #735

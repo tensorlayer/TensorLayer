@@ -9,6 +9,7 @@ from tensorlayer.layers.utils import flatten_reshape
 from tensorlayer import logging
 
 from tensorlayer.decorators import deprecated_alias
+from tensorlayer.decorators import force_return_self
 
 __all__ = [
     'FlattenLayer',
@@ -42,16 +43,32 @@ class FlattenLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, name='flatten'):
-        super(FlattenLayer, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(self, prev_layer=None, name='flatten'):
 
-        _out = flatten_reshape(self.inputs, name=name)
-        self.n_units = int(_out.get_shape()[-1])
+        self.prev_layer = prev_layer
+        self.name = name
 
-        logging.info("FlattenLayer %s: %d" % (self.name, self.n_units))
+        super(FlattenLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        _out = flatten_reshape(prev_layer.outputs, name=self.name)
+        self.out_shape = _out.shape
+
+        super(FlattenLayer, self).__call__(prev_layer)
 
         self.outputs = _out
-
         self._add_layers(self.outputs)
 
 
@@ -80,16 +97,37 @@ class ReshapeLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, shape, name='reshape'):
-        super(ReshapeLayer, self).__init__(prev_layer=prev_layer, name=name)
+    def __init__(self, prev_layer=None, shape=list(), name='reshape'):
 
         if not shape:
             raise ValueError("Shape list can not be empty")
 
-        self.outputs = tf.reshape(self.inputs, shape=shape, name=name)
-        self._add_layers(self.outputs)
+        self.prev_layer = prev_layer
+        self._shape = shape
+        self.name = name
 
-        logging.info("ReshapeLayer %s: %s" % (self.name, self.outputs.get_shape()))
+        super(ReshapeLayer, self).__init__()
+
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        _out = tf.reshape(prev_layer.outputs, shape=self._shape, name=self.name)
+        self.out_shape = _out.shape
+
+        super(ReshapeLayer, self).__call__(prev_layer)
+
+        self.outputs = _out
+        self._add_layers(self.outputs)
 
 
 class TransposeLayer(Layer):
@@ -118,14 +156,39 @@ class TransposeLayer(Layer):
     """
 
     @deprecated_alias(layer='prev_layer', end_support_version=1.9)  # TODO remove this line for the 1.9 release
-    def __init__(self, prev_layer, perm, name='transpose'):
+    def __init__(self, prev_layer=None, perm=None, name='transpose'):
 
         if perm is None:
             raise AssertionError("The `perm` argument cannot be None")
 
-        super(TransposeLayer, self).__init__(prev_layer=prev_layer, name=name)
+        self.prev_layer = prev_layer
+        self.perm = perm
+        self.name = name
 
-        logging.info("TransposeLayer  %s: perm: %s" % (self.name, perm))
+        super(TransposeLayer, self).__init__()
 
-        self.outputs = tf.transpose(self.inputs, perm=perm, name=name)
+    def __str__(self):
+        additional_str = []
+
+        try:
+            additional_str.append("perm: %s" % self.perm)
+        except AttributeError:
+            pass
+
+        try:
+            additional_str.append("out_shape: %s" % self.out_shape)
+        except AttributeError:
+            pass
+
+        return self._str(additional_str)
+
+    @force_return_self
+    def __call__(self, prev_layer, is_train=True):
+
+        _out = tf.transpose(prev_layer.outputs, perm=self.perm, name=self.name)
+        self.out_shape = _out.shape
+
+        super(TransposeLayer, self).__call__(prev_layer)
+
+        self.outputs = _out
         self._add_layers(self.outputs)
