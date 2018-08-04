@@ -1,6 +1,7 @@
 """
 A sample script that shows how to distribute multiple tasks to multiple machine
 using the database module.
+
 """
 import time
 import tensorlayer as tl

@@ -1,8 +1,8 @@
 """
 Run this script on servers, it will monitor the database and run tasks when
 task distributor push a task to the database.
-"""
 
+"""
 import time
 import tensorlayer as tl
 
