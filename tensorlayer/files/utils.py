@@ -1933,6 +1933,7 @@ def _graph2net(graphs):
         layer_kwargs = dict(
             layer_kwargs
         )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
+
         layer_class = layer_kwargs.pop('class')  # class of current layer
         prev_layer = layer_kwargs.pop(
             'prev_layer'
