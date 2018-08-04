@@ -107,6 +107,7 @@ To release a new version, please update the changelog as followed:
 - missing import in tl.prepro (PR #712)
 - Dockerfiles import error fixed - issue #733 (PR #747)
 - Fix a typo in `absolute_difference_error` in file: `tensorlayer/cost.py` - Issue #753 (PR #759)
+- Fix the bug of scaling the learning rate of trainer (PR #776)
 
 ### Security
 
@@ -120,7 +121,7 @@ To release a new version, please update the changelog as followed:
 ### Contributors
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
-- @OwenLiuzZ: #698 #710
+- @OwenLiuzZ: #698 #710 #776
 - @zsdonghao: #711 #712 #734 #736 #737 #700
 - @luomai: #700 #766
 - @XJTUWYD: #735
