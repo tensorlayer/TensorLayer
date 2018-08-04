@@ -135,40 +135,12 @@ def main_test_cnn_layer():
 
     sess = tf.InteractiveSession()
 
-    # Define the batchsize at the begin, you can give the batchsize in x and y_
-    # rather than 'None', this can allow TensorFlow to apply some optimizations
-    # – especially for convolutional layers.
     batch_size = 128
-
     x = tf.placeholder(tf.float32, shape=[batch_size, 28, 28, 1])  # [batch_size, height, width, channels]
     y_ = tf.placeholder(tf.int64, shape=[batch_size])
 
     net = tl.layers.InputLayer(x, name='input')
-    ## Professional conv API for tensorflow expert
-    # net = tl.layers.Conv2dLayer(net,
-    #                     act = tf.nn.relu,
-    #                     shape = [5, 5, 1, 32],  # 32 features for each 5x5 patch
-    #                     strides=[1, 1, 1, 1],
-    #                     padding='SAME',
-    #                     name ='cnn1')     # output: (?, 28, 28, 32)
-    # net = tl.layers.PoolLayer(net,
-    #                     ksize=[1, 2, 2, 1],
-    #                     strides=[1, 2, 2, 1],
-    #                     padding='SAME',
-    #                     pool = tf.nn.max_pool,
-    #                     name ='pool1',)   # output: (?, 14, 14, 32)
-    # net = tl.layers.Conv2dLayer(net,
-    #                     act = tf.nn.relu,
-    #                     shape = [5, 5, 32, 64], # 64 features for each 5x5 patch
-    #                     strides=[1, 1, 1, 1],
-    #                     padding='SAME',
-    #                     name ='cnn2')     # output: (?, 14, 14, 64)
-    # net = tl.layers.PoolLayer(net,
-    #                     ksize=[1, 2, 2, 1],
-    #                     strides=[1, 2, 2, 1],
-    #                     padding='SAME',
-    #                     pool = tf.nn.max_pool,
-    #                     name ='pool2',)   # output: (?, 7, 7, 64)
+
     ## Simplified conv API (the same with the above layers)
     net = tl.layers.Conv2d(net, 32, (5, 5), (1, 1), act=tf.nn.relu, padding='SAME', name='cnn1')
     net = tl.layers.MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
@@ -184,6 +156,7 @@ def main_test_cnn_layer():
     y = net.outputs
 
     print([n.name for n in tf.get_default_graph().as_graph_def().node])
+
     # To string Graph
     with open("graph.proto", "wb") as file:
         graph = tf.get_default_graph().as_graph_def(add_shapes=True)
@@ -242,11 +215,8 @@ def main_test_cnn_layer():
                 n_batch += 1
             print("   val loss: %f" % (val_loss / n_batch))
             print("   val acc: %f" % (val_acc / n_batch))
-            # try:
-            #     tl.vis.CNN2d(net.all_params[0].eval(), second=10, saveable=True, name='cnn1_' + str(epoch + 1), fig_idx=2012)
-            # except:  # pylint: disable=bare-except
-            #     print("You should change vis.CNN(), if you want to save the feature images for different dataset")
 
+    # Evaluation
     print('Evaluation')
     test_loss, test_acc, n_batch = 0, 0, 0
     for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
