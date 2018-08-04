@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+# import ast
 import sys
 import gzip
 import math
@@ -1929,6 +1930,9 @@ def _graph2net(graphs):
     for graph in graphs:
         # get current layer class
         name, layer_kwargs = graph
+        layer_kwargs = dict(
+            layer_kwargs
+        )  # when InputLayer is used for twice, if we "pop" elements, the second time to use it will have error.
         layer_class = layer_kwargs.pop('class')  # class of current layer
         prev_layer = layer_kwargs.pop(
             'prev_layer'
@@ -1947,14 +1951,17 @@ def _graph2net(graphs):
         # print(name, prev_layer, layer_class, layer_kwargs)
 
         if layer_class == 'placeholder':  # create placeholder
-            dtype = layer_kwargs.pop('dtype')
-            shape = layer_kwargs.pop('shape')
-            _placeholder = tf.placeholder(eval('tf.' + dtype), shape, name=name.split(':')[0])  # globals()['tf.'+dtype]
-            # input_dict.update({name: _placeholder})
-            input_list.append((name, _placeholder))
+            if name not in input_list:  # if placeholder is not exist
+                dtype = layer_kwargs.pop('dtype')
+                shape = layer_kwargs.pop('shape')
+                _placeholder = tf.placeholder(eval('tf.' + dtype), shape,
+                                              name=name.split(':')[0])  # globals()['tf.'+dtype]
+                # _placeholder = tf.placeholder(ast.literal_eval('tf.' + dtype), shape, name=name.split(':')[0])
+                # input_dict.update({name: _placeholder})
+                input_list.append((name, _placeholder))
         else:  # create network
             if isinstance(prev_layer, list):  # e.g. ConcatLayer, ElementwiseLayer have multiply previous layers
-                raise NotImplementedError("graph does not support this layer at the moment:{}" % layer_class)
+                raise NotImplementedError("TL graph does not support this layer at the moment: %s" % (layer_class))
             else:  # normal layers e.g. Conv2d
                 try:  # if previous layer is layer
                     net = layer_dict[prev_layer]
@@ -1974,6 +1981,7 @@ def _graph2net(graphs):
         if n_new[-1] == '0':
             n_new = n_new[:-1]
         input_list[i] = (n_new, t)
+        # print(n_new, t)
 
     # put placeholder into network attributes
     for n, t in input_list:
