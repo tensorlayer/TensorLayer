@@ -117,11 +117,9 @@ import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
 
-
 from onnx_tf.backend import prepare
 from onnx_tf.frontend import tensorflow_graph_to_onnx_model
 from tensorflow.python.tools.freeze_graph import freeze_graph as freeze_graph
-
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -238,18 +236,15 @@ def main_test_cnn_layer():
     print("   test loss: %f" % (test_loss / n_batch))
     print("   test acc: %f" % (test_acc / n_batch))
 
+
 def graph_freeze():
     # Please see the detail of parameters  at the begin of this tutorial
-    freeze_graph(input_graph='/root/graph.proto',
-                 input_saver='',
-                 input_binary=True,
-                 input_checkpoint='/root/model/model.ckpt',
-                 output_graph='/root/frozen_graph.pb ',
-                 output_node_names='output/bias_add',
-                 restore_op_name='save/restore_all',
-                 filename_tensor_name='save/Const:0',
-                 clear_devices=True,
-                 initializer_nodes=None)
+    freeze_graph(
+        input_graph='/root/graph.proto', input_saver='', input_binary=True, input_checkpoint='/root/model/model.ckpt',
+        output_graph='/root/frozen_graph.pb ', output_node_names='output/bias_add', restore_op_name='save/restore_all',
+        filename_tensor_name='save/Const:0', clear_devices=True, initializer_nodes=None
+    )
+
 
 def convert_model_to_onnx():
     with tf.gfile.GFile("frozen_graph.pb", "rb") as f:
@@ -260,6 +255,7 @@ def convert_model_to_onnx():
         file.write(onnx_model.SerializeToString())
         file.close()
 
+
 def convert_onnx_to_model():
     model = onnx.load('mnist.onnx')
     tf_rep = prepare(model)
@@ -267,9 +263,6 @@ def convert_onnx_to_model():
     img = np.load("./assets/image.npz")
     output = tf_rep.run(img.reshape([1, 784]))
     print("The digit is classified as ", np.argmax(output))
-
-
-
 
 
 if __name__ == '__main__':
@@ -285,4 +278,3 @@ if __name__ == '__main__':
 
     # 4. Convert thr ONNX file to specific model(ONNX is under implementation!!!)
     # convert_onnx_to_model()
-
