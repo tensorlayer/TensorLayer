@@ -13,8 +13,9 @@ Caffe2, PyTorch, Microsoft Cognitive Toolkit, Apache MXNet and other tools are d
 
 Pre-work:
 ----------------------------
-- Install ONNX package : 
+- Install ONNX and onnx-tf package : 
 >>> pip install onnx
+>>> pip install onnx-tf
 Note: When installing in a non-Anaconda environment, make sure to install the Protobuf compiler before running the pip installation of onnx. For example, on Ubuntu:
 >>>sudo apt-get install protobuf-compiler libprotoc-dev
 >>>pip install onnx
