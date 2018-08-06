@@ -225,11 +225,15 @@ class VGG19(VGG19Base):
 
     def __init__(self, x, end_with='fc3_relu', reuse=None):
         with tf.variable_scope("vgg19", reuse=reuse):
+            scope_name = tf.get_variable_scope().name
+            self.name = scope_name + '/vgg19' if scope_name else '/vgg19'
+
             net = InputLayer(x, name='input')
             self.net = VGG19Base.vgg19_simple_api(net, end_with)
             self.outputs = self.net.outputs
             self.all_params = self.net.all_params
             self.all_layers = self.net.all_layers
             self.all_drop = self.net.all_drop
+            self.all_graphs = list(self.net.all_graphs)
             self.print_layers = self.net.print_layers
             self.print_params = self.net.print_params
