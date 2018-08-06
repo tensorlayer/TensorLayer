@@ -93,7 +93,7 @@ Then you will get thr first node info:
 >>>name: "cnn1/kernel/read"
 >>>op_type: "Identity"
 
-Inference using Backend(This part onnx-tf is under implementation!!!)
+4.Inference using Backend(This part onnx-tf is under implementation!!!)
 -------------------------------------------------------------------
 In this tutorial, we continue our demonstration by performing inference using this obtained ONNX model. Here, we exported an image representing a handwritten 7 and stored the numpy array as image.npz. Using onnx-tf backend, we will classify this image using the converted ONNX model.
 >>>import onnx
@@ -111,10 +111,17 @@ You will get the information in your console:
 >>>The digit is classified as  7
 
 """
-
 import time
+import onnx
+import numpy as np
 import tensorflow as tf
 import tensorlayer as tl
+
+
+from onnx_tf.backend import prepare
+from onnx_tf.frontend import tensorflow_graph_to_onnx_model
+from tensorflow.python.tools.freeze_graph import freeze_graph as freeze_graph
+
 
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
@@ -231,8 +238,51 @@ def main_test_cnn_layer():
     print("   test loss: %f" % (test_loss / n_batch))
     print("   test acc: %f" % (test_acc / n_batch))
 
+def graph_freeze():
+    # Please see the detail of parameters  at the begin of this tutorial
+    freeze_graph(input_graph='/root/graph.proto',
+                 input_saver='',
+                 input_binary=True,
+                 input_checkpoint='/root/model/model.ckpt',
+                 output_graph='/root/frozen_graph.pb ',
+                 output_node_names='output/bias_add',
+                 restore_op_name='save/restore_all',
+                 filename_tensor_name='save/Const:0',
+                 clear_devices=True,
+                 initializer_nodes=None)
+
+def convert_model_to_onnx():
+    with tf.gfile.GFile("frozen_graph.pb", "rb") as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        onnx_model = tensorflow_graph_to_onnx_model(graph_def, "output/bias_add", opset=6)
+        file = open("mnist.onnx", "wb")
+        file.write(onnx_model.SerializeToString())
+        file.close()
+
+def convert_onnx_to_model():
+    model = onnx.load('mnist.onnx')
+    tf_rep = prepare(model)
+    # Image Path
+    img = np.load("./assets/image.npz")
+    output = tf_rep.run(img.reshape([1, 784]))
+    print("The digit is classified as ", np.argmax(output))
+
+
+
+
 
 if __name__ == '__main__':
 
-    # CNN
+    # 1. Train the CNN network and output the graph and checkpoints
     main_test_cnn_layer()
+
+    # 2. Freeze the graph with checkpoints
+    graph_freeze()
+
+    # 3. Convert the pb file to ONNX file
+    convert_model_to_onnx()
+
+    # 4. Convert thr ONNX file to specific model(ONNX is under implementation!!!)
+    # convert_onnx_to_model()
+
