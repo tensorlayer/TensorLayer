@@ -119,6 +119,7 @@ import tensorlayer as tl
 tf.logging.set_verbosity(tf.logging.DEBUG)
 tl.logging.set_verbosity(tl.logging.DEBUG)
 
+
 def main_test_cnn_layer():
     """Reimplementation of the TensorFlow official MNIST CNN tutorials:
     - https://www.tensorflow.org/versions/r0.8/tutorials/mnist/pros/index.html
@@ -190,7 +191,7 @@ def main_test_cnn_layer():
             sess.run(train_op, feed_dict=feed_dict)
         # Save the checkpoint every 10 eopchs
         if epoch % 10 == 0:
-            tl.files.save_ckpt(sess,mode_name='model.ckpt', save_dir='model', printable=True)
+            tl.files.save_ckpt(sess, mode_name='model.ckpt', save_dir='model', printable=True)
         if epoch + 1 == 1 or (epoch + 1) % print_freq == 0:
             print("Epoch %d of %d took %fs" % (epoch + 1, n_epoch, time.time() - start_time))
             train_loss, train_acc, n_batch = 0, 0, 0
