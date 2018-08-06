@@ -74,12 +74,19 @@ To release a new version, please update the changelog as followed:
   - Add `tl.logging.contrib.hyperdash` (PR #739)
   - Add `tl.distributed.trainer` (PR #700)
   - Add `prefetch_buffer_size` to the `tl.distributed.trainer` (PR #766)
+  - Add `tl.db.TensorHub` (PR ＃751)
+  - Add `tl.files.save_graph` (PR ＃751)
+  - Add `tl.files.load_graph_` (PR ＃751)
+  - Add `tl.files.save_graph_and_params` (PR ＃751)
+  - Add `tl.files.load_graph_and_params` (PR ＃751)
 - Documentation:
   - Add binary, ternary and dorefa links (PR #711)
   - Update input scale of VGG16 and VGG19 to 0~1 (PR #736)
+  - Update database (PR ＃751)
 - Layer:
   - Release SwitchNormLayer (PR #737)
   - Release QuanConv2d, QuanConv2dWithBN, QuanDenseLayer, QuanDenseLayerWithBN (PR#735)
+  - Update Core Layer to support graph (PR ＃751)
 - Setup:
   - Creation of installation flaggs `all_dev`, `all_cpu_dev`, and `all_gpu_dev` (PR #739)
 - Tutorials:
@@ -121,8 +128,8 @@ To release a new version, please update the changelog as followed:
 - @DEKHTIARJonathan: #739 #747 #750 #754
 - @lgarithm: #705 #700
 - @OwenLiuzZ: #698 #710 #776
-- @zsdonghao: #711 #712 #734 #736 #737 #700
-- @luomai: #700 #766
+- @zsdonghao: #711 #712 #734 #736 #737 #700 #751
+- @luomai: #700 #751 #766
 - @XJTUWYD: #735
 - @mutewall: #735
 - @thangvubk: #759

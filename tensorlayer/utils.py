@@ -263,9 +263,11 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         if cost is not None:
             tl.logging.info("   test loss: %f" % sess.run(cost, feed_dict=feed_dict))
 
-        tl.logging.info("   test acc: %f" % sess.run(acc, feed_dict=feed_dict))
+        test_acc = sess.run(acc, feed_dict=feed_dict)
+        tl.logging.info("   test acc: %f" % test_acc)
         # tl.logging.info("   test acc: %f" % np.mean(y_test == sess.run(y_op,
         #                                           feed_dict=feed_dict)))
+        return test_acc
     else:
         test_loss, test_acc, n_batch = 0, 0, 0
         for X_test_a, y_test_a in tl.iterate.minibatches(X_test, y_test, batch_size, shuffle=True):
@@ -282,6 +284,7 @@ def test(sess, network, acc, X_test, y_test, x, y_, batch_size, cost=None):
         if cost is not None:
             tl.logging.info("   test loss: %f" % (test_loss / n_batch))
         tl.logging.info("   test acc: %f" % (test_acc / n_batch))
+        return test_acc / n_batch
 
 
 def predict(sess, network, X, x, y_op, batch_size=None):

@@ -30,7 +30,6 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import activation
     from tensorlayer import array_ops
     from tensorlayer import cost
-    from tensorlayer import db
     from tensorlayer import decorators
     from tensorlayer import files
     from tensorlayer import initializers
@@ -41,12 +40,13 @@ if 'TENSORLAYER_PACKAGE_BUILDING' not in os.environ:
     from tensorlayer import models
     from tensorlayer import optimizers
     from tensorlayer import rein
-    from tensorlayer import utils
 
     # Lazy Imports
+    db = LazyImport("tensorlayer.db")
     distributed = LazyImport("tensorlayer.distributed")
     nlp = LazyImport("tensorlayer.nlp")
     prepro = LazyImport("tensorlayer.prepro")
+    utils = LazyImport("tensorlayer.utils")
     visualize = LazyImport("tensorlayer.visualize")
 
     # alias
